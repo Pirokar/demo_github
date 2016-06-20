@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircularProgressButton">
+        <attr name="completed_drawable" format="reference"/>
+        <attr name="start_download_label" format="reference"/>
+        <attr name="in_progress_label" format="reference"/>
+    </declare-styleable>
+</resources>

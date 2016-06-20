@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/default_chat_row_height"
+    android:orientation="vertical">
+
+    <ProgressBar
+        android:layout_width="@dimen/default_chat_row_height"
+        android:layout_height="@dimen/default_chat_row_height"
+        android:layout_gravity="left"
+        android:layout_marginLeft="@dimen/margin_material"
+        android:background="@drawable/circle_aqua_outline"
+        android:padding="14dp"
+        android:indeterminate="true"
+
+        android:indeterminateDrawable="@drawable/circle_with_circle" />
+</FrameLayout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/margin_half">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="@dimen/user_margin_left"
+        android:layout_marginRight="@dimen/user_margin_right"
+        android:background="@drawable/bubble_blue"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_three_fourth">
+
+        <TableRow
+            android:id="@+id/file_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_quarter"
+            android:visibility="visible">
+
+            <ImageButton
+                android:layout_marginTop="@dimen/margin_half"
+                android:id="@+id/file"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_half"
+                android:background="@drawable/ic_insert_file_white_36dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/margin_quarter"
+                android:background="@android:color/white" />
+
+            <TextView
+                android:id="@+id/text_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_half"
+                android:paddingRight="80dp"
+                android:text="Мария Павлова instruction.pdf 1,2mb отправлено sddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" />
+        </TableRow>
+
+        <FrameLayout>
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/margin_quarter"
+                android:text="Как-то так...."
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:drawablePadding="@dimen/margin_quarter"
+                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/margin_quarter"
+                android:text="10:19" />
+        </FrameLayout>
+
+
+    </TableLayout>
+</FrameLayout>

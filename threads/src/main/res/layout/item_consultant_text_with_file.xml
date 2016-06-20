@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/consultant_margin_left"
+        android:layout_marginRight="@dimen/consultant_margin_right"
+        android:layout_marginTop="@dimen/margin_material"
+        android:background="@drawable/bubble_white"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_three_fourth">
+
+        <LinearLayout
+            android:id="@+id/file_row"
+            android:layout_marginBottom="@dimen/margin_quarter"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <com.sequenia.threads.views.CircularProgressButton
+                android:id="@+id/button_download"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                app:completed_drawable="@drawable/ic_insert_file_blue_36dp"
+                app:in_progress_label="@drawable/ic_clear_blue_36dp"
+                app:start_download_label="@drawable/ic_vertical_align_bottom_24dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/margin_half"
+                android:background="@color/blue" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/to"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+                    android:paddingRight="80dp"
+                    android:text="Иван Петров"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/file_specs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+
+                    android:text="счет на оплату 1,2mb dfffffffffffffffffdddddddddddddddddddddddddddddddddddddddddddddddd"
+                    android:textColor="@color/gray_text" />
+
+                <TextView
+                    android:id="@+id/send_at"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+                    android:text="отправлено 21 апр 2016"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout>
+
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/margin_quarter"
+                android:text="Как-то так"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:drawablePadding="@dimen/margin_quarter"
+                android:paddingBottom="@dimen/margin_quarter"
+                android:text="10:19"
+                android:textColor="@android:color/black" />
+        </FrameLayout>
+    </TableLayout>
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="@dimen/margin_half"
+        android:layout_marginTop="@dimen/margin_quarter"
+        android:src="@drawable/sample_consult_avatar_small"
+        android:visibility="gone" />
+</LinearLayout>
