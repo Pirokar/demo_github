@@ -95,31 +95,32 @@
             android:background="@android:color/white">
 
             <EditText
+                android:maxLines="5"
                 android:id="@+id/input"
                 style="@style/InputEditTextStyle"
                 android:background="@android:color/transparent"
-                android:drawableLeft="@drawable/ic_attach_file_blue_24dp"
+                android:paddingLeft="64dp"
+                android:paddingRight="64dp"
                 android:drawablePadding="@dimen/margin_big"
-                android:drawableRight="@drawable/ic_send_36dp"
                 android:hint="@string/your_message" />
 
-            <Button
+            <ImageButton
+                android:src="@drawable/ic_attach_file_blue_24dp"
                 android:id="@+id/add_attachment"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="left"
+                android:layout_height="64dp"
+                android:layout_gravity="left|bottom"
                 android:background="@android:color/transparent" />
 
-            <Button
+            <ImageButton
+                android:src="@drawable/ic_send_36dp"
                 android:id="@+id/send_message"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="64dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="right"
+                android:layout_height="64dp"
+                android:layout_gravity="right|bottom"
                 android:background="@android:color/transparent" />
-
-
         </FrameLayout>
     </LinearLayout>
 

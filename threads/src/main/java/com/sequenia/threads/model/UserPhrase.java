@@ -5,7 +5,6 @@ package com.sequenia.threads.model;
  */
 public class UserPhrase implements ChatPhrase {
     private final long messageId;
-
     private final String phrase;
     private final boolean withFile;
     private MessageState sentState;
@@ -15,17 +14,15 @@ public class UserPhrase implements ChatPhrase {
     private final FileDescription fileDescription;
     private final String filePath;
 
-    public UserPhrase(long messageId, String phrase, long phraseTimeStamp, String filePath, Quote quote,FileDescription fileDescription) {
+
+    public UserPhrase(long messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, String filePath) {
         this.messageId = messageId;
         this.phrase = phrase;
         this.withFile = filePath != null;
-        mQuote = quote;
-        this.isWithQuote = quote != null;
+        this.mQuote = mQuote;
         this.phraseTimeStamp = phraseTimeStamp;
-        this.filePath = filePath;
-        sentState = MessageState.STATE_SENT;
         this.fileDescription = fileDescription;
-
+        this.filePath = filePath;
     }
 
     @Override

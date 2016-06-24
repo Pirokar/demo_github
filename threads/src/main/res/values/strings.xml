@@ -1,18 +1,18 @@
 <resources>
     <string name="app_name">Threads</string>
-    <string name="contact_center">Контакт центр</string>
-    <string name="search_hint">Поиск сообщений</string>
-    <string name="searching_operator">Поиск оператора...</string>
-    <string name="your_message">Ваше сообщение...</string>
-    <string name="no_connection">Отсутствует
-       \nсоединение с интернетом</string>
-    <string name="no_connection_details">Включите передачу даннх
-       \nили воспользуйтесь WI_FI для\nотправки сообщения</string>
-    <string name="close">Закрыть</string>
-    <string name="camera">Камера</string>
-    <string name="gallery">Галерея</string>
-    <string name="file">Файл</string>
-    <string name="send">Отправить</string>
-    <string name="connected_female">подключилась к диалогу в</string>
-    <string name="connected">подключился к диалогу в</string>
+    <string name="contact_center">Contact center</string>
+    <string name="search_hint">Message search</string>
+    <string name="searching_operator">Searching operator...</string>
+    <string name="your_message">Your message...</string>
+    <string name="no_connection">No internet connection</string>
+    <string name="no_connection_details">Turn on mobile data
+       \nor use WI_FI to\nsend message</string>
+    <string name="close">Close</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="file">File</string>
+    <string name="send">Send</string>
+    <string name="connected_female">connected to dialog at</string>
+    <string name="connected">connected to dialog</string>
+    <string name="send_at">send at</string>
 </resources>

@@ -76,16 +76,15 @@
 
         <FrameLayout>
 
-
             <TextView
                 android:id="@+id/text"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:paddingBottom="@dimen/margin_quarter"
-                android:text="Как-то так"
-                android:textColor="@color/black" />
+
+                android:text="Как-то так....eryeryeryeryeryeryeryeryeyr"
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:id="@+id/timestamp"
@@ -93,9 +92,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:drawablePadding="@dimen/margin_quarter"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/black"
                 android:paddingBottom="@dimen/margin_quarter"
-                android:text="10:19"
-                android:textColor="@android:color/black" />
+                android:text="10:19" />
         </FrameLayout>
     </TableLayout>
 

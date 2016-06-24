@@ -2,10 +2,12 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -41,7 +43,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         mFileDescrTextView = (TextView) itemView.findViewById(R.id.text_description);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mFileImageButton = (ImageButton) itemView.findViewById(R.id.file);
-        sdf = new SimpleDateFormat("hh:mm", Locale.US);
+        sdf = new SimpleDateFormat("HH:mm", Locale.US);
         fileSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
     }
 
@@ -96,7 +98,23 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         } else {
             mFileRow.setVisibility(View.GONE);
         }
-        Log.e(TAG, "" + sentState);
+        mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                try {
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                    float density = itemView.getContext().getResources().getDisplayMetrics().density;
+                    if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
+                        params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+                    }
+                    mTimeStampTextView.setLayoutParams(params);
+                    mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         switch (sentState) {
             case STATE_SENT_AND_SERVER_RECEIVED:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_all_white_18dp, 0);

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.pushserver.android.PushController;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ConsultConnected;
 import com.sequenia.threads.model.ConsultPhrase;
@@ -22,6 +23,7 @@ import com.sequenia.threads.model.UserPhrase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -47,6 +49,7 @@ public class ChatController extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
     }
 
     public void bindActivity(ChatActivity ca) {
@@ -69,24 +72,24 @@ public class ChatController extends Fragment {
 
     public void onUserInput(UpcomingUserMessage upcomingUserMessage) {
         if (upcomingUserMessage == null) return;
-        Log.e(TAG, "" + upcomingUserMessage);// TODO: 14.06.2016
         UserPhrase up;
         if (upcomingUserMessage.getAttachments() != null && upcomingUserMessage.getAttachments().size() > 0) {
             up = new UserPhrase(
                     counter.incrementAndGet()
                     , upcomingUserMessage.getText()
-                    , System.currentTimeMillis()
-                    , upcomingUserMessage.getAttachments().get(0)
                     , upcomingUserMessage.getQuote()
-                    , upcomingUserMessage.getFileDescription());
+                    , System.currentTimeMillis()
+                    , upcomingUserMessage.getFileDescription()
+                    , upcomingUserMessage.getAttachments().get(0)
+            );
         } else {
             up = new UserPhrase(
                     counter.incrementAndGet()
                     , upcomingUserMessage.getText()
-                    , System.currentTimeMillis()
-                    , null
                     , upcomingUserMessage.getQuote()
-                    , upcomingUserMessage.getFileDescription());
+                    , System.currentTimeMillis()
+                    , upcomingUserMessage.getFileDescription()
+                    , null);
         }
         final UserPhrase finalUp = up;
         addMessage(up);
@@ -128,33 +131,29 @@ public class ChatController extends Fragment {
         }
         if (upcomingUserMessage.getAttachments() != null && upcomingUserMessage.getAttachments().size() > 1) {
             for (String str : upcomingUserMessage.getAttachments()) {
-                up = new UserPhrase(counter.incrementAndGet(), null, System.currentTimeMillis(), str, null, null);
+                up = new UserPhrase(counter.incrementAndGet(), null, null, System.currentTimeMillis(), null, str);
                 mUserPhrases.add(up);
             }
         }
-
     }
 
     public ConsultPhrase getConsultPhraseById(long id) {
-        ConsultPhrase cf = null;
         for (ConsultPhrase cff : mConsultPhrases) {
             if (cff.getMessageId() == id) {
                 return cff;
             }
-
         }
-        return cf;
+        return null;
     }
 
     public UserPhrase getUserPhraseById(long id) {
-        UserPhrase uf = null;
         for (UserPhrase uff : mUserPhrases) {
             if (uff.getMessageId() == id) {
-                return uf;
+                return uff;
             }
 
         }
-        return uf;
+        return null;
     }
 
     private String getSmallConsultAvatarPath() {
@@ -221,9 +220,11 @@ public class ChatController extends Fragment {
         h.postDelayed(runnables.get(3), 3500);
         h.postDelayed(runnables.get(4), 4000);
     }
-    public void checkAndResendPhrase(UserPhrase userPhrase){
+
+    public void checkAndResendPhrase(UserPhrase userPhrase) {
 
     }
+
     private class ProgressRunnable implements Runnable {
         private String path;
         private int progress;

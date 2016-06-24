@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:paddingBottom="@dimen/margin_quarter"
-                android:text="Как-то так...."
+                android:text="Как-то так....eryeryeryeryeryeryeryeryeyr"
                 android:textColor="@android:color/white" />
 
             <TextView

@@ -7,7 +7,7 @@ public class ConsultPhrase implements ChatPhrase {
     private final String avatarPath;
     private final String filePath;
     private final long timeStamp;
-    private final String consultPhrase;
+    private final String phrase;
     private final long messageId;
     private int downloadingProgress;
     private final String consultName;
@@ -15,11 +15,11 @@ public class ConsultPhrase implements ChatPhrase {
     private final Quote quote;
     private final FileDescription fileDescription;
 
-    public ConsultPhrase(String avatarPath, String filePath, long timeStamp, String consultPhrase, long messageId, String consultName, Quote quote, FileDescription fileDescription) {
+    public ConsultPhrase(String avatarPath, String filePath, long timeStamp, String phrase, long messageId, String consultName, Quote quote, FileDescription fileDescription) {
         this.avatarPath = avatarPath;
         this.filePath = filePath;
         this.timeStamp = timeStamp;
-        this.consultPhrase = consultPhrase;
+        this.phrase = phrase;
         this.messageId = messageId;
         this.consultName = consultName;
         this.quote = quote;
@@ -61,7 +61,7 @@ public class ConsultPhrase implements ChatPhrase {
 
     @Override
     public String getPhraseText() {
-        return consultPhrase;
+        return phrase;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ConsultPhrase implements ChatPhrase {
                 "avatarPath='" + avatarPath + '\'' +
                 ", filePath='" + filePath + '\'' +
                 ", timeStamp=" + timeStamp +
-                ", consultPhrase='" + consultPhrase + '\'' +
+                ", phrase='" + phrase + '\'' +
                 ", messageId=" + messageId +
                 ", downloadingProgress=" + downloadingProgress +
                 ", consultName='" + consultName + '\'' +
@@ -100,7 +100,7 @@ public class ConsultPhrase implements ChatPhrase {
         return timeStamp;
     }
 
-    public String getConsultPhrase() {
-        return consultPhrase;
+    public String getPhrase() {
+        return phrase;
     }
 }

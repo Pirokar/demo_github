@@ -2,11 +2,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sequenia.appwithchat">
 
+    <permission
+        android:name="com.sequenia.appwithchat.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <permission
+        android:name="com.sequenia.appwithchat.permission.pushserver.RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.sequenia.appwithchat.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.SEND" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.sequenia.appwithchat.permission.pushserver.RECEIVE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -15,9 +29,60 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="7dea244530b440655e927fed9654a59108f414bc" />
+
+        <meta-data
+            android:name="com.pushserver.android.useDefaultDeviceUID"
+            android:value="true" />
+        <meta-data
+            android:name="com.pushserver.android.senderId"
+            android:value="!STRING!1079639835466" />
+        <meta-data
+            android:name="com.pushserver.android.serverUrl"
+            android:value="http://pushservertest.mfms.ru/push-test" />
+        <meta-data
+            android:name="com.pushserver.android.logs"
+            android:value="true" />
+        <meta-data
+            android:name="com.pushserver.android.service"
+            android:value="com.sequenia.appwithchat.MyServerIntentService" />
+        <meta-data
+            android:name="com.pushserver.android.location"
+            android:value="true" />
+        <meta-data
+            android:name="com.pushserver.android.heartbeatInterval"
+            android:value="30000" />
+        <meta-data
+            android:name="com.pushserver.android.providerUid"
+            android:value="PH5FY2ohRkRmJ0UzRl9sLix2ohRkRmJ1hkQT" />
+        <!-- <meta-data
+               android:name="com.pushserver.android.serverPrimaryId"
+               android:value="[PRIMARY_SERVER_ID]"/>-->
+        <receiver
+            android:name=".MyPushBroadcastReceiver"
+            android:exported="false"
+            android:permission="com.sequenia.appwithchat.permission.pushserver.RECEIVE">
+            <intent-filter>
+                <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT" />
+                <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT" />
+                <action android:name="com.pushserver.android.DEVICE_ADDRESS_CHANGED_EVENT" />
+                <action android:name="com.pushserver.android.ERROR_EVENT" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".MyOtherPushBroadcastReceiver"
+            android:exported="false"
+            android:permission="com.pushserver.android.permission.RECEIVE">
+            <intent-filter>
+                <action android:name="com.pushserver.android.OTHER_PUSH_MESSAGE_EVENT" />
+            </intent-filter>
+
+        </receiver>
+
+        <service android:name=".MyServerIntentService" />
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

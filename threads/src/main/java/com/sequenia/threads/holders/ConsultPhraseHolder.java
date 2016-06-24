@@ -2,9 +2,12 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,9 +31,9 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     private TextView mFileSpecs;
     private TextView mFileTimeStamp;
     private TextView mTimeStampTextView;
-    private TextView mConsultPhraseTV;
+    private TextView mPhraseTextView;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
-    private SimpleDateFormat timesSampSdf = new SimpleDateFormat("hh:mm");
+    private SimpleDateFormat timesSampSdf = new SimpleDateFormat("HH:mm");
     public ImageView mConsultAvatar;
 
     public ConsultPhraseHolder(ViewGroup parent) {
@@ -40,7 +43,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         fileToUserHeader = (TextView) itemView.findViewById(R.id.to);
         mFileSpecs = (TextView) itemView.findViewById(R.id.file_specs);
         mFileTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
-        mConsultPhraseTV = (TextView) itemView.findViewById(R.id.text);
+        mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
     }
@@ -53,7 +56,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         fileToUserHeader = (TextView) itemView.findViewById(R.id.to);
         mFileSpecs = (TextView) itemView.findViewById(R.id.file_specs);
         mFileTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
-        mConsultPhraseTV = (TextView) itemView.findViewById(R.id.text);
+        mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
     }
@@ -75,17 +78,17 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         }
 
         if (consultPhrase == null) {
-            mConsultPhraseTV.setVisibility(View.GONE);
+            mPhraseTextView.setVisibility(View.GONE);
         } else {
-            mConsultPhraseTV.setVisibility(View.VISIBLE);
-            mConsultPhraseTV.setText(consultPhrase);
+            mPhraseTextView.setVisibility(View.VISIBLE);
+            mPhraseTextView.setText(consultPhrase);
         }
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
             fileToUserHeader.setText(quote.getHeader());
             mFileSpecs.setText(quote.getText());
-            mFileTimeStamp.setText("отправлено " + sdf.format(new Date(quote.getTimeStamp())));
+            mFileTimeStamp.setText(itemView.getContext().getString(R.string.send_at) + " " + sdf.format(new Date(quote.getTimeStamp())));
         } else if (fileDescription != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.VISIBLE);
@@ -94,7 +97,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             }
             fileToUserHeader.setText(fileDescription.getHeader());
             mFileSpecs.setText(fileDescription.getText());
-            mFileTimeStamp.setText("отправлено " + sdf.format(new Date(fileDescription.getTimeStamp())));
+            mFileTimeStamp.setText(itemView.getContext().getString(R.string.send_at) + " " + sdf.format(new Date(fileDescription.getTimeStamp())));
             mCircularProgressButton.setProgress(progress);
 
         } else {
@@ -105,6 +108,25 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
         }
+
+        mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                try {
+
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                    float density = itemView.getContext().getResources().getDisplayMetrics().density;
+                    if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 50)) {
+                        params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (3 * (int) (density)), 0, 0);
+                    }
+                    mTimeStampTextView.setLayoutParams(params);
+                    mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 

@@ -15,14 +15,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.pushserver.android.PushController;
+import com.pushserver.android.RequestCallback;
+import com.pushserver.android.exception.PushServerErrorException;
 import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
@@ -111,9 +114,9 @@ public class ChatActivity extends AppCompatActivity
             }
         });
         t.showOverflowMenu();
-        Drawable overlowDrawable = t.getOverflowIcon();
+        Drawable overflowDrawable = t.getOverflowIcon();
         try {
-            overlowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
+            overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
@@ -128,9 +131,9 @@ public class ChatActivity extends AppCompatActivity
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         SwipeAwareView sav = (SwipeAwareView) findViewById(R.id.swipe_view);
         mInputEditText = (EditText) findViewById(R.id.input);
-        Button SendButton = (Button) findViewById(R.id.send_message);
+        ImageButton SendButton = (ImageButton) findViewById(R.id.send_message);
         final Context c = this;
-        Button AddAttachmentButton = (Button) findViewById(R.id.add_attachment);
+        ImageButton AddAttachmentButton = (ImageButton) findViewById(R.id.add_attachment);
         AddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,6 +156,7 @@ public class ChatActivity extends AppCompatActivity
                 }
             }
         });
+        final Context ctx = this;
         SendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +164,17 @@ public class ChatActivity extends AppCompatActivity
                     return;
 
                 mChatController.onUserInput(new UpcomingUserMessage(mInputEditText.getText().toString(), mQuote, mFileDescription, mAttachments));
+                PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
+                    @Override
+                    public void onResult(Void aVoid) {
+                        Log.e(TAG, "onResult");
+                    }
+
+                    @Override
+                    public void onError(PushServerErrorException e) {
+                        Log.e(TAG, "onError " + e);
+                    }
+                });
                 mInputEditText.setText("");
                 mQuoteLayoutHolder.setIsVisible(false);
                 mQuote = null;

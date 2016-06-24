@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/push-api-release-1.0-28-2016-06-20-16-36" />
             <option value="$PROJECT_DIR$/threads" />
           </set>
         </option>
@@ -16,6 +17,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/push-api-release-1.0-28-2016-06-20-16-36" />
             <option value="$PROJECT_DIR$/threads" />
           </set>
         </option>

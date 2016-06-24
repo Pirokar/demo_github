@@ -20,7 +20,7 @@ public class ConsultConnectedViewHolder extends RecyclerView.ViewHolder {
     public ImageView mConsultAvatar;
     private TextView headerTextView;
     private TextView connectedMessage;
-    private SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
     public ConsultConnectedViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consult_connected, parent, false));

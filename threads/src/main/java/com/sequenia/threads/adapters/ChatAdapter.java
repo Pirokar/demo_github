@@ -89,7 +89,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof ConsultPhraseHolder) {
             final ConsultPhrase cp = (ConsultPhrase) list.get(position);
             ((ConsultPhraseHolder) holder)
-                    .onBind(cp.getConsultPhrase()
+                    .onBind(cp.getPhrase()
                             , cp.getTimeStamp()
                             , cp.isAvatarVisible()
                             , cp.getQuote()
@@ -122,7 +122,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         }
 
-        if (holder instanceof UserPhraseViewHolder) {
+       /* if (holder instanceof UserPhraseViewHolder) {
             final UserPhrase up = (UserPhrase) list.get(position);
             ((UserPhraseViewHolder) holder).onBind(
                     up.getPhrase()
@@ -155,8 +155,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             }
                             return false;
                         }
-                    });
-        }
+                    });// TODO: 24.06.2016  
+        }*/
         if (holder instanceof DateViewHolder) {
             DateRow dr = (DateRow) list.get(position);
             ((DateViewHolder) holder).onBind(dr.getDate());
