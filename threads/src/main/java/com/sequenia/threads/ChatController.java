@@ -6,12 +6,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pushserver.android.PushController;
+import com.sequenia.threads.database.DatabaseHolder;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ConsultConnected;
 import com.sequenia.threads.model.ConsultPhrase;
@@ -24,7 +23,6 @@ import com.sequenia.threads.model.UserPhrase;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -36,12 +34,11 @@ public class ChatController extends Fragment {
     private static final Handler h = new Handler();
     public static final String TAG = "ChatController ";
     private ChatActivity activity;
-    private ArrayList<UserPhrase> mUserPhrases = new ArrayList<>();
-    private ArrayList<ConsultPhrase> mConsultPhrases = new ArrayList<>();
-    private AtomicLong counter = new AtomicLong();
     private boolean isSearchingConsult;
     private HashMap<String, ArrayList<ProgressRunnable>> runableMap = new HashMap<>();
     private ArrayList<String> completedDownloads = new ArrayList<>();
+    private DatabaseHolder mDatabaseHolder;
+    private boolean isConsultFound;
 
 
     @Override
@@ -49,7 +46,7 @@ public class ChatController extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-
+        mDatabaseHolder = DatabaseHolder.getInstance(getActivity());
     }
 
     public void bindActivity(ChatActivity ca) {
@@ -75,7 +72,7 @@ public class ChatController extends Fragment {
         UserPhrase up;
         if (upcomingUserMessage.getAttachments() != null && upcomingUserMessage.getAttachments().size() > 0) {
             up = new UserPhrase(
-                    counter.incrementAndGet()
+                    UUID.randomUUID().toString()
                     , upcomingUserMessage.getText()
                     , upcomingUserMessage.getQuote()
                     , System.currentTimeMillis()
@@ -84,7 +81,7 @@ public class ChatController extends Fragment {
             );
         } else {
             up = new UserPhrase(
-                    counter.incrementAndGet()
+                    UUID.randomUUID().toString()
                     , upcomingUserMessage.getText()
                     , upcomingUserMessage.getQuote()
                     , System.currentTimeMillis()
@@ -92,30 +89,37 @@ public class ChatController extends Fragment {
                     , null);
         }
         final UserPhrase finalUp = up;
+        DatabaseHolder.getInstance(getActivity()).putChatItem(finalUp);
         addMessage(up);
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
                 activity.changeChatPhraseStatus(finalUp.getId(), MessageState.STATE_SENT_AND_SERVER_RECEIVED);
+                DatabaseHolder.getInstance(getActivity()).setStateOfUserPhrase(finalUp.getId(), MessageState.STATE_SENT_AND_SERVER_RECEIVED);
             }
         }, 1000);
-        if (mConsultPhrases.size() == 0 && !isSearchingConsult) {
+        if (!isConsultFound && !isSearchingConsult) {
             isSearchingConsult = true;
+            isConsultFound = true;
             activity.setTitleStateSearching();
             addMessage(new SearchingConsult(System.currentTimeMillis()));
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     activity.setTitleStateOperatorConnected("Мария Павлова", "оператор");
-                    addMessage(new ConsultConnected("Мария Павлова"
+                    ConsultConnected cc = new ConsultConnected("Мария Павлова"
                             , false
                             , System.currentTimeMillis()
-                            , getBigConsultAvatarPath()));
+                            , getBigConsultAvatarPath());
+                    addMessage(cc);
+                    mDatabaseHolder.putChatItem(cc);
                     addMessage(new ConsultTyping(System.currentTimeMillis(), getBigConsultAvatarPath()));
                     h.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            addMessage(convert(finalUp));
+                            ConsultPhrase cp = convert(finalUp);
+                            mDatabaseHolder.putChatItem(cp);
+                            addMessage(cp);
                         }
                     }, 3500);
                 }
@@ -125,36 +129,20 @@ public class ChatController extends Fragment {
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    activity.addMessage(convert(finalUp));
+                    ConsultPhrase cp = convert(finalUp);
+                    activity.addMessage(cp);
+                    mDatabaseHolder.putChatItem(cp);
                 }
             }, 3500);
         }
         if (upcomingUserMessage.getAttachments() != null && upcomingUserMessage.getAttachments().size() > 1) {
             for (String str : upcomingUserMessage.getAttachments()) {
-                up = new UserPhrase(counter.incrementAndGet(), null, null, System.currentTimeMillis(), null, str);
-                mUserPhrases.add(up);
+                up = new UserPhrase(UUID.randomUUID().toString(), null, null, System.currentTimeMillis(), null, str);
+                mDatabaseHolder.putChatItem(up);
             }
         }
     }
 
-    public ConsultPhrase getConsultPhraseById(long id) {
-        for (ConsultPhrase cff : mConsultPhrases) {
-            if (cff.getMessageId() == id) {
-                return cff;
-            }
-        }
-        return null;
-    }
-
-    public UserPhrase getUserPhraseById(long id) {
-        for (UserPhrase uff : mUserPhrases) {
-            if (uff.getMessageId() == id) {
-                return uff;
-            }
-
-        }
-        return null;
-    }
 
     private String getSmallConsultAvatarPath() {
         return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + activity.getPackageName() + "/drawable/" + "sample_consult_avatar_small").toString();
@@ -166,25 +154,17 @@ public class ChatController extends Fragment {
 
     private ConsultPhrase convert(final UserPhrase up) {
         if (up.isWithQuote()) {
-            return new ConsultPhrase(getSmallConsultAvatarPath(), null, System.currentTimeMillis(), up.getPhrase(), counter.incrementAndGet(), getConsultName(), up.getQuote(), null);
+            return new ConsultPhrase(getSmallConsultAvatarPath(), null, System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getConsultName(), up.getQuote(), null);
         } else if (up.isWithFile()) {
-            return new ConsultPhrase(getSmallConsultAvatarPath(), up.getFilePath(), System.currentTimeMillis(), up.getPhrase(), counter.incrementAndGet(), getConsultName(), null, up.getFileDescription());
+            return new ConsultPhrase(getSmallConsultAvatarPath(), up.getFilePath(), System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getConsultName(), null, up.getFileDescription());
         } else {
-            return new ConsultPhrase(getSmallConsultAvatarPath(), null, System.currentTimeMillis(), up.getPhrase(), counter.incrementAndGet(), getConsultName(), null, null);
+            return new ConsultPhrase(getSmallConsultAvatarPath(), null, System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getConsultName(), null, null);
         }
     }
 
     private void addMessage(ChatItem cm) {
-        if (cm instanceof UserPhrase) {
-            mUserPhrases.add((UserPhrase) cm);
-            activity.addMessage(cm);
-        } else if (cm instanceof ConsultPhrase) {
-            mConsultPhrases.add((ConsultPhrase) cm);
-            activity.addMessage(cm);
-        } else {
-            activity.addMessage(cm);
-        }
-
+        mDatabaseHolder.putChatItem(cm);
+        activity.addMessage(cm);
     }
 
     public String getConsultName() {

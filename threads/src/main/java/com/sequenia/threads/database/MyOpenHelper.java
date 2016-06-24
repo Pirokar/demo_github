@@ -70,13 +70,13 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
                 COLUMN_FILE_PATH, COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE));
-        db.execSQL(String.format(Locale.US, "create table %s, " + // TABLE_QUOTE
+        db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_QUOTE
                         " %s text, " +//header
                         " %s text, " +//body
                         " %s integer, " +//timestamp
                         " %s integer)" // message id
                 , TABLE_QUOTE, COLUMN_QUOTE_HEADER, COLUMN_QUOTE_BODY, COLUMN_QUOTE_TIMESTAMP, COLUMN_QUOTE_MESSAGE_ID_EXT));
-        db.execSQL(String.format(Locale.US, "create table %s, " + // TABLE_FILE_DESCRIPTION
+        db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_FILE_DESCRIPTION
                         " %s text, " +//header
                         " %s text, " +//body
                         " %s integer, " +//timestamp
@@ -89,7 +89,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     }
 
-    void putUserPharse(ChatPhrase phrase) {
+    void putUserPhrase(ChatPhrase phrase) {
         ContentValues cv = new ContentValues();
         if (phrase instanceof UserPhrase) {
             UserPhrase userPhrase = (UserPhrase) phrase;
@@ -145,15 +145,10 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     }
 
-    void setUserPhraseState(long messageId, MessageState messageState) {
-        Cursor c = getReadableDatabase().rawQuery(String.format(Locale.US, "select * from %s where %s = %s", TABLE_MESSAGES, COLUMN_MESSAGE_ID, messageId), null);
-        if (c.getCount() == 0) {
-            c.close();
-            return;
-        }
+    void setUserPhraseState(String messageId, MessageState messageState) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_ID, messageState.getType());
-        getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = " + messageId, null);
+        cv.put(COLUMN_MESSAGE_SEND_STATE, messageState.getType());
+        getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{messageId});
     }
 
     void putConsultConnected(ConsultConnected consultConnected) {
@@ -168,8 +163,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     public List<ChatItem> getChatItems(int offset, int limit) {
         List<ChatItem> items = new ArrayList<>();
-        Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES + " limit " + limit + " offset " + offset + " order by " + COLUMN_TIMESTAMP + " desc", null);
-        if (c.getColumnCount() == 0) {
+        String query = String.format(Locale.US, "select * from %s order by %s desc limit %s offset %s", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset));
+        Cursor c = getWritableDatabase().rawQuery(query, null);
+        if (c.getCount() == 0) {
             c.close();
             return items;
         }
@@ -179,9 +175,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         final int INDEX_FILEPATH = c.getColumnIndex(COLUMN_FILE_PATH);
         final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
         final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
-
-        for (c.moveToFirst(); c.isAfterLast(); c.moveToNext()) {
-
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             int type = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_TYPE));
             if (type == MessageTypes.TYPE_CONSULT_CONNECTED.type) {
                 boolean sex = c.getInt(c.getColumnIndex(COLUMN_SEX)) == 1;
@@ -199,7 +193,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         filePath,
                         c.getLong(INDEX_TIMESTAMP),
                         phrase,
-                        c.getLong(INDEX_MESSAGE_ID),
+                        c.getString(INDEX_MESSAGE_ID),
                         name,
                         getQuote(c.getLong(INDEX_MESSAGE_ID)),
                         getFileDescription(c.getLong(INDEX_MESSAGE_ID)));
@@ -207,9 +201,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
                 String filePath = c.isNull(INDEX_FILEPATH) ? null : c.getString(INDEX_FILEPATH);
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
-
                 UserPhrase up = new UserPhrase(
-                        c.getLong(INDEX_MESSAGE_ID),
+                        c.getString(INDEX_MESSAGE_ID),
                         phrase,
                         getQuote(c.getLong(INDEX_MESSAGE_ID)),
                         c.getLong(INDEX_TIMESTAMP),
@@ -239,7 +232,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     private FileDescription getFileDescription(long messageId) {
-        Cursor c = getWritableDatabase().rawQuery(" select * from ? where ? = ? ", new String[]{TABLE_FILE_DESCRIPTION, COLUMN_FD_MESSAGE_ID_EXT, "" + messageId});
+        String query = String.format(Locale.US, "select * from %s where %s = %s", TABLE_FILE_DESCRIPTION, COLUMN_FD_MESSAGE_ID_EXT, String.valueOf(messageId));
+        Cursor c = getWritableDatabase().rawQuery(query, null);
         if (!c.moveToFirst()) {
             c.close();
             return null;

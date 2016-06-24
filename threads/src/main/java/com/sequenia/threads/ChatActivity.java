@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +22,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.pushserver.android.PushController;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
 import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
@@ -164,7 +160,7 @@ public class ChatActivity extends AppCompatActivity
                     return;
 
                 mChatController.onUserInput(new UpcomingUserMessage(mInputEditText.getText().toString(), mQuote, mFileDescription, mAttachments));
-                PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
+               /* PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
                         Log.e(TAG, "onResult");
@@ -174,7 +170,7 @@ public class ChatActivity extends AppCompatActivity
                     public void onError(PushServerErrorException e) {
                         Log.e(TAG, "onError " + e);
                     }
-                });
+                });*/// TODO: 24.06.2016  
                 mInputEditText.setText("");
                 mQuoteLayoutHolder.setIsVisible(false);
                 mQuote = null;
@@ -287,7 +283,7 @@ public class ChatActivity extends AppCompatActivity
         mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
     }
 
-    public void changeStateOfMessage(long messageId, MessageState state) {
+    public void changeStateOfMessage(String messageId, MessageState state) {
         mChatAdapter.changeStateOfMessage(messageId, state);
     }
 
@@ -372,7 +368,7 @@ public class ChatActivity extends AppCompatActivity
         super.onBackPressed();
     }
 
-    public void changeChatPhraseStatus(long id, MessageState messageState) {
+    public void changeChatPhraseStatus(String id, MessageState messageState) {
         mChatAdapter.changeStateOfMessage(id, messageState);
     }
 

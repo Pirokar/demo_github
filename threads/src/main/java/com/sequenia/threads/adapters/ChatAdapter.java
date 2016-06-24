@@ -2,6 +2,7 @@ package com.sequenia.threads.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,9 +123,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         }
 
-       /* if (holder instanceof UserPhraseViewHolder) {
+        if (holder instanceof UserPhraseViewHolder) {
             final UserPhrase up = (UserPhrase) list.get(position);
             ((UserPhraseViewHolder) holder).onBind(
+
                     up.getPhrase()
                     , up.getTimeStamp()
                     , up.getSentState()
@@ -155,8 +157,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             }
                             return false;
                         }
-                    });// TODO: 24.06.2016  
-        }*/
+                    });
+        }
         if (holder instanceof DateViewHolder) {
             DateRow dr = (DateRow) list.get(position);
             ((DateViewHolder) holder).onBind(dr.getDate());
@@ -256,9 +258,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return super.getItemViewType(position);
     }
 
-    public void changeStateOfMessage(long messageId, MessageState state) {
+    public void changeStateOfMessage(String id, MessageState state) {
         for (ChatItem cm : list) {
-            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()) == messageId)) {
+            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(id))) {
                 int position = list.lastIndexOf(cm);
                 ((UserPhrase) cm).setSentState(state);
                 notifyItemChanged(position);
@@ -266,9 +268,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public void changeDownloadProgress(long messageId, int progress) {
+    public void changeDownloadProgress(String messageId, int progress) {
         for (ChatItem cm : list) {
-            if (cm instanceof ConsultPhrase && (((ConsultPhrase) cm).getMessageId()) == messageId) {
+            if (cm instanceof ConsultPhrase && (((ConsultPhrase) cm).getMessageId()).equals(messageId)) {
                 int position = list.lastIndexOf(cm);
                 ((ConsultPhrase) cm).setDownloadingProgress(progress);
                 notifyItemChanged(position);

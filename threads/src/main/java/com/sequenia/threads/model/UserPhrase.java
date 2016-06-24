@@ -1,10 +1,12 @@
 package com.sequenia.threads.model;
 
+import java.util.UUID;
+
 /**
  * Created by yuri on 10.06.2016.
  */
 public class UserPhrase implements ChatPhrase {
-    private final long messageId;
+    private final String messageId;
     private final String phrase;
     private final boolean withFile;
     private MessageState sentState;
@@ -15,14 +17,15 @@ public class UserPhrase implements ChatPhrase {
     private final String filePath;
 
 
-    public UserPhrase(long messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, String filePath) {
-        this.messageId = messageId;
+    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, String filePath) {
+        this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
         this.phrase = phrase;
         this.withFile = filePath != null;
         this.mQuote = mQuote;
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
         this.filePath = filePath;
+        sentState = MessageState.STATE_SENT;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class UserPhrase implements ChatPhrase {
         return filePath;
     }
 
-    public long getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 
@@ -67,7 +70,7 @@ public class UserPhrase implements ChatPhrase {
     }
 
     @Override
-    public long getId() {
+    public String getId() {
         return messageId;
     }
 

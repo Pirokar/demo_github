@@ -54,7 +54,7 @@
             android:value="true" />
         <meta-data
             android:name="com.pushserver.android.heartbeatInterval"
-            android:value="30000" />
+            android:value="300000" />
         <meta-data
             android:name="com.pushserver.android.providerUid"
             android:value="PH5FY2ohRkRmJ0UzRl9sLix2ohRkRmJ1hkQT" />

@@ -1,5 +1,7 @@
 package com.sequenia.threads.model;
 
+import java.util.UUID;
+
 /**
  * Created by yuri on 10.06.2016.
  */
@@ -8,22 +10,23 @@ public class ConsultPhrase implements ChatPhrase {
     private final String filePath;
     private final long timeStamp;
     private final String phrase;
-    private final long messageId;
+    private final String messageId;
     private int downloadingProgress;
     private final String consultName;
     private boolean isAvatarVisible = true;
     private final Quote quote;
     private final FileDescription fileDescription;
 
-    public ConsultPhrase(String avatarPath, String filePath, long timeStamp, String phrase, long messageId, String consultName, Quote quote, FileDescription fileDescription) {
+    public ConsultPhrase(String avatarPath, String filePath, long timeStamp, String phrase, String messageId, String consultName, Quote quote, FileDescription fileDescription) {
         this.avatarPath = avatarPath;
         this.filePath = filePath;
         this.timeStamp = timeStamp;
         this.phrase = phrase;
-        this.messageId = messageId;
+        this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
         this.consultName = consultName;
         this.quote = quote;
         this.fileDescription = fileDescription;
+
     }
 
     public long getDate() {
@@ -55,7 +58,7 @@ public class ConsultPhrase implements ChatPhrase {
     }
 
     @Override
-    public long getId() {
+    public String getId() {
         return messageId;
     }
 
@@ -80,7 +83,7 @@ public class ConsultPhrase implements ChatPhrase {
                 '}';
     }
 
-    public long getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 

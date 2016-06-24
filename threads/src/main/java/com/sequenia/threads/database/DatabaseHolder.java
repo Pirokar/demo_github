@@ -57,13 +57,13 @@ public class DatabaseHolder {
             return true;
         }
         if (chatItem instanceof ChatPhrase) {
-            database.putUserPharse((ChatPhrase) chatItem);
+            database.putUserPhrase((ChatPhrase) chatItem);
             return true;
         }
         return false;
     }
 
-    public void setStateOfUserPhrase(long messageId, MessageState messageState) {
+    public void setStateOfUserPhrase(String messageId, MessageState messageState) {
         database.setUserPhraseState(messageId, messageState);
     }
 
