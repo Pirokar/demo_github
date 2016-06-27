@@ -91,6 +91,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     void putUserPhrase(ChatPhrase phrase) {
         ContentValues cv = new ContentValues();
+        boolean isDup = false;
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_MESSAGE_ID + " = ?", new String[]{phrase.getId()});
+        if (c.getCount() > 0) isDup = true;
         if (phrase instanceof UserPhrase) {
             UserPhrase userPhrase = (UserPhrase) phrase;
             cv.put(COLUMN_MESSAGE_ID, userPhrase.getMessageId());
@@ -99,7 +102,11 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
             cv.put(COLUMN_FILE_PATH, userPhrase.getFilePath());
             cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.type);
-            getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+            if (!isDup) {
+                getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+            } else {
+                getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{phrase.getId()});
+            }
             if (userPhrase.getFileDescription() != null) {
                 cv.clear();
                 cv.put(COLUMN_FD_MESSAGE_ID_EXT, userPhrase.getMessageId());
@@ -123,7 +130,11 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_TIMESTAMP, consultPhrase.getTimeStamp());
             cv.put(COLUMN_FILE_PATH, consultPhrase.getFilePath());
             cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_PHRASE.type);
-            getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+            if (!isDup) {
+                getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+            } else {
+                getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ? ", new String[]{consultPhrase.getId()});
+            }
             if (consultPhrase.getFileDescription() != null) {
                 cv.clear();
                 cv.put(COLUMN_FD_MESSAGE_ID_EXT, consultPhrase.getMessageId());
@@ -141,8 +152,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 getWritableDatabase().insert(TABLE_QUOTE, null, cv);
             }
         }
-
-
+        c.close();
     }
 
     void setUserPhraseState(String messageId, MessageState messageState) {
@@ -158,12 +168,16 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_AVATAR_PATH, consultConnected.getAvatarPath());
         cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_CONNECTED.type);
         cv.put(COLUMN_SEX, consultConnected.getSex() ? "1" : "0");
-        getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_NAME + " , " + COLUMN_TIMESTAMP + " from " + TABLE_MESSAGES + " where " + COLUMN_NAME + " = ? and " + COLUMN_TIMESTAMP + " = ? ", new String[]{consultConnected.getName(), "" + consultConnected.getTimeStamp()});
+        if (c.getCount() == 0) {
+            c.close();
+            getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+        }
     }
 
     public List<ChatItem> getChatItems(int offset, int limit) {
         List<ChatItem> items = new ArrayList<>();
-        String query = String.format(Locale.US, "select * from %s order by %s desc limit %s offset %s", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset));
+        String query = String.format(Locale.US, "select * from %s order by %s asc limit %s offset %s", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset));
         Cursor c = getWritableDatabase().rawQuery(query, null);
         if (c.getCount() == 0) {
             c.close();
@@ -245,13 +259,35 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return fd;
     }
 
+    int getMessagesCount() {
+        Cursor c = getWritableDatabase().rawQuery(String.format(Locale.US, "select count(%s) from %s", COLUMN_TABLE_ID, TABLE_MESSAGES), null);
+        if (c.getCount() == 0) {
+            c.close();
+            return 0;
+        }
+        c.moveToFirst();
+        int i = c.getInt(0);
+        c.close();
+        return i;
+    }
+
+    public void cleanMessagesTable() {
+        getWritableDatabase().execSQL("delete  from " + TABLE_MESSAGES);
+    }
+
+    public void cleanQuotes() {
+        getWritableDatabase().execSQL("delete  from " + TABLE_QUOTE);
+    }
+
+    public void cleanFD() {
+        getWritableDatabase().execSQL("delete from " + TABLE_FILE_DESCRIPTION);
+    }
+
     private enum MessageTypes {
         TYPE_CONSULT_CONNECTED(1),
         TYPE_CONSULT_PHRASE(2),
         TYPE_USER_PHRASE(3);
-
         int type;
-
         MessageTypes(int type) {
             this.type = type;
         }

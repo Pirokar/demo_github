@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,18 +71,14 @@ public class ChatActivity extends AppCompatActivity
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         if (null != t) setUpToolbar(t);
         initViews();
-        if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {
+        if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {//mb, someday, we will support orientation change
             mChatController = (ChatController) getFragmentManager().findFragmentByTag(ChatController.TAG);
         } else {
             mChatController = new ChatController();
-            getFragmentManager().beginTransaction().add(android.R.id.content, mChatController).commit();
+            getFragmentManager().beginTransaction().add(mChatController, ChatController.TAG).commit();
         }
         mChatController.bindActivity(this);
-        if (!mChatController.isWelcomeScreenShowed()) {
-            ViewGroup vg = (ViewGroup) findViewById(R.id.chat_content);
-            vg.addView((mWelcomeScreen = new WelcomeScreen(this)));
-
-        }
+        mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
     }
 
     public static Intent getStartIntent(Context ctx) {
@@ -158,8 +155,12 @@ public class ChatActivity extends AppCompatActivity
             public void onClick(View v) {
                 if (mInputEditText.getText().length() == 0 && ((mQuote == null) && (mFileDescription == null)))
                     return;
-
-                mChatController.onUserInput(new UpcomingUserMessage(mInputEditText.getText().toString(), mQuote, mFileDescription, mAttachments));
+                if (mWelcomeScreen != null) {
+                    mWelcomeScreen.removeViewWithAnimation(500, null);
+                    mWelcomeScreen = null;
+                }
+                ;
+                mChatController.onUserInput(new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, mFileDescription, mAttachments));
                /* PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
@@ -207,7 +208,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onCameraClick() {
-        mFileDescription = new FileDescription(mChatController.getConsultName(), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
+        mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
@@ -221,7 +222,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onGalleyClick() {
-        mFileDescription = new FileDescription(mChatController.getConsultName(), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
+        mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
@@ -235,7 +236,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onFileClick() {
-        mFileDescription = new FileDescription(mChatController.getConsultName(), UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
+        mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
@@ -258,6 +259,11 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void addMessage(ChatItem item) {
+        Log.e(TAG, "" + mWelcomeScreen);
+        if (null != mWelcomeScreen) {
+            mWelcomeScreen.removeViewWithAnimation(30, null);
+            mWelcomeScreen = null;
+        }
         if (item instanceof SearchingConsult) {
             mChatAdapter.addConsultSearching((SearchingConsult) item);
             isSearchingConsult = true;
@@ -279,6 +285,18 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void addMessages(List<ChatItem> list) {
+        ViewGroup vg = (ViewGroup) findViewById(R.id.chat_content);
+        if (vg.getChildCount() > 1) {
+            List<View> views = new ArrayList<>();
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                if (vg.getChildAt(i) instanceof WelcomeScreen) {
+                    views.add(vg.getChildAt(i));
+                }
+            }
+            for (View v : views) {
+                vg.removeView(v);
+            }
+        }
         mChatAdapter.addItems(list);
         mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
     }
@@ -341,7 +359,7 @@ public class ChatActivity extends AppCompatActivity
                 if (cp instanceof UserPhrase) {
                     headerText = "Я";
                 } else {
-                    headerText = mChatController.getConsultName();
+                    headerText = mChatController.getCurrentConsultName();
                 }
                 mQuoteLayoutHolder.setText(headerText, cp.getPhraseText());
                 hideCopyControls();
@@ -420,5 +438,16 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onUserPhraseClick(UserPhrase userPhrase, int position) {
         mChatController.checkAndResendPhrase(userPhrase);
+    }
+
+    public void cleanChat() {
+        mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this);
+        mRecyclerView.setAdapter(mChatAdapter);
+        setTitleStateDefault();
+        mWelcomeScreen = new WelcomeScreen(this);
+        ((ViewGroup) findViewById(R.id.chat_content)).addView(mWelcomeScreen);
+        mInputEditText.clearFocus();
+        isConsultTyping = false;
+        isSearchingConsult = false;
     }
 }

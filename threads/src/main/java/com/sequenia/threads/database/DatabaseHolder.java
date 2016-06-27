@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
  * Created by yuri on 23.06.2016.
  */
 public class DatabaseHolder {
-    private final MyOpenHelper database;
+    private final MyOpenHelper mMyOpenHelper;
     private static DatabaseHolder instance;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -29,22 +29,22 @@ public class DatabaseHolder {
     }
 
     private DatabaseHolder(Context ctx) {
-        database = new MyOpenHelper(ctx);
+        mMyOpenHelper = new MyOpenHelper(ctx);
     }
 
     public List<ChatItem> getChatItems(int offset, int limit) {
-        return database.getChatItems(offset, limit);
+        return mMyOpenHelper.getChatItems(offset, limit);
     }
 
     public void getChatItemsAsync(final int offset, final int limit, final DatabaseResponse<List<ChatItem>> completionHandler) {
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                List<ChatItem> items = database.getChatItems(offset, limit);
-                if (items==null||items.size()==0){
+                List<ChatItem> items = mMyOpenHelper.getChatItems(offset, limit);
+                if (items == null || items.size() == 0) {
                     completionHandler.setSuccessful(false);
                     completionHandler.setMessage("nothing here");
-                }else {
+                } else {
                     completionHandler.onComplete(items);
                 }
             }
@@ -53,19 +53,37 @@ public class DatabaseHolder {
 
     public boolean putChatItem(ChatItem chatItem) {
         if (chatItem instanceof ConsultConnected) {
-            database.putConsultConnected((ConsultConnected) chatItem);
+            mMyOpenHelper.putConsultConnected((ConsultConnected) chatItem);
             return true;
         }
         if (chatItem instanceof ChatPhrase) {
-            database.putUserPhrase((ChatPhrase) chatItem);
+            mMyOpenHelper.putUserPhrase((ChatPhrase) chatItem);
             return true;
         }
         return false;
     }
 
     public void setStateOfUserPhrase(String messageId, MessageState messageState) {
-        database.setUserPhraseState(messageId, messageState);
+        mMyOpenHelper.setUserPhraseState(messageId, messageState);
     }
 
+   public int getMessagesCount() {
+        return mMyOpenHelper.getMessagesCount();
+    }
+
+    public void getMessagesCountAsync(final DatabaseResponse<Integer> response) {
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                response.onComplete(mMyOpenHelper.getMessagesCount());
+            }
+        });
+    }
+
+    public void cleanDatabase(){
+        mMyOpenHelper.cleanFD();
+        mMyOpenHelper.cleanMessagesTable();
+        mMyOpenHelper.cleanQuotes();
+    }
 
 }

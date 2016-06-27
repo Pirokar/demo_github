@@ -1,11 +1,12 @@
 package com.sequenia.threads.model;
 
+import android.os.Message;
+
 /**
  * Created by yuri on 24.06.2016.
  */
 public abstract class DatabaseResponse<T> {
     private boolean isSuccessful;
-    private T data;
     private String message;
 
 
@@ -13,9 +14,6 @@ public abstract class DatabaseResponse<T> {
         isSuccessful = successful;
     }
 
-    public void setData(T data) {
-        this.data = data;
-    }
 
     public void setMessage(String message) {
         this.message = message;
@@ -23,14 +21,10 @@ public abstract class DatabaseResponse<T> {
 
     public abstract void onComplete(T data);
 
-    public abstract void onError();
+    public abstract void onError(Throwable e, Message message);
 
     public boolean isSuccessful() {
         return isSuccessful;
-    }
-
-    public T getData() {
-        return data;
     }
 
     public String getMessage() {
@@ -41,7 +35,6 @@ public abstract class DatabaseResponse<T> {
     public String toString() {
         return "DatabaseResponse{" +
                 "isSuccessful=" + isSuccessful +
-                ", data=" + data +
                 ", message='" + message + '\'' +
                 '}';
     }

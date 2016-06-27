@@ -38,10 +38,11 @@ public class WelcomeScreen extends FrameLayout {
 
     public void removeViewWithAnimation(int time, @Nullable final Runnable onComplete) {
         final View v = this;
-        this.animate().alpha(0.0f).setInterpolator(new AccelerateInterpolator()) .setDuration(time).withEndAction(new Runnable() {
+        this.animate().alpha(0.0f).setInterpolator(new AccelerateInterpolator()).setDuration(time).withEndAction(new Runnable() {
+
             @Override
             public void run() {
-                ((ViewGroup) getParent()).removeView(v);
+                if (getParent() != null) ((ViewGroup) getParent()).removeView(v);
                 if (onComplete != null) onComplete.run();
             }
         });

@@ -2,7 +2,6 @@ package com.sequenia.threads.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -289,6 +288,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 notifyItemChanged(i);
             }
         }
+    }
+
+    public void clean() {
+        list.clear();
+        notifyItemRangeRemoved(0, list.size());
     }
 
     public interface AdapterInterface {
