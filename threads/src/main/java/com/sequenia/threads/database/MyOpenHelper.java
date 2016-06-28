@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
@@ -98,6 +99,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             UserPhrase userPhrase = (UserPhrase) phrase;
             cv.put(COLUMN_MESSAGE_ID, userPhrase.getMessageId());
             cv.put(COLUMN_PHRASE, userPhrase.getPhrase());
+            Log.e(TAG, "");
             cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().getType());
             cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
             cv.put(COLUMN_FILE_PATH, userPhrase.getFilePath());

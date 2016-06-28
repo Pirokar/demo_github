@@ -5,7 +5,7 @@ import android.content.Context;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.ConsultConnected;
-import com.sequenia.threads.model.DatabaseResponse;
+import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.MessageState;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class DatabaseHolder {
         return mMyOpenHelper.getChatItems(offset, limit);
     }
 
-    public void getChatItemsAsync(final int offset, final int limit, final DatabaseResponse<List<ChatItem>> completionHandler) {
+    public void getChatItemsAsync(final int offset, final int limit, final CompletionHandler<List<ChatItem>> completionHandler) {
         executorService.submit(new Runnable() {
             @Override
             public void run() {
@@ -71,7 +71,7 @@ public class DatabaseHolder {
         return mMyOpenHelper.getMessagesCount();
     }
 
-    public void getMessagesCountAsync(final DatabaseResponse<Integer> response) {
+    public void getMessagesCountAsync(final CompletionHandler<Integer> response) {
         executorService.submit(new Runnable() {
             @Override
             public void run() {

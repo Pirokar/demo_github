@@ -51,11 +51,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Context ctx;
     private AdapterInterface mAdapterInterface;
 
-    public ChatAdapter(ArrayList<ChatItem> list, Context ctx) {
+    public ChatAdapter(ArrayList<ChatItem> list, Context ctx, AdapterInterface adapterInterface) {
         this.list = list;
         if (this.list == null) this.list = new ArrayList<>();
         picasso = Picasso.with(ctx);
         this.ctx = ctx;
+        this.mAdapterInterface = adapterInterface;
     }
 
     public void setAdapterInterface(AdapterInterface mAdapterInterface) {
@@ -179,10 +180,21 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     public void addConsultTyping(ConsultTyping ct) {
+
         if (ct != null) {
             list.add(ct);
             notifyItemInserted(list.lastIndexOf(ct));
         }
+    }
+
+    public boolean isConsultTyping() {
+        boolean isTyping = false;
+        for (ChatItem ci : list) {
+            if (ci instanceof ConsultTyping) {
+                isTyping = true;
+            }
+        }
+        return isTyping;
     }
 
     public void removeConsultIsTyping() {
@@ -321,7 +333,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setItemChosen(boolean isChosen, ChatPhrase cp) {
-        if (cp==null)return;
+        if (cp == null) return;
         if (cp instanceof UserPhrase) {
             ((UserPhrase) cp).setChosen(isChosen);
             notifyItemChanged(list.indexOf(cp));

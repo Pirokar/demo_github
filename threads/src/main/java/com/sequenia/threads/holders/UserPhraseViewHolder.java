@@ -60,13 +60,9 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             , View.OnClickListener onRowClickListener
             , View.OnLongClickListener onLongClickListener
             , boolean isChosen) {
-        ViewGroup vg = (ViewGroup) itemView;
-        itemView.setOnLongClickListener(onLongClickListener);
+
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            vg.getChildAt(i).setOnClickListener(onRowClickListener);
-            vg.getChildAt(i).setOnLongClickListener(onLongClickListener);
-        }
+
         if (phrase == null || phrase.length() == 0) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
@@ -126,6 +122,12 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         } else {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
+        }
+        ViewGroup vg = (ViewGroup) itemView;
+        itemView.setOnLongClickListener(onLongClickListener);
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            vg.getChildAt(i).setOnClickListener(onRowClickListener);
+            vg.getChildAt(i).setOnLongClickListener(onLongClickListener);
         }
     }
 }

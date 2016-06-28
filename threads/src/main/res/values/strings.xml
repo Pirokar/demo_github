@@ -5,8 +5,7 @@
     <string name="searching_operator">Searching operator...</string>
     <string name="your_message">Your message...</string>
     <string name="no_connection">No internet connection</string>
-    <string name="no_connection_details">Turn on mobile data
-       \nor use WI_FI to\nsend message</string>
+    <string name="no_connection_details">Turn on mobile data or use WI-FI to to resend message</string>
     <string name="close">Close</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>

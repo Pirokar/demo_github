@@ -5,7 +5,7 @@ import android.os.Message;
 /**
  * Created by yuri on 24.06.2016.
  */
-public abstract class DatabaseResponse<T> {
+public abstract class CompletionHandler<T> {
     private boolean isSuccessful;
     private String message;
 
@@ -21,7 +21,7 @@ public abstract class DatabaseResponse<T> {
 
     public abstract void onComplete(T data);
 
-    public abstract void onError(Throwable e, Message message);
+    public abstract void onError(Throwable e, String message, T data);
 
     public boolean isSuccessful() {
         return isSuccessful;
@@ -33,7 +33,7 @@ public abstract class DatabaseResponse<T> {
 
     @Override
     public String toString() {
-        return "DatabaseResponse{" +
+        return "CompletionHandler{" +
                 "isSuccessful=" + isSuccessful +
                 ", message='" + message + '\'' +
                 '}';

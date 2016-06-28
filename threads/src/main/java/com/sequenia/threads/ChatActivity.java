@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.sequenia.threads.adapters.ChatAdapter;
+import com.sequenia.threads.fragments.NoConnectionDialogFragment;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.ConsultTyping;
@@ -130,8 +131,8 @@ public class ChatActivity extends AppCompatActivity
         ImageButton AddAttachmentButton = (ImageButton) findViewById(R.id.add_attachment);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setAdapter((mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this)));
-        mChatAdapter.setAdapterInterface(this);
+        mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this, this);
+        mRecyclerView.setAdapter(mChatAdapter);
         final View inputLayout = findViewById(R.id.input_layout);
         AddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,11 +214,13 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onCameraClick() {
+        final View input = findViewById(R.id.input_layout);
         mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
                 mBottomSheetView.setVisibility(View.GONE);
+                input.setVisibility(View.VISIBLE);
             }
         });
         mQuoteLayoutHolder.setText(mFileDescription.getHeader(), mFileDescription.getText());
@@ -227,11 +230,13 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onGalleyClick() {
+        final View input = findViewById(R.id.input_layout);
         mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
                 mBottomSheetView.setVisibility(View.GONE);
+                input.setVisibility(View.VISIBLE);
             }
         });
         mQuoteLayoutHolder.setText(mFileDescription.getHeader(), mFileDescription.getText());
@@ -241,11 +246,13 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onFileClick() {
+        final View input = findViewById(R.id.input_layout);
         mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
                 mBottomSheetView.setVisibility(View.GONE);
+                input.setVisibility(View.VISIBLE);
             }
         });
         mQuoteLayoutHolder.setText(mFileDescription.getHeader(), mFileDescription.getText());
@@ -266,7 +273,7 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void addMessage(ChatItem item) {
-        Log.e(TAG, "" + mWelcomeScreen);
+
         if (null != mWelcomeScreen) {
             mWelcomeScreen.removeViewWithAnimation(30, null);
             mWelcomeScreen = null;
@@ -275,8 +282,11 @@ public class ChatActivity extends AppCompatActivity
             mChatAdapter.addConsultSearching((SearchingConsult) item);
             isSearchingConsult = true;
         } else if (item instanceof ConsultTyping) {
-            mChatAdapter.addConsultTyping((ConsultTyping) item);
-            isConsultTyping = true;
+            Log.e(TAG, "ConsultTyping!!!!!");// TODO: 28.06.2016
+            if (!mChatAdapter.isConsultTyping()) {
+                mChatAdapter.addConsultTyping((ConsultTyping) item);
+                isConsultTyping = true;
+            }
         } else {
             if (isConsultTyping) {
                 mChatAdapter.removeConsultIsTyping();
@@ -400,7 +410,7 @@ public class ChatActivity extends AppCompatActivity
         super.onBackPressed();
     }
 
-    public void changeChatPhraseStatus(String id, MessageState messageState) {
+    public void setPhraseSentStatus(String id, MessageState messageState) {
         mChatAdapter.changeStateOfMessage(id, messageState);
     }
 
@@ -456,12 +466,21 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onUserPhraseClick(UserPhrase userPhrase, int position) {
-        mChatController.checkAndResendPhrase(userPhrase);
+    public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
+        if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
+            final NoConnectionDialogFragment ncdf = NoConnectionDialogFragment.getInstance(new NoConnectionDialogFragment.OnCancelListener() {
+                @Override
+                public void onCancel() {
+                    mChatController.checkAndResendPhrase(userPhrase);
+                }
+            });
+            ncdf.setCancelable(true);
+            ncdf.show(getFragmentManager(), null);
+        }
     }
 
     public void cleanChat() {
-        mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this);
+        mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this, this);
         mRecyclerView.setAdapter(mChatAdapter);
         setTitleStateDefault();
         mWelcomeScreen = new WelcomeScreen(this);
