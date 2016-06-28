@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Threads</string>
+    <string name="contact_center">Контакт центр</string>
+    <string name="search_hint">Поиск сообщений</string>
+    <string name="searching_operator">Поиск оператора...</string>
+    <string name="your_message">Ваше сообщение...</string>
+    <string name="no_connection">Отсутствует
+       \nсоединение с интернетом</string>
+    <string name="no_connection_details">Включите передачу даннх
+       \nили воспользуйтесь WI_FI для\nотправки сообщения</string>
+    <string name="close">Закрыть</string>
+    <string name="camera">Камера</string>
+    <string name="gallery">Галерея</string>
+    <string name="file">Файл</string>
+    <string name="hide">Отмена</string>
+    <string name="connected_female">подключилась к диалогу в</string>
+    <string name="connected">подключился к диалогу в</string>
+    <string name="send_at">отправлено</string>
+</resources>
