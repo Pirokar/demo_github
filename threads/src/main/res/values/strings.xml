@@ -11,7 +11,7 @@
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="file">File</string>
-    <string name="send">Send</string>
+    <string name="hide">Hide</string>
     <string name="connected_female">connected to dialog at</string>
     <string name="connected">connected to dialog</string>
     <string name="send_at">send at</string>

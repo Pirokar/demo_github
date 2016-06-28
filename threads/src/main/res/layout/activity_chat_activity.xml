@@ -17,10 +17,11 @@
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
         <com.sequenia.threads.views.WelcomeScreen
             android:id="@+id/welcome"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </FrameLayout>
 
@@ -35,10 +36,10 @@
 
 
         <RelativeLayout
-            android:visibility="gone"
             android:id="@+id/quote_layout"
             android:layout_width="match_parent"
-            android:layout_height="64dp">
+            android:layout_height="64dp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/quote_header"
@@ -99,43 +100,40 @@
             android:background="@android:color/white">
 
             <EditText
-                android:maxLines="5"
                 android:id="@+id/input"
                 style="@style/InputEditTextStyle"
                 android:background="@android:color/transparent"
-                android:paddingLeft="64dp"
-                android:paddingRight="64dp"
                 android:drawablePadding="@dimen/margin_big"
-                android:hint="@string/your_message" />
+                android:hint="@string/your_message"
+                android:maxLines="5"
+                android:paddingLeft="64dp"
+                android:paddingRight="64dp" />
 
             <ImageButton
-                android:src="@drawable/ic_attach_file_blue_24dp"
                 android:id="@+id/add_attachment"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="60dp"
                 android:layout_height="64dp"
                 android:layout_gravity="left|bottom"
-                android:background="@android:color/transparent" />
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_attach_file_blue_24dp" />
 
             <ImageButton
-                android:src="@drawable/ic_send_36dp"
                 android:id="@+id/send_message"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_gravity="right|bottom"
-                android:background="@android:color/transparent" />
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_send_36dp" />
         </FrameLayout>
+
+        <com.sequenia.threads.views.BottomSheetView
+            android:id="@+id/file_input_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
     </LinearLayout>
-
-
-    <com.sequenia.threads.views.BottomSheetView
-
-        android:id="@+id/file_input_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone" />
 
 
     <com.sequenia.threads.views.SwipeAwareView
@@ -158,12 +156,12 @@
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp">
 
         <LinearLayout
-            android:paddingLeft="36dp"
             android:id="@+id/copy_controls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
+            android:paddingLeft="36dp"
             android:visibility="gone">
 
             <ImageButton

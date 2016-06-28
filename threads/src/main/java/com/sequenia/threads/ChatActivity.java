@@ -127,6 +127,11 @@ public class ChatActivity extends AppCompatActivity
         ImageButton SendButton = (ImageButton) findViewById(R.id.send_message);
         final Context c = this;
         ImageButton AddAttachmentButton = (ImageButton) findViewById(R.id.add_attachment);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setAdapter((mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this)));
+        mChatAdapter.setAdapterInterface(this);
+        final View inputLayout = findViewById(R.id.input_layout);
         AddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,6 +144,8 @@ public class ChatActivity extends AppCompatActivity
                             mBottomSheetView.setVisibility(View.VISIBLE);
                         }
                     });
+                    inputLayout.setVisibility(View.GONE);
+                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
                 } else {
                     mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
                         @Override
@@ -190,10 +197,7 @@ public class ChatActivity extends AppCompatActivity
         }
         mTitleView = (TextView) findViewById(R.id.title);
         mSubTitleView = (TextView) findViewById(R.id.subtitle);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setAdapter((mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this)));
-        mChatAdapter.setAdapterInterface(this);
+
         mCopyControls = findViewById(R.id.copy_controls);
         mInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -249,11 +253,13 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSendClick() {
+    public void onHideClick() {
+        final View input = findViewById(R.id.input_layout);
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
                 mBottomSheetView.setVisibility(View.GONE);
+                input.setVisibility(View.VISIBLE);
             }
         });
     }

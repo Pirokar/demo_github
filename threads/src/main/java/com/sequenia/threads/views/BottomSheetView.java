@@ -16,7 +16,7 @@ import com.sequenia.threads.R;
  */
 public class BottomSheetView extends LinearLayout {
     private ButtonsListener buttonsListener;
-    private TextView sendButton;
+    private TextView hideButton;
 
     public BottomSheetView(Context context) {
         super(context);
@@ -53,11 +53,11 @@ public class BottomSheetView extends LinearLayout {
                 if (null != buttonsListener) buttonsListener.onFileClick();
             }
         });
-        sendButton = (TextView) findViewById(R.id.bmsheet_send);
-        sendButton.setOnClickListener(new OnClickListener() {
+        hideButton = (TextView) findViewById(R.id.bmsheet_hide);
+        hideButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != buttonsListener) buttonsListener.onSendClick();
+                if (null != buttonsListener) buttonsListener.onHideClick();
             }
         });
         this.setBackgroundColor(getContext().getResources().getColor(android.R.color.white));
@@ -66,10 +66,10 @@ public class BottomSheetView extends LinearLayout {
     public void setState(boolean smthSelected) {
         if (smthSelected) {
             Drawable d = getContext().getResources().getDrawable(R.drawable.ic_send_blue_42dp);
-            sendButton.setCompoundDrawables(null, d, null, null);
+            hideButton.setCompoundDrawables(null, d, null, null);
         } else {
             Drawable d = getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_blue_42dp);
-            sendButton.setCompoundDrawables(null, d, null, null);
+            hideButton.setCompoundDrawables(null, d, null, null);
         }
     }
 
@@ -84,6 +84,6 @@ public class BottomSheetView extends LinearLayout {
 
         void onFileClick();
 
-        void onSendClick();
+        void onHideClick();
     }
 }

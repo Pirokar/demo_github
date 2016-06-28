@@ -130,6 +130,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_TIMESTAMP, consultPhrase.getTimeStamp());
             cv.put(COLUMN_FILE_PATH, consultPhrase.getFilePath());
             cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_PHRASE.type);
+            cv.put(COLUMN_AVATAR_PATH,((ConsultPhrase) phrase).getAvatarPath());
             if (!isDup) {
                 getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             } else {

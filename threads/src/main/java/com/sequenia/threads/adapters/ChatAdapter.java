@@ -232,11 +232,38 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 notifyItemChanged(prev);
             }
         }
+        if (list.size() < 2) return;
+        final ChatItem last = list.get(list.size() - 1);
+        final ChatItem prev = list.get(list.size() - 2);
+
+        if (prev instanceof UserPhrase && last instanceof ConsultConnected) {
+            list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
+        }
+        if (prev instanceof ConsultPhrase && last instanceof UserPhrase) {
+            list.add(list.size() - 1, new Space(8, System.currentTimeMillis()));
+        }
+        if (prev instanceof ConsultPhrase && last instanceof UserPhrase) {
+            list.add(list.size() - 1, new Space(16, System.currentTimeMillis()));
+        }
+        if (prev instanceof ConsultConnected && last instanceof ConsultPhrase) {
+            list.add(list.size() - 1, new Space(16, System.currentTimeMillis()));
+        }
+        if (last instanceof ConsultPhrase && prev instanceof ConsultPhrase) {
+            list.add(list.size() - 1, new Space(6, System.currentTimeMillis()));
+        }
+        if (last instanceof UserPhrase && prev instanceof UserPhrase) {
+            list.add(list.size() - 1, new Space(6, System.currentTimeMillis()));
+        }
+        if (prev instanceof UserPhrase && last instanceof ConsultPhrase) {
+            list.add(list.size() - 1, new Space(24, System.currentTimeMillis()));
+        }
+        notifyItemInserted(list.size() - 2);
     }
 
     public void addItems(List<ChatItem> items) {
-        list.addAll(items);
-        notifyItemRangeInserted(list.lastIndexOf(items.get(0)), items.size());
+        for (ChatItem ci : items) {
+            addItem(ci);
+        }
     }
 
     @Override

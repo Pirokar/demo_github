@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/margin_half">
+    android:layout_height="wrap_content">
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:layout_marginLeft="@dimen/user_margin_left"
         android:layout_marginRight="@dimen/user_margin_right"
         android:background="@drawable/bubble_blue"
@@ -22,12 +20,12 @@
             android:visibility="visible">
 
             <ImageButton
-                android:layout_marginTop="@dimen/margin_half"
                 android:id="@+id/file"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginBottom="@dimen/margin_half"
+                android:layout_marginTop="@dimen/margin_half"
                 android:background="@drawable/ic_insert_file_white_36dp" />
 
             <View
