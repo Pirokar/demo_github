@@ -2,6 +2,7 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import java.util.Date;
  * layout/item_consultant_text_with_file.xml
  */
 public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
+    private static final String TAG = "ConsultPhraseHolder ";
     private View fileRow;
     private CircularProgressButton mCircularProgressButton;
     private TextView fileToUserHeader;
@@ -35,6 +37,8 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
     private SimpleDateFormat timesSampSdf = new SimpleDateFormat("HH:mm");
     public ImageView mConsultAvatar;
+    private View mFilterView;
+    private View mFilterViewSecond;
 
     public ConsultPhraseHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
@@ -46,19 +50,8 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
-    }
-
-
-    public ConsultPhraseHolder(View itemView) {
-        super(itemView);
-        fileRow = itemView.findViewById(R.id.file_row);
-        mCircularProgressButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
-        fileToUserHeader = (TextView) itemView.findViewById(R.id.to);
-        mFileSpecs = (TextView) itemView.findViewById(R.id.file_specs);
-        mFileTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
-        mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
-        mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
-        mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
+        mFilterView = itemView.findViewById(R.id.filter);
+        mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
     }
 
     public void onBind(String consultPhrase
@@ -68,8 +61,8 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             , FileDescription fileDescription
             , @Nullable View.OnClickListener onAttachClickListener
             , View.OnLongClickListener onRowLongClickListener
-            , int progress) {
-
+            , int progress
+            , boolean isChosen) {
         itemView.setOnLongClickListener(onRowLongClickListener);
         mTimeStampTextView.setText(timesSampSdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
@@ -113,7 +106,6 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             @Override
             public void onGlobalLayout() {
                 try {
-
                     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                     float density = itemView.getContext().getResources().getDisplayMetrics().density;
@@ -127,7 +119,13 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
-
+        if (isChosen) {
+            mFilterView.setVisibility(View.VISIBLE);
+            mFilterViewSecond.setVisibility(View.VISIBLE);
+        } else {
+            mFilterView.setVisibility(View.INVISIBLE);
+            mFilterViewSecond.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void setDownloadProgress(int progress) {

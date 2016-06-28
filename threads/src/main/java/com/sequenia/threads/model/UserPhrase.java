@@ -15,6 +15,7 @@ public class UserPhrase implements ChatPhrase {
     private final long phraseTimeStamp;
     private final FileDescription fileDescription;
     private final String filePath;
+    private boolean isChosen;
 
 
     public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, String filePath) {
@@ -79,10 +80,18 @@ public class UserPhrase implements ChatPhrase {
         return phrase;
     }
 
+    public boolean isChosen() {
+        return isChosen;
+    }
+
+    public void setChosen(boolean chosen) {
+        isChosen = chosen;
+    }
+
     @Override
     public String toString() {
         return "UserPhrase{" +
-                "messageId=" + messageId +
+                "messageId='" + messageId + '\'' +
                 ", phrase='" + phrase + '\'' +
                 ", withFile=" + withFile +
                 ", sentState=" + sentState +
@@ -91,6 +100,7 @@ public class UserPhrase implements ChatPhrase {
                 ", phraseTimeStamp=" + phraseTimeStamp +
                 ", fileDescription=" + fileDescription +
                 ", filePath='" + filePath + '\'' +
+                ", isChosen=" + isChosen +
                 '}';
     }
 }

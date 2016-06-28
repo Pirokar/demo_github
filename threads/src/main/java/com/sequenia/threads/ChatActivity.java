@@ -63,6 +63,7 @@ public class ChatActivity extends AppCompatActivity
     private Quote mQuote = null;
     private FileDescription mFileDescription = null;
     private ArrayList<String> mAttachments = null;
+    private ChatPhrase mChosenPhrase = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,7 +101,7 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (mCopyControls.getVisibility() == View.VISIBLE) {
-                    hideCopyControls();
+                    unchooseItem(mChosenPhrase);
                     return;
                 }
                 finish();
@@ -343,6 +344,11 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onPhraseLongClick(final ChatPhrase cp, final int position) {
+        if (cp == mChosenPhrase) {
+            unchooseItem(cp);
+            return;
+        }
+        unchooseItem(cp);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
         mToolbar.setBackgroundColor(getResources().getColor(android.R.color.white));
         mCopyControls.setVisibility(View.VISIBLE);
@@ -373,6 +379,8 @@ public class ChatActivity extends AppCompatActivity
                 mQuote = new Quote(headerText, cp.getPhraseText(), cp.getTimeStamp());
             }
         });
+        mChosenPhrase = cp;
+        mChatAdapter.setItemChosen(true, cp);
     }
 
     private void hideCopyControls() {
@@ -386,7 +394,7 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         if (mCopyControls.getVisibility() == View.VISIBLE) {
-            hideCopyControls();
+            unchooseItem(mChosenPhrase);
             return;
         }
         super.onBackPressed();
@@ -394,6 +402,12 @@ public class ChatActivity extends AppCompatActivity
 
     public void changeChatPhraseStatus(String id, MessageState messageState) {
         mChatAdapter.changeStateOfMessage(id, messageState);
+    }
+
+    private void unchooseItem(ChatPhrase cp) {
+        hideCopyControls();
+        mChatAdapter.setItemChosen(false, mChosenPhrase);
+        mChosenPhrase = null;
     }
 
     public void updateProgress(String path, int progress) {

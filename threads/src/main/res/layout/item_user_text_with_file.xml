@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TableLayout
+
+        android:id="@+id/phrase_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/user_margin_left"
         android:layout_marginRight="@dimen/user_margin_right"
+        android:layout_marginTop="@dimen/margin_quarter"
         android:background="@drawable/bubble_blue"
         android:orientation="vertical"
         android:padding="@dimen/margin_three_fourth">
 
         <TableRow
+
             android:id="@+id/file_row"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,6 +69,22 @@
                 android:text="10:19" />
         </FrameLayout>
 
-
     </TableLayout>
-</FrameLayout>
+
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_quarter"
+        android:layout_alignBottom="@+id/phrase_content"
+        android:layout_alignParentTop="true"
+        android:layout_below="@+id/phrase_content"
+        android:background="@color/blue_transparent" />
+
+    <View
+        android:id="@+id/filter_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_quarter"
+        android:layout_below="@+id/phrase_content"
+        android:background="@color/blue_transparent" />
+
+</RelativeLayout>

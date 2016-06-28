@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:minHeight="56dp"
+        android:minHeight="52dp"
+        android:paddingTop="@dimen/margin_quarter"
         android:text="29 апреля 2016"
         android:textColor="@color/gray_text"
         android:textSize="@dimen/text_medium" />

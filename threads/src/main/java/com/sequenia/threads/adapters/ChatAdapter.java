@@ -112,7 +112,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     }
                                     return false;
                                 }
-                            }, cp.getDownloadingProgress());
+                            }, cp.getDownloadingProgress()
+                            , cp.isChosen());
             picasso.
                     load(cp.getAvatarPath())
                     .fit()
@@ -125,7 +126,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof UserPhraseViewHolder) {
             final UserPhrase up = (UserPhrase) list.get(position);
             ((UserPhraseViewHolder) holder).onBind(
-
                     up.getPhrase()
                     , up.getTimeStamp()
                     , up.getSentState()
@@ -156,7 +156,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             }
                             return false;
                         }
-                    });
+                    }
+                    , up.isChosen());
         }
         if (holder instanceof DateViewHolder) {
             DateRow dr = (DateRow) list.get(position);
@@ -236,25 +237,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final ChatItem last = list.get(list.size() - 1);
         final ChatItem prev = list.get(list.size() - 2);
 
-        if (prev instanceof UserPhrase && last instanceof ConsultConnected) {
+        if (prev instanceof UserPhrase && last instanceof ConsultConnected) {// spacing between Consult and Consult connected
             list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
         }
-        if (prev instanceof ConsultPhrase && last instanceof UserPhrase) {
-            list.add(list.size() - 1, new Space(8, System.currentTimeMillis()));
+        if (prev instanceof ConsultPhrase && last instanceof UserPhrase) {// spacing between Consult and User phrase
+            list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
         }
-        if (prev instanceof ConsultPhrase && last instanceof UserPhrase) {
-            list.add(list.size() - 1, new Space(16, System.currentTimeMillis()));
+        if (prev instanceof ConsultConnected && last instanceof ConsultPhrase) {// spacing between Consult connected and Consult phrase
+            list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
         }
-        if (prev instanceof ConsultConnected && last instanceof ConsultPhrase) {
-            list.add(list.size() - 1, new Space(16, System.currentTimeMillis()));
+        if (last instanceof ConsultPhrase && prev instanceof ConsultPhrase) {// spacing between Consult phrase connected and Consult phrase
+            list.add(list.size() - 1, new Space(2, System.currentTimeMillis()));
         }
-        if (last instanceof ConsultPhrase && prev instanceof ConsultPhrase) {
-            list.add(list.size() - 1, new Space(6, System.currentTimeMillis()));
+        if (last instanceof UserPhrase && prev instanceof UserPhrase) {// spacing between User phrase connected and User phrase
+            list.add(list.size() - 1, new Space(2, System.currentTimeMillis()));
         }
-        if (last instanceof UserPhrase && prev instanceof UserPhrase) {
-            list.add(list.size() - 1, new Space(6, System.currentTimeMillis()));
-        }
-        if (prev instanceof UserPhrase && last instanceof ConsultPhrase) {
+        if (prev instanceof UserPhrase && last instanceof ConsultPhrase) {// spacing between User phrase connected and Consult phrase
             list.add(list.size() - 1, new Space(24, System.currentTimeMillis()));
         }
         notifyItemInserted(list.size() - 2);
@@ -320,6 +318,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void clean() {
         list.clear();
         notifyItemRangeRemoved(0, list.size());
+    }
+
+    public void setItemChosen(boolean isChosen, ChatPhrase cp) {
+        if (cp==null)return;
+        if (cp instanceof UserPhrase) {
+            ((UserPhrase) cp).setChosen(isChosen);
+            notifyItemChanged(list.indexOf(cp));
+        }
+        if (cp instanceof ConsultPhrase) {
+            ((ConsultPhrase) cp).setChosen(isChosen);
+            notifyItemChanged(list.indexOf(cp));
+        }
     }
 
     public interface AdapterInterface {

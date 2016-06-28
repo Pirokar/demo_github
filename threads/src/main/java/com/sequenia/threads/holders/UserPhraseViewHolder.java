@@ -35,6 +35,8 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private ImageButton mFileImageButton;
     private SimpleDateFormat sdf;
     private SimpleDateFormat fileSdf;
+    private View mFilterView;
+    private View mFilterViewSecond;
 
     public UserPhraseViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -45,17 +47,8 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         mFileImageButton = (ImageButton) itemView.findViewById(R.id.file);
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
         fileSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
-    }
-
-    public UserPhraseViewHolder(View itemView) {
-        super(itemView);
-        mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
-        mFileRow = (TableRow) itemView.findViewById(R.id.file_row);
-        mFileDescrTextView = (TextView) itemView.findViewById(R.id.text_description);
-        mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
-        mFileImageButton = (ImageButton) itemView.findViewById(R.id.file);
-        sdf = new SimpleDateFormat("hh:mm", Locale.US);
-        fileSdf = new SimpleDateFormat("dd MMM yyyy", new RussianFormatSymbols());
+        mFilterView = itemView.findViewById(R.id.filter);
+        mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
     }
 
     public void onBind(String phrase
@@ -65,7 +58,8 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             , FileDescription fileDescription
             , @Nullable View.OnClickListener fileClickListener
             , View.OnClickListener onRowClickListener
-            , View.OnLongClickListener onLongClickListener) {
+            , View.OnLongClickListener onLongClickListener
+            , boolean isChosen) {
         ViewGroup vg = (ViewGroup) itemView;
         itemView.setOnLongClickListener(onLongClickListener);
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
@@ -125,6 +119,13 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             case STATE_NOT_SENT:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_cached_white_18dp, 0);
                 break;
+        }
+        if (isChosen) {
+            mFilterView.setVisibility(View.VISIBLE);
+            mFilterViewSecond.setVisibility(View.VISIBLE);
+        } else {
+            mFilterView.setVisibility(View.INVISIBLE);
+            mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
     }
 }

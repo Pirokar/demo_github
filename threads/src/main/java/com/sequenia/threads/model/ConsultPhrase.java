@@ -16,6 +16,7 @@ public class ConsultPhrase implements ChatPhrase {
     private boolean isAvatarVisible = true;
     private final Quote quote;
     private final FileDescription fileDescription;
+    private boolean isChosen;
 
     public ConsultPhrase(String avatarPath, String filePath, long timeStamp, String phrase, String messageId, String consultName, Quote quote, FileDescription fileDescription) {
         this.avatarPath = avatarPath;
@@ -27,6 +28,14 @@ public class ConsultPhrase implements ChatPhrase {
         this.quote = quote;
         this.fileDescription = fileDescription;
 
+    }
+
+    public boolean isChosen() {
+        return isChosen;
+    }
+
+    public void setChosen(boolean chosen) {
+        isChosen = chosen;
     }
 
     public long getDate() {
@@ -74,12 +83,13 @@ public class ConsultPhrase implements ChatPhrase {
                 ", filePath='" + filePath + '\'' +
                 ", timeStamp=" + timeStamp +
                 ", phrase='" + phrase + '\'' +
-                ", messageId=" + messageId +
+                ", messageId='" + messageId + '\'' +
                 ", downloadingProgress=" + downloadingProgress +
                 ", consultName='" + consultName + '\'' +
                 ", isAvatarVisible=" + isAvatarVisible +
                 ", quote=" + quote +
                 ", fileDescription=" + fileDescription +
+                ", isChosen=" + isChosen +
                 '}';
     }
 
