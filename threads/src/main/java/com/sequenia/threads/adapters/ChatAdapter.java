@@ -2,6 +2,7 @@ package com.sequenia.threads.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -180,7 +181,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     public void addConsultTyping(ConsultTyping ct) {
-
         if (ct != null) {
             list.add(ct);
             notifyItemInserted(list.lastIndexOf(ct));

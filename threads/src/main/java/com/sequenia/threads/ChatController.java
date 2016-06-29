@@ -72,7 +72,6 @@ public class ChatController extends Fragment {
             });
         }
         isConsultFound = appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE).getBoolean("isConsultFound", false);
-        Log.e(TAG, "isConsultFound " + isConsultFound);// TODO: 28.06.2016  
         if (isConsultFound) {
             String[] nameAndTitle = getCurrentConsultName().split("%%");
             activity.setTitleStateOperatorConnected(nameAndTitle[0], nameAndTitle[1]);
@@ -90,7 +89,6 @@ public class ChatController extends Fragment {
     }
 
     public void onUserInput(UpcomingUserMessage upcomingUserMessage) {
-        Log.e(TAG, "onUserInput " + upcomingUserMessage.getText());// TODO: 27.06.2016
         if (upcomingUserMessage.getText().trim().equalsIgnoreCase("Thanks a lot")) {
             cleanAll();
             return;
@@ -98,7 +96,7 @@ public class ChatController extends Fragment {
         if (upcomingUserMessage == null) return;
         List<UserPhrase> phrases = convert(upcomingUserMessage);
         for (UserPhrase up : phrases) {
-            postUserPhrase(up, 0, new CompletionHandler<UserPhrase>() {
+            postUserPhrase(up, 1000, new CompletionHandler<UserPhrase>() {
                 @Override
                 public void onComplete(UserPhrase data) {
                     answerToUser(data, true);
@@ -131,7 +129,6 @@ public class ChatController extends Fragment {
     }
 
     private void addMessage(ChatItem cm) {
-        Log.e(TAG, "addMessage");// TODO: 28.06.2016  
         mDatabaseHolder.putChatItem(cm);
         if (null != activity) activity.addMessage(cm);
     }
@@ -215,13 +212,11 @@ public class ChatController extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "saving is Consult found " + isConsultFound);// TODO: 28.06.2016  
         SharedPreferences sp = appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE);
         sp.edit().putBoolean("isConsultFound", isConsultFound).apply();
     }
 
     private void answerToUser(final UserPhrase up, final boolean showIsTyping) {
-        Log.e(TAG, "answerToUser " + up.getPhrase() + " " + up.getSentState());// TODO: 28.06.2016
         if (up.getSentState() == MessageState.STATE_SENT_AND_SERVER_RECEIVED) {
             if (!isSearchingConsult && !isConsultFound) {
                 isSearchingConsult = true;
@@ -254,7 +249,6 @@ public class ChatController extends Fragment {
     }
 
     private void postConsultPhrase(final UserPhrase up, long delay, final CompletionHandler<ConsultPhrase> handler) {
-        Log.e(TAG, "postConsultPhrase");// TODO: 28.06.2016  
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -269,6 +263,7 @@ public class ChatController extends Fragment {
     }
 
     private void postUserPhrase(final UserPhrase up, long sendDelay, final CompletionHandler<UserPhrase> handler) {
+        addMessage(up);
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -283,7 +278,6 @@ public class ChatController extends Fragment {
                     handler.setSuccessful(true);
                     handler.onComplete(up);
                 }
-                addMessage(up);
             }
         }, sendDelay);
     }

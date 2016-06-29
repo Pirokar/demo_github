@@ -273,7 +273,6 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void addMessage(ChatItem item) {
-
         if (null != mWelcomeScreen) {
             mWelcomeScreen.removeViewWithAnimation(30, null);
             mWelcomeScreen = null;
@@ -282,13 +281,11 @@ public class ChatActivity extends AppCompatActivity
             mChatAdapter.addConsultSearching((SearchingConsult) item);
             isSearchingConsult = true;
         } else if (item instanceof ConsultTyping) {
-            Log.e(TAG, "ConsultTyping!!!!!");// TODO: 28.06.2016
-            if (!mChatAdapter.isConsultTyping()) {
-                mChatAdapter.addConsultTyping((ConsultTyping) item);
-                isConsultTyping = true;
-            }
+            mChatAdapter.removeConsultIsTyping();
+            mChatAdapter.addConsultTyping((ConsultTyping) item);
+            isConsultTyping = true;
         } else {
-            if (isConsultTyping) {
+            if (mChatAdapter.isConsultTyping()) {
                 mChatAdapter.removeConsultIsTyping();
                 isConsultTyping = false;
             }
@@ -296,6 +293,7 @@ public class ChatActivity extends AppCompatActivity
                 mChatAdapter.removeConsultSearching();
                 isSearchingConsult = false;
             }
+
             mChatAdapter.addItem(item);
         }
         mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
