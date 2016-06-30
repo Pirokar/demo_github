@@ -36,18 +36,21 @@
 
 
         <RelativeLayout
+
             android:id="@+id/quote_layout"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:visibility="gone">
 
+
             <TextView
+
                 android:id="@+id/quote_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_three_fourth"
+                android:layout_marginLeft="@dimen/margin_quarter"
                 android:layout_marginTop="@dimen/margin_three_fourth"
-                android:layout_toRightOf="@+id/quote_past"
+                android:layout_toRightOf="@+id/quote_image"
                 android:text="Мария Павлова"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_medium" />
@@ -57,10 +60,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/quote_header"
-                android:layout_marginLeft="@dimen/margin_three_fourth"
+                android:layout_marginLeft="@dimen/margin_quarter"
                 android:layout_marginTop="@dimen/margin_quarter"
                 android:layout_toLeftOf="@+id/quote_clear"
-                android:layout_toRightOf="@+id/quote_past"
+                android:layout_toRightOf="@+id/quote_image"
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="Добрый день!Подскажите номер вашей карты"
@@ -72,7 +75,19 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:background="@null"
-                android:src="@drawable/ic_past" />
+                android:src="@drawable/ic_reply_gray_24dp" />
+
+
+            <ImageView
+                android:id="@+id/quote_image"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_toRightOf="@id/quote_past"
+                android:minWidth="1dp"
+                android:padding="@dimen/margin_half"
+                android:scaleType="centerCrop"
+                android:src="@drawable/sample"
+                android:visibility="visible" />
 
             <ImageButton
                 android:id="@+id/quote_clear"
@@ -127,6 +142,12 @@
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_send_36dp" />
         </FrameLayout>
+
+        <com.sequenia.threads.views.BottomGallery
+            android:visibility="gone"
+            android:id="@+id/bottom_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <com.sequenia.threads.views.BottomSheetView
             android:id="@+id/file_input_sheet"

@@ -2,7 +2,6 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,21 +89,25 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         if (fileDescription != null) {
             mRightTextRow.setVisibility(View.VISIBLE);
             mFileImageButton.setVisibility(View.VISIBLE);
-            mRightTextDescr.setText(fileDescription.getPath());
-            mRightTextHeader.setText(quote==null?fileDescription.getHeader():quote.getHeader());
+            mRightTextDescr.setText(fileDescription.getPath() + "\n1,2mb");
+            mRightTextHeader.setText(quote == null ? fileDescription.getHeader() : quote.getHeader());
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.sent_at) + " " + fileSdf.format(fileDescription.getTimeStamp()));
             if (fileClickListener != null) {
                 mFileImageButton.setOnClickListener(fileClickListener);
             }
             mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         }
-        if (fileDescription==null && quote == null){
+        if (fileDescription == null && quote == null) {
             mRightTextRow.setVisibility(View.GONE);
         }
         mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 try {
+                    if (mPhraseTextView.getLayout() == null) {
+                        mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        return;
+                    }
                     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                     float density = itemView.getContext().getResources().getDisplayMetrics().density;

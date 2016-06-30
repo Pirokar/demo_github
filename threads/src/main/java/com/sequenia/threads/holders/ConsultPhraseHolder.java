@@ -94,7 +94,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                 mCircularProgressButton.setOnClickListener(onAttachClickListener);
             }
             rightTextHeader.setText(quote == null ? "" : quote.getHeader());
-            rightTextDescr.setText(fileDescription.getPath());
+            rightTextDescr.setText(fileDescription.getPath() +"\n1,2mb");
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
             mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         }
@@ -111,6 +111,10 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             @Override
             public void onGlobalLayout() {
                 try {
+                    if ( mPhraseTextView.getLayout()==null){
+                        mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        return;
+                    }
                     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                     float density = itemView.getContext().getResources().getDisplayMetrics().density;

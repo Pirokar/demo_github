@@ -17,6 +17,7 @@ import com.sequenia.threads.R;
 public class BottomSheetView extends LinearLayout {
     private ButtonsListener buttonsListener;
     private TextView hideButton;
+    private boolean isSmthSelected;
 
     public BottomSheetView(Context context) {
         super(context);
@@ -57,20 +58,29 @@ public class BottomSheetView extends LinearLayout {
         hideButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != buttonsListener) buttonsListener.onHideClick();
+                if (null != buttonsListener) {
+                    if (isSmthSelected) {
+                        buttonsListener.onSendClick();
+                    } else {
+                        buttonsListener.onHideClick();
+                    }
+                }
             }
         });
         this.setBackgroundColor(getContext().getResources().getColor(android.R.color.white));
     }
 
-    public void setState(boolean smthSelected) {
-        if (smthSelected) {
-            Drawable d = getContext().getResources().getDrawable(R.drawable.ic_send_blue_42dp);
-            hideButton.setCompoundDrawables(null, d, null, null);
+    public void setState(boolean isSmthSelected) {
+        Drawable d;
+        if (isSmthSelected) {
+             d = getContext().getResources().getDrawable(R.drawable.ic_send_blue_42dp);
+            hideButton.setText(getContext().getResources().getString(R.string.send));
         } else {
-            Drawable d = getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_blue_42dp);
-            hideButton.setCompoundDrawables(null, d, null, null);
+            d = getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_blue_42dp);
+            hideButton.setText(getContext().getResources().getString(R.string.hide));
         }
+        hideButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, d, null, null);
+        this.isSmthSelected = isSmthSelected;
     }
 
     public void setButtonsListener(ButtonsListener listener) {
@@ -85,5 +95,8 @@ public class BottomSheetView extends LinearLayout {
         void onFileClick();
 
         void onHideClick();
+
+        void onSendClick();
+
     }
 }

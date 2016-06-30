@@ -2,12 +2,14 @@ package com.sequenia.threads;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,8 +23,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sequenia.threads.adapters.BottomGalleryAdapter;
 import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.fragments.NoConnectionDialogFragment;
 import com.sequenia.threads.model.ChatItem;
@@ -35,6 +39,8 @@ import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.model.SearchingConsult;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
+import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.views.BottomGallery;
 import com.sequenia.threads.views.BottomSheetView;
 import com.sequenia.threads.views.SwipeAwareView;
 import com.sequenia.threads.views.WelcomeScreen;
@@ -55,6 +61,7 @@ public class ChatActivity extends AppCompatActivity
     private WelcomeScreen mWelcomeScreen;
     private EditText mInputEditText;
     private BottomSheetView mBottomSheetView;
+    private BottomGallery mBottomGallery;
     private ChatAdapter mChatAdapter;
     private TextView mTitleView;
     private TextView mSubTitleView;
@@ -67,6 +74,7 @@ public class ChatActivity extends AppCompatActivity
     private Quote mQuote = null;
     private FileDescription mFileDescription = null;
     private ChatPhrase mChosenPhrase = null;
+    private List<String> mAttachedImages = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,6 +134,7 @@ public class ChatActivity extends AppCompatActivity
         mBottomSheetView = (BottomSheetView) findViewById(R.id.file_input_sheet);
         mBottomSheetView.setButtonsListener(this);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mBottomGallery = (BottomGallery) findViewById(R.id.bottom_gallery);
         SwipeAwareView sav = (SwipeAwareView) findViewById(R.id.swipe_view);
         mInputEditText = (EditText) findViewById(R.id.input);
         ImageButton SendButton = (ImageButton) findViewById(R.id.send_message);
@@ -178,14 +187,36 @@ public class ChatActivity extends AppCompatActivity
                /* PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
-                        Log.e(TAG, "onResult");
+                        Log.e(TAG, ""+aVoid);
                     }
 
                     @Override
                     public void onError(PushServerErrorException e) {
-                        Log.e(TAG, "onError " + e);
+                        Log.e(TAG, ""+e);
                     }
-                });*/// TODO: 24.06.2016  
+                });
+                PushController.getInstance(ctx).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                    @Override
+                    public void onResult(List<InOutMessage> inOutMessages) {
+                        Log.e(TAG, "getMessageHistoryAsync onResult"+inOutMessages);
+                    }
+
+                    @Override
+                    public void onError(PushServerErrorException e) {
+                        Log.e(TAG, ""+e);
+                    }
+                });
+                PushController.getInstance(ctx).getNextMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                    @Override
+                    public void onResult(List<InOutMessage> inOutMessages) {
+                        Log.e(TAG, "getNextMessageHistoryAsync onResult"+inOutMessages);
+                    }
+
+                    @Override
+                    public void onError(PushServerErrorException e) {
+                        Log.e(TAG, ""+e);
+                    }
+                });*/
                 mInputEditText.setText("");
                 mQuoteLayoutHolder.setIsVisible(false);
                 mQuote = null;
@@ -219,30 +250,54 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onCameraClick() {
         hideBottomSheet();
-        mFileDescription = new FileDescription("", UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], mFileDescription.getPath());
-        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0],"",System.currentTimeMillis());
+        mBottomGallery.setVisibility(View.GONE);
+        mFileDescription = new FileDescription(getResources().getString(R.string.image), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.image), Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/drawable/sample").toString());
+        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis());
     }
 
     @Override
     public void onGalleyClick() {
-        hideBottomSheet();
-        mFileDescription = new FileDescription("", UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], mFileDescription.getPath());
-        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0],"",System.currentTimeMillis());
+        if (mBottomGallery.getVisibility() == View.VISIBLE) {
+            mBottomGallery.setVisibility(View.GONE);
+            mAttachedImages.clear();
+        } else {
+            mBottomGallery.setVisibility(View.VISIBLE);
+            mBottomGallery.setAlpha(0.0f);
+            mBottomGallery.animate().alpha(1.0f).setDuration(200).start();
+            mQuoteLayoutHolder.setIsVisible(false);
+            List<String> strings = new ArrayList<>();
+            for (int i = 0; i < 12; i++) {
+                strings.add(new String(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/drawable/sample_card").toString()));
+            }
+            mBottomGallery.setImages(strings, new BottomGalleryAdapter.OnChooseItemsListener() {
+                @Override
+                public void onChosenItems(List<String> items) {
+                    mAttachedImages = new ArrayList<>(items);
+                    if (mAttachedImages.size() > 0) {
+                        mBottomSheetView.setState(true);
+                    } else {
+                        mBottomSheetView.setState(false);
+                    }
+                }
+            });
+            mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
+        }
     }
 
     @Override
     public void onFileClick() {
         hideBottomSheet();
+        mBottomGallery.setVisibility(View.GONE);
         mFileDescription = new FileDescription("", UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], mFileDescription.getPath());
-        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0],"",System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.file_pdf), null);
+        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis());
     }
 
     @Override
     public void onHideClick() {
         final View input = findViewById(R.id.input_layout);
+        mBottomGallery.setVisibility(View.GONE);
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
@@ -252,9 +307,31 @@ public class ChatActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    public void onSendClick() {
+        if (mAttachedImages == null || mAttachedImages.size() == 0) {
+            mBottomGallery.setVisibility(View.GONE);
+        } else {
+            UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis()), new FileDescription("", mAttachedImages.get(0), System.currentTimeMillis()));
+            mChatController.onUserInput(uum);
+            for (int i = 1; i < mAttachedImages.size(); i++) {
+                uum = new UpcomingUserMessage(null, new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis()), new FileDescription("", mAttachedImages.get(i), System.currentTimeMillis()));
+                mChatController.onUserInput(uum);
+            }
+        }
+        mBottomSheetView.setState(false);
+        mInputEditText.setText("");
+        mQuoteLayoutHolder.setIsVisible(false);
+        mQuote = null;
+        mFileDescription = null;
+        hideBottomSheet();
+        hideCopyControls();
+        mAttachedImages.clear();
+        mBottomGallery.setVisibility(View.GONE);
+    }
+
     private void hideBottomSheet() {
         final View input = findViewById(R.id.input_layout);
-        mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
@@ -377,7 +454,7 @@ public class ChatActivity extends AppCompatActivity
                     mQuote = new Quote(headerText, cp.getPhraseText(), System.currentTimeMillis());
                 }
                 String text = cp.getPhraseText();
-                mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text);
+                mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
                 hideCopyControls();
                 mRecyclerView.scrollToPosition(position);
                 mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, cp.getTimeStamp());
@@ -423,11 +500,13 @@ public class ChatActivity extends AppCompatActivity
         private View view;
         private TextView mHeader;
         private TextView mText;
+        private ImageView mQuoteImage;
 
         public QuoteLayoutHolder() {
             view = findViewById(R.id.quote_layout);
             mHeader = (TextView) view.findViewById(R.id.quote_header);
             mText = (TextView) view.findViewById(R.id.quote_text);
+            mQuoteImage = (ImageView) findViewById(R.id.quote_image);
             View clear = view.findViewById(R.id.quote_clear);
             clear.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -454,10 +533,29 @@ public class ChatActivity extends AppCompatActivity
             }
         }
 
-        public void setText(String header, String text) {
+        private void setImage(String path) {
+            mQuoteImage.setVisibility(View.VISIBLE);
+            Picasso
+                    .with(getApplicationContext())
+                    .load(path)
+                    .fit()
+                    .centerInside()
+                    .into(mQuoteImage);
+        }
+
+        private void removeImage() {
+            mQuoteImage.setVisibility(View.GONE);
+        }
+
+        void setText(String header, String text, String imagePath) {
             setIsVisible(true);
             mHeader.setText(header);
             mText.setText(text);
+            if (imagePath != null) {
+                setImage(imagePath);
+            } else {
+                removeImage();
+            }
         }
     }
 

@@ -20,7 +20,9 @@ import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnected;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
+import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
+import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
 
@@ -88,11 +90,12 @@ public class ChatController extends Fragment {
     }
 
     public void onUserInput(UpcomingUserMessage upcomingUserMessage) {
-        if (upcomingUserMessage.getText().trim().equalsIgnoreCase("Thanks a lot")) {
+        if (upcomingUserMessage == null) return;
+
+        if (upcomingUserMessage.getText() != null && upcomingUserMessage.getText().trim().equalsIgnoreCase("Thanks a lot")) {
             cleanAll();
             return;
         }
-        if (upcomingUserMessage == null) return;
         postUserPhrase(convert(upcomingUserMessage), 1000, new CompletionHandler<UserPhrase>() {
             @Override
             public void onComplete(UserPhrase data) {
@@ -115,7 +118,17 @@ public class ChatController extends Fragment {
     }
 
     private ConsultPhrase convert(final UserPhrase up) {
-        return new ConsultPhrase(getSmallConsultAvatarPath(), System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getCurrentConsultName().split("%%")[0], up.getQuote(), up.getFileDescription());
+        FileDescription fd = null;
+        if (up.getFileDescription() != null) {
+            String userFP = up.getFileDescription().getPath();
+            String filepath = UUID.randomUUID().toString().concat(userFP.substring(userFP.lastIndexOf(".")));
+            fd = new FileDescription(up.getFileDescription().getHeader(), filepath, System.currentTimeMillis());
+        }
+        Quote q = null;
+        if (null != up.getQuote()) {
+            q = new Quote("Я", up.getQuote().getText(), System.currentTimeMillis());
+        }
+        return new ConsultPhrase(getSmallConsultAvatarPath(), System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getCurrentConsultName().split("%%")[0], q, fd);
     }
 
     private void addMessage(ChatItem cm) {

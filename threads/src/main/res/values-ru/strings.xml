@@ -16,4 +16,7 @@
     <string name="connected_female">подключилась к диалогу в</string>
     <string name="connected">подключился к диалогу в</string>
     <string name="sent_at">отправлено</string>
+    <string name="file_pdf">Текстовый файл</string>
+    <string name="image">изображение</string>
+    <string name="send">Отправить</string>
 </resources>
