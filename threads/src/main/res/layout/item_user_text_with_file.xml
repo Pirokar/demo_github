@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TableLayout
+    <LinearLayout
 
         android:id="@+id/phrase_content"
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
 
         <TableRow
 
-            android:id="@+id/file_row"
+            android:id="@+id/right_text_row"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_quarter"
@@ -38,16 +38,44 @@
                 android:layout_marginLeft="@dimen/margin_quarter"
                 android:background="@android:color/white" />
 
-            <TextView
-                android:id="@+id/text_description"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_half"
-                android:paddingRight="80dp"
-                android:text="Мария Павлова instruction.pdf 1,2mb отправлено sddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/to"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+                    android:paddingRight="80dp"
+                    android:text="Иван Петров"
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/file_specs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+
+                    android:text="счет на оплату 1,2mb dfffffffffffffffffdddddddddddddddddddddddddddddddddddddddddddddddd"
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/send_at"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+                    android:text="отправлено 21 апр 2016"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
         </TableRow>
 
-        <FrameLayout>
+        <FrameLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/text"
@@ -69,7 +97,7 @@
                 android:text="10:19" />
         </FrameLayout>
 
-    </TableLayout>
+    </LinearLayout>
 
     <View
         android:id="@+id/filter"

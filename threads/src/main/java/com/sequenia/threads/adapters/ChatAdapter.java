@@ -2,7 +2,6 @@ package com.sequenia.threads.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,7 +99,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 @Override
                                 public void onClick(View v) {
                                     if (mAdapterInterface != null) {
-                                        mAdapterInterface.onFileClick(cp.getFilePath());
+                                        mAdapterInterface.onFileClick(cp.getFileDescription().getPath());
                                     }
                                 }
                             }
@@ -114,7 +113,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     }
                                     return false;
                                 }
-                            }, cp.getDownloadingProgress()
+                            }
                             , cp.isChosen());
             picasso.
                     load(cp.getAvatarPath())
@@ -136,8 +135,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (mAdapterInterface != null && (up.getFilePath() != null)) {
-                                mAdapterInterface.onFileClick(up.getFilePath());
+                            if (mAdapterInterface != null && (up.getFileDescription() != null)) {
+                                mAdapterInterface.onFileClick(up.getFileDescription().getPath());
                             }
                         }
                     }
@@ -308,7 +307,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (ChatItem cm : list) {
             if (cm instanceof ConsultPhrase && (((ConsultPhrase) cm).getMessageId()).equals(messageId)) {
                 int position = list.lastIndexOf(cm);
-                ((ConsultPhrase) cm).setDownloadingProgress(progress);
+                ((ConsultPhrase) cm).getFileDescription().setDownloadProgress(progress);
                 notifyItemChanged(position);
             }
         }
@@ -319,8 +318,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) instanceof ConsultPhrase) {
                 ConsultPhrase cp = (ConsultPhrase) list.get(i);
-                if (cp.getFilePath() != null && cp.getFilePath().equals(path)) {
-                    cp.setDownloadingProgress(progress);
+                if (cp.getFileDescription() != null && cp.getFileDescription().getPath().equals(path)) {
+                    cp.getFileDescription().setDownloadProgress(progress);
                 }
                 notifyItemChanged(i);
             }

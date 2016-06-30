@@ -4,13 +4,34 @@ package com.sequenia.threads.model;
  * Created by yuri on 13.06.2016.
  */
 public class FileDescription {
-    private final String header;
-    private final String text;
-    private final long timeStamp;
+    private String header;
+    private String path;
+    private long timeStamp;
+    private int downloadProgress;
 
-    public FileDescription(String header, String text, long timeStamp) {
+    public FileDescription(String header, String path, long timeStamp) {
         this.header = header;
-        this.text = text;
+        this.path = path;
+        this.timeStamp = timeStamp;
+    }
+
+    public int getDownloadProgress() {
+        return downloadProgress;
+    }
+
+    public void setDownloadProgress(int downloadProgress) {
+        this.downloadProgress = downloadProgress;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public void setPath(String text) {
+        this.path = text;
+    }
+
+    public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
 
@@ -18,8 +39,8 @@ public class FileDescription {
         return header;
     }
 
-    public String getText() {
-        return text;
+    public String getPath() {
+        return path;
     }
 
     public long getTimeStamp() {
@@ -30,8 +51,9 @@ public class FileDescription {
     public String toString() {
         return "FileDescription{" +
                 "header='" + header + '\'' +
-                ", text='" + text + '\'' +
-                ", timeStamp='" + timeStamp + '\'' +
+                ", path='" + path + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", downloadProgress=" + downloadProgress +
                 '}';
     }
 }

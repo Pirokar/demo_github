@@ -7,4 +7,8 @@ public interface ChatPhrase extends ChatItem {
     String getId();
 
     String getPhraseText();
+
+    Quote getQuote();
+
+    FileDescription getFileDescription();
 }

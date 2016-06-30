@@ -15,5 +15,5 @@
     <string name="hide">Отмена</string>
     <string name="connected_female">подключилась к диалогу в</string>
     <string name="connected">подключился к диалогу в</string>
-    <string name="send_at">отправлено</string>
+    <string name="sent_at">отправлено</string>
 </resources>

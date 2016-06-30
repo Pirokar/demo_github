@@ -27,6 +27,7 @@ import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.fragments.NoConnectionDialogFragment;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
+import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
@@ -41,6 +42,8 @@ import com.sequenia.threads.views.WelcomeScreen;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
  *
@@ -63,7 +66,6 @@ public class ChatActivity extends AppCompatActivity
     private RecyclerView mRecyclerView;
     private Quote mQuote = null;
     private FileDescription mFileDescription = null;
-    private ArrayList<String> mAttachments = null;
     private ChatPhrase mChosenPhrase = null;
 
     @Override
@@ -102,7 +104,7 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (mCopyControls.getVisibility() == View.VISIBLE) {
-                    unchooseItem(mChosenPhrase);
+                    unChooseItem(mChosenPhrase);
                     return;
                 }
                 finish();
@@ -169,7 +171,10 @@ public class ChatActivity extends AppCompatActivity
                     mWelcomeScreen = null;
                 }
                 ;
-                mChatController.onUserInput(new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, mFileDescription, mAttachments));
+                unChooseItem(mChosenPhrase);
+                UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, mFileDescription);
+                Log.e(TAG, "" + uum);
+                mChatController.onUserInput(uum);
                /* PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
@@ -185,7 +190,6 @@ public class ChatActivity extends AppCompatActivity
                 mQuoteLayoutHolder.setIsVisible(false);
                 mQuote = null;
                 mFileDescription = null;
-                mAttachments = null;
             }
         });
 
@@ -214,55 +218,43 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onCameraClick() {
-        final View input = findViewById(R.id.input_layout);
-        mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
-        mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                mBottomSheetView.setVisibility(View.GONE);
-                input.setVisibility(View.VISIBLE);
-            }
-        });
-        mQuoteLayoutHolder.setText(mFileDescription.getHeader(), mFileDescription.getText());
-        if (mAttachments == null) mAttachments = new ArrayList<>();
-        mAttachments.add(UUID.randomUUID().toString());
+        hideBottomSheet();
+        mFileDescription = new FileDescription("", UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], mFileDescription.getPath());
+        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0],"",System.currentTimeMillis());
     }
 
     @Override
     public void onGalleyClick() {
-        final View input = findViewById(R.id.input_layout);
-        mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
-        mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                mBottomSheetView.setVisibility(View.GONE);
-                input.setVisibility(View.VISIBLE);
-            }
-        });
-        mQuoteLayoutHolder.setText(mFileDescription.getHeader(), mFileDescription.getText());
-        if (mAttachments == null) mAttachments = new ArrayList<>();
-        mAttachments.add(UUID.randomUUID().toString());
+        hideBottomSheet();
+        mFileDescription = new FileDescription("", UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], mFileDescription.getPath());
+        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0],"",System.currentTimeMillis());
     }
 
     @Override
     public void onFileClick() {
-        final View input = findViewById(R.id.input_layout);
-        mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
-        mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                mBottomSheetView.setVisibility(View.GONE);
-                input.setVisibility(View.VISIBLE);
-            }
-        });
-        mQuoteLayoutHolder.setText(mFileDescription.getHeader(), mFileDescription.getText());
-        if (mAttachments == null) mAttachments = new ArrayList<>();
-        mAttachments.add(UUID.randomUUID().toString());
+        hideBottomSheet();
+        mFileDescription = new FileDescription("", UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], mFileDescription.getPath());
+        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0],"",System.currentTimeMillis());
     }
 
     @Override
     public void onHideClick() {
         final View input = findViewById(R.id.input_layout);
+        mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                mBottomSheetView.setVisibility(View.GONE);
+                input.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void hideBottomSheet() {
+        final View input = findViewById(R.id.input_layout);
+        mFileDescription = new FileDescription(mChatController.getCurrentConsultName(), UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
@@ -353,10 +345,10 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onPhraseLongClick(final ChatPhrase cp, final int position) {
         if (cp == mChosenPhrase) {
-            unchooseItem(cp);
+            unChooseItem(cp);
             return;
         }
-        unchooseItem(cp);
+        unChooseItem(cp);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
         mToolbar.setBackgroundColor(getResources().getColor(android.R.color.white));
         mCopyControls.setVisibility(View.VISIBLE);
@@ -375,16 +367,21 @@ public class ChatActivity extends AppCompatActivity
         reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String headerText;
+                String headerText = "";
                 if (cp instanceof UserPhrase) {
                     headerText = "Я";
-                } else {
-                    headerText = mChatController.getCurrentConsultName();
+                } else if (cp instanceof ConsultPhrase) {
+                    headerText = mChatController.getCurrentConsultName().split("%%")[0];
                 }
-                mQuoteLayoutHolder.setText(headerText, cp.getPhraseText());
+                if (isEmpty(cp.getPhraseText())) {
+                    mQuote = new Quote(headerText, cp.getPhraseText(), System.currentTimeMillis());
+                }
+                String text = cp.getPhraseText();
+                mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text);
                 hideCopyControls();
                 mRecyclerView.scrollToPosition(position);
-                mQuote = new Quote(headerText, cp.getPhraseText(), cp.getTimeStamp());
+                mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, cp.getTimeStamp());
+                mFileDescription = cp.getFileDescription();
             }
         });
         mChosenPhrase = cp;
@@ -402,7 +399,7 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         if (mCopyControls.getVisibility() == View.VISIBLE) {
-            unchooseItem(mChosenPhrase);
+            unChooseItem(mChosenPhrase);
             return;
         }
         super.onBackPressed();
@@ -412,7 +409,7 @@ public class ChatActivity extends AppCompatActivity
         mChatAdapter.changeStateOfMessage(id, messageState);
     }
 
-    private void unchooseItem(ChatPhrase cp) {
+    private void unChooseItem(ChatPhrase cp) {
         hideCopyControls();
         mChatAdapter.setItemChosen(false, mChosenPhrase);
         mChosenPhrase = null;
@@ -440,6 +437,7 @@ public class ChatActivity extends AppCompatActivity
                     view.setVisibility(View.GONE);
                     mQuote = null;
                     mFileDescription = null;
+                    unChooseItem(mChosenPhrase);
                 }
             });
         }

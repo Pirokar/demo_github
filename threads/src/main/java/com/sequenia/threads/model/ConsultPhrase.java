@@ -7,20 +7,17 @@ import java.util.UUID;
  */
 public class ConsultPhrase implements ChatPhrase {
     private final String avatarPath;
-    private final String filePath;
     private final long timeStamp;
     private final String phrase;
     private final String messageId;
-    private int downloadingProgress;
     private final String consultName;
     private boolean isAvatarVisible = true;
     private final Quote quote;
     private final FileDescription fileDescription;
     private boolean isChosen;
 
-    public ConsultPhrase(String avatarPath, String filePath, long timeStamp, String phrase, String messageId, String consultName, Quote quote, FileDescription fileDescription) {
+    public ConsultPhrase(String avatarPath, long timeStamp, String phrase, String messageId, String consultName, Quote quote, FileDescription fileDescription) {
         this.avatarPath = avatarPath;
-        this.filePath = filePath;
         this.timeStamp = timeStamp;
         this.phrase = phrase;
         this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
@@ -50,13 +47,6 @@ public class ConsultPhrase implements ChatPhrase {
         return avatarPath;
     }
 
-    public int getDownloadingProgress() {
-        return downloadingProgress;
-    }
-
-    public void setDownloadingProgress(int downloadingProgress) {
-        this.downloadingProgress = downloadingProgress;
-    }
 
     public boolean isAvatarVisible() {
         return isAvatarVisible;
@@ -80,11 +70,9 @@ public class ConsultPhrase implements ChatPhrase {
     public String toString() {
         return "ConsultPhrase{" +
                 "avatarPath='" + avatarPath + '\'' +
-                ", filePath='" + filePath + '\'' +
                 ", timeStamp=" + timeStamp +
                 ", phrase='" + phrase + '\'' +
                 ", messageId='" + messageId + '\'' +
-                ", downloadingProgress=" + downloadingProgress +
                 ", consultName='" + consultName + '\'' +
                 ", isAvatarVisible=" + isAvatarVisible +
                 ", quote=" + quote +
@@ -97,9 +85,6 @@ public class ConsultPhrase implements ChatPhrase {
         return messageId;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
 
     public Quote getQuote() {
         return quote;

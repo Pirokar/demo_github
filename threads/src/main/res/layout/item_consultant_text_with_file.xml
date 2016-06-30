@@ -22,7 +22,7 @@
             android:padding="@dimen/margin_three_fourth">
 
             <LinearLayout
-                android:id="@+id/file_row"
+                android:id="@+id/right_text_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_quarter"

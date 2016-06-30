@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,20 +93,17 @@ public class ChatController extends Fragment {
             return;
         }
         if (upcomingUserMessage == null) return;
-        List<UserPhrase> phrases = convert(upcomingUserMessage);
-        for (UserPhrase up : phrases) {
-            postUserPhrase(up, 1000, new CompletionHandler<UserPhrase>() {
-                @Override
-                public void onComplete(UserPhrase data) {
-                    answerToUser(data, true);
-                }
+        postUserPhrase(convert(upcomingUserMessage), 1000, new CompletionHandler<UserPhrase>() {
+            @Override
+            public void onComplete(UserPhrase data) {
+                answerToUser(data, true);
+            }
 
-                @Override
-                public void onError(Throwable e, String message, UserPhrase data) {
-                    data.setSentState(MessageState.STATE_NOT_SENT);
-                }
-            });
-        }
+            @Override
+            public void onError(Throwable e, String message, UserPhrase data) {
+                data.setSentState(MessageState.STATE_NOT_SENT);
+            }
+        });
     }
 
     private String getSmallConsultAvatarPath() {
@@ -119,13 +115,7 @@ public class ChatController extends Fragment {
     }
 
     private ConsultPhrase convert(final UserPhrase up) {
-        if (up.isWithQuote()) {
-            return new ConsultPhrase(getSmallConsultAvatarPath(), null, System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getCurrentConsultName(), up.getQuote(), null);
-        } else if (up.isWithFile()) {
-            return new ConsultPhrase(getSmallConsultAvatarPath(), up.getFilePath(), System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getCurrentConsultName(), null, up.getFileDescription());
-        } else {
-            return new ConsultPhrase(getSmallConsultAvatarPath(), null, System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getCurrentConsultName(), null, null);
-        }
+        return new ConsultPhrase(getSmallConsultAvatarPath(), System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getCurrentConsultName().split("%%")[0], up.getQuote(), up.getFileDescription());
     }
 
     private void addMessage(ChatItem cm) {
@@ -290,35 +280,9 @@ public class ChatController extends Fragment {
         mDatabaseHolder.setStateOfUserPhrase(up.getId(), up.getSentState());
     }
 
-    private List<UserPhrase> convert(UpcomingUserMessage message) {
-        List<UserPhrase> list = new ArrayList<>();
-        if (message == null) return list;
-        UserPhrase up;
-        if (message.getAttachments() != null && message.getAttachments().size() > 0) {
-            up = new UserPhrase(
-                    UUID.randomUUID().toString()
-                    , message.getText()
-                    , message.getQuote()
-                    , System.currentTimeMillis()
-                    , message.getFileDescription()
-                    , message.getAttachments().get(0)
-            );
-        } else {
-            up = new UserPhrase(
-                    UUID.randomUUID().toString()
-                    , message.getText()
-                    , message.getQuote()
-                    , System.currentTimeMillis()
-                    , message.getFileDescription()
-                    , null);
-        }
-        list.add(up);
-        if (message.getAttachments() != null && message.getAttachments().size() > 1) {
-            for (String str : message.getAttachments()) {
-                up = new UserPhrase(UUID.randomUUID().toString(), null, null, System.currentTimeMillis(), null, str);
-                list.add(up);
-            }
-        }
-        return list;
+    private UserPhrase convert(UpcomingUserMessage message) {
+        if (message == null)
+            return new UserPhrase(UUID.randomUUID().toString(), "", null, System.currentTimeMillis(), null);
+        return new UserPhrase(UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription());
     }
 }

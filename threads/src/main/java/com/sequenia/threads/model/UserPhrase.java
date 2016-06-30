@@ -14,18 +14,16 @@ public class UserPhrase implements ChatPhrase {
     private boolean isWithQuote;
     private final long phraseTimeStamp;
     private final FileDescription fileDescription;
-    private final String filePath;
     private boolean isChosen;
 
 
-    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, String filePath) {
+    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
         this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
         this.phrase = phrase;
-        this.withFile = filePath != null;
+        this.withFile = fileDescription != null;
         this.mQuote = mQuote;
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
-        this.filePath = filePath;
         sentState = MessageState.STATE_SENT;
     }
 
@@ -38,9 +36,6 @@ public class UserPhrase implements ChatPhrase {
         return mQuote;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
 
     public String getMessageId() {
         return messageId;
@@ -99,7 +94,6 @@ public class UserPhrase implements ChatPhrase {
                 ", isWithQuote=" + isWithQuote +
                 ", phraseTimeStamp=" + phraseTimeStamp +
                 ", fileDescription=" + fileDescription +
-                ", filePath='" + filePath + '\'' +
                 ", isChosen=" + isChosen +
                 '}';
     }

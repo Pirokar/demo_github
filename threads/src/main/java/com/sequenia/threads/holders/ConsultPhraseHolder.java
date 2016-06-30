@@ -2,7 +2,6 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,7 @@ import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -29,29 +29,34 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "ConsultPhraseHolder ";
     private View fileRow;
     private CircularProgressButton mCircularProgressButton;
-    private TextView fileToUserHeader;
-    private TextView mFileSpecs;
-    private TextView mFileTimeStamp;
+    private TextView rightTextHeader;
+    private TextView rightTextDescr;
+    private TextView rightTextFileStamp;
     private TextView mTimeStampTextView;
     private TextView mPhraseTextView;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
-    private SimpleDateFormat timesSampSdf = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat quoteSdf;
+    private SimpleDateFormat timeStampSdf = new SimpleDateFormat("HH:mm");
     public ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterViewSecond;
 
     public ConsultPhraseHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
-        fileRow = itemView.findViewById(R.id.file_row);
+        fileRow = itemView.findViewById(R.id.right_text_row);
         mCircularProgressButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
-        fileToUserHeader = (TextView) itemView.findViewById(R.id.to);
-        mFileSpecs = (TextView) itemView.findViewById(R.id.file_specs);
-        mFileTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
+        rightTextHeader = (TextView) itemView.findViewById(R.id.to);
+        rightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
+        rightTextFileStamp = (TextView) itemView.findViewById(R.id.send_at);
         mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
+        if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+            quoteSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
+        } else {
+            quoteSdf = new SimpleDateFormat("dd MMMM yyyy");
+        }
     }
 
     public void onBind(String consultPhrase
@@ -61,10 +66,9 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             , FileDescription fileDescription
             , @Nullable View.OnClickListener onAttachClickListener
             , View.OnLongClickListener onRowLongClickListener
-            , int progress
             , boolean isChosen) {
         itemView.setOnLongClickListener(onRowLongClickListener);
-        mTimeStampTextView.setText(timesSampSdf.format(new Date(timeStamp)));
+        mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnLongClickListener(onRowLongClickListener);
@@ -79,21 +83,22 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
-            fileToUserHeader.setText(quote.getHeader());
-            mFileSpecs.setText(quote.getText());
-            mFileTimeStamp.setText(itemView.getContext().getString(R.string.send_at) + " " + sdf.format(new Date(quote.getTimeStamp())));
-        } else if (fileDescription != null) {
+            rightTextHeader.setText(quote.getHeader());
+            rightTextDescr.setText(quote.getText());
+            rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
+        }
+        if (fileDescription != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.VISIBLE);
             if (onAttachClickListener != null) {
                 mCircularProgressButton.setOnClickListener(onAttachClickListener);
             }
-            fileToUserHeader.setText(fileDescription.getHeader());
-            mFileSpecs.setText(fileDescription.getText());
-            mFileTimeStamp.setText(itemView.getContext().getString(R.string.send_at) + " " + sdf.format(new Date(fileDescription.getTimeStamp())));
-            mCircularProgressButton.setProgress(progress);
-
-        } else {
+            rightTextHeader.setText(quote == null ? "" : quote.getHeader());
+            rightTextDescr.setText(fileDescription.getPath());
+            rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
+            mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
+        }
+        if (fileDescription == null && quote == null) {
             fileRow.setVisibility(View.GONE);
         }
         if (isAvatarVisible) {
@@ -126,9 +131,5 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
-    }
-
-    public void setDownloadProgress(int progress) {
-        mCircularProgressButton.setProgress(progress);
     }
 }

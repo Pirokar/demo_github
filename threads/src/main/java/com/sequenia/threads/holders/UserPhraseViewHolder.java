@@ -2,6 +2,7 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +30,10 @@ import java.util.Locale;
 public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "UserPhraseViewHolder ";
     private TextView mPhraseTextView;
-    private TableRow mFileRow;
-    private TextView mFileDescrTextView;
+    private TableRow mRightTextRow;
+    private TextView mRightTextDescr;
+    private TextView mRightTextHeader;
+    private TextView mRightTextTimeStamp;
     private TextView mTimeStampTextView;
     private ImageButton mFileImageButton;
     private SimpleDateFormat sdf;
@@ -41,14 +44,20 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     public UserPhraseViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
         mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
-        mFileRow = (TableRow) itemView.findViewById(R.id.file_row);
-        mFileDescrTextView = (TextView) itemView.findViewById(R.id.text_description);
+        mRightTextRow = (TableRow) itemView.findViewById(R.id.right_text_row);
+        mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mFileImageButton = (ImageButton) itemView.findViewById(R.id.file);
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
-        fileSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
+        if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+            fileSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
+        } else {
+            fileSdf = new SimpleDateFormat("dd MMMM yyyy");
+        }
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
+        mRightTextHeader = (TextView) itemView.findViewById(R.id.to);
+        mRightTextTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
     }
 
     public void onBind(String phrase
@@ -69,24 +78,28 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(phrase);
         }
-
         if (quote != null) {
-            mFileRow.setVisibility(View.VISIBLE);
+            mRightTextRow.setVisibility(View.VISIBLE);
+            mRightTextRow.setVisibility(View.VISIBLE);
             mFileImageButton.setVisibility(View.GONE);
-            String text = quote.getHeader() + "\n" + quote.getText() + "\n" + fileSdf.format(new Date(quote.getTimeStamp()));
-            mFileDescrTextView.setText(text);
+            mRightTextDescr.setText(quote.getText());
+            mRightTextHeader.setText(quote.getHeader());
+            mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.sent_at) + " " + fileSdf.format(quote.getTimeStamp()));
             mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
-        } else if (fileDescription != null) {
-            mFileRow.setVisibility(View.VISIBLE);
+        }
+        if (fileDescription != null) {
+            mRightTextRow.setVisibility(View.VISIBLE);
             mFileImageButton.setVisibility(View.VISIBLE);
-            String text = fileDescription.getHeader() + "\n" + fileDescription.getText() + "\n" + fileSdf.format(new Date(fileDescription.getTimeStamp()));
-            mFileDescrTextView.setText(text);
+            mRightTextDescr.setText(fileDescription.getPath());
+            mRightTextHeader.setText(quote==null?fileDescription.getHeader():quote.getHeader());
+            mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.sent_at) + " " + fileSdf.format(fileDescription.getTimeStamp()));
             if (fileClickListener != null) {
                 mFileImageButton.setOnClickListener(fileClickListener);
             }
             mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
-        } else {
-            mFileRow.setVisibility(View.GONE);
+        }
+        if (fileDescription==null && quote == null){
+            mRightTextRow.setVisibility(View.GONE);
         }
         mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override

@@ -9,13 +9,11 @@ public class UpcomingUserMessage {
     private final String text;
     private final Quote quote;
     private final FileDescription fileDescription;
-    private final List<String> attachments;
 
-    public UpcomingUserMessage(String text, Quote quote, FileDescription fileDescription, List<String> attachments) {
+    public UpcomingUserMessage(String text, Quote quote, FileDescription fileDescription) {
         this.text = text;
         this.quote = quote;
         this.fileDescription = fileDescription;
-        this.attachments = attachments;
     }
 
     public String getText() {
@@ -31,17 +29,12 @@ public class UpcomingUserMessage {
         return quote;
     }
 
-    public List<String> getAttachments() {
-        return attachments;
-    }
-
     @Override
     public String toString() {
         return "UpcomingUserMessage{" +
                 "text='" + text + '\'' +
                 ", quote=" + quote +
                 ", fileDescription=" + fileDescription +
-                ", attachments=" + attachments +
                 '}';
     }
 }

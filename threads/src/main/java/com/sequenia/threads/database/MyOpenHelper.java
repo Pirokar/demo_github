@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
@@ -33,7 +32,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
     static final String COLUMN_MESSAGE_TYPE = "COLUMN_MESSAGE_TYPE";
     static final String COLUMN_NAME = "COLUMN_NAME";
     static final String COLUMN_AVATAR_PATH = "COLUMN_AVATAR_PATH";
-    static final String COLUMN_FILE_PATH = "COLUMN_FILE_PATH";
     static final String COLUMN_MESSAGE_ID = "COLUMN_MESSAGE_ID";
     static final String COLUMN_MESSAGE_SEND_STATE = "COLUMN_MESSAGE_SEND_STATE";
     static final String COLUMN_SEX = "COLUMN_SEX";
@@ -47,7 +45,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     static final String TABLE_FILE_DESCRIPTION = "TABLE_FILE_DESCRIPTION";
     static final String COLUMN_FD_HEADER = "COLUMN_FD_HEADER";
-    static final String COLUMN_FD_BODY = "COLUMN_FD_BODY";
+    static final String COLUMN_FD_PATH = "COLUMN_FD_PATH";
+    static final String COLUMN_FD_DOWNLOAD_PROGRESS = "COLUMN_FD_DOWNLOAD_PROGRESS";
     static final String COLUMN_FD_TIMESTAMP = "COLUMN_FD_TIMESTAMP";
     static final String COLUMN_FD_MESSAGE_ID_EXT = "COLUMN_FD_MESSAGE_ID_EXT";
 
@@ -64,13 +63,12 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         " %s integer, " +//item type
                         " %s text, " +//name
                         " %s text, " +//avatar path
-                        " %s text, " +//file path
                         " %s text, " + // message id
                         "%s integer, " + //sex
                         " %s integer)",//message sent state
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
-                COLUMN_FILE_PATH, COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE));
+                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE));
         db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_QUOTE
                         " %s text, " +//header
                         " %s text, " +//body
@@ -81,8 +79,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         " %s text, " +//header
                         " %s text, " +//body
                         " %s integer, " +//timestamp
-                        " %s integer)" // message id
-                , TABLE_FILE_DESCRIPTION, COLUMN_FD_HEADER, COLUMN_FD_BODY, COLUMN_FD_TIMESTAMP, COLUMN_FD_MESSAGE_ID_EXT));
+                        " %s integer," +// message id
+                        " %s integer)" // download progress
+                , TABLE_FILE_DESCRIPTION, COLUMN_FD_HEADER, COLUMN_FD_PATH, COLUMN_FD_TIMESTAMP, COLUMN_FD_MESSAGE_ID_EXT, COLUMN_FD_DOWNLOAD_PROGRESS));
     }
 
     @Override
@@ -99,10 +98,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
             UserPhrase userPhrase = (UserPhrase) phrase;
             cv.put(COLUMN_MESSAGE_ID, userPhrase.getMessageId());
             cv.put(COLUMN_PHRASE, userPhrase.getPhrase());
-            Log.e(TAG, "");
             cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().getType());
             cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
-            cv.put(COLUMN_FILE_PATH, userPhrase.getFilePath());
             cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.type);
             if (!isDup) {
                 getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
@@ -113,8 +110,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 cv.clear();
                 cv.put(COLUMN_FD_MESSAGE_ID_EXT, userPhrase.getMessageId());
                 cv.put(COLUMN_FD_HEADER, userPhrase.getFileDescription().getHeader());
-                cv.put(COLUMN_FD_BODY, userPhrase.getFileDescription().getText());
+                cv.put(COLUMN_FD_PATH, userPhrase.getFileDescription().getPath());
                 cv.put(COLUMN_FD_TIMESTAMP, userPhrase.getFileDescription().getTimeStamp());
+                cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, userPhrase.getFileDescription().getDownloadProgress());
                 getWritableDatabase().insert(TABLE_FILE_DESCRIPTION, null, cv);
             }
             if (userPhrase.getQuote() != null) {
@@ -130,9 +128,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_MESSAGE_ID, consultPhrase.getMessageId());
             cv.put(COLUMN_PHRASE, consultPhrase.getPhrase());
             cv.put(COLUMN_TIMESTAMP, consultPhrase.getTimeStamp());
-            cv.put(COLUMN_FILE_PATH, consultPhrase.getFilePath());
             cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_PHRASE.type);
-            cv.put(COLUMN_AVATAR_PATH,((ConsultPhrase) phrase).getAvatarPath());
+            cv.put(COLUMN_AVATAR_PATH, ((ConsultPhrase) phrase).getAvatarPath());
             if (!isDup) {
                 getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             } else {
@@ -142,7 +139,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 cv.clear();
                 cv.put(COLUMN_FD_MESSAGE_ID_EXT, consultPhrase.getMessageId());
                 cv.put(COLUMN_FD_HEADER, consultPhrase.getFileDescription().getHeader());
-                cv.put(COLUMN_FD_BODY, consultPhrase.getFileDescription().getText());
+                cv.put(COLUMN_FD_PATH, consultPhrase.getFileDescription().getPath());
                 cv.put(COLUMN_FD_TIMESTAMP, consultPhrase.getFileDescription().getTimeStamp());
                 getWritableDatabase().insert(TABLE_FILE_DESCRIPTION, null, cv);
             }
@@ -189,7 +186,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         final int INDEX_NAME = c.getColumnIndex(COLUMN_NAME);
         final int INDEX_AVATAR_PATH = c.getColumnIndex(COLUMN_AVATAR_PATH);
         final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
-        final int INDEX_FILEPATH = c.getColumnIndex(COLUMN_FILE_PATH);
         final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
         final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
@@ -201,30 +197,26 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 ConsultConnected cc = new ConsultConnected(name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath);
                 items.add(cc);
             } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
-                String filePath = c.isNull(INDEX_FILEPATH) ? null : c.getString(INDEX_FILEPATH);
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
                 String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
 
                 ConsultPhrase cp = new ConsultPhrase(avatarPath,
-                        filePath,
                         c.getLong(INDEX_TIMESTAMP),
                         phrase,
                         c.getString(INDEX_MESSAGE_ID),
                         name,
-                        getQuote(c.getLong(INDEX_MESSAGE_ID)),
-                        getFileDescription(c.getLong(INDEX_MESSAGE_ID)));
+                        getQuote(c.getString(INDEX_MESSAGE_ID)),
+                        getFileDescription(c.getString(INDEX_MESSAGE_ID)));
                 items.add(cp);
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
-                String filePath = c.isNull(INDEX_FILEPATH) ? null : c.getString(INDEX_FILEPATH);
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
                 UserPhrase up = new UserPhrase(
                         c.getString(INDEX_MESSAGE_ID),
                         phrase,
-                        getQuote(c.getLong(INDEX_MESSAGE_ID)),
+                        getQuote(c.getString(INDEX_MESSAGE_ID)),
                         c.getLong(INDEX_TIMESTAMP),
-                        getFileDescription(c.getLong(INDEX_MESSAGE_ID)),
-                        filePath);
+                        getFileDescription(c.getString(INDEX_MESSAGE_ID)));
                 int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
                 MessageState ms = sentState == 1 ? MessageState.STATE_SENT : sentState == 2 ? MessageState.STATE_SENT_AND_SERVER_RECEIVED : MessageState.STATE_NOT_SENT;
                 up.setSentState(ms);
@@ -235,8 +227,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return items;
     }
 
-    private Quote getQuote(long messageId) {
-        Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_QUOTE + " where " + COLUMN_QUOTE_MESSAGE_ID_EXT + " = " + messageId, null);
+    private Quote getQuote(String messageId) {
+        String query = String.format(Locale.US, "select * from %s where %s = ?", TABLE_QUOTE, COLUMN_QUOTE_MESSAGE_ID_EXT);
+        Cursor c = getWritableDatabase().rawQuery(query, new String[]{messageId});
         if (!c.moveToFirst()) {
             c.close();
             return null;
@@ -248,16 +241,18 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return q;
     }
 
-    private FileDescription getFileDescription(long messageId) {
-        String query = String.format(Locale.US, "select * from %s where %s = %s", TABLE_FILE_DESCRIPTION, COLUMN_FD_MESSAGE_ID_EXT, String.valueOf(messageId));
-        Cursor c = getWritableDatabase().rawQuery(query, null);
+    private FileDescription getFileDescription(String messageId) {
+        String query = String.format(Locale.US, "select * from %s where %s = ?", TABLE_FILE_DESCRIPTION, COLUMN_FD_MESSAGE_ID_EXT);
+        Cursor c = getWritableDatabase().rawQuery(query, new String[]{messageId});
         if (!c.moveToFirst()) {
             c.close();
             return null;
         }
         String header = c.isNull(c.getColumnIndex(COLUMN_FD_HEADER)) ? null : c.getString(c.getColumnIndex(COLUMN_FD_HEADER));
-        String body = c.isNull(c.getColumnIndex(COLUMN_FD_BODY)) ? null : c.getString(c.getColumnIndex(COLUMN_FD_BODY));
-        FileDescription fd = new FileDescription(header, body, c.getLong(c.getColumnIndex(COLUMN_FD_TIMESTAMP)));
+        String path = c.isNull(c.getColumnIndex(COLUMN_FD_PATH)) ? null : c.getString(c.getColumnIndex(COLUMN_FD_PATH));
+        Integer progress = c.isNull(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PROGRESS)) ? 0 : c.getInt(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PROGRESS));
+        FileDescription fd = new FileDescription(header, path, c.getLong(c.getColumnIndex(COLUMN_FD_TIMESTAMP)));
+        fd.setDownloadProgress(progress);
         c.close();
         return fd;
     }
@@ -291,6 +286,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         TYPE_CONSULT_PHRASE(2),
         TYPE_USER_PHRASE(3);
         int type;
+
         MessageTypes(int type) {
             this.type = type;
         }
