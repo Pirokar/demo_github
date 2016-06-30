@@ -1,2 +1,0 @@
-configurations.maybeCreate("default")
-artifacts.add("default", file('push-api-release-1.0-28-2016-06-20-16-36.aar'))

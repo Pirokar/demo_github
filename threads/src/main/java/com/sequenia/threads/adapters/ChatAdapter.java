@@ -1,7 +1,10 @@
 package com.sequenia.threads.adapters;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +13,8 @@ import com.sequenia.threads.holders.ConsultConnectedViewHolder;
 import com.sequenia.threads.holders.ConsultIsTypingViewHolder;
 import com.sequenia.threads.holders.ConsultPhraseHolder;
 import com.sequenia.threads.holders.DateViewHolder;
+import com.sequenia.threads.holders.ImageFromConsultViewHolder;
+import com.sequenia.threads.holders.ImageFromUserViewHolder;
 import com.sequenia.threads.holders.SearchingConsultViewHolder;
 import com.sequenia.threads.holders.SpaceViewHolder;
 import com.sequenia.threads.holders.UserPhraseViewHolder;
@@ -43,6 +48,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_CONSULT_PHRASE = 5;
     private static final int TYPE_USER_PHRASE = 6;
     private static final int TYPE_FREE_SPACE = 7;
+    private static final int TYPE_IMAGE_FROM_CONSULT = 8;
+    private static final int TYPE_IMAGE_FROM_USER = 9;
     private Calendar prev = Calendar.getInstance();
     private Calendar next = Calendar.getInstance();
 
@@ -72,6 +79,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_CONSULT_PHRASE) return new ConsultPhraseHolder(parent);
         if (viewType == TYPE_USER_PHRASE) return new UserPhraseViewHolder(parent);
         if (viewType == TYPE_FREE_SPACE) return new SpaceViewHolder(parent);
+        if (viewType == TYPE_IMAGE_FROM_CONSULT) return new ImageFromConsultViewHolder(parent);
+        if (viewType == TYPE_IMAGE_FROM_USER) return new ImageFromUserViewHolder(parent);
         return null;
     }
 
@@ -176,6 +185,62 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, space.getHeight(), ctx.getResources().getDisplayMetrics());
             ((SpaceViewHolder) holder).onBind((int) height);
         }
+        if (holder instanceof ImageFromConsultViewHolder) {
+            final ConsultPhrase cp = (ConsultPhrase) list.get(position);
+            ((ImageFromConsultViewHolder) holder).onBind(
+                    cp.getAvatarPath()
+                    , Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + holder.itemView.getContext().getPackageName() + "/drawable/sample_card").toString()
+                    , cp.getTimeStamp()
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mAdapterInterface != null) {
+                                mAdapterInterface.onFileClick(cp.getFileDescription().getPath());
+                            }
+                        }
+                    }
+                    , new View.OnLongClickListener() {
+
+                        @Override
+                        public boolean onLongClick(View v) {
+                            if (mAdapterInterface != null) {
+                                mAdapterInterface.onPhraseLongClick(cp, position);
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                    , cp.isChosen()
+                    , cp.isAvatarVisible());
+        }
+
+        if (holder instanceof ImageFromUserViewHolder) {
+            final UserPhrase up = (UserPhrase) list.get(position);
+            ((ImageFromUserViewHolder) holder).onBind(
+                    Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + holder.itemView.getContext().getPackageName() + "/drawable/sample_card").toString()
+                    , up.getTimeStamp()
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mAdapterInterface != null) {
+                                mAdapterInterface.onFileClick(up.getFileDescription().getPath());
+                            }
+                        }
+                    }
+                    , new View.OnLongClickListener() {
+
+                        @Override
+                        public boolean onLongClick(View v) {
+                            if (mAdapterInterface != null) {
+                                mAdapterInterface.onPhraseLongClick(up, position);
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                    , up.isChosen());
+        }
+
     }
 
 
@@ -283,12 +348,29 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemViewType(int position) {
         Object o = list.get(position);
-        if (o instanceof ConsultPhrase) return TYPE_CONSULT_PHRASE;
+        if (o instanceof ConsultPhrase) {
+            ConsultPhrase cp = (ConsultPhrase) o;
+            String extension = cp.getFileDescription() == null ? null : cp.getFileDescription().getPath().substring(cp.getFileDescription().getPath().lastIndexOf(".") + 1);
+            if (TextUtils.isEmpty(cp.getPhrase()) && extension != null && (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png"))) {
+                return TYPE_IMAGE_FROM_CONSULT;
+            } else {
+                return TYPE_CONSULT_PHRASE;
+            }
+        }
         if (o instanceof ConsultConnected) return TYPE_CONSULT_CONNECTED;
         if (o instanceof ConsultTyping) return TYPE_CONSULT_TYPING;
         if (o instanceof DateRow) return TYPE_DATE;
         if (o instanceof SearchingConsult) return TYPE_SEARCHING_CONSULT;
-        if (o instanceof UserPhrase) return TYPE_USER_PHRASE;
+
+        if (o instanceof UserPhrase) {
+            UserPhrase up = (UserPhrase) o;
+            String extension = up.getFileDescription() == null ? null : up.getFileDescription().getPath().substring(up.getFileDescription().getPath().lastIndexOf(".") + 1);
+            if (TextUtils.isEmpty(up.getPhrase()) && extension != null && (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png"))) {
+                return TYPE_IMAGE_FROM_USER;
+            } else {
+                return TYPE_USER_PHRASE;
+            }
+        }
         if (o instanceof Space) return TYPE_FREE_SPACE;
         return super.getItemViewType(position);
     }

@@ -12,7 +12,7 @@
     <dimen name="text_big">20sp</dimen>
     <dimen name="text_header">34sp</dimen>
     <dimen name="consultant_margin_right">72dp</dimen>
-    <dimen name="consultant_margin_left">28dp</dimen>
+    <dimen name="consultant_margin_left">36dp</dimen>
     <dimen name="user_margin_left">72dp</dimen>
     <dimen name="user_margin_right">28dp</dimen>
     <dimen name="default_chat_row_height">56dp</dimen>
