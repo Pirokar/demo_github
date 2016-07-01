@@ -11,6 +11,7 @@ import com.sequenia.threads.RussianFormatSymbols;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -22,12 +23,11 @@ public class DateViewHolder extends RecyclerView.ViewHolder {
     public DateViewHolder(ViewGroup parent){
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_date,parent,false));
         mTextView = (TextView) itemView.findViewById(R.id.text);
-        sdf=new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
-    }
-    public DateViewHolder(View itemView) {
-        super(itemView);
-        mTextView = (TextView) itemView.findViewById(R.id.text);
-        sdf=new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
+        if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")){
+            sdf=new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
+        }else {
+            sdf=new SimpleDateFormat("dd MMMM yyyy");
+        }
     }
     public void onBind(long timeStamp){
         mTextView.setText(sdf.format(new Date(timeStamp)));

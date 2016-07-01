@@ -48,12 +48,12 @@
         android:id="@+id/filter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/consult_avatar"
+        android:layout_alignBottom="@+id/image"
         android:background="@color/blue_transparent" />
     <View
         android:id="@+id/filter_second"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_quarter"
+        android:layout_height="24dp"
         android:layout_below="@+id/filter"
         android:background="@color/blue_transparent" />
 </RelativeLayout>

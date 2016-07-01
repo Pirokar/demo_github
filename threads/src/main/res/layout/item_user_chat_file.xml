@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/bubble"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="@dimen/user_margin_left"
+        android:layout_marginRight="@dimen/user_margin_right"
+        android:layout_marginTop="@dimen/margin_quarter"
+        android:background="@drawable/bubble_blue"
+        android:paddingRight="@dimen/margin_three_fourth">
+
+
+        <ImageButton
+            android:id="@+id/file"
+            style="@style/CircularProgressButtonStyle"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="@dimen/margin_three_fourth"
+            android:layout_marginLeft="@dimen/margin_quarter"
+            android:layout_marginRight="@dimen/margin_quarter"
+            android:layout_marginTop="@dimen/margin_half"
+            android:background="@drawable/ic_insert_file_white_36dp" />
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_toRightOf="@+id/file"
+            android:text="счет на оплату.pdf"
+            android:textColor="@android:color/white" />
+
+
+        <TextView
+            android:paddingBottom="@dimen/margin_half"
+            android:id="@+id/file_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginTop="@dimen/margin_quarter"
+            android:layout_toRightOf="@+id/file"
+            android:text="1,2 mb"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:paddingBottom="@dimen/margin_half"
+            android:id="@+id/timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/header"
+            android:layout_below="@+id/header"
+            android:layout_marginTop="@dimen/margin_quarter"
+            android:text="10:19"
+            android:textColor="@android:color/white" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bubble"
+        android:layout_alignParentTop="true"
+        android:background="@color/blue_transparent" />
+
+    <View
+        android:id="@+id/filter_second"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_quarter"
+        android:layout_below="@+id/filter"
+        android:background="@color/blue_transparent" />
+</RelativeLayout>

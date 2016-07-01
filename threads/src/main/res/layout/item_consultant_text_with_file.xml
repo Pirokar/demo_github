@@ -31,12 +31,11 @@
 
                 <com.sequenia.threads.views.CircularProgressButton
                     android:id="@+id/button_download"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="center_vertical"
+
                     app:completed_drawable="@drawable/ic_insert_file_blue_36dp"
                     app:in_progress_label="@drawable/ic_clear_blue_36dp"
-                    app:start_download_label="@drawable/ic_vertical_align_bottom_24dp" />
+                    app:start_download_label="@drawable/ic_vertical_align_bottom_24dp"
+                    style="@style/CircularProgressButtonStyle" />
 
                 <View
                     android:layout_width="1dp"

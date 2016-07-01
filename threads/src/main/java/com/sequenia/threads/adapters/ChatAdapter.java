@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sequenia.threads.holders.ConsultConnectedViewHolder;
+import com.sequenia.threads.holders.ConsultFileViewHolder;
 import com.sequenia.threads.holders.ConsultIsTypingViewHolder;
 import com.sequenia.threads.holders.ConsultPhraseHolder;
 import com.sequenia.threads.holders.DateViewHolder;
@@ -17,6 +18,7 @@ import com.sequenia.threads.holders.ImageFromConsultViewHolder;
 import com.sequenia.threads.holders.ImageFromUserViewHolder;
 import com.sequenia.threads.holders.SearchingConsultViewHolder;
 import com.sequenia.threads.holders.SpaceViewHolder;
+import com.sequenia.threads.holders.UserFileViewHolder;
 import com.sequenia.threads.holders.UserPhraseViewHolder;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
@@ -50,6 +52,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_FREE_SPACE = 7;
     private static final int TYPE_IMAGE_FROM_CONSULT = 8;
     private static final int TYPE_IMAGE_FROM_USER = 9;
+    private static final int TYPE_FILE_FROM_USER = 10;
+    private static final int TYPE_FILE_FROM_CONSULT = 11;
     private Calendar prev = Calendar.getInstance();
     private Calendar next = Calendar.getInstance();
 
@@ -81,11 +85,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_FREE_SPACE) return new SpaceViewHolder(parent);
         if (viewType == TYPE_IMAGE_FROM_CONSULT) return new ImageFromConsultViewHolder(parent);
         if (viewType == TYPE_IMAGE_FROM_USER) return new ImageFromUserViewHolder(parent);
+        if (viewType == TYPE_FILE_FROM_CONSULT) return new ConsultFileViewHolder(parent);
+        if (viewType == TYPE_FILE_FROM_USER) return new UserFileViewHolder(parent);
         return null;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ConsultConnectedViewHolder) {
             ConsultConnected cc = (ConsultConnected) list.get(position);
             ((ConsultConnectedViewHolder) holder).onBind(cc.getName(), cc.getTimeStamp(), cc.getSex());
@@ -107,6 +113,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             , new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
                                     if (mAdapterInterface != null) {
                                         mAdapterInterface.onFileClick(cp.getFileDescription().getPath());
                                     }
@@ -117,7 +124,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 @Override
                                 public boolean onLongClick(View v) {
                                     if (mAdapterInterface != null) {
-                                        mAdapterInterface.onPhraseLongClick(cp, position);
+                                        ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
+                                        mAdapterInterface.onPhraseLongClick(cp, holder.getAdapterPosition());
                                         return true;
                                     }
                                     return false;
@@ -144,6 +152,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
                             if (mAdapterInterface != null && (up.getFileDescription() != null)) {
                                 mAdapterInterface.onFileClick(up.getFileDescription().getPath());
                             }
@@ -152,8 +161,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
                             if (mAdapterInterface != null) {
-                                mAdapterInterface.onUserPhraseClick(up, position);
+                                mAdapterInterface.onUserPhraseClick(up, holder.getAdapterPosition());
                             }
                         }
                     }
@@ -161,7 +171,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         @Override
                         public boolean onLongClick(View v) {
                             if (mAdapterInterface != null) {
-                                mAdapterInterface.onPhraseLongClick(up, position);
+                                UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onPhraseLongClick(up, holder.getAdapterPosition());
                                 return true;
                             }
                             return false;
@@ -195,6 +206,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         @Override
                         public void onClick(View v) {
                             if (mAdapterInterface != null) {
+                                final ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
                                 mAdapterInterface.onFileClick(cp.getFileDescription().getPath());
                             }
                         }
@@ -204,7 +216,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         @Override
                         public boolean onLongClick(View v) {
                             if (mAdapterInterface != null) {
-                                mAdapterInterface.onPhraseLongClick(cp, position);
+                                final ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onPhraseLongClick(cp, holder.getAdapterPosition());
                                 return true;
                             }
                             return false;
@@ -223,6 +236,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         @Override
                         public void onClick(View v) {
                             if (mAdapterInterface != null) {
+                                UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onUserPhraseClick(up, holder.getAdapterPosition());
+                            }
+                        }
+                    }
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mAdapterInterface != null) {
+                                UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
                                 mAdapterInterface.onFileClick(up.getFileDescription().getPath());
                             }
                         }
@@ -232,13 +255,85 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         @Override
                         public boolean onLongClick(View v) {
                             if (mAdapterInterface != null) {
-                                mAdapterInterface.onPhraseLongClick(up, position);
+                                UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onPhraseLongClick(up, holder.getAdapterPosition());
                                 return true;
                             }
                             return false;
                         }
                     }
-                    , up.isChosen());
+                    , up.isChosen()
+                    , up.getSentState());
+        }
+
+        if (holder instanceof UserFileViewHolder) {
+            final UserPhrase up = (UserPhrase) list.get(position);
+            ((UserFileViewHolder) holder).onBind(
+                    up.getTimeStamp()
+                    , "1,2 mb"
+                    , up.getFileDescription()
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mAdapterInterface != null) {
+                                UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onFileClick(up.getFileDescription().getPath());
+                            }
+                        }
+                    }, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mAdapterInterface != null) {
+                                mAdapterInterface.onUserPhraseClick((UserPhrase) list.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+                            }
+                        }
+                    }
+                    , new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            if (mAdapterInterface != null) {
+                                UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onPhraseLongClick(up, holder.getAdapterPosition());
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                    , up.isChosen()
+                    , up.getSentState()
+            );
+        }
+
+        if (holder instanceof ConsultFileViewHolder) {
+            final ConsultPhrase cp = (ConsultPhrase) list.get(position);
+            ((ConsultFileViewHolder) holder).onBind(
+                    cp.getTimeStamp()
+                    , "1,2 mb"
+                    , cp.getFileDescription()
+                    , cp.getAvatarPath()
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
+                            if (mAdapterInterface != null) {
+                                mAdapterInterface.onFileClick(cp.getFileDescription().getPath());
+                            }
+                        }
+                    }
+                    , new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            if (mAdapterInterface != null) {
+                                ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onPhraseLongClick(cp, holder.getAdapterPosition());
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                    , cp.isAvatarVisible()
+                    , cp.isChosen()
+            );
         }
 
     }
@@ -353,6 +448,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             String extension = cp.getFileDescription() == null ? null : cp.getFileDescription().getPath().substring(cp.getFileDescription().getPath().lastIndexOf(".") + 1);
             if (TextUtils.isEmpty(cp.getPhrase()) && extension != null && (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png"))) {
                 return TYPE_IMAGE_FROM_CONSULT;
+            } else if (TextUtils.isEmpty(cp.getPhrase()) && extension != null && (extension.equalsIgnoreCase("pdf"))) {
+                return TYPE_FILE_FROM_CONSULT;
             } else {
                 return TYPE_CONSULT_PHRASE;
             }
@@ -367,6 +464,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             String extension = up.getFileDescription() == null ? null : up.getFileDescription().getPath().substring(up.getFileDescription().getPath().lastIndexOf(".") + 1);
             if (TextUtils.isEmpty(up.getPhrase()) && extension != null && (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png"))) {
                 return TYPE_IMAGE_FROM_USER;
+            } else if (TextUtils.isEmpty(up.getPhrase()) && extension != null && (extension.equalsIgnoreCase("pdf"))) {
+                return TYPE_FILE_FROM_USER;
             } else {
                 return TYPE_USER_PHRASE;
             }
@@ -402,8 +501,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 ConsultPhrase cp = (ConsultPhrase) list.get(i);
                 if (cp.getFileDescription() != null && cp.getFileDescription().getPath().equals(path)) {
                     cp.getFileDescription().setDownloadProgress(progress);
+                    notifyItemChanged(i);
                 }
-                notifyItemChanged(i);
             }
         }
     }
