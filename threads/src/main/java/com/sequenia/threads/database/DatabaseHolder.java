@@ -4,8 +4,9 @@ import android.content.Context;
 
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
-import com.sequenia.threads.model.ConsultConnected;
 import com.sequenia.threads.model.CompletionHandler;
+import com.sequenia.threads.model.ConsultConnected;
+import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 
 import java.util.List;
@@ -67,7 +68,7 @@ public class DatabaseHolder {
         mMyOpenHelper.setUserPhraseState(messageId, messageState);
     }
 
-   public int getMessagesCount() {
+    public int getMessagesCount() {
         return mMyOpenHelper.getMessagesCount();
     }
 
@@ -80,10 +81,19 @@ public class DatabaseHolder {
         });
     }
 
-    public void cleanDatabase(){
+    public void cleanDatabase() {
         mMyOpenHelper.cleanFD();
         mMyOpenHelper.cleanMessagesTable();
         mMyOpenHelper.cleanQuotes();
+    }
+
+    public void getFilesAsync(final CompletionHandler<List<FileDescription>> handler) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                handler.onComplete(mMyOpenHelper.getFileDescription());
+            }
+        });
     }
 
 }

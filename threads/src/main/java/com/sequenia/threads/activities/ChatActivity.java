@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.activities;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -19,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -26,8 +27,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.BottomGalleryAdapter;
 import com.sequenia.threads.adapters.ChatAdapter;
+import com.sequenia.threads.controllers.ChatController;
 import com.sequenia.threads.fragments.NoConnectionDialogFragment;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
@@ -81,7 +84,7 @@ public class ChatActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_activity);
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
-        if (null != t) setUpToolbar(t);
+        if (null != t) initToolbar(t);
         initViews();
         if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {//mb, someday, we will support orientation change
             mChatController = (ChatController) getFragmentManager().findFragmentByTag(ChatController.TAG);
@@ -105,7 +108,7 @@ public class ChatActivity extends AppCompatActivity
     }
 
     //initialy  sets title,click listeners on toolbar.
-    private void setUpToolbar(@NonNull Toolbar t) {
+    private void initToolbar(@NonNull Toolbar t) {
         t.setTitle("");
         setSupportActionBar(t);
         t.setNavigationOnClickListener(new View.OnClickListener() {
@@ -234,6 +237,22 @@ public class ChatActivity extends AppCompatActivity
         }
         mTitleView = (TextView) findViewById(R.id.title);
         mSubTitleView = (TextView) findViewById(R.id.subtitle);
+
+        mTitleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mChatController.isConsultFound())
+                    onConsultClick();
+            }
+        });
+
+        mSubTitleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mChatController.isConsultFound())
+                    onConsultClick();
+            }
+        });
 
         mCopyControls = findViewById(R.id.copy_controls);
         mInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -465,6 +484,11 @@ public class ChatActivity extends AppCompatActivity
         mChatAdapter.setItemChosen(true, cp);
     }
 
+    @Override
+    public void onConsultClick() {
+        startActivity(ConsultActivity.getStartIntent(this, null, null, null));
+    }
+
     private void hideCopyControls() {
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         mToolbar.setBackgroundColor(getResources().getColor(R.color.green_light));
@@ -582,5 +606,15 @@ public class ChatActivity extends AppCompatActivity
         mInputEditText.clearFocus();
         isConsultTyping = false;
         isSearchingConsult = false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.files_and_media) {
+            startActivity(FilesActivity.getStartIntetent(this));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

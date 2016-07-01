@@ -3,7 +3,7 @@ package com.sequenia.threads.model;
 /**
  * Created by yuri on 10.06.2016.
  */
-public class DateRow implements ChatItem {
+public class DateRow implements ChatItem, MediaAndFileItem {
     private final long date;
 
     @Override

@@ -19,4 +19,8 @@
     <string name="file_pdf">Текстовый файл</string>
     <string name="image">изображение</string>
     <string name="send">Отправить</string>
+    <string name="search_messages">Поиск сообщений</string>
+    <string name="media">Медиа и файлы</string>
+    <string name="recently">Недавно</string>
+    <string name="yesterday">Вчера</string>
 </resources>

@@ -4,13 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 
-import com.pushserver.android.PushController;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
-import com.sequenia.threads.ChatActivity;
+import com.sequenia.threads.activities.ChatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity ";

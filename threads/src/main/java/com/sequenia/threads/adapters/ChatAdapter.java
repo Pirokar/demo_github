@@ -94,7 +94,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ConsultConnectedViewHolder) {
             ConsultConnected cc = (ConsultConnected) list.get(position);
-            ((ConsultConnectedViewHolder) holder).onBind(cc.getName(), cc.getTimeStamp(), cc.getSex());
+            ((ConsultConnectedViewHolder) holder).onBind(
+                    cc.getName()
+                    , cc.getTimeStamp()
+                    , cc.getSex()
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != mAdapterInterface){
+                                mAdapterInterface.onConsultClick();
+                            }
+                        }
+                    });
             picasso
                     .load(cc.getAvatarPath())
                     .fit()
@@ -530,5 +541,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onPhraseLongClick(ChatPhrase chatPhrase, int position);
 
         void onUserPhraseClick(UserPhrase userPhrase, int position);
+
+        void onConsultClick();
     }
 }

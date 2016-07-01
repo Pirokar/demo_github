@@ -8,9 +8,20 @@
         <item name="android:windowBackground">@color/white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/menuItemTheme</item>
+
     </style>
+
+    <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimaryDark">#000000</item>
+        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:itemTextAppearance">@style/menuItemTheme</item>
+
+    </style>
+
     <style name="menuItemTheme">
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">@color/blue</item>
     </style>
 
     <style name="TimestampStyle">

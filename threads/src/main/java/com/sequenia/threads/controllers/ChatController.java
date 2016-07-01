@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.controllers;
 
 import android.accounts.NetworkErrorException;
 import android.app.Fragment;
@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.database.DatabaseHolder;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.CompletionHandler;
@@ -79,8 +80,13 @@ public class ChatController extends Fragment {
         }
     }
 
+    public boolean isConsultFound() {
+        return isConsultFound;
+    }
+
     public void unbindActivity() {
         activity = null;
+        appContext = null;
     }
 
     @Nullable

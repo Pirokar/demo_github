@@ -257,6 +257,31 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return fd;
     }
 
+    List<FileDescription> getFileDescription() {
+        String query = String.format(Locale.US, "select * from %s order by %s desc", TABLE_FILE_DESCRIPTION,COLUMN_FD_TIMESTAMP);
+        List<FileDescription> list = new ArrayList<>();
+        Cursor c = getWritableDatabase().rawQuery(query, new String[]{});
+        if (!c.moveToFirst()) {
+            c.close();
+            return list;
+        }
+        int fdHeaderIndex = c.getColumnIndex(COLUMN_FD_HEADER);
+        int fdPAthIndex = c.getColumnIndex(COLUMN_FD_PATH);
+        int fdProgress = c.getColumnIndex(COLUMN_FD_DOWNLOAD_PROGRESS);
+        int fdTimeStamp = c.getColumnIndex(COLUMN_FD_TIMESTAMP);
+
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            String header = c.isNull(fdHeaderIndex) ? null : c.getString(fdHeaderIndex);
+            String path = c.isNull(fdPAthIndex) ? null : c.getString(fdPAthIndex);
+            Integer progress = c.isNull(fdProgress) ? 0 : c.getInt(fdProgress);
+            FileDescription fd = new FileDescription(header, path, c.getLong(fdTimeStamp));
+            fd.setDownloadProgress(progress);
+            list.add(fd);
+        }
+        c.close();
+        return list;
+    }
+
     int getMessagesCount() {
         Cursor c = getWritableDatabase().rawQuery(String.format(Locale.US, "select count(%s) from %s", COLUMN_TABLE_ID, TABLE_MESSAGES), null);
         if (c.getCount() == 0) {

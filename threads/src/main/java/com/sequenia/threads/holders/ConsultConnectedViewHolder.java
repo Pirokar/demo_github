@@ -36,7 +36,10 @@ public class ConsultConnectedViewHolder extends RecyclerView.ViewHolder {
         connectedMessage = (TextView) itemView.findViewById(R.id.text);
     }
 
-    public void onBind(String consultName, long date, boolean sex) {
+    public void onBind(String consultName
+            , long date
+            , boolean sex
+            , View.OnClickListener listener) {
         headerTextView.setText(consultName);
         String connectedText;
         if (sex) {
@@ -45,5 +48,9 @@ public class ConsultConnectedViewHolder extends RecyclerView.ViewHolder {
             connectedText = itemView.getContext().getResources().getString(R.string.connected_female) + " " + sdf.format(new Date(date));
         }
         connectedMessage.setText(connectedText);
+        ViewGroup vg = (ViewGroup) itemView;
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            vg.getChildAt(i).setOnClickListener(listener);
+        }
     }
 }

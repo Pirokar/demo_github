@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:layout_marginTop="1dp"
+    android:background="@android:color/white">
+
+    <ImageButton
+        android:id="@+id/file_button"
+        android:layout_width="64dp"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:scaleType="centerInside"
+        android:padding="@dimen/margin_half"
+        android:src="@drawable/ic_insert_file_blue_42dp" />
+
+    <TextView
+        android:id="@+id/file_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="@dimen/margin_big"
+        android:layout_marginTop="@dimen/margin_three_fourth"
+        android:layout_toRightOf="@id/file_button"
+        android:ellipsize="end"
+        android:lines="1"
+        android:text="235555555555wefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/file_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/file_title"
+        android:layout_marginTop="@dimen/margin_quarter"
+        android:layout_toRightOf="@+id/file_button"
+        android:text="1,2mb"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/file_title"
+        android:layout_marginRight="@dimen/margin_big"
+        android:layout_marginTop="@dimen/margin_quarter"
+        android:text="10:19"
+        android:textColor="@android:color/black" />
+</RelativeLayout>
