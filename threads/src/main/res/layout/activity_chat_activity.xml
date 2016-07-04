@@ -145,10 +145,10 @@
         </FrameLayout>
 
         <com.sequenia.threads.views.BottomGallery
-            android:visibility="gone"
             android:id="@+id/bottom_gallery"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
         <com.sequenia.threads.views.BottomSheetView
             android:id="@+id/file_input_sheet"
@@ -231,13 +231,15 @@
                 android:text="оператор"
                 android:visibility="gone" />
 
-            <EditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="@null"
-                android:hint="@string/search_hint"
+                android:hint="@string/search_messages"
+                android:textColor="@android:color/white"
                 android:textColorHint="@color/hint_color"
+                android:textCursorDrawable="@null"
                 android:textSize="@dimen/text_big"
                 android:visibility="gone" />
         </LinearLayout>

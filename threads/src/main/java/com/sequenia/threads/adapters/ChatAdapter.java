@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Calendar next = Calendar.getInstance();
 
     ArrayList<ChatItem> list;
+    ArrayList<ChatItem> backupList;
     final Picasso picasso;
     private final Context ctx;
     private AdapterInterface mAdapterInterface;
@@ -65,6 +67,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ChatAdapter(ArrayList<ChatItem> list, Context ctx, AdapterInterface adapterInterface) {
         this.list = list;
         if (this.list == null) this.list = new ArrayList<>();
+        backupList = new ArrayList<>(this.list);
         picasso = Picasso.with(ctx);
         this.ctx = ctx;
         this.mAdapterInterface = adapterInterface;
@@ -101,7 +104,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (null != mAdapterInterface){
+                            if (null != mAdapterInterface) {
                                 mAdapterInterface.onConsultClick();
                             }
                         }
@@ -393,20 +396,25 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addItem(ChatItem item) {
+        addItem(item, true);
+    }
+
+    public void addItem(ChatItem item, boolean withBackup) {
         if (list.size() == 0) {
-            list.add(new DateRow(System.currentTimeMillis()));
+            list.add(new DateRow(item.getTimeStamp()));
+            if (withBackup) backupList.add(new DateRow(item.getTimeStamp()));
             notifyItemInserted(0);
         }
-        if (!(list.get(list.size() - 1) instanceof DateRow)) {
-            prev.setTimeInMillis(list.get(list.size() - 1).getTimeStamp());
-            next.setTimeInMillis(System.currentTimeMillis());
-            int prevSum = prev.get(Calendar.DAY_OF_MONTH) + prev.get(Calendar.MONTH) + prev.get(Calendar.YEAR);
-            int nextSum = next.get(Calendar.DAY_OF_MONTH) + next.get(Calendar.MONTH) + next.get(Calendar.YEAR);
-            if (prevSum != nextSum) {
-                list.add(new DateRow(System.currentTimeMillis()));
-            }
+        Calendar currentTimeStamp = Calendar.getInstance();
+        Calendar prevTimeStamp = Calendar.getInstance();
+        currentTimeStamp.setTimeInMillis(item.getTimeStamp());
+        prevTimeStamp.setTimeInMillis(list.get(list.size() - 1).getTimeStamp());
+        if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) != prevTimeStamp.get(Calendar.DAY_OF_YEAR)) {
+            this.list.add(new DateRow(item.getTimeStamp()));
+            if (withBackup)  this.backupList.add(new DateRow(item.getTimeStamp()));
         }
         list.add(item);
+        if (withBackup) backupList.add(item);
         notifyItemInserted(list.lastIndexOf(item));
         if (item instanceof ConsultPhrase && list.size() != 1) {
             int prev = list.size() - 2;
@@ -439,6 +447,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         notifyItemInserted(list.size() - 2);
     }
+
 
     public void addItems(List<ChatItem> items) {
         for (ChatItem ci : items) {
@@ -532,6 +541,28 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (cp instanceof ConsultPhrase) {
             ((ConsultPhrase) cp).setChosen(isChosen);
             notifyItemChanged(list.indexOf(cp));
+        }
+    }
+
+    public void filterItems(String query) {
+        if (query == null || (query.length() == 0)) {
+            list = new ArrayList<>(backupList);
+            notifyDataSetChanged();
+            return;
+        }
+        list.clear();
+        notifyDataSetChanged();
+        ArrayList<ChatItem> tempList = new ArrayList<>();
+        for (ChatItem ci : backupList) {
+            if (ci instanceof ChatPhrase) {
+                if (((ChatPhrase) ci).getPhraseText() != null && ((ChatPhrase) ci).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
+                    tempList.add(ci);
+                    continue;
+                }
+            }
+        }
+        for (ChatItem ci : tempList) {
+            addItem(ci,false);
         }
     }
 

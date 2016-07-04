@@ -43,7 +43,6 @@ public class FileAndMediaViewHolder extends RecyclerView.ViewHolder {
         if (fileDescription.getPath() == null) return;
         String extension = fileDescription.getPath().substring(fileDescription.getPath().lastIndexOf(".") + 1);
         Picasso p = Picasso.with(itemView.getContext());
-        Log.e(TAG, "" + extension);// TODO: 01.07.2016
         if (extension.equalsIgnoreCase("pdf")) {
             mImageButton.setImageResource(R.drawable.ic_insert_file_blue_36dp);
         } else if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png")) {

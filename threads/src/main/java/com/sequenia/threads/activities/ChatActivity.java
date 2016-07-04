@@ -14,9 +14,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -78,6 +81,7 @@ public class ChatActivity extends AppCompatActivity
     private FileDescription mFileDescription = null;
     private ChatPhrase mChosenPhrase = null;
     private List<String> mAttachedImages = new ArrayList<>();
+    private AppCompatEditText mSearchMessageEditText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,11 +118,7 @@ public class ChatActivity extends AppCompatActivity
         t.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCopyControls.getVisibility() == View.VISIBLE) {
-                    unChooseItem(mChosenPhrase);
-                    return;
-                }
-                finish();
+                onBackPressed();
             }
         });
         t.showOverflowMenu();
@@ -137,6 +137,7 @@ public class ChatActivity extends AppCompatActivity
         mBottomSheetView = (BottomSheetView) findViewById(R.id.file_input_sheet);
         mBottomSheetView.setButtonsListener(this);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mSearchMessageEditText = (AppCompatEditText) findViewById(R.id.search);
         mBottomGallery = (BottomGallery) findViewById(R.id.bottom_gallery);
         SwipeAwareView sav = (SwipeAwareView) findViewById(R.id.swipe_view);
         mInputEditText = (EditText) findViewById(R.id.input);
@@ -151,6 +152,7 @@ public class ChatActivity extends AppCompatActivity
         AddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setTitleStateCurrentOperatorConnected();
                 if (mBottomSheetView.getVisibility() == View.GONE) {
                     mBottomSheetView.setVisibility(View.VISIBLE);
                     mBottomSheetView.setAlpha(0.0f);
@@ -268,7 +270,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onCameraClick() {
-        hideBottomSheet();
+        setBottomStateDefault();
         mBottomGallery.setVisibility(View.GONE);
         mFileDescription = new FileDescription(getResources().getString(R.string.image), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
         mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.image), Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/drawable/sample").toString());
@@ -306,8 +308,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onFileClick() {
-        hideBottomSheet();
-        mBottomGallery.setVisibility(View.GONE);
+        setBottomStateDefault();
         mFileDescription = new FileDescription("", UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
         mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.file_pdf), null);
         mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis());
@@ -328,6 +329,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onSendClick() {
+        setTitleStateCurrentOperatorConnected();
         if (mAttachedImages == null || mAttachedImages.size() == 0) {
             mBottomGallery.setVisibility(View.GONE);
         } else {
@@ -343,13 +345,13 @@ public class ChatActivity extends AppCompatActivity
         mQuoteLayoutHolder.setIsVisible(false);
         mQuote = null;
         mFileDescription = null;
-        hideBottomSheet();
+        setBottomStateDefault();
         hideCopyControls();
         mAttachedImages.clear();
         mBottomGallery.setVisibility(View.GONE);
     }
 
-    private void hideBottomSheet() {
+    private void setBottomStateDefault() {
         final View input = findViewById(R.id.input_layout);
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
@@ -358,6 +360,9 @@ public class ChatActivity extends AppCompatActivity
                 input.setVisibility(View.VISIBLE);
             }
         });
+        mSearchMessageEditText.setVisibility(View.GONE);
+        mSearchMessageEditText.setText("");
+        mBottomGallery.setVisibility(View.GONE);
     }
 
     public void addMessage(ChatItem item) {
@@ -411,20 +416,44 @@ public class ChatActivity extends AppCompatActivity
     public void setTitleStateDefault() {
         mSubTitleView.setVisibility(View.GONE);
         mTitleView.setVisibility(View.VISIBLE);
+        mSearchMessageEditText.setVisibility(View.GONE);
+        mSearchMessageEditText.setText("");
         mTitleView.setText(getResources().getString(R.string.contact_center));
     }
 
-    public void setTitleStateSearching() {
+    public void setTitleStateSearchingConsult() {
         mSubTitleView.setVisibility(View.GONE);
         mTitleView.setVisibility(View.VISIBLE);
+        mSearchMessageEditText.setVisibility(View.GONE);
+        mSearchMessageEditText.setText("");
         mTitleView.setText(getResources().getString(R.string.searching_operator));
     }
+
+    public void setTitleStateSearchingMessage() {
+        mSubTitleView.setVisibility(View.GONE);
+        mTitleView.setVisibility(View.GONE);
+        mSearchMessageEditText.setVisibility(View.VISIBLE);
+        mSearchMessageEditText.setText("");
+        mSearchMessageEditText.requestFocus();
+    }
+
 
     public void setTitleStateOperatorConnected(String title, String subtitle) {
         mSubTitleView.setVisibility(View.VISIBLE);
         mTitleView.setVisibility(View.VISIBLE);
         mTitleView.setText(title);
         mSubTitleView.setText(subtitle);
+    }
+
+    public void setTitleStateCurrentOperatorConnected() {
+        if (mChatController.isConsultFound()) {
+            String[] cfn = mChatController.getCurrentConsultName().split("%%");
+            setTitleStateOperatorConnected(cfn[0], cfn[1]);
+            mSubTitleView.setVisibility(View.VISIBLE);
+            mTitleView.setVisibility(View.VISIBLE);
+            mSearchMessageEditText.setVisibility(View.GONE);
+            mSearchMessageEditText.setText("");
+        }
     }
 
     @Override
@@ -490,6 +519,7 @@ public class ChatActivity extends AppCompatActivity
     }
 
     private void hideCopyControls() {
+        setTitleStateCurrentOperatorConnected();
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         mToolbar.setBackgroundColor(getResources().getColor(R.color.green_light));
         mCopyControls.setVisibility(View.GONE);
@@ -499,11 +529,21 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        boolean isNeedToClose = true;
         if (mCopyControls.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
-            return;
+            isNeedToClose = false;
         }
-        super.onBackPressed();
+        if (mSearchMessageEditText.getVisibility() == View.VISIBLE) {
+            String[] cfn = mChatController.getCurrentConsultName().split("%%");
+            setTitleStateOperatorConnected(cfn[0], cfn[1]);
+            mSearchMessageEditText.setVisibility(View.GONE);
+            isNeedToClose = false;
+        }
+        if (isNeedToClose) {
+            super.onBackPressed();
+        }
+
     }
 
     public void setPhraseSentStatus(String id, MessageState messageState) {
@@ -613,6 +653,28 @@ public class ChatActivity extends AppCompatActivity
         if (item.getItemId() == R.id.files_and_media) {
             startActivity(FilesActivity.getStartIntetent(this));
             return true;
+        }
+        if (item.getItemId() == R.id.search) {
+            setBottomStateDefault();
+            setTitleStateSearchingMessage();
+            mSearchMessageEditText.setVisibility(View.VISIBLE);
+            mSearchMessageEditText.requestFocus();
+            mSearchMessageEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    mChatAdapter.filterItems(s.toString());
+                }
+            });
         }
 
         return super.onOptionsItemSelected(item);

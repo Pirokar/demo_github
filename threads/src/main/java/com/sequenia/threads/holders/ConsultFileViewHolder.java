@@ -55,7 +55,7 @@ public class ConsultFileViewHolder extends RecyclerView.ViewHolder {
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         ViewGroup vg = (ViewGroup) itemView;
-        Log.e(TAG, "onBIND!!!!!!! progress = " + fileDescription.getDownloadProgress());// TODO: 01.07.2016
+      //  Log.e(TAG, "onBIND!!!!!!! progress = " + fileDescription.getDownloadProgress());// TODO: 01.07.2016
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);
         }

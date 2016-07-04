@@ -230,7 +230,7 @@ public class ChatController extends Fragment {
             if (!isSearchingConsult && !isConsultFound) {
                 isSearchingConsult = true;
                 isConsultFound = true;
-                activity.setTitleStateSearching();
+                activity.setTitleStateSearchingConsult();
                 h.postDelayed(new Runnable() {
                     @Override
                     public void run() {
