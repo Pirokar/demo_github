@@ -43,7 +43,7 @@ public class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImag
                 mChosenItems.clear();
                 for (BottomGalleryItem item : list) {
                     if (item.isChosen()) {
-                        mChosenItems.add(item.getImagePath()+".jpg");
+                        mChosenItems.add(item.getImagePath());
                     }
                 }
                 if (null != mOnChooseItemsListener) {

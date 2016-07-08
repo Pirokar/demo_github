@@ -9,11 +9,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.sequenia.appwithchat.MainActivity">
 
-   <Button
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="В чат!"
-       android:layout_gravity="center"
-       android:textSize="25sp"
-       android:onClick="onChatButtonClick"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="onChatButtonClick"
+        android:text="В чат!"
+        android:textSize="25sp" />
+
+    <Button
+        android:id="@+id/gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:text="в галлерею" />
 </FrameLayout>

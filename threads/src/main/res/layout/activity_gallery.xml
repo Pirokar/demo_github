@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#333333"
+        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+        app:title="@string/photos"
+        app:titleTextColor="@android:color/white">
+
+        <LinearLayout
+            android:id="@+id/search_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/search_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.85"
+                android:background="@null"
+                android:ellipsize="end"
+                android:hint="@string/search_photos"
+                android:lines="1"
+                android:paddingLeft="12dp"
+                android:textColor="@android:color/white"
+                android:textColorHint="#989898"
+                android:textSize="@dimen/text_big" />
+
+            <ImageButton
+                android:id="@+id/clear_search_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.15"
+                android:background="@null"
+                android:src="@drawable/ic_clear_gray_30dp" />
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:id="@+id/search_label_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/toolbar"
+        android:layout_margin="@dimen/margin_quarter"
+        android:background="#282828">
+
+        <ImageButton
+            android:id="@+id/search_photo"
+            android:layout_width="54dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_search_white_24dp" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/search_photo_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_toRightOf="@+id/search_photo"
+            android:text="@string/find_photos"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/search_photo_title"
+            android:layout_toRightOf="@+id/search_photo"
+            android:text="@string/on_your_device"
+
+            android:textColor="#8b8b8b"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_buttons"
+        android:layout_below="@+id/search_label_layout" />
+
+    <TextView
+        android:paddingTop="84dp"
+        android:id="@+id/nothing_found_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical"
+        android:text="@string/nothing_found"
+        android:textColor="#808080"
+        android:textSize="@dimen/text_big"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/bottom_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentBottom="true"
+        android:background="#333333"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="104dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:background="@null"
+            android:text="@string/cancel"
+            android:textAllCaps="true" />
+
+        <Button
+            android:id="@+id/send"
+            android:layout_width="104dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:background="@null"
+            android:text="@string/send"
+            android:textAllCaps="true" />
+    </FrameLayout>
+</RelativeLayout>

@@ -1,8 +1,6 @@
 package com.sequenia.threads.adapters;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -214,7 +212,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final ConsultPhrase cp = (ConsultPhrase) list.get(position);
             ((ImageFromConsultViewHolder) holder).onBind(
                     cp.getAvatarPath()
-                    , Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + holder.itemView.getContext().getPackageName() + "/drawable/sample_card").toString()
+                    , cp.getFileDescription().getPath()
                     , cp.getTimeStamp()
                     , new View.OnClickListener() {
                         @Override
@@ -243,8 +241,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (holder instanceof ImageFromUserViewHolder) {
             final UserPhrase up = (UserPhrase) list.get(position);
+            Log.e(TAG, ""+up);
             ((ImageFromUserViewHolder) holder).onBind(
-                    Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + holder.itemView.getContext().getPackageName() + "/drawable/sample_card").toString()
+                    up.getFileDescription().getPath()
                     , up.getTimeStamp()
                     , new View.OnClickListener() {
                         @Override
@@ -411,7 +410,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         prevTimeStamp.setTimeInMillis(list.get(list.size() - 1).getTimeStamp());
         if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) != prevTimeStamp.get(Calendar.DAY_OF_YEAR)) {
             this.list.add(new DateRow(item.getTimeStamp()));
-            if (withBackup)  this.backupList.add(new DateRow(item.getTimeStamp()));
+            if (withBackup) this.backupList.add(new DateRow(item.getTimeStamp()));
         }
         list.add(item);
         if (withBackup) backupList.add(item);
@@ -562,7 +561,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         for (ChatItem ci : tempList) {
-            addItem(ci,false);
+            addItem(ci, false);
         }
     }
 

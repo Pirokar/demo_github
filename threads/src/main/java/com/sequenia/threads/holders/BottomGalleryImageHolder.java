@@ -18,7 +18,7 @@ public class BottomGalleryImageHolder extends RecyclerView.ViewHolder {
     private View chosenMark;
 
     public BottomGalleryImageHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bottom_gallery_item, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_bottom, parent, false));
         image = (ImageView) itemView.findViewById(R.id.image);
         chosenMark = itemView.findViewById(R.id.mark);
     }

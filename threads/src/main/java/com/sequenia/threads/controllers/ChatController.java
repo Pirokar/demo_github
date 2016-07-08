@@ -127,7 +127,7 @@ public class ChatController extends Fragment {
         FileDescription fd = null;
         if (up.getFileDescription() != null) {
             String userFP = up.getFileDescription().getPath();
-            String filepath = UUID.randomUUID().toString().concat(userFP.substring(userFP.lastIndexOf(".")));
+            String filepath = userFP;
             fd = new FileDescription(up.getFileDescription().getHeader(), filepath, System.currentTimeMillis());
         }
         Quote q = null;

@@ -20,10 +20,22 @@
 
     </style>
 
+    <style name="ThreadsGalleryStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimaryDark">#282828</item>
+        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:itemTextAppearance">@style/menuItemThemeDark</item>
+
+    </style>
+
     <style name="menuItemTheme">
         <item name="android:textColor">@color/blue</item>
     </style>
-
+    <style name="menuItemThemeDark">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">#282828</item>
+    </style>
     <style name="TimestampStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -31,6 +43,7 @@
         <item name="android:layout_marginRight">48dp</item>
         <item name="android:paddingBottom">@dimen/margin_three_fourth</item>
     </style>
+
 
     <style name="MessageStyle">
         <item name="android:layout_width">match_parent</item>

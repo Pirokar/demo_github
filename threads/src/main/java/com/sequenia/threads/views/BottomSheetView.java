@@ -45,7 +45,7 @@ public class BottomSheetView extends LinearLayout {
         findViewById(R.id.gallery).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != buttonsListener) buttonsListener.onGalleyClick();
+                if (null != buttonsListener) buttonsListener.onGalleryClick();
             }
         });
         findViewById(R.id.file).setOnClickListener(new OnClickListener() {
@@ -70,7 +70,7 @@ public class BottomSheetView extends LinearLayout {
         this.setBackgroundColor(getContext().getResources().getColor(android.R.color.white));
     }
 
-    public void setState(boolean isSmthSelected) {
+    public void setSelectedState(boolean isSmthSelected) {
         Drawable d;
         if (isSmthSelected) {
              d = getContext().getResources().getDrawable(R.drawable.ic_send_blue_42dp);
@@ -90,7 +90,7 @@ public class BottomSheetView extends LinearLayout {
     public interface ButtonsListener {
         void onCameraClick();
 
-        void onGalleyClick();
+        void onGalleryClick();
 
         void onFileClick();
 

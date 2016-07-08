@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sequenia.threads">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application>
 
         <activity
@@ -10,12 +12,17 @@
         <activity
             android:name=".activities.ConsultActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ThreadsStyle"
+            android:theme="@style/ThreadsStyleConsultPage"
              />
         <activity
             android:name=".activities.FilesActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyle"
+            />
+        <activity
+            android:name=".activities.GalleryActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ThreadsGalleryStyle"
             />
 
     </application>

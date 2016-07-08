@@ -45,11 +45,14 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         filter.setOnLongClickListener(longListener);
         p
                 .load(avatarPath)
-                .fit().centerInside()
+                .fit()
+                .centerInside()
                 .into(mConsultAvatar);
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
         p
                 .load(imagePath)
+                .fit()
+                .centerCrop()
                 .into(mImage);
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);

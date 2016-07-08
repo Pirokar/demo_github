@@ -23,4 +23,10 @@
     <string name="media">Медиа и файлы</string>
     <string name="recently">Недавно</string>
     <string name="yesterday">Вчера</string>
+    <string name="photos">Фотографии</string>
+    <string name="find_photos">Найти фотографии</string>
+    <string name="on_your_device">на вашем устройстве</string>
+    <string name="cancel">Отмена</string>
+    <string name="search_photos">Поиск изображений...</string>
+    <string name="nothing_found">Ничего не найден</string>
 </resources>

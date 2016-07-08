@@ -9,4 +9,5 @@
     <color name="blue">#3299de</color>
     <color name="blue_transparent">#303299de</color>
     <color name="orange">#ff9600</color>
+    <color name="disabled_text_color">#9a9a9a</color>
 </resources>

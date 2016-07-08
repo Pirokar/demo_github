@@ -69,6 +69,8 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
         p
                 .load(imagePath)
+                .fit()
+                .centerCrop()
                 .into(mImage);
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);

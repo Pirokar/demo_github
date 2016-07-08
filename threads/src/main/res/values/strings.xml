@@ -18,7 +18,13 @@
     <string name="image">Picture</string>
     <string name="send">Send</string>
     <string name="search_messages">Search message</string>
+    <string name="search_photos">Search photos...</string>
     <string name="media">Files and media</string>
     <string name="recently">Recently</string>
     <string name="yesterday">Yesterday</string>
+    <string name="photos">Photographies</string>
+    <string name="find_photos">Find photos</string>
+    <string name="on_your_device">on your device</string>
+    <string name="cancel">Cancel</string>
+    <string name="nothing_found">Nothing found</string>
 </resources>

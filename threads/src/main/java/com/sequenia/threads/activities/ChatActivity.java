@@ -82,6 +82,7 @@ public class ChatActivity extends AppCompatActivity
     private ChatPhrase mChosenPhrase = null;
     private List<String> mAttachedImages = new ArrayList<>();
     private AppCompatEditText mSearchMessageEditText;
+    public static final int REQUEST_CODE_PHOTOES = 100;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -187,7 +188,6 @@ public class ChatActivity extends AppCompatActivity
                 ;
                 unChooseItem(mChosenPhrase);
                 UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, mFileDescription);
-                Log.e(TAG, "" + uum);
                 mChatController.onUserInput(uum);
                /* PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
@@ -278,31 +278,41 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onGalleyClick() {
+    public void onGalleryClick() {
         if (mBottomGallery.getVisibility() == View.VISIBLE) {
             mBottomGallery.setVisibility(View.GONE);
             mAttachedImages.clear();
         } else {
-            mBottomGallery.setVisibility(View.VISIBLE);
-            mBottomGallery.setAlpha(0.0f);
-            mBottomGallery.animate().alpha(1.0f).setDuration(200).start();
             mQuoteLayoutHolder.setIsVisible(false);
-            List<String> strings = new ArrayList<>();
-            for (int i = 0; i < 12; i++) {
-                strings.add(new String(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/drawable/sample_card").toString()));
-            }
-            mBottomGallery.setImages(strings, new BottomGalleryAdapter.OnChooseItemsListener() {
-                @Override
-                public void onChosenItems(List<String> items) {
-                    mAttachedImages = new ArrayList<>(items);
-                    if (mAttachedImages.size() > 0) {
-                        mBottomSheetView.setState(true);
-                    } else {
-                        mBottomSheetView.setState(false);
-                    }
+            startActivityForResult(GalleryActivity.getStartIntent(this, REQUEST_CODE_PHOTOES), REQUEST_CODE_PHOTOES);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_PHOTOES && resultCode == RESULT_OK) {
+            if (data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG) != null && data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG).size() > 0) {
+                mBottomGallery.setVisibility(View.VISIBLE);
+                mBottomGallery.setAlpha(0.0f);
+                mBottomGallery.animate().alpha(1.0f).setDuration(200).start();
+                ArrayList<String> paths = data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG);
+                for (int i = 0; i < paths.size(); i++) {
+                    paths.set(i, "file://" + paths.get(i));
                 }
-            });
-            mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
+                mBottomGallery.setImages(paths, new BottomGalleryAdapter.OnChooseItemsListener() {
+                    @Override
+                    public void onChosenItems(List<String> items) {
+                        mAttachedImages = new ArrayList<>(items);
+                        if (mAttachedImages.size() > 0) {
+                            mBottomSheetView.setSelectedState(true);
+                        } else {
+                            mBottomSheetView.setSelectedState(false);
+                        }
+                    }
+                });
+                mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
+            }
         }
     }
 
@@ -340,7 +350,7 @@ public class ChatActivity extends AppCompatActivity
                 mChatController.onUserInput(uum);
             }
         }
-        mBottomSheetView.setState(false);
+        mBottomSheetView.setSelectedState(false);
         mInputEditText.setText("");
         mQuoteLayoutHolder.setIsVisible(false);
         mQuote = null;
@@ -538,6 +548,7 @@ public class ChatActivity extends AppCompatActivity
             String[] cfn = mChatController.getCurrentConsultName().split("%%");
             setTitleStateOperatorConnected(cfn[0], cfn[1]);
             mSearchMessageEditText.setVisibility(View.GONE);
+            mSearchMessageEditText.setText("");
             isNeedToClose = false;
         }
         if (isNeedToClose) {

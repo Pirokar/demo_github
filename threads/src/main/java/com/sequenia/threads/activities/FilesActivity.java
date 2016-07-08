@@ -30,13 +30,14 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files_and_media);
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(t);
         t.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+               onBackPressed();
             }
         });
-        setSupportActionBar(t);
+
         if (getFragmentManager().findFragmentByTag(TAG) == null) {
             mFilesAndMediaController = FilesAndMediaController.getInstance();
             getFragmentManager().beginTransaction().add(mFilesAndMediaController, TAG).commit();
