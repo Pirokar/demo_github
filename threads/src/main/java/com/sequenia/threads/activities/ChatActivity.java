@@ -497,6 +497,7 @@ public class ChatActivity extends AppCompatActivity
                 ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
                 hideCopyControls();
+                
             }
         });
         reply.setOnClickListener(new View.OnClickListener() {

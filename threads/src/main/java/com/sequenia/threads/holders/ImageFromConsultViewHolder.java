@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sequenia.threads.MaskedTransformer;
 import com.sequenia.threads.R;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 
@@ -49,11 +50,14 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                 .centerInside()
                 .into(mConsultAvatar);
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
+
         p
                 .load(imagePath)
                 .fit()
                 .centerCrop()
+                .transform(new MaskedTransformer(itemView.getContext(),MaskedTransformer.TYPE_CONSULT))
                 .into(mImage);
+
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);
             filterSecond.setVisibility(View.VISIBLE);

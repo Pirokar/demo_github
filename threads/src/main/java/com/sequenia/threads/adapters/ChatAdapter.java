@@ -3,7 +3,6 @@ package com.sequenia.threads.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -241,7 +240,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (holder instanceof ImageFromUserViewHolder) {
             final UserPhrase up = (UserPhrase) list.get(position);
-            Log.e(TAG, ""+up);
             ((ImageFromUserViewHolder) holder).onBind(
                     up.getFileDescription().getPath()
                     , up.getTimeStamp()
@@ -444,6 +442,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (prev instanceof UserPhrase && last instanceof ConsultPhrase) {// spacing between User phrase connected and Consult phrase
             list.add(list.size() - 1, new Space(24, System.currentTimeMillis()));
         }
+        if (last instanceof UserPhrase && prev instanceof ConsultConnected) {
+            list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
+        }
         notifyItemInserted(list.size() - 2);
     }
 
@@ -561,7 +562,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         for (ChatItem ci : tempList) {
-            addItem(ci, false);
+            if (!(ci instanceof ConsultConnected)) addItem(ci, false);
         }
     }
 

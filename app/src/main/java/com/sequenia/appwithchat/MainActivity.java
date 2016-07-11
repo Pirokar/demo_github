@@ -20,13 +20,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         final Context ctx = this;
-        findViewById(R.id.gallery).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e(TAG, "CLICKK");// TODO: 06.07.2016
-                startActivity(new Intent(ctx, GalleryActivity.class));
-            }
-        });
       /*  PushController.getInstance(this).init();
         PushController.getInstance(this).setClientIdAsync("9147088091", new RequestCallback<Void, PushServerErrorException>() {
             @Override

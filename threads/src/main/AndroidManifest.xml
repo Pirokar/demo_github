@@ -2,8 +2,12 @@
     package="com.sequenia.threads">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
-    <application>
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application android:hardwareAccelerated="true" >
 
         <activity
             android:name=".activities.ChatActivity"
@@ -12,18 +16,20 @@
         <activity
             android:name=".activities.ConsultActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ThreadsStyleConsultPage"
-             />
+            android:theme="@style/ThreadsStyleConsultPage" />
         <activity
             android:name=".activities.FilesActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ThreadsStyle"
-            />
+            android:theme="@style/ThreadsStyle" />
         <activity
             android:name=".activities.GalleryActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ThreadsGalleryStyle"
-            />
+            android:theme="@style/ThreadsGalleryStyle" />
+
+        <activity
+            android:name=".activities.CameraActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ThreadsGalleryStyle" />
 
     </application>
 

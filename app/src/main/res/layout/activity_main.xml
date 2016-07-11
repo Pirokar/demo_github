@@ -17,10 +17,4 @@
         android:text="В чат!"
         android:textSize="25sp" />
 
-    <Button
-        android:id="@+id/gallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:text="в галлерею" />
 </FrameLayout>

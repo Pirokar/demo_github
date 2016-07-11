@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sequenia.threads.MaskedTransformer;
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
@@ -67,10 +68,12 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         });
         filter.setOnLongClickListener(longListener);
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
+
         p
                 .load(imagePath)
                 .fit()
                 .centerCrop()
+                .transform(new MaskedTransformer(itemView.getContext(),MaskedTransformer.TYPE_USER))
                 .into(mImage);
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);

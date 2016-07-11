@@ -60,7 +60,7 @@ public class ConsultActivity extends AppCompatActivity {
         t.showOverflowMenu();
         Drawable overflowDrawable = t.getOverflowIcon();
         try {
-            overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.transparent), PorterDuff.Mode.SRC_ATOP));
+            overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
