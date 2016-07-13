@@ -27,4 +27,9 @@
     <string name="on_your_device">on your device</string>
     <string name="cancel">Cancel</string>
     <string name="nothing_found">Nothing found</string>
+    <string name="press">Press</string>
+    <string name="to_photo">to take photo</string>
+    <string name="no_cameras_detected">Your device doesn\'t have a camera</string>
+    <string name="retake">Retake</string>
+    <string name="unavailible">Service is unavailible</string>
 </resources>

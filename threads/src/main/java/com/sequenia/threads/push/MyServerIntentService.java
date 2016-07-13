@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat;
+package com.sequenia.threads.push;
 
 import android.util.Log;
 

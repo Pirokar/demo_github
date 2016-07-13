@@ -8,10 +8,10 @@ import android.view.View;
 /**
  * Created by yuri on 07.07.2016.
  */
-public class BucketGalleryDecorator extends RecyclerView.ItemDecoration {
+public class BucketsGalleryDecorator extends RecyclerView.ItemDecoration {
     private int offset;
 
-    public BucketGalleryDecorator(int offset) {
+    public BucketsGalleryDecorator(int offset) {
         this.offset = offset;
     }
 

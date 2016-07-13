@@ -49,7 +49,7 @@
             android:value="true" />
         <meta-data
             android:name="com.pushserver.android.service"
-            android:value="com.sequenia.appwithchat.MyServerIntentService" />
+            android:value="com.sequenia.threads.push.MyServerIntentService" />
         <meta-data
             android:name="com.pushserver.android.location"
             android:value="true" />
@@ -63,7 +63,7 @@
                android:name="com.pushserver.android.serverPrimaryId"
                android:value="[PRIMARY_SERVER_ID]"/>-->
         <receiver
-            android:name=".MyPushBroadcastReceiver"
+            android:name="com.sequenia.threads.push.MyPhBReceiver"
             android:exported="false"
             android:permission="com.sequenia.appwithchat.permission.pushserver.RECEIVE">
             <intent-filter>
@@ -73,9 +73,8 @@
                 <action android:name="com.pushserver.android.ERROR_EVENT" />
             </intent-filter>
         </receiver>
-
         <receiver
-            android:name=".MyOtherPushBroadcastReceiver"
+            android:name="com.sequenia.threads.push.MyOtherPBReceiver"
             android:exported="false"
             android:permission="com.pushserver.android.permission.RECEIVE">
             <intent-filter>
@@ -83,7 +82,6 @@
             </intent-filter>
 
         </receiver>
-
-        <service android:name=".MyServerIntentService" />
+        <service android:name="com.sequenia.threads.push.MyServerIntentService" />
     </application>
 </manifest>

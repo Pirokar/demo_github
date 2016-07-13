@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat;
+package com.sequenia.threads.push;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,8 +9,9 @@ import com.pushserver.android.PushBroadcastReceiver;
 /**
  * Created by yuri on 22.06.2016.
  */
-public class MyPushBroadcastReceiver extends PushBroadcastReceiver {
-    private static final String TAG = "MyPushBroadcastReceiver ";
+public class MyOtherPBReceiver extends PushBroadcastReceiver {
+    private static final String TAG = "MyOtherPBReceiver ";
+
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.e(TAG, "onNewPushNotification " + s + " " + bundle);
@@ -19,6 +20,7 @@ public class MyPushBroadcastReceiver extends PushBroadcastReceiver {
     @Override
     public void onStatusChanged(Context context, String s) {
         Log.e(TAG, "onStatusChanged " + s);
+
     }
 
     @Override

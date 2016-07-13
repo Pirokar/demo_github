@@ -16,5 +16,4 @@
         android:onClick="onChatButtonClick"
         android:text="В чат!"
         android:textSize="25sp" />
-
 </FrameLayout>

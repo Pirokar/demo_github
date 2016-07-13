@@ -10,7 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#333333"
+        android:background="@color/toolbar_gray"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:title="@string/photos"
         app:titleTextColor="@android:color/white">
@@ -115,21 +115,17 @@
         android:visibility="gone">
 
         <Button
+
             android:id="@+id/cancel"
-            android:layout_width="104dp"
-            android:layout_height="match_parent"
             android:layout_gravity="left"
-            android:background="@null"
             android:text="@string/cancel"
-            android:textAllCaps="true" />
+            style="@style/bottomButtonTransparent" />
 
         <Button
             android:id="@+id/send"
-            android:layout_width="104dp"
-            android:layout_height="match_parent"
+
             android:layout_gravity="right"
-            android:background="@null"
             android:text="@string/send"
-            android:textAllCaps="true" />
+            style="@style/bottomButtonTransparent" />
     </FrameLayout>
 </RelativeLayout>

@@ -10,4 +10,5 @@
     <color name="blue_transparent">#303299de</color>
     <color name="orange">#ff9600</color>
     <color name="disabled_text_color">#9a9a9a</color>
+    <color name="toolbar_gray">#333333</color>
 </resources>

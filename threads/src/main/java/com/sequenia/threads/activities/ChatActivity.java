@@ -2,17 +2,17 @@ package com.sequenia.threads.activities;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,7 +29,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.advisa.client.api.InOutMessage;
+import com.pushserver.android.PushController;
+import com.pushserver.android.RequestCallback;
+import com.pushserver.android.exception.PushServerErrorException;
+import com.sequenia.threads.PermissionChecker;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.BottomGalleryAdapter;
 import com.sequenia.threads.adapters.ChatAdapter;
@@ -82,7 +88,10 @@ public class ChatActivity extends AppCompatActivity
     private ChatPhrase mChosenPhrase = null;
     private List<String> mAttachedImages = new ArrayList<>();
     private AppCompatEditText mSearchMessageEditText;
-    public static final int REQUEST_CODE_PHOTOES = 100;
+    public static final int REQUEST_CODE_PHOTOS = 100;
+    public static final int REQUEST_CODE_PHOTO = 101;
+    public static final int REQUEST_PERMISSION_GALLERY = 102;
+    public static final int REQUEST_PERMISSION_CAMERA = 103;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,7 +103,7 @@ public class ChatActivity extends AppCompatActivity
         if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {//mb, someday, we will support orientation change
             mChatController = (ChatController) getFragmentManager().findFragmentByTag(ChatController.TAG);
         } else {
-            mChatController = new ChatController();
+            mChatController = ChatController.getInstance();
             getFragmentManager().beginTransaction().add(mChatController, ChatController.TAG).commit();
         }
         mChatController.bindActivity(this);
@@ -189,39 +198,39 @@ public class ChatActivity extends AppCompatActivity
                 unChooseItem(mChosenPhrase);
                 UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, mFileDescription);
                 mChatController.onUserInput(uum);
-               /* PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
+                PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
-                        Log.e(TAG, ""+aVoid);
+                        Log.e(TAG, "" + aVoid);
                     }
 
                     @Override
                     public void onError(PushServerErrorException e) {
-                        Log.e(TAG, ""+e);
+                        Log.e(TAG, "" + e);
                     }
-                });
-                PushController.getInstance(ctx).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                });// TODO: 13.07.2016  
+               PushController.getInstance(ctx).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
                     @Override
                     public void onResult(List<InOutMessage> inOutMessages) {
-                        Log.e(TAG, "getMessageHistoryAsync onResult"+inOutMessages);
+                        Log.e(TAG, "getMessageHistoryAsync onResult" + inOutMessages);
                     }
 
                     @Override
                     public void onError(PushServerErrorException e) {
-                        Log.e(TAG, ""+e);
+                        Log.e(TAG, "" + e);
                     }
-                });
+                });// TODO: 13.07.2016  
                 PushController.getInstance(ctx).getNextMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
                     @Override
                     public void onResult(List<InOutMessage> inOutMessages) {
-                        Log.e(TAG, "getNextMessageHistoryAsync onResult"+inOutMessages);
+                        Log.e(TAG, "getNextMessageHistoryAsync onResult" + inOutMessages);
                     }
 
                     @Override
                     public void onError(PushServerErrorException e) {
-                        Log.e(TAG, ""+e);
+                        Log.e(TAG, "" + e);
                     }
-                });*/
+                });// TODO: 13.07.2016
                 mInputEditText.setText("");
                 mQuoteLayoutHolder.setIsVisible(false);
                 mQuote = null;
@@ -270,28 +279,40 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onCameraClick() {
-        setBottomStateDefault();
-        mBottomGallery.setVisibility(View.GONE);
-        mFileDescription = new FileDescription(getResources().getString(R.string.image), UUID.randomUUID().toString() + ".jpg", System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.image), Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/drawable/sample").toString());
-        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis());
+        boolean isCameraGranted = PermissionChecker.isCameraPermissionGranted(this);
+        boolean isWriteGranted = PermissionChecker.isWriteExternalPermissionGranted(this);
+        if (isCameraGranted && isWriteGranted) {
+            setBottomStateDefault();
+            mBottomGallery.setVisibility(View.GONE);
+            startActivityForResult(new Intent(this, CameraActivity.class), REQUEST_CODE_PHOTO);
+        } else {
+            ArrayList<String> permissions = new ArrayList<>();
+            if (!isCameraGranted) permissions.add(android.Manifest.permission.CAMERA);
+            if (!isWriteGranted)
+                permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(this, permissions.toArray(new String[]{}), REQUEST_PERMISSION_CAMERA);
+        }
     }
 
     @Override
     public void onGalleryClick() {
-        if (mBottomGallery.getVisibility() == View.VISIBLE) {
-            mBottomGallery.setVisibility(View.GONE);
-            mAttachedImages.clear();
+        if (PermissionChecker.isReadExternalPermissionGranted(this)) {
+            if (mBottomGallery.getVisibility() == View.VISIBLE) {
+                mBottomGallery.setVisibility(View.GONE);
+                mAttachedImages.clear();
+            } else {
+                mQuoteLayoutHolder.setIsVisible(false);
+                startActivityForResult(GalleryActivity.getStartIntent(this, REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS);
+            }
         } else {
-            mQuoteLayoutHolder.setIsVisible(false);
-            startActivityForResult(GalleryActivity.getStartIntent(this, REQUEST_CODE_PHOTOES), REQUEST_CODE_PHOTOES);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_GALLERY);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_PHOTOES && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_PHOTOS && resultCode == RESULT_OK) {
             if (data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG) != null && data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG).size() > 0) {
                 mBottomGallery.setVisibility(View.VISIBLE);
                 mBottomGallery.setAlpha(0.0f);
@@ -313,6 +334,10 @@ public class ChatActivity extends AppCompatActivity
                 });
                 mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
             }
+        } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
+            mFileDescription = new FileDescription(getResources().getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), System.currentTimeMillis());
+            mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.image), "file://" + data.getStringExtra(CameraActivity.IMAGE_EXTRA));
+            mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis());
         }
     }
 
@@ -497,7 +522,7 @@ public class ChatActivity extends AppCompatActivity
                 ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
                 hideCopyControls();
-                
+
             }
         });
         reply.setOnClickListener(new View.OnClickListener() {
@@ -690,5 +715,30 @@ public class ChatActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_GALLERY) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onGalleryClick();
+            } else {
+
+            }
+        }
+        if (requestCode == REQUEST_PERMISSION_CAMERA) {
+            int granted = 0;
+            for (int i = 0; i < grantResults.length; i++) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    granted++;
+                }
+            }
+            if (granted == grantResults.length) {
+                onCameraClick();
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.unavailible), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:layout_marginLeft="@dimen/consultant_margin_left"
         android:layout_marginRight="@dimen/consultant_margin_right"
         android:minHeight="240dp"

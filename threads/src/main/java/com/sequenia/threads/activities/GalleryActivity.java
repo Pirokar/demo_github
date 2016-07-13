@@ -15,14 +15,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.sequenia.threads.BucketGalleryDecorator;
+import com.sequenia.threads.BucketsGalleryDecorator;
 import com.sequenia.threads.GalleryDecorator;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.GalleryAdaper;
@@ -45,7 +44,7 @@ public class GalleryActivity extends AppCompatActivity
     private ArrayList<ArrayList<MediaPhoto>> lists;
     List<PhotoBucketItem> bucketItems = new ArrayList<>();
     private boolean isInBuckets = false;
-    private BucketGalleryDecorator mBucketGalleryDecorator = new BucketGalleryDecorator(4);
+    private BucketsGalleryDecorator mBucketsGalleryDecorator = new BucketsGalleryDecorator(4);
     private GalleryDecorator mGalleryDecorator = new GalleryDecorator(4);
     private EditText mSearchEdiText;
     private List<MediaPhoto> chosentItems;
@@ -118,10 +117,10 @@ public class GalleryActivity extends AppCompatActivity
         for (ArrayList<MediaPhoto> itemList : lists) {
             bucketItems.add(new PhotoBucketItem(itemList.get(0).getBucketName(), String.valueOf(itemList.size()), itemList.get(0).getImagePath()));
         }
-        mBucketGalleryDecorator = new BucketGalleryDecorator(4);
+        mBucketsGalleryDecorator = new BucketsGalleryDecorator(4);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mRecyclerView.setAdapter(new PhotoBucketsGalleryAdapter(bucketItems, this));
-        mRecyclerView.addItemDecoration(mBucketGalleryDecorator);
+        mRecyclerView.addItemDecoration(mBucketsGalleryDecorator);
         isInBuckets = true;
         mSearchEdiText = (EditText) findViewById(R.id.search_edit_text);
         findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
@@ -169,7 +168,7 @@ public class GalleryActivity extends AppCompatActivity
         findViewById(R.id.bottom_buttons).setVisibility(View.VISIBLE);
         findViewById(R.id.search_layout).setVisibility(View.GONE);
         findViewById(R.id.nothing_found_label).setVisibility(View.GONE);
-        mRecyclerView.removeItemDecoration(mBucketGalleryDecorator);
+        mRecyclerView.removeItemDecoration(mBucketsGalleryDecorator);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         List<MediaPhoto> photos = null;
         for (List<MediaPhoto> list : lists) {
@@ -198,7 +197,7 @@ public class GalleryActivity extends AppCompatActivity
         mRecyclerView.removeItemDecoration(mGalleryDecorator);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mRecyclerView.setAdapter(new PhotoBucketsGalleryAdapter(bucketItems, this));
-        mRecyclerView.addItemDecoration(mBucketGalleryDecorator);
+        mRecyclerView.addItemDecoration(mBucketsGalleryDecorator);
     }
 
     private void setStateSearchingPhoto() {
@@ -211,7 +210,7 @@ public class GalleryActivity extends AppCompatActivity
         ImageButton clearButton = (ImageButton) findViewById(R.id.clear_search_button);
         final TextView nothingFoundLabel = (TextView) findViewById(R.id.nothing_found_label);
         nothingFoundLabel.setVisibility(View.VISIBLE);
-        mRecyclerView.removeItemDecoration(mBucketGalleryDecorator);
+        mRecyclerView.removeItemDecoration(mBucketsGalleryDecorator);
         mRecyclerView.addItemDecoration(mGalleryDecorator);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mRecyclerView.setAdapter(null);

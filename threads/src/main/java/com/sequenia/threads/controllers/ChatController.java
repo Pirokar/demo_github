@@ -48,7 +48,15 @@ public class ChatController extends Fragment {
     private DatabaseHolder mDatabaseHolder;
     private boolean isConsultFound;
     private Context appContext;
+    private boolean isBotActive = true;
+    private static ChatController instance;
 
+    public static ChatController getInstance() {
+        if (instance == null) {
+            instance = new ChatController();
+        }
+        return instance;
+    }
 
     @Override
 
@@ -105,7 +113,9 @@ public class ChatController extends Fragment {
         postUserPhrase(convert(upcomingUserMessage), 1000, new CompletionHandler<UserPhrase>() {
             @Override
             public void onComplete(UserPhrase data) {
-                answerToUser(data, true);
+                if (isBotActive) {
+                    answerToUser(data, true);
+                }
             }
 
             @Override
@@ -128,6 +138,9 @@ public class ChatController extends Fragment {
         if (up.getFileDescription() != null) {
             String userFP = up.getFileDescription().getPath();
             String filepath = userFP;
+            if (!filepath.contains("file://")) {
+                filepath = "file://" + filepath;
+            }
             fd = new FileDescription(up.getFileDescription().getHeader(), filepath, System.currentTimeMillis());
         }
         Quote q = null;
@@ -302,6 +315,13 @@ public class ChatController extends Fragment {
     private UserPhrase convert(UpcomingUserMessage message) {
         if (message == null)
             return new UserPhrase(UUID.randomUUID().toString(), "", null, System.currentTimeMillis(), null);
+        if (message.getFileDescription() != null && !message.getFileDescription().getPath().contains("file://")) {
+            message.getFileDescription().setPath("file://" + message.getFileDescription().getPath());
+        }
         return new UserPhrase(UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription());
+    }
+
+    public void onConsultInput(String chatPhrase) {
+        addMessage(new ConsultPhrase(getSmallConsultAvatarPath(), System.currentTimeMillis(), chatPhrase, UUID.randomUUID().toString(), "", null, null));
     }
 }
