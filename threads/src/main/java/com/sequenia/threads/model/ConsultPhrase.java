@@ -7,6 +7,7 @@ import java.util.UUID;
  */
 public class ConsultPhrase implements ChatPhrase {
     private final String avatarPath;
+    private final String consultId;
     private final long timeStamp;
     private final String phrase;
     private final String messageId;
@@ -16,15 +17,19 @@ public class ConsultPhrase implements ChatPhrase {
     private final FileDescription fileDescription;
     private boolean isChosen;
 
-    public ConsultPhrase(String avatarPath, long timeStamp, String phrase, String messageId, String consultName, Quote quote, FileDescription fileDescription) {
-        this.avatarPath = avatarPath;
-        this.timeStamp = timeStamp;
-        this.phrase = phrase;
-        this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
-        this.consultName = consultName;
-        this.quote = quote;
+    public ConsultPhrase(FileDescription fileDescription, Quote quote, String consultName, String messageId, String phrase, long timeStamp, String consultId, String avatarPath) {
         this.fileDescription = fileDescription;
+        this.quote = quote;
+        this.consultName = consultName;
+        this.messageId = messageId;
+        this.phrase = phrase;
+        this.timeStamp = timeStamp;
+        this.consultId = consultId;
+        this.avatarPath = avatarPath;
+    }
 
+    public String getConsultId() {
+        return consultId;
     }
 
     public boolean isChosen() {
@@ -70,6 +75,7 @@ public class ConsultPhrase implements ChatPhrase {
     public String toString() {
         return "ConsultPhrase{" +
                 "avatarPath='" + avatarPath + '\'' +
+                ", consultId='" + consultId + '\'' +
                 ", timeStamp=" + timeStamp +
                 ", phrase='" + phrase + '\'' +
                 ", messageId='" + messageId + '\'' +

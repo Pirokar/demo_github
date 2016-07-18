@@ -1,24 +1,33 @@
 package com.sequenia.threads.controllers;
 
 import android.accounts.NetworkErrorException;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.pushserver.android.PushController;
+import com.pushserver.android.PushGcmIntentService;
+import com.pushserver.android.RequestCallback;
+import com.pushserver.android.exception.PushServerErrorException;
+import com.sequenia.threads.ConsultInfo;
+import com.sequenia.threads.MessageMatcher;
 import com.sequenia.threads.activities.ChatActivity;
+import com.sequenia.threads.activities.ConsultActivity;
 import com.sequenia.threads.database.DatabaseHolder;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.CompletionHandler;
-import com.sequenia.threads.model.ConsultConnected;
+import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.model.FileDescription;
@@ -46,10 +55,10 @@ public class ChatController extends Fragment {
     private HashMap<String, ArrayList<ProgressRunnable>> runableMap = new HashMap<>();
     private ArrayList<String> completedDownloads = new ArrayList<>();
     private DatabaseHolder mDatabaseHolder;
-    private boolean isConsultFound;
     private Context appContext;
-    private boolean isBotActive = true;
+    private boolean isBotActive = false;
     private static ChatController instance;
+    private List<UpcomingUserMessage> pendingMessages = new ArrayList<>();
 
     public static ChatController getInstance() {
         if (instance == null) {
@@ -67,6 +76,7 @@ public class ChatController extends Fragment {
 
     public void bindActivity(ChatActivity ca) {
         activity = ca;
+        activity.connectedConsultId = ConsultInfo.getCurrentConsultId(ca);
         appContext = activity.getApplicationContext();
         mDatabaseHolder = DatabaseHolder.getInstance(activity);
         if (mDatabaseHolder.getMessagesCount() > 0) {
@@ -81,15 +91,14 @@ public class ChatController extends Fragment {
                 }
             });
         }
-        isConsultFound = appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE).getBoolean("isConsultFound", false);
-        if (isConsultFound) {
-            String[] nameAndTitle = getCurrentConsultName().split("%%");
-            activity.setTitleStateOperatorConnected(nameAndTitle[0], nameAndTitle[1]);
+
+        if (ConsultInfo.isConsultConnected(appContext)) {
+            activity.setTitleStateOperatorConnected(ConsultInfo.getCurrentConsultName(appContext),ConsultInfo.getCurrentConsultName(appContext), ConsultInfo.getCurrentConsultTitle(appContext));
         }
     }
 
     public boolean isConsultFound() {
-        return isConsultFound;
+        return ConsultInfo.isConsultConnected(appContext);
     }
 
     public void unbindActivity() {
@@ -105,11 +114,72 @@ public class ChatController extends Fragment {
 
     public void onUserInput(UpcomingUserMessage upcomingUserMessage) {
         if (upcomingUserMessage == null) return;
-
         if (upcomingUserMessage.getText() != null && upcomingUserMessage.getText().trim().equalsIgnoreCase("Thanks a lot")) {
             cleanAll();
             return;
         }
+        if (upcomingUserMessage.getText() != null && upcomingUserMessage.getText().trim().equalsIgnoreCase("test connection")) {
+            Bundle b = new Bundle();
+            b.putString(PushGcmIntentService.EXTRA_TYPE, "OPERATOR_JOINED");
+            b.putString("operatorPhoto", "http://i.imgur.com/uJ8YJ.jpg");
+            b.putString("operatorName", "Тестовый оператор №100500");
+            b.putString("operatorStatus", "Тестовый статус тестового оператора");
+            b.putString("alert", "Оператор Тестовый оператор №100500 присоединился");
+            onMessageFromServer(activity, b);
+            return;
+        }
+        if (upcomingUserMessage.getText() != null && upcomingUserMessage.getText().trim().equalsIgnoreCase("test disconnection")) {
+            Bundle b = new Bundle();
+            b.putString(PushGcmIntentService.EXTRA_TYPE, "OPERATOR_LEFT");
+            b.putString("operatorName", "Тестовый оператор №100500");
+            b.putString("alert", "Оператор Тестовый оператор №100500 покинул чятик");
+            onMessageFromServer(activity, b);
+            return;
+        }
+        if (appContext != null) {
+            try {
+                PushController.getInstance(appContext).sendMessageAsync(upcomingUserMessage.getText(), false, new RequestCallback<Void, PushServerErrorException>() {
+                    @Override
+                    public void onResult(Void aVoid) {
+                        Log.e(TAG, "onResult " + aVoid);
+                    }
+
+                    @Override
+                    public void onError(PushServerErrorException e) {
+                        Log.e(TAG, "onError " + e);
+                    }
+                });// TODO: 13.07.2016
+            } catch (Exception e) {
+                pendingMessages.add(upcomingUserMessage);
+            }
+        }
+
+       /* PushController.getInstance(ctx).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+            @Override
+            public void onResult(List<InOutMessage> inOutMessages) {
+                Log.e(TAG, "getMessageHistoryAsync onResult" + inOutMessages);
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+                Log.e(TAG, "" + e);
+            }
+        });// TODO: 13.07.2016
+        PushController.getInstance(ctx).getNextMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+            @Override
+            public void onResult(List<InOutMessage> inOutMessages) {
+                Log.e(TAG, "getNextMessageHistoryAsync onResult" + inOutMessages);
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+                Log.e(TAG, "" + e);
+            }
+        });// TODO: 13.07.2016
+        if (upcomingUserMessage.getText() != null && upcomingUserMessage.getText().trim().equalsIgnoreCase("Thanks a lot")) {
+            cleanAll();
+            return;
+        }*/
         postUserPhrase(convert(upcomingUserMessage), 1000, new CompletionHandler<UserPhrase>() {
             @Override
             public void onComplete(UserPhrase data) {
@@ -123,14 +193,6 @@ public class ChatController extends Fragment {
                 data.setSentState(MessageState.STATE_NOT_SENT);
             }
         });
-    }
-
-    private String getSmallConsultAvatarPath() {
-        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + appContext.getPackageName() + "/drawable/" + "sample_consult_avatar_small").toString();
-    }
-
-    private String getBigConsultAvatarPath() {
-        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + appContext.getPackageName() + "/drawable/" + "sample_consult_avatar_big").toString();
     }
 
     private ConsultPhrase convert(final UserPhrase up) {
@@ -147,7 +209,8 @@ public class ChatController extends Fragment {
         if (null != up.getQuote()) {
             q = new Quote("Я", up.getQuote().getText(), System.currentTimeMillis());
         }
-        return new ConsultPhrase(getSmallConsultAvatarPath(), System.currentTimeMillis(), up.getPhrase(), UUID.randomUUID().toString(), getCurrentConsultName().split("%%")[0], q, fd);
+
+        return new ConsultPhrase(fd, q, ConsultInfo.getCurrentConsultName(appContext), UUID.randomUUID().toString(), up.getPhrase(), System.currentTimeMillis(), ConsultInfo.getCurrentConsultName(appContext), ConsultInfo.getCurrentConsultPhoto(appContext));
     }
 
     private void addMessage(ChatItem cm) {
@@ -156,7 +219,17 @@ public class ChatController extends Fragment {
     }
 
     public String getCurrentConsultName() {
-        return "Мария Павлова%%оператор";
+        Context ctx = null;
+        if (activity != null) {
+            ctx = activity;
+        }
+        if (appContext != null) {
+            ctx = activity;
+        }
+        if (ctx != null) {
+            return ConsultInfo.getCurrentConsultName(ctx) + "%%" + ConsultInfo.getCurrentConsultTitle(ctx);
+        }
+        return "";
     }
 
     public void onDownloadRequest(final String path) {
@@ -224,46 +297,49 @@ public class ChatController extends Fragment {
     private void cleanAll() {
         mDatabaseHolder.cleanDatabase();
         activity.cleanChat();
-        isConsultFound = false;
+        ConsultInfo.setCurrentConsultLeft(appContext);
         isSearchingConsult = false;
         h.removeCallbacksAndMessages(null);
         runableMap = new HashMap<>();
         completedDownloads = new ArrayList<>();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        SharedPreferences sp = appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-        sp.edit().putBoolean("isConsultFound", isConsultFound).apply();
-    }
-
     private void answerToUser(final UserPhrase up, final boolean showIsTyping) {
         if (up.getSentState() == MessageState.STATE_SENT_AND_SERVER_RECEIVED) {
-            if (!isSearchingConsult && !isConsultFound) {
+            if (!isSearchingConsult && !ConsultInfo.isConsultConnected(appContext)) {
                 isSearchingConsult = true;
-                isConsultFound = true;
+                Bundle b = new Bundle();
+                b.putString("operatorStatus", "УВЧ СР!");
+                b.putString("operatorName", "Чат Бот");
+                b.putString("alert", "Оператор ");
+                b.putString("operatorPhoto", Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://com.sequenia.appwithchat/drawable/consult_photo").toString());
+                ConsultInfo.setCurrentConsultInfo(UUID.randomUUID().toString(), b, appContext);
                 activity.setTitleStateSearchingConsult();
                 h.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        String[] nameAndTitle = getCurrentConsultName().split("%%");
                         if (activity != null) {
-                            activity.setTitleStateOperatorConnected(nameAndTitle[0], nameAndTitle[1]);
+                            activity.setTitleStateOperatorConnected(
+                                    ConsultInfo.getCurrentConsultId(activity)
+                                    , ConsultInfo.getCurrentConsultName(activity)
+                                    , ConsultInfo.getCurrentConsultTitle(activity));
                         }
-                        ConsultConnected cc = new ConsultConnected(nameAndTitle[0]
+                        ConsultConnectionMessage cc = new ConsultConnectionMessage(
+                                "Чат Бот"
+                                , ConsultConnectionMessage.TYPE_JOINED
+                                , ConsultInfo.getCurrentConsultName(activity)
                                 , false
                                 , System.currentTimeMillis()
-                                , getBigConsultAvatarPath());
+                                , ConsultInfo.getCurrentConsultPhoto(activity));
                         addMessage(cc);
                         if (showIsTyping)
-                            addMessage(new ConsultTyping(System.currentTimeMillis(), getBigConsultAvatarPath()));
+                            addMessage(new ConsultTyping("Чат Бот", System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(activity)));
                         postConsultPhrase(up, 2000, null);
                     }
                 }, 3500);
             } else {
                 if (showIsTyping) {
-                    activity.addMessage(new ConsultTyping(System.currentTimeMillis(), getBigConsultAvatarPath()));
+                    activity.addMessage(new ConsultTyping("Чат Бот", System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(activity)));
                 }
                 postConsultPhrase(up, 2000, null);
             }
@@ -321,7 +397,84 @@ public class ChatController extends Fragment {
         return new UserPhrase(UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription());
     }
 
-    public void onConsultInput(String chatPhrase) {
-        addMessage(new ConsultPhrase(getSmallConsultAvatarPath(), System.currentTimeMillis(), chatPhrase, UUID.randomUUID().toString(), "", null, null));
+    public void onMessageFromServer(Context ctx, Bundle bundle) {
+        Log.e(TAG, "current consult id is " + ConsultInfo.getCurrentConsultId(ctx));
+
+
+     /*   Log.e(TAG, "alert = " + bundle.getString(PushGcmIntentService.EXTRA_ALERT));
+        Log.e(TAG, "operatorStatus " + bundle.getString("operatorStatus"));
+        Log.e(TAG, "messageId " + bundle.getString("messageId"));
+        Log.e(TAG, "operatorName " + bundle.getString("operatorName"));
+        Log.e(TAG, "type " + bundle.getString(PushGcmIntentService.EXTRA_TYPE));
+        Log.e(TAG, "operatorPhoto " + bundle.getString("operatorPhoto"));*/
+        switch (MessageMatcher.getType(bundle)) {
+            case MessageMatcher.TYPE_MESSAGE:
+                if (ConsultInfo.getCurrentConsultId(activity) == null) {
+                    ConsultInfo.setCurrentConsultId(UUID.randomUUID().toString(), activity);
+                }
+                addMessage(
+                        new ConsultPhrase(null
+                                , null
+                                , ConsultInfo.getCurrentConsultName(activity)
+                                , bundle.getString("messageId")
+                                , bundle.getString(PushGcmIntentService.EXTRA_ALERT)
+                                , System.currentTimeMillis()
+                                , ConsultInfo.getCurrentConsultId(activity) //before we have tru consult id. i just use it's name
+                                , ConsultInfo.getCurrentConsultPhoto(activity)));
+
+                break;
+            case MessageMatcher.TYPE_OPERATOR_JOINED:
+                Context notNullContext = appContext == null ? ctx : appContext;
+                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_JOINED, bundle.getString("operatorName"), true, System.currentTimeMillis(), bundle.getString("operatorPhoto")));
+                if (null != notNullContext) {
+                    ConsultInfo.setCurrentConsultInfo(bundle.getString("operatorName"), bundle, notNullContext);
+                }
+                if (activity != null) {
+                    activity.setTitleStateOperatorConnected(bundle.getString("operatorName"), bundle.getString("operatorName"), ConsultInfo.getCurrentConsultTitle(activity));
+                }
+                break;
+            case MessageMatcher.TYPE_OPERATOR_LEFT:
+                Log.e(TAG, "MessageMatcher.TYPE_OPERATOR_LEFT");
+                notNullContext = appContext == null ? ctx : appContext;
+                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_LEFT, bundle.getString("operatorName"), true, System.currentTimeMillis(), ConsultInfo.getConsultPhoto(notNullContext, bundle.getString("operatorName"))));
+                if (null != notNullContext) {
+                    ConsultInfo.setCurrentConsultLeft(notNullContext);
+                }
+                if (activity != null) {
+                    activity.setTitleStateDefault();
+                }
+                break;
+            case MessageMatcher.TYPE_OPERATOR_TYPING:
+                notNullContext = appContext == null ? ctx : appContext;
+                addMessage(new ConsultTyping(ConsultInfo.getCurrentConsultId(notNullContext), System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(appContext)));
+                break;
+            default:
+                Log.e(TAG, "unknown message type " + bundle);
+        }
+        //  addMessage(new ConsultPhrase(getSmallConsultAvatarPath(), System.currentTimeMillis(), chatPhrase, UUID.randomUUID().toString(), "", null, null));
+    }
+
+    public void onPushInit(Context ctx) {
+        for (UpcomingUserMessage upm : pendingMessages) {
+            if (ctx != null && upm.getText() != null) {
+                PushController.getInstance(ctx).sendMessageAsync(upm.getText(), false, new RequestCallback<Void, PushServerErrorException>() {
+                    @Override
+                    public void onResult(Void aVoid) {
+                        Log.e(TAG, "onResult " + aVoid);
+                    }
+
+                    @Override
+                    public void onError(PushServerErrorException e) {
+                        Log.e(TAG, "onError " + e);
+                    }
+                });
+            }
+        }
+        pendingMessages.clear();
+    }
+
+    public void onConsultChoose(Activity activity, String consultId) {
+        Intent i = ConsultActivity.getStartIntent(activity, ConsultInfo.getConsultPhoto(activity, consultId), ConsultInfo.getConsultName(activity, consultId), ConsultInfo.getConsultStatus(activity, consultId));
+        activity.startActivity(i);
     }
 }

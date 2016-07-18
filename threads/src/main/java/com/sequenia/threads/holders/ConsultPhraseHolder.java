@@ -2,6 +2,7 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +12,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sequenia.threads.CircleTransform;
 import com.sequenia.threads.R;
 import com.sequenia.threads.RussianFormatSymbols;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.Quote;
+import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
@@ -60,25 +63,21 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(String consultPhrase
+            , String avatarPath
             , long timeStamp
             , boolean isAvatarVisible
             , Quote quote
             , FileDescription fileDescription
             , @Nullable View.OnClickListener onAttachClickListener
             , View.OnLongClickListener onRowLongClickListener
+            , View.OnClickListener onAvatarClickListener
             , boolean isChosen) {
+        Log.e(TAG, ""+avatarPath);
         itemView.setOnLongClickListener(onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnLongClickListener(onRowLongClickListener);
-        }
-
-        if (consultPhrase == null) {
-            mPhraseTextView.setVisibility(View.GONE);
-        } else {
-            mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(consultPhrase);
         }
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
@@ -94,7 +93,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                 mCircularProgressButton.setOnClickListener(onAttachClickListener);
             }
             rightTextHeader.setText(quote == null ? "" : quote.getHeader());
-            rightTextDescr.setText(fileDescription.getPath() +"\n1,2mb");
+            rightTextDescr.setText(fileDescription.getPath() + "\n1,2mb");
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
             mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         }
@@ -103,16 +102,27 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         }
         if (isAvatarVisible) {
             mConsultAvatar.setVisibility(View.VISIBLE);
+            mConsultAvatar.setOnClickListener(onAvatarClickListener);
+            if (avatarPath != null) {
+                Picasso
+                        .with(itemView.getContext())
+                        .load(avatarPath)
+                        .fit()
+                        .centerCrop()
+                        .transform(new CircleTransform())
+                        .into(mConsultAvatar);
+            }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
         }
-
+        //  Log.e(TAG, "consultPhrase = "+consultPhrase);// TODO: 14.07.2016
         mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 try {
-                    if ( mPhraseTextView.getLayout()==null){
+                    if (mPhraseTextView.getLayout() == null) {
                         mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        //      Log.e(TAG, "mPhraseTextView.getLayout()==null");// TODO: 14.07.2016
                         return;
                     }
                     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -121,6 +131,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                     if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 50)) {
                         params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (3 * (int) (density)), 0, 0);
                     }
+                    //   Log.e(TAG, " mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (3 * (int) (density)) = "+ mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (3 * (int) (density)));// TODO: 14.07.2016
                     mTimeStampTextView.setLayoutParams(params);
                     mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 } catch (Throwable e) {
@@ -128,6 +139,12 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
+        if (consultPhrase == null) {
+            mPhraseTextView.setVisibility(View.GONE);
+        } else {
+            mPhraseTextView.setVisibility(View.VISIBLE);
+            mPhraseTextView.setText(consultPhrase);
+        }
         if (isChosen) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterViewSecond.setVisibility(View.VISIBLE);

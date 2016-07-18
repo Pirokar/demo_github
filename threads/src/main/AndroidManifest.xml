@@ -35,6 +35,8 @@
             android:name=".activities.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
+        <service android:name=".push.MyServerIntentService" />
+        <service android:name=".push.MyPGCMService"/>
 
     </application>
 

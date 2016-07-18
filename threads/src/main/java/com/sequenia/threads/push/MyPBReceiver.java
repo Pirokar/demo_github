@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
+import com.pushserver.android.PushGcmIntentService;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 import com.sequenia.threads.controllers.ChatController;
@@ -16,13 +17,13 @@ import java.util.UUID;
 /**
  * Created by yuri on 22.06.2016.
  */
-public class MyPhBReceiver extends PushBroadcastReceiver {
-    private static final String TAG = "MyPhBReceiver ";
+public class MyPBReceiver extends PushBroadcastReceiver {
+    private static final String TAG = "MyPBReceiver ";
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.e(TAG, "onNewPushNotification " + s + " " + bundle);
-        ChatController.getInstance().onConsultInput(s);
+        ChatController.getInstance().onMessageFromServer(context,bundle);
     }
 
     @Override
@@ -31,17 +32,20 @@ public class MyPhBReceiver extends PushBroadcastReceiver {
     }
 
     @Override
-    public void onDeviceAddressChanged(Context context, String s) {
+    public void onDeviceAddressChanged(final Context context, String s) {
         Log.e(TAG, "onDeviceAddressChanged " + s);
         String id = PreferenceManager.getDefaultSharedPreferences(context).getString("Id", null);
+        Log.e(TAG, "id== " +id);
         if (id == null) {
             id = UUID.randomUUID().toString();
             PreferenceManager.getDefaultSharedPreferences(context).edit().putString("Id", id).apply();
+            Log.e(TAG, "new id== " +id);
         }
         PushController.getInstance(context).setClientIdAsync(id, new RequestCallback<Void, PushServerErrorException>() {
             @Override
             public void onResult(Void aVoid) {
                 Log.e(TAG, "" + aVoid);
+                ChatController.getInstance().onPushInit(context);
             }
 
             @Override

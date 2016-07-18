@@ -38,4 +38,6 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
     public void onError(Context context, String s) {
         Log.e(TAG, "onError " + s);
     }
+
+
 }

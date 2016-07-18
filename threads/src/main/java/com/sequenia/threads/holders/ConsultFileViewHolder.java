@@ -1,7 +1,6 @@
 package com.sequenia.threads.holders;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,13 +54,18 @@ public class ConsultFileViewHolder extends RecyclerView.ViewHolder {
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         ViewGroup vg = (ViewGroup) itemView;
-      //  Log.e(TAG, "onBIND!!!!!!! progress = " + fileDescription.getDownloadProgress());// TODO: 01.07.2016
+        //  Log.e(TAG, "onBIND!!!!!!! progress = " + fileDescription.getDownloadProgress());// TODO: 01.07.2016
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);
         }
         mCircularProgressButton.setOnClickListener(buttonClickListener);
         Picasso.with(itemView.getContext()).load(avatarPath).fit().into(mConsultAvatar);
         if (isAvatarVisible) {
+            mConsultAvatar.setVisibility(View.VISIBLE);
+        } else {
+            mConsultAvatar.setVisibility(View.GONE);
+        }
+        if (avatarPath == null) {
             mConsultAvatar.setVisibility(View.VISIBLE);
         } else {
             mConsultAvatar.setVisibility(View.GONE);

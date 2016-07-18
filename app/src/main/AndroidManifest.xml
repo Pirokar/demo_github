@@ -63,7 +63,7 @@
                android:name="com.pushserver.android.serverPrimaryId"
                android:value="[PRIMARY_SERVER_ID]"/>-->
         <receiver
-            android:name="com.sequenia.threads.push.MyPhBReceiver"
+            android:name="com.sequenia.threads.push.MyPBReceiver"
             android:exported="false"
             android:permission="com.sequenia.appwithchat.permission.pushserver.RECEIVE">
             <intent-filter>

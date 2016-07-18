@@ -12,6 +12,8 @@
     <string name="file">File</string>
     <string name="hide">Hide</string>
     <string name="connected_female">connected to dialog at</string>
+    <string name="left_female">disconnected from dialog at</string>
+    <string name="left_dialog">disconnected from dialog at</string>
     <string name="connected">connected to dialog</string>
     <string name="sent_at">sent at</string>
     <string name="file_pdf">Text file</string>

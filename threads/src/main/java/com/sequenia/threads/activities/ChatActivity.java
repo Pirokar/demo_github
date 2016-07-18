@@ -31,10 +31,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.advisa.client.api.InOutMessage;
-import com.pushserver.android.PushController;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
 import com.sequenia.threads.PermissionChecker;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.BottomGalleryAdapter;
@@ -75,8 +71,8 @@ public class ChatActivity extends AppCompatActivity
     private BottomSheetView mBottomSheetView;
     private BottomGallery mBottomGallery;
     private ChatAdapter mChatAdapter;
-    private TextView mTitleView;
-    private TextView mSubTitleView;
+    private TextView mConsultNameView;
+    private TextView mConsultTitle;
     private boolean isConsultTyping = false;
     private boolean isSearchingConsult = false;
     private View mCopyControls;
@@ -92,6 +88,7 @@ public class ChatActivity extends AppCompatActivity
     public static final int REQUEST_CODE_PHOTO = 101;
     public static final int REQUEST_PERMISSION_GALLERY = 102;
     public static final int REQUEST_PERMISSION_CAMERA = 103;
+    public String connectedConsultId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -198,39 +195,6 @@ public class ChatActivity extends AppCompatActivity
                 unChooseItem(mChosenPhrase);
                 UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, mFileDescription);
                 mChatController.onUserInput(uum);
-                PushController.getInstance(ctx).sendMessageAsync(mInputEditText.getText().toString(), false, new RequestCallback<Void, PushServerErrorException>() {
-                    @Override
-                    public void onResult(Void aVoid) {
-                        Log.e(TAG, "" + aVoid);
-                    }
-
-                    @Override
-                    public void onError(PushServerErrorException e) {
-                        Log.e(TAG, "" + e);
-                    }
-                });// TODO: 13.07.2016  
-               PushController.getInstance(ctx).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-                    @Override
-                    public void onResult(List<InOutMessage> inOutMessages) {
-                        Log.e(TAG, "getMessageHistoryAsync onResult" + inOutMessages);
-                    }
-
-                    @Override
-                    public void onError(PushServerErrorException e) {
-                        Log.e(TAG, "" + e);
-                    }
-                });// TODO: 13.07.2016  
-                PushController.getInstance(ctx).getNextMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-                    @Override
-                    public void onResult(List<InOutMessage> inOutMessages) {
-                        Log.e(TAG, "getNextMessageHistoryAsync onResult" + inOutMessages);
-                    }
-
-                    @Override
-                    public void onError(PushServerErrorException e) {
-                        Log.e(TAG, "" + e);
-                    }
-                });// TODO: 13.07.2016
                 mInputEditText.setText("");
                 mQuoteLayoutHolder.setIsVisible(false);
                 mQuote = null;
@@ -246,22 +210,22 @@ public class ChatActivity extends AppCompatActivity
                 }
             });
         }
-        mTitleView = (TextView) findViewById(R.id.title);
-        mSubTitleView = (TextView) findViewById(R.id.subtitle);
+        mConsultNameView = (TextView) findViewById(R.id.consult_name);
+        mConsultTitle = (TextView) findViewById(R.id.subtitle);
 
-        mTitleView.setOnClickListener(new View.OnClickListener() {
+        mConsultNameView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mChatController.isConsultFound())
-                    onConsultClick();
+                    onConsultAvatarClick(connectedConsultId);
             }
         });
 
-        mSubTitleView.setOnClickListener(new View.OnClickListener() {
+        mConsultTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mChatController.isConsultFound())
-                    onConsultClick();
+                    onConsultAvatarClick(connectedConsultId);
             }
         });
 
@@ -449,43 +413,42 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void setTitleStateDefault() {
-        mSubTitleView.setVisibility(View.GONE);
-        mTitleView.setVisibility(View.VISIBLE);
+        mConsultTitle.setVisibility(View.GONE);
+        mConsultNameView.setVisibility(View.VISIBLE);
         mSearchMessageEditText.setVisibility(View.GONE);
         mSearchMessageEditText.setText("");
-        mTitleView.setText(getResources().getString(R.string.contact_center));
+        mConsultNameView.setText(getResources().getString(R.string.contact_center));
     }
 
     public void setTitleStateSearchingConsult() {
-        mSubTitleView.setVisibility(View.GONE);
-        mTitleView.setVisibility(View.VISIBLE);
+        mConsultTitle.setVisibility(View.GONE);
+        mConsultNameView.setVisibility(View.VISIBLE);
         mSearchMessageEditText.setVisibility(View.GONE);
         mSearchMessageEditText.setText("");
-        mTitleView.setText(getResources().getString(R.string.searching_operator));
+        mConsultNameView.setText(getResources().getString(R.string.searching_operator));
     }
 
     public void setTitleStateSearchingMessage() {
-        mSubTitleView.setVisibility(View.GONE);
-        mTitleView.setVisibility(View.GONE);
+        mConsultTitle.setVisibility(View.GONE);
+        mConsultNameView.setVisibility(View.GONE);
         mSearchMessageEditText.setVisibility(View.VISIBLE);
         mSearchMessageEditText.setText("");
         mSearchMessageEditText.requestFocus();
     }
 
 
-    public void setTitleStateOperatorConnected(String title, String subtitle) {
-        mSubTitleView.setVisibility(View.VISIBLE);
-        mTitleView.setVisibility(View.VISIBLE);
-        mTitleView.setText(title);
-        mSubTitleView.setText(subtitle);
+    public void setTitleStateOperatorConnected(String connectedConsultId, String ConsultName, String consultTitle) {
+        mConsultTitle.setVisibility(View.VISIBLE);
+        mConsultNameView.setVisibility(View.VISIBLE);
+        mConsultNameView.setText(ConsultName);
+        mConsultTitle.setText(consultTitle);
+        this.connectedConsultId = connectedConsultId;
     }
 
     public void setTitleStateCurrentOperatorConnected() {
         if (mChatController.isConsultFound()) {
-            String[] cfn = mChatController.getCurrentConsultName().split("%%");
-            setTitleStateOperatorConnected(cfn[0], cfn[1]);
-            mSubTitleView.setVisibility(View.VISIBLE);
-            mTitleView.setVisibility(View.VISIBLE);
+            mConsultTitle.setVisibility(View.VISIBLE);
+            mConsultNameView.setVisibility(View.VISIBLE);
             mSearchMessageEditText.setVisibility(View.GONE);
             mSearchMessageEditText.setText("");
         }
@@ -512,8 +475,8 @@ public class ChatActivity extends AppCompatActivity
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
         mToolbar.setBackgroundColor(getResources().getColor(android.R.color.white));
         mCopyControls.setVisibility(View.VISIBLE);
-        mTitleView.setVisibility(View.GONE);
-        mSubTitleView.setVisibility(View.GONE);
+        mConsultNameView.setVisibility(View.GONE);
+        mConsultTitle.setVisibility(View.GONE);
         ImageButton reply = (ImageButton) mCopyControls.findViewById(R.id.reply);
         ImageButton copy = (ImageButton) mCopyControls.findViewById(R.id.content_copy);
         copy.setOnClickListener(new View.OnClickListener() {
@@ -550,8 +513,9 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onConsultClick() {
-        startActivity(ConsultActivity.getStartIntent(this, null, null, null));
+    public void onConsultAvatarClick(String consultId) {
+        Log.e(TAG, "onConsultAvatarClick " + consultId);// TODO: 16.07.2016  
+        mChatController.onConsultChoose(this, consultId);
     }
 
     private void hideCopyControls() {
@@ -559,8 +523,10 @@ public class ChatActivity extends AppCompatActivity
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         mToolbar.setBackgroundColor(getResources().getColor(R.color.green_light));
         mCopyControls.setVisibility(View.GONE);
-        mTitleView.setVisibility(View.VISIBLE);
-        mSubTitleView.setVisibility(View.VISIBLE);
+        mConsultNameView.setVisibility(View.VISIBLE);
+        if (mChatController != null && mChatController.isConsultFound()) {
+            mConsultTitle.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -571,8 +537,6 @@ public class ChatActivity extends AppCompatActivity
             isNeedToClose = false;
         }
         if (mSearchMessageEditText.getVisibility() == View.VISIBLE) {
-            String[] cfn = mChatController.getCurrentConsultName().split("%%");
-            setTitleStateOperatorConnected(cfn[0], cfn[1]);
             mSearchMessageEditText.setVisibility(View.GONE);
             mSearchMessageEditText.setText("");
             isNeedToClose = false;

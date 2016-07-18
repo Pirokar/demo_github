@@ -5,7 +5,7 @@ import android.content.Context;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.CompletionHandler;
-import com.sequenia.threads.model.ConsultConnected;
+import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 
@@ -53,8 +53,8 @@ public class DatabaseHolder {
     }
 
     public boolean putChatItem(ChatItem chatItem) {
-        if (chatItem instanceof ConsultConnected) {
-            mMyOpenHelper.putConsultConnected((ConsultConnected) chatItem);
+        if (chatItem instanceof ConsultConnectionMessage) {
+            mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) chatItem);
             return true;
         }
         if (chatItem instanceof ChatPhrase) {

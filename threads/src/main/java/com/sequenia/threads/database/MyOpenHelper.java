@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
-import com.sequenia.threads.model.ConsultConnected;
+import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
@@ -35,6 +35,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
     static final String COLUMN_MESSAGE_ID = "COLUMN_MESSAGE_ID";
     static final String COLUMN_MESSAGE_SEND_STATE = "COLUMN_MESSAGE_SEND_STATE";
     static final String COLUMN_SEX = "COLUMN_SEX";
+    static final String COLUMN_CONSULT_ID = "COLUMN_CONSULT_ID";
+    static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
 
 
     static final String TABLE_QUOTE = "TABLE_QUOTE";
@@ -65,10 +67,12 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         " %s text, " +//avatar path
                         " %s text, " + // message id
                         "%s integer, " + //sex
-                        " %s integer)",//message sent state
+                        " %s integer," +//message sent state
+                        "%s text," + //consultid
+                        "%s text)", //connection type
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
-                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE));
+                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID, COLUMN_CONNECTION_TYPE));
         db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_QUOTE
                         " %s text, " +//header
                         " %s text, " +//body
@@ -130,6 +134,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_TIMESTAMP, consultPhrase.getTimeStamp());
             cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_PHRASE.type);
             cv.put(COLUMN_AVATAR_PATH, ((ConsultPhrase) phrase).getAvatarPath());
+            cv.put(COLUMN_CONSULT_ID, ((ConsultPhrase) phrase).getConsultId());
             if (!isDup) {
                 getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             } else {
@@ -161,14 +166,20 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{messageId});
     }
 
-    void putConsultConnected(ConsultConnected consultConnected) {
+    void putConsultConnected(ConsultConnectionMessage consultConnectionMessage) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_NAME, consultConnected.getName());
-        cv.put(COLUMN_TIMESTAMP, consultConnected.getTimeStamp());
-        cv.put(COLUMN_AVATAR_PATH, consultConnected.getAvatarPath());
+        cv.put(COLUMN_NAME, consultConnectionMessage.getName());
+        cv.put(COLUMN_TIMESTAMP, consultConnectionMessage.getTimeStamp());
+        cv.put(COLUMN_AVATAR_PATH, consultConnectionMessage.getAvatarPath());
         cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_CONNECTED.type);
-        cv.put(COLUMN_SEX, consultConnected.getSex() ? "1" : "0");
-        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_NAME + " , " + COLUMN_TIMESTAMP + " from " + TABLE_MESSAGES + " where " + COLUMN_NAME + " = ? and " + COLUMN_TIMESTAMP + " = ? ", new String[]{consultConnected.getName(), "" + consultConnected.getTimeStamp()});
+        cv.put(COLUMN_SEX, consultConnectionMessage.getSex() ? "1" : "0");
+        cv.put(COLUMN_CONNECTION_TYPE, consultConnectionMessage.getConnectionType());
+        cv.put(COLUMN_CONSULT_ID, consultConnectionMessage.getConsultId());
+        if (consultConnectionMessage.getName() == null) {
+            getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+            return;
+        }
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_NAME + " , " + COLUMN_TIMESTAMP + " from " + TABLE_MESSAGES + " where " + COLUMN_NAME + " = ? and " + COLUMN_TIMESTAMP + " = ? ", new String[]{consultConnectionMessage.getName(), "" + consultConnectionMessage.getTimeStamp()});
         if (c.getCount() == 0) {
             c.close();
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
@@ -188,26 +199,30 @@ class MyOpenHelper extends SQLiteOpenHelper {
         final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
         final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
         final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
+        final int INDEX_CONNECTION_TYPE = c.getColumnIndex(COLUMN_CONNECTION_TYPE);
+        final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             int type = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_TYPE));
             if (type == MessageTypes.TYPE_CONSULT_CONNECTED.type) {
                 boolean sex = c.getInt(c.getColumnIndex(COLUMN_SEX)) == 1;
                 String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
-                ConsultConnected cc = new ConsultConnected(name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath);
+                String connectionType = c.getString(INDEX_CONNECTION_TYPE);
+                ConsultConnectionMessage cc = new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath);
                 items.add(cc);
             } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
                 String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
-
-                ConsultPhrase cp = new ConsultPhrase(avatarPath,
-                        c.getLong(INDEX_TIMESTAMP),
-                        phrase,
-                        c.getString(INDEX_MESSAGE_ID),
-                        name,
+                ConsultPhrase cp = new ConsultPhrase(
+                        getFileDescription(c.getString(INDEX_MESSAGE_ID)),
                         getQuote(c.getString(INDEX_MESSAGE_ID)),
-                        getFileDescription(c.getString(INDEX_MESSAGE_ID)));
+                        name,
+                        c.getString(INDEX_MESSAGE_ID),
+                        phrase,
+                        c.getLong(INDEX_TIMESTAMP),
+                        c.getString(INDEX_CONSULT_ID),
+                        avatarPath);
                 items.add(cp);
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
@@ -258,7 +273,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     List<FileDescription> getFileDescription() {
-        String query = String.format(Locale.US, "select * from %s order by %s desc", TABLE_FILE_DESCRIPTION,COLUMN_FD_TIMESTAMP);
+        String query = String.format(Locale.US, "select * from %s order by %s desc", TABLE_FILE_DESCRIPTION, COLUMN_FD_TIMESTAMP);
         List<FileDescription> list = new ArrayList<>();
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{});
         if (!c.moveToFirst()) {

@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.iid.InstanceID;
+import com.pushserver.android.PushController;
+import com.pushserver.android.PushMessage;
 import com.sequenia.threads.PermissionChecker;
 import com.sequenia.threads.ThreadsInitializer;
 import com.sequenia.threads.activities.ChatActivity;
@@ -24,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
@@ -43,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK);
         }
-
     }
 
     @Override
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
             }
         }
+
     }
 
     private void requestPermissionsAndInit(int requestCode) {
