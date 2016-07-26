@@ -3,12 +3,11 @@ package com.sequenia.threads.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sequenia.threads.CircleTransform;
+import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.holders.ConsultConnectionMessageViewHolder;
 import com.sequenia.threads.holders.ConsultFileViewHolder;
 import com.sequenia.threads.holders.ConsultIsTypingViewHolder;
@@ -97,7 +96,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ConsultConnectionMessageViewHolder) {
             ConsultConnectionMessage cc = (ConsultConnectionMessage) list.get(position);
-            Log.e(TAG, ""+cc);
             ((ConsultConnectionMessageViewHolder) holder).onBind(
                     cc.getName()
                     , cc.getTimeStamp()
@@ -412,15 +410,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public void addItem(ChatItem item) {
-        addItem(item, true);
+    public void addItem(ChatItem item, boolean isBulk) {
+        addItem(item, true, isBulk);
     }
 
-    public void addItem(ChatItem item, boolean withBackup) {
+    public void addItem(ChatItem item, boolean withBackup, boolean isBulk) {
         if (list.size() == 0) {
             list.add(new DateRow(item.getTimeStamp()));
             if (withBackup) backupList.add(new DateRow(item.getTimeStamp()));
-            notifyItemInserted(0);
+            if (!isBulk) notifyItemInserted(0);
         }
         Calendar currentTimeStamp = Calendar.getInstance();
         Calendar prevTimeStamp = Calendar.getInstance();
@@ -432,18 +430,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         list.add(item);
         if (withBackup) backupList.add(item);
-        notifyItemInserted(list.lastIndexOf(item));
+        if (!isBulk) notifyItemInserted(list.size() - 1);
         if (item instanceof ConsultPhrase && list.size() != 1) {
             int prev = list.size() - 2;
             if (list.get(prev) instanceof ConsultPhrase) {
                 ((ConsultPhrase) list.get(prev)).setAvatarVisible(false);
-                notifyItemChanged(prev);
+                if (!isBulk) notifyItemChanged(prev);
             }
         }
         if (list.size() < 2) return;
         final ChatItem last = list.get(list.size() - 1);
         final ChatItem prev = list.get(list.size() - 2);
-
         if (prev instanceof UserPhrase && last instanceof ConsultConnectionMessage) {// spacing between Consult and Consult connected
             list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
         }
@@ -474,14 +471,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (last instanceof ConsultConnectionMessage && prev instanceof ConsultPhrase) {
             list.add(list.size() - 1, new Space(8, System.currentTimeMillis()));
         }
-        notifyItemInserted(list.size() - 2);
+        if (!isBulk) notifyItemInserted(list.size() - 2);
     }
 
 
-    public void addItems(List<ChatItem> items) {
-        for (ChatItem ci : items) {
-            addItem(ci);
+    public void addItems(final List<ChatItem> items) {
+        for (int i = 0; i < items.size(); i++) {
+            addItem(items.get(i), true);
         }
+
     }
 
     @Override

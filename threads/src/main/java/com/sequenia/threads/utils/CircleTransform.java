@@ -1,5 +1,5 @@
 
-package com.sequenia.threads;
+package com.sequenia.threads.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;

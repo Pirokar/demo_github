@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 
+import com.sequenia.threads.R;
 import com.sequenia.threads.picasso_url_connection_only.Transformation;
 
 /**

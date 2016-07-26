@@ -62,6 +62,9 @@
         <!-- <meta-data
                android:name="com.pushserver.android.serverPrimaryId"
                android:value="[PRIMARY_SERVER_ID]"/>-->
+        <meta-data
+            android:name="com.pushserver.android.uploadServerUrl"
+            android:value="http://pushservertest.mfms.ru/push-test/file/upload"/>
         <receiver
             android:name="com.sequenia.threads.push.MyPBReceiver"
             android:exported="false"

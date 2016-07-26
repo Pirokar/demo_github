@@ -13,7 +13,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
-import com.sequenia.threads.RussianFormatSymbols;
+import com.sequenia.threads.utils.RussianFormatSymbols;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;

@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.sequenia.threads.MaskedTransformer;
+import com.sequenia.threads.utils.MaskedTransformer;
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;

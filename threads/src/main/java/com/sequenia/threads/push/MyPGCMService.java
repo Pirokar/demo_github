@@ -16,6 +16,6 @@ public class MyPGCMService extends PushGcmIntentService {
     public void onMessageReceived(String from, Bundle data) {
         super.onMessageReceived(from, data);
         Log.e(THIS_TAG, "data = " + data);
-        ChatController.getInstance().onMessageFromServer(null, data);
+        ChatController.getInstance(getApplication()).onSystemMessageFromServer(null, data);
     }
 }

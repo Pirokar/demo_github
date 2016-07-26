@@ -13,6 +13,8 @@
     <string name="gallery">Галерея</string>
     <string name="file">Файл</string>
     <string name="hide">Отмена</string>
+    <string name="left_female">покинула диалог в</string>
+    <string name="left_dialog">покинул диалог в</string>
     <string name="connected_female">подключилась к диалогу в</string>
     <string name="connected">подключился к диалогу в</string>
     <string name="sent_at">отправлено</string>
@@ -34,4 +36,5 @@
     <string name="no_cameras_detected">На устройстве отсутствует камера</string>
     <string name="retake">Переснять</string>
     <string name="unavailible">Недоступно</string>
+    <string name="consult">Консультант</string>
 </resources>

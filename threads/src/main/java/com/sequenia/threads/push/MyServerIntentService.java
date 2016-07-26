@@ -2,8 +2,15 @@ package com.sequenia.threads.push;
 
 import android.util.Log;
 
+import com.advisa.client.api.InOutMessage;
+import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
 import com.pushserver.android.PushServerIntentService;
+import com.pushserver.android.RequestCallback;
+import com.pushserver.android.exception.PushServerErrorException;
+import com.sequenia.threads.controllers.ChatController;
+
+import org.json.JSONException;
 
 import java.util.List;
 
@@ -12,14 +19,34 @@ import java.util.List;
  */
 public class MyServerIntentService extends PushServerIntentService {
     private static final String TAG = "MyServerIntentService ";
+
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
-        Log.e(TAG, ""+list);
+        if (list == null) return false;
+        try {
+            for (int i = 0; i < list.size(); i++) {
+                ChatController.getInstance(getApplication()).onConsultMessage(list.get(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e(TAG, "error while parsing server answer");
+        }
+        PushController.getInstance(getApplicationContext()).getNextMessageHistoryAsync(10, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+            @Override
+            public void onResult(List<InOutMessage> inOutMessages) {
+                Log.e(TAG, "history =" + inOutMessages);
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+
+            }
+        });
         return true;
     }
 
     @Override
     protected void messagesWereRead(List<String> list) {
-        Log.e(TAG, ""+list);
+        Log.e(TAG, "" + list);
     }
 }

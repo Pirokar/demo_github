@@ -7,9 +7,9 @@ import android.util.Log;
 
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
-import com.pushserver.android.PushGcmIntentService;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
+import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.controllers.ChatController;
 
 import java.util.UUID;
@@ -23,7 +23,8 @@ public class MyPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.e(TAG, "onNewPushNotification " + s + " " + bundle);
-        ChatController.getInstance().onMessageFromServer(context,bundle);
+        if (MessageMatcher.getType(bundle)==MessageMatcher.TYPE_MESSAGE)return;
+        ChatController.getInstance(context).onSystemMessageFromServer(context,bundle);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class MyPBReceiver extends PushBroadcastReceiver {
             @Override
             public void onResult(Void aVoid) {
                 Log.e(TAG, "" + aVoid);
-                ChatController.getInstance().onPushInit(context);
+                ChatController.getInstance(context).onPushInit(context);
             }
 
             @Override

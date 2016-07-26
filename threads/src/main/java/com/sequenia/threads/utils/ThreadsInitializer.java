@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.utils;
 
 import android.Manifest;
 import android.content.Context;

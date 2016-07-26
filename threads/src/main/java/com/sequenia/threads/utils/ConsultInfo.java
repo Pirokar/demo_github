@@ -1,11 +1,9 @@
-package com.sequenia.threads;
+package com.sequenia.threads.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-
-import java.util.Arrays;
 
 /**
  * Created by yuri on 14.07.2016.
@@ -47,6 +45,21 @@ public class ConsultInfo {
         setCurrentConsultId(consultId, ctx);
     }
 
+    public static void setCurrentConsultInfo(String consultId
+            , String operatorStatus
+            , String operatorName
+            , String operatorTitle
+            , String operatorPhoto
+            , Context ctx) {
+        if (ctx == null) return;
+        SharedPreferences.Editor editor = ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
+        editor.putString(OPERATOR_STATUS + consultId, operatorStatus).commit();
+        editor.putString(OPERATOR_NAME + consultId, operatorName).commit();
+        editor.putString(OPERATOR_TITLE + consultId, operatorTitle).commit();
+        editor.putString(OPERATOR_PHOTO + consultId, operatorPhoto).commit();
+        setCurrentConsultId(consultId, ctx);
+    }
+
     public static void setCurrentConsultId(String consultId, Context ctx) {
         ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit().putString(OPERATOR_ID, consultId).commit();
     }
@@ -61,8 +74,6 @@ public class ConsultInfo {
             Log.e(TAG, "getCurrentConsultName context is null");
             return null;
         }
-        Log.e(TAG, "getCurrentConsultName");// TODO: 18.07.2016
-        Log.e(TAG, "current consult id is " + getCurrentConsultId(ctx));// TODO: 18.07.2016
         return getConsultName(ctx, getCurrentConsultId(ctx));
     }
 

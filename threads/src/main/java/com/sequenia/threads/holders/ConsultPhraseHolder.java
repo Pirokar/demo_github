@@ -2,7 +2,6 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +11,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.sequenia.threads.CircleTransform;
+import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.R;
-import com.sequenia.threads.RussianFormatSymbols;
+import com.sequenia.threads.utils.RussianFormatSymbols;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
@@ -72,7 +71,6 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             , View.OnLongClickListener onRowLongClickListener
             , View.OnClickListener onAvatarClickListener
             , boolean isChosen) {
-        Log.e(TAG, ""+avatarPath);
         itemView.setOnLongClickListener(onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
@@ -151,6 +149,9 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
+        }
+        if (avatarPath==null){
+            mConsultAvatar.setVisibility(View.GONE);
         }
     }
 }

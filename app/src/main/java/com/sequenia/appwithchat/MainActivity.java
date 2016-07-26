@@ -9,11 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.iid.InstanceID;
-import com.pushserver.android.PushController;
-import com.pushserver.android.PushMessage;
-import com.sequenia.threads.PermissionChecker;
-import com.sequenia.threads.ThreadsInitializer;
+import com.sequenia.threads.utils.PermissionChecker;
+import com.sequenia.threads.utils.ThreadsInitializer;
 import com.sequenia.threads.activities.ChatActivity;
 
 import java.util.ArrayList;

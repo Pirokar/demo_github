@@ -21,8 +21,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.sequenia.threads.BucketsGalleryDecorator;
-import com.sequenia.threads.GalleryDecorator;
+import com.sequenia.threads.utils.BucketsGalleryDecorator;
+import com.sequenia.threads.utils.GalleryDecorator;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.GalleryAdaper;
 import com.sequenia.threads.adapters.PhotoBucketsGalleryAdapter;
