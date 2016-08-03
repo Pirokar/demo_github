@@ -37,7 +37,7 @@
             android:theme="@style/ThreadsGalleryStyle" />
         <service android:name=".push.MyServerIntentService" />
         <service android:name=".push.MyPGCMService"/>
-
+        <service android:name=".utils.DownloadService" android:enabled="false"/>
     </application>
 
 </manifest>

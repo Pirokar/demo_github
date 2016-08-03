@@ -3,6 +3,12 @@ package com.sequenia.threads.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.pushserver.android.PushMessage;
+import com.sequenia.threads.model.ConsultPhrase;
+import com.sequenia.threads.model.FileDescription;
+import com.sequenia.threads.model.Quote;
+import com.sequenia.threads.model.UpcomingUserMessage;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,40 +34,160 @@ public class MessageFormatter {
     private MessageFormatter() {
     }
 
-    public static JSONObject formatMessage(String message, String quote, String filePath, String mfmsFilePath) throws JSONException {
-        JSONObject upcomingMessage = new JSONObject();
-        if (!TextUtils.isEmpty(quote)) {
-            JSONArray quotes = new JSONArray();
-            upcomingMessage.put("quotes", quotes);
-            JSONObject quoteobject = new JSONObject();
-            quoteobject.put("text", quote);
-            quotes.put(quoteobject);
-        }
-        upcomingMessage.put("text", message == null ? "" : message);
-        if (!TextUtils.isEmpty(mfmsFilePath)) {
-            if (!new File(filePath).exists()) {
-                Log.e(TAG, "file with path " + filePath + " doesn't exist");
-                return upcomingMessage;
+    public static String format(UpcomingUserMessage upcomingUserMessage, String quoteMfmsFilePath, String mfmsFilePath) {
+        try {
+            Quote quote = upcomingUserMessage.getQuote();
+            FileDescription fileDescription = upcomingUserMessage.getFileDescription();
+            JSONObject formattedMessage = new JSONObject();
+            formattedMessage.put("text", upcomingUserMessage.getText());
+            if (quote != null) {
+                JSONArray quotes = new JSONArray();
+                formattedMessage.put("quotes", quotes);
+                JSONObject quoteJson = new JSONObject();
+                quotes.put(quoteJson);
+                if (!TextUtils.isEmpty(quote.getText())) {
+                    quoteJson.put("text", quote.getText());
+                }
+                if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
+                    quoteJson.put("attachments", attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
+                }
             }
-            JSONArray attachments = new JSONArray();
-            JSONObject attachment = new JSONObject();
-            attachment.put("result", mfmsFilePath);
-            attachment.put("progress","");
-            JSONObject optional = new JSONObject();
-            attachment.put("optional", optional);
-            String extension = filePath.substring(filePath.lastIndexOf(".")+1).toLowerCase();
+            if (fileDescription != null && mfmsFilePath != null) {
+                formattedMessage.put("attachments", attachmentsFromFileDescription(fileDescription, mfmsFilePath));
+            }
+            return formattedMessage.toString().replaceAll("\\\\", "");
+        } catch (JSONException e) {
+            Log.e(TAG, "error formatting json");
+            e.printStackTrace();
+
+        }
+        return "";
+    }
+
+    public static ConsultPhrase format(PushMessage pushMessage) throws JSONException {
+        JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
+        String messageId = pushMessage.getMessageId();
+        long timeStamp = pushMessage.getSentAt();
+        String message = fullMessage.getString("text") == null ? pushMessage.getShortMessage() : fullMessage.getString("text");
+        JSONObject operatorInfo = fullMessage.getJSONObject("operator");
+        final String name = operatorInfo.getString("name");
+        String photoUrl = operatorInfo.getString("photoUrl");
+        FileDescription fileDescription = descriptionFromJson(fullMessage.getJSONArray("attachments"));
+        if (fileDescription != null) fileDescription.setFrom(name);
+        Quote quote = quoteFromJson(fullMessage.getJSONArray("quotes"));
+        return new ConsultPhrase(
+                fileDescription
+                , quote
+                , name
+                , messageId
+                , message
+                , timeStamp
+                , name
+                , photoUrl);
+    }
+
+    private static JSONArray attachmentsFromFileDescription(File file) throws JSONException {
+        JSONArray attachments = new JSONArray();
+        JSONObject attachment = new JSONObject();
+        attachments.put(attachment);
+        JSONObject optional = new JSONObject();
+        attachment.put("optional", optional);
+        String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(".") + 1).toLowerCase();
+        String type = null;
+        if (extension.equals("jpg")) type = "image/jpg";
+        if (extension.equals("png")) type = "image/png";
+        if (extension.equals("pdf")) type = "text/pdf";
+        optional.put("type", type);
+        optional.put("name", file.getName());
+        optional.put("size", file.length());
+        optional.put("lastModified", file.lastModified());
+        return attachments;
+    }
+
+    private static JSONArray attachmentsFromMfmsPath(FileDescription fileDescription) throws JSONException {
+        JSONArray attachments = new JSONArray();
+        JSONObject attachment = new JSONObject();
+        attachments.put(attachment);
+        JSONObject optional = new JSONObject();
+        attachment.put("optional", optional);
+        if (fileDescription.getIncomingName() != null) {
+            String extension = fileDescription.getIncomingName().substring(fileDescription.getIncomingName().lastIndexOf(".") + 1).toLowerCase();
             String type = null;
-            File file = new File(filePath);
             if (extension.equals("jpg")) type = "image/jpg";
             if (extension.equals("png")) type = "image/png";
             if (extension.equals("pdf")) type = "text/pdf";
             optional.put("type", type);
-            optional.put("name", file.getName());
-            optional.put("size", file.length());
-            optional.put("lastModified", file.lastModified());
-            attachments.put(attachment);
-            upcomingMessage.put("attachments", attachments);
         }
-        return upcomingMessage;
+        optional.put("name", fileDescription.getIncomingName());
+        optional.put("size", fileDescription.getSize());
+        optional.put("lastModified", System.currentTimeMillis());
+        return attachments;
+    }
+
+    public static JSONArray attachmentsFromFileDescription(FileDescription fileDescription, String mfmsFilepath) throws JSONException {
+        JSONArray attachments = null;
+        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath().replaceAll("file://", "")).exists()) {
+            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath().replaceAll("file://", "")));
+        } else if (fileDescription.getDownloadPath() != null) {
+            attachments = attachmentsFromMfmsPath(fileDescription);
+        }
+        attachments.getJSONObject(0).put("result", mfmsFilepath);
+        return attachments;
+    }
+
+    public static boolean hasFile(UpcomingUserMessage message) {
+        return (message.getFileDescription() != null || (message.getQuote() != null && message.getQuote().getFileDescription() != null));
+    }
+
+    public static Quote quoteFromJson(JSONArray quotes) throws JSONException {
+        Quote quote = null;
+        FileDescription quoteFileDescription = null;
+        String quoteString = null;
+        String consultName = "";
+        if (quotes.length() > 0 && quotes.getJSONObject(0) != null && (quotes.getJSONObject(0).has("text"))) {
+            quoteString = quotes.getJSONObject(0).getString("text");
+        }
+        if (quotes.length() > 0//// TODO: 29.07.2016 need real timestamp of quote
+                && quotes.getJSONObject(0) != null
+                && (quotes.getJSONObject(0).has("attachments"))
+                && (quotes.getJSONObject(0).getJSONArray("attachments").length() > 0
+                && (quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).has("result")))) {
+            String header = null;
+            if (quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).has("optional")) {
+                header = quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getJSONObject("optional").getString("name");
+            }
+            quoteFileDescription = new FileDescription(
+                    header
+                    , quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getString("result")
+                    , quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getJSONObject("optional").getLong("size")
+                    , System.currentTimeMillis());
+
+        }
+        if (quotes.length() > 0 && quotes.getJSONObject(0) != null && quotes.getJSONObject(0).has("operator")) {
+            consultName = quotes.getJSONObject(0).getJSONObject("operator").getString("name");
+        }
+        if (quoteString != null || quoteFileDescription != null) {
+            quote = new Quote(consultName, quoteString, quoteFileDescription, System.currentTimeMillis());
+        }
+        return quote;
+    }
+
+    public static FileDescription descriptionFromJson(JSONArray jsonArray) throws JSONException {
+        FileDescription fileDescription = null;
+        if (jsonArray.length() > 0
+                && jsonArray.getJSONObject(0) != null) {
+            String header = null;
+            if (jsonArray.getJSONObject(0).has("optional")) {
+                header = jsonArray.getJSONObject(0).getJSONObject("optional").getString("name");
+            }
+            fileDescription = new FileDescription(
+                    null
+                    , null
+                    , jsonArray.getJSONObject(0).getJSONObject("optional").getLong("size")
+                    , System.currentTimeMillis());
+            fileDescription.setDownloadPath(jsonArray.getJSONObject(0).getString("result"));
+            fileDescription.setIncomingName(header);
+        }
+        return fileDescription;
     }
 }

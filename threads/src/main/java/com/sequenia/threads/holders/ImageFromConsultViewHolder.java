@@ -7,9 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.sequenia.threads.utils.MaskedTransformer;
 import com.sequenia.threads.R;
+import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.CircleTransform;
+import com.sequenia.threads.utils.MaskedTransformer;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,7 +36,13 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         filterSecond = itemView.findViewById(R.id.filter_second);
     }
 
-    public void onBind(String avatarPath, String imagePath, long timestamp, View.OnClickListener listener, View.OnLongClickListener longListener, boolean isChosen, boolean isAvatarVisible) {
+    public void onBind(String avatarPath
+            , FileDescription fileDescription
+            , long timestamp
+            , View.OnClickListener listener
+            , View.OnLongClickListener longListener
+            , boolean isChosen
+            , boolean isAvatarVisible) {
         Picasso p = Picasso.with(itemView.getContext());
         mTimeStampTextView.setOnClickListener(listener);
         mTimeStampTextView.setOnLongClickListener(longListener);
@@ -47,16 +55,26 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         p
                 .load(avatarPath)
                 .fit()
+                .transform(new CircleTransform())
                 .centerInside()
                 .into(mConsultAvatar);
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
+        if (fileDescription.getFilePath() != null) {
+            p
+                    .load(fileDescription.getFilePath())
+                    .fit()
+                    .centerCrop()
+                    .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_CONSULT))
+                    .into(mImage);
+        } else if (fileDescription.getDownloadPath() != null) {
+            p
+                    .load(fileDescription.getDownloadPath())
+                    .fit()
+                    .centerCrop()
+                    .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_CONSULT))
+                    .into(mImage);
+        }
 
-        p
-                .load(imagePath)
-                .fit()
-                .centerCrop()
-                .transform(new MaskedTransformer(itemView.getContext(),MaskedTransformer.TYPE_CONSULT))
-                .into(mImage);
 
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);

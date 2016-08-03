@@ -91,9 +91,14 @@ public class DatabaseHolder {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                handler.onComplete(mMyOpenHelper.getFileDescription());
+                handler.onComplete(mMyOpenHelper.getFd());
             }
         });
+    }
+
+    public void updateFileDescription(FileDescription fileDescription){
+        if (fileDescription==null)return;
+        mMyOpenHelper.updateFd(fileDescription);
     }
 
 }

@@ -35,4 +35,7 @@
     <string name="retake">Retake</string>
     <string name="unavailible">Service is unavailible</string>
     <string name="consult">Consultant</string>
+    <string name="error_no_file">Unfortunately, file was deleted</string>
+    <string name="added_to_download_quee">Added to download queue</string>
+    <string name="I">I</string>
 </resources>

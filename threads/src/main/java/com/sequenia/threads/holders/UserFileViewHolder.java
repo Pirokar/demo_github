@@ -45,7 +45,7 @@ public class UserFileViewHolder extends RecyclerView.ViewHolder {
             , View.OnLongClickListener onLongClick
             , boolean isFilterVisible
             , MessageState sentState) {
-        mFileHeader.setText(fileDescription.getPath());
+        mFileHeader.setText(fileDescription.getFilePath());
         mSizeTextView.setText(fileSize);
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;

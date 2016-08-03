@@ -12,6 +12,7 @@ import com.sequenia.threads.controllers.ChatController;
 public class MyPGCMService extends PushGcmIntentService {
     private static final String THIS_TAG = " MyPGCMService ";
 
+
     @Override
     public void onMessageReceived(String from, Bundle data) {
         super.onMessageReceived(from, data);

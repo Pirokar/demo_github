@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.BottomGalleryAdapter;
 import com.sequenia.threads.adapters.ChatAdapter;
@@ -48,11 +48,13 @@ import com.sequenia.threads.model.SearchingConsult;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.views.BottomGallery;
 import com.sequenia.threads.views.BottomSheetView;
 import com.sequenia.threads.views.SwipeAwareView;
 import com.sequenia.threads.views.WelcomeScreen;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -105,7 +107,7 @@ public class ChatActivity extends AppCompatActivity
         }
         mChatController.bindActivity(this);
         mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
-        if (!mChatController.isNeedToShowWelcome()) {
+        if (!mChatController.isNeedToShowWelcome() && mWelcomeScreen != null) {
             mWelcomeScreen.removeViewWithAnimation(0, null);
         }
     }
@@ -157,8 +159,8 @@ public class ChatActivity extends AppCompatActivity
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this, this);
+        mRecyclerView.getItemAnimator().setChangeDuration(0);
         mRecyclerView.setAdapter(mChatAdapter);
-
         final View inputLayout = findViewById(R.id.input_layout);
         AddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -304,18 +306,18 @@ public class ChatActivity extends AppCompatActivity
                 mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
             }
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
-            mFileDescription = new FileDescription(getResources().getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), System.currentTimeMillis());
+            mFileDescription = new FileDescription(getResources().getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
             mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.image), "file://" + data.getStringExtra(CameraActivity.IMAGE_EXTRA));
-            mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis());
+            mQuote = null;
         }
     }
 
     @Override
     public void onFileClick() {
         setBottomStateDefault();
-        mFileDescription = new FileDescription("", UUID.randomUUID().toString() + ".pdf", System.currentTimeMillis());
+        mFileDescription = new FileDescription("someFile.pdf", UUID.randomUUID().toString() + ".pdf", 100500, System.currentTimeMillis());
         mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.file_pdf), null);
-        mQuote = new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis());
+        mQuote = null;
     }
 
     @Override
@@ -337,10 +339,10 @@ public class ChatActivity extends AppCompatActivity
         if (mAttachedImages == null || mAttachedImages.size() == 0) {
             mBottomGallery.setVisibility(View.GONE);
         } else {
-            UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis()), new FileDescription("", mAttachedImages.get(0), System.currentTimeMillis()));
+            UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, new FileDescription(getString(R.string.I), mAttachedImages.get(0), new File(mAttachedImages.get(0).replaceAll("file://", "")).length(), System.currentTimeMillis()));
             mChatController.onUserInput(uum);
             for (int i = 1; i < mAttachedImages.size(); i++) {
-                uum = new UpcomingUserMessage(null, new Quote(mChatController.getCurrentConsultName().split("%%")[0], "", System.currentTimeMillis()), new FileDescription("", mAttachedImages.get(i), System.currentTimeMillis()));
+                uum = new UpcomingUserMessage(null, null, new FileDescription(getString(R.string.I), mAttachedImages.get(i), new File(mAttachedImages.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis()));
                 mChatController.onUserInput(uum);
             }
         }
@@ -463,8 +465,8 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFileClick(String path) {
-        mChatController.onDownloadRequest(path);
+    public void onFileClick(FileDescription filedescription) {
+        mChatController.onDownloadRequest(filedescription);
     }
 
     @Override
@@ -495,22 +497,28 @@ public class ChatActivity extends AppCompatActivity
             public void onClick(View v) {
                 String headerText = "";
                 if (cp instanceof UserPhrase) {
-                    headerText = "Я";
+                    headerText = getString(R.string.I);
+
                 } else if (cp instanceof ConsultPhrase) {
                     headerText = mChatController.getConsultNameById(((ConsultPhrase) cp).getConsultId());
-                    if (headerText==null){
+                    if (headerText == null) {
                         headerText = getString(R.string.consult);
                     }
                 }
                 if (isEmpty(cp.getPhraseText())) {
-                    mQuote = new Quote(headerText, cp.getPhraseText(), System.currentTimeMillis());
+                    mQuote = new Quote(headerText, cp.getPhraseText(), null, System.currentTimeMillis());
                 }
                 String text = cp.getPhraseText();
                 mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
                 hideCopyControls();
                 mRecyclerView.scrollToPosition(position);
-                mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, cp.getTimeStamp());
-                mFileDescription = cp.getFileDescription();
+                FileDescription quoteFileDescription = cp.getFileDescription();
+                if (quoteFileDescription==null && cp.getQuote()!=null){
+                    quoteFileDescription=cp.getQuote().getFileDescription();
+                }
+                mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
+                mFileDescription = null;
+
             }
         });
         mChosenPhrase = cp;
@@ -544,7 +552,9 @@ public class ChatActivity extends AppCompatActivity
             mSearchMessageEditText.setVisibility(View.GONE);
             mSearchMessageEditText.setText("");
             if (mChatController != null && mChatController.isConsultFound()) {
-                setTitleStateOperatorConnected(connectedConsultId, mChatController.getCurrentConsultName().split("%%")[0], mChatController.getCurrentConsultName().split("%%")[1]);
+                setTitleStateOperatorConnected(connectedConsultId
+                        , mChatController.getCurrentConsultName().split("%%")[0]==null?"":mChatController.getCurrentConsultName().split("%%")[0]
+                        , mChatController.getCurrentConsultName().split("%%")[1]==null||mChatController.getCurrentConsultName().split("%%")[1].equals("null")?"":mChatController.getCurrentConsultName().split("%%")[1]);
             } else {
                 setTitleStateDefault();
             }
@@ -569,8 +579,8 @@ public class ChatActivity extends AppCompatActivity
         mChosenPhrase = null;
     }
 
-    public void updateProgress(String path, int progress) {
-        mChatAdapter.updateProgress(path, progress);
+    public void updateProgress(FileDescription filedescription) {
+        mChatAdapter.updateProgress(filedescription);
     }
 
     private class QuoteLayoutHolder {

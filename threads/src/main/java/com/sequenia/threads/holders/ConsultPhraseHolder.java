@@ -2,6 +2,8 @@ package com.sequenia.threads.holders;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +13,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.R;
-import com.sequenia.threads.utils.RussianFormatSymbols;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.CircleTransform;
+import com.sequenia.threads.utils.FileUtils;
+import com.sequenia.threads.utils.RussianFormatSymbols;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
@@ -80,9 +83,14 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
-            rightTextHeader.setText(quote.getHeader());
+            rightTextHeader.setText(quote.getPhraseOwnerTitle());
             rightTextDescr.setText(quote.getText());
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
+            if (TextUtils.isEmpty(quote.getPhraseOwnerTitle())) {
+                rightTextHeader.setVisibility(View.GONE);
+            } else {
+                rightTextHeader.setVisibility(View.VISIBLE);
+            }
         }
         if (fileDescription != null) {
             fileRow.setVisibility(View.VISIBLE);
@@ -90,8 +98,14 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             if (onAttachClickListener != null) {
                 mCircularProgressButton.setOnClickListener(onAttachClickListener);
             }
-            rightTextHeader.setText(quote == null ? "" : quote.getHeader());
-            rightTextDescr.setText(fileDescription.getPath() + "\n1,2mb");
+           rightTextHeader.setText(fileDescription.getFileSentTo() == null ? "" : fileDescription.getFileSentTo());
+            if (!TextUtils.isEmpty(rightTextHeader.getText())) {
+                rightTextHeader.setVisibility(View.VISIBLE);
+            } else {
+                rightTextHeader.setVisibility(View.GONE);
+            }
+            String fileHeader = fileDescription.getIncomingName()==null? FileUtils.getLastPathSegment(fileDescription.getFilePath()):fileDescription.getIncomingName();
+            rightTextDescr.setText(fileHeader==null?"":fileHeader + "\n" + android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
             mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         }
@@ -150,8 +164,9 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
-        if (avatarPath==null){
+        if (avatarPath == null) {
             mConsultAvatar.setVisibility(View.GONE);
         }
+
     }
 }

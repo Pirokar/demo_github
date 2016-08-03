@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -15,6 +16,7 @@ import com.sequenia.threads.R;
  *
  */
 public class CircularProgressButton extends FrameLayout {
+    private static final String TAG = "CircularProgressButton ";
     private MyCircleProgress mcp;
     private View mImageLabel;
     private View background;
@@ -43,24 +45,35 @@ public class CircularProgressButton extends FrameLayout {
         completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
         inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
         startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
-        mImageLabel.setBackground(startDownloadDrawable);
         background = findViewById(R.id.background);
         ta.recycle();
+        mImageLabel.setVisibility(View.VISIBLE);
+        mcp.setVisibility(VISIBLE);
+        background.setVisibility(VISIBLE);
+        mImageLabel.setBackground(startDownloadDrawable);
+        this.setBackground(null);
     }
 
     public void setProgress(int progress) {
         mcp.setProgress(progress);
-        if (progress > 0 && (progress != 100)) {
-            mcp.setVisibility(VISIBLE);
-            background.setVisibility(VISIBLE);
-            mImageLabel.setBackground(inProgress);
+        if (progress > 0 && progress < 100) {
+            if (mcp.getVisibility() == INVISIBLE) mcp.setVisibility(VISIBLE);
+            if (background.getVisibility() == INVISIBLE) background.setVisibility(VISIBLE);
+            if (!mImageLabel.getBackground().equals(inProgress)){
+                mImageLabel.setBackground(inProgress);
+            }
+                
         } else if (progress > 99) {
             mcp.setVisibility(INVISIBLE);
             mImageLabel.setVisibility(INVISIBLE);
             background.setVisibility(INVISIBLE);
             this.setBackground(completedDrawable);
         } else if (progress == 0) {
+            mImageLabel.setVisibility(View.VISIBLE);
+            mcp.setVisibility(VISIBLE);
+            background.setVisibility(VISIBLE);
             mImageLabel.setBackground(startDownloadDrawable);
+            this.setBackground(null);
         }
     }
 

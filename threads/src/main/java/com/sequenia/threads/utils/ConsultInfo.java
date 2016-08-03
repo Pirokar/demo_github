@@ -5,6 +5,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.pushserver.android.PushMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by yuri on 14.07.2016.
  */
@@ -58,6 +63,22 @@ public class ConsultInfo {
         editor.putString(OPERATOR_TITLE + consultId, operatorTitle).commit();
         editor.putString(OPERATOR_PHOTO + consultId, operatorPhoto).commit();
         setCurrentConsultId(consultId, ctx);
+    }
+    public static void setCurrentConsultInfo(PushMessage pushMessage, Context ctx) throws JSONException {
+        if (ctx == null) return;
+        JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
+        Log.e(TAG, "" + pushMessage);
+        JSONObject operatorInfo = fullMessage.getJSONObject("operator");
+        final String name = operatorInfo.getString("name");
+        String status = operatorInfo.getString("status");
+        String photoUrl = operatorInfo.getString("photoUrl");
+        final String title = ConsultInfo.getCurrentConsultTitle(ctx);
+        SharedPreferences.Editor editor = ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
+        editor.putString(OPERATOR_STATUS + name, status).commit();
+        editor.putString(OPERATOR_NAME + name, name).commit();
+        editor.putString(OPERATOR_TITLE + name, title).commit();
+        editor.putString(OPERATOR_PHOTO + name, photoUrl).commit();
+        setCurrentConsultId(name, ctx);
     }
 
     public static void setCurrentConsultId(String consultId, Context ctx) {

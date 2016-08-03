@@ -3,7 +3,6 @@ package com.sequenia.threads.holders;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.FileUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,22 +40,22 @@ public class FileAndMediaViewHolder extends RecyclerView.ViewHolder {
             FileDescription fileDescription
             , View.OnClickListener fileClickListener) {
 
-        if (fileDescription.getPath() == null) return;
-        String extension = fileDescription.getPath().substring(fileDescription.getPath().lastIndexOf(".") + 1);
+        if (fileDescription.getFilePath() == null) return;
+        String extension = fileDescription.getFilePath().substring(fileDescription.getFilePath().lastIndexOf(".") + 1);
         Picasso p = Picasso.with(itemView.getContext());
         if (extension.equalsIgnoreCase("pdf")) {
             mImageButton.setImageResource(R.drawable.ic_insert_file_blue_36dp);
         } else if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png")) {
             p
-                    .load(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + itemView.getContext().getPackageName() + "/drawable/sample_card"))
+                    .load(fileDescription.getFilePath())
                     .fit()
                     .centerInside()
                     .into(mImageButton);
         } else {
             mImageButton.setImageResource(R.drawable.ic_insert_file_blue_36dp);
         }
-        fileHeaderTextView.setText(fileDescription.getPath());
-        fileSizeTextView.setText("1,2 mb");
+        fileHeaderTextView.setText(FileUtils.getLastPathSegment(fileDescription.getFilePath()));
+        fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(),fileDescription.getSize()));
         timeStampTextView.setText(sdf.format(new Date(fileDescription.getTimeStamp())));
         mImageButton.setOnClickListener(fileClickListener);
     }

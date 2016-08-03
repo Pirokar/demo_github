@@ -37,4 +37,7 @@
     <string name="retake">Переснять</string>
     <string name="unavailible">Недоступно</string>
     <string name="consult">Консультант</string>
+    <string name="error_no_file">Файл удалён на сервере</string>
+    <string name="added_to_download_quee">Добавлено в очередь загрузок</string>
+    <string name="I">Я</string>
 </resources>

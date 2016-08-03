@@ -1,6 +1,7 @@
 package com.sequenia.threads.holders;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.CircleTransform;
+import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
@@ -42,15 +45,16 @@ public class ConsultFileViewHolder extends RecyclerView.ViewHolder {
 
     public void onBind(
             long timeStamp
-            , String fileSize
             , FileDescription fileDescription
             , String avatarPath
             , View.OnClickListener buttonClickListener
             , View.OnLongClickListener onLongClick
             , boolean isAvatarVisible
             , boolean isFilterVisible) {
-        mFileHeader.setText(fileDescription.getPath());
-        mSizeTextView.setText(fileSize);
+        String name = null;
+        mFileHeader.setText(fileDescription.getIncomingName()==null?FileUtils.getLastPathSegment(fileDescription.getFilePath()):fileDescription.getIncomingName());
+        if (mFileHeader.getText().toString().equalsIgnoreCase("null"))mFileHeader.setText("");
+        mSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         ViewGroup vg = (ViewGroup) itemView;
@@ -59,17 +63,12 @@ public class ConsultFileViewHolder extends RecyclerView.ViewHolder {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);
         }
         mCircularProgressButton.setOnClickListener(buttonClickListener);
-        Picasso.with(itemView.getContext()).load(avatarPath).fit().into(mConsultAvatar);
-        if (isAvatarVisible) {
-            mConsultAvatar.setVisibility(View.VISIBLE);
-        } else {
-            mConsultAvatar.setVisibility(View.GONE);
-        }
-        if (avatarPath == null) {
-            mConsultAvatar.setVisibility(View.VISIBLE);
-        } else {
-            mConsultAvatar.setVisibility(View.GONE);
-        }
+        Picasso
+                .with(itemView.getContext())
+                .load(avatarPath)
+                .fit()
+                .transform(new CircleTransform())
+                .into(mConsultAvatar);
         if (isFilterVisible) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterSecond.setVisibility(View.VISIBLE);
@@ -77,5 +76,16 @@ public class ConsultFileViewHolder extends RecyclerView.ViewHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterSecond.setVisibility(View.INVISIBLE);
         }
+        if (isAvatarVisible) {
+            mConsultAvatar.setVisibility(View.VISIBLE);
+        } else {
+            mConsultAvatar.setVisibility(View.GONE);
+            mFilterSecond.setVisibility(View.GONE);
+        }
+        if (avatarPath == null) {
+            mConsultAvatar.setVisibility(View.GONE);
+            mFilterSecond.setVisibility(View.GONE);
+        }
+
     }
 }
