@@ -32,6 +32,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sequenia.threads.FilePickerFragment;
+import com.sequenia.threads.MyFileFilter;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.BottomGalleryAdapter;
 import com.sequenia.threads.adapters.ChatAdapter;
@@ -48,6 +50,7 @@ import com.sequenia.threads.model.SearchingConsult;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.views.BottomGallery;
 import com.sequenia.threads.views.BottomSheetView;
@@ -57,7 +60,6 @@ import com.sequenia.threads.views.WelcomeScreen;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -65,7 +67,10 @@ import static android.text.TextUtils.isEmpty;
  *
  */
 public class ChatActivity extends AppCompatActivity
-        implements BottomSheetView.ButtonsListener, ChatAdapter.AdapterInterface {
+        implements
+        BottomSheetView.ButtonsListener
+        , ChatAdapter.AdapterInterface
+        , FilePickerFragment.SelectedListener {
     private static final String TAG = "ChatActivity ";
     private ChatController mChatController;
     private WelcomeScreen mWelcomeScreen;
@@ -90,6 +95,7 @@ public class ChatActivity extends AppCompatActivity
     public static final int REQUEST_CODE_PHOTO = 101;
     public static final int REQUEST_PERMISSION_GALLERY = 102;
     public static final int REQUEST_PERMISSION_CAMERA = 103;
+    public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
     public String connectedConsultId;
 
     @Override
@@ -281,6 +287,13 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
+    public void onDirSelected(File fileOrDirectory) {
+        mFileDescription = new FileDescription(FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
+        mQuote = null;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_PHOTOS && resultCode == RESULT_OK) {
@@ -315,9 +328,18 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onFileClick() {
         setBottomStateDefault();
-        mFileDescription = new FileDescription("someFile.pdf", UUID.randomUUID().toString() + ".pdf", 100500, System.currentTimeMillis());
+       /* mFileDescription = new FileDescription("someFile.pdf", UUID.randomUUID().toString() + ".pdf", 100500, System.currentTimeMillis());
         mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.file_pdf), null);
-        mQuote = null;
+        mQuote = null;*/
+        if (PermissionChecker.isReadExternalPermissionGranted(this)) {
+            FilePickerFragment frag = FilePickerFragment.newInstance(null);
+            frag.setFileFilter(new MyFileFilter());
+            frag.setOnDirSelectedListener(this);
+            frag.show(getFragmentManager(), null);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL);
+        }
+
     }
 
     @Override
@@ -514,8 +536,8 @@ public class ChatActivity extends AppCompatActivity
                 hideCopyControls();
                 mRecyclerView.scrollToPosition(position);
                 FileDescription quoteFileDescription = cp.getFileDescription();
-                if (quoteFileDescription==null && cp.getQuote()!=null){
-                    quoteFileDescription=cp.getQuote().getFileDescription();
+                if (quoteFileDescription == null && cp.getQuote() != null) {
+                    quoteFileDescription = cp.getQuote().getFileDescription();
                 }
                 mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
                 mFileDescription = null;
@@ -554,8 +576,8 @@ public class ChatActivity extends AppCompatActivity
             mSearchMessageEditText.setText("");
             if (mChatController != null && mChatController.isConsultFound()) {
                 setTitleStateOperatorConnected(connectedConsultId
-                        , mChatController.getCurrentConsultName().split("%%")[0]==null?"":mChatController.getCurrentConsultName().split("%%")[0]
-                        , mChatController.getCurrentConsultName().split("%%")[1]==null||mChatController.getCurrentConsultName().split("%%")[1].equals("null")?"":mChatController.getCurrentConsultName().split("%%")[1]);
+                        , mChatController.getCurrentConsultName().split("%%")[0] == null ? "" : mChatController.getCurrentConsultName().split("%%")[0]
+                        , mChatController.getCurrentConsultName().split("%%")[1] == null || mChatController.getCurrentConsultName().split("%%")[1].equals("null") ? "" : mChatController.getCurrentConsultName().split("%%")[1]);
             } else {
                 setTitleStateDefault();
             }
@@ -723,6 +745,16 @@ public class ChatActivity extends AppCompatActivity
             }
             if (granted == grantResults.length) {
                 onCameraClick();
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.unavailible), Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                FilePickerFragment picker = FilePickerFragment.newInstance(null);
+                picker.setFileFilter(new MyFileFilter());
+                picker.setOnDirSelectedListener(this);
+                picker.show(getFragmentManager(), null);
             } else {
                 Toast.makeText(this, getResources().getString(R.string.unavailible), Toast.LENGTH_SHORT).show();
             }
