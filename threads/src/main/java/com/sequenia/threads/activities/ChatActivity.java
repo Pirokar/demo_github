@@ -466,6 +466,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onFileClick(FileDescription filedescription) {
+        Log.e(TAG, "onFileClick");// TODO: 04.08.2016  
         mChatController.onDownloadRequest(filedescription);
     }
 

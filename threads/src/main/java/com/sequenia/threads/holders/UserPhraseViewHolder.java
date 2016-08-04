@@ -73,6 +73,12 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             , View.OnLongClickListener onLongClickListener
             , boolean isChosen) {
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
+        ViewGroup vg = (ViewGroup) itemView;
+        itemView.setOnLongClickListener(onLongClickListener);
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            vg.getChildAt(i).setOnClickListener(onRowClickListener);
+            vg.getChildAt(i).setOnLongClickListener(onLongClickListener);
+        }
         if (phrase == null || phrase.length() == 0) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
@@ -94,6 +100,8 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                     filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath())==null?"":FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
                 }
                 mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
+                mFileImageButton.setOnClickListener(fileClickListener);
+                mFileImageButton.setProgress(quote.getFileDescription().getDownloadProgress());
             }
         }
         if (fileDescription != null) {
@@ -159,11 +167,6 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
-        ViewGroup vg = (ViewGroup) itemView;
-        itemView.setOnLongClickListener(onLongClickListener);
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            vg.getChildAt(i).setOnClickListener(onRowClickListener);
-            vg.getChildAt(i).setOnLongClickListener(onLongClickListener);
-        }
+
     }
 }

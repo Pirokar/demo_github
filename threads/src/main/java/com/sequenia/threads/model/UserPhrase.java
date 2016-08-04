@@ -13,7 +13,7 @@ public class UserPhrase implements ChatPhrase {
     private final Quote mQuote;
     private boolean isWithQuote;
     private final long phraseTimeStamp;
-    private final FileDescription fileDescription;
+    private FileDescription fileDescription;
     private boolean isChosen;
 
 
@@ -47,6 +47,10 @@ public class UserPhrase implements ChatPhrase {
 
     public boolean isWithFile() {
         return withFile;
+    }
+
+    public void setFileDescription(FileDescription fileDescription) {
+        this.fileDescription = fileDescription;
     }
 
     public boolean isWithQuote() {

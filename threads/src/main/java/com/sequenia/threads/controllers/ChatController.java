@@ -3,13 +3,14 @@ package com.sequenia.threads.controllers;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,7 @@ import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
-import com.sequenia.threads.R;
+import com.sequenia.threads.DownloadService;
 import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.activities.ConsultActivity;
 import com.sequenia.threads.database.DatabaseHolder;
@@ -34,19 +35,14 @@ import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.utils.ConsultInfo;
 import com.sequenia.threads.utils.DualFilePoster;
-import com.sequenia.threads.utils.FileDownloader;
 import com.sequenia.threads.utils.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
 
 import org.json.JSONException;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -56,11 +52,16 @@ import java.util.concurrent.Executors;
  */
 public class ChatController extends Fragment {
     static final Handler h = new Handler(Looper.getMainLooper());
+    public static final String PROGRESS_BROADCAST = "com.sequenia.threads.controllers.PROGRESS_BROADCAST";
+    public static final String DOWNLOADED_SUCCESSFULLY_BROADCAST = "com.sequenia.threads.controllers.DOWNLOADED_SUCCESSFULLY_BROADCAST";
+    public static final String DOWNLOAD_ERROR_BROADCAST = "com.sequenia.threads.controllers.DOWNLOAD_ERROR_BROADCAST";
+
     public static final String TAG = "ChatController ";
+    private ProgressReceiver mProgressReceiver;
     ChatActivity activity;
     boolean isSearchingConsult;
-    Executor executor = Executors.newFixedThreadPool(3);
-    private static HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();
+    /* Executor executor = Executors.newFixedThreadPool(3);
+     private static HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();*/
     DatabaseHolder mDatabaseHolder;
     Context appContext;
     private ChatBot mChatBot;
@@ -82,6 +83,12 @@ public class ChatController extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @SuppressLint("all")
@@ -90,6 +97,7 @@ public class ChatController extends Fragment {
             mDatabaseHolder = DatabaseHolder.getInstance(ctx);
         }
         mChatBot = new ChatBot(this);
+
     }
 
     public boolean isNeedToShowWelcome() {
@@ -119,6 +127,12 @@ public class ChatController extends Fragment {
         if (ConsultInfo.isConsultConnected(appContext)) {
             activity.setTitleStateOperatorConnected(ConsultInfo.getCurrentConsultName(appContext), ConsultInfo.getCurrentConsultName(appContext), ConsultInfo.getCurrentConsultTitle(appContext));
         }
+        mProgressReceiver = new ProgressReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(PROGRESS_BROADCAST);
+        intentFilter.addAction(DOWNLOADED_SUCCESSFULLY_BROADCAST);
+        intentFilter.addAction(DOWNLOAD_ERROR_BROADCAST);
+        activity.registerReceiver(mProgressReceiver, intentFilter);
     }
 
     public boolean isConsultFound() {
@@ -126,6 +140,7 @@ public class ChatController extends Fragment {
     }
 
     public void unbindActivity() {
+        activity.unregisterReceiver(mProgressReceiver);
         activity = null;
         appContext = null;
     }
@@ -147,7 +162,7 @@ public class ChatController extends Fragment {
             mChatBot.processUserPhrase(um);
         }
         try {
-            if (!MessageFormatter.hasFile(upcomingUserMessage)) {
+            if (!MessageFormatter.hasFile(upcomingUserMessage)) {// TODO: 04.08.2016 implement resned on usnet messages
                 PushController
                         .getInstance(appContext)
                         .sendMessageAsync(MessageFormatter.format(upcomingUserMessage, null, null), false, new RequestCallback<Void, PushServerErrorException>() {
@@ -251,84 +266,11 @@ public class ChatController extends Fragment {
 
     public void onDownloadRequest(final FileDescription fileDescription) {
         Log.e(TAG, "onDownloadRequest with fd = " + fileDescription);// TODO: 01.08.2016
-        if (fileDescription == null || fileDescription.getDownloadPath() == null || fileDescription.getFilePath()!=null) {
-            Log.e(TAG, "cant download with fileDescription = " + fileDescription);
-            return;
+        if (activity != null) {
+            Intent i = new Intent(activity, DownloadService.class);
+            i.putExtra(DownloadService.FD_TAG, fileDescription);
+            activity.startService(i);
         }
-        if (!TextUtils.isEmpty(fileDescription.getFilePath())) return;
-        if (runningDownloads.containsKey(fileDescription)) {
-            FileDownloader fileDownloader = runningDownloads.get(fileDescription);
-            fileDownloader.stop();
-            fileDescription.setDownloadProgress(0);
-            if (activity != null) activity.updateProgress(fileDescription);
-            mDatabaseHolder.updateFileDescription(fileDescription);
-            runningDownloads.remove(fileDescription);
-            return;
-        }
-        Toast.makeText(activity, R.string.added_to_download_quee, Toast.LENGTH_SHORT).show();// TODO: 02.08.2016 refactor to service
-        final Context context = getActivity();
-        final FileDownloader fileDownloader = new FileDownloader(fileDescription.getDownloadPath(), fileDescription.getIncomingName(), activity) {
-            @Override
-            public void onProgress(double progress) {
-                if (progress < 1) progress = 1.0;
-                Log.e(TAG, "onprogress = " + progress);// TODO: 01.08.2016
-                fileDescription.setDownloadProgress((int) progress);
-                ChatController.getInstance(context).mDatabaseHolder.updateFileDescription(fileDescription);
-                final double finalProgress = progress;
-                h.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalProgress < 100.0) {
-                            if (ChatController.getInstance(context).activity != null) {
-                                ChatController.getInstance(context).activity.updateProgress(fileDescription);
-                            }
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onComplete(final File file) {
-                Log.e(TAG, "oncomplete");// TODO: 01.08.2016
-                h.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        fileDescription.setDownloadProgress(100);// TODO: 02.08.2016
-                        if (ChatController.getInstance(context).activity != null) {
-                            ChatController.getInstance(context).activity.updateProgress(fileDescription);
-                        }
-                        fileDescription.setFilePath("file://" + file.getAbsolutePath());
-                        ChatController.getInstance(context).mDatabaseHolder.updateFileDescription(fileDescription);
-                        ChatController.getInstance(context).runningDownloads.remove(fileDescription);
-                    }
-                });
-            }
-
-            @Override
-            public void onError(final Exception e) {
-                fileDescription.setDownloadProgress(0);
-                Log.e(TAG, "error while downloading file " + e);
-                e.printStackTrace();
-                fileDescription.setDownloadProgress(0);
-                ChatController.getInstance(context).mDatabaseHolder.updateFileDescription(fileDescription);
-                h.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (activity != null) {
-                            Toast.makeText(activity, R.string.error_no_file, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-            }
-        };
-        runningDownloads.put(fileDescription, fileDownloader);
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                fileDownloader.download();
-            }
-        });
     }
 
 
@@ -445,5 +387,36 @@ public class ChatController extends Fragment {
 
     public String getConsultNameById(String id) {
         return ConsultInfo.getConsultName(activity, id);
+    }
+
+    private class ProgressReceiver extends BroadcastReceiver {
+        private static final String TAG = "ProgressReceiver ";
+
+        public ProgressReceiver() {
+
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action == null) return;
+            if (action.equals(PROGRESS_BROADCAST)) {
+                FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
+                if (activity != null && fileDescription != null)
+                    activity.updateProgress(fileDescription);
+            } else if (action.equals(DOWNLOADED_SUCCESSFULLY_BROADCAST)) {
+                FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
+                if (activity != null && fileDescription != null)
+                    activity.updateProgress(fileDescription);
+            } else if (action.equals(DOWNLOAD_ERROR_BROADCAST)) {
+                FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
+                if (activity != null && fileDescription != null)
+                    activity.updateProgress(fileDescription);
+                Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
+                if (activity != null) {
+                    Toast.makeText(activity, t.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 }

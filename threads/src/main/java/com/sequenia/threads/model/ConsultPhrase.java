@@ -14,7 +14,7 @@ public class ConsultPhrase implements ChatPhrase {
     private final String consultName;
     private boolean isAvatarVisible = true;
     private final Quote quote;
-    private final FileDescription fileDescription;
+    private FileDescription fileDescription;
     private boolean isChosen;
 
     public ConsultPhrase(FileDescription fileDescription, Quote quote, String consultName, String messageId, String phrase, long timeStamp, String consultId, String avatarPath) {
@@ -26,6 +26,10 @@ public class ConsultPhrase implements ChatPhrase {
         this.timeStamp = timeStamp;
         this.consultId = consultId;
         this.avatarPath = avatarPath;
+    }
+
+    public void setFileDescription(FileDescription fileDescription) {
+        this.fileDescription = fileDescription;
     }
 
     public String getConsultId() {

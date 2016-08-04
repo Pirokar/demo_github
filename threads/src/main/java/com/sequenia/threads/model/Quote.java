@@ -6,7 +6,7 @@ package com.sequenia.threads.model;
 public class Quote {
     private final String phraseOwnerTitle;
     private final String text;
-    private final FileDescription fileDescription;
+    private FileDescription fileDescription;
     private final long timeStamp;
 
     public Quote(String phraseOwnerTitle, String text, FileDescription fileDescription, long timeStamp) {
@@ -14,6 +14,10 @@ public class Quote {
         this.text = text;
         this.fileDescription = fileDescription;
         this.timeStamp = timeStamp;
+    }
+
+    public void setFileDescription(FileDescription fileDescription) {
+        this.fileDescription = fileDescription;
     }
 
     public FileDescription getFileDescription() {

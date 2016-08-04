@@ -176,6 +176,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
                             if (mAdapterInterface != null && (up.getFileDescription() != null)) {
                                 mAdapterInterface.onFileClick(up.getFileDescription());// TODO: 29.07.2016 implemet download fron quote file description
+                            } else if (mAdapterInterface != null && up.getFileDescription() == null && up.getQuote() != null && up.getQuote().getFileDescription() != null) {
+                                mAdapterInterface.onFileClick(up.getQuote().getFileDescription());
                             }
                         }
                     }
@@ -551,12 +553,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) instanceof ConsultPhrase) {
                 ConsultPhrase cp = (ConsultPhrase) list.get(i);
-                if ((cp.getFileDescription() != null && cp.getFileDescription().equals(fileDescription))) {
+                if (cp.getFileDescription() != null && cp.getFileDescription().equals(fileDescription)) {
+                    cp.setFileDescription(fileDescription);
                     notifyItemChanged(list.indexOf(cp));
-                    continue;
                 }
                 if (cp.getQuote() != null && cp.getQuote().getFileDescription() != null && cp.getQuote().getFileDescription().equals(fileDescription)) {
+                    cp.getQuote().setFileDescription(fileDescription);
                     notifyItemChanged(list.indexOf(cp));
+                }
+            } else if (list.get(i) instanceof UserPhrase) {
+                UserPhrase up = (UserPhrase) list.get(i);
+
+                if (up.getFileDescription() != null && up.getFileDescription().equals(fileDescription)) {
+                    up.setFileDescription(fileDescription);
+                    notifyItemChanged(list.indexOf(up));
+                }
+                if (up.getQuote() != null && up.getQuote().getFileDescription() != null && up.getQuote().getFileDescription().equals(fileDescription)) {
+                    up.getQuote().setFileDescription(fileDescription);
+                    notifyItemChanged(list.indexOf(up));
                 }
             }
         }

@@ -3,8 +3,8 @@ package com.sequenia.threads.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -23,6 +23,7 @@ public class CircularProgressButton extends FrameLayout {
     private Drawable completedDrawable;
     private Drawable inProgress;
     private Drawable startDownloadDrawable;
+    private Drawable progressBackgroundDrawable;
 
     public CircularProgressButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -51,6 +52,7 @@ public class CircularProgressButton extends FrameLayout {
         mcp.setVisibility(VISIBLE);
         background.setVisibility(VISIBLE);
         mImageLabel.setBackground(startDownloadDrawable);
+        progressBackgroundDrawable = ContextCompat.getDrawable(getContext(), R.drawable.circle_gray_48dp);
         this.setBackground(null);
     }
 
@@ -59,10 +61,16 @@ public class CircularProgressButton extends FrameLayout {
         if (progress > 0 && progress < 100) {
             if (mcp.getVisibility() == INVISIBLE) mcp.setVisibility(VISIBLE);
             if (background.getVisibility() == INVISIBLE) background.setVisibility(VISIBLE);
-            if (!mImageLabel.getBackground().equals(inProgress)){
+            if (!background.getBackground().equals(progressBackgroundDrawable)) {
+                background.setBackground(progressBackgroundDrawable);
+            }
+            if (!mImageLabel.getBackground().equals(inProgress)) {
                 mImageLabel.setBackground(inProgress);
             }
-                
+            if (getBackground() != null) {
+                setBackground(null);
+            }
+
         } else if (progress > 99) {
             mcp.setVisibility(INVISIBLE);
             mImageLabel.setVisibility(INVISIBLE);
