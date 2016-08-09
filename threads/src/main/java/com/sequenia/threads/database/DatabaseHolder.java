@@ -8,7 +8,9 @@ import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
+import com.sequenia.threads.utils.Callback;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,9 +44,9 @@ public class DatabaseHolder {
             @Override
             public void run() {
                 List<ChatItem> items = mMyOpenHelper.getChatItems(offset, limit);
-                if (items == null || items.size() == 0) {
-                    completionHandler.setSuccessful(false);
-                    completionHandler.setMessage("nothing here");
+                if (items == null) {
+                    completionHandler.setSuccessful(true);
+                    completionHandler.onComplete(new ArrayList<ChatItem>());
                 } else {
                     completionHandler.onComplete(items);
                 }
@@ -96,9 +98,20 @@ public class DatabaseHolder {
         });
     }
 
-    public void updateFileDescription(FileDescription fileDescription){
-        if (fileDescription==null)return;
+    public void updateFileDescription(FileDescription fileDescription) {
+        if (fileDescription == null) return;
         mMyOpenHelper.updateFd(fileDescription);
     }
 
+    public void queryChatPhrasesAsync(final String query, final CompletionHandler<List<ChatPhrase>> callback) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<ChatPhrase> list = mMyOpenHelper.getSortedPhrases(query);
+                if (query == null)
+                    callback.onError(new IllegalArgumentException(), "query is null", new ArrayList<ChatPhrase>());
+                callback.onComplete(list);
+            }
+        });
+    }
 }

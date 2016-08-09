@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,25 +22,32 @@ import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
-import com.sequenia.threads.DownloadService;
+import com.sequenia.threads.R;
 import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.activities.ConsultActivity;
+import com.sequenia.threads.activities.ImagesActivity;
 import com.sequenia.threads.database.DatabaseHolder;
 import com.sequenia.threads.model.ChatItem;
+import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
+import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.ConsultInfo;
+import com.sequenia.threads.utils.DownloadService;
 import com.sequenia.threads.utils.DualFilePoster;
 import com.sequenia.threads.utils.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
+import com.sequenia.threads.utils.PrefUtils;
 
 import org.json.JSONException;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,22 +63,22 @@ public class ChatController extends Fragment {
     public static final String PROGRESS_BROADCAST = "com.sequenia.threads.controllers.PROGRESS_BROADCAST";
     public static final String DOWNLOADED_SUCCESSFULLY_BROADCAST = "com.sequenia.threads.controllers.DOWNLOADED_SUCCESSFULLY_BROADCAST";
     public static final String DOWNLOAD_ERROR_BROADCAST = "com.sequenia.threads.controllers.DOWNLOAD_ERROR_BROADCAST";
+    public static final String CLIENT_ID_IS_SET_BROADCAST = "com.sequenia.threads.controllers.CLIENT_ID_IS_SET_BROADCAST";
 
     public static final String TAG = "ChatController ";
     private ProgressReceiver mProgressReceiver;
     ChatActivity activity;
     boolean isSearchingConsult;
-    /* Executor executor = Executors.newFixedThreadPool(3);
-     private static HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();*/
     DatabaseHolder mDatabaseHolder;
     Context appContext;
     private ChatBot mChatBot;
     private static ChatController instance;
-    List<UpcomingUserMessage> pendingMessages = new ArrayList<>();
+    int currentOffset = 0;
+    List<Pair<UpcomingUserMessage, UserPhrase>> pendingMessages = new ArrayList<>();
 
-    public static ChatController getInstance(Context ctx) {
+    public static ChatController getInstance(Context ctx, String clientId) {
         if (instance == null) {
-            instance = new ChatController(ctx);
+            instance = new ChatController(ctx, clientId);
         }
         return instance;
     }
@@ -83,7 +91,6 @@ public class ChatController extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-
     }
 
     @Override
@@ -92,12 +99,26 @@ public class ChatController extends Fragment {
     }
 
     @SuppressLint("all")
-    public ChatController(Context ctx) {
+    public ChatController(final Context ctx, final String clientId) {
+        if (clientId == null) throw new IllegalArgumentException("client id is null");
         if (mDatabaseHolder == null) {
             mDatabaseHolder = DatabaseHolder.getInstance(ctx);
         }
         mChatBot = new ChatBot(this);
+        if (PrefUtils.isClientIdSet(ctx) && !PrefUtils.getClientID(ctx).equals(clientId)) {
+            PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
+                @Override
+                public void onResult(Void aVoid) {
+                    PrefUtils.setClientId(ctx, clientId);
+                }
 
+                @Override
+                public void onError(PushServerErrorException e) {
+                    Log.e(TAG, "error while setting client id" + e);
+                    e.printStackTrace();
+                }
+            });
+        } else if (!PrefUtils.isClientIdSet(ctx)) PrefUtils.setClientId(ctx, clientId);
     }
 
     public boolean isNeedToShowWelcome() {
@@ -112,10 +133,11 @@ public class ChatController extends Fragment {
             mDatabaseHolder = DatabaseHolder.getInstance(activity);
         }
         if (mDatabaseHolder.getMessagesCount() > 0) {
-            mDatabaseHolder.getChatItemsAsync(0, 1000, new CompletionHandler<List<ChatItem>>() {
+            mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
                 @Override
                 public void onComplete(List<ChatItem> data) {
                     if (null != activity) activity.addMessages(data);
+                    currentOffset = 20;
                 }
 
                 @Override
@@ -208,7 +230,7 @@ public class ChatController extends Fragment {
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            pendingMessages.add(upcomingUserMessage);
+            pendingMessages.add(new Pair<>(upcomingUserMessage, um));
         }
 
        /* PushController.getInstance(ctx).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
@@ -267,9 +289,13 @@ public class ChatController extends Fragment {
     public void onDownloadRequest(final FileDescription fileDescription) {
         Log.e(TAG, "onDownloadRequest with fd = " + fileDescription);// TODO: 01.08.2016
         if (activity != null) {
-            Intent i = new Intent(activity, DownloadService.class);
-            i.putExtra(DownloadService.FD_TAG, fileDescription);
-            activity.startService(i);
+            if (fileDescription.getFilePath() == null) {
+                Intent i = new Intent(activity, DownloadService.class);
+                i.putExtra(DownloadService.FD_TAG, fileDescription);
+                activity.startService(i);
+            } else if (fileDescription.hasImage()) {
+                activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
+            }
         }
     }
 
@@ -343,9 +369,26 @@ public class ChatController extends Fragment {
         }
     }
 
+    public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
+        Log.e(TAG, "requestItems currentOffset = " + currentOffset);// TODO: 09.08.2016  
+        mDatabaseHolder.getChatItemsAsync(currentOffset, 20, new CompletionHandler<List<ChatItem>>() {
+            @Override
+            public void onComplete(List<ChatItem> data) {
+                callback.onSuccess(data);
+                currentOffset += data.size();
+            }
+
+            @Override
+            public void onError(Throwable e, String message, List<ChatItem> data) {
+                callback.onFail(e);
+            }
+        });
+    }
+
     public synchronized void onConsultMessage(PushMessage pushMessage) throws JSONException {
         ConsultInfo.setCurrentConsultInfo(pushMessage, activity);
-        addMessage(MessageFormatter.format(pushMessage));
+        ConsultPhrase consultPhrase = MessageFormatter.format(pushMessage);
+        addMessage(consultPhrase);
         h.post(new Runnable() {
             @Override
             public void run() {
@@ -361,7 +404,7 @@ public class ChatController extends Fragment {
     }
 
     public void onPushInit(Context ctx) {
-        for (UpcomingUserMessage upm : pendingMessages) {
+       /* for (UpcomingUserMessage upm : pendingMessages) {
             if (ctx != null && upm.getText() != null) {
                 PushController.getInstance(ctx).sendMessageAsync(upm.getText(), false, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
@@ -376,7 +419,7 @@ public class ChatController extends Fragment {
                 });
             }
         }
-        pendingMessages.clear();
+        pendingMessages.clear();*/
     }
 
     public void onConsultChoose(Activity activity, String consultId) {
@@ -384,6 +427,22 @@ public class ChatController extends Fragment {
         activity.startActivity(i);
     }
 
+    public void requestFilterefPhrases(String query, final Callback<List<ChatPhrase>,Exception> callback){
+        mDatabaseHolder.queryChatPhrasesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
+            @Override
+            public void onComplete(final List<ChatPhrase> data) {
+                h.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(data);
+                    }
+                });
+            }
+            @Override
+            public void onError(Throwable e, String message, List<ChatPhrase> data) {
+            }
+        });
+    }
 
     public String getConsultNameById(String id) {
         return ConsultInfo.getConsultName(activity, id);
@@ -414,8 +473,14 @@ public class ChatController extends Fragment {
                     activity.updateProgress(fileDescription);
                 Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
                 if (activity != null) {
-                    Toast.makeText(activity, t.toString(), Toast.LENGTH_SHORT).show();
+                    if (t instanceof FileNotFoundException){
+                        Toast.makeText(activity, activity.getString(R.string.error_no_file), Toast.LENGTH_SHORT).show();
+                    }
+
                 }
+            } else if (action.equals(CLIENT_ID_IS_SET_BROADCAST) && pendingMessages.size() != 0) {
+
+
             }
         }
     }

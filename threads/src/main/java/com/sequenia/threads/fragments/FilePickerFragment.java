@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -17,6 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.AnimatedArrayAdapter;
 
 import java.io.File;
@@ -59,7 +59,7 @@ public class FilePickerFragment extends DialogFragment
         currentAbsoluteDir = (File) getArguments().getSerializable(STARTING_FOLDER_TAG);
 
         if (currentAbsoluteDir == null || currentAbsoluteDir.isFile()) {
-            currentAbsoluteDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+            currentAbsoluteDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         }
         super.onCreate(savedInstanceState);
     }
@@ -69,7 +69,7 @@ public class FilePickerFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v;
         AlertDialog dialog;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),R.style.FileDialogStyle);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyle);
         builder.setTitle(getString(R.string.choose_file));
         builder.setNeutralButton(getString(R.string.folder_up), this);
         builder.setNegativeButton(getString(R.string.cancel), this);
@@ -163,7 +163,7 @@ public class FilePickerFragment extends DialogFragment
         currentAbsoluteDir = pointedFileToTravel;
         if (pointedFileToTravel.exists() && mSelectedListener != null) {
             if (mFileFilter != null && mFileFilter.accept(pointedFileToTravel.getAbsoluteFile())) {
-                mSelectedListener.onDirSelected(pointedFileToTravel);
+                mSelectedListener.onFileSelected(pointedFileToTravel);
                 dismiss();
             }
         }
@@ -171,7 +171,7 @@ public class FilePickerFragment extends DialogFragment
     }
 
     public interface SelectedListener {
-        void onDirSelected(File directory);
+        void onFileSelected(File directory);
 
     }
 
@@ -189,7 +189,7 @@ public class FilePickerFragment extends DialogFragment
                 break;
             case AlertDialog.BUTTON_POSITIVE:
                 if (mSelectedListener != null) {
-                    mSelectedListener.onDirSelected(currentAbsoluteDir);
+                    mSelectedListener.onFileSelected(currentAbsoluteDir);
                 }
                 dismiss();
                 break;

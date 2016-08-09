@@ -21,6 +21,7 @@
         <item name="colorPrimaryDark">#000000</item>
         <item name="android:windowBackground">@color/white_dark</item>
         <item name="android:textColor">@android:color/white</item>
+        <item name="windowActionBar">false</item>
         <item name="android:itemTextAppearance">@style/menuItemTheme</item>
 
     </style>
@@ -28,6 +29,7 @@
     <style name="ThreadsGalleryStyle" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimaryDark">#282828</item>
+        <item name="windowActionBar">false</item>
         <item name="android:windowBackground">@color/white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/menuItemThemeDark</item>

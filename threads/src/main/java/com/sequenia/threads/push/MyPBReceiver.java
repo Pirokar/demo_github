@@ -1,6 +1,7 @@
 package com.sequenia.threads.push;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -11,6 +12,7 @@ import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.controllers.ChatController;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.util.UUID;
 
@@ -23,8 +25,8 @@ public class MyPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.e(TAG, "onNewPushNotification " + s + " " + bundle);
-        if (MessageMatcher.getType(bundle)==MessageMatcher.TYPE_MESSAGE)return;
-        ChatController.getInstance(context).onSystemMessageFromServer(context,bundle);
+        if (MessageMatcher.getType(bundle) == MessageMatcher.TYPE_MESSAGE) return;
+        ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
     }
 
     @Override
@@ -35,18 +37,13 @@ public class MyPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onDeviceAddressChanged(final Context context, String s) {
         Log.e(TAG, "onDeviceAddressChanged " + s);
-        String id = PreferenceManager.getDefaultSharedPreferences(context).getString("Id", null);
-        Log.e(TAG, "id== " +id);
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putString("Id", id).apply();
-            Log.e(TAG, "new id== " +id);
-        }
-        PushController.getInstance(context).setClientIdAsync(id, new RequestCallback<Void, PushServerErrorException>() {
+        PushController.getInstance(context).setClientIdAsync(PrefUtils.getClientID(context), new RequestCallback<Void, PushServerErrorException>() {
             @Override
             public void onResult(Void aVoid) {
                 Log.e(TAG, "" + aVoid);
-                ChatController.getInstance(context).onPushInit(context);
+                ChatController.getInstance(context, PrefUtils.getClientID(context)).onPushInit(context);
+                PrefUtils.setClientIdWasSet(true, context);
+                context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
             }
 
             @Override

@@ -19,7 +19,6 @@ public class ThreadsInitializer {
         if (instance == null) {
             instance = new ThreadsInitializer(ctx);
         }
-        instance.init();
         return instance;
     }
 
@@ -28,7 +27,7 @@ public class ThreadsInitializer {
         this.ctx = ctx;
     }
 
-    public boolean init() {
+    public synchronized boolean init() throws IllegalArgumentException {
         if (isInited) return true;
         if (!isInited && PermissionChecker.isCoarseLocationPermissionGranted(ctx) && PermissionChecker.isReadSmsPermissionGranted(ctx) && PermissionChecker.isReadPhoneStatePermissionGranted(ctx)) {
             PushController.getInstance(ctx).init();
@@ -40,7 +39,7 @@ public class ThreadsInitializer {
     }
 
     public boolean isInited() {
-        return isInited;
+        return ctx.getSharedPreferences(this.getClass().toString(), Context.MODE_PRIVATE).getBoolean("init",false);
     }
 
     public String getStatus() {

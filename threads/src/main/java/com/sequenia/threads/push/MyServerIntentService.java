@@ -9,6 +9,7 @@ import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 import com.sequenia.threads.controllers.ChatController;
+import com.sequenia.threads.utils.PrefUtils;
 
 import org.json.JSONException;
 
@@ -25,7 +26,7 @@ public class MyServerIntentService extends PushServerIntentService {
         if (list == null) return false;
         try {
             for (int i = 0; i < list.size(); i++) {
-                ChatController.getInstance(getApplication()).onConsultMessage(list.get(i));
+                ChatController.getInstance(getApplication(), PrefUtils.getClientID(getApplication())).onConsultMessage(list.get(i));
             }
         } catch (JSONException e) {
             e.printStackTrace();

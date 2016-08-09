@@ -2,11 +2,16 @@ package com.sequenia.appwithchat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sequenia.threads.utils.PermissionChecker;
@@ -19,11 +24,16 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity ";
     private static final int PERM_REQUEST_CODE = 1;
     private static final int PERM_REQUEST_CODE_CLICK = 2;
+    EditText mEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mEditText = (EditText) findViewById(R.id.edit_text);
+        mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
+                ""
+                : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
@@ -37,10 +47,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChatButtonClick(View v) {
-        if (ThreadsInitializer.getInstance(this).isInited()) {
-            startActivity(ChatActivity.getStartIntent(this));
-        } else {
+        if (ThreadsInitializer.getInstance(this).isInited() && mEditText.getText().length() > 5) {
+            startActivity(ChatActivity.getStartIntent(this, mEditText.getText().toString()));
+        } else if (!PermissionChecker.isCoarseLocationPermissionGranted(this)
+                || !PermissionChecker.isReadSmsPermissionGranted(this)
+                || !PermissionChecker.isReadPhoneStatePermissionGranted(this)) {
             requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK);
+        } else if (mEditText.getText().length() < 5) {
+            Toast.makeText(this, "client id must have length more than 4 chars", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -57,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             if (grantedum == grantResults.length) {
                 ThreadsInitializer.getInstance(this).init();
                 if (requestCode == PERM_REQUEST_CODE_CLICK) {
-                    startActivity(ChatActivity.getStartIntent(this));
+                    onChatButtonClick(null);
                 }
             } else {
                 Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
@@ -75,5 +89,11 @@ public class MainActivity extends AppCompatActivity {
         if (!isSmsGranted) permissions.add(Manifest.permission.READ_SMS);
         if (!isReadPhoneStateGranted) permissions.add(Manifest.permission.READ_PHONE_STATE);
         ActivityCompat.requestPermissions(this, permissions.toArray(new String[]{}), requestCode);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putString("edit", mEditText.getText().toString()).apply();
     }
 }

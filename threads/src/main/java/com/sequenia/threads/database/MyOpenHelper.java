@@ -190,9 +190,28 @@ class MyOpenHelper extends SQLiteOpenHelper {
         }
     }
 
+    public List<ChatPhrase> getSortedPhrases(String query){
+        List<ChatPhrase> list = new ArrayList<>();
+        if (query==null)return list;
+        List<ChatItem> chatItems= getChatItems(0,-1);
+        for (ChatItem chatItem:chatItems) {
+            if (chatItem instanceof UserPhrase){
+                if (((UserPhrase) chatItem).getPhraseText()!=null && ((UserPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())){
+                    list.add((UserPhrase)chatItem);
+                }
+            }
+            if (chatItem instanceof ConsultPhrase){
+                if (((ConsultPhrase) chatItem).getPhraseText()!=null && ((ConsultPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())){
+                    list.add((ConsultPhrase)chatItem);
+                }
+            }
+        }
+        return list;
+    }
+
     public List<ChatItem> getChatItems(int offset, int limit) {
         List<ChatItem> items = new ArrayList<>();
-        String query = String.format(Locale.US, "select * from %s order by %s asc limit %s offset %s", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset));
+        String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset),COLUMN_TIMESTAMP);
         Cursor c = getWritableDatabase().rawQuery(query, null);
         if (c.getCount() == 0) {
             c.close();

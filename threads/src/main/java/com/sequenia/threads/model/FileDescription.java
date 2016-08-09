@@ -2,11 +2,15 @@ package com.sequenia.threads.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.sequenia.threads.utils.FileUtils;
 
 /**
  * Created by yuri on 13.06.2016.
  */
 public class FileDescription implements Parcelable {
+    private static final String TAG = "FileDescription ";
     private String from;
     private String filePath;
     private String downloadPath;
@@ -137,6 +141,17 @@ public class FileDescription implements Parcelable {
         result = 31 * result + (int) (size ^ (size >>> 32));
         result = 31 * result + (int) (timeStamp ^ (timeStamp >>> 32));
         return result;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public boolean hasImage() {
+        return FileUtils.getExtensionFromPath(incomingName) == FileUtils.PNG
+                || FileUtils.getExtensionFromPath(incomingName) == FileUtils.JPEG
+                || FileUtils.getExtensionFromPath(filePath) == FileUtils.JPEG
+                || FileUtils.getExtensionFromPath(filePath) == FileUtils.PNG;
     }
 
     @Override

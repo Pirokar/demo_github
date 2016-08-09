@@ -12,7 +12,9 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
     <application
         android:hardwareAccelerated="true"
@@ -39,9 +41,39 @@
             android:name=".activities.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
-        <service android:name=".push.MyServerIntentService" android:exported="false" />
-        <service android:name=".push.MyPGCMService" android:exported="false"/>
-        <service android:name=".DownloadService" android:exported="false"/>
-    </application>
+        <activity
+            android:name=".activities.ImagesActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ThreadsGalleryStyle" />
 
+        <service
+            android:name=".push.MyServerIntentService"
+            android:exported="false" />
+        <service
+            android:name=".utils.DownloadService"
+            android:exported="false" />
+        <receiver
+            android:name="com.sequenia.threads.push.MyPBReceiver"
+            android:exported="false"
+            android:permission="com.sequenia.appwithchat.permission.pushserver.RECEIVE">
+            <intent-filter>
+                <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT" />
+                <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT" />
+                <action android:name="com.pushserver.android.DEVICE_ADDRESS_CHANGED_EVENT" />
+                <action android:name="com.pushserver.android.ERROR_EVENT" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.sequenia.threads.push.MyOtherPBReceiver"
+            android:exported="false"
+            android:permission="com.pushserver.android.permission.RECEIVE">
+            <intent-filter>
+                <action android:name="com.pushserver.android.OTHER_PUSH_MESSAGE_EVENT" />
+            </intent-filter>
+
+        </receiver>
+        <meta-data
+            android:name="com.pushserver.android.service"
+            android:value="com.sequenia.threads.push.MyServerIntentService" />
+    </application>
 </manifest>

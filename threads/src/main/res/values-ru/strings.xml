@@ -44,4 +44,7 @@
     <string name="choose">Выбрат</string>
     <string name="folder_up">Выше</string>
     <string name="now_you_are_in_directory">Вы наодитесь в </string>
+    <string name="from">из</string>
+    <string name="in">в</string>
+    <string name="error">Произошла ошибка </string>
 </resources>

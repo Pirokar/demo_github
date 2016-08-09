@@ -44,9 +44,7 @@
         <meta-data
             android:name="com.pushserver.android.logs"
             android:value="true" />
-        <meta-data
-            android:name="com.pushserver.android.service"
-            android:value="com.sequenia.threads.push.MyServerIntentService" />
+
         <meta-data
             android:name="com.pushserver.android.location"
             android:value="true" />
@@ -62,26 +60,6 @@
         <meta-data
             android:name="com.pushserver.android.uploadServerUrl"
             android:value="http://pushservertest.mfms.ru/push-test/file/upload"/>
-        <receiver
-            android:name="com.sequenia.threads.push.MyPBReceiver"
-            android:exported="false"
-            android:permission="com.sequenia.appwithchat.permission.pushserver.RECEIVE">
-            <intent-filter>
-                <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT" />
-                <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT" />
-                <action android:name="com.pushserver.android.DEVICE_ADDRESS_CHANGED_EVENT" />
-                <action android:name="com.pushserver.android.ERROR_EVENT" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.sequenia.threads.push.MyOtherPBReceiver"
-            android:exported="false"
-            android:permission="com.pushserver.android.permission.RECEIVE">
-            <intent-filter>
-                <action android:name="com.pushserver.android.OTHER_PUSH_MESSAGE_EVENT" />
-            </intent-filter>
 
-        </receiver>
-        <service android:name="com.sequenia.threads.push.MyServerIntentService" />
     </application>
 </manifest>

@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,8 +33,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sequenia.threads.FilePickerFragment;
-import com.sequenia.threads.MyFileFilter;
+import com.sequenia.threads.fragments.FilePickerFragment;
+import com.sequenia.threads.utils.Callback;
+import com.sequenia.threads.utils.MyFileFilter;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.BottomGalleryAdapter;
 import com.sequenia.threads.adapters.ChatAdapter;
@@ -52,6 +54,7 @@ import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.PermissionChecker;
+import com.sequenia.threads.utils.ThreadsInitializer;
 import com.sequenia.threads.views.BottomGallery;
 import com.sequenia.threads.views.BottomSheetView;
 import com.sequenia.threads.views.SwipeAwareView;
@@ -91,6 +94,7 @@ public class ChatActivity extends AppCompatActivity
     private ChatPhrase mChosenPhrase = null;
     private List<String> mAttachedImages = new ArrayList<>();
     private AppCompatEditText mSearchMessageEditText;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
     public static final int REQUEST_PERMISSION_GALLERY = 102;
@@ -101,6 +105,8 @@ public class ChatActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!ThreadsInitializer.getInstance(this).isInited())
+            throw new IllegalStateException("you must call ThreadsInitializer.getInstance(context).init() before opening this activity");
         setContentView(R.layout.activity_chat_activity);
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         if (null != t) initToolbar(t);
@@ -108,7 +114,7 @@ public class ChatActivity extends AppCompatActivity
         if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {//mb, someday, we will support orientation change
             mChatController = (ChatController) getFragmentManager().findFragmentByTag(ChatController.TAG);
         } else {
-            mChatController = ChatController.getInstance(this);
+            mChatController = ChatController.getInstance(this, getIntent().getStringExtra(TAG));
             getFragmentManager().beginTransaction().add(mChatController, ChatController.TAG).commit();
         }
         mChatController.bindActivity(this);
@@ -116,10 +122,15 @@ public class ChatActivity extends AppCompatActivity
         if (!mChatController.isNeedToShowWelcome() && mWelcomeScreen != null) {
             mWelcomeScreen.removeViewWithAnimation(0, null);
         }
+
     }
 
-    public static Intent getStartIntent(Context ctx) {
+    public static Intent getStartIntent(Context ctx, String clientId) {
         Intent i = new Intent(ctx, ChatActivity.class);
+        if (clientId == null || clientId.length() < 5)
+            throw new IllegalStateException("you must provide valid client id," +
+                    "\r\n it is now null or it'ts length < 5");
+        i.putExtra(TAG, clientId);
         return i;
     }
 
@@ -157,13 +168,15 @@ public class ChatActivity extends AppCompatActivity
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mSearchMessageEditText = (AppCompatEditText) findViewById(R.id.search);
         mBottomGallery = (BottomGallery) findViewById(R.id.bottom_gallery);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         SwipeAwareView sav = (SwipeAwareView) findViewById(R.id.swipe_view);
         mInputEditText = (EditText) findViewById(R.id.input);
         ImageButton SendButton = (ImageButton) findViewById(R.id.send_message);
         final Context c = this;
         ImageButton AddAttachmentButton = (ImageButton) findViewById(R.id.add_attachment);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this, this);
         mRecyclerView.getItemAnimator().setChangeDuration(0);
         mRecyclerView.setAdapter(mChatAdapter);
@@ -191,6 +204,41 @@ public class ChatActivity extends AppCompatActivity
                         }
                     });
                 }
+            }
+        });
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.orange);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mChatController.requestItems(new Callback<List<ChatItem>, Throwable>() {
+                    @Override
+                    public void onSuccess(final List<ChatItem> result) {
+                        final Handler h = new Handler(Looper.getMainLooper());
+                        h.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                int itemsBefore = mChatAdapter.getItemCount();
+                                mChatAdapter.addItems(result);
+                                int itemsAfter = mChatAdapter.getItemCount();
+                                mRecyclerView.scrollToPosition(itemsAfter - itemsBefore);
+                                for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
+                                    h.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mSwipeRefreshLayout.setRefreshing(false);
+                                            mSwipeRefreshLayout.clearAnimation();
+                                            mSwipeRefreshLayout.destroyDrawingCache();
+                                            mSwipeRefreshLayout.invalidate();
+                                        }
+                                    }, i * 500);
+                                }
+                            }
+                        },500);
+                    }
+                    @Override
+                    public void onFail(Throwable error) {
+                    }
+                });
             }
         });
         final Context ctx = this;
@@ -287,7 +335,17 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDirSelected(File fileOrDirectory) {
+    protected void onPause() {
+        super.onPause();
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.setRefreshing(false);
+            mSwipeRefreshLayout.destroyDrawingCache();
+            mSwipeRefreshLayout.clearAnimation();
+        }
+    }
+
+    @Override
+    public void onFileSelected(File fileOrDirectory) {
         mFileDescription = new FileDescription(FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
         mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
         mQuote = null;
@@ -325,12 +383,10 @@ public class ChatActivity extends AppCompatActivity
         }
     }
 
+
     @Override
-    public void onFileClick() {
+    public void onFilepickerClick() {
         setBottomStateDefault();
-       /* mFileDescription = new FileDescription("someFile.pdf", UUID.randomUUID().toString() + ".pdf", 100500, System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.file_pdf), null);
-        mQuote = null;*/
         if (PermissionChecker.isReadExternalPermissionGranted(this)) {
             FilePickerFragment frag = FilePickerFragment.newInstance(null);
             frag.setFileFilter(new MyFileFilter());
@@ -488,7 +544,6 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onFileClick(FileDescription filedescription) {
-        Log.e(TAG, "onFileClick");// TODO: 04.08.2016  
         mChatController.onDownloadRequest(filedescription);
     }
 
@@ -574,6 +629,8 @@ public class ChatActivity extends AppCompatActivity
         if (mSearchMessageEditText.getVisibility() == View.VISIBLE) {
             mSearchMessageEditText.setVisibility(View.GONE);
             mSearchMessageEditText.setText("");
+            mChatAdapter.undoClear();
+            mSwipeRefreshLayout.setEnabled(true);
             if (mChatController != null && mChatController.isConsultFound()) {
                 setTitleStateOperatorConnected(connectedConsultId
                         , mChatController.getCurrentConsultName().split("%%")[0] == null ? "" : mChatController.getCurrentConsultName().split("%%")[0]
@@ -705,6 +762,8 @@ public class ChatActivity extends AppCompatActivity
             setTitleStateSearchingMessage();
             mSearchMessageEditText.setVisibility(View.VISIBLE);
             mSearchMessageEditText.requestFocus();
+            mChatAdapter.backupAndClear();
+            mSwipeRefreshLayout.setEnabled(false);
             mSearchMessageEditText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -718,7 +777,22 @@ public class ChatActivity extends AppCompatActivity
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    mChatAdapter.filterItems(s.toString());
+                    if (s == null || s.length() == 0) {
+                        mChatAdapter.undoClear();
+                    } else {
+                        Log.e(TAG, "after textChanged " + s);// TODO: 09.08.2016
+                        mChatController.requestFilterefPhrases(s.toString(), new Callback<List<ChatPhrase>, Exception>() {
+                            @Override
+                            public void onSuccess(List<ChatPhrase> result) {
+                                mChatAdapter.swapItems(result);
+                            }
+
+                            @Override
+                            public void onFail(Exception error) {
+
+                            }
+                        });
+                    }
                 }
             });
         }

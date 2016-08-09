@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.utils;
 
 import java.io.File;
 import java.io.FileFilter;

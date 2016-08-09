@@ -35,11 +35,14 @@
     <string name="retake">Retake</string>
     <string name="unavailible">Service is unavailible</string>
     <string name="consult">Consultant</string>
-    <string name="error_no_file">Unfortunately, file was deleted</string>
+    <string name="error_no_file">Unfortunately, file was deleted on server</string>
     <string name="added_to_download_quee">Added to download queue</string>
     <string name="I">I</string>
     <string name="choose_file">Choose file to send</string>
     <string name="choose">Choose</string>
     <string name="folder_up">Up</string>
     <string name="now_you_are_in_directory">Your are in </string>
+    <string name="error">Error happened while </string>
+    <string name="from">from</string>
+    <string name="in">in</string>
 </resources>

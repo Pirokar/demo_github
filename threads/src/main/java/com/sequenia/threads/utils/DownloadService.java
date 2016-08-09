@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.utils;
 
 import android.app.Service;
 import android.content.Context;
@@ -27,12 +27,10 @@ public class DownloadService extends Service {
     private static HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();
 
     public DownloadService() {
-        Log.e(TAG, "Constructor");// TODO: 04.08.2016
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");// TODO: 04.08.2016
         final FileDescription fileDescription = intent.getParcelableExtra(FD_TAG);
         if (fileDescription == null) return START_STICKY;
         Log.e(TAG, "onDownloadRequest with fd = " + fileDescription);// TODO: 01.08.2016

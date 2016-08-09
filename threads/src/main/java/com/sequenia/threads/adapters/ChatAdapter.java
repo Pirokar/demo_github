@@ -35,6 +35,9 @@ import com.sequenia.threads.utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -55,11 +58,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_IMAGE_FROM_USER = 9;
     private static final int TYPE_FILE_FROM_USER = 10;
     private static final int TYPE_FILE_FROM_CONSULT = 11;
-    private Calendar prev = Calendar.getInstance();
-    private Calendar next = Calendar.getInstance();
 
     ArrayList<ChatItem> list;
-    ArrayList<ChatItem> backupList;
+    ArrayList<ChatItem> backupList = new ArrayList<>();
     final Picasso picasso;
     private final Context ctx;
     private AdapterInterface mAdapterInterface;
@@ -67,7 +68,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ChatAdapter(ArrayList<ChatItem> list, Context ctx, AdapterInterface adapterInterface) {
         this.list = list;
         if (this.list == null) this.list = new ArrayList<>();
-        backupList = new ArrayList<>(this.list);
         picasso = Picasso.with(ctx);
         this.ctx = ctx;
         this.mAdapterInterface = adapterInterface;
@@ -258,6 +258,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                     , cp.isChosen()
                     , cp.isAvatarVisible());
+
         }
 
         if (holder instanceof ImageFromUserViewHolder) {
@@ -420,7 +421,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void addItem(ChatItem item, boolean withBackup, boolean isBulk) {
         if (list.size() == 0) {
             list.add(new DateRow(item.getTimeStamp()));
-            if (withBackup) backupList.add(new DateRow(item.getTimeStamp()));
             if (!isBulk) notifyItemInserted(0);
         }
         Calendar currentTimeStamp = Calendar.getInstance();
@@ -429,10 +429,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         prevTimeStamp.setTimeInMillis(list.get(list.size() - 1).getTimeStamp());
         if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) != prevTimeStamp.get(Calendar.DAY_OF_YEAR)) {
             this.list.add(new DateRow(item.getTimeStamp()));
-            if (withBackup) this.backupList.add(new DateRow(item.getTimeStamp()));
         }
         list.add(item);
-        if (withBackup) backupList.add(item);
         if (!isBulk) notifyItemInserted(list.size() - 1);
         if (item instanceof ConsultPhrase && list.size() != 1) {
             int prev = list.size() - 2;
@@ -445,34 +443,34 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final ChatItem last = list.get(list.size() - 1);
         final ChatItem prev = list.get(list.size() - 2);
         if (prev instanceof UserPhrase && last instanceof ConsultConnectionMessage) {// spacing between Consult and Consult connected
-            list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()));
         }
         if (prev instanceof ConsultPhrase && last instanceof UserPhrase) {// spacing between Consult and User phrase
-            list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()));
         }
         if (prev instanceof ConsultConnectionMessage && last instanceof ConsultPhrase) {// spacing between Consult connected and Consult phrase
-            list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()));
         }
         if (last instanceof ConsultPhrase && prev instanceof ConsultPhrase) {// spacing between Consult phrase connected and Consult phrase
-            list.add(list.size() - 1, new Space(2, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(2, prev.getTimeStamp()));
         }
         if (last instanceof UserPhrase && prev instanceof UserPhrase) {// spacing between User phrase connected and User phrase
-            list.add(list.size() - 1, new Space(2, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(2, prev.getTimeStamp()));
         }
         if (prev instanceof UserPhrase && last instanceof ConsultPhrase) {// spacing between User phrase connected and Consult phrase
-            list.add(list.size() - 1, new Space(24, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(24, prev.getTimeStamp()));
         }
         if (last instanceof UserPhrase && prev instanceof ConsultConnectionMessage) {
-            list.add(list.size() - 1, new Space(12, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()));
         }
         if (last instanceof ConsultConnectionMessage && prev instanceof ConsultConnectionMessage) {
-            list.add(list.size() - 1, new Space(8, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()));
         }
         if (last instanceof UserPhrase && prev instanceof ConsultConnectionMessage) {
-            list.add(list.size() - 1, new Space(8, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()));
         }
         if (last instanceof ConsultConnectionMessage && prev instanceof ConsultPhrase) {
-            list.add(list.size() - 1, new Space(8, System.currentTimeMillis()));
+            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()));
         }
         if (!isBulk) notifyItemInserted(list.size() - 2);
     }
@@ -482,7 +480,42 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (int i = 0; i < items.size(); i++) {
             addItem(items.get(i), true);
         }
-
+        Collections.sort(list, new Comparator<ChatItem>() {
+            @Override
+            public int compare(ChatItem lhs, ChatItem rhs) {
+                return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
+            }
+        });
+        Calendar currentTimeStamp = Calendar.getInstance();
+        Calendar nextTimeStamp = Calendar.getInstance();
+        List<DateRow> daterows = new ArrayList<>();
+        for (ChatItem ci : list) {
+            if (ci instanceof DateRow) {
+                daterows.add((DateRow) ci);
+                continue;
+            }
+            int index = list.indexOf(ci);
+            if (index == (list.size()-1))continue;//removing dups of date rows
+            if (ci instanceof ConsultPhrase && list.get(index+1) instanceof ConsultPhrase) {
+                ((ConsultPhrase) ci).setAvatarVisible(false);
+            }
+        }
+        for (int i = 0; i < daterows.size(); i++) {
+            if (i == (daterows.size() - 1)) continue;
+            currentTimeStamp.setTimeInMillis(daterows.get(i).getTimeStamp());
+            nextTimeStamp.setTimeInMillis(daterows.get(i + 1).getTimeStamp());
+            if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) == nextTimeStamp.get(Calendar.DAY_OF_YEAR)) {
+                list.remove(daterows.get(i + 1));
+            }
+        }
+        for (ChatItem ci : list) {
+            int index = list.indexOf(ci);
+            if (index == (list.size()-1))continue;//removing wrong avatar visibility of consult of date rows
+            if (ci instanceof ConsultPhrase && list.get(index+1) instanceof ConsultPhrase) {
+                ((ConsultPhrase) ci).setAvatarVisible(false);
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -593,24 +626,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public void filterItems(String query) {
-        if (query == null || (query.length() == 0)) {
-            list = new ArrayList<>(backupList);
-            notifyDataSetChanged();
-            return;
-        }
+    public void backupAndClear() {
+        backupList = new ArrayList<>(list);
         list.clear();
         notifyDataSetChanged();
-        for (ChatItem ci : backupList) {
-            if (ci instanceof ChatPhrase) {
-                if (((ChatPhrase) ci).getPhraseText() != null
-                        && ((ChatPhrase) ci).getPhraseText().toLowerCase().contains(query.toLowerCase())
-                        && !(ci instanceof ConsultConnectionMessage)) {
-                    addItem(ci, false, true);
-                    continue;
-                }
-            }
+    }
+
+    public void undoClear() {
+        list = new ArrayList<>(backupList);
+    }
+
+    public void swapItems(List<ChatPhrase> list) {
+        this.list.clear();
+        for (ChatPhrase cp : list) {
+            addItem(cp, true);
         }
+        notifyDataSetChanged();
     }
 
     public interface AdapterInterface {

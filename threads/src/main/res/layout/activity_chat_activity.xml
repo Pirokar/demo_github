@@ -13,19 +13,24 @@
         android:layout_above="@+id/bottom_layout"
         android:layout_below="@+id/toolbar">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <com.sequenia.threads.views.MySwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-       <com.sequenia.threads.views.WelcomeScreen
-            android:id="@+id/welcome"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.sequenia.threads.views.MySwipeRefreshLayout>
     </FrameLayout>
 
-
+    <com.sequenia.threads.views.WelcomeScreen
+        android:id="@+id/welcome"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <LinearLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
@@ -236,6 +241,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"
+                android:lines="1"
                 android:hint="@string/search_messages"
                 android:textColor="@android:color/white"
                 android:textColorHint="@color/hint_color"
