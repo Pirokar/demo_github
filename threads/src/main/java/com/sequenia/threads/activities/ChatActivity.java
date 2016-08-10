@@ -105,12 +105,12 @@ public class ChatActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!ThreadsInitializer.getInstance(this).isInited())
-            throw new IllegalStateException("you must call ThreadsInitializer.getInstance(context).init() before opening this activity");
         setContentView(R.layout.activity_chat_activity);
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         if (null != t) initToolbar(t);
         initViews();
+        if (getIntent().getStringExtra(TAG)==null) throw new IllegalStateException("you must provide valid client id," +
+                "\r\n it is now null or it'ts length < 5");
         if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {//mb, someday, we will support orientation change
             mChatController = (ChatController) getFragmentManager().findFragmentByTag(ChatController.TAG);
         } else {
@@ -122,7 +122,6 @@ public class ChatActivity extends AppCompatActivity
         if (!mChatController.isNeedToShowWelcome() && mWelcomeScreen != null) {
             mWelcomeScreen.removeViewWithAnimation(0, null);
         }
-
     }
 
     public static Intent getStartIntent(Context ctx, String clientId) {
@@ -233,8 +232,9 @@ public class ChatActivity extends AppCompatActivity
                                     }, i * 500);
                                 }
                             }
-                        },500);
+                        }, 500);
                     }
+
                     @Override
                     public void onFail(Throwable error) {
                     }
@@ -346,8 +346,8 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onFileSelected(File fileOrDirectory) {
-        mFileDescription = new FileDescription(FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
+        mFileDescription = new FileDescription(getString(R.string.I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(getString(R.string.I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
         mQuote = null;
     }
 
@@ -385,7 +385,7 @@ public class ChatActivity extends AppCompatActivity
 
 
     @Override
-    public void onFilepickerClick() {
+    public void onFilePickerClick() {
         setBottomStateDefault();
         if (PermissionChecker.isReadExternalPermissionGranted(this)) {
             FilePickerFragment frag = FilePickerFragment.newInstance(null);
@@ -544,7 +544,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onFileClick(FileDescription filedescription) {
-        mChatController.onDownloadRequest(filedescription);
+        mChatController.onFileClick(filedescription);
     }
 
     @Override
@@ -716,6 +716,11 @@ public class ChatActivity extends AppCompatActivity
 
         void setText(String header, String text, String imagePath) {
             setIsVisible(true);
+            if (header == null || header.equals("null")) {
+                mHeader.setVisibility(View.INVISIBLE);
+            } else {
+                mHeader.setVisibility(View.VISIBLE);
+            }
             mHeader.setText(header);
             mText.setText(text);
             if (imagePath != null) {
@@ -728,16 +733,17 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
-        if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
-            final NoConnectionDialogFragment ncdf = NoConnectionDialogFragment.getInstance(new NoConnectionDialogFragment.OnCancelListener() {
-                @Override
-                public void onCancel() {
-                    mChatController.checkAndResendPhrase(userPhrase);
-                }
-            });
-            ncdf.setCancelable(true);
-            ncdf.show(getFragmentManager(), null);
-        }
+        mChatController.checkAndResendPhrase(userPhrase);
+    }
+
+    public void showConnectionError(){
+        final NoConnectionDialogFragment ncdf = NoConnectionDialogFragment.getInstance(new NoConnectionDialogFragment.OnCancelListener() {
+            @Override
+            public void onCancel() {
+            }
+        });
+        ncdf.setCancelable(true);
+        ncdf.show(getFragmentManager(), null);
     }
 
     public void cleanChat() {
@@ -780,7 +786,6 @@ public class ChatActivity extends AppCompatActivity
                     if (s == null || s.length() == 0) {
                         mChatAdapter.undoClear();
                     } else {
-                        Log.e(TAG, "after textChanged " + s);// TODO: 09.08.2016
                         mChatController.requestFilterefPhrases(s.toString(), new Callback<List<ChatPhrase>, Exception>() {
                             @Override
                             public void onSuccess(List<ChatPhrase> result) {
@@ -789,7 +794,6 @@ public class ChatActivity extends AppCompatActivity
 
                             @Override
                             public void onFail(Exception error) {
-
                             }
                         });
                     }
@@ -834,4 +838,6 @@ public class ChatActivity extends AppCompatActivity
             }
         }
     }
+
+
 }

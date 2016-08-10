@@ -157,7 +157,7 @@ public class FileDescription implements Parcelable {
     @Override
     public String toString() {
         return "FileDescription{" +
-                "header='" + from + '\'' +
+                "from='" + from + '\'' +
                 ", filePath='" + filePath + '\'' +
                 ", downloadPath='" + downloadPath + '\'' +
                 ", incomingName='" + incomingName + '\'' +

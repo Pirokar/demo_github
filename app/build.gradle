@@ -23,8 +23,8 @@ android {
         applicationId "com.sequenia.appwithchat"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 3
-        versionName "1.5_test"
+        versionCode 4
+        versionName "1.52_test"
     }
     buildTypes {
         release {
@@ -35,7 +35,11 @@ android {
     lintOptions {
         abortOnError false
     }
+    dexOptions {
+        javaMaxHeapSize "12g"
+    }
 }
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

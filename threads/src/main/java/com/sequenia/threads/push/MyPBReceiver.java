@@ -36,21 +36,24 @@ public class MyPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressChanged(final Context context, String s) {
-        Log.e(TAG, "onDeviceAddressChanged " + s);
-        PushController.getInstance(context).setClientIdAsync(PrefUtils.getClientID(context), new RequestCallback<Void, PushServerErrorException>() {
-            @Override
-            public void onResult(Void aVoid) {
-                Log.e(TAG, "" + aVoid);
-                ChatController.getInstance(context, PrefUtils.getClientID(context)).onPushInit(context);
-                PrefUtils.setClientIdWasSet(true, context);
-                context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
-            }
+        Log.d(TAG, "onDeviceAddressChanged " + s);
+        Log.e(TAG, "PrefUtils.getClientID(context) = " + PrefUtils.getClientID(context));// TODO: 10.08.2016
+        Log.e(TAG, "PrefUtils.isClientIdSet(context) = " + PrefUtils.isClientIdSet(context));// TODO: 10.08.2016
+        if (!PrefUtils.isClientIdSet(context) && PrefUtils.getClientID(context) != null) {
+            PushController.getInstance(context).setClientIdAsync(PrefUtils.getClientID(context), new RequestCallback<Void, PushServerErrorException>() {
+                @Override
+                public void onResult(Void aVoid) {
+                    Log.d(TAG, "client id was set");
+                    PrefUtils.setClientIdWasSet(true, context);
+                    context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
+                }
 
-            @Override
-            public void onError(PushServerErrorException e) {
-                Log.e(TAG, "" + e);
-            }
-        });
+                @Override
+                public void onError(PushServerErrorException e) {
+                    Log.e(TAG, "" + e);
+                }
+            });
+        }
     }
 
     @Override

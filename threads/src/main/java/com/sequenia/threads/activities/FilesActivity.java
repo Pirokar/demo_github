@@ -34,7 +34,7 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
         t.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               onBackPressed();
+                onBackPressed();
             }
         });
 
@@ -58,7 +58,7 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
 
     @Override
     public void onFileClick(FileDescription fileDescription) {
-
+        mFilesAndMediaController.onFileClick(fileDescription);
     }
 
     public static Intent getStartIntetent(Activity activity) {

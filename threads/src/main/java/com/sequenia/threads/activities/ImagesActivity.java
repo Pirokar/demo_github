@@ -27,13 +27,14 @@ public class ImagesActivity extends AppCompatActivity implements ViewPager.OnPag
     private Toolbar mToolbar;
     private int collectionSize;
     private static final String TAG = "ImagesActivity ";
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_images);
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.addOnPageChangeListener(this);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.addOnPageChangeListener(this);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,12 +56,12 @@ public class ImagesActivity extends AppCompatActivity implements ViewPager.OnPag
                 }
                 Log.e(TAG, "output = "+output);
                 collectionSize = output.size();
-                viewPager.setAdapter(new ImagesAdapter(output, getFragmentManager()));
+                mViewPager.setAdapter(new ImagesAdapter(output, getFragmentManager()));
                 FileDescription fd = getIntent().getParcelableExtra("FileDescription");
                 if (fd != null) {
                     int page = output.indexOf(fd);
                     if (page != -1) {
-                        viewPager.setCurrentItem(page);
+                        mViewPager.setCurrentItem(page);
                         onPageSelected(page);
                     }
                 }
@@ -87,8 +88,7 @@ public class ImagesActivity extends AppCompatActivity implements ViewPager.OnPag
 
     @Override
     public void onPageSelected(int position) {
-        Log.e(TAG, "onPageSelected");// TODO: 05.08.2016
-        getSupportActionBar().setTitle(position+1 + " " + getString(R.string.from) + " " + collectionSize);
+        getSupportActionBar().setTitle(mViewPager.getCurrentItem()  +1 + " " + getString(R.string.from) + " " + collectionSize);
     }
 
     @Override

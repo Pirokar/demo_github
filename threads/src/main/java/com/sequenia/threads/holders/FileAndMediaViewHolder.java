@@ -58,5 +58,9 @@ public class FileAndMediaViewHolder extends RecyclerView.ViewHolder {
         fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(),fileDescription.getSize()));
         timeStampTextView.setText(sdf.format(new Date(fileDescription.getTimeStamp())));
         mImageButton.setOnClickListener(fileClickListener);
+        ViewGroup vg = (ViewGroup) itemView;
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            vg.getChildAt(i).setOnClickListener(fileClickListener);
+        }
     }
 }

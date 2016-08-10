@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
+import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mEditText = (EditText) findViewById(R.id.edit_text);
+        Log.e(TAG, ""+PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));// TODO: 09.08.2016  
         mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
                 ""
                 : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
@@ -47,13 +49,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChatButtonClick(View v) {
-        if (ThreadsInitializer.getInstance(this).isInited() && mEditText.getText().length() > 5) {
-            startActivity(ChatActivity.getStartIntent(this, mEditText.getText().toString()));
-        } else if (!PermissionChecker.isCoarseLocationPermissionGranted(this)
+        if (!PermissionChecker.isCoarseLocationPermissionGranted(this)
                 || !PermissionChecker.isReadSmsPermissionGranted(this)
                 || !PermissionChecker.isReadPhoneStatePermissionGranted(this)) {
             requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK);
-        } else if (mEditText.getText().length() < 5) {
+        }else if (mEditText.getText().length() > 5) {
+            ThreadsInitializer.getInstance(this).init();
+            startActivity(ChatActivity.getStartIntent(this, mEditText.getText().toString()));
+        }
+        else if (mEditText.getText().length() < 5) {
             Toast.makeText(this, "client id must have length more than 4 chars", Toast.LENGTH_SHORT).show();
         }
     }
@@ -92,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this).edit().putString("edit", mEditText.getText().toString()).apply();
     }
 }

@@ -88,6 +88,27 @@ public class UserPhrase implements ChatPhrase {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserPhrase that = (UserPhrase) o;
+
+        if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
+        if (mQuote != null ? !mQuote.equals(that.mQuote) : that.mQuote != null) return false;
+        return fileDescription != null ? fileDescription.equals(that.fileDescription) : that.fileDescription == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = phrase != null ? phrase.hashCode() : 0;
+        result = 31 * result + (mQuote != null ? mQuote.hashCode() : 0);
+        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "UserPhrase{" +
                 "messageId='" + messageId + '\'' +

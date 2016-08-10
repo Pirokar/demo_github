@@ -26,7 +26,7 @@ public class MyServerIntentService extends PushServerIntentService {
         if (list == null) return false;
         try {
             for (int i = 0; i < list.size(); i++) {
-                ChatController.getInstance(getApplication(), PrefUtils.getClientID(getApplication())).onConsultMessage(list.get(i));
+                ChatController.getInstance(getApplication(), PrefUtils.getClientID(getApplication())).onConsultMessage(list.get(i),getApplication());
             }
         } catch (JSONException e) {
             e.printStackTrace();

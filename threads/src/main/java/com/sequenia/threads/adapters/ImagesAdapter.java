@@ -33,7 +33,6 @@ public class ImagesAdapter extends PagerAdapter {
     private Fragment mCurrentPrimaryItem = null;
 
     public ImagesAdapter(List<FileDescription> fileDescriptions, FragmentManager mFragmentManager) {
-        Log.e(TAG, ""+fileDescriptions);
         this.fileDescriptions = fileDescriptions;
         this.mFragmentManager = mFragmentManager;
     }

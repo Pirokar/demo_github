@@ -33,13 +33,11 @@ public class DownloadService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         final FileDescription fileDescription = intent.getParcelableExtra(FD_TAG);
         if (fileDescription == null) return START_STICKY;
-        Log.e(TAG, "onDownloadRequest with fd = " + fileDescription);// TODO: 01.08.2016
         if (fileDescription.getDownloadPath() == null || fileDescription.getFilePath() != null) {
             Log.e(TAG, "cant download with fileDescription = " + fileDescription);
             return START_STICKY;
         }
         if (runningDownloads.containsKey(fileDescription)) {
-            Log.e(TAG, "runningDownloads.containsKey(fileDescription))");// TODO: 04.08.2016  
             FileDownloader fileDownloader = runningDownloads.get(fileDescription);
             runningDownloads.remove(fileDescription);
             fileDownloader.stop();
@@ -53,7 +51,6 @@ public class DownloadService extends Service {
             @Override
             public void onProgress(double progress) {
                 if (progress < 1) progress = 1.0;
-                Log.e(TAG, "onprogress = " + progress);// TODO: 01.08.2016
                 fileDescription.setDownloadProgress((int) progress);
                 DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
                 sendDownloadProgressBroadcast(fileDescription);
@@ -61,7 +58,6 @@ public class DownloadService extends Service {
 
             @Override
             public void onComplete(final File file) {
-                Log.e(TAG, "oncomplete");// TODO: 01.08.2016
                 fileDescription.setDownloadProgress(100);
                 fileDescription.setFilePath("file://" + file.getAbsolutePath());
                 DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);

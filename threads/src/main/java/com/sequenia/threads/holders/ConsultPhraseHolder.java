@@ -3,6 +3,7 @@ package com.sequenia.threads.holders;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,7 +36,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     private View fileRow;
     private CircularProgressButton mCircularProgressButton;
     private TextView rightTextHeader;
-    private TextView rightTextDescr;
+    private TextView mRightTextDescr;
     private TextView rightTextFileStamp;
     private TextView mTimeStampTextView;
     private TextView mPhraseTextView;
@@ -50,7 +51,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         fileRow = itemView.findViewById(R.id.right_text_row);
         mCircularProgressButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
         rightTextHeader = (TextView) itemView.findViewById(R.id.to);
-        rightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
+        mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         rightTextFileStamp = (TextView) itemView.findViewById(R.id.send_at);
         mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
@@ -70,7 +71,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             , boolean isAvatarVisible
             , Quote quote
             , FileDescription fileDescription
-            , @Nullable View.OnClickListener onAttachClickListener
+            , @Nullable View.OnClickListener fileClickListener
             , View.OnLongClickListener onRowLongClickListener
             , View.OnClickListener onAvatarClickListener
             , boolean isChosen) {
@@ -84,19 +85,31 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
             rightTextHeader.setText(quote.getPhraseOwnerTitle());
-            rightTextDescr.setText(quote.getText());
+            mRightTextDescr.setText(quote.getText());
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
             if (TextUtils.isEmpty(quote.getPhraseOwnerTitle())) {
                 rightTextHeader.setVisibility(View.GONE);
             } else {
                 rightTextHeader.setVisibility(View.VISIBLE);
             }
+            if (quote.getFileDescription() != null) {
+                mCircularProgressButton.setVisibility(View.VISIBLE);
+                String filename = quote.getFileDescription().getIncomingName();
+                if (filename==null){
+                    filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath())==null?"":FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
+                }
+                mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
+                mCircularProgressButton.setOnClickListener(fileClickListener);
+                mCircularProgressButton.setProgress(quote.getFileDescription().getDownloadProgress());
+            }else {
+                mCircularProgressButton.setVisibility(View.GONE);
+            }
         }
         if (fileDescription != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.VISIBLE);
-            if (onAttachClickListener != null) {
-                mCircularProgressButton.setOnClickListener(onAttachClickListener);
+            if (fileClickListener != null) {
+                mCircularProgressButton.setOnClickListener(fileClickListener);
             }
            rightTextHeader.setText(fileDescription.getFileSentTo() == null ? "" : fileDescription.getFileSentTo());
             if (!TextUtils.isEmpty(rightTextHeader.getText())) {
@@ -105,7 +118,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                 rightTextHeader.setVisibility(View.GONE);
             }
             String fileHeader = fileDescription.getIncomingName()==null? FileUtils.getLastPathSegment(fileDescription.getFilePath()):fileDescription.getIncomingName();
-            rightTextDescr.setText(fileHeader==null?"":fileHeader + "\n" + android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
+            mRightTextDescr.setText(fileHeader==null?"":fileHeader + "\n" + android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
             mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         }

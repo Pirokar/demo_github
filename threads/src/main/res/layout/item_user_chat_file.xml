@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/bubble"
-
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="@dimen/user_margin_left"
@@ -17,6 +16,7 @@
 
 
         <ImageButton
+            android:layout_centerVertical="true"
             android:id="@+id/file"
             style="@style/CircularProgressButtonStyle"
             android:layout_width="42dp"
@@ -35,12 +35,11 @@
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toRightOf="@+id/file"
-            android:text="счет на оплату.pdf"
+            android:text="счетddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.pdf"
             android:textColor="@android:color/white" />
 
 
         <TextView
-            android:paddingBottom="@dimen/margin_half"
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,17 +48,19 @@
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_quarter"
             android:layout_toRightOf="@+id/file"
+            android:paddingBottom="@dimen/margin_half"
             android:text="1,2 mb"
             android:textColor="@android:color/white" />
 
         <TextView
-            android:paddingBottom="@dimen/margin_half"
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_alignRight="@+id/header"
             android:layout_below="@+id/header"
             android:layout_marginTop="@dimen/margin_quarter"
+            android:paddingBottom="@dimen/margin_half"
             android:text="10:19"
             android:textColor="@android:color/white" />
 

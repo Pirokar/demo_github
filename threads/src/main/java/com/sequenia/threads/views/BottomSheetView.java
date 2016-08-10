@@ -51,7 +51,7 @@ public class BottomSheetView extends LinearLayout {
         findViewById(R.id.file).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != buttonsListener) buttonsListener.onFilepickerClick();
+                if (null != buttonsListener) buttonsListener.onFilePickerClick();
             }
         });
         hideButton = (TextView) findViewById(R.id.bmsheet_hide);
@@ -92,7 +92,7 @@ public class BottomSheetView extends LinearLayout {
 
         void onGalleryClick();
 
-        void onFilepickerClick();
+        void onFilePickerClick();
 
         void onHideClick();
 

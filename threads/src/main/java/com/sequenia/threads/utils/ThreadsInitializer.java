@@ -2,6 +2,7 @@ package com.sequenia.threads.utils;
 
 import android.Manifest;
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.pushserver.android.PushController;
 
@@ -25,25 +26,24 @@ public class ThreadsInitializer {
     private ThreadsInitializer(Context ctx) {
         isInited = ctx.getSharedPreferences(this.getClass().toString(), Context.MODE_PRIVATE).getBoolean("init", false);
         this.ctx = ctx;
+        isInited = PrefUtils.isClientIdSet(ctx);
     }
 
     public synchronized boolean init() throws IllegalArgumentException {
         if (isInited) return true;
         if (!isInited && PermissionChecker.isCoarseLocationPermissionGranted(ctx) && PermissionChecker.isReadSmsPermissionGranted(ctx) && PermissionChecker.isReadPhoneStatePermissionGranted(ctx)) {
             PushController.getInstance(ctx).init();
-            isInited = true;
-            ctx.getSharedPreferences(this.getClass().toString(), Context.MODE_PRIVATE).edit().putBoolean("init", true).apply();
             return true;
         }
         return false;
     }
 
     public boolean isInited() {
-        return ctx.getSharedPreferences(this.getClass().toString(), Context.MODE_PRIVATE).getBoolean("init",false);
+        return PrefUtils.isClientIdSet(ctx);
     }
 
     public String getStatus() {
-        if (isInited) {
+        if (PrefUtils.isClientIdSet(ctx)) {
             return "Threads is initialised";
         }
         HashMap<String, Boolean> map = new HashMap<>();

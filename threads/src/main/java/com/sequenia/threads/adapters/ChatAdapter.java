@@ -3,6 +3,7 @@ package com.sequenia.threads.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,7 +134,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 @Override
                                 public void onClick(View v) {
                                     ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
-                                    if (mAdapterInterface != null) {
+                                    if (mAdapterInterface != null && cp.getQuote()!=null && cp.getQuote().getFileDescription()!=null) {
+                                        mAdapterInterface.onFileClick(cp.getQuote().getFileDescription());
+                                    }
+                                    if (mAdapterInterface != null && cp.getFileDescription()!=null) {
                                         mAdapterInterface.onFileClick(cp.getFileDescription());
                                     }
                                 }
@@ -175,7 +179,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         public void onClick(View v) {
                             UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
                             if (mAdapterInterface != null && (up.getFileDescription() != null)) {
-                                mAdapterInterface.onFileClick(up.getFileDescription());// TODO: 29.07.2016 implemet download fron quote file description
+                                mAdapterInterface.onFileClick(up.getFileDescription());
                             } else if (mAdapterInterface != null && up.getFileDescription() == null && up.getQuote() != null && up.getQuote().getFileDescription() != null) {
                                 mAdapterInterface.onFileClick(up.getQuote().getFileDescription());
                             }
@@ -304,7 +308,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final UserPhrase up = (UserPhrase) list.get(position);
             ((UserFileViewHolder) holder).onBind(
                     up.getTimeStamp()
-                    , "1,2 mb"
                     , up.getFileDescription()
                     , new View.OnClickListener() {
                         @Override
@@ -486,6 +489,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
             }
         });
+        list.add(0,new DateRow(list.get(0).getTimeStamp()));
         Calendar currentTimeStamp = Calendar.getInstance();
         Calendar nextTimeStamp = Calendar.getInstance();
         List<DateRow> daterows = new ArrayList<>();
@@ -563,13 +567,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void changeStateOfMessage(String id, MessageState state) {
+        Log.e(TAG, "changeStateOfMessage");// TODO: 10.08.2016  
         for (ChatItem cm : list) {
             if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(id))) {
-                int position = list.lastIndexOf(cm);
                 ((UserPhrase) cm).setSentState(state);
-                notifyItemChanged(position);
             }
         }
+        notifyDataSetChanged();
     }
 
     public void changeDownloadProgress(String messageId, int progress) {

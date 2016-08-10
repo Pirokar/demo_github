@@ -113,6 +113,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             }
             mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
             mRightTextHeader.setText(quote == null ? fileDescription.getFileSentTo() : quote.getPhraseOwnerTitle());
+
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.sent_at) + " " + fileSdf.format(fileDescription.getTimeStamp()));
             if (fileClickListener != null) {
                 mFileImageButton.setOnClickListener(fileClickListener);
@@ -149,6 +150,11 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
+        if (mRightTextHeader.getText()==null||mRightTextHeader.getText().toString().equals("null")){
+            mRightTextHeader.setVisibility(View.GONE);
+        }else {
+            mRightTextHeader.setVisibility(View.VISIBLE);
+        }
         switch (sentState) {
             case STATE_SENT_AND_SERVER_RECEIVED:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_all_white_18dp, 0);

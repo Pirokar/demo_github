@@ -14,7 +14,6 @@
     <uses-permission android:name="com.google.android.c2dm.permission.SEND" />
     <uses-permission android:name="com.sequenia.appwithchat.permission.pushserver.RECEIVE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -23,7 +22,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -54,12 +52,14 @@
         <meta-data
             android:name="com.pushserver.android.providerUid"
             android:value="PH5FY2ohRkRmJ0UzRl9sLix2ohRkRmJ1hkQT" />
+      <!-- <meta-data
+          android:name="com.pushserver.android.providerUid"
+          android:value="PH5AckgzOkYoSz82QVN1M2ovbiZePEdBMi80QHFdOm0ubVwmYEVjNVomJDN+Pgo" />-->
         <!-- <meta-data
                android:name="com.pushserver.android.serverPrimaryId"
                android:value="[PRIMARY_SERVER_ID]"/>-->
         <meta-data
             android:name="com.pushserver.android.uploadServerUrl"
-            android:value="http://pushservertest.mfms.ru/push-test/file/upload"/>
-
+            android:value="http://pushservertest.mfms.ru/push-test/file/upload" />
     </application>
 </manifest>

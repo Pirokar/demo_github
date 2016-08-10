@@ -1,6 +1,7 @@
 package com.sequenia.threads.utils;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -46,7 +47,12 @@ public abstract class FileDownloader {
                 //    urlConnection.setRequestProperty("content-type", "binary/data");
                 //   urlConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
                 //  urlConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
-                File outputFile = new File(ctx.getDir("files", Context.MODE_PRIVATE), fileName);
+                File outputFile = null;
+                if (FileUtils.getExtensionFromPath(fileName) == FileUtils.PDF) {
+                    outputFile = new File(Environment.getExternalStorageDirectory(),fileName);
+                } else {
+                    outputFile = new File(ctx.getDir("files", Context.MODE_PRIVATE), fileName);
+                }
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
                 List values = urlConnection.getHeaderFields().get("Content-Length");
                 Long length = null;

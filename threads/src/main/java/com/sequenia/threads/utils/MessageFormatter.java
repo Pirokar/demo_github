@@ -8,6 +8,7 @@ import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.model.UpcomingUserMessage;
+import com.sequenia.threads.model.UserPhrase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +41,35 @@ public class MessageFormatter {
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
             JSONObject formattedMessage = new JSONObject();
             formattedMessage.put("text", upcomingUserMessage.getText());
+            if (quote != null) {
+                JSONArray quotes = new JSONArray();
+                formattedMessage.put("quotes", quotes);
+                JSONObject quoteJson = new JSONObject();
+                quotes.put(quoteJson);
+                if (!TextUtils.isEmpty(quote.getText())) {
+                    quoteJson.put("text", quote.getText());
+                }
+                if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
+                    quoteJson.put("attachments", attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
+                }
+            }
+            if (fileDescription != null && mfmsFilePath != null) {
+                formattedMessage.put("attachments", attachmentsFromFileDescription(fileDescription, mfmsFilePath));
+            }
+            return formattedMessage.toString().replaceAll("\\\\", "");
+        } catch (JSONException e) {
+            Log.e(TAG, "error formatting json");
+            e.printStackTrace();
+
+        }
+        return "";
+    }
+    public static String format(UserPhrase upcomingUserMessage, String quoteMfmsFilePath, String mfmsFilePath) {
+        try {
+            Quote quote = upcomingUserMessage.getQuote();
+            FileDescription fileDescription = upcomingUserMessage.getFileDescription();
+            JSONObject formattedMessage = new JSONObject();
+            formattedMessage.put("text", upcomingUserMessage.getPhrase());
             if (quote != null) {
                 JSONArray quotes = new JSONArray();
                 formattedMessage.put("quotes", quotes);
@@ -138,6 +168,9 @@ public class MessageFormatter {
     public static boolean hasFile(UpcomingUserMessage message) {
         return (message.getFileDescription() != null || (message.getQuote() != null && message.getQuote().getFileDescription() != null));
     }
+    public static boolean hasFile(UserPhrase message) {
+        return (message.getFileDescription() != null || (message.getQuote() != null && message.getQuote().getFileDescription() != null));
+    }
 
     public static Quote quoteFromJson(JSONArray quotes) throws JSONException {
         Quote quote = null;
@@ -156,11 +189,7 @@ public class MessageFormatter {
             if (quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).has("optional")) {
                 header = quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getJSONObject("optional").getString("name");
             }
-            quoteFileDescription = new FileDescription(
-                    header
-                    , quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getString("result")
-                    , quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getJSONObject("optional").getLong("size")
-                    , System.currentTimeMillis());
+            quoteFileDescription = descriptionFromJson( quotes.getJSONObject(0).getJSONArray("attachments"));
 
         }
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && quotes.getJSONObject(0).has("operator")) {
@@ -168,6 +197,9 @@ public class MessageFormatter {
         }
         if (quoteString != null || quoteFileDescription != null) {
             quote = new Quote(consultName, quoteString, quoteFileDescription, System.currentTimeMillis());
+        }
+        if (quoteFileDescription!=null){
+            quoteFileDescription.setFrom(consultName);
         }
         return quote;
     }

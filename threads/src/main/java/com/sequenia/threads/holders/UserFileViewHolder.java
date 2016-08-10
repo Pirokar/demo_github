@@ -1,6 +1,7 @@
 package com.sequenia.threads.holders;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
+import com.sequenia.threads.utils.FileUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,15 +40,18 @@ public class UserFileViewHolder extends RecyclerView.ViewHolder {
 
     public void onBind(
             long timeStamp
-            , String fileSize
             , FileDescription fileDescription
             , View.OnClickListener buttonClickListener
             , View.OnClickListener rowClickListener
             , View.OnLongClickListener onLongClick
             , boolean isFilterVisible
             , MessageState sentState) {
-        mFileHeader.setText(fileDescription.getFilePath());
-        mSizeTextView.setText(fileSize);
+        if (fileDescription.getIncomingName()!=null){
+            mFileHeader.setText(FileUtils.getLastPathSegment(fileDescription.getIncomingName()));
+        }else if (fileDescription.getFilePath()!=null){
+            mFileHeader.setText(FileUtils.getLastPathSegment(fileDescription.getFilePath()));
+        }
+        mSizeTextView.setText( Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {

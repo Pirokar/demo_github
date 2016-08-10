@@ -3,14 +3,17 @@ package com.sequenia.threads.controllers;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.advisa.client.api.InOutMessage;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
 import com.pushserver.android.RequestCallback;
@@ -41,15 +45,19 @@ import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.ConsultInfo;
 import com.sequenia.threads.utils.DownloadService;
 import com.sequenia.threads.utils.DualFilePoster;
+import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.utils.PrefUtils;
+import com.sequenia.threads.utils.ThreadsInitializer;
 
 import org.json.JSONException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.UUID;
 
 /**
@@ -71,14 +79,59 @@ public class ChatController extends Fragment {
     boolean isSearchingConsult;
     DatabaseHolder mDatabaseHolder;
     Context appContext;
-    private ChatBot mChatBot;
     private static ChatController instance;
     int currentOffset = 0;
     List<Pair<UpcomingUserMessage, UserPhrase>> pendingMessages = new ArrayList<>();
 
-    public static ChatController getInstance(Context ctx, String clientId) {
+    public static ChatController getInstance(final Context ctx, final String clientId) {
         if (instance == null) {
-            instance = new ChatController(ctx, clientId);
+            instance = new ChatController(ctx);
+        }
+        if (PrefUtils.getClientID(ctx) == null) {
+            PrefUtils.setClientId(ctx, clientId);
+        }
+        try {
+            if (!PrefUtils.isClientIdSet(ctx)
+                    || !PrefUtils.getClientID(ctx).equals(clientId)) {
+                PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
+                    @Override
+                    public void onResult(Void aVoid) {
+                        Log.e(TAG, "client id was set");// TODO: 09.08.2016
+                        PrefUtils.setClientId(ctx, clientId);
+                        PrefUtils.setClientIdWasSet(true, ctx);
+                        PushController.getInstance(ctx).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                            @Override
+                            public void onResult(List<InOutMessage> inOutMessages) {
+                                Log.e(TAG, "getMessageHistoryAsync onResult" + inOutMessages);
+                            }
+
+                            @Override
+                            public void onError(PushServerErrorException e) {
+                                Log.e(TAG, "" + e);
+                            }
+                        });// TODO: 13.07.2016
+                        PushController.getInstance(ctx).getNextMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                            @Override
+                            public void onResult(List<InOutMessage> inOutMessages) {
+                                Log.e(TAG, "getNextMessageHistoryAsync onResult" + inOutMessages);
+                            }
+
+                            @Override
+                            public void onError(PushServerErrorException e) {
+                                Log.e(TAG, "" + e);
+                            }
+                        });// TODO: 13.07.2016
+                    }
+
+                    @Override
+                    public void onError(PushServerErrorException e) {
+                        Log.e(TAG, "error while setting client id" + e);
+                        e.printStackTrace();
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return instance;
     }
@@ -99,26 +152,10 @@ public class ChatController extends Fragment {
     }
 
     @SuppressLint("all")
-    public ChatController(final Context ctx, final String clientId) {
-        if (clientId == null) throw new IllegalArgumentException("client id is null");
+    public ChatController(final Context ctx) {
         if (mDatabaseHolder == null) {
             mDatabaseHolder = DatabaseHolder.getInstance(ctx);
         }
-        mChatBot = new ChatBot(this);
-        if (PrefUtils.isClientIdSet(ctx) && !PrefUtils.getClientID(ctx).equals(clientId)) {
-            PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
-                @Override
-                public void onResult(Void aVoid) {
-                    PrefUtils.setClientId(ctx, clientId);
-                }
-
-                @Override
-                public void onError(PushServerErrorException e) {
-                    Log.e(TAG, "error while setting client id" + e);
-                    e.printStackTrace();
-                }
-            });
-        } else if (!PrefUtils.isClientIdSet(ctx)) PrefUtils.setClientId(ctx, clientId);
     }
 
     public boolean isNeedToShowWelcome() {
@@ -129,6 +166,7 @@ public class ChatController extends Fragment {
         activity = ca;
         activity.connectedConsultId = ConsultInfo.getCurrentConsultId(ca);
         appContext = activity.getApplicationContext();
+        currentOffset = 0;
         if (mDatabaseHolder == null) {
             mDatabaseHolder = DatabaseHolder.getInstance(activity);
         }
@@ -137,7 +175,7 @@ public class ChatController extends Fragment {
                 @Override
                 public void onComplete(List<ChatItem> data) {
                     if (null != activity) activity.addMessages(data);
-                    currentOffset = 20;
+                    currentOffset = data.size();
                 }
 
                 @Override
@@ -154,6 +192,7 @@ public class ChatController extends Fragment {
         intentFilter.addAction(PROGRESS_BROADCAST);
         intentFilter.addAction(DOWNLOADED_SUCCESSFULLY_BROADCAST);
         intentFilter.addAction(DOWNLOAD_ERROR_BROADCAST);
+        intentFilter.addAction(CLIENT_ID_IS_SET_BROADCAST);
         activity.registerReceiver(mProgressReceiver, intentFilter);
     }
 
@@ -176,47 +215,48 @@ public class ChatController extends Fragment {
     public void onUserInput(final UpcomingUserMessage upcomingUserMessage) {//// TODO: 03.08.2016 implemet resend of pending messages
         if (upcomingUserMessage == null) return;
         Log.e(TAG, "upcomingUserMessage = " + upcomingUserMessage);// TODO: 29.07.2016
-        if (mChatBot.processServiceMessage(upcomingUserMessage))
-            return;//if message contains some service commands we just return
         final UserPhrase um = convert(upcomingUserMessage);
-        addMessage(um);
-        if (mChatBot.isBotActive) {
-            mChatBot.processUserPhrase(um);
-        }
+        addMessage(um, activity);
+        sendMessage(um);
+    }
+
+    private void sendMessage(final UserPhrase userPhrase) {
         try {
-            if (!MessageFormatter.hasFile(upcomingUserMessage)) {// TODO: 04.08.2016 implement resned on usnet messages
+            if (!MessageFormatter.hasFile(userPhrase)) {
                 PushController
                         .getInstance(appContext)
-                        .sendMessageAsync(MessageFormatter.format(upcomingUserMessage, null, null), false, new RequestCallback<Void, PushServerErrorException>() {
+                        .sendMessageAsync(MessageFormatter.format(userPhrase, null, null), false, new RequestCallback<Void, PushServerErrorException>() {
                             @Override
                             public void onResult(Void aVoid) {
                                 Log.e(TAG, "onResult sending without files");
-                                setMessageState(um, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
+                                setMessageState(userPhrase, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
                             }
 
                             @Override
                             public void onError(PushServerErrorException e) {
-                                setMessageState(um, MessageState.STATE_NOT_SENT);
+                                setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+                                activity.showConnectionError();
                             }
                         });
             } else {
                 new DualFilePoster(
-                        upcomingUserMessage.getFileDescription() != null ? upcomingUserMessage.getFileDescription() : null
-                        , upcomingUserMessage.getQuote() != null ? upcomingUserMessage.getQuote().getFileDescription() != null ? upcomingUserMessage.getQuote().getFileDescription() : null : null//// TODO: 02.08.2016  fix bug with crash of sending quote with downloaded image
+                        userPhrase.getFileDescription() != null ? userPhrase.getFileDescription() : null
+                        , userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() != null ? userPhrase.getQuote().getFileDescription() : null : null//// TODO: 02.08.2016  fix bug with crash of sending quote with downloaded image
                         , activity) {
                     @Override
                     public void onResult(String mfmsFilePath, String mfmsQuoteFilePath) {
                         Log.e(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
-                        PushController.getInstance(activity).sendMessageAsync(MessageFormatter.format(upcomingUserMessage, mfmsQuoteFilePath, mfmsFilePath), false, new RequestCallback<Void, PushServerErrorException>() {
+                        PushController.getInstance(activity).sendMessageAsync(MessageFormatter.format(userPhrase, mfmsQuoteFilePath, mfmsFilePath), false, new RequestCallback<Void, PushServerErrorException>() {
                             @Override
                             public void onResult(Void aVoid) {
-                                setMessageState(um, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
+                                setMessageState(userPhrase, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
                             }
 
                             @Override
                             public void onError(PushServerErrorException e) {
                                 Log.e(TAG, "error while sending message to server");
-                                setMessageState(um, MessageState.STATE_NOT_SENT);
+                                setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+                                activity.showConnectionError();
                             }
                         });
                     }
@@ -225,43 +265,67 @@ public class ChatController extends Fragment {
                     public void onError(Exception e) {
                         Log.e(TAG, "error while sending files to server");
                         e.printStackTrace();
+                        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+                        activity.showConnectionError();
                     }
                 };
             }
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            pendingMessages.add(new Pair<>(upcomingUserMessage, um));
+            setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+            if (!ThreadsInitializer.getInstance(activity).isInited())
+                ThreadsInitializer.getInstance(activity).init();
+            activity.showConnectionError();
         }
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (activity != null)
+                            try {
+                                PushController.getInstance(activity).notifyMessageUpdateNeeded();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                    }
+                }).start();
+            }
+        }, 60000);
 
-       /* PushController.getInstance(ctx).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-            @Override
-            public void onResult(List<InOutMessage> inOutMessages) {
-                Log.e(TAG, "getMessageHistoryAsync onResult" + inOutMessages);
-            }
+        try {
+            PushController.getInstance(activity).getMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                @Override
+                public void onResult(List<InOutMessage> inOutMessages) {
+                    Log.e(TAG, "getMessageHistoryAsync onResult" + inOutMessages);
+                }
 
-            @Override
-            public void onError(PushServerErrorException e) {
-                Log.e(TAG, "" + e);
-            }
-        });// TODO: 13.07.2016
-        PushController.getInstance(ctx).getNextMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-            @Override
-            public void onResult(List<InOutMessage> inOutMessages) {
-                Log.e(TAG, "getNextMessageHistoryAsync onResult" + inOutMessages);
-            }
+                @Override
+                public void onError(PushServerErrorException e) {
+                    Log.e(TAG, "" + e);
+                }
+            });// TODO: 13.07.2016
+        } catch (Exception e) {
+        }
+        try {
+            PushController.getInstance(activity).getNextMessageHistoryAsync(1000, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                @Override
+                public void onResult(List<InOutMessage> inOutMessages) {
+                    Log.e(TAG, "getNextMessageHistoryAsync onResult" + inOutMessages);
+                }
 
-            @Override
-            public void onError(PushServerErrorException e) {
-                Log.e(TAG, "" + e);
-            }
-        });// TODO: 13.07.2016
-        if (upcomingUserMessage.getText() != null && upcomingUserMessage.getText().trim().equalsIgnoreCase("Thanks a lot")) {
-            cleanAll();
-            return;
-        }*/
+                @Override
+                public void onError(PushServerErrorException e) {
+                    Log.e(TAG, "" + e);
+                }
+            });// TODO: 13.07.2016
+        } catch (Exception e) {
+        }
     }
 
-    void addMessage(final ChatItem cm) {
+
+    void addMessage(final ChatItem cm, Context ctx) {
         mDatabaseHolder.putChatItem(cm);
         h.post(new Runnable() {
             @Override
@@ -269,6 +333,9 @@ public class ChatController extends Fragment {
                 if (null != activity) activity.addMessage(cm);
             }
         });
+        if (cm instanceof ConsultPhrase) {
+            PushController.getInstance(ctx).notifyMessageRead(((ConsultPhrase) cm).getId());
+        }
 
     }
 
@@ -286,29 +353,32 @@ public class ChatController extends Fragment {
         return "";
     }
 
-    public void onDownloadRequest(final FileDescription fileDescription) {
-        Log.e(TAG, "onDownloadRequest with fd = " + fileDescription);// TODO: 01.08.2016
-        if (activity != null) {
+    public void onFileClick(final FileDescription fileDescription) {
+        if (activity != null) {// TODO: 10.08.2016 implement opening of incoming images on click
             if (fileDescription.getFilePath() == null) {
                 Intent i = new Intent(activity, DownloadService.class);
                 i.putExtra(DownloadService.FD_TAG, fileDescription);
                 activity.startService(i);
             } else if (fileDescription.hasImage()) {
                 activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
+            } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
+                Intent target = new Intent(Intent.ACTION_VIEW);
+                File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
+                target.setDataAndType(Uri.fromFile(file), "application/pdf");
+                target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                try {
+                    startActivity(target);
+                } catch (ActivityNotFoundException e) {
+                    // Instruct the user to install a PDF reader here, or something
+                    Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
 
-
     public void checkAndResendPhrase(final UserPhrase userPhrase) {
-        if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setMessageState(userPhrase, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
-                    if (mChatBot.isBotActive) mChatBot.answerToUser(userPhrase, true);
-                }
-            }, 2000);
+        if (userPhrase.getSentState()==MessageState.STATE_SENT||userPhrase.getSentState()==MessageState.STATE_NOT_SENT){
+            sendMessage(userPhrase);
         }
     }
 
@@ -319,7 +389,6 @@ public class ChatController extends Fragment {
         isSearchingConsult = false;
         h.removeCallbacksAndMessages(null);
     }
-
 
     void setMessageState(UserPhrase up, MessageState messageState) {
         up.setSentState(messageState);
@@ -342,7 +411,7 @@ public class ChatController extends Fragment {
         switch (MessageMatcher.getType(bundle)) {
             case MessageMatcher.TYPE_OPERATOR_JOINED:
                 Context notNullContext = appContext == null ? ctx : appContext;
-                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_JOINED, bundle.getString("operatorName"), true, System.currentTimeMillis(), bundle.getString("operatorPhoto")));
+                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_JOINED, bundle.getString("operatorName"), true, System.currentTimeMillis(), bundle.getString("operatorPhoto")), ctx);
                 if (null != notNullContext) {
                     ConsultInfo.setCurrentConsultInfo(bundle.getString("operatorName"), bundle, notNullContext);
                 }
@@ -352,7 +421,7 @@ public class ChatController extends Fragment {
                 break;
             case MessageMatcher.TYPE_OPERATOR_LEFT:
                 notNullContext = appContext == null ? ctx : appContext;
-                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_LEFT, bundle.getString("operatorName"), true, System.currentTimeMillis(), ConsultInfo.getConsultPhoto(notNullContext, bundle.getString("operatorName"))));
+                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_LEFT, bundle.getString("operatorName"), true, System.currentTimeMillis(), ConsultInfo.getConsultPhoto(notNullContext, bundle.getString("operatorName"))), ctx);
                 if (null != notNullContext) {
                     ConsultInfo.setCurrentConsultLeft(notNullContext);
                 }
@@ -362,7 +431,7 @@ public class ChatController extends Fragment {
                 break;
             case MessageMatcher.TYPE_OPERATOR_TYPING:
                 notNullContext = appContext == null ? ctx : appContext;
-                addMessage(new ConsultTyping(ConsultInfo.getCurrentConsultId(notNullContext), System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(appContext)));
+                addMessage(new ConsultTyping(ConsultInfo.getCurrentConsultId(notNullContext), System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(appContext)), ctx);
                 break;
             default:
                 Log.e(TAG, "unknown message type " + bundle);
@@ -370,7 +439,6 @@ public class ChatController extends Fragment {
     }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
-        Log.e(TAG, "requestItems currentOffset = " + currentOffset);// TODO: 09.08.2016  
         mDatabaseHolder.getChatItemsAsync(currentOffset, 20, new CompletionHandler<List<ChatItem>>() {
             @Override
             public void onComplete(List<ChatItem> data) {
@@ -385,10 +453,10 @@ public class ChatController extends Fragment {
         });
     }
 
-    public synchronized void onConsultMessage(PushMessage pushMessage) throws JSONException {
+    public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {
         ConsultInfo.setCurrentConsultInfo(pushMessage, activity);
         ConsultPhrase consultPhrase = MessageFormatter.format(pushMessage);
-        addMessage(consultPhrase);
+        addMessage(consultPhrase, ctx);
         h.post(new Runnable() {
             @Override
             public void run() {
@@ -422,12 +490,16 @@ public class ChatController extends Fragment {
         pendingMessages.clear();*/
     }
 
+    public void onClickOnUnsentUserPhrase(UserPhrase userPhrase) {
+
+    }
+
     public void onConsultChoose(Activity activity, String consultId) {
         Intent i = ConsultActivity.getStartIntent(activity, ConsultInfo.getConsultPhoto(activity, consultId), ConsultInfo.getConsultName(activity, consultId), ConsultInfo.getConsultStatus(activity, consultId));
         activity.startActivity(i);
     }
 
-    public void requestFilterefPhrases(String query, final Callback<List<ChatPhrase>,Exception> callback){
+    public void requestFilterefPhrases(String query, final Callback<List<ChatPhrase>, Exception> callback) {
         mDatabaseHolder.queryChatPhrasesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
             @Override
             public void onComplete(final List<ChatPhrase> data) {
@@ -438,10 +510,16 @@ public class ChatController extends Fragment {
                     }
                 });
             }
+
             @Override
             public void onError(Throwable e, String message, List<ChatPhrase> data) {
             }
         });
+    }
+
+    public void onSettingClientId(Context ctx) {
+
+
     }
 
     public String getConsultNameById(String id) {
@@ -473,14 +551,12 @@ public class ChatController extends Fragment {
                     activity.updateProgress(fileDescription);
                 Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
                 if (activity != null) {
-                    if (t instanceof FileNotFoundException){
+                    if (t instanceof FileNotFoundException) {
                         Toast.makeText(activity, activity.getString(R.string.error_no_file), Toast.LENGTH_SHORT).show();
                     }
-
                 }
             } else if (action.equals(CLIENT_ID_IS_SET_BROADCAST) && pendingMessages.size() != 0) {
-
-
+                onSettingClientId(context);
             }
         }
     }
