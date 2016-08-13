@@ -12,26 +12,26 @@ import android.support.v4.content.ContextCompat;
 public class PermissionChecker {
 
     public static boolean isCameraPermissionGranted(Context ctx){
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED;
+        return android.support.v4.content.PermissionChecker.checkSelfPermission(ctx, Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED;
     }
     public static boolean isAudioRecordingPermissionGranted(Context ctx){
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED;
+        return android.support.v4.content.PermissionChecker.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED;
     }
     public static boolean isWriteExternalPermissionGranted(Context ctx){
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.WRITE_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED;
+        return android.support.v4.content.PermissionChecker.checkSelfPermission(ctx, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED;
     }
     public static boolean isReadExternalPermissionGranted(Context ctx){
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED;
+        return android.support.v4.content.PermissionChecker.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean isReadPhoneStatePermissionGranted(Context ctx){
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE)==PackageManager.PERMISSION_GRANTED;
+        return android.support.v4.content.PermissionChecker.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE)==PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean isReadSmsPermissionGranted(Context ctx){
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_SMS)==PackageManager.PERMISSION_GRANTED;
+        return android.support.v4.content.PermissionChecker.checkSelfPermission(ctx, Manifest.permission.READ_SMS)==PackageManager.PERMISSION_GRANTED;
     }
     public static boolean isCoarseLocationPermissionGranted(Context ctx){
-        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED;
+        return android.support.v4.content.PermissionChecker.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED;
     }
 }

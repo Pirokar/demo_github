@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.util.Pair;
 
 import com.sequenia.threads.model.ChatItem;
@@ -56,6 +57,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
     static final String COLUMN_FD_IS_FROM_QUOTE = "COLUMN_FD_IS_FROM_QUOTE";
     static final String COLUMN_FD_INCOMING_FILENAME = "COLUMN_FD_INCOMING_FILENAME";
     static final String COLUMN_FD_MESSAGE_ID_EXT = "COLUMN_FD_MESSAGE_ID_EXT";
+    private ArrayList<UserPhrase> cashedPhrases = new ArrayList<>();
+    private long lastPhraseRequest = System.currentTimeMillis();
 
     public MyOpenHelper(Context context) {
         super(context, "messages.db", null, VERSION);
@@ -102,37 +105,69 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     }
 
-    void putUserPhrase(ChatPhrase phrase) {
+    private void putUserPhrase(UserPhrase userPhrase) {
+        ArrayList<UserPhrase> phrasesInDb = new ArrayList<>();
+        if ((System.currentTimeMillis() - lastPhraseRequest) > 300) {
+            Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES, new String[]{});
+            final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
+            final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
+            final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
+            final int INDEX_TYPE = c.getColumnIndex(COLUMN_MESSAGE_TYPE);
+            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+                if (c.getInt(INDEX_TYPE) == MessageTypes.TYPE_USER_PHRASE.type) {
+                    String phrase1 = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
+                    Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+                    UserPhrase up = new UserPhrase(
+                            c.getString(INDEX_MESSAGE_ID),
+                            phrase1,
+                            getQuote(c.getString(INDEX_MESSAGE_ID)),
+                            c.getLong(INDEX_TIMESTAMP),
+                            fd != null && !fd.first ? fd.second : null);
+                    int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
+                    MessageState ms = sentState == 1 ? MessageState.STATE_SENT : sentState == 2 ? MessageState.STATE_SENT_AND_SERVER_RECEIVED : MessageState.STATE_NOT_SENT;
+                    up.setSentState(ms);
+                    phrasesInDb.add(up);
+                }
+            }
+            c.close();
+            lastPhraseRequest = System.currentTimeMillis();
+            cashedPhrases = phrasesInDb;
+        } else {
+            phrasesInDb = cashedPhrases;
+        }
+
+        if (phrasesInDb.contains(userPhrase)) return;
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_MESSAGE_ID, userPhrase.getMessageId());
+        cv.put(COLUMN_PHRASE, userPhrase.getPhrase());
+        cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().getType());
+        cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
+        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.type);
+        getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+        if (userPhrase.getFileDescription() != null) {
+            putFd(userPhrase.getFileDescription(), userPhrase.getMessageId(), false);
+        }
+        if (userPhrase.getQuote() != null) {
+            cv.clear();
+            cv.put(COLUMN_QUOTE_MESSAGE_ID_EXT, userPhrase.getMessageId());
+            cv.put(COLUMN_QUOTE_HEADER, userPhrase.getQuote().getPhraseOwnerTitle());
+            cv.put(COLUMN_QUOTE_BODY, userPhrase.getQuote().getText());
+            cv.put(COLUMN_QUOTE_TIMESTAMP, userPhrase.getQuote().getTimeStamp());
+            getWritableDatabase().insert(TABLE_QUOTE, null, cv);
+            if (userPhrase.getQuote().getFileDescription() != null) {
+                putFd(userPhrase.getQuote().getFileDescription(), userPhrase.getMessageId(), true);
+            }
+        }
+    }
+
+
+    void putChatPhrase(ChatPhrase phrase) {
         ContentValues cv = new ContentValues();
         boolean isDup = false;
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_MESSAGE_ID + " = ?", new String[]{phrase.getId()});
         if (c.getCount() > 0) isDup = true;
         if (phrase instanceof UserPhrase) {
-            UserPhrase userPhrase = (UserPhrase) phrase;
-            cv.put(COLUMN_MESSAGE_ID, userPhrase.getMessageId());
-            cv.put(COLUMN_PHRASE, userPhrase.getPhrase());
-            cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().getType());
-            cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
-            cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.type);
-            if (!isDup) {
-                getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
-            } else {
-                getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{phrase.getId()});
-            }
-            if (userPhrase.getFileDescription() != null) {
-                putFd(userPhrase.getFileDescription(), userPhrase.getMessageId(), false);
-            }
-            if (userPhrase.getQuote() != null) {
-                cv.clear();
-                cv.put(COLUMN_QUOTE_MESSAGE_ID_EXT, userPhrase.getMessageId());
-                cv.put(COLUMN_QUOTE_HEADER, userPhrase.getQuote().getPhraseOwnerTitle());
-                cv.put(COLUMN_QUOTE_BODY, userPhrase.getQuote().getText());
-                cv.put(COLUMN_QUOTE_TIMESTAMP, userPhrase.getQuote().getTimeStamp());
-                getWritableDatabase().insert(TABLE_QUOTE, null, cv);
-                if (userPhrase.getQuote().getFileDescription() != null) {
-                    putFd(userPhrase.getQuote().getFileDescription(), userPhrase.getMessageId(), true);
-                }
-            }
+            putUserPhrase((UserPhrase) phrase);
         } else if (phrase instanceof ConsultPhrase) {
             ConsultPhrase consultPhrase = (ConsultPhrase) phrase;
             cv.put(COLUMN_MESSAGE_ID, consultPhrase.getMessageId());
@@ -170,6 +205,12 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{messageId});
     }
 
+    void setUserPhraseMessageId(String oldMessageId, String newMessageId) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_MESSAGE_ID, newMessageId);
+        getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{oldMessageId});
+    }
+
     void putConsultConnected(ConsultConnectionMessage consultConnectionMessage) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME, consultConnectionMessage.getName());
@@ -190,19 +231,19 @@ class MyOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<ChatPhrase> getSortedPhrases(String query){
+    public List<ChatPhrase> getSortedPhrases(String query) {
         List<ChatPhrase> list = new ArrayList<>();
-        if (query==null)return list;
-        List<ChatItem> chatItems= getChatItems(0,-1);
-        for (ChatItem chatItem:chatItems) {
-            if (chatItem instanceof UserPhrase){
-                if (((UserPhrase) chatItem).getPhraseText()!=null && ((UserPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())){
-                    list.add((UserPhrase)chatItem);
+        if (query == null) return list;
+        List<ChatItem> chatItems = getChatItems(0, -1);
+        for (ChatItem chatItem : chatItems) {
+            if (chatItem instanceof UserPhrase) {
+                if (((UserPhrase) chatItem).getPhraseText() != null && ((UserPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
+                    list.add((UserPhrase) chatItem);
                 }
             }
-            if (chatItem instanceof ConsultPhrase){
-                if (((ConsultPhrase) chatItem).getPhraseText()!=null && ((ConsultPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())){
-                    list.add((ConsultPhrase)chatItem);
+            if (chatItem instanceof ConsultPhrase) {
+                if (((ConsultPhrase) chatItem).getPhraseText() != null && ((ConsultPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
+                    list.add((ConsultPhrase) chatItem);
                 }
             }
         }
@@ -211,7 +252,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     public List<ChatItem> getChatItems(int offset, int limit) {
         List<ChatItem> items = new ArrayList<>();
-        String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset),COLUMN_TIMESTAMP);
+        String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset), COLUMN_TIMESTAMP);
         Cursor c = getWritableDatabase().rawQuery(query, null);
         if (c.getCount() == 0) {
             c.close();
@@ -376,7 +417,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().insert(TABLE_FILE_DESCRIPTION, null, cv);
     }
 
-     void updateFd(FileDescription fileDescription) {
+    void updateFd(FileDescription fileDescription) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FD_HEADER, fileDescription.getFileSentTo());
         cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
@@ -388,6 +429,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
                 "" + COLUMN_FD_INCOMING_FILENAME
                         + " like ? and " + COLUMN_FD_WEB_PATH + " like ?"
-                , new String[]{fileDescription.getIncomingName(),fileDescription.getDownloadPath()});
+                , new String[]{fileDescription.getIncomingName(), fileDescription.getDownloadPath()});
     }
 }

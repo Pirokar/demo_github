@@ -6,14 +6,18 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.advisa.client.api.InOutMessage;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
+import com.sequenia.threads.model.UpcomingUserMessage;
+import com.sequenia.threads.utils.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.controllers.ChatController;
 import com.sequenia.threads.utils.PrefUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,17 +41,25 @@ public class MyPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onDeviceAddressChanged(final Context context, String s) {
         Log.d(TAG, "onDeviceAddressChanged " + s);
-        Log.e(TAG, "PrefUtils.getClientID(context) = " + PrefUtils.getClientID(context));// TODO: 10.08.2016
-        Log.e(TAG, "PrefUtils.isClientIdSet(context) = " + PrefUtils.isClientIdSet(context));// TODO: 10.08.2016
         if (!PrefUtils.isClientIdSet(context) && PrefUtils.getClientID(context) != null) {
             PushController.getInstance(context).setClientIdAsync(PrefUtils.getClientID(context), new RequestCallback<Void, PushServerErrorException>() {
                 @Override
                 public void onResult(Void aVoid) {
                     Log.d(TAG, "client id was set");
-                    PrefUtils.setClientIdWasSet(true, context);
-                    context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
-                }
+                    PushController.getInstance(context).sendMessageAsync(MessageFormatter.getStartMessage("Пупкин Василий Петрович", PrefUtils.getClientID(context), ""), true, new RequestCallback<Void, PushServerErrorException>() {
+                        @Override
+                        public void onResult(Void aVoid) {
+                            Log.e(TAG, "client id was set");// TODO: 09.08.2016
+                            context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
+                            PrefUtils.setClientIdWasSet(true, context);
+                        }
 
+                        @Override
+                        public void onError(PushServerErrorException e) {
+
+                        }
+                    });
+                }
                 @Override
                 public void onError(PushServerErrorException e) {
                     Log.e(TAG, "" + e);

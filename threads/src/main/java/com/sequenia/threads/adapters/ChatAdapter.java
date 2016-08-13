@@ -134,10 +134,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 @Override
                                 public void onClick(View v) {
                                     ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
-                                    if (mAdapterInterface != null && cp.getQuote()!=null && cp.getQuote().getFileDescription()!=null) {
+                                    if (mAdapterInterface != null && cp.getQuote() != null && cp.getQuote().getFileDescription() != null) {
                                         mAdapterInterface.onFileClick(cp.getQuote().getFileDescription());
                                     }
-                                    if (mAdapterInterface != null && cp.getFileDescription()!=null) {
+                                    if (mAdapterInterface != null && cp.getFileDescription() != null) {
                                         mAdapterInterface.onFileClick(cp.getFileDescription());
                                     }
                                 }
@@ -426,6 +426,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             list.add(new DateRow(item.getTimeStamp()));
             if (!isBulk) notifyItemInserted(0);
         }
+        if (list.contains(item))return;
         Calendar currentTimeStamp = Calendar.getInstance();
         Calendar prevTimeStamp = Calendar.getInstance();
         currentTimeStamp.setTimeInMillis(item.getTimeStamp());
@@ -478,8 +479,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (!isBulk) notifyItemInserted(list.size() - 2);
     }
 
+    public int getCurrentItemCount() {
+        int count = 0;
+        for (ChatItem item : list) {
+            if (item instanceof UserPhrase || item instanceof ConsultPhrase || item instanceof ConsultConnectionMessage)
+                count++;
+        }
+        return count;
+    }
 
     public void addItems(final List<ChatItem> items) {
+        Log.e(TAG, "addItems begin");
         for (int i = 0; i < items.size(); i++) {
             addItem(items.get(i), true);
         }
@@ -489,7 +499,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
             }
         });
-        list.add(0,new DateRow(list.get(0).getTimeStamp()));
+        list.add(0, new DateRow(list.get(0).getTimeStamp()));
         Calendar currentTimeStamp = Calendar.getInstance();
         Calendar nextTimeStamp = Calendar.getInstance();
         List<DateRow> daterows = new ArrayList<>();
@@ -499,8 +509,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 continue;
             }
             int index = list.indexOf(ci);
-            if (index == (list.size()-1))continue;//removing dups of date rows
-            if (ci instanceof ConsultPhrase && list.get(index+1) instanceof ConsultPhrase) {
+            if (index == (list.size() - 1)) continue;//removing dups of date rows
+            if (ci instanceof ConsultPhrase && list.get(index + 1) instanceof ConsultPhrase) {
                 ((ConsultPhrase) ci).setAvatarVisible(false);
             }
         }
@@ -514,12 +524,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         for (ChatItem ci : list) {
             int index = list.indexOf(ci);
-            if (index == (list.size()-1))continue;//removing wrong avatar visibility of consult of date rows
-            if (ci instanceof ConsultPhrase && list.get(index+1) instanceof ConsultPhrase) {
+            if (index == (list.size() - 1))
+                continue;//removing wrong avatar visibility of consult of date rows
+            if (ci instanceof ConsultPhrase && list.get(index + 1) instanceof ConsultPhrase) {
                 ((ConsultPhrase) ci).setAvatarVisible(false);
             }
         }
         notifyDataSetChanged();
+        Log.e(TAG, "addItems emd");
     }
 
     @Override
@@ -567,13 +579,20 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void changeStateOfMessage(String id, MessageState state) {
-        Log.e(TAG, "changeStateOfMessage");// TODO: 10.08.2016  
         for (ChatItem cm : list) {
             if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(id))) {
                 ((UserPhrase) cm).setSentState(state);
             }
         }
         notifyDataSetChanged();
+    }
+
+    public void setUserPhraseMessageId(String oldId, String newId) {
+        for (ChatItem cm : list) {
+            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(oldId))) {
+                ((UserPhrase) cm).setMessageId(newId);
+            }
+        }
     }
 
     public void changeDownloadProgress(String messageId, int progress) {

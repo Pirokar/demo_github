@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
+        mEditText.setText("79139055740");// TODO: 12.08.2016 remove
         if (isCoarseLocGranted && isSmsGranted && isReadPhoneStateGranted) {
             ThreadsInitializer.getInstance(this).init();
         } else {

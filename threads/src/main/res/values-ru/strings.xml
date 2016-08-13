@@ -12,7 +12,7 @@
     <string name="camera">Камера</string>
     <string name="gallery">Галерея</string>
     <string name="file">Файл</string>
-    <string name="hide">Отмена</string>
+    <string name="hide">Свернуть</string>
     <string name="left_female">покинула диалог в</string>
     <string name="left_dialog">покинул диалог в</string>
     <string name="connected_female">подключилась к диалогу в</string>
@@ -48,4 +48,6 @@
     <string name="in">в</string>
     <string name="error">Произошла ошибка </string>
     <string name="no_pdf_support">Устройство не поддерживает данный формат файлов</string>
+    <string name="retreiving_history">Загружаем историю</string>
+    <string name="search_more">Искать дальше</string>
 </resources>

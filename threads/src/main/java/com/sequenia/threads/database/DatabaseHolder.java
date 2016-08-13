@@ -8,7 +8,6 @@ import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
-import com.sequenia.threads.utils.Callback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +59,7 @@ public class DatabaseHolder {
             return true;
         }
         if (chatItem instanceof ChatPhrase) {
-            mMyOpenHelper.putUserPhrase((ChatPhrase) chatItem);
+            mMyOpenHelper.putChatPhrase((ChatPhrase) chatItem);
             return true;
         }
         return false;
@@ -113,5 +112,29 @@ public class DatabaseHolder {
                 callback.onComplete(list);
             }
         });
+    }
+
+    public void putMessagesAsync(final List<ChatItem> items, final CompletionHandler<Void> completionHandler) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                mMyOpenHelper.getWritableDatabase().beginTransaction();
+                for (ChatItem item:items) {
+                    if (item instanceof ChatPhrase){
+                        mMyOpenHelper.putChatPhrase((ChatPhrase)item);
+                    }
+                    if (item instanceof ConsultConnectionMessage){
+                        mMyOpenHelper.putConsultConnected((ConsultConnectionMessage)item);
+                    }
+                }
+                mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
+                mMyOpenHelper.getWritableDatabase().endTransaction();
+                completionHandler.onComplete(null);
+            }
+        });
+
+    }
+    public void setUserPhraseMessageId(String oldId,String newId){
+        mMyOpenHelper.setUserPhraseMessageId(oldId,newId);
     }
 }

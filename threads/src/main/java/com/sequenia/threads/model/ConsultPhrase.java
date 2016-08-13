@@ -71,6 +71,38 @@ public class ConsultPhrase implements ChatPhrase {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConsultPhrase)) return false;
+
+        ConsultPhrase that = (ConsultPhrase) o;
+
+        if (timeStamp != that.timeStamp) return false;
+        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
+            return false;
+        if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
+        if (messageId != null ? !messageId.equals(that.messageId) : that.messageId != null)
+            return false;
+        if (consultName != null ? !consultName.equals(that.consultName) : that.consultName != null)
+            return false;
+        if (quote != null ? !quote.equals(that.quote) : that.quote != null) return false;
+        return fileDescription != null ? fileDescription.equals(that.fileDescription) : that.fileDescription == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = consultId != null ? consultId.hashCode() : 0;
+        result = 31 * result + (int) (timeStamp ^ (timeStamp >>> 32));
+        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
+        result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
+        result = 31 * result + (consultName != null ? consultName.hashCode() : 0);
+        result = 31 * result + (quote != null ? quote.hashCode() : 0);
+        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String getPhraseText() {
         return phrase;
     }

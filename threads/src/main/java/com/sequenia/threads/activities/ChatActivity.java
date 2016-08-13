@@ -1,17 +1,20 @@
 package com.sequenia.threads.activities;
 
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -24,9 +27,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -54,7 +60,6 @@ import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.PermissionChecker;
-import com.sequenia.threads.utils.ThreadsInitializer;
 import com.sequenia.threads.views.BottomGallery;
 import com.sequenia.threads.views.BottomSheetView;
 import com.sequenia.threads.views.SwipeAwareView;
@@ -95,12 +100,15 @@ public class ChatActivity extends AppCompatActivity
     private List<String> mAttachedImages = new ArrayList<>();
     private AppCompatEditText mSearchMessageEditText;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Button mSearchMoreButton;
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
-    public static final int REQUEST_PERMISSION_GALLERY = 102;
+    public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 102;
     public static final int REQUEST_PERMISSION_CAMERA = 103;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
     public String connectedConsultId;
+    private ProgressDialog mProgressDialog;
+    private Handler h = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,8 +117,9 @@ public class ChatActivity extends AppCompatActivity
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         if (null != t) initToolbar(t);
         initViews();
-        if (getIntent().getStringExtra(TAG)==null) throw new IllegalStateException("you must provide valid client id," +
-                "\r\n it is now null or it'ts length < 5");
+        if (getIntent().getStringExtra(TAG) == null)
+            throw new IllegalStateException("you must provide valid client id," +
+                    "\r\n it is now null or it'ts length < 5");
         if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {//mb, someday, we will support orientation change
             mChatController = (ChatController) getFragmentManager().findFragmentByTag(ChatController.TAG);
         } else {
@@ -118,7 +127,7 @@ public class ChatActivity extends AppCompatActivity
             getFragmentManager().beginTransaction().add(mChatController, ChatController.TAG).commit();
         }
         mChatController.bindActivity(this);
-        mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
+      /*  mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);*/
         if (!mChatController.isNeedToShowWelcome() && mWelcomeScreen != null) {
             mWelcomeScreen.removeViewWithAnimation(0, null);
         }
@@ -179,32 +188,14 @@ public class ChatActivity extends AppCompatActivity
         mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this, this);
         mRecyclerView.getItemAnimator().setChangeDuration(0);
         mRecyclerView.setAdapter(mChatAdapter);
-        final View inputLayout = findViewById(R.id.input_layout);
         AddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setTitleStateCurrentOperatorConnected();
-                if (mBottomSheetView.getVisibility() == View.GONE) {
-                    mBottomSheetView.setVisibility(View.VISIBLE);
-                    mBottomSheetView.setAlpha(0.0f);
-                    mBottomSheetView.animate().alpha(1.0f).setDuration(300).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            mBottomSheetView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                    inputLayout.setVisibility(View.GONE);
-                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
-                } else {
-                    mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            mBottomSheetView.setVisibility(View.GONE);
-                        }
-                    });
-                }
+                openBottomSheetAndGallery();
             }
         });
+        mSearchMoreButton = (Button) findViewById(R.id.search_more);
+        mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -299,13 +290,96 @@ public class ChatActivity extends AppCompatActivity
                 }
             }
         });
+        mSearchMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, "onClick");// TODO: 13.08.2016  
+                if (mSearchMessageEditText.getText() != null && mSearchMessageEditText.getText().length() > 0) {
+                    Log.e(TAG, ".getText() != null");// TODO: 13.08.2016  
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    mChatController.requestFilteredPhrases(true, mSearchMessageEditText.getText().toString(), new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
+                        @Override
+                        public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
+                            Log.e(TAG, "onSuccess");// TODO: 13.08.2016  
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            if (result.first) {
+                                mSearchMoreButton.setVisibility(View.VISIBLE);
+                            } else {
+                                mSearchMoreButton.setVisibility(View.GONE);
+                            }
+                            mChatAdapter.swapItems(result.second);
+                        }
+                        @Override
+                        public void onFail(Exception error) {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+            }
+        });
+    }
 
+    private void openBottomSheetAndGallery() {
+        if (PermissionChecker.isReadExternalPermissionGranted(this)) {
+            setTitleStateCurrentOperatorConnected();
+            final View inputLayout = findViewById(R.id.input_layout);
+            if (mBottomSheetView.getVisibility() == View.GONE) {
+                mBottomSheetView.setVisibility(View.VISIBLE);
+                mBottomSheetView.setAlpha(0.0f);
+                mBottomSheetView.animate().alpha(1.0f).setDuration(300).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBottomSheetView.setVisibility(View.VISIBLE);
+                    }
+                });
+                inputLayout.setVisibility(View.GONE);
+                mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                String[] projection = new String[]{MediaStore.Images.Media.DATA};
+                Cursor c = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_TAKEN + " desc");
+                int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
+                if (c.getCount() == 0) return;
+                ArrayList<String> allItems = new ArrayList<>();
+                for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+                    allItems.add("file://" + c.getString(DATA));
+                }
+                mBottomGallery.setVisibility(View.VISIBLE);
+                mBottomGallery.setAlpha(0.0f);
+                mBottomGallery.animate().alpha(1.0f).setDuration(200).start();
+                mBottomGallery.setImages(allItems, new BottomGalleryAdapter.OnChooseItemsListener() {
+                    @Override
+                    public void onChosenItems(List<String> items) {
+                        mAttachedImages = new ArrayList<>(items);
+                        if (mAttachedImages.size() > 0) {
+                            mBottomSheetView.setSelectedState(true);
+                        } else {
+                            mBottomSheetView.setSelectedState(false);
+                        }
+                    }
+                });
+                mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
+            } else {
+                mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBottomSheetView.setVisibility(View.GONE);
+                    }
+                });
+            }
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY);
+        }
+
+    }
+
+    public void setUserPhraseMessageId(String oldId, String newId) {
+        mChatAdapter.setUserPhraseMessageId(oldId, newId);
     }
 
     @Override
     public void onCameraClick() {
         boolean isCameraGranted = PermissionChecker.isCameraPermissionGranted(this);
         boolean isWriteGranted = PermissionChecker.isWriteExternalPermissionGranted(this);
+        Log.e(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);// TODO: 11.08.2016
         if (isCameraGranted && isWriteGranted) {
             setBottomStateDefault();
             mBottomGallery.setVisibility(View.GONE);
@@ -321,17 +395,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onGalleryClick() {
-        if (PermissionChecker.isReadExternalPermissionGranted(this)) {
-            if (mBottomGallery.getVisibility() == View.VISIBLE) {
-                mBottomGallery.setVisibility(View.GONE);
-                mAttachedImages.clear();
-            } else {
-                mQuoteLayoutHolder.setIsVisible(false);
-                startActivityForResult(GalleryActivity.getStartIntent(this, REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS);
-            }
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_GALLERY);
-        }
+        startActivityForResult(GalleryActivity.getStartIntent(this, REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS);
     }
 
     @Override
@@ -355,26 +419,29 @@ public class ChatActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_PHOTOS && resultCode == RESULT_OK) {
-            if (data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG) != null && data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG).size() > 0) {
-                mBottomGallery.setVisibility(View.VISIBLE);
-                mBottomGallery.setAlpha(0.0f);
-                mBottomGallery.animate().alpha(1.0f).setDuration(200).start();
-                ArrayList<String> paths = data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG);
-                for (int i = 0; i < paths.size(); i++) {
-                    paths.set(i, "file://" + paths.get(i));
-                }
-                mBottomGallery.setImages(paths, new BottomGalleryAdapter.OnChooseItemsListener() {
-                    @Override
-                    public void onChosenItems(List<String> items) {
-                        mAttachedImages = new ArrayList<>(items);
-                        if (mAttachedImages.size() > 0) {
-                            mBottomSheetView.setSelectedState(true);
-                        } else {
-                            mBottomSheetView.setSelectedState(false);
-                        }
-                    }
-                });
-                mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
+            ArrayList<String> photos = data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG);
+            onHideClick();
+            if (mWelcomeScreen != null) {
+                mWelcomeScreen.removeViewWithAnimation(500, null);
+                mWelcomeScreen = null;
+            }
+            if (photos.size() == 0) return;
+            unChooseItem(mChosenPhrase);
+            UpcomingUserMessage uum =
+                    new UpcomingUserMessage(mInputEditText.getText().toString().trim()
+                            , null
+                            , new FileDescription(getString(R.string.I), photos.get(0), new File(photos.get(0).replaceAll("file://", "")).length(), System.currentTimeMillis()));
+            mChatController.onUserInput(uum);
+            mInputEditText.setText("");
+            mQuoteLayoutHolder.setIsVisible(false);
+            mQuote = null;
+            mFileDescription = null;
+            for (int i = 1; i < photos.size(); i++) {
+                uum =
+                        new UpcomingUserMessage(null
+                                , null
+                                , new FileDescription(getString(R.string.I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis()));
+                mChatController.onUserInput(uum);
             }
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
             mFileDescription = new FileDescription(getResources().getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
@@ -382,7 +449,6 @@ public class ChatActivity extends AppCompatActivity
             mQuote = null;
         }
     }
-
 
     @Override
     public void onFilePickerClick() {
@@ -476,16 +542,49 @@ public class ChatActivity extends AppCompatActivity
         mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
     }
 
-    public void addMessages(List<ChatItem> list) {
-        if (mWelcomeScreen != null) {
-            mWelcomeScreen.removeViewWithAnimation(300, null);
-            mWelcomeScreen = null;
-        }
-        mChatAdapter.addItems(list);
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+    public void addMessages(final List<ChatItem> list) {
+        Log.e(TAG, "addMessages");// TODO: 13.08.2016  
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mWelcomeScreen != null) {
+                    mWelcomeScreen.setVisibility(View.GONE);
+                    ((ViewGroup) findViewById(android.R.id.content)).removeView(mWelcomeScreen);
+                    mWelcomeScreen = null;
+                }
+                mChatAdapter.addItems(list);
+            }
+        });
+        h.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+            }
+        }, 600);
+    }
+
+    public void showDownloading() {
+        final Context context = this;
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null) return;
+                mProgressDialog = new ProgressDialog(context);
+                mProgressDialog.setIndeterminate(true);
+                mProgressDialog.setMessage(getString(R.string.retreiving_history));
+                mProgressDialog.show();
+            }
+        }, 100);
+    }
+
+    public void removeDownloading() {
+        Log.e(TAG, "removeDownloading");// TODO: 13.08.2016  
+        if (mProgressDialog == null) return;
+        final Context context = this;
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
             }
         }, 300);
     }
@@ -619,6 +718,10 @@ public class ChatActivity extends AppCompatActivity
         }
     }
 
+    public int getCurrentItemsCount() {
+        return mChatAdapter.getCurrentItemCount();
+    }
+
     @Override
     public void onBackPressed() {
         boolean isNeedToClose = true;
@@ -630,6 +733,7 @@ public class ChatActivity extends AppCompatActivity
             mSearchMessageEditText.setVisibility(View.GONE);
             mSearchMessageEditText.setText("");
             mChatAdapter.undoClear();
+            mSearchMoreButton.setVisibility(View.GONE);
             mSwipeRefreshLayout.setEnabled(true);
             if (mChatController != null && mChatController.isConsultFound()) {
                 setTitleStateOperatorConnected(connectedConsultId
@@ -642,6 +746,10 @@ public class ChatActivity extends AppCompatActivity
             if (mRecyclerView != null && mChatAdapter != null) {
                 mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
+        }
+        if (mBottomGallery.getVisibility() == View.VISIBLE) {
+            onHideClick();
+            return;
         }
         if (isNeedToClose) {
             super.onBackPressed();
@@ -729,6 +837,7 @@ public class ChatActivity extends AppCompatActivity
                 removeImage();
             }
         }
+
     }
 
     @Override
@@ -736,7 +845,7 @@ public class ChatActivity extends AppCompatActivity
         mChatController.checkAndResendPhrase(userPhrase);
     }
 
-    public void showConnectionError(){
+    public void showConnectionError() {
         final NoConnectionDialogFragment ncdf = NoConnectionDialogFragment.getInstance(new NoConnectionDialogFragment.OnCancelListener() {
             @Override
             public void onCancel() {
@@ -770,6 +879,7 @@ public class ChatActivity extends AppCompatActivity
             mSearchMessageEditText.requestFocus();
             mChatAdapter.backupAndClear();
             mSwipeRefreshLayout.setEnabled(false);
+            mSearchMoreButton.setVisibility(View.VISIBLE);
             mSearchMessageEditText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -786,30 +896,30 @@ public class ChatActivity extends AppCompatActivity
                     if (s == null || s.length() == 0) {
                         mChatAdapter.undoClear();
                     } else {
-                        mChatController.requestFilterefPhrases(s.toString(), new Callback<List<ChatPhrase>, Exception>() {
+                        mChatController.requestFilteredPhrases(false, s.toString(), new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
                             @Override
-                            public void onSuccess(List<ChatPhrase> result) {
-                                mChatAdapter.swapItems(result);
+                            public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
+                                mChatAdapter.swapItems(result.second);
                             }
 
                             @Override
                             public void onFail(Exception error) {
+
                             }
                         });
                     }
                 }
             });
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_GALLERY) {
+        if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                onGalleryClick();
+                openBottomSheetAndGallery();
             } else {
 
             }

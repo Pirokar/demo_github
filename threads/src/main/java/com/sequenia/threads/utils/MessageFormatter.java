@@ -3,9 +3,14 @@ package com.sequenia.threads.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.advisa.client.api.InOutMessage;
 import com.pushserver.android.PushMessage;
+import com.sequenia.threads.model.ChatItem;
+import com.sequenia.threads.model.ChatPhrase;
+import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.FileDescription;
+import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
@@ -15,6 +20,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by yuri on 26.07.2016.
@@ -64,6 +72,7 @@ public class MessageFormatter {
         }
         return "";
     }
+
     public static String format(UserPhrase upcomingUserMessage, String quoteMfmsFilePath, String mfmsFilePath) {
         try {
             Quote quote = upcomingUserMessage.getQuote();
@@ -102,7 +111,7 @@ public class MessageFormatter {
         JSONObject operatorInfo = fullMessage.getJSONObject("operator");
         final String name = operatorInfo.getString("name");
         String photoUrl = operatorInfo.getString("photoUrl");
-        FileDescription fileDescription = descriptionFromJson(fullMessage.getJSONArray("attachments"));
+        FileDescription fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
         if (fileDescription != null) fileDescription.setFrom(name);
         Quote quote = quoteFromJson(fullMessage.getJSONArray("quotes"));
         return new ConsultPhrase(
@@ -112,7 +121,7 @@ public class MessageFormatter {
                 , messageId
                 , message
                 , timeStamp
-                , name
+                , operatorInfo.getString("id")
                 , photoUrl);
     }
 
@@ -168,6 +177,7 @@ public class MessageFormatter {
     public static boolean hasFile(UpcomingUserMessage message) {
         return (message.getFileDescription() != null || (message.getQuote() != null && message.getQuote().getFileDescription() != null));
     }
+
     public static boolean hasFile(UserPhrase message) {
         return (message.getFileDescription() != null || (message.getQuote() != null && message.getQuote().getFileDescription() != null));
     }
@@ -189,7 +199,7 @@ public class MessageFormatter {
             if (quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).has("optional")) {
                 header = quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getJSONObject("optional").getString("name");
             }
-            quoteFileDescription = descriptionFromJson( quotes.getJSONObject(0).getJSONArray("attachments"));
+            quoteFileDescription = fileDescriptionFromJson(quotes.getJSONObject(0).getJSONArray("attachments"));
 
         }
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && quotes.getJSONObject(0).has("operator")) {
@@ -198,13 +208,13 @@ public class MessageFormatter {
         if (quoteString != null || quoteFileDescription != null) {
             quote = new Quote(consultName, quoteString, quoteFileDescription, System.currentTimeMillis());
         }
-        if (quoteFileDescription!=null){
+        if (quoteFileDescription != null) {
             quoteFileDescription.setFrom(consultName);
         }
         return quote;
     }
 
-    public static FileDescription descriptionFromJson(JSONArray jsonArray) throws JSONException {
+    public static FileDescription fileDescriptionFromJson(JSONArray jsonArray) throws JSONException {
         FileDescription fileDescription = null;
         if (jsonArray.length() > 0
                 && jsonArray.getJSONObject(0) != null) {
@@ -221,5 +231,62 @@ public class MessageFormatter {
             fileDescription.setIncomingName(header);
         }
         return fileDescription;
+    }
+
+    public static String getStartMessage(String clientName, String clientId, String email) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("name", clientName);
+            object.put("clientId", clientId);
+            object.put("email", email);
+            object.put("type", "CLIENT_INFO");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return object.toString().replaceAll("\\\\", "");
+    }
+
+    public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
+        ArrayList<ChatItem> out = new ArrayList<>();
+        try {
+            for (InOutMessage message : messages) {
+                if (message.content == null || message.content.length() == 0) continue;
+                try {
+                    JSONObject body = new JSONObject(message.content);
+                    String messageId = String.valueOf(message.messageId);
+                    long timeStamp = message.sentAt.millis;
+                    String phraseText = body.has("text") ? body.getString("text") : null;
+                    JSONObject operatorInfo = body.has("operator") ? body.getJSONObject("operator") : null;
+                    final String name = operatorInfo != null ? operatorInfo.getString("name") : null;
+                    String photoUrl = operatorInfo != null ? operatorInfo.getString("photoUrl") : null;
+                    FileDescription fileDescription = body.has("attachments") ? fileDescriptionFromJson(body.getJSONArray("attachments")) : null;
+                    if (fileDescription != null) fileDescription.setFrom(name);
+                    Quote quote = body.has("quotes") ? quoteFromJson(body.getJSONArray("quotes")) : null;
+                    String operId = operatorInfo != null ? operatorInfo.getString("id") : UUID.randomUUID().toString();
+                    if (!message.incoming) {
+                        out.add(new ConsultPhrase(fileDescription, quote, name, messageId, phraseText, timeStamp, operId, photoUrl));
+                    } else {
+
+                        out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_SENT_AND_SERVER_RECEIVED));
+                    }
+                } catch (JSONException e) {
+                    String content = message.content;
+                    String type = content.contains("подключился") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+                    ConsultConnectionMessage m =
+                            new ConsultConnectionMessage(content.substring(content.indexOf(" "+1)==-1?0:content.indexOf(" "+1))
+                                    , type
+                                    , content.substring(content.indexOf(" "))
+                                    , true
+                                    , message.sentAt.millis
+                                    , null);
+                    out.add(m);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "" + messages);// TODO: 12.08.2016
+            e.printStackTrace();
+        }
+        return out;
     }
 }

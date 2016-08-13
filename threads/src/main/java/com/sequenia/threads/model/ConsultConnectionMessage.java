@@ -60,6 +60,34 @@ public class ConsultConnectionMessage implements ChatItem {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConsultConnectionMessage)) return false;
+
+        ConsultConnectionMessage that = (ConsultConnectionMessage) o;
+
+        if (sex != that.sex) return false;
+        if (date != that.date) return false;
+        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
+            return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return avatarPath != null ? avatarPath.equals(that.avatarPath) : that.avatarPath == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = consultId != null ? consultId.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (sex ? 1 : 0);
+        result = 31 * result + (int) (date ^ (date >>> 32));
+        result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "ConsultConnectionMessage{" +
                 "consultId='" + consultId + '\'' +

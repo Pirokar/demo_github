@@ -49,10 +49,13 @@
         <meta-data
             android:name="com.pushserver.android.heartbeatInterval"
             android:value="300000" />
-        <meta-data
+      <meta-data
             android:name="com.pushserver.android.providerUid"
             android:value="PH5FY2ohRkRmJ0UzRl9sLix2ohRkRmJ1hkQT" />
-      <!-- <meta-data
+       <!-- <meta-data
+            android:name="com.pushserver.android.providerUid"
+            android:value="PH5FY2ohRkRmJ0UzRl9sLix2ohRkRmJ1hkQT" />-->
+     <!-- <meta-data
           android:name="com.pushserver.android.providerUid"
           android:value="PH5AckgzOkYoSz82QVN1M2ovbiZePEdBMi80QHFdOm0ubVwmYEVjNVomJDN+Pgo" />-->
         <!-- <meta-data

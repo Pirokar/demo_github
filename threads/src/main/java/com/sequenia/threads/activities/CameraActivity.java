@@ -83,6 +83,7 @@ public class CameraActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     Log.e(TAG, "error while setting preview display of camera");
                     e.printStackTrace();
+                    finish();
                 }
             }
 

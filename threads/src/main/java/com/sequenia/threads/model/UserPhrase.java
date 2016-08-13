@@ -6,7 +6,7 @@ import java.util.UUID;
  * Created by yuri on 10.06.2016.
  */
 public class UserPhrase implements ChatPhrase {
-    private final String messageId;
+    private String messageId;
     private final String phrase;
     private final boolean withFile;
     private MessageState sentState;
@@ -25,6 +25,19 @@ public class UserPhrase implements ChatPhrase {
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
         sentState = MessageState.STATE_SENT;
+    }
+    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription,MessageState sentState) {
+        this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
+        this.phrase = phrase;
+        this.withFile = fileDescription != null;
+        this.mQuote = mQuote;
+        this.phraseTimeStamp = phraseTimeStamp;
+        this.fileDescription = fileDescription;
+        this.sentState = MessageState.STATE_SENT_AND_SERVER_RECEIVED;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     @Override
@@ -90,7 +103,7 @@ public class UserPhrase implements ChatPhrase {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof UserPhrase)) return false;
 
         UserPhrase that = (UserPhrase) o;
 
