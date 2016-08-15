@@ -76,6 +76,7 @@ public class ImagesActivity extends AppCompatActivity implements ViewPager.OnPag
     }
 
     public static Intent getStartIntent(Context context, FileDescription fileDescription) {
+
         Intent i = new Intent(context, ImagesActivity.class);
         i.putExtra("FileDescription", fileDescription);
         return i;

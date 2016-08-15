@@ -647,6 +647,12 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
+    public void onImageClick(FileDescription fileDescription) {// TODO: 15.08.2016 move logic to controller
+        if (fileDescription.getFilePath()!=null)return;
+        startActivity(ImagesActivity.getStartIntent(this,fileDescription));
+    }
+
+    @Override
     public void onPhraseLongClick(final ChatPhrase cp, final int position) {
         if (cp == mChosenPhrase) {
             unChooseItem(cp);

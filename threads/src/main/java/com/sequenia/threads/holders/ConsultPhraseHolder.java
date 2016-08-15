@@ -141,29 +141,37 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mConsultAvatar.setVisibility(View.GONE);
         }
         //  Log.e(TAG, "consultPhrase = "+consultPhrase);// TODO: 14.07.2016
-        mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                try {
-                    if (mPhraseTextView.getLayout() == null) {
-                        mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        //      Log.e(TAG, "mPhraseTextView.getLayout()==null");// TODO: 14.07.2016
-                        return;
-                    }
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-                    float density = itemView.getContext().getResources().getDisplayMetrics().density;
-                    if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 50)) {
-                        params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (3 * (int) (density)), 0, 0);
-                    }
-                    //   Log.e(TAG, " mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (3 * (int) (density)) = "+ mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (3 * (int) (density)));// TODO: 14.07.2016
-                    mTimeStampTextView.setLayoutParams(params);
-                    mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
+        if (mPhraseTextView.getLayout() != null) {
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+            float density = itemView.getContext().getResources().getDisplayMetrics().density;
+            if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
+                params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
             }
-        });
+            mTimeStampTextView.setLayoutParams(params);
+        }else {
+            mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try {
+                        if (mPhraseTextView.getLayout() == null) {
+                            mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            return;
+                        }
+                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                        float density = itemView.getContext().getResources().getDisplayMetrics().density;
+                        if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
+                            params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+                        }
+                        mTimeStampTextView.setLayoutParams(params);
+                        mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
         if (consultPhrase == null) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import android.util.Pair;
 
 import com.sequenia.threads.model.ChatItem;
@@ -50,7 +49,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
     static final String TABLE_FILE_DESCRIPTION = "TABLE_FILE_DESCRIPTION";
     static final String COLUMN_FD_HEADER = "COLUMN_FD_HEADER";
     static final String COLUMN_FD_PATH = "COLUMN_FD_PATH";
-    static final String COLUMN_FD_WEB_PATH = "COLUMN_WEB_PATH";
+    static final String COLUMN_FD_DOWNLOAD_PATH = "COLUMN_WEB_PATH";
     static final String COLUMN_FD_DOWNLOAD_PROGRESS = "COLUMN_FD_DOWNLOAD_PROGRESS";
     static final String COLUMN_FD_TIMESTAMP = "COLUMN_FD_TIMESTAMP";
     static final String COLUMN_FD_SIZE = "COLUMN_FD_SIZE";
@@ -97,7 +96,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s integer, " + // is from quote
                         "%s text," + // incoming filename
                         "%s integer)" // download progress
-                , TABLE_FILE_DESCRIPTION, COLUMN_FD_HEADER, COLUMN_FD_PATH, COLUMN_FD_TIMESTAMP, COLUMN_FD_MESSAGE_ID_EXT, COLUMN_FD_WEB_PATH, COLUMN_FD_SIZE, COLUMN_FD_IS_FROM_QUOTE, COLUMN_FD_INCOMING_FILENAME, COLUMN_FD_DOWNLOAD_PROGRESS));
+                , TABLE_FILE_DESCRIPTION, COLUMN_FD_HEADER, COLUMN_FD_PATH, COLUMN_FD_TIMESTAMP, COLUMN_FD_MESSAGE_ID_EXT, COLUMN_FD_DOWNLOAD_PATH, COLUMN_FD_SIZE, COLUMN_FD_IS_FROM_QUOTE, COLUMN_FD_INCOMING_FILENAME, COLUMN_FD_DOWNLOAD_PROGRESS));
     }
 
     @Override
@@ -335,7 +334,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         Integer progress = c.isNull(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PROGRESS)) ? 0 : c.getInt(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PROGRESS));
         FileDescription fd = new FileDescription(header, path, c.getLong(c.getColumnIndex(COLUMN_FD_SIZE)), c.getLong(c.getColumnIndex(COLUMN_FD_TIMESTAMP)));
         fd.setDownloadProgress(progress);
-        fd.setDownloadPath(c.getString(c.getColumnIndex(COLUMN_FD_WEB_PATH)));
+        fd.setDownloadPath(c.getString(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PATH)));
         fd.setIncomingName(c.getString(c.getColumnIndex(COLUMN_FD_INCOMING_FILENAME)));
         boolean isFromQuote = c.getInt(c.getColumnIndex(COLUMN_FD_IS_FROM_QUOTE)) == 1;
         c.close();
@@ -362,6 +361,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             FileDescription fd = new FileDescription(header, path, c.getLong(c.getColumnIndex(COLUMN_FD_SIZE)), c.getLong(fdTimeStamp));
             fd.setDownloadProgress(progress);
             fd.setIncomingName(c.isNull(fdFilename) ? null : c.getString(fdFilename));
+            fd.setDownloadPath(c.getString(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PATH)));
             list.add(fd);
         }
         c.close();
@@ -408,7 +408,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_FD_MESSAGE_ID_EXT, id);
         cv.put(COLUMN_FD_HEADER, fileDescription.getFileSentTo());
         cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
-        cv.put(COLUMN_FD_WEB_PATH, fileDescription.getDownloadPath());
+        cv.put(COLUMN_FD_DOWNLOAD_PATH, fileDescription.getDownloadPath());
         cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
         cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
         cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
@@ -421,14 +421,14 @@ class MyOpenHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FD_HEADER, fileDescription.getFileSentTo());
         cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
-        cv.put(COLUMN_FD_WEB_PATH, fileDescription.getDownloadPath());
+        cv.put(COLUMN_FD_DOWNLOAD_PATH, fileDescription.getDownloadPath());
         cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
         cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
         cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
         cv.put(COLUMN_FD_INCOMING_FILENAME, fileDescription.getIncomingName());
         getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
                 "" + COLUMN_FD_INCOMING_FILENAME
-                        + " like ? and " + COLUMN_FD_WEB_PATH + " like ?"
+                        + " like ? and " + COLUMN_FD_DOWNLOAD_PATH + " like ?"
                 , new String[]{fileDescription.getIncomingName(), fileDescription.getDownloadPath()});
     }
 }

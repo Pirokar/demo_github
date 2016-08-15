@@ -365,7 +365,7 @@ public class ChatController extends Fragment {
     }
 
     public void onFileClick(final FileDescription fileDescription) {
-        if (activity != null) {// TODO: 10.08.2016 implement opening of incoming images on click
+        if (activity != null) {
             if (fileDescription.getFilePath() == null) {
                 Intent i = new Intent(activity, DownloadService.class);
                 i.putExtra(DownloadService.FD_TAG, fileDescription);
@@ -383,6 +383,7 @@ public class ChatController extends Fragment {
                     Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
                 }
             }
+
         }
     }
 

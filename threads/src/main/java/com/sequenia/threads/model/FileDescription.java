@@ -120,12 +120,11 @@ public class FileDescription implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof FileDescription)) return false;
 
         FileDescription that = (FileDescription) o;
 
         if (size != that.size) return false;
-        if (timeStamp != that.timeStamp) return false;
         if (from != null ? !from.equals(that.from) : that.from != null) return false;
         if (downloadPath != null ? !downloadPath.equals(that.downloadPath) : that.downloadPath != null)
             return false;
@@ -139,7 +138,6 @@ public class FileDescription implements Parcelable {
         result = 31 * result + (downloadPath != null ? downloadPath.hashCode() : 0);
         result = 31 * result + (incomingName != null ? incomingName.hashCode() : 0);
         result = 31 * result + (int) (size ^ (size >>> 32));
-        result = 31 * result + (int) (timeStamp ^ (timeStamp >>> 32));
         return result;
     }
 

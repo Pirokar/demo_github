@@ -246,6 +246,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 final ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
                                 mAdapterInterface.onFileClick(cp.getFileDescription());
                             }
+                            if (mAdapterInterface != null) {
+                                final ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onImageClick(cp.getFileDescription());
+                            }
                         }
                     }
                     , new View.OnLongClickListener() {
@@ -489,7 +493,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addItems(final List<ChatItem> items) {
-        Log.e(TAG, "addItems begin");
         for (int i = 0; i < items.size(); i++) {
             addItem(items.get(i), true);
         }
@@ -499,6 +502,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
             }
         });
+        if (list.size()==0)return;
         list.add(0, new DateRow(list.get(0).getTimeStamp()));
         Calendar currentTimeStamp = Calendar.getInstance();
         Calendar nextTimeStamp = Calendar.getInstance();
@@ -531,7 +535,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         notifyDataSetChanged();
-        Log.e(TAG, "addItems emd");
     }
 
     @Override
@@ -675,5 +678,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onUserPhraseClick(UserPhrase userPhrase, int position);
 
         void onConsultAvatarClick(String consultId);
+
+        void onImageClick(FileDescription fileDescription);
     }
 }

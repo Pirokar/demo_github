@@ -51,7 +51,7 @@ public class ImageFragment extends Fragment {
         if (fd == null) throw new IllegalStateException("you must provide filedescription");
         TextView from = (TextView) v.findViewById(R.id.from);
         TextView date = (TextView) v.findViewById(R.id.date);
-        if (fd.getFrom() != null) {
+        if (fd.getFrom() != null && !fd.getFrom().equals("null")) {
             from.setText(fd.getFrom());
         } else {
             from.setText("");
