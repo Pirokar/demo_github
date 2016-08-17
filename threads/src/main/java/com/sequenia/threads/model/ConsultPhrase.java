@@ -70,6 +70,11 @@ public class ConsultPhrase implements ChatPhrase {
         return messageId;
     }
 
+    public boolean hasFile() {
+        return getFileDescription() != null ||
+                (getQuote() != null && getQuote().getFileDescription() != null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

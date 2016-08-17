@@ -431,4 +431,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         + " like ? and " + COLUMN_FD_DOWNLOAD_PATH + " like ?"
                 , new String[]{fileDescription.getIncomingName(), fileDescription.getDownloadPath()});
     }
+    void cleanDb(){
+        getWritableDatabase().execSQL("delete * from " + TABLE_MESSAGES);
+        getWritableDatabase().execSQL("delete * from " + TABLE_FILE_DESCRIPTION);
+        getWritableDatabase().execSQL("delete * from " + TABLE_QUOTE);
+    }
 }

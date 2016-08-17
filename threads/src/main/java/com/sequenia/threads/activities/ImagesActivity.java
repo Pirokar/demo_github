@@ -36,13 +36,13 @@ public class ImagesActivity extends AppCompatActivity implements ViewPager.OnPag
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
-        setSupportActionBar(mToolbar);
         mToolbar.setTitle("");
         DatabaseHolder.getInstance(this).getFilesAsync(new CompletionHandler<List<FileDescription>>() {
             @Override

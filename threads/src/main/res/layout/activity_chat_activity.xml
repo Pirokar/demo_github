@@ -35,15 +35,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </com.sequenia.threads.views.MySwipeRefreshLayout>
+
     </FrameLayout>
 
     <com.sequenia.threads.views.WelcomeScreen
         android:id="@+id/welcome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_layout"
-        android:layout_below="@+id/toolbar" />
-
+        />
     <LinearLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
@@ -234,7 +233,6 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="@string/contact_center"
                 android:textSize="20sp"
                 android:visibility="visible" />
 

@@ -31,6 +31,28 @@ public class ConsultTyping implements ChatItem {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConsultTyping)) return false;
+
+        ConsultTyping that = (ConsultTyping) o;
+
+        if (date != that.date) return false;
+        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
+            return false;
+        return avatarPath != null ? avatarPath.equals(that.avatarPath) : that.avatarPath == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (date ^ (date >>> 32));
+        result = 31 * result + (consultId != null ? consultId.hashCode() : 0);
+        result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "ConsultTyping{" +
                 "date=" + date +

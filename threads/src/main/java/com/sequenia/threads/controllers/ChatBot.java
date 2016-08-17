@@ -22,6 +22,7 @@ import java.util.UUID;
 /**
  * Created by yuri on 27.07.2016.
  */
+@Deprecated
 public class ChatBot {
     public boolean isBotActive = false;
     private ChatController controller;
@@ -58,7 +59,7 @@ public class ChatBot {
                 b.putString("alert", "Оператор ");
                 b.putString("operatorPhoto", Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://com.sequenia.appwithchat/drawable/consult_photo").toString());
                 ConsultInfo.setCurrentConsultInfo(UUID.randomUUID().toString(), b, controller.appContext);
-                controller.activity.setTitleStateSearchingConsult();
+                controller.activity.setStateSearchingConsult();
                 controller.h.postDelayed(new Runnable() {
                     @Override
                     public void run() {

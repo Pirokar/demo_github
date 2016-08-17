@@ -1,6 +1,7 @@
 package com.sequenia.appwithchat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,11 +16,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.ThreadsInitializer;
 import com.sequenia.threads.activities.ChatActivity;
 
 import java.util.ArrayList;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity ";
@@ -32,21 +36,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mEditText = (EditText) findViewById(R.id.edit_text);
-        Log.e(TAG, ""+PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));// TODO: 09.08.2016  
+        Log.e(TAG, "" + PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));// TODO: 09.08.2016
         mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
                 ""
                 : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
-        mEditText.setText("79139055740");// TODO: 12.08.2016 remove
+        mEditText.setText("79139055742");// TODO: 12.08.2016 remove
         if (isCoarseLocGranted && isSmsGranted && isReadPhoneStateGranted) {
             ThreadsInitializer.getInstance(this).init();
         } else {
             requestPermissionsAndInit(PERM_REQUEST_CODE);
         }
-
-        //   Fabric.with(this, new Crashlytics());*/
+        /*Fabric.with(this, new Crashlytics());*/
     }
 
     public void onChatButtonClick(View v) {
@@ -54,11 +57,15 @@ public class MainActivity extends AppCompatActivity {
                 || !PermissionChecker.isReadSmsPermissionGranted(this)
                 || !PermissionChecker.isReadPhoneStatePermissionGranted(this)) {
             requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK);
-        }else if (mEditText.getText().length() > 5) {
+        } else if (mEditText.getText().length() > 5) {
             ThreadsInitializer.getInstance(this).init();
-            startActivity(ChatActivity.getStartIntent(this, mEditText.getText().toString()));
-        }
-        else if (mEditText.getText().length() < 5) {
+            Intent i = ChatActivity
+                    .IntentBuilder
+                    .getBuilder(this, mEditText.getText().toString())
+                    .setDefaultChatTitle(getString(R.string.contact_center))
+                    .build();
+            startActivity(i);
+        } else if (mEditText.getText().length() < 5) {
             Toast.makeText(this, "client id must have length more than 4 chars", Toast.LENGTH_SHORT).show();
         }
     }

@@ -50,4 +50,10 @@
     <string name="no_pdf_support">Устройство не поддерживает данный формат файлов</string>
     <string name="retreiving_history">Загружаем историю</string>
     <string name="search_more">Искать дальше</string>
+    <string name="one_new_message">1 новое сообщение</string>
+    <string name="new_messages">новых сообщений</string>
+    <string name="file_received">Получен файл</string>
+    <string name="with_file">(с файлом)</string>
+    <string name="you_have_unread_messages">у вас есть непрочитанный сообщения</string>
+    <string name="message_were_unsent">Сообщение не было послано</string>
 </resources>

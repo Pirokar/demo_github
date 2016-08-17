@@ -3,6 +3,7 @@ package com.sequenia.threads.holders;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,13 +40,15 @@ public class FileAndMediaViewHolder extends RecyclerView.ViewHolder {
     public void onBind(
             FileDescription fileDescription
             , View.OnClickListener fileClickListener) {
+        Log.e(TAG, "onBind " + fileDescription);// TODO: 17.08.2016  
 
-        if (fileDescription.getFilePath() == null) return;
-        String extension = fileDescription.getFilePath().substring(fileDescription.getFilePath().lastIndexOf(".") + 1);
+        int extension = FileUtils.getExtensionFromPath(fileDescription.getFilePath())==FileUtils.UNKNOWN?
+                FileUtils.getExtensionFromPath(fileDescription.getIncomingName())
+                :FileUtils.getExtensionFromPath(fileDescription.getFilePath());
         Picasso p = Picasso.with(itemView.getContext());
-        if (extension.equalsIgnoreCase("pdf")) {
+        if (extension== FileUtils.PDF) {
             mImageButton.setImageResource(R.drawable.ic_insert_file_blue_36dp);
-        } else if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png")) {
+        } else if (extension==FileUtils.JPEG||extension==FileUtils.PNG) {
             p
                     .load(fileDescription.getFilePath())
                     .fit()
@@ -54,7 +57,13 @@ public class FileAndMediaViewHolder extends RecyclerView.ViewHolder {
         } else {
             mImageButton.setImageResource(R.drawable.ic_insert_file_blue_36dp);
         }
-        fileHeaderTextView.setText(FileUtils.getLastPathSegment(fileDescription.getFilePath()));
+        String header = "";
+        if (fileDescription.getFilePath()!=null){
+            header = FileUtils.getLastPathSegment(fileDescription.getFilePath());
+        }else if (fileDescription.getIncomingName()!=null){
+            header = fileDescription.getIncomingName();
+        }
+        fileHeaderTextView.setText(header);
         fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(),fileDescription.getSize()));
         timeStampTextView.setText(sdf.format(new Date(fileDescription.getTimeStamp())));
         mImageButton.setOnClickListener(fileClickListener);

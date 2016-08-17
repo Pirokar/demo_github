@@ -137,4 +137,13 @@ public class DatabaseHolder {
     public void setUserPhraseMessageId(String oldId,String newId){
         mMyOpenHelper.setUserPhraseMessageId(oldId,newId);
     }
+    public void cleanDbAsync(final CompletionHandler<Void> onComplete){
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                mMyOpenHelper.cleanDb();
+                onComplete.onComplete(null);
+            }
+        });
+    }
 }

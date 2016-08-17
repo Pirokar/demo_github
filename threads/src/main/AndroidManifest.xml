@@ -23,6 +23,7 @@
         <activity
             android:name=".activities.ChatActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             android:theme="@style/ThreadsStyle" />
         <activity
             android:name=".activities.ConsultActivity"
@@ -47,11 +48,15 @@
             android:theme="@style/ThreadsGalleryStyle" />
 
         <service
-            android:name=".push.MyServerIntentService"
+            android:name=".services.MyServerIntentService"
             android:exported="false" />
         <service
             android:name=".utils.DownloadService"
             android:exported="false" />
+        <service
+            android:name=".services.NotificationService"
+            android:exported="false" />
+
         <receiver
             android:name="com.sequenia.threads.push.MyPBReceiver"
             android:exported="false"
@@ -72,8 +77,9 @@
             </intent-filter>
 
         </receiver>
+
         <meta-data
             android:name="com.pushserver.android.service"
-            android:value="com.sequenia.threads.push.MyServerIntentService" />
+            android:value="com.sequenia.threads.services.MyServerIntentService" />
     </application>
 </manifest>

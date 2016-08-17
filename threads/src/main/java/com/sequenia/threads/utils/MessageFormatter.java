@@ -125,6 +125,18 @@ public class MessageFormatter {
                 , photoUrl);
     }
 
+    public static ArrayList<ConsultPhrase> format(ArrayList<com.pushserver.android.PushMessage> list) {
+        ArrayList<ConsultPhrase> cp = new ArrayList<>();
+        try {
+            for (PushMessage pm : list) {
+                cp.add(format(pm));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return cp;
+    }
+
     private static JSONArray attachmentsFromFileDescription(File file) throws JSONException {
         JSONArray attachments = new JSONArray();
         JSONObject attachment = new JSONObject();
@@ -274,7 +286,7 @@ public class MessageFormatter {
                     String content = message.content;
                     String type = content.contains("подключился") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
                     ConsultConnectionMessage m =
-                            new ConsultConnectionMessage(content.substring(content.indexOf(" "+1)==-1?0:content.indexOf(" "+1))
+                            new ConsultConnectionMessage(content.substring(content.indexOf(" " + 1) == -1 ? 0 : content.indexOf(" " + 1))
                                     , type
                                     , content.substring(content.indexOf(" "))
                                     , true

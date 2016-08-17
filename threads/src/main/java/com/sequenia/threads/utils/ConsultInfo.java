@@ -20,9 +20,20 @@ public class ConsultInfo {
     public static final String OPERATOR_TITLE = "OPERATOR_TITLE";
     public static final String OPERATOR_PHOTO = "OPERATOR_PHOTO";
     public static final String OPERATOR_ID = "OPERATOR_ID";
+    public static final String SEARCHING_CONSULT = "SEARCHING_CONSULT";
 
     private ConsultInfo() {
     }
+
+    public static void setSearchingConsult(boolean isSearching, Context ctx) {
+        ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit().putBoolean(ConsultInfo.class+ SEARCHING_CONSULT, isSearching).commit();
+    }
+
+    public static boolean istSearchingConsult(Context ctx) {
+        if (ctx == null) return false;
+        return ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).getBoolean(ConsultInfo.class+ SEARCHING_CONSULT, false);
+    }
+
 
     public static void setConsultInfo(String consultId, Bundle info, Context ctx) {
         if (ctx == null) return;
@@ -67,17 +78,18 @@ public class ConsultInfo {
     public static void setCurrentConsultInfo(PushMessage pushMessage, Context ctx) throws JSONException {
         if (ctx == null) return;
         JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
-        Log.e(TAG, "" + pushMessage);
         JSONObject operatorInfo = fullMessage.getJSONObject("operator");
         final String name = operatorInfo.getString("name");
         String status = operatorInfo.getString("status");
         String photoUrl = operatorInfo.getString("photoUrl");
         final String title = ConsultInfo.getCurrentConsultTitle(ctx);
+        String id = operatorInfo.getString("id");
         SharedPreferences.Editor editor = ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
-        editor.putString(OPERATOR_STATUS + name, status).commit();
-        editor.putString(OPERATOR_NAME + name, name).commit();
-        editor.putString(OPERATOR_TITLE + name, title).commit();
-        editor.putString(OPERATOR_PHOTO + name, photoUrl).commit();
+        editor.putString(OPERATOR_STATUS + id, status).commit();
+        editor.putString(OPERATOR_NAME + id, name).commit();
+        editor.putString(OPERATOR_TITLE + id, title).commit();
+        editor.putString(OPERATOR_PHOTO + id, photoUrl).commit();
+        editor.putString(OPERATOR_ID + id, operatorInfo.getString("id")).commit();
         setCurrentConsultId(name, ctx);
     }
 

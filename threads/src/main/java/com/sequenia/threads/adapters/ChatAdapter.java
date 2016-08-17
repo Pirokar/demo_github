@@ -379,11 +379,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
-    public void addConsultTyping(ConsultTyping ct) {
-        if (ct != null) {
-            list.add(ct);
-            notifyItemInserted(list.lastIndexOf(ct));
+    public void addConsultTyping(String consultId,String avatarPath) {
+        ConsultTyping ct = new ConsultTyping(consultId,Long.MAX_VALUE,avatarPath);
+        if (list.contains(ct))return;
+        for (Iterator<ChatItem> iter  = list.iterator(); iter.hasNext() ;) {
+            ChatItem ci = iter.next();
+            if (ci instanceof ConsultTyping){
+                iter.remove();
+            }
         }
+        list.add(ct);
+        notifyDataSetChanged();
     }
 
     public boolean isConsultTyping() {
@@ -406,7 +412,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public void addConsultSearching(SearchingConsult sc) {
+    public void setSearchingConsult() {
+        SearchingConsult sc = new SearchingConsult(Long.MAX_VALUE);
+        if (list.contains(sc))return;
         list.add(sc);
         notifyItemInserted(list.lastIndexOf(sc));
     }
@@ -421,16 +429,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public void addItem(ChatItem item, boolean isBulk) {
+    private void addItem(ChatItem item, boolean isBulk) {
         addItem(item, true, isBulk);
     }
 
-    public void addItem(ChatItem item, boolean withBackup, boolean isBulk) {
+    private void addItem(ChatItem item, boolean withBackup, boolean isBulk) {
         if (list.size() == 0) {
             list.add(new DateRow(item.getTimeStamp()));
             if (!isBulk) notifyItemInserted(0);
         }
-        if (list.contains(item))return;
+        Log.e(TAG, "" + item);
+        if (list.contains(item)) return;
         Calendar currentTimeStamp = Calendar.getInstance();
         Calendar prevTimeStamp = Calendar.getInstance();
         currentTimeStamp.setTimeInMillis(item.getTimeStamp());
@@ -451,34 +460,34 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final ChatItem last = list.get(list.size() - 1);
         final ChatItem prev = list.get(list.size() - 2);
         if (prev instanceof UserPhrase && last instanceof ConsultConnectionMessage) {// spacing between Consult and Consult connected
-            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()+1));
         }
         if (prev instanceof ConsultPhrase && last instanceof UserPhrase) {// spacing between Consult and User phrase
-            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()+1));
         }
         if (prev instanceof ConsultConnectionMessage && last instanceof ConsultPhrase) {// spacing between Consult connected and Consult phrase
-            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()+1));
         }
         if (last instanceof ConsultPhrase && prev instanceof ConsultPhrase) {// spacing between Consult phrase connected and Consult phrase
-            list.add(list.size() - 1, new Space(2, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(2, prev.getTimeStamp()+1));
         }
         if (last instanceof UserPhrase && prev instanceof UserPhrase) {// spacing between User phrase connected and User phrase
-            list.add(list.size() - 1, new Space(2, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(2, prev.getTimeStamp()+1));
         }
         if (prev instanceof UserPhrase && last instanceof ConsultPhrase) {// spacing between User phrase connected and Consult phrase
-            list.add(list.size() - 1, new Space(24, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(24, prev.getTimeStamp()+1));
         }
         if (last instanceof UserPhrase && prev instanceof ConsultConnectionMessage) {
-            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(12, prev.getTimeStamp()+1));
         }
         if (last instanceof ConsultConnectionMessage && prev instanceof ConsultConnectionMessage) {
-            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()+1));
         }
         if (last instanceof UserPhrase && prev instanceof ConsultConnectionMessage) {
-            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()+1));
         }
         if (last instanceof ConsultConnectionMessage && prev instanceof ConsultPhrase) {
-            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()));
+            list.add(list.size() - 1, new Space(8, prev.getTimeStamp()+1));
         }
         if (!isBulk) notifyItemInserted(list.size() - 2);
     }
@@ -502,7 +511,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
             }
         });
-        if (list.size()==0)return;
+        if (list.size() == 0) return;
         list.add(0, new DateRow(list.get(0).getTimeStamp()));
         Calendar currentTimeStamp = Calendar.getInstance();
         Calendar nextTimeStamp = Calendar.getInstance();
@@ -533,6 +542,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (ci instanceof ConsultPhrase && list.get(index + 1) instanceof ConsultPhrase) {
                 ((ConsultPhrase) ci).setAvatarVisible(false);
             }
+        }
+        SearchingConsult sc = null;
+        for (ChatItem ci : list) {
+            if (ci instanceof SearchingConsult) sc = (SearchingConsult) ci;
+        }
+        if (sc != null) {
+            int prevPos = list.lastIndexOf(sc);
+            list.remove(sc);
+            list.add(sc);
+            notifyItemMoved(prevPos, list.size() - 1);
         }
         notifyDataSetChanged();
     }
@@ -568,10 +587,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (o instanceof UserPhrase) {
             UserPhrase up = (UserPhrase) o;
-            String extension = up.getFileDescription() == null ? null : up.getFileDescription().getFilePath().substring(up.getFileDescription().getFilePath().lastIndexOf(".") + 1);
-            if (TextUtils.isEmpty(up.getPhrase()) && extension != null && (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png"))) {
+            if (up.getFileDescription() == null) return TYPE_USER_PHRASE;
+            int extension = FileUtils.getExtensionFromPath(up.getFileDescription().getFilePath());
+            if (extension == FileUtils.JPEG || extension == FileUtils.PNG) {
                 return TYPE_IMAGE_FROM_USER;
-            } else if (TextUtils.isEmpty(up.getPhrase()) && extension != null && (extension.equalsIgnoreCase("pdf"))) {
+            } else if (extension == FileUtils.PDF) {
                 return TYPE_FILE_FROM_USER;
             } else {
                 return TYPE_USER_PHRASE;
