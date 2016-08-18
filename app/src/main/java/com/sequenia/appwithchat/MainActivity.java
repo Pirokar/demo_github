@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -30,13 +31,14 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERM_REQUEST_CODE = 1;
     private static final int PERM_REQUEST_CODE_CLICK = 2;
     EditText mEditText;
+    TextView nameTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mEditText = (EditText) findViewById(R.id.edit_text);
-        Log.e(TAG, "" + PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));// TODO: 09.08.2016
+        nameTextView = (TextView) findViewById(R.id.client_name);
         mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
                 ""
                 : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
         mEditText.setText("79139055742");// TODO: 12.08.2016 remove
+        nameTextView.setText("Васисуалий Андреевич Лоханкин");
         if (isCoarseLocGranted && isSmsGranted && isReadPhoneStateGranted) {
             ThreadsInitializer.getInstance(this).init();
         } else {
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     .IntentBuilder
                     .getBuilder(this, mEditText.getText().toString())
                     .setDefaultChatTitle(getString(R.string.contact_center))
+                    .setClientName(nameTextView.getText().toString())
                     .build();
             startActivity(i);
         } else if (mEditText.getText().length() < 5) {
@@ -107,5 +111,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this).edit().putString("edit", mEditText.getText().toString()).apply();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putString("name", nameTextView.getText().toString()).apply();
     }
 }

@@ -11,13 +11,22 @@ public class PrefUtils {
     public static final String TAG_CLIENT_ID = "TAG_CLIENT_ID";
     public static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
     public static final String DEFAULT_TITLE_TAG = "DEFAULT_TITLE_TAG";
+    public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
 
     private PrefUtils() {
     }
 
+    public static void setClientName(Context ctx, String ClientName) {
+        if (ClientName == null) throw new IllegalStateException("ClientName is null");
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + CLIENT_NAME, ClientName).commit();
+    }
+
+    public static String getClientName(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + CLIENT_NAME, "");
+    }
     public static void setClientId(Context ctx, String clientId) {
         if (clientId == null) throw new IllegalStateException("clientId is null");
-        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + TAG_CLIENT_ID, clientId).apply();
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + TAG_CLIENT_ID, clientId).commit();
     }
 
     public static String getClientID(Context ctx) {
@@ -25,7 +34,7 @@ public class PrefUtils {
     }
 
     public static void setDefaultTitle(Context ctx, String defTitle) {
-        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + DEFAULT_TITLE_TAG, defTitle).apply();
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + DEFAULT_TITLE_TAG, defTitle).commit();
     }
 
     public static String getDefaultTitle(Context ctx) {

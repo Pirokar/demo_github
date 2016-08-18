@@ -47,7 +47,7 @@ public class MyPBReceiver extends PushBroadcastReceiver {
                 @Override
                 public void onResult(Void aVoid) {
                     Log.d(TAG, "client id was set");
-                    PushController.getInstance(context).sendMessageAsync(MessageFormatter.getStartMessage("Пупкин Василий Петрович", PrefUtils.getClientID(context), ""), true, new RequestCallback<Void, PushServerErrorException>() {
+                    PushController.getInstance(context).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getClientName(context), PrefUtils.getClientID(context), ""), true, new RequestCallback<Void, PushServerErrorException>() {
                         @Override
                         public void onResult(Void aVoid) {
                             Log.e(TAG, "client id was set");// TODO: 09.08.2016

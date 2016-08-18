@@ -113,6 +113,17 @@ public class DatabaseHolder {
             }
         });
     }
+    public void queryFilesAsync(final String query, final CompletionHandler<List<ChatPhrase>> callback) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<ChatPhrase> list = mMyOpenHelper.queryFiles(query);
+                if (query == null)
+                    callback.onError(new IllegalArgumentException(), "query is null", new ArrayList<ChatPhrase>());
+                callback.onComplete(list);
+            }
+        });
+    }
 
     public void putMessagesAsync(final List<ChatItem> items, final CompletionHandler<Void> completionHandler) {
         executorService.execute(new Runnable() {

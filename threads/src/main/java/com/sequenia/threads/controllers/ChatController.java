@@ -84,6 +84,7 @@ public class ChatController extends Fragment {
     int currentOffset = 0;
     private int searchOffset = 0;
     private boolean isActive;
+    private long lastUserTypingSend = System.currentTimeMillis();
 
     public static ChatController getInstance(final Context ctx, final String clientId) {
         if (instance == null) {
@@ -99,7 +100,8 @@ public class ChatController extends Fragment {
                 PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
-                        PushController.getInstance(ctx).sendMessageAsync(MessageFormatter.getStartMessage("Пупкин Василий Петрович", PrefUtils.getClientID(ctx), ""), true, new RequestCallback<Void, PushServerErrorException>() {
+                        Log.e(TAG, "PrefUtils.getClientName(ctx) = " + PrefUtils.getClientName(ctx));// TODO: 18.08.2016
+                        PushController.getInstance(ctx).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getClientName(ctx), PrefUtils.getClientID(ctx), ""), true, new RequestCallback<Void, PushServerErrorException>() {
                             @Override
                             public void onResult(Void aVoid) {
                                 Log.e(TAG, "client id was set");// TODO: 09.08.2016
@@ -187,6 +189,27 @@ public class ChatController extends Fragment {
     public ChatController(final Context ctx) {
         if (mDatabaseHolder == null) {
             mDatabaseHolder = DatabaseHolder.getInstance(ctx);
+        }
+    }
+
+    public void onUserTyping() {
+        long currentTime = System.currentTimeMillis();
+        Log.e(TAG, "onUserTyping");// TODO: 18.08.2016  
+        Log.e(TAG, "lastUserTypingSend - currentTime = " + (lastUserTypingSend - currentTime));// TODO: 18.08.2016  
+        if ((currentTime - lastUserTypingSend) >= 3000) {
+            
+            lastUserTypingSend = currentTime;
+            PushController.getInstance(activity).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<Void, PushServerErrorException>() {
+                @Override
+                public void onResult(Void aVoid) {
+
+                }
+
+                @Override
+                public void onError(PushServerErrorException e) {
+
+                }
+            });
         }
     }
 
@@ -312,6 +335,7 @@ public class ChatController extends Fragment {
                             }
                         });
                     }
+
                     @Override
                     public void onError(Exception e) {
                         Log.e(TAG, "error while sending files to server");
@@ -505,6 +529,7 @@ public class ChatController extends Fragment {
                             PushController.getInstance(activity).getMessageHistoryAsync(currentOffset[0] + 20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
                                 @Override
                                 public void onResult(List<InOutMessage> inOutMessages) {
+                                    Log.e(TAG, "" + inOutMessages);// TODO: 18.08.2016
                                     mDatabaseHolder.putMessagesAsync(MessageFormatter.format(inOutMessages), new CompletionHandler<Void>() {
                                         @Override
                                         public void onComplete(Void data) {
@@ -576,8 +601,7 @@ public class ChatController extends Fragment {
 
     public void requestFilteredPhrases(boolean searchInServerHistory
             , final String query
-            , final Callback<Pair<Boolean
-            , List<ChatPhrase>>, Exception> callback) {
+            , final Callback<Pair<Boolean, List<ChatPhrase>>, Exception> callback) {
 
         if (!searchInServerHistory) {
             mDatabaseHolder.queryChatPhrasesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
@@ -618,14 +642,14 @@ public class ChatController extends Fragment {
 
                                 @Override
                                 public void onError(Throwable e, String message, List<ChatPhrase> data) {
-
+                                    callback.onFail((Exception) e);
                                 }
                             });
                         }
 
                         @Override
                         public void onError(Throwable e, String message, Void data) {
-
+                            callback.onFail((Exception) e);
                         }
                     });
 
@@ -646,7 +670,7 @@ public class ChatController extends Fragment {
 
                         @Override
                         public void onError(Throwable e, String message, List<ChatPhrase> data) {
-
+                            callback.onFail((Exception) e);
                         }
                     });
                 }
@@ -654,6 +678,87 @@ public class ChatController extends Fragment {
         }
 
     }
+
+    public void requestFilteredFiles(boolean searchInServerHistory
+            , final String query
+            , final Callback<Pair<Boolean, List<ChatPhrase>>, Exception> callback) {
+
+        if (!searchInServerHistory) {
+            mDatabaseHolder.queryFilesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
+                @Override
+                public void onComplete(final List<ChatPhrase> data) {
+                    h.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onSuccess(new Pair<>(true, data));
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(Throwable e, String message, List<ChatPhrase> data) {
+                    callback.onFail((Exception) e);
+                }
+            });
+        } else {
+            final int querySize = mDatabaseHolder.getMessagesCount() + searchOffset;
+            PushController.getInstance(activity).getMessageHistoryAsync(querySize, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                @Override
+                public void onResult(final List<InOutMessage> inOutMessages) {
+                    mDatabaseHolder.putMessagesAsync(MessageFormatter.format(inOutMessages), new CompletionHandler<Void>() {
+                        @Override
+                        public void onComplete(final Void avoid) {
+                            mDatabaseHolder.queryFilesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
+                                @Override
+                                public void onComplete(final List<ChatPhrase> data) {
+                                    h.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            callback.onSuccess(new Pair<>(inOutMessages.size() >= querySize, data));
+                                            searchOffset += 20;
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onError(Throwable e, String message, List<ChatPhrase> data) {
+                                    callback.onFail((Exception) e);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(Throwable e, String message, Void data) {
+                            callback.onFail((Exception) e);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onError(PushServerErrorException e) {
+                    mDatabaseHolder.queryChatPhrasesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
+                        @Override
+                        public void onComplete(final List<ChatPhrase> data) {
+                            h.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onSuccess(new Pair<>(true, data));
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(Throwable e, String message, List<ChatPhrase> data) {
+                            callback.onFail((Exception) e);
+                        }
+                    });
+                }
+            });
+        }
+
+    }
+
 
     private void onSettingClientId(Context ctx) {
         if (mDatabaseHolder.getMessagesCount() == 0 && activity != null) {

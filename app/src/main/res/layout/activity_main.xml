@@ -21,12 +21,24 @@
         android:textSize="25sp" />
 
     <EditText
-        android:text=""
         android:id="@+id/edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/margin_half"
-        android:hint="Enter client id" />
+        android:hint="Enter client id"
+        android:text="" />
+
+    <EditText
+        android:id="@+id/client_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_half"
+        android:hint="Enter client name"
+        android:inputType="text"
+        android:lines="1"
+        android:text="" />
 </RelativeLayout>

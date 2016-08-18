@@ -15,7 +15,6 @@ import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.FilesAndMediaAdapter;
 import com.sequenia.threads.controllers.FilesAndMediaController;
 import com.sequenia.threads.model.FileDescription;
-import com.sequenia.threads.utils.PrefUtils;
 
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
         findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ctx.sendBroadcast(new Intent(ChatActivity.ACTION_SEARCH_CHAT));
+                ctx.sendBroadcast(new Intent(ChatActivity.ACTION_SEARCH_CHAT_FILES));
                 finish();
             }
         });

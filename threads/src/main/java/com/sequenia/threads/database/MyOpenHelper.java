@@ -15,8 +15,10 @@ import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.model.UserPhrase;
+import com.sequenia.threads.utils.FileUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -322,6 +324,33 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return q;
     }
 
+    public List<ChatPhrase> queryFiles(String query) {
+        List<ChatPhrase> list = getSortedPhrases("");
+        List<ChatPhrase> out = new ArrayList<>();
+        for (Iterator<ChatPhrase> iter = list.iterator(); iter.hasNext(); ) {
+            ChatPhrase cp = iter.next();
+            if (cp.getFileDescription() != null) {
+                FileDescription fd = cp.getFileDescription();
+                if (fd.getIncomingName() != null && fd.getIncomingName().toLowerCase().contains(query.toLowerCase())) {
+                    out.add(cp);
+                } else if (fd.getFilePath() != null
+                        && FileUtils.getLastPathSegment(fd.getFilePath()).toLowerCase().contains(query.toLowerCase())) {
+                    out.add(cp);
+                }
+            } else if (cp.getQuote() != null && cp.getQuote().getFileDescription() != null) {
+                FileDescription fd = cp.getQuote().getFileDescription();
+                if (fd.getIncomingName() != null && fd.getIncomingName().toLowerCase().contains(query.toLowerCase())) {
+                    out.add(cp);
+                } else if (fd.getFilePath() != null
+                        && FileUtils.getLastPathSegment(fd.getFilePath()).toLowerCase().contains(query.toLowerCase())) {
+                    out.add(cp);
+                }
+            }
+        }
+
+        return out;
+    }
+
     private Pair<Boolean, FileDescription> getFd(String messageId) {
         String query = String.format(Locale.US, "select * from %s where %s = ?", TABLE_FILE_DESCRIPTION, COLUMN_FD_MESSAGE_ID_EXT);
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{messageId});
@@ -431,7 +460,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         + " like ? and " + COLUMN_FD_DOWNLOAD_PATH + " like ?"
                 , new String[]{fileDescription.getIncomingName(), fileDescription.getDownloadPath()});
     }
-    void cleanDb(){
+
+    void cleanDb() {
         getWritableDatabase().execSQL("delete * from " + TABLE_MESSAGES);
         getWritableDatabase().execSQL("delete * from " + TABLE_FILE_DESCRIPTION);
         getWritableDatabase().execSQL("delete * from " + TABLE_QUOTE);

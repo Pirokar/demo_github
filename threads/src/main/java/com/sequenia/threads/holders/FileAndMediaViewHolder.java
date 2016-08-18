@@ -40,7 +40,7 @@ public class FileAndMediaViewHolder extends RecyclerView.ViewHolder {
     public void onBind(
             FileDescription fileDescription
             , View.OnClickListener fileClickListener) {
-        Log.e(TAG, "onBind " + fileDescription);// TODO: 17.08.2016  
+        Log.e(TAG, "onBind " + fileDescription);// TODO: 17.08.2016  implemet true filedescription timestamp
 
         int extension = FileUtils.getExtensionFromPath(fileDescription.getFilePath())==FileUtils.UNKNOWN?
                 FileUtils.getExtensionFromPath(fileDescription.getIncomingName())

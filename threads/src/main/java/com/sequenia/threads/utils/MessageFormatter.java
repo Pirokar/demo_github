@@ -112,8 +112,14 @@ public class MessageFormatter {
         final String name = operatorInfo.getString("name");
         String photoUrl = operatorInfo.getString("photoUrl");
         FileDescription fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
-        if (fileDescription != null) fileDescription.setFrom(name);
+        if (fileDescription != null) {
+            fileDescription.setFrom(name);
+            fileDescription.setTimeStamp(timeStamp);
+        }
         Quote quote = quoteFromJson(fullMessage.getJSONArray("quotes"));
+        if (quote!=null && quote.getFileDescription()!=null){
+            quote.getFileDescription().setTimeStamp(timeStamp);
+        }
         return new ConsultPhrase(
                 fileDescription
                 , quote
@@ -212,7 +218,6 @@ public class MessageFormatter {
                 header = quotes.getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getJSONObject("optional").getString("name");
             }
             quoteFileDescription = fileDescriptionFromJson(quotes.getJSONObject(0).getJSONArray("attachments"));
-
         }
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && quotes.getJSONObject(0).has("operator")) {
             consultName = quotes.getJSONObject(0).getJSONObject("operator").getString("name");
@@ -238,7 +243,7 @@ public class MessageFormatter {
                     null
                     , null
                     , jsonArray.getJSONObject(0).getJSONObject("optional").getLong("size")
-                    , System.currentTimeMillis());
+                    , 0);// TODO: 18.08.2016 set incoming time
             fileDescription.setDownloadPath(jsonArray.getJSONObject(0).getString("result"));
             fileDescription.setIncomingName(header);
         }
@@ -273,8 +278,12 @@ public class MessageFormatter {
                     final String name = operatorInfo != null ? operatorInfo.getString("name") : null;
                     String photoUrl = operatorInfo != null ? operatorInfo.getString("photoUrl") : null;
                     FileDescription fileDescription = body.has("attachments") ? fileDescriptionFromJson(body.getJSONArray("attachments")) : null;
-                    if (fileDescription != null) fileDescription.setFrom(name);
+                    if (fileDescription != null) {
+                        fileDescription.setFrom(name);
+                        fileDescription.setTimeStamp(timeStamp);
+                    }
                     Quote quote = body.has("quotes") ? quoteFromJson(body.getJSONArray("quotes")) : null;
+                    if (quote!=null && quote.getFileDescription()!=null)quote.getFileDescription().setTimeStamp(timeStamp);
                     String operId = operatorInfo != null ? operatorInfo.getString("id") : UUID.randomUUID().toString();
                     if (!message.incoming) {
                         out.add(new ConsultPhrase(fileDescription, quote, name, messageId, phraseText, timeStamp, operId, photoUrl));
@@ -300,5 +309,16 @@ public class MessageFormatter {
             e.printStackTrace();
         }
         return out;
+    }
+
+    public static String getMessageTyping(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("type","TYPING");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject.toString().replace("\\\\","");
     }
 }
