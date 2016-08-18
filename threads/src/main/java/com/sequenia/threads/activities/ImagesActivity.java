@@ -49,7 +49,7 @@ public class ImagesActivity extends AppCompatActivity implements ViewPager.OnPag
             public void onComplete(List<FileDescription> data) {
                 List<FileDescription> output = new ArrayList<>();
                 for (FileDescription fd : data) {
-                    if (fd.hasImage()) {
+                    if (fd.hasImage()&& fd.getFilePath()!=null) {
                         Log.e(TAG, "hasImage()");
                         output.add(fd);
                     }

@@ -1,11 +1,15 @@
 package com.sequenia.threads.model;
 
+import android.text.TextUtils;
+
+import com.sequenia.threads.utils.FileUtils;
+
 import java.util.UUID;
 
 /**
  * Created by yuri on 10.06.2016.
  */
-public class UserPhrase implements ChatPhrase {
+public class UserPhrase implements ChatPhrase,IsOnlyImage {
     private String messageId;
     private final String phrase;
     private final boolean withFile;
@@ -26,7 +30,8 @@ public class UserPhrase implements ChatPhrase {
         this.fileDescription = fileDescription;
         sentState = MessageState.STATE_SENT;
     }
-    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription,MessageState sentState) {
+
+    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
         this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
         this.phrase = phrase;
         this.withFile = fileDescription != null;
@@ -119,6 +124,16 @@ public class UserPhrase implements ChatPhrase {
         result = 31 * result + (mQuote != null ? mQuote.hashCode() : 0);
         result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
         return result;
+    }
+
+    public boolean isOnlyImage() {
+        return fileDescription != null
+                && TextUtils.isEmpty(phrase)
+                && mQuote == null
+                && (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.JPEG
+                || FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PNG
+                || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG
+                || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.JPEG);
     }
 
     @Override

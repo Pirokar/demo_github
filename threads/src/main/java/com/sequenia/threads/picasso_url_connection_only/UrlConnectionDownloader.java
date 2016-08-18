@@ -19,6 +19,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.net.http.HttpResponseCache;
 import android.os.Build;
+import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -86,7 +88,6 @@ public class UrlConnectionDownloader implements Downloader {
 
         headerValue = builder.toString();
       }
-
       connection.setRequestProperty("Cache-Control", headerValue);
     }
 
@@ -128,7 +129,7 @@ public class UrlConnectionDownloader implements Downloader {
       File cacheDir = Utils.createDefaultCacheDir(context);
       HttpResponseCache cache = HttpResponseCache.getInstalled();
       if (cache == null) {
-        long maxSize = Utils.calculateDiskCacheSize(cacheDir);
+        long maxSize = 52428800; //50mb
         cache = HttpResponseCache.install(cacheDir, maxSize);
       }
       return cache;

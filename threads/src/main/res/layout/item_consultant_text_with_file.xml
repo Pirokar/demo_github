@@ -79,7 +79,8 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <FrameLayout>
+            <FrameLayout
+                android:id="@+id/frame">
 
                 <TextView
                     android:id="@+id/text"

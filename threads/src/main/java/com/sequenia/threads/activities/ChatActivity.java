@@ -653,8 +653,14 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onImageClick(FileDescription fileDescription) {// TODO: 15.08.2016 move logic to controller
-        if (fileDescription.getFilePath() != null) return;
+        Log.e(TAG, "onImageClick " + fileDescription);// TODO: 18.08.2016
+        if (fileDescription.getFilePath() == null) return;
         startActivity(ImagesActivity.getStartIntent(this, fileDescription));
+    }
+
+    @Override
+    public void onImageDownloadRequest(FileDescription fileDescription) {
+        mChatController.onImageDownloadRequest(fileDescription);
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.sequenia.threads.adapters.FilesAndMediaAdapter;
 import com.sequenia.threads.controllers.FilesAndMediaController;
 import com.sequenia.threads.model.FileDescription;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -60,6 +61,9 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
 
     public void onFileReceive(List<FileDescription> descriptions) {
         if (descriptions != null && descriptions.size() > 0) {
+            for (Iterator<FileDescription> iter = descriptions.iterator(); iter.hasNext(); ) {
+                if (iter.next().getFilePath() == null) iter.remove();
+            }
             mRecyclerView.setAdapter(new FilesAndMediaAdapter(descriptions, this));
         }
     }

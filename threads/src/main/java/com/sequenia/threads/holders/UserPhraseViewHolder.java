@@ -43,6 +43,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat fileSdf;
     private View mFilterView;
     private View mFilterViewSecond;
+    private View mTextFrame;
 
     public UserPhraseViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -57,6 +58,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         } else {
             fileSdf = new SimpleDateFormat("dd MMMM yyyy");
         }
+        mTextFrame = itemView.findViewById(R.id.frame);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mRightTextHeader = (TextView) itemView.findViewById(R.id.to);
@@ -72,18 +74,18 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             , View.OnClickListener onRowClickListener
             , View.OnLongClickListener onLongClickListener
             , boolean isChosen) {
+        if (phrase == null || phrase.length() == 0) {
+            mPhraseTextView.setVisibility(View.GONE);
+        } else {
+            mPhraseTextView.setVisibility(View.VISIBLE);
+            mPhraseTextView.setText(phrase);
+        }
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
         itemView.setOnLongClickListener(onLongClickListener);
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(onRowClickListener);
             vg.getChildAt(i).setOnLongClickListener(onLongClickListener);
-        }
-        if (phrase == null || phrase.length() == 0) {
-            mPhraseTextView.setVisibility(View.GONE);
-        } else {
-            mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(phrase);
         }
         if (quote != null) {
             mRightTextRow.setVisibility(View.VISIBLE);
@@ -129,20 +131,26 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         if (fileDescription == null && quote == null) {
             mRightTextRow.setVisibility(View.GONE);
         }
+        Log.e(TAG, ""+phrase);
         if (mPhraseTextView.getLayout() != null) {
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-                float density = itemView.getContext().getResources().getDisplayMetrics().density;
-                if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-                    params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
-                }
-                mTimeStampTextView.setLayoutParams(params);
-        }else {
+            Log.e(TAG, "mPhraseTextView.getLayout() != null");
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+            float density = itemView.getContext().getResources().getDisplayMetrics().density;
+            if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
+                params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+            }
+            mTimeStampTextView.setLayoutParams(params);
+            mTextFrame.forceLayout();
+            mTextFrame.invalidate();
+        } else {
+            Log.e(TAG, "mPhraseTextView.getLayout() == null");
             mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     try {
                         if (mPhraseTextView.getLayout() == null) {
+                            Log.e(TAG, "mPhraseTextView.getLayout() ==== null");
                             mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                             return;
                         }
@@ -154,6 +162,9 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                         }
                         mTimeStampTextView.setLayoutParams(params);
                         mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mTextFrame.forceLayout();
+                        mTextFrame.invalidate();
+
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }

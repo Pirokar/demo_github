@@ -1,4 +1,4 @@
-package com.sequenia.threads.utils;
+package com.sequenia.threads.services;
 
 import android.app.Service;
 import android.content.Context;
@@ -22,7 +22,9 @@ import java.util.concurrent.Executors;
  */
 public class DownloadService extends Service {
     private static final String TAG = "DownloadService ";
-    public static final String FD_TAG = "FD_TAG";
+    public static final String START_DOWNLOAD_FD_TAG = "com.sequenia.threads.services.START_DOWNLOAD_FD_TAG";
+    public static final String FD_TAG = "com.sequenia.threads.services.FD_TAG";
+    public static final String START_DOWNLOAD_WITH_NO_STOP = "com.sequenia.threads.services.START_DOWNLOAD_WITH_NO_STOP";
     Executor executor = Executors.newFixedThreadPool(3);
     private static HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();
 
@@ -35,15 +37,6 @@ public class DownloadService extends Service {
         if (fileDescription == null) return START_STICKY;
         if (fileDescription.getDownloadPath() == null || fileDescription.getFilePath() != null) {
             Log.e(TAG, "cant download with fileDescription = " + fileDescription);
-            return START_STICKY;
-        }
-        if (runningDownloads.containsKey(fileDescription)) {
-            FileDownloader fileDownloader = runningDownloads.get(fileDescription);
-            runningDownloads.remove(fileDescription);
-            fileDownloader.stop();
-            fileDescription.setDownloadProgress(0);
-            sendDownloadProgressBroadcast(fileDescription);
-            DatabaseHolder.getInstance(this).updateFileDescription(fileDescription);
             return START_STICKY;
         }
         final Context context = this;
@@ -63,7 +56,7 @@ public class DownloadService extends Service {
                 DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
                 runningDownloads.remove(fileDescription);
                 sendFinishBroadcast(fileDescription);
-                if (runningDownloads.size()==0)stopSelf();
+                if (runningDownloads.size() == 0) stopSelf();
             }
 
             @Override
@@ -75,13 +68,35 @@ public class DownloadService extends Service {
                 sendDownloadErrorBroadcast(fileDescription, e);
             }
         };
-        runningDownloads.put(fileDescription, fileDownloader);
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                fileDownloader.download();
+        if (intent.getAction().equals(START_DOWNLOAD_FD_TAG)) {
+            if (runningDownloads.containsKey(fileDescription)) {
+                FileDownloader tfileDownloader = runningDownloads.get(fileDescription);
+                runningDownloads.remove(fileDescription);
+                tfileDownloader.stop();
+                fileDescription.setDownloadProgress(0);
+                sendDownloadProgressBroadcast(fileDescription);
+                DatabaseHolder.getInstance(this).updateFileDescription(fileDescription);
+                return START_STICKY;
+            } else {
+                runningDownloads.put(fileDescription, fileDownloader);
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        fileDownloader.download();
+                    }
+                });
             }
-        });
+        } else if (intent.getAction().equals(START_DOWNLOAD_WITH_NO_STOP)) {
+            if (!runningDownloads.containsKey(fileDescription)){
+                runningDownloads.put(fileDescription, fileDownloader);
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        fileDownloader.download();
+                    }
+                });
+            }
+        }
         return START_STICKY;
     }
 

@@ -45,6 +45,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     public ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterViewSecond;
+    private View mTextFrame;
 
     public ConsultPhraseHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
@@ -63,6 +64,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy");
         }
+        mTextFrame = itemView.findViewById(R.id.frame);
     }
 
     public void onBind(String consultPhrase
@@ -75,6 +77,13 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             , View.OnLongClickListener onRowLongClickListener
             , View.OnClickListener onAvatarClickListener
             , boolean isChosen) {
+        if (consultPhrase == null) {
+            mPhraseTextView.setVisibility(View.GONE);
+        } else {
+            mPhraseTextView.setVisibility(View.VISIBLE);
+            mPhraseTextView.setText(consultPhrase);
+            mPhraseTextView.invalidate();
+        }
         itemView.setOnLongClickListener(onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
@@ -140,8 +149,9 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
         }
-        //  Log.e(TAG, "consultPhrase = "+consultPhrase);// TODO: 14.07.2016
+        Log.e(TAG, ""+consultPhrase);
         if (mPhraseTextView.getLayout() != null) {
+            Log.e(TAG, "mPhraseTextView.getLayout() != null");
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
@@ -149,12 +159,15 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                 params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
             }
             mTimeStampTextView.setLayoutParams(params);
+            mTextFrame.forceLayout();
         }else {
+            Log.e(TAG, "mPhraseTextView.getLayout() == null");
             mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     try {
                         if (mPhraseTextView.getLayout() == null) {
+                            Log.e(TAG, "mPhraseTextView.getLayout() ==== null");
                             mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                             return;
                         }
@@ -166,18 +179,15 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                         }
                         mTimeStampTextView.setLayoutParams(params);
                         mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mTextFrame.forceLayout();
+                        mTextFrame.invalidate();
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
                 }
             });
         }
-        if (consultPhrase == null) {
-            mPhraseTextView.setVisibility(View.GONE);
-        } else {
-            mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(consultPhrase);
-        }
+
         if (isChosen) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterViewSecond.setVisibility(View.VISIBLE);

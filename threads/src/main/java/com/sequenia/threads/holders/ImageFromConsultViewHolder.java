@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.FileDescription;
+import com.sequenia.threads.picasso_url_connection_only.NetworkPolicy;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.MaskedTransformer;
@@ -64,18 +65,19 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                     .load(fileDescription.getFilePath())
                     .fit()
                     .centerCrop()
+                    .error(R.drawable.no_image)
                     .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_CONSULT))
                     .into(mImage);
         } else if (fileDescription.getDownloadPath() != null) {
             p
                     .load(fileDescription.getDownloadPath())
                     .fit()
+                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .centerCrop()
+                    .error(R.drawable.no_image)
                     .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_CONSULT))
                     .into(mImage);
         }
-
-
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);
             filterSecond.setVisibility(View.VISIBLE);

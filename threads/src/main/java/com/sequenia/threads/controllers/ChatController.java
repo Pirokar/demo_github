@@ -37,13 +37,15 @@ import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.model.FileDescription;
+import com.sequenia.threads.model.IsOnlyImage;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
+import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.services.NotificationService;
 import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.ConsultInfo;
-import com.sequenia.threads.utils.DownloadService;
+import com.sequenia.threads.services.DownloadService;
 import com.sequenia.threads.utils.DualFilePoster;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.MessageFormatter;
@@ -85,6 +87,7 @@ public class ChatController extends Fragment {
     private int searchOffset = 0;
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
+    public static Picasso p;
 
     public static ChatController getInstance(final Context ctx, final String clientId) {
         if (instance == null) {
@@ -171,6 +174,7 @@ public class ChatController extends Fragment {
     }
 
     public ChatController() {
+
     }
 
     @Override
@@ -194,10 +198,8 @@ public class ChatController extends Fragment {
 
     public void onUserTyping() {
         long currentTime = System.currentTimeMillis();
-        Log.e(TAG, "onUserTyping");// TODO: 18.08.2016  
-        Log.e(TAG, "lastUserTypingSend - currentTime = " + (lastUserTypingSend - currentTime));// TODO: 18.08.2016  
         if ((currentTime - lastUserTypingSend) >= 3000) {
-            
+
             lastUserTypingSend = currentTime;
             PushController.getInstance(activity).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<Void, PushServerErrorException>() {
                 @Override
@@ -394,6 +396,7 @@ public class ChatController extends Fragment {
                 }
             }, 1500);
         }
+
     }
 
     public String getCurrentConsultName() {
@@ -414,6 +417,7 @@ public class ChatController extends Fragment {
         if (activity != null) {
             if (fileDescription.getFilePath() == null) {
                 Intent i = new Intent(activity, DownloadService.class);
+                i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
                 i.putExtra(DownloadService.FD_TAG, fileDescription);
                 activity.startService(i);
             } else if (fileDescription.hasImage()) {
@@ -529,7 +533,6 @@ public class ChatController extends Fragment {
                             PushController.getInstance(activity).getMessageHistoryAsync(currentOffset[0] + 20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
                                 @Override
                                 public void onResult(List<InOutMessage> inOutMessages) {
-                                    Log.e(TAG, "" + inOutMessages);// TODO: 18.08.2016
                                     mDatabaseHolder.putMessagesAsync(MessageFormatter.format(inOutMessages), new CompletionHandler<Void>() {
                                         @Override
                                         public void onComplete(Void data) {
@@ -573,6 +576,13 @@ public class ChatController extends Fragment {
                 callback.onFail(e);
             }
         });
+    }
+
+    public void onImageDownloadRequest(FileDescription fileDescription) {
+        Intent i = new Intent(activity, DownloadService.class);
+        i.setAction(DownloadService.START_DOWNLOAD_WITH_NO_STOP);
+        i.putExtra(DownloadService.FD_TAG, fileDescription);
+        activity.startService(i);
     }
 
     public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {

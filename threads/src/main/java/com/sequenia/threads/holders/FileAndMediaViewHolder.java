@@ -42,29 +42,38 @@ public class FileAndMediaViewHolder extends RecyclerView.ViewHolder {
             , View.OnClickListener fileClickListener) {
         Log.e(TAG, "onBind " + fileDescription);// TODO: 17.08.2016  implemet true filedescription timestamp
 
-        int extension = FileUtils.getExtensionFromPath(fileDescription.getFilePath())==FileUtils.UNKNOWN?
+        int extension = FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.UNKNOWN ?
                 FileUtils.getExtensionFromPath(fileDescription.getIncomingName())
-                :FileUtils.getExtensionFromPath(fileDescription.getFilePath());
+                : FileUtils.getExtensionFromPath(fileDescription.getFilePath());
         Picasso p = Picasso.with(itemView.getContext());
-        if (extension== FileUtils.PDF) {
+        if (extension == FileUtils.PDF) {
             mImageButton.setImageResource(R.drawable.ic_insert_file_blue_36dp);
-        } else if (extension==FileUtils.JPEG||extension==FileUtils.PNG) {
-            p
-                    .load(fileDescription.getFilePath())
-                    .fit()
-                    .centerInside()
-                    .into(mImageButton);
+        } else if (extension == FileUtils.JPEG || extension == FileUtils.PNG) {
+            if (fileDescription.getFilePath() != null) {
+                p
+                        .load(fileDescription.getFilePath())
+                        .fit()
+                        .centerInside()
+                        .into(mImageButton);
+            } else if (fileDescription.getDownloadPath() != null) {
+                p
+                        .load(fileDescription.getDownloadPath())
+                        .fit()
+                        .centerInside()
+                        .into(mImageButton);
+            }
+
         } else {
             mImageButton.setImageResource(R.drawable.ic_insert_file_blue_36dp);
         }
         String header = "";
-        if (fileDescription.getFilePath()!=null){
+        if (fileDescription.getFilePath() != null) {
             header = FileUtils.getLastPathSegment(fileDescription.getFilePath());
-        }else if (fileDescription.getIncomingName()!=null){
+        } else if (fileDescription.getIncomingName() != null) {
             header = fileDescription.getIncomingName();
         }
         fileHeaderTextView.setText(header);
-        fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(),fileDescription.getSize()));
+        fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
         timeStampTextView.setText(sdf.format(new Date(fileDescription.getTimeStamp())));
         mImageButton.setOnClickListener(fileClickListener);
         ViewGroup vg = (ViewGroup) itemView;

@@ -66,29 +66,9 @@ public class ImageFragment extends Fragment {
                     .with(getActivity())
                     .load(fd.getFilePath())
                     .fit()
-                    .placeholder(R.drawable.ic_progress_green)
                     .centerCrop()
+                    .error(R.drawable.no_image)
                     .into(imageView);
-        } else if (fd.getDownloadPath() != null) {
-            Picasso
-                    .with(getActivity())
-                    .load(fd.getDownloadPath())
-                    .fit()
-                    .placeholder(R.drawable.ic_progress_green)
-                    .centerCrop()
-                    .into(imageView, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-                            imageView.setImageResource(android.R.drawable.ic_delete);
-                        }
-                    });
-        } else {
-            imageView.setImageResource(android.R.drawable.ic_delete);
         }
         return v;
     }

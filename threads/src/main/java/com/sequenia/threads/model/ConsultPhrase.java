@@ -1,11 +1,15 @@
 package com.sequenia.threads.model;
 
+import android.text.TextUtils;
+
+import com.sequenia.threads.utils.FileUtils;
+
 import java.util.UUID;
 
 /**
  * Created by yuri on 10.06.2016.
  */
-public class ConsultPhrase implements ChatPhrase {
+public class ConsultPhrase implements ChatPhrase,IsOnlyImage {
     private final String avatarPath;
     private final String consultId;
     private final long timeStamp;
@@ -73,6 +77,15 @@ public class ConsultPhrase implements ChatPhrase {
     public boolean hasFile() {
         return getFileDescription() != null ||
                 (getQuote() != null && getQuote().getFileDescription() != null);
+    }
+    public boolean isOnlyImage() {
+        return fileDescription != null
+                && TextUtils.isEmpty(phrase)
+                && quote == null
+                && (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.JPEG
+                || FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PNG
+                || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG
+                || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.JPEG);
     }
 
     @Override
