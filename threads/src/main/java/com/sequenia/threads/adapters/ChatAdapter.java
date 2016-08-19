@@ -1,6 +1,10 @@
 package com.sequenia.threads.adapters;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -65,6 +69,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     final Picasso picasso;
     private final Context ctx;
     private AdapterInterface mAdapterInterface;
+    public static final String ACTION_CHANGED = "com.sequenia.threads.adapters.ACTION_CHANGED";
 
     public ChatAdapter(ArrayList<ChatItem> list, Context ctx, AdapterInterface adapterInterface) {
         this.list = list;
@@ -72,6 +77,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         picasso = Picasso.with(ctx);
         this.ctx = ctx;
         this.mAdapterInterface = adapterInterface;
+        BroadcastReceiver br = new MyBroadcastReceiver();
+        LocalBroadcastManager.getInstance(ctx).registerReceiver(br, new IntentFilter(ACTION_CHANGED));
     }
 
     public void setAdapterInterface(AdapterInterface mAdapterInterface) {
@@ -261,7 +268,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             }
                             return false;
                         }
-                    }
+                    }, cp.getFileDescription().isDownlodadError()
                     , cp.isChosen()
                     , cp.isAvatarVisible());
 
@@ -295,6 +302,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             return false;
                         }
                     }
+                    ,up.getFileDescription().isDownlodadError()
                     , up.isChosen()
                     , up.getSentState());
         }
@@ -626,6 +634,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void updateProgress(FileDescription fileDescription) {
         for (int i = 0; i < list.size(); i++) {
+            if (fileDescription.getFilePath() == null
+                    && (getItemViewType(i) == TYPE_IMAGE_FROM_USER || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT))
+                return;
             if (list.get(i) instanceof ConsultPhrase) {
                 ConsultPhrase cp = (ConsultPhrase) list.get(i);
                 if (cp.getFileDescription() != null && cp.getFileDescription().equals(fileDescription)) {
@@ -686,6 +697,21 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void onDownloadError(FileDescription fileDescription) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) instanceof ChatPhrase) {
+                ChatPhrase cp = (ChatPhrase) list.get(i);
+                if (cp.getFileDescription() != null
+                        && cp.getFileDescription().equals(fileDescription)
+                        && getItemViewType(i) == TYPE_IMAGE_FROM_USER
+                        || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT) {
+                    cp.getFileDescription().setDownlodadError(true);
+                    notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
     public interface AdapterInterface {
         void onFileClick(FileDescription description);
 
@@ -698,5 +724,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onImageClick(FileDescription fileDescription);
 
         void onImageDownloadRequest(FileDescription fileDescription);
+    }
+
+    private class MyBroadcastReceiver extends BroadcastReceiver {
+        private static final String TAG = "MyBroadcastReceiver ";
+        int last = -1;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int index = intent.getIntExtra(ACTION_CHANGED, -1);
+            if (last == index) return;
+            last = index;
+            notifyItemChanged(last);
+        }
     }
 }

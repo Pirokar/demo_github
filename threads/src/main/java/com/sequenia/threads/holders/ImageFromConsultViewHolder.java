@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.FileDescription;
+import com.sequenia.threads.picasso_url_connection_only.Callback;
 import com.sequenia.threads.picasso_url_connection_only.NetworkPolicy;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
@@ -42,6 +43,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             , long timestamp
             , View.OnClickListener listener
             , View.OnLongClickListener longListener
+            , boolean isDownloadError
             , boolean isChosen
             , boolean isAvatarVisible) {
         Picasso p = Picasso.with(itemView.getContext());
@@ -60,23 +62,26 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                 .centerInside()
                 .into(mConsultAvatar);
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
-        if (fileDescription.getFilePath() != null) {
+        mImage.setImageResource(0);
+        if (fileDescription.getFilePath() != null && !isDownloadError) {
             p
                     .load(fileDescription.getFilePath())
                     .fit()
                     .centerCrop()
-                    .error(R.drawable.no_image)
                     .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_CONSULT))
-                    .into(mImage);
-        } else if (fileDescription.getDownloadPath() != null) {
-            p
-                    .load(fileDescription.getDownloadPath())
-                    .fit()
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .centerCrop()
-                    .error(R.drawable.no_image)
-                    .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_CONSULT))
-                    .into(mImage);
+                    .into(mImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            mImage.setImageResource(R.drawable.no_image);
+                        }
+                    });
+        } else if (isDownloadError) {
+            mImage.setImageResource(R.drawable.no_image);
         }
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);

@@ -45,17 +45,20 @@ public class MainActivity extends AppCompatActivity {
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
-        mEditText.setText("79139055742");// TODO: 12.08.2016 remove
+        mEditText.setText("79139055741");// TODO: 12.08.2016 remove
         nameTextView.setText("Васисуалий Андреевич Лоханкин");
         if (isCoarseLocGranted && isSmsGranted && isReadPhoneStateGranted) {
             ThreadsInitializer.getInstance(this).init();
         } else {
             requestPermissionsAndInit(PERM_REQUEST_CODE);
         }
+
         /*Fabric.with(this, new Crashlytics());*/
+
     }
 
     public void onChatButtonClick(View v) {
+
         if (!PermissionChecker.isCoarseLocationPermissionGranted(this)
                 || !PermissionChecker.isReadSmsPermissionGranted(this)
                 || !PermissionChecker.isReadPhoneStatePermissionGranted(this)) {

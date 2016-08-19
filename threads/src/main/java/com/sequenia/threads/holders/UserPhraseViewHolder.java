@@ -1,6 +1,8 @@
 package com.sequenia.threads.holders;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;
@@ -65,7 +68,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         mRightTextTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
     }
 
-    public void onBind(String phrase
+    public void onBind(final String phrase
             , long timeStamp
             , MessageState sentState
             , Quote quote
@@ -128,43 +131,41 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             }
 
         }
-        if (fileDescription == null && quote == null) {
-            mRightTextRow.setVisibility(View.GONE);
-        }
-        Log.e(TAG, ""+phrase);
+
         if (mPhraseTextView.getLayout() != null) {
-            Log.e(TAG, "mPhraseTextView.getLayout() != null");
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+            //  FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            // params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
-            if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-                params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+            if (phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
+                //  params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+                mPhraseTextView.setText(phrase + "\n ");
+                Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED,getAdapterPosition());
+                LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
             }
-            mTimeStampTextView.setLayoutParams(params);
-            mTextFrame.forceLayout();
-            mTextFrame.invalidate();
+            //  mTimeStampTextView.setLayoutParams(params);
+            //  mTextFrame.forceLayout();
         } else {
-            Log.e(TAG, "mPhraseTextView.getLayout() == null");
             mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     try {
                         if (mPhraseTextView.getLayout() == null) {
-                            Log.e(TAG, "mPhraseTextView.getLayout() ==== null");
                             mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                             return;
                         }
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                        //   FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        //  params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                         float density = itemView.getContext().getResources().getDisplayMetrics().density;
-                        if (mPhraseTextView.getText().length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-                            params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+                        if (phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
+                            //  params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+                            mPhraseTextView.setText(phrase + "\n ");
+                            Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED,getAdapterPosition());
+                            LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
                         }
-                        mTimeStampTextView.setLayoutParams(params);
+                        //     mTimeStampTextView.setLayoutParams(params);
                         mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        mTextFrame.forceLayout();
-                        mTextFrame.invalidate();
-
+                        //  mTextFrame.forceLayout();
+                        //   mTextFrame.invalidate();
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -194,6 +195,20 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
-
-    }
+        if (phrase == null) return;
+        if (fileDescription == null && quote == null) {
+            mRightTextRow.setVisibility(View.GONE);
+        }
+       /* Log.e(TAG, "" + phrase);
+        int length = phrase.length();
+        Log.e(TAG, "length " + length);
+        int linesCount = 0;
+        while (length > 27) {
+            length -= 27;
+            linesCount++;
+        }
+        Log.e(TAG, "length = " + length);
+        if (length > (14 +((double)linesCount) *2)) {
+            mPhraseTextView.setText(phrase + "\n ");*/
+        }
 }

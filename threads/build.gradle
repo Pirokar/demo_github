@@ -32,5 +32,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'com.google.android.gms:play-services-gcm:9.0.2'
-    compile project(':push-api-release-1.0-33-2016-07-15-17-22')
+    /* compile project(':push-api-release-1.0-36-2016-08-16-12-21')*/
+    /* compile project(':push-api-release-1.0-33-2016-07-15-17-22')*/
+    /* compile project(':push-api-release-1.0-36-2016-08-16-12-21')*/
+    compile project(':push-api-release-1.0-36-2016-08-16-12-21')
 }

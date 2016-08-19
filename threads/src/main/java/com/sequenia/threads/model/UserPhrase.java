@@ -112,6 +112,8 @@ public class UserPhrase implements ChatPhrase,IsOnlyImage {
 
         UserPhrase that = (UserPhrase) o;
 
+        if (messageId != null ? !messageId.equals(that.messageId) : that.messageId != null)
+            return false;
         if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
         if (mQuote != null ? !mQuote.equals(that.mQuote) : that.mQuote != null) return false;
         return fileDescription != null ? fileDescription.equals(that.fileDescription) : that.fileDescription == null;
@@ -120,7 +122,8 @@ public class UserPhrase implements ChatPhrase,IsOnlyImage {
 
     @Override
     public int hashCode() {
-        int result = phrase != null ? phrase.hashCode() : 0;
+        int result = messageId != null ? messageId.hashCode() : 0;
+        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
         result = 31 * result + (mQuote != null ? mQuote.hashCode() : 0);
         result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
         return result;

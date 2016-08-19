@@ -66,6 +66,7 @@ import com.sequenia.threads.views.SwipeAwareView;
 import com.sequenia.threads.views.WelcomeScreen;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -138,7 +139,7 @@ public class ChatActivity extends AppCompatActivity
     }
 
     private void getIncomingSettings(Intent intent) {
-        if (intent.getStringExtra(TAG) == null)
+        if (intent.getStringExtra(TAG) == null && PrefUtils.getClientID(this)==null)
             throw new IllegalStateException("you must provide valid client id," +
                     "\r\n it is now null or it'ts length < 5");
         if (intent.getStringExtra(TAG_DEF_TITLE) != null) {
@@ -661,6 +662,14 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onImageDownloadRequest(FileDescription fileDescription) {
         mChatController.onImageDownloadRequest(fileDescription);
+    }
+
+    public void onDownloadError(FileDescription fileDescription,Throwable t) {
+        updateProgress(fileDescription);
+        if (t instanceof FileNotFoundException){
+            Toast.makeText(this,R.string.error_no_file,Toast.LENGTH_SHORT).show();
+            mChatAdapter.onDownloadError(fileDescription);
+        }
     }
 
     @Override

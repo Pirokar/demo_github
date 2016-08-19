@@ -47,10 +47,10 @@ public class MyPBReceiver extends PushBroadcastReceiver {
                 @Override
                 public void onResult(Void aVoid) {
                     Log.d(TAG, "client id was set");
-                    PushController.getInstance(context).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getClientName(context), PrefUtils.getClientID(context), ""), true, new RequestCallback<Void, PushServerErrorException>() {
+                    PushController.getInstance(context).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getClientName(context), PrefUtils.getClientID(context), ""), true, new RequestCallback<String, PushServerErrorException>() {
                         @Override
-                        public void onResult(Void aVoid) {
-                            Log.e(TAG, "client id was set");// TODO: 09.08.2016
+                        public void onResult(String string) {
+                            Log.e(TAG, "client id was set string = " + string);// TODO: 09.08.2016
                             context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
                             PrefUtils.setClientIdWasSet(true, context);
                         }

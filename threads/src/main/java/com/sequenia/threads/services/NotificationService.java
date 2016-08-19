@@ -54,6 +54,7 @@ public class NotificationService extends Service {
             mBroadcastReceiver = new myBroadcastReceiver();
             getApplicationContext().registerReceiver(mBroadcastReceiver, new IntentFilter(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         }
+        if (intent==null)return START_STICKY;
         ArrayList<com.pushserver.android.PushMessage> il = intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
         if (il != null) {
             ArrayList<ConsultPhrase> list = MessageFormatter.format(il);
@@ -126,14 +127,15 @@ public class NotificationService extends Service {
             Log.e(TAG, "PendingIntent =" + pend);// TODO: 17.08.2016
             notificationBuilder.setContentIntent(pend);
             notificationBuilder.setAutoCancel(true);
-            unreadMessagesRunnables.add(new Runnable() {
+            Runnable r = new Runnable() {
                 @Override
                 public void run() {
                     Log.e(TAG, "run");// TODO: 17.08.2016
                     nm.notify(UNREAD_MESSAGE_PUSH_ID, notificationBuilder.build());
                 }
-            });
-            h.postDelayed(unreadMessagesRunnables.get(unreadMessages.size()-1), 3000);
+            };
+            unreadMessagesRunnables.add(r);
+            h.postDelayed(r, 3000);
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNSENT_MESSAGE)) {
             final NotificationCompat.Builder nc = new NotificationCompat.Builder(this);
             nc.setContentTitle(getString(R.string.message_were_unsent));

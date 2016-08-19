@@ -18,12 +18,21 @@ public class FileDescription implements Parcelable {
     private final long size;
     private long timeStamp;
     private int downloadProgress;
+    private boolean downloadError = false;
 
     public FileDescription(String from, String filePath, long size, long timeStamp) {
         this.from = from;
         this.filePath = filePath;
         this.size = size;
         this.timeStamp = timeStamp;
+    }
+
+    public boolean isDownlodadError() {
+        return downloadError;
+    }
+
+    public void setDownlodadError(boolean downloadError) {
+        this.downloadError = downloadError;
     }
 
     public String getIncomingName() {

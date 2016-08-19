@@ -43,8 +43,10 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             , long timestamp
             , final View.OnClickListener rowClickListener
             , View.OnLongClickListener longListener
+            , boolean isDownloadError
             , boolean isChosen
             , MessageState sentState) {
+
         final Picasso p = Picasso.with(itemView.getContext());
         mTimeStampTextView.setOnLongClickListener(longListener);
         ViewGroup vg = (ViewGroup) itemView;
@@ -54,23 +56,26 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         mImage.setOnLongClickListener(longListener);
         filter.setOnLongClickListener(longListener);
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
-        if (fileDescription.getFilePath() != null) {
+        mImage.setImageResource(0);
+        if (fileDescription.getFilePath() != null && !isDownloadError) {
             p
                     .load(fileDescription.getFilePath())
                     .fit()
                     .centerCrop()
-                    .error(R.drawable.no_image)
                     .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_USER))
-                    .into(mImage);
-        } else if (fileDescription.getDownloadPath() != null) {
-            p
-                    .load(fileDescription.getDownloadPath())
-                    .fit()
-                    .centerCrop()
-                    .error(R.drawable.no_image)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_USER))
-                    .into(mImage);
+                    .into(mImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            mImage.setImageResource(R.drawable.no_image);
+                        }
+                    });
+        } else if (isDownloadError) {
+            mImage.setImageResource(R.drawable.no_image);
         }
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);

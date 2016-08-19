@@ -3,7 +3,6 @@ package com.sequenia.threads.push;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-
 import com.pushserver.android.PushBroadcastReceiver;
 
 /**

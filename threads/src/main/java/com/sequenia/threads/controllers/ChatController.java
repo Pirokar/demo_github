@@ -93,21 +93,23 @@ public class ChatController extends Fragment {
         if (instance == null) {
             instance = new ChatController(ctx);
         }
+
         if (PrefUtils.getClientID(ctx) == null) {
             PrefUtils.setClientId(ctx, clientId);
         }
         try {
             if (!PrefUtils.isClientIdSet(ctx)
                     || !PrefUtils.getClientID(ctx).equals(clientId)) {
-                Log.e(TAG, "setting client id async");// TODO: 13.08.2016  
+                Log.e(TAG, "setting client id async");// TODO: 13.08.2016
+
                 PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
-                        Log.e(TAG, "PrefUtils.getClientName(ctx) = " + PrefUtils.getClientName(ctx));// TODO: 18.08.2016
-                        PushController.getInstance(ctx).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getClientName(ctx), PrefUtils.getClientID(ctx), ""), true, new RequestCallback<Void, PushServerErrorException>() {
+
+                        PushController.getInstance(ctx).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getClientName(ctx), PrefUtils.getClientID(ctx), ""), true, new RequestCallback<String, PushServerErrorException>() {
                             @Override
-                            public void onResult(Void aVoid) {
-                                Log.e(TAG, "client id was set");// TODO: 09.08.2016
+                            public void onResult(String string) {
+                                Log.e(TAG, "client id was set string =" + string);
                                 PrefUtils.setClientId(ctx, clientId);
                                 PrefUtils.setClientIdWasSet(true, ctx);
                                 instance.cleanAll();
@@ -199,11 +201,10 @@ public class ChatController extends Fragment {
     public void onUserTyping() {
         long currentTime = System.currentTimeMillis();
         if ((currentTime - lastUserTypingSend) >= 3000) {
-
             lastUserTypingSend = currentTime;
-            PushController.getInstance(activity).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<Void, PushServerErrorException>() {
+            PushController.getInstance(activity).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
                 @Override
-                public void onResult(Void aVoid) {
+                public void onResult(String aVoid) {
 
                 }
 
@@ -292,11 +293,14 @@ public class ChatController extends Fragment {
             if (!MessageFormatter.hasFile(userPhrase)) {
                 PushController
                         .getInstance(appContext)
-                        .sendMessageAsync(MessageFormatter.format(userPhrase, null, null), false, new RequestCallback<Void, PushServerErrorException>() {
+                        .sendMessageAsync(MessageFormatter.format(userPhrase, null, null), false, new RequestCallback<String, PushServerErrorException>() {
                             @Override
-                            public void onResult(Void aVoid) {
-                                Log.e(TAG, "onResult sending without files");
+                            public void onResult(String string) {
+                                Log.e(TAG, "onResult sending without files string = " + string);
                                 setMessageState(userPhrase, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
+                                mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
+                                if (activity != null)
+                                    activity.setUserPhraseMessageId(userPhrase.getId(), string);
                             }
 
                             @Override
@@ -318,9 +322,10 @@ public class ChatController extends Fragment {
                     @Override
                     public void onResult(String mfmsFilePath, String mfmsQuoteFilePath) {
                         Log.e(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
-                        PushController.getInstance(activity).sendMessageAsync(MessageFormatter.format(userPhrase, mfmsQuoteFilePath, mfmsFilePath), false, new RequestCallback<Void, PushServerErrorException>() {
+                        PushController.getInstance(activity).sendMessageAsync(MessageFormatter.format(userPhrase, mfmsQuoteFilePath, mfmsFilePath), false, new RequestCallback<String, PushServerErrorException>() {
                             @Override
-                            public void onResult(Void aVoid) {
+                            public void onResult(String string) {
+                                Log.e(TAG, "sending with files string = " + string);
                                 setMessageState(userPhrase, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
                             }
 
@@ -837,13 +842,9 @@ public class ChatController extends Fragment {
                     activity.updateProgress(fileDescription);
             } else if (action.equals(DOWNLOAD_ERROR_BROADCAST)) {
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
-                if (activity != null && fileDescription != null)
-                    activity.updateProgress(fileDescription);
-                Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
-                if (activity != null) {
-                    if (t instanceof FileNotFoundException) {
-                        Toast.makeText(activity, activity.getString(R.string.error_no_file), Toast.LENGTH_SHORT).show();
-                    }
+                if (activity != null && fileDescription != null) {
+                    Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
+                    activity.onDownloadError(fileDescription, t);
                 }
             } else if (action.equals(CLIENT_ID_IS_SET_BROADCAST)) {
                 onSettingClientId(context);
