@@ -30,8 +30,7 @@ public class ThreadsInitializer {
     }
 
     public synchronized boolean init() throws IllegalArgumentException {
-        if (isInited) return true;
-        if (!isInited && PermissionChecker.isCoarseLocationPermissionGranted(ctx) && PermissionChecker.isReadSmsPermissionGranted(ctx) && PermissionChecker.isReadPhoneStatePermissionGranted(ctx)) {
+        if (PermissionChecker.isCoarseLocationPermissionGranted(ctx) && PermissionChecker.isReadSmsPermissionGranted(ctx) && PermissionChecker.isReadPhoneStatePermissionGranted(ctx)) {
             PushController.getInstance(ctx).init();
             return true;
         }

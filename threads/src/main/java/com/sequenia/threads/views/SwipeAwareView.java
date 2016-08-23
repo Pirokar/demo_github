@@ -40,7 +40,7 @@ public class SwipeAwareView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mGestureDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
+        return true;
 
     }
 
@@ -54,7 +54,9 @@ public class SwipeAwareView extends View {
 
     private class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_MIN_DISTANCE = 100;
-        private static final int SWIPE_MAX_DISTANCE = 350;
+        private static final int SWIPE_Y_MAX_DISTANCE = 500;
+        private static final int SWIPE_X_MAX_DISTANCE = 600;
+        private static final int SWIPE_X_MIN_DISTANCE = 350;
         private static final int SWIPE_MIN_VELOCITY = 100;
 
 
@@ -62,14 +64,14 @@ public class SwipeAwareView extends View {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             final float xDistance = Math.abs(e1.getX() - e2.getX());
             final float yDistance = Math.abs(e1.getY() - e2.getY());
-
-            if (xDistance > SWIPE_MAX_DISTANCE || yDistance > SWIPE_MAX_DISTANCE)
+            if (xDistance < SWIPE_X_MIN_DISTANCE || yDistance > SWIPE_Y_MAX_DISTANCE)
                 return false;
             velocityX = Math.abs(velocityX);
             velocityY = Math.abs(velocityY);
             if (velocityX > SWIPE_MIN_VELOCITY && xDistance > SWIPE_MIN_DISTANCE) {
                 if (e1.getX() < e2.getX()) // left to  right
                     if (null != mSwipeListener) {
+                        Log.e(TAG, "onRightSwipe");// TODO: 22.08.2016  
                         mSwipeListener.onRightSwipe();
                         return true;
                     }

@@ -41,7 +41,7 @@ public class MyServerIntentService extends PushServerIntentService {
             for (int i = 0; i < list.size(); i++) {
                 ChatController.getInstance(getApplication(), PrefUtils.getClientID(getApplication())).onConsultMessage(list.get(i), getApplication());
             }
-            Intent intent = new Intent(getApplicationContext(),NotificationService.class);
+            Intent intent = new Intent(getApplicationContext(), NotificationService.class);
             ArrayList<PushMessage> al = new ArrayList<>(list);
             intent.putParcelableArrayListExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE, al);
             intent.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE);
@@ -55,6 +55,6 @@ public class MyServerIntentService extends PushServerIntentService {
 
     @Override
     protected void messagesWereRead(List<String> list) {
-
+        Log.e(TAG, "messagesWereRead " + list);
     }
 }

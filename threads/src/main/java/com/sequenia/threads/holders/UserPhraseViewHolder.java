@@ -133,17 +133,12 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (mPhraseTextView.getLayout() != null) {
-            //  FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            // params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
-            if (phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-                //  params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+            if (phrase!=null && phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
                 mPhraseTextView.setText(phrase + "\n ");
                 Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED,getAdapterPosition());
                 LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
             }
-            //  mTimeStampTextView.setLayoutParams(params);
-            //  mTextFrame.forceLayout();
         } else {
             mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -153,19 +148,16 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                             mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                             return;
                         }
-                        //   FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        //  params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                         float density = itemView.getContext().getResources().getDisplayMetrics().density;
-                        if (phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-                            //  params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+                        if (phrase!=null
+                                && phrase.length() > 1
+                                && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length())
+                                > (mTimeStampTextView.getLeft() - density * 40)) {
                             mPhraseTextView.setText(phrase + "\n ");
                             Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED,getAdapterPosition());
                             LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
                         }
-                        //     mTimeStampTextView.setLayoutParams(params);
                         mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        //  mTextFrame.forceLayout();
-                        //   mTextFrame.invalidate();
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -176,7 +168,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mRightTextHeader.setVisibility(View.GONE);
         } else {
             mRightTextHeader.setVisibility(View.VISIBLE);
-        }
+    }
         switch (sentState) {
             case STATE_SENT_AND_SERVER_RECEIVED:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_all_white_18dp, 0);

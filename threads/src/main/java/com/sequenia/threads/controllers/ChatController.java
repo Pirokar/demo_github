@@ -25,7 +25,6 @@ import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
-import com.sequenia.threads.R;
 import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.activities.ConsultActivity;
 import com.sequenia.threads.activities.ImagesActivity;
@@ -37,7 +36,6 @@ import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.model.FileDescription;
-import com.sequenia.threads.model.IsOnlyImage;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
@@ -51,12 +49,10 @@ import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.utils.PrefUtils;
-import com.sequenia.threads.utils.ThreadsInitializer;
 
 import org.json.JSONException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -76,6 +72,9 @@ public class ChatController extends Fragment {
     public static final String DOWNLOAD_ERROR_BROADCAST = "com.sequenia.threads.controllers.DOWNLOAD_ERROR_BROADCAST";
     public static final String CLIENT_ID_IS_SET_BROADCAST = "com.sequenia.threads.controllers.CLIENT_ID_IS_SET_BROADCAST";
     private Executor mExecutor = Executors.newSingleThreadExecutor();
+    public static final int CONSULT_STATE_FOUND = 1;
+    public static final int CONSULT_STATE_SEARCHING = 2;
+    public static final int CONSULT_STATE_DEFAULT = 3;
     public static final String TAG = "ChatController ";
     private ProgressReceiver mProgressReceiver;
     ChatActivity activity;
@@ -88,6 +87,8 @@ public class ChatController extends Fragment {
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
     public static Picasso p;
+    private boolean isInitError;
+
 
     public static ChatController getInstance(final Context ctx, final String clientId) {
         if (instance == null) {
@@ -101,11 +102,9 @@ public class ChatController extends Fragment {
             if (!PrefUtils.isClientIdSet(ctx)
                     || !PrefUtils.getClientID(ctx).equals(clientId)) {
                 Log.e(TAG, "setting client id async");// TODO: 13.08.2016
-
                 PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
-
                         PushController.getInstance(ctx).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getClientName(ctx), PrefUtils.getClientID(ctx), ""), true, new RequestCallback<String, PushServerErrorException>() {
                             @Override
                             public void onResult(String string) {
@@ -170,6 +169,11 @@ public class ChatController extends Fragment {
                 });
             }
         } catch (Exception e) {
+            if (e instanceof PushServerErrorException) {
+                PushController.getInstance(ctx).init();
+            } else if (e instanceof IllegalStateException) {
+                PushController.getInstance(ctx).init();
+            }
             e.printStackTrace();
         }
         return instance;
@@ -184,6 +188,12 @@ public class ChatController extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+    }
+
+    public int getStateOfConsult() {
+        if (ConsultInfo.istSearchingConsult(activity)) return CONSULT_STATE_SEARCHING;
+        else if (ConsultInfo.isConsultConnected(activity)) return CONSULT_STATE_FOUND;
+        else return CONSULT_STATE_DEFAULT;
     }
 
     @Override
@@ -202,17 +212,21 @@ public class ChatController extends Fragment {
         long currentTime = System.currentTimeMillis();
         if ((currentTime - lastUserTypingSend) >= 3000) {
             lastUserTypingSend = currentTime;
-            PushController.getInstance(activity).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
-                @Override
-                public void onResult(String aVoid) {
+            try {
+                PushController.getInstance(activity).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
+                    @Override
+                    public void onResult(String aVoid) {
 
-                }
+                    }
 
-                @Override
-                public void onError(PushServerErrorException e) {
+                    @Override
+                    public void onError(PushServerErrorException e) {
 
-                }
-            });
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -360,8 +374,11 @@ public class ChatController extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
             setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-            if (!ThreadsInitializer.getInstance(activity).isInited())
-                ThreadsInitializer.getInstance(activity).init();
+            if (e instanceof PushServerErrorException) {
+                PushController.getInstance(activity).init();
+            } else if (e instanceof IllegalStateException) {
+                PushController.getInstance(activity).init();
+            }
             if (activity != null && isActive) activity.showConnectionError();
         }
         h.postDelayed(new Runnable() {
@@ -387,7 +404,7 @@ public class ChatController extends Fragment {
         h.post(new Runnable() {
             @Override
             public void run() {
-                if (null != activity) activity.addMessage(cm);
+                if (null != activity) activity.addChatItem(cm);
             }
         });
         if (cm instanceof ConsultPhrase) {
@@ -691,7 +708,6 @@ public class ChatController extends Fragment {
                 }
             });
         }
-
     }
 
     public void requestFilteredFiles(boolean searchInServerHistory
@@ -849,6 +865,20 @@ public class ChatController extends Fragment {
             } else if (action.equals(CLIENT_ID_IS_SET_BROADCAST)) {
                 onSettingClientId(context);
             }
+        }
+    }
+
+    private class InitThread extends Thread {
+        private Context ctx;
+
+        public InitThread(Context ctx) {
+            this.ctx = ctx;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            PushController.getInstance(ctx).init();
         }
     }
 }

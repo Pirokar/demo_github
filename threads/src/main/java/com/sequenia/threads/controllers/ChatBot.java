@@ -76,15 +76,15 @@ public class ChatBot {
                                 , false
                                 , System.currentTimeMillis()
                                 , ConsultInfo.getCurrentConsultPhoto(controller.activity));
-                        /*controller.addMessage(cc);
+                        /*controller.addChatItem(cc);
                         if (showIsTyping)
-                            controller.addMessage(new ConsultTyping("Чат Бот", System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(controller.activity)));
+                            controller.addChatItem(new ConsultTyping("Чат Бот", System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(controller.activity)));
                         postConsultPhrase(up, 2000, null);*/
                     }
                 }, 3500);
             } else {
                 if (showIsTyping) {
-                    controller.activity.addMessage(new ConsultTyping("Чат Бот", System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(controller.activity)));
+                    controller.activity.addChatItem(new ConsultTyping("Чат Бот", System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(controller.activity)));
                 }
                 postConsultPhrase(up, 2000, null);
             }
@@ -130,7 +130,7 @@ public class ChatBot {
             @Override
             public void run() {
                 ConsultPhrase cp = convert(up);
-              /*  controller. addMessage(cp);*/
+              /*  controller. addChatItem(cp);*/
                 if (handler == null) return;
                 handler.setSuccessful(true);
                 handler.onComplete(cp);
@@ -143,7 +143,7 @@ public class ChatBot {
             @Override
             public void run() {
                 ConsultPhrase cp = convert(up);
-             /*   controller. addMessage(cp);*/
+             /*   controller. addChatItem(cp);*/
             }
         }, 1000);
     }

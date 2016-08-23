@@ -42,19 +42,21 @@ public class MainActivity extends AppCompatActivity {
         mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
                 ""
                 : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
+        nameTextView.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("name", null) == null ?
+                ""
+                : PreferenceManager.getDefaultSharedPreferences(this).getString("name", null));
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
         mEditText.setText("79139055741");// TODO: 12.08.2016 remove
-        nameTextView.setText("Васисуалий Андреевич Лоханкин");
+        nameTextView.setText("Серегй Петрович Иванов");
         if (isCoarseLocGranted && isSmsGranted && isReadPhoneStateGranted) {
+            Log.e(TAG, "initing");
             ThreadsInitializer.getInstance(this).init();
         } else {
             requestPermissionsAndInit(PERM_REQUEST_CODE);
         }
-
         /*Fabric.with(this, new Crashlytics());*/
-
     }
 
     public void onChatButtonClick(View v) {
@@ -70,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
                     .getBuilder(this, mEditText.getText().toString())
                     .setDefaultChatTitle(getString(R.string.contact_center))
                     .setClientName(nameTextView.getText().toString())
+                    .setWelcomeScreenAttrs(R.drawable.logo
+                            ,"Добро пожаловать"
+                            ,"мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст"
+                            ,R.color.green_dark
+                            ,18
+                            ,14)
                     .build();
             startActivity(i);
         } else if (mEditText.getText().length() < 5) {

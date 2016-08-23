@@ -1,4 +1,4 @@
-package com.sequenia.threads.push;
+package com.sequenia.threads.broadcastReceivers;
 
 import android.content.Context;
 import android.os.Bundle;

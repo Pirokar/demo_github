@@ -6,6 +6,7 @@
     <color name="hint_color">#75cec8</color>
     <color name="gray_text">#617d8b</color>
     <color name="black">#000000</color>
+    <color name="black_transparent">#30000000</color>
     <color name="blue">#3299de</color>
     <color name="blue_transparent">#303299de</color>
     <color name="orange">#ff9600</color>

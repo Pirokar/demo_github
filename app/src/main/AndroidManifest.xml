@@ -29,10 +29,6 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="7dea244530b440655e927fed9654a59108f414bc" />
-
-        <meta-data
-            android:name="com.pushserver.android.useDefaultDeviceUID"
-            android:value="true" />
         <meta-data
             android:name="com.pushserver.android.senderId"
             android:value="!STRING!1079639835466" />

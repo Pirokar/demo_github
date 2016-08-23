@@ -117,7 +117,7 @@ public class MessageFormatter {
             fileDescription.setTimeStamp(timeStamp);
         }
         Quote quote = quoteFromJson(fullMessage.getJSONArray("quotes"));
-        if (quote!=null && quote.getFileDescription()!=null){
+        if (quote != null && quote.getFileDescription() != null) {
             quote.getFileDescription().setTimeStamp(timeStamp);
         }
         return new ConsultPhrase(
@@ -283,7 +283,8 @@ public class MessageFormatter {
                         fileDescription.setTimeStamp(timeStamp);
                     }
                     Quote quote = body.has("quotes") ? quoteFromJson(body.getJSONArray("quotes")) : null;
-                    if (quote!=null && quote.getFileDescription()!=null)quote.getFileDescription().setTimeStamp(timeStamp);
+                    if (quote != null && quote.getFileDescription() != null)
+                        quote.getFileDescription().setTimeStamp(timeStamp);
                     String operId = operatorInfo != null ? operatorInfo.getString("id") : UUID.randomUUID().toString();
                     if (!message.incoming) {
                         out.add(new ConsultPhrase(fileDescription, quote, name, messageId, phraseText, timeStamp, operId, photoUrl));
@@ -293,11 +294,13 @@ public class MessageFormatter {
                     }
                 } catch (JSONException e) {
                     String content = message.content;
-                    String type = content.contains("подключился") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+                    int end = !content.contains("отключил")? content.indexOf("присоединил") : content.indexOf("отключил");
+                    String name = content.substring(content.indexOf(" "), end).trim();
+                    String type = content.contains("отключил") ? ConsultConnectionMessage.TYPE_LEFT : ConsultConnectionMessage.TYPE_JOINED;
                     ConsultConnectionMessage m =
                             new ConsultConnectionMessage(content.substring(content.indexOf(" " + 1) == -1 ? 0 : content.indexOf(" " + 1))
                                     , type
-                                    , content.substring(content.indexOf(" "))
+                                    , name
                                     , true
                                     , message.sentAt.millis
                                     , null);
@@ -311,14 +314,14 @@ public class MessageFormatter {
         return out;
     }
 
-    public static String getMessageTyping(){
+    public static String getMessageTyping() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("type","TYPING");
+            jsonObject.put("type", "TYPING");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return jsonObject.toString().replace("\\\\","");
+        return jsonObject.toString().replace("\\\\", "");
     }
 }

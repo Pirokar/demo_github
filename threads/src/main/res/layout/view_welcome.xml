@@ -1,7 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/welcome">
+    android:gravity="center"
+    android:orientation="vertical">
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/welcome_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo" />
+
+    <TextView
+        android:layout_marginLeft="@dimen/margin_material"
+        android:layout_marginRight="@dimen/margin_material"
+        android:id="@+id/welcome_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_half"
+        android:gravity="center"
+        android:text="Добро пожаловать в контакт центр" />
+
+    <TextView
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:id="@+id/welcome_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_quarter"
+        android:gravity="center"
+        android:text="Отправьте ваш вопрос и первый освободившийся оператор на него ответит" />
+</merge>

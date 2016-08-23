@@ -1,50 +1,103 @@
 package com.sequenia.threads.views;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.content.res.TypedArray;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.sequenia.threads.R;
 
 /**
  * Created by yuri on 08.06.2016.
  */
-public class WelcomeScreen extends FrameLayout {
-    public WelcomeScreen(Context context) {
-        super(context);
-        init();
-    }
+public class WelcomeScreen extends LinearLayout {
+    ImageView logoView;
+    TextView title;
+    TextView subTitle;
 
     public WelcomeScreen(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context, attrs);
     }
 
     public WelcomeScreen(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context, attrs);
     }
 
-    private void init() {
-        ((LayoutInflater) getContext()
+    private void init(Context context, AttributeSet attrs) {
+        ((LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.view_welcome, this, true);
+        setOrientation(VERTICAL);
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.WelcomeScreen, 0, 0);
+        int drawableResourse = typedArray.getResourceId(R.styleable.WelcomeScreen_image_src, 0);
+        setGravity(Gravity.CENTER);
+        logoView = (ImageView) findViewById(R.id.welcome_logo);
+        logoView.setImageResource(drawableResourse);
+        float titleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_title, 12);
+        float subtitleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_subtitle, 12);
+        int textColor = typedArray.getColor(R.styleable.WelcomeScreen_text_color, getResources().getColor(android.R.color.black));
+        String titleText = typedArray.getString(R.styleable.WelcomeScreen_title_text);
+        String subtitleText = typedArray.getString(R.styleable.WelcomeScreen_subtitle_text);
+        title = (TextView) findViewById(R.id.welcome_title);
+        subTitle = (TextView) findViewById(R.id.welcome_subtitle);
+        title.setTextColor(textColor);
+        title.setTextSize(titleSize);
+        if (TextUtils.isEmpty(titleText)) {
+            title.setVisibility(GONE);
+        } else {
+            title.setText(titleText);
+        }
+        if (TextUtils.isEmpty(subtitleText)) {
+            subTitle.setVisibility(GONE);
+        } else {
+            subTitle.setText(titleText);
+        }
+        subTitle.setTextSize(subtitleSize);
+        subTitle.setTextColor(textColor);
+        typedArray.recycle();
     }
 
-    public void removeViewWithAnimation(int time, @Nullable final Runnable onComplete) {
-        final View v = this;
-        this.animate().alpha(0.0f).setInterpolator(new AccelerateInterpolator()).setDuration(time).withEndAction(new Runnable() {
+    public WelcomeScreen setTitletextSize(float size) {
+        title.setTextSize(size);
+        return this;
+    }
 
-            @Override
-            public void run() {
-                if (getParent() != null) ((ViewGroup) getParent()).removeView(v);
-                if (onComplete != null) onComplete.run();
-            }
-        });
+    public WelcomeScreen setSubtitleSize(float size) {
+        subTitle.setTextSize(size);
+        return this;
+    }
+
+    public WelcomeScreen setTextColor(int color) {
+        title.setTextColor(getContext().getResources().getColor(color));
+        subTitle.setTextColor(getContext().getResources().getColor(color));
+        return this;
+    }
+
+    public WelcomeScreen setText(String title, String subtitle) {
+        if (TextUtils.isEmpty(title)) {
+            this.title.setVisibility(GONE);
+        } else {
+            this.title.setVisibility(VISIBLE);
+            this.title.setText(title);
+        }
+        if (TextUtils.isEmpty(subtitle)) {
+            this.subTitle.setVisibility(GONE);
+        } else {
+            this.subTitle.setVisibility(VISIBLE);
+            this.subTitle.setText(subtitle);
+        }
+        return this;
+    }
+
+    public WelcomeScreen setLogo(int resId) {
+        logoView.setImageResource(resId);
+        return this;
     }
 }

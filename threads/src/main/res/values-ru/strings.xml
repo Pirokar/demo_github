@@ -56,4 +56,5 @@
     <string name="with_file">(с файлом)</string>
     <string name="you_have_unread_messages">у вас есть непрочитанный сообщения</string>
     <string name="message_were_unsent">Сообщение не было послано</string>
+    <string name="unknown_operator">Неизвестный</string>
 </resources>

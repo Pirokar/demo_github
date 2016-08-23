@@ -49,7 +49,7 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");// TODO: 17.08.2016
+        Log.e(TAG, "onStartCommand");// TODO: 19.08.2016  
         if (mBroadcastReceiver == null) {
             mBroadcastReceiver = new myBroadcastReceiver();
             getApplicationContext().registerReceiver(mBroadcastReceiver, new IntentFilter(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
@@ -61,7 +61,6 @@ public class NotificationService extends Service {
             unreadMessages.addAll(list);
             final NotificationCompat.Builder notificationBuilder =
                     new NotificationCompat.Builder(this);
-
             notificationBuilder
                     .setSmallIcon(R.drawable.sample);
             if (unreadMessages.size() == 1) {
@@ -80,7 +79,6 @@ public class NotificationService extends Service {
                         .setContentTitle(getString(R.string.one_new_message))
                         .setContentText(notif);
             } else if (unreadMessages.size() <= 5 && unreadMessages.size() != 0) {
-                Log.e(TAG, "unreadMessages.size() < 5 && unreadMessages.size() != 0");// TODO: 17.08.2016
                 String notif = "";
                 NotificationCompat.InboxStyle inboxStyle =
                         new NotificationCompat.InboxStyle();
@@ -103,7 +101,6 @@ public class NotificationService extends Service {
                     inboxStyle.addLine(notif);
                 }
                 String title = unreadMessages.size() == 1 ? getString(R.string.one_new_message) : unreadMessages.size() + " " + getString(R.string.new_messages);
-                Log.e(TAG, "" + notif);// TODO: 17.08.2016
                 inboxStyle.setBuilder(notificationBuilder);
                 inboxStyle.setBigContentTitle(title);
                 notificationBuilder
@@ -123,14 +120,11 @@ public class NotificationService extends Service {
             Intent i = new Intent(this, ChatActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pend = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-            Log.e(TAG, "getAppContext = " + getApplicationContext());
-            Log.e(TAG, "PendingIntent =" + pend);// TODO: 17.08.2016
             notificationBuilder.setContentIntent(pend);
             notificationBuilder.setAutoCancel(true);
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG, "run");// TODO: 17.08.2016
                     nm.notify(UNREAD_MESSAGE_PUSH_ID, notificationBuilder.build());
                 }
             };
@@ -159,14 +153,12 @@ public class NotificationService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy()");// TODO: 17.08.2016
         super.onDestroy();
         if (mBroadcastReceiver != null)
             getApplicationContext().unregisterReceiver(mBroadcastReceiver);
     }
 
     private void dismissUnreadMessagesNotification() {
-        Log.e(TAG, "dismissUnreadMessagesNotification()");// TODO: 17.08.2016
         unreadMessages.clear();
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.cancel(UNREAD_MESSAGE_PUSH_ID);
@@ -181,7 +173,6 @@ public class NotificationService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals(NotificationService.ACTION_ALL_MESSAGES_WERE_READ)) {
-                Log.e(TAG, "onReceive");// TODO: 17.08.2016
                 dismissUnreadMessagesNotification();
             }
         }

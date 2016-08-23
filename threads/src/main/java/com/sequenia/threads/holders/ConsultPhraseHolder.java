@@ -171,18 +171,16 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         if (consultPhrase == null) {
             return;
         }
-      if (mPhraseTextView.getLayout() != null) {
+        if (mPhraseTextView.getLayout() != null) {
             //  FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             // params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
             if (consultPhrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(consultPhrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
                 //  params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
                 mPhraseTextView.setText(consultPhrase + "\n ");
-                Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED,getAdapterPosition());
+                Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
                 LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
             }
-            //  mTimeStampTextView.setLayoutParams(params);
-            //  mTextFrame.forceLayout();
         } else {
             mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -192,19 +190,16 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                             mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                             return;
                         }
-                        //   FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        //  params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                         float density = itemView.getContext().getResources().getDisplayMetrics().density;
-                        if (consultPhrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(consultPhrase.length()) > (mTimeStampTextView.getLeft() - density * 40)) {
-                            //  params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
+                        if (consultPhrase != null
+                                && consultPhrase.length() > 1
+                                && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length())
+                                > (mTimeStampTextView.getLeft() - density * 40)) {
                             mPhraseTextView.setText(consultPhrase + "\n ");
-                            Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED,getAdapterPosition());
+                            Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
                             LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
                         }
-                        //     mTimeStampTextView.setLayoutParams(params);
                         mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        //  mTextFrame.forceLayout();
-                        //   mTextFrame.invalidate();
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }

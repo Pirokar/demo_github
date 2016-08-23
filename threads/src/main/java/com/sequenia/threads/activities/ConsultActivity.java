@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,9 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.sequenia.threads.BuildConfig;
 import com.sequenia.threads.R;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 
@@ -31,6 +35,12 @@ public class ConsultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT>20) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            getWindow().setStatusBarColor(getResources().getColor(R.color.black_transparent));
+        }
         setContentView(R.layout.activity_consult_page);
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         mConsulHeaderTextView = (TextView) findViewById(R.id.consult_title);
@@ -64,6 +74,11 @@ public class ConsultActivity extends AppCompatActivity {
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
+        if (Build.VERSION.SDK_INT>20) {
+            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0,(int)getResources().getDimension(R.dimen.margin_big),0,0);
+            t.setLayoutParams(lp);
+        }
     }
 
     @Override
@@ -86,7 +101,10 @@ public class ConsultActivity extends AppCompatActivity {
             startActivity(FilesActivity.getStartIntetent(this));
             return true;
         }
-
+        if (item.getItemId()==R.id.search){
+            sendBroadcast(new Intent(ChatActivity.ACTION_SEARCH_CHAT_FILES));
+            finish();
+        }
         return super.onOptionsItemSelected(item);
     }
 }

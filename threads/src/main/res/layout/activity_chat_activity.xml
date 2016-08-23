@@ -7,7 +7,6 @@
     tools:context=".activities.ChatActivity">
 
     <Button
-        android:visibility="gone"
         android:id="@+id/search_more"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -16,7 +15,8 @@
         android:layout_marginRight="@dimen/margin_big"
         android:background="@android:color/transparent"
         android:text="@string/search_more"
-        android:textColor="@color/green_dark" />
+        android:textColor="@color/green_dark"
+        android:visibility="gone" />
 
     <FrameLayout
         android:id="@+id/chat_content"
@@ -36,13 +36,21 @@
                 android:layout_height="match_parent" />
         </com.sequenia.threads.views.MySwipeRefreshLayout>
 
+        <com.sequenia.threads.views.WelcomeScreen
+            android:id="@+id/welcome"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white_dark"
+            android:visibility="visible"
+            app:text_color="@color/blue"
+           />
+        <com.sequenia.threads.views.SwipeAwareView
+            android:id="@+id/swipe_view"
+            android:layout_width="160dp"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar" />
     </FrameLayout>
 
-    <com.sequenia.threads.views.WelcomeScreen
-        android:id="@+id/welcome"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
     <LinearLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
@@ -171,11 +179,7 @@
     </LinearLayout>
 
 
-    <com.sequenia.threads.views.SwipeAwareView
-        android:id="@+id/swipe_view"
-        android:layout_width="150dp"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar" />
+
 
 
     <View

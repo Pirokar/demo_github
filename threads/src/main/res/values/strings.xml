@@ -54,4 +54,5 @@
     <string name="with_file">(with file)</string>
     <string name="you_have_unread_messages">you have unread messages</string>
     <string name="message_were_unsent">Message were unsent</string>
+    <string name="unknown_operator">Unknown</string>
 </resources>

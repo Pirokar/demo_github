@@ -1,25 +1,18 @@
-package com.sequenia.threads.push;
+package com.sequenia.threads.broadcastReceivers;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.advisa.client.api.InOutMessage;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
-import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.utils.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.controllers.ChatController;
 import com.sequenia.threads.utils.PrefUtils;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by yuri on 22.06.2016.
