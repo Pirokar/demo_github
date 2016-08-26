@@ -23,6 +23,7 @@ import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.RussianFormatSymbols;
+import com.sequenia.threads.utils.ViewUtils;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
@@ -46,7 +47,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat fileSdf;
     private View mFilterView;
     private View mFilterViewSecond;
-    private View mTextFrame;
+
 
     public UserPhraseViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -61,7 +62,6 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         } else {
             fileSdf = new SimpleDateFormat("dd MMMM yyyy");
         }
-        mTextFrame = itemView.findViewById(R.id.frame);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mRightTextHeader = (TextView) itemView.findViewById(R.id.to);
@@ -84,12 +84,8 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mPhraseTextView.setText(phrase);
         }
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
-        ViewGroup vg = (ViewGroup) itemView;
-        itemView.setOnLongClickListener(onLongClickListener);
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            vg.getChildAt(i).setOnClickListener(onRowClickListener);
-            vg.getChildAt(i).setOnLongClickListener(onLongClickListener);
-        }
+        ViewUtils.setClickListener((ViewGroup) itemView,onLongClickListener);
+        ViewUtils.setClickListener((ViewGroup) itemView,onRowClickListener);
         if (quote != null) {
             mRightTextRow.setVisibility(View.VISIBLE);
             mRightTextRow.setVisibility(View.VISIBLE);
@@ -105,7 +101,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                     filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath()) == null ? "" : FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
                 }
                 mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
-                mFileImageButton.setOnClickListener(fileClickListener);
+                if (null != fileClickListener) mFileImageButton.setOnClickListener(fileClickListener);
                 mFileImageButton.setProgress(quote.getFileDescription().getDownloadProgress());
             }
         }
@@ -134,9 +130,9 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
 
         if (mPhraseTextView.getLayout() != null) {
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
-            if (phrase!=null && phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
+            if (phrase != null && phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
                 mPhraseTextView.setText(phrase + "\n ");
-                Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED,getAdapterPosition());
+                Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
                 LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
             }
         } else {
@@ -149,12 +145,12 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                             return;
                         }
                         float density = itemView.getContext().getResources().getDisplayMetrics().density;
-                        if (phrase!=null
+                        if (phrase != null
                                 && phrase.length() > 1
                                 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length())
                                 > (mTimeStampTextView.getLeft() - density * 40)) {
                             mPhraseTextView.setText(phrase + "\n ");
-                            Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED,getAdapterPosition());
+                            Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
                             LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
                         }
                         mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -168,7 +164,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mRightTextHeader.setVisibility(View.GONE);
         } else {
             mRightTextHeader.setVisibility(View.VISIBLE);
-    }
+        }
         switch (sentState) {
             case STATE_SENT_AND_SERVER_RECEIVED:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_all_white_18dp, 0);
@@ -191,16 +187,5 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         if (fileDescription == null && quote == null) {
             mRightTextRow.setVisibility(View.GONE);
         }
-       /* Log.e(TAG, "" + phrase);
-        int length = phrase.length();
-        Log.e(TAG, "length " + length);
-        int linesCount = 0;
-        while (length > 27) {
-            length -= 27;
-            linesCount++;
-        }
-        Log.e(TAG, "length = " + length);
-        if (length > (14 +((double)linesCount) *2)) {
-            mPhraseTextView.setText(phrase + "\n ");*/
-        }
+    }
 }

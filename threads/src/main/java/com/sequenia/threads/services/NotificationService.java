@@ -49,7 +49,7 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");// TODO: 19.08.2016  
+        Log.i(TAG, "onStartCommand");
         if (mBroadcastReceiver == null) {
             mBroadcastReceiver = new myBroadcastReceiver();
             getApplicationContext().registerReceiver(mBroadcastReceiver, new IntentFilter(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));

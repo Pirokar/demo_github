@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.pushserver.android.PushController;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.ThreadsInitializer;
 import com.sequenia.threads.activities.ChatActivity;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
-        mEditText.setText("79139055741");// TODO: 12.08.2016 remove
+        mEditText.setText("79139055742");// TODO: set if id
         nameTextView.setText("Серегй Петрович Иванов");
         if (isCoarseLocGranted && isSmsGranted && isReadPhoneStateGranted) {
             Log.e(TAG, "initing");
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             requestPermissionsAndInit(PERM_REQUEST_CODE);
         }
-        /*Fabric.with(this, new Crashlytics());*/
+       /* Fabric.with(this, new Crashlytics());*/
     }
 
     public void onChatButtonClick(View v) {

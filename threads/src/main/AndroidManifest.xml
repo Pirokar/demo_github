@@ -24,7 +24,8 @@
             android:name=".activities.ChatActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
-            android:theme="@style/ThreadsStyle" />
+            android:theme="@style/ThreadsStyle"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".activities.ConsultActivity"
             android:screenOrientation="portrait"

@@ -1,5 +1,7 @@
 package com.sequenia.threads.utils;
 
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -22,6 +24,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -128,7 +131,8 @@ public class MessageFormatter {
                 , message
                 , timeStamp
                 , operatorInfo.getString("id")
-                , photoUrl);
+                , photoUrl
+                , false);
     }
 
     public static ArrayList<ConsultPhrase> format(ArrayList<com.pushserver.android.PushMessage> list) {
@@ -265,6 +269,7 @@ public class MessageFormatter {
     }
 
     public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
+        Log.e(TAG, "" + messages);
         ArrayList<ChatItem> out = new ArrayList<>();
         try {
             for (InOutMessage message : messages) {
@@ -287,18 +292,25 @@ public class MessageFormatter {
                         quote.getFileDescription().setTimeStamp(timeStamp);
                     String operId = operatorInfo != null ? operatorInfo.getString("id") : UUID.randomUUID().toString();
                     if (!message.incoming) {
-                        out.add(new ConsultPhrase(fileDescription, quote, name, messageId, phraseText, timeStamp, operId, photoUrl));
+                        out.add(new ConsultPhrase(fileDescription, quote, name, messageId, phraseText, timeStamp, operId, photoUrl, true));
                     } else {
-
+                        if (fileDescription != null) {
+                            if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")){
+                                fileDescription.setFrom("Я");
+                            }else {
+                                fileDescription.setFrom("I");
+                            }
+                        }
                         out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_SENT_AND_SERVER_RECEIVED));
                     }
                 } catch (JSONException e) {
                     String content = message.content;
-                    int end = !content.contains("отключил")? content.indexOf("присоединил") : content.indexOf("отключил");
+                    int end = !content.contains("отключил") ? content.indexOf("присоединил") : content.indexOf("отключил");
                     String name = content.substring(content.indexOf(" "), end).trim();
                     String type = content.contains("отключил") ? ConsultConnectionMessage.TYPE_LEFT : ConsultConnectionMessage.TYPE_JOINED;
                     ConsultConnectionMessage m =
-                            new ConsultConnectionMessage(content.substring(content.indexOf(" " + 1) == -1 ? 0 : content.indexOf(" " + 1))
+                            new ConsultConnectionMessage(
+                                    content.substring(content.indexOf(" " + 1) == -1 ? 0 : content.indexOf(" " + 1))
                                     , type
                                     , name
                                     , true

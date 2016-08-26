@@ -45,7 +45,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
             , boolean isConnected
             , View.OnClickListener listener) {
         if (consultName == null || consultName.equals("null")) {
-            Log.e(TAG, "consultName is null");
+            Log.d(TAG, "consultName is null");
             consultName = itemView.getContext().getString(R.string.unknown_operator);
         }
         headerTextView.setText(consultName);

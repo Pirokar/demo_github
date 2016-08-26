@@ -12,12 +12,17 @@ public class MyFileFilter implements FileFilter, FilenameFilter {
     private static final ArrayList<IgnoreCaseString> acceptedPicFormats = new ArrayList<>();
     private static final String TAG = "MyFileFilter";
 
-
     public MyFileFilter() {
         acceptedPicFormats.add(new IgnoreCaseString(".jpg"));
         acceptedPicFormats.add(new IgnoreCaseString(".jpeg"));
         acceptedPicFormats.add(new IgnoreCaseString(".png"));
         acceptedPicFormats.add(new IgnoreCaseString(".pdf"));
+       /* acceptedPicFormats.add(new IgnoreCaseString(".doc"));
+        acceptedPicFormats.add(new IgnoreCaseString(".docx"));
+        acceptedPicFormats.add(new IgnoreCaseString(".xls"));
+        acceptedPicFormats.add(new IgnoreCaseString(".xlsx"));
+        acceptedPicFormats.add(new IgnoreCaseString(".ppt"));
+        acceptedPicFormats.add(new IgnoreCaseString(".pptx"));*/
     }
 
     @Override

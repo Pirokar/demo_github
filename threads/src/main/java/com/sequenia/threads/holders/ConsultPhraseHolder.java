@@ -29,6 +29,7 @@ import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.RussianFormatSymbols;
+import com.sequenia.threads.utils.ViewUtils;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
@@ -91,12 +92,14 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(consultPhrase);
         }
-        itemView.setOnLongClickListener(onRowLongClickListener);
+        mCircularProgressButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, "BANGGGGGGG!!!");
+            }
+        });
+        ViewUtils.setClickListener((ViewGroup) itemView,onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
-        ViewGroup vg = (ViewGroup) itemView;
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            vg.getChildAt(i).setOnLongClickListener(onRowLongClickListener);
-        }
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
@@ -115,7 +118,8 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                     filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath()) == null ? "" : FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
                 }
                 mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
-                mCircularProgressButton.setOnClickListener(fileClickListener);
+                if (fileDescription != null)
+                    mCircularProgressButton.setOnClickListener(fileClickListener);
                 mCircularProgressButton.setProgress(quote.getFileDescription().getDownloadProgress());
             } else {
                 mCircularProgressButton.setVisibility(View.GONE);
@@ -156,8 +160,6 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
         }
-
-
         if (isChosen) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterViewSecond.setVisibility(View.VISIBLE);
@@ -172,11 +174,8 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             return;
         }
         if (mPhraseTextView.getLayout() != null) {
-            //  FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            // params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
             if (consultPhrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(consultPhrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-                //  params.setMargins(0, mPhraseTextView.getLineHeight() * mPhraseTextView.getLayout().getLineCount() + (2 * (int) (density)), 0, 0);
                 mPhraseTextView.setText(consultPhrase + "\n ");
                 Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
                 LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);

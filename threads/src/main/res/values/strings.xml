@@ -20,8 +20,9 @@
     <string name="image">Picture</string>
     <string name="send">Send</string>
     <string name="search_messages">Search message</string>
+    <string name="search_files">Search files</string>
     <string name="search_photos">Search photos...</string>
-    <string name="media">Files and media</string>
+    <string name="files_and_media">Files and media</string>
     <string name="recently">Recently</string>
     <string name="yesterday">Yesterday</string>
     <string name="photos">Photographies</string>
@@ -38,6 +39,7 @@
     <string name="error_no_file">Unfortunately, file was deleted from server</string>
     <string name="added_to_download_quee">Added to download queue</string>
     <string name="I">I</string>
+    <string name="download">Download</string>
     <string name="choose_file">Choose file to send</string>
     <string name="choose">Choose</string>
     <string name="folder_up">Up</string>
@@ -53,6 +55,8 @@
     <string name="file_received">file received</string>
     <string name="with_file">(with file)</string>
     <string name="you_have_unread_messages">you have unread messages</string>
-    <string name="message_were_unsent">Message were unsent</string>
+    <string name="message_were_unsent">Message not sent</string>
     <string name="unknown_operator">Unknown</string>
+    <string name="saved_to">Saved to</string>
+    <string name="unable_to_save">Unable to save file</string>
 </resources>

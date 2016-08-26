@@ -10,7 +10,9 @@ import com.sequenia.threads.model.DateRow;
 import com.sequenia.threads.model.FileAndMediaItem;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MediaAndFileItem;
+import com.sequenia.threads.utils.FileUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -25,22 +27,30 @@ public class FilesAndMediaAdapter extends RecyclerView.Adapter {
     private OnFileClick mOnFileClick;
 
     private ArrayList<MediaAndFileItem> list;
+    private ArrayList<MediaAndFileItem> backup;
 
     public FilesAndMediaAdapter(List<FileDescription> list, OnFileClick onFileClick) {
         this.list = new ArrayList<>();
         mOnFileClick = onFileClick;
         if (list.size() == 0) return;
-        this.list.add(new DateRow(list.get(0).getTimeStamp()));
-        this.list.add(new FileAndMediaItem(list.get(0)));
+        addItems(list);
+    }
+
+    private void addItems(List<FileDescription> fileDescription) {
+        if (fileDescription.size() == 0) return;
         Calendar current = Calendar.getInstance();
         Calendar prev = Calendar.getInstance();
+        if (list.size() == 0) {
+            this.list.add(new DateRow(fileDescription.get(0).getTimeStamp()));
+            this.list.add(new FileAndMediaItem(fileDescription.get(0)));
 
-        for (int i = 1; i < list.size(); i++) {
-            current.setTimeInMillis(list.get(i).getTimeStamp());
-            prev.setTimeInMillis(list.get(i - 1).getTimeStamp());
-            this.list.add(new FileAndMediaItem(list.get(i)));
+        }
+        for (int i = 1; i < fileDescription.size(); i++) {
+            current.setTimeInMillis(fileDescription.get(i).getTimeStamp());
+            prev.setTimeInMillis(fileDescription.get(i - 1).getTimeStamp());
+            this.list.add(new FileAndMediaItem(fileDescription.get(i)));
             if (current.get(Calendar.DAY_OF_YEAR) != prev.get(Calendar.DAY_OF_YEAR)) {
-                this.list.add(new DateRow(list.get(i).getTimeStamp()));
+                this.list.add(new DateRow(fileDescription.get(i).getTimeStamp()));
             }
         }
     }
@@ -84,6 +94,40 @@ public class FilesAndMediaAdapter extends RecyclerView.Adapter {
         if (list.get(position) instanceof DateRow) return TYPE_DATE_ROW;
         if (list.get(position) instanceof FileAndMediaItem) return TYPE_FILE_AND_MEDIA_ROW;
         return super.getItemViewType(position);
+    }
+
+    public void backupAndClear() {
+        backup = new ArrayList<>(list);
+        list.clear();
+    }
+
+    public void filter(String filter) {
+        if (filter == null) filter = "";
+        list.clear();
+        ArrayList<FileDescription> filteredItems = new ArrayList<>();
+        for (MediaAndFileItem maf : backup) {
+            if (maf instanceof FileAndMediaItem) {
+                if (((FileAndMediaItem) maf).getFileDescription() != null) {
+                    FileDescription fd = ((FileAndMediaItem) maf).getFileDescription();
+                    if (FileUtils.getLastPathSegment(fd.getFilePath()).toLowerCase().contains(filter.toLowerCase())
+                            ) {
+                        filteredItems.add(fd);
+                    } else if (((FileAndMediaItem) maf).getFileDescription() != null && ((FileAndMediaItem) maf).getFileDescription().getIncomingName() != null) {
+                        String name = ((FileAndMediaItem) maf).getFileDescription().getIncomingName();
+                        if (name.toLowerCase().contains(filter.toLowerCase()))
+                            filteredItems.add(((FileAndMediaItem) maf).getFileDescription());
+                    }
+                }
+            }
+        }
+        addItems(filteredItems);
+        notifyDataSetChanged();
+    }
+
+    public void undoClear() {
+        list = new ArrayList<>(backup);
+        backup.clear();
+        notifyDataSetChanged();
     }
 
     public interface OnFileClick {

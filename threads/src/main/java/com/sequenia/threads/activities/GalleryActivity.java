@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,7 +65,6 @@ public class GalleryActivity extends AppCompatActivity
     private void initViews() {
         final Context ctx = this;
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
-
         findViewById(R.id.search_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +88,36 @@ public class GalleryActivity extends AppCompatActivity
         }
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mSendButton = (Button) findViewById(R.id.send);
+
+        mBucketsGalleryDecorator = new BucketsGalleryDecorator(4);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mRecyclerView.setAdapter(new PhotoBucketsGalleryAdapter(bucketItems, this));
+        mRecyclerView.addItemDecoration(mBucketsGalleryDecorator);
+        isInBuckets = true;
+        mSearchEdiText = (EditText) findViewById(R.id.search_edit_text);
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getIntent().getIntExtra(PHOTOS_REQUEST_CODE_TAG, -1) == -1) {
+                    finish();
+                } else {
+                    ArrayList<String> list1 = new ArrayList<String>();
+                    for (MediaPhoto mp : chosentItems) {
+                        list1.add(mp.getImagePath());
+                    }
+                    Intent i = new Intent();
+                    i.putStringArrayListExtra(PHOTOS_TAG, list1);
+                    setResult(RESULT_OK, i);
+                    finish();
+                }
+            }
+        });
         String[] projection = new String[]{MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA};
         Cursor c = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " desc");
         int BUCKET_DISPLAY_NAME = c.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
@@ -118,35 +148,6 @@ public class GalleryActivity extends AppCompatActivity
         for (ArrayList<MediaPhoto> itemList : lists) {
             bucketItems.add(new PhotoBucketItem(itemList.get(0).getBucketName(), String.valueOf(itemList.size()), itemList.get(0).getImagePath()));
         }
-        mBucketsGalleryDecorator = new BucketsGalleryDecorator(4);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        mRecyclerView.setAdapter(new PhotoBucketsGalleryAdapter(bucketItems, this));
-        mRecyclerView.addItemDecoration(mBucketsGalleryDecorator);
-        isInBuckets = true;
-        mSearchEdiText = (EditText) findViewById(R.id.search_edit_text);
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getIntent().getIntExtra(PHOTOS_REQUEST_CODE_TAG, -1) == -1) {
-                    finish();
-                } else {
-                    ArrayList<String> list1 = new ArrayList<String>();
-                    for (MediaPhoto mp : chosentItems) {
-                        list1.add(mp.getImagePath());
-                    }
-                    Intent i = new Intent();
-                    i.putStringArrayListExtra(PHOTOS_TAG, list1);
-                    setResult(RESULT_OK, i);
-                    finish();
-                }
-            }
-        });
     }
 
     public static Intent getStartIntent(Context ctx, int requestCode) {
@@ -154,6 +155,8 @@ public class GalleryActivity extends AppCompatActivity
         i.putExtra(PHOTOS_REQUEST_CODE_TAG, requestCode);
         return i;
     }
+
+
 
     @Override
     public void onPhotoBucketClick(PhotoBucketItem item) {

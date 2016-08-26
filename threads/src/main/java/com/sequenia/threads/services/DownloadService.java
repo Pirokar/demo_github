@@ -33,6 +33,8 @@ public class DownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e(TAG, "onStartCommand");
+        if (intent==null)return START_STICKY;
         final FileDescription fileDescription = intent.getParcelableExtra(FD_TAG);
         if (fileDescription == null) return START_STICKY;
         if (fileDescription.getDownloadPath() == null || fileDescription.getFilePath() != null) {
@@ -79,6 +81,8 @@ public class DownloadService extends Service {
                 return START_STICKY;
             } else {
                 runningDownloads.put(fileDescription, fileDownloader);
+                fileDescription.setDownloadProgress(1);
+                sendDownloadProgressBroadcast(fileDescription);
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -89,6 +93,8 @@ public class DownloadService extends Service {
         } else if (intent.getAction().equals(START_DOWNLOAD_WITH_NO_STOP)) {
             if (!runningDownloads.containsKey(fileDescription)){
                 runningDownloads.put(fileDescription, fileDownloader);
+                fileDescription.setDownloadProgress(1);
+                sendDownloadProgressBroadcast(fileDescription);
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {

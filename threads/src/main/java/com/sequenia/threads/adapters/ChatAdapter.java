@@ -21,6 +21,7 @@ import com.sequenia.threads.holders.ImageFromConsultViewHolder;
 import com.sequenia.threads.holders.ImageFromUserViewHolder;
 import com.sequenia.threads.holders.SearchingConsultViewHolder;
 import com.sequenia.threads.holders.SpaceViewHolder;
+import com.sequenia.threads.holders.UnreadMessageViewHolder;
 import com.sequenia.threads.holders.UserFileViewHolder;
 import com.sequenia.threads.holders.UserPhraseViewHolder;
 import com.sequenia.threads.model.ChatItem;
@@ -33,6 +34,7 @@ import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.SearchingConsult;
 import com.sequenia.threads.model.Space;
+import com.sequenia.threads.model.UnreadMessages;
 import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
@@ -63,6 +65,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_IMAGE_FROM_USER = 9;
     private static final int TYPE_FILE_FROM_USER = 10;
     private static final int TYPE_FILE_FROM_CONSULT = 11;
+    private static final int TYPE_UNREAD_MESSAGES = 12;
 
     ArrayList<ChatItem> list;
     ArrayList<ChatItem> backupList = new ArrayList<>();
@@ -100,6 +103,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_IMAGE_FROM_USER) return new ImageFromUserViewHolder(parent);
         if (viewType == TYPE_FILE_FROM_CONSULT) return new ConsultFileViewHolder(parent);
         if (viewType == TYPE_FILE_FROM_USER) return new UserFileViewHolder(parent);
+        if (viewType == TYPE_UNREAD_MESSAGES) return new UnreadMessageViewHolder(parent);
         return null;
     }
 
@@ -254,7 +258,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         public void onClick(View v) {
                             if (mAdapterInterface != null) {
                                 final ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
-                                mAdapterInterface.onImageClick(cp.getFileDescription());
+                                mAdapterInterface.onImageClick(cp);
                             }
                         }
                     }
@@ -287,7 +291,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         public void onClick(View v) {
                             if (mAdapterInterface != null) {
                                 UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
-                                mAdapterInterface.onImageClick(up.getFileDescription());
+                                mAdapterInterface.onImageClick(up);
                             }
                         }
                     }
@@ -375,11 +379,27 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     , cp.isChosen()
             );
         }
-
+        if (holder instanceof UnreadMessageViewHolder) {
+            ((UnreadMessageViewHolder) holder).onBind((UnreadMessages) list.get(holder.getAdapterPosition()));
+        }
     }
 
+    public void setAllMessagesRead() {
+        ArrayList<ChatItem> list = getList();
+        for (Iterator<ChatItem> iter = list.iterator(); iter.hasNext(); ) {
+            ChatItem item = iter.next();
+            if (item instanceof ConsultPhrase) {
+                if (!((ConsultPhrase) item).isRead()) ((ConsultPhrase) item).setRead(true);
+            }
+            if (item instanceof UnreadMessages) {
+                iter.remove();
+                notifyItemRemoved(list.indexOf(item));
+            }
+        }
+    }
 
     public void addConsultTyping(String consultId, String avatarPath) {
+        ArrayList<ChatItem> list = getList();
         ConsultTyping ct = new ConsultTyping(consultId, Long.MAX_VALUE, avatarPath);
         if (list.contains(ct)) return;
         for (Iterator<ChatItem> iter = list.iterator(); iter.hasNext(); ) {
@@ -393,6 +413,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public boolean isConsultTyping() {
+        ArrayList<ChatItem> list = getList();
         boolean isTyping = false;
         for (ChatItem ci : list) {
             if (ci instanceof ConsultTyping) {
@@ -403,6 +424,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void removeConsultIsTyping() {
+        ArrayList<ChatItem> list = getList();
         for (ChatItem cm : list) {
             if (cm instanceof ConsultTyping) {
                 int i = list.indexOf(cm);
@@ -413,12 +435,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setSearchingConsult() {
-        ArrayList<ChatItem> list;
-        if (isInSearchMode) {
-            list = this.backupList;
-        } else {
-            list = this.list;
-        }
+        ArrayList<ChatItem> list = getList();
         SearchingConsult sc = new SearchingConsult(Long.MAX_VALUE);
         if (list.contains(sc)) return;
         list.add(sc);
@@ -426,12 +443,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void removeConsultSearching() {
-        ArrayList<ChatItem> list;
-        if (isInSearchMode) {
-            list = this.backupList;
-        } else {
-            list = this.list;
-        }
+        ArrayList<ChatItem> list = getList();
         for (ChatItem cm : list) {
             if (cm instanceof SearchingConsult) {
                 int i = list.indexOf(cm);
@@ -448,7 +460,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else {
             list = this.list;
         }
-
         if (list.size() == 0) {
             list.add(new DateRow(item.getTimeStamp()));
             if (!isBulk && !isInSearchMode) notifyItemInserted(0);
@@ -507,6 +518,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public int getCurrentItemCount() {
+        ArrayList<ChatItem> list = getList();
         int count = 0;
         for (ChatItem item : list) {
             if (item instanceof UserPhrase || item instanceof ConsultPhrase || item instanceof ConsultConnectionMessage)
@@ -516,14 +528,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addItems(final List<ChatItem> items) {
+        ArrayList<ChatItem> list = getList();
         for (int i = 0; i < items.size(); i++) {
-            addItem(items.get(i), true,false);
-        }
-        ArrayList<ChatItem> list;
-        if (isInSearchMode) {
-            list = this.backupList;
-        } else {
-            list = this.list;
+            addItem(items.get(i), true, false);
         }
         Collections.sort(list, new Comparator<ChatItem>() {
             @Override
@@ -573,6 +580,34 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             list.add(sc);
             notifyItemMoved(prevPos, list.size() - 1);
         }
+        boolean hasUnread = false;
+        for (ChatItem ci : list) {
+            if (ci instanceof ConsultPhrase) {
+                if (!((ConsultPhrase) ci).isRead()) hasUnread = true;
+            }
+        }
+        if (hasUnread) {
+            long lastUnreadStamp = Long.MAX_VALUE;
+            int counter = 0;
+            for (Iterator<ChatItem> iter = list.iterator(); iter.hasNext(); ) {
+                ChatItem item = iter.next();
+                if (item instanceof UnreadMessages) iter.remove();
+                if (item instanceof ConsultPhrase) {
+                    ConsultPhrase cp = ((ConsultPhrase) item);
+                    if (!cp.isRead()) counter++;
+                    if (!cp.isRead() && cp.getTimeStamp() < lastUnreadStamp) {
+                        lastUnreadStamp = cp.getTimeStamp();
+                    }
+                }
+            }
+            list.add(new UnreadMessages(lastUnreadStamp - 1, counter));
+            Collections.sort(list, new Comparator<ChatItem>() {
+                @Override
+                public int compare(ChatItem lhs, ChatItem rhs) {
+                    return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
+                }
+            });
+        }
         if (!isInSearchMode) notifyDataSetChanged();
     }
 
@@ -583,7 +618,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        Object o = list.get(position);
+        Object o = null;
+        try {
+            o = list.get(position);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return 0;
+        }
         if (o instanceof ConsultPhrase) {
             ConsultPhrase cp = (ConsultPhrase) o;
             FileDescription fileDescription = cp.getFileDescription();
@@ -594,7 +635,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG)) {
                 return TYPE_IMAGE_FROM_CONSULT;
             } else if (TextUtils.isEmpty(cp.getPhrase())
-                    && (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PDF)) {
+                    && (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF
+                    || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PDF)) {
                 return TYPE_FILE_FROM_CONSULT;
             } else {
                 return TYPE_CONSULT_PHRASE;
@@ -608,22 +650,23 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (o instanceof UserPhrase) {
             UserPhrase up = (UserPhrase) o;
             if (up.getFileDescription() == null) return TYPE_USER_PHRASE;
-            if (up.isOnlyImage()) return TYPE_IMAGE_FROM_USER;
+            if (up.isOnlyImage()) {
+                return TYPE_IMAGE_FROM_USER;
+            }
             int extension = -1;
             if (up.getFileDescription().getFilePath() != null) {
                 extension = FileUtils.getExtensionFromPath(up.getFileDescription().getFilePath());
             } else if (up.getFileDescription().getIncomingName() != null) {
                 extension = FileUtils.getExtensionFromPath(up.getFileDescription().getIncomingName());
             }
-            if (extension == FileUtils.JPEG || extension == FileUtils.PNG) {
-                return TYPE_IMAGE_FROM_USER;
-            } else if (extension == FileUtils.PDF) {
+            if ((extension == FileUtils.PDF || extension == FileUtils.OTHER_DOC_FORMATS) && TextUtils.isEmpty(up.getPhrase())) {
                 return TYPE_FILE_FROM_USER;
             } else {
                 return TYPE_USER_PHRASE;
             }
         }
         if (o instanceof Space) return TYPE_FREE_SPACE;
+        if (o instanceof UnreadMessages) return TYPE_UNREAD_MESSAGES;
         return super.getItemViewType(position);
     }
 
@@ -637,6 +680,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setUserPhraseMessageId(String oldId, String newId) {
+        ArrayList<ChatItem> list = getList();
         for (ChatItem cm : list) {
             if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(oldId))) {
                 ((UserPhrase) cm).setMessageId(newId);
@@ -648,33 +692,56 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void updateProgress(FileDescription fileDescription) {
         for (int i = 0; i < list.size(); i++) {
             if (fileDescription.getFilePath() == null
-                    && (getItemViewType(i) == TYPE_IMAGE_FROM_USER || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT))
-                return;
+                    && (getItemViewType(i) == TYPE_IMAGE_FROM_USER || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT) && !isInSearchMode)
+                continue;
             if (list.get(i) instanceof ConsultPhrase) {
                 ConsultPhrase cp = (ConsultPhrase) list.get(i);
                 if (cp.getFileDescription() != null && cp.getFileDescription().equals(fileDescription)) {
                     cp.setFileDescription(fileDescription);
-                    notifyItemChanged(list.indexOf(cp));
-                }
-                if (cp.getQuote() != null && cp.getQuote().getFileDescription() != null && cp.getQuote().getFileDescription().equals(fileDescription)) {
+                    if (!isInSearchMode) notifyItemChanged(list.indexOf(cp));
+                } else if (cp.getQuote() != null && cp.getQuote().getFileDescription() != null && cp.getQuote().getFileDescription().equals(fileDescription)) {
                     cp.getQuote().setFileDescription(fileDescription);
-                    notifyItemChanged(list.indexOf(cp));
+                    if (!isInSearchMode) notifyItemChanged(list.indexOf(cp));
                 }
             } else if (list.get(i) instanceof UserPhrase) {
                 UserPhrase up = (UserPhrase) list.get(i);
 
                 if (up.getFileDescription() != null && up.getFileDescription().equals(fileDescription)) {
                     up.setFileDescription(fileDescription);
-                    notifyItemChanged(list.indexOf(up));
-                }
-                if (up.getQuote() != null && up.getQuote().getFileDescription() != null && up.getQuote().getFileDescription().equals(fileDescription)) {
+                    if (!isInSearchMode) notifyItemChanged(list.indexOf(up));
+                } else if (up.getQuote() != null && up.getQuote().getFileDescription() != null && up.getQuote().getFileDescription().equals(fileDescription)) {
                     up.getQuote().setFileDescription(fileDescription);
-                    notifyItemChanged(list.indexOf(up));
+                    if (!isInSearchMode) notifyItemChanged(list.indexOf(up));
                 }
             }
         }
-    }
+        if (backupList != null && backupList.size() > 0 && isInSearchMode)
+            for (int i = 0; i < backupList.size(); i++) {
+                if (fileDescription.getFilePath() == null
+                        && (getItemViewType(i) == TYPE_IMAGE_FROM_USER || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT))
+                    continue;
+                if (backupList.get(i) instanceof ConsultPhrase) {
+                    ConsultPhrase cp = (ConsultPhrase) list.get(i);
+                    if (cp.getFileDescription() != null && cp.getFileDescription().equals(fileDescription)) {
+                        cp.setFileDescription(fileDescription);
+                        notifyItemChanged(backupList.indexOf(cp));
+                    } else if (cp.getQuote() != null && cp.getQuote().getFileDescription() != null && cp.getQuote().getFileDescription().equals(fileDescription)) {
+                        cp.getQuote().setFileDescription(fileDescription);
+                        notifyItemChanged(backupList.indexOf(cp));
+                    }
+                } else if (backupList.get(i) instanceof UserPhrase) {
+                    UserPhrase up = (UserPhrase) backupList.get(i);
 
+                    if (up.getFileDescription() != null && up.getFileDescription().equals(fileDescription)) {
+                        up.setFileDescription(fileDescription);
+                        notifyItemChanged(backupList.indexOf(up));
+                    } else if (up.getQuote() != null && up.getQuote().getFileDescription() != null && up.getQuote().getFileDescription().equals(fileDescription)) {
+                        up.getQuote().setFileDescription(fileDescription);
+                        notifyItemChanged(backupList.indexOf(up));
+                    }
+                }
+            }
+    }
 
     public void setItemChosen(boolean isChosen, ChatPhrase cp) {
         if (cp == null) return;
@@ -689,7 +756,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void backupAndClear() {
-        Log.e(TAG, "backupAndClear");// TODO: 23.08.2016  
         backupList = new ArrayList<>(list);
         list.clear();
         notifyDataSetChanged();
@@ -697,7 +763,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void undoClear() {
-        Log.e(TAG, "undoClear");// TODO: 23.08.2016  
         isInSearchMode = false;
         list = new ArrayList<>(backupList);
         Collections.sort(list, new Comparator<ChatItem>() {
@@ -710,14 +775,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void swapItems(List<ChatPhrase> list) {
+        Log.e(TAG, "swapItems");
         this.list.clear();
         for (ChatPhrase cp : list) {
-            addItem(cp, true,true);
+            addItem(cp, true, true);
         }
         notifyDataSetChanged();
     }
 
     public void onDownloadError(FileDescription fileDescription) {
+        ArrayList<ChatItem> list = getList();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) instanceof ChatPhrase) {
                 ChatPhrase cp = (ChatPhrase) list.get(i);
@@ -741,7 +808,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void onConsultAvatarClick(String consultId);
 
-        void onImageClick(FileDescription fileDescription);
+        void onImageClick(ChatPhrase chatPhrase);
 
         void onImageDownloadRequest(FileDescription fileDescription);
     }
@@ -757,5 +824,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             last = index;
             notifyItemChanged(last);
         }
+    }
+
+    private ArrayList<ChatItem> getList() {
+        ArrayList<ChatItem> list;
+        if (isInSearchMode) {
+            list = this.backupList;
+        } else {
+            list = this.list;
+        }
+        return list;
     }
 }

@@ -12,6 +12,5 @@
         android:background="@drawable/circle_aqua_outline"
         android:padding="14dp"
         android:indeterminate="true"
-
         android:indeterminateDrawable="@drawable/circle_with_circle" />
 </FrameLayout>

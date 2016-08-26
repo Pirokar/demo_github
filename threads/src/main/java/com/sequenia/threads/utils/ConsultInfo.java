@@ -26,12 +26,13 @@ public class ConsultInfo {
     }
 
     public static void setSearchingConsult(boolean isSearching, Context ctx) {
-        ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit().putBoolean(ConsultInfo.class+ SEARCHING_CONSULT, isSearching).commit();
+        if (ctx == null) return;
+        ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit().putBoolean(ConsultInfo.class + SEARCHING_CONSULT, isSearching).commit();
     }
 
     public static boolean istSearchingConsult(Context ctx) {
         if (ctx == null) return false;
-        return ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).getBoolean(ConsultInfo.class+ SEARCHING_CONSULT, false);
+        return ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).getBoolean(ConsultInfo.class + SEARCHING_CONSULT, false);
     }
 
 
@@ -75,11 +76,13 @@ public class ConsultInfo {
         editor.putString(OPERATOR_PHOTO + consultId, operatorPhoto).commit();
         setCurrentConsultId(consultId, ctx);
     }
+
     public static void setCurrentConsultInfo(PushMessage pushMessage, Context ctx) throws JSONException {
         if (ctx == null) return;
         JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
         JSONObject operatorInfo = fullMessage.getJSONObject("operator");
         final String name = operatorInfo.getString("name");
+        Log.e(TAG, "name = " + name);
         String status = operatorInfo.getString("status");
         String photoUrl = operatorInfo.getString("photoUrl");
         final String title = ConsultInfo.getCurrentConsultTitle(ctx);
@@ -90,7 +93,7 @@ public class ConsultInfo {
         editor.putString(OPERATOR_TITLE + id, title).commit();
         editor.putString(OPERATOR_PHOTO + id, photoUrl).commit();
         editor.putString(OPERATOR_ID + id, operatorInfo.getString("id")).commit();
-        setCurrentConsultId(name, ctx);
+        setCurrentConsultId(id, ctx);
     }
 
     public static void setCurrentConsultId(String consultId, Context ctx) {

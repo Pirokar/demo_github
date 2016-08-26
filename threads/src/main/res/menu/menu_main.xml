@@ -7,6 +7,6 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/files_and_media"
-        android:title="@string/media"
+        android:title="@string/files_and_media"
         app:showAsAction="never" />
 </menu>

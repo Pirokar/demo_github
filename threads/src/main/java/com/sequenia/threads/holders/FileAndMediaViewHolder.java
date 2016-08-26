@@ -40,13 +40,11 @@ public class FileAndMediaViewHolder extends RecyclerView.ViewHolder {
     public void onBind(
             FileDescription fileDescription
             , View.OnClickListener fileClickListener) {
-        Log.e(TAG, "onBind " + fileDescription);// TODO: 17.08.2016  implemet true filedescription timestamp
-
         int extension = FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.UNKNOWN ?
                 FileUtils.getExtensionFromPath(fileDescription.getIncomingName())
                 : FileUtils.getExtensionFromPath(fileDescription.getFilePath());
         Picasso p = Picasso.with(itemView.getContext());
-        if (extension == FileUtils.PDF) {
+        if (extension == FileUtils.PDF|| extension==FileUtils.OTHER_DOC_FORMATS) {
             mImageButton.setImageResource(R.drawable.ic_insert_file_blue_36dp);
         } else if (extension == FileUtils.JPEG || extension == FileUtils.PNG) {
             if (fileDescription.getFilePath() != null) {

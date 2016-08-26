@@ -4,12 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.FilesAndMediaAdapter;
@@ -26,15 +32,18 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
     private static final String TAG = "FilesActivity ";
     private FilesAndMediaController mFilesAndMediaController;
     private RecyclerView mRecyclerView;
+    private EditText mSearchEditText;
+    private Toolbar mToolbar;
+    private FilesAndMediaAdapter mFilesAndMediaAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         final Context ctx = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files_and_media);
-        Toolbar t = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(t);
-        t.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -50,11 +59,46 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
         mFilesAndMediaController.getFilesAcync();
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mSearchEditText = (EditText) findViewById(R.id.search_edit_text);
         findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ctx.sendBroadcast(new Intent(ChatActivity.ACTION_SEARCH_CHAT_FILES));
-                finish();
+                if (mSearchEditText.getVisibility() == View.VISIBLE) {
+                    mSearchEditText.setText("");
+                    mSearchEditText.setVisibility(View.GONE);
+                    mToolbar.setTitle(getString(R.string.files_and_media));
+                    mFilesAndMediaAdapter.undoClear();
+                } else {
+                    mSearchEditText.setVisibility(View.VISIBLE);
+                    mSearchEditText.requestFocus();
+                    mToolbar.setTitle("");
+                    mFilesAndMediaAdapter.backupAndClear();
+                    mSearchEditText.setText("");
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(mSearchEditText, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    }, 100);
+                }
+                /*ctx.sendBroadcast(new Intent(ChatActivity.ACTION_SEARCH_CHAT_FILES));
+                finish();*/
+            }
+        });
+        mSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                String str = null;
+                if (s == null) str = "";
+                str = str == null ? s.toString() : str;
+                mFilesAndMediaAdapter.filter(str);
             }
         });
     }
@@ -64,7 +108,8 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
             for (Iterator<FileDescription> iter = descriptions.iterator(); iter.hasNext(); ) {
                 if (iter.next().getFilePath() == null) iter.remove();
             }
-            mRecyclerView.setAdapter(new FilesAndMediaAdapter(descriptions, this));
+            mFilesAndMediaAdapter = new FilesAndMediaAdapter(descriptions, this);
+            mRecyclerView.setAdapter(mFilesAndMediaAdapter);
         }
     }
 
@@ -76,5 +121,17 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
     public static Intent getStartIntetent(Activity activity) {
         Intent i = new Intent(activity, FilesActivity.class);
         return i;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mSearchEditText.getVisibility() == View.VISIBLE) {
+            mSearchEditText.setText("");
+            mSearchEditText.setVisibility(View.GONE);
+            mToolbar.setTitle(getString(R.string.files_and_media));
+            mFilesAndMediaAdapter.undoClear();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

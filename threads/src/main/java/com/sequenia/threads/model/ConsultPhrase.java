@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Created by yuri on 10.06.2016.
  */
-public class ConsultPhrase implements ChatPhrase,IsOnlyImage {
+public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
     private final String avatarPath;
     private final String consultId;
     private final long timeStamp;
@@ -20,8 +20,9 @@ public class ConsultPhrase implements ChatPhrase,IsOnlyImage {
     private final Quote quote;
     private FileDescription fileDescription;
     private boolean isChosen;
+    private boolean isRead;
 
-    public ConsultPhrase(FileDescription fileDescription, Quote quote, String consultName, String messageId, String phrase, long timeStamp, String consultId, String avatarPath) {
+    public ConsultPhrase(FileDescription fileDescription, Quote quote, String consultName, String messageId, String phrase, long timeStamp, String consultId, String avatarPath, boolean isRead) {
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.consultName = consultName;
@@ -30,10 +31,20 @@ public class ConsultPhrase implements ChatPhrase,IsOnlyImage {
         this.timeStamp = timeStamp;
         this.consultId = consultId;
         this.avatarPath = avatarPath;
+        this.isRead = isRead;
     }
 
     public void setFileDescription(FileDescription fileDescription) {
         this.fileDescription = fileDescription;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+
+    public void setRead(boolean read) {
+        isRead = read;
     }
 
     public String getConsultId() {
@@ -78,6 +89,7 @@ public class ConsultPhrase implements ChatPhrase,IsOnlyImage {
         return getFileDescription() != null ||
                 (getQuote() != null && getQuote().getFileDescription() != null);
     }
+
     public boolean isOnlyImage() {
         return fileDescription != null
                 && TextUtils.isEmpty(phrase)

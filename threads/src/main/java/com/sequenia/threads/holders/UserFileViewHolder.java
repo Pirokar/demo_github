@@ -2,6 +2,7 @@ package com.sequenia.threads.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.sequenia.threads.R;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.utils.FileUtils;
+import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,7 +22,8 @@ import java.util.Date;
  * Created by yuri on 01.07.2016.
  */
 public class UserFileViewHolder extends RecyclerView.ViewHolder {
-    private ImageButton mImageButton;
+    private static final String TAG = "UserFileViewHolder ";
+    private CircularProgressButton mCircularProgressButton;
     private TextView mFileHeader;
     private TextView mSizeTextView;
     private TextView mTimeStampTextView;
@@ -30,7 +33,7 @@ public class UserFileViewHolder extends RecyclerView.ViewHolder {
 
     public UserFileViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_chat_file, parent, false));
-        mImageButton = (ImageButton) itemView.findViewById(R.id.file);
+        mCircularProgressButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
         mFileHeader = (TextView) itemView.findViewById(R.id.header);
         mSizeTextView = (TextView) itemView.findViewById(R.id.file_size);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
@@ -46,19 +49,26 @@ public class UserFileViewHolder extends RecyclerView.ViewHolder {
             , View.OnLongClickListener onLongClick
             , boolean isFilterVisible
             , MessageState sentState) {
-        if (fileDescription.getIncomingName()!=null){
-            mFileHeader.setText(FileUtils.getLastPathSegment(fileDescription.getIncomingName()));
-        }else if (fileDescription.getFilePath()!=null){
+        if (fileDescription == null) return;
+        if (fileDescription.getIncomingName() != null) {
+            mFileHeader.setText(fileDescription.getIncomingName());
+        } else if (fileDescription.getFilePath() != null) {
             mFileHeader.setText(FileUtils.getLastPathSegment(fileDescription.getFilePath()));
         }
-        mSizeTextView.setText( Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
+        mSizeTextView.setText(Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);
             vg.getChildAt(i).setOnClickListener(rowClickListener);
         }
-        mImageButton.setOnClickListener(buttonClickListener);
+        if (fileDescription.getFilePath()!=null){
+            mCircularProgressButton.setProgress(100);
+        }else {
+            mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
+        }
+        mCircularProgressButton.setOnClickListener(buttonClickListener);
+
         if (isFilterVisible) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterSecond.setVisibility(View.VISIBLE);

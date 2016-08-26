@@ -101,7 +101,7 @@ public class ChatController extends Fragment {
         try {
             if (!PrefUtils.isClientIdSet(ctx)
                     || !PrefUtils.getClientID(ctx).equals(clientId)) {
-                Log.e(TAG, "setting client id async");// TODO: 13.08.2016
+                Log.i(TAG, "setting client id async");
                 PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
@@ -292,7 +292,7 @@ public class ChatController extends Fragment {
 
     public void onUserInput(final UpcomingUserMessage upcomingUserMessage) {
         if (upcomingUserMessage == null) return;
-        Log.e(TAG, "upcomingUserMessage = " + upcomingUserMessage);// TODO: 29.07.2016
+        Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um, activity);
         if (!ConsultInfo.isConsultConnected(activity)) {
@@ -331,7 +331,7 @@ public class ChatController extends Fragment {
             } else {
                 new DualFilePoster(
                         userPhrase.getFileDescription() != null ? userPhrase.getFileDescription() : null
-                        , userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() != null ? userPhrase.getQuote().getFileDescription() : null : null//// TODO: 02.08.2016  fix bug with crash of sending quote with downloaded image
+                        , userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() != null ? userPhrase.getQuote().getFileDescription() : null : null
                         , activity) {
                     @Override
                     public void onResult(String mfmsFilePath, String mfmsQuoteFilePath) {
@@ -410,16 +410,16 @@ public class ChatController extends Fragment {
         if (cm instanceof ConsultPhrase) {
             PushController.getInstance(ctx).notifyMessageRead(((ConsultPhrase) cm).getId());
         }
-        if (activity != null && isActive) {
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (activity != null && isActive) {
                     activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
                 }
-            }, 1500);
-        }
-
+            }
+        }, 1500);
     }
+
 
     public String getCurrentConsultName() {
         Context ctx = null;
@@ -435,15 +435,18 @@ public class ChatController extends Fragment {
         return "";
     }
 
-    public void onFileClick(final FileDescription fileDescription) {// TODO: 17.08.2016 if image is unsent then taping on it opens it and resends it
+    public void onFileClick(final FileDescription fileDescription) {
+        Log.i(TAG, "onFileClick: " + fileDescription);
         if (activity != null) {
             if (fileDescription.getFilePath() == null) {
                 Intent i = new Intent(activity, DownloadService.class);
                 i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
                 i.putExtra(DownloadService.FD_TAG, fileDescription);
                 activity.startService(i);
-            } else if (fileDescription.hasImage()) {
-                activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
+            } else if (fileDescription.hasImage() && fileDescription.getFilePath()!=null) {
+                if (activity!=null){
+                    activity.startActivity(ImagesActivity.getStartIntent(activity,fileDescription));
+                }
             } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
                 Intent target = new Intent(Intent.ACTION_VIEW);
                 File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
@@ -465,7 +468,6 @@ public class ChatController extends Fragment {
     }
 
     void cleanAll() {
-        Log.e(TAG, "cleanAll");// TODO: 16.08.2016  
         mDatabaseHolder.cleanDatabase();
         if (activity != null) activity.cleanChat();
         ConsultInfo.setCurrentConsultLeft(appContext);
@@ -478,6 +480,17 @@ public class ChatController extends Fragment {
 
     public void setActivityIsForeground(boolean isForeground) {
         this.isActive = isForeground;
+        mDatabaseHolder.setAllMessagesRead(new CompletionHandler<Void>() {
+            @Override
+            public void onComplete(Void data) {
+
+            }
+
+            @Override
+            public void onError(Throwable e, String message, Void data) {
+
+            }
+        });
         if (isForeground) h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -505,8 +518,10 @@ public class ChatController extends Fragment {
     }
 
     public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
+        Log.i(TAG, "onSystemMessageFromServer:");
         switch (MessageMatcher.getType(bundle)) {
             case MessageMatcher.TYPE_OPERATOR_JOINED:
+                Log.i(TAG, "onSystemMessageFromServer: MessageMatcher.TYPE_OPERATOR_JOINED");
                 Context notNullContext = appContext == null ? ctx : appContext;
                 addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_JOINED, bundle.getString("operatorName"), true, System.currentTimeMillis(), bundle.getString("operatorPhoto")), ctx);
                 if (null != notNullContext) {
@@ -518,6 +533,7 @@ public class ChatController extends Fragment {
                 }
                 break;
             case MessageMatcher.TYPE_OPERATOR_LEFT:
+                Log.i(TAG, "onSystemMessageFromServer: MessageMatcher.TYPE_OPERATOR_LEFT");
                 notNullContext = appContext == null ? ctx : appContext;
                 addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_LEFT, bundle.getString("operatorName"), true, System.currentTimeMillis(), ConsultInfo.getConsultPhoto(notNullContext, bundle.getString("operatorName"))), ctx);
                 if (null != notNullContext) {
@@ -608,7 +624,8 @@ public class ChatController extends Fragment {
     }
 
     public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {
-        ConsultInfo.setCurrentConsultInfo(pushMessage, activity);
+        Log.i(TAG, "onConsultMessage: " + pushMessage);
+        ConsultInfo.setCurrentConsultInfo(pushMessage, ctx);
         ConsultInfo.setSearchingConsult(false, ctx);
         ConsultPhrase consultPhrase = MessageFormatter.format(pushMessage);
         addMessage(consultPhrase, ctx);
@@ -846,9 +863,11 @@ public class ChatController extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive:");
             String action = intent.getAction();
             if (action == null) return;
             if (action.equals(PROGRESS_BROADCAST)) {
+                Log.d(TAG, "onReceive: PROGRESS_BROADCAST " + intent.getParcelableExtra(DownloadService.FD_TAG));
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 if (activity != null && fileDescription != null)
                     activity.updateProgress(fileDescription);

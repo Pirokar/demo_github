@@ -44,11 +44,11 @@
             android:visibility="visible"
             app:text_color="@color/blue"
            />
-        <com.sequenia.threads.views.SwipeAwareView
+    <!-- <com.sequenia.threads.views.SwipeAwareView
             android:id="@+id/swipe_view"
             android:layout_width="160dp"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar" />
+            android:layout_below="@+id/toolbar" />-->
     </FrameLayout>
 
     <LinearLayout
@@ -178,10 +178,6 @@
             android:visibility="gone" />
     </LinearLayout>
 
-
-
-
-
     <View
         android:layout_width="match_parent"
         android:layout_height="63dp"
@@ -190,7 +186,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:background="@color/green_light"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp">
 
@@ -206,7 +202,7 @@
             <ImageButton
                 android:id="@+id/reply"
                 android:layout_width="30dp"
-                android:layout_height="match_parent"
+                android:layout_height="30dp"
                 android:layout_marginLeft="-60dp"
                 android:background="@null"
                 android:src="@drawable/ic_reply_blue_30dp" />
@@ -214,7 +210,7 @@
             <ImageButton
                 android:id="@+id/content_copy"
                 android:layout_width="30dp"
-                android:layout_height="match_parent"
+                android:layout_height="30dp"
                 android:layout_marginLeft="@dimen/margin_big"
                 android:background="@null"
                 android:src="@drawable/ic_content_copy_blue_24dp" />

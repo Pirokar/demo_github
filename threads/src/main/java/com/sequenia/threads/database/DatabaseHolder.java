@@ -113,6 +113,7 @@ public class DatabaseHolder {
             }
         });
     }
+
     public void queryFilesAsync(final String query, final CompletionHandler<List<ChatPhrase>> callback) {
         executorService.execute(new Runnable() {
             @Override
@@ -130,12 +131,12 @@ public class DatabaseHolder {
             @Override
             public void run() {
                 mMyOpenHelper.getWritableDatabase().beginTransaction();
-                for (ChatItem item:items) {
-                    if (item instanceof ChatPhrase){
-                        mMyOpenHelper.putChatPhrase((ChatPhrase)item);
+                for (ChatItem item : items) {
+                    if (item instanceof ChatPhrase) {
+                        mMyOpenHelper.putChatPhrase((ChatPhrase) item);
                     }
-                    if (item instanceof ConsultConnectionMessage){
-                        mMyOpenHelper.putConsultConnected((ConsultConnectionMessage)item);
+                    if (item instanceof ConsultConnectionMessage) {
+                        mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
                     }
                 }
                 mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
@@ -145,15 +146,27 @@ public class DatabaseHolder {
         });
 
     }
-    public void setUserPhraseMessageId(String oldId,String newId){
-        mMyOpenHelper.setUserPhraseMessageId(oldId,newId);
+
+    public void setUserPhraseMessageId(String oldId, String newId) {
+        mMyOpenHelper.setUserPhraseMessageId(oldId, newId);
     }
-    public void cleanDbAsync(final CompletionHandler<Void> onComplete){
+
+    public void cleanDbAsync(final CompletionHandler<Void> onComplete) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 mMyOpenHelper.cleanDb();
                 onComplete.onComplete(null);
+            }
+        });
+    }
+
+    public void setAllMessagesRead(final CompletionHandler<Void> handler) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                mMyOpenHelper.setAllRead();
+                handler.onComplete(null);
             }
         });
     }

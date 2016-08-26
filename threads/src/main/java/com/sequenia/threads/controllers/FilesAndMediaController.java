@@ -73,7 +73,8 @@ public class FilesAndMediaController extends Fragment {
                                 if (fd.hasImage()) {
                                     list.add(fd);
                                 }
-                                if (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PDF) {
+                                if (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PDF
+                                        ||FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.OTHER_DOC_FORMATS) {
                                     list.add(fd);
                                 }
                             }

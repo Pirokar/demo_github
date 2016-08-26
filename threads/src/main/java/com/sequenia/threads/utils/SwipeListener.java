@@ -1,102 +1,59 @@
-package com.sequenia.threads.views;
+package com.sequenia.threads.utils;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
+import com.sequenia.threads.views.SwipeAwareView;
 
 /**
- * Created by yuri on 01.06.2016.
- * view that recognize right swipe
+ * Created by yuri on 25.08.2016.
  */
-public class SwipeAwareView extends View {
-    private static final String TAG = "SwipeAwareView ";
-    private SwipeListener mSwipeListener;
+public class SwipeListener implements View.OnTouchListener {
+    private static final String TAG = "SwipeListener ";
     private GestureDetector mGestureDetector;
-    private MyGestureDetector mMyGestureDetector;
-    private ArrayList<MotionEvent> events = new ArrayList<>(100);
+    private MySwipeListener listener;
 
-
-    public SwipeAwareView(Context context) {
-        super(context);
-        init();
-    }
-
-    public SwipeAwareView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
-    }
-
-    public SwipeAwareView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    private void init() {
-        mGestureDetector = new GestureDetector(this.getContext(), new MyGestureDetector());
+    public SwipeListener(Context ctx, MySwipeListener listener) {
+        mGestureDetector = new GestureDetector(ctx, new MyGestureDetector());
+        this.listener = listener;
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        events.add(event);
+    public boolean onTouch(View v, MotionEvent event) {
         return mGestureDetector.onTouchEvent(event);
-
-    }
-
-    public void setSwipeListener(SwipeListener listener) {
-        this.mSwipeListener = listener;
-    }
-
-    public interface SwipeListener {
-        void onRightSwipe();
-
-        boolean onTouchEvent(MotionEvent event);
     }
 
     private class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_MIN_DISTANCE = 100;
-        private static final int SWIPE_Y_MAX_DISTANCE = 500;
+        private static final int SWIPE_Y_MAX_DISTANCE = 600;
         private static final int SWIPE_X_MAX_DISTANCE = 600;
         private static final int SWIPE_X_MIN_DISTANCE = 350;
-        private static final int SWIPE_MIN_VELOCITY = 100;
+        private static final int SWIPE_MIN_VELOCITY = 80;
 
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (e1 == null || e2 == null) return false;
             Log.e(TAG, "onFling");
-            boolean answer;
             final float xDistance = Math.abs(e1.getX() - e2.getX());
             final float yDistance = Math.abs(e1.getY() - e2.getY());
             if (xDistance < SWIPE_X_MIN_DISTANCE || yDistance > SWIPE_Y_MAX_DISTANCE) {
-                if (mSwipeListener != null) {
-                    for (MotionEvent m:events) {
-                        mSwipeListener.onTouchEvent(m);
-                    }
-                }
-                events.clear();
+                Log.e(TAG, "xDistance < SWIPE_X_MIN_DISTANCE || yDistance > SWIPE_Y_MAX_DISTANCE");// TODO: 25.08.2016  
                 return false;
             }
             velocityX = Math.abs(velocityX);
             velocityY = Math.abs(velocityY);
             if (velocityX > SWIPE_MIN_VELOCITY && xDistance > SWIPE_MIN_DISTANCE) {
                 if (e1.getX() < e2.getX()) // left to  right
-                    if (null != mSwipeListener) {
-                        Log.e(TAG, "onRightSwipe");// TODO: 22.08.2016  
-                        mSwipeListener.onRightSwipe();
-                        events.clear();
+                    if (null != listener) {
+                        Log.e(TAG, "onRightSwipe");// TODO: 22.08.2016
+                        listener.onRightSwipe();
                         return true;
                     }
             }
-            if (mSwipeListener != null) {
-                for (MotionEvent m:events) {
-                    mSwipeListener.onTouchEvent(m);
-                }
-            }
-            events.clear();
             return false;
         }
 
@@ -137,12 +94,16 @@ public class SwipeAwareView extends View {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            return false;
+            return true;
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             return false;
         }
+    }
+
+    public interface MySwipeListener {
+        void onRightSwipe();
     }
 }

@@ -7,6 +7,7 @@ public class FileUtils {
     public static final int JPEG = 0;
     public static final int PNG = 1;
     public static final int PDF = 2;
+    public static final int OTHER_DOC_FORMATS = 3;
     public static final int UNKNOWN = -1;
 
     private FileUtils() {
@@ -18,6 +19,12 @@ public class FileUtils {
         if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg")) return JPEG;
         if (extension.equalsIgnoreCase("png")) return PNG;
         if (extension.equalsIgnoreCase("pdf")) return PDF;
+        if (extension.equalsIgnoreCase("doc")
+                ||extension.equalsIgnoreCase("docx")
+                ||extension.equalsIgnoreCase("xls")
+                ||extension.equalsIgnoreCase("xlsx")
+                ||extension.equalsIgnoreCase("ppt")
+                ||extension.equalsIgnoreCase("pptx")) return OTHER_DOC_FORMATS;
         return UNKNOWN;
     }
 

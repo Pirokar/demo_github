@@ -7,9 +7,11 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.utils.ViewUtils;
 
 
 /**
@@ -123,9 +125,7 @@ public class CircularProgressButton extends FrameLayout {
     }
 
     public void setOnClickListener(View.OnClickListener ocl) {
-        for (int i = 0; i < getChildCount(); i++) {
-            getChildAt(i).setOnClickListener(ocl);
-        }
+        ViewUtils.setClickListener((ViewGroup) findViewById(R.id.frame),ocl);
     }
 }
 

@@ -32,8 +32,10 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -61,8 +63,10 @@ import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.PrefUtils;
+import com.sequenia.threads.utils.SwipeListener;
 import com.sequenia.threads.views.BottomGallery;
 import com.sequenia.threads.views.BottomSheetView;
+import com.sequenia.threads.views.MySwipeRefreshLayout;
 import com.sequenia.threads.views.SwipeAwareView;
 import com.sequenia.threads.views.WelcomeScreen;
 
@@ -102,7 +106,7 @@ public class ChatActivity extends AppCompatActivity
     private ChatPhrase mChosenPhrase = null;
     private List<String> mAttachedImages = new ArrayList<>();
     private AppCompatEditText mSearchMessageEditText;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private MySwipeRefreshLayout mSwipeRefreshLayout;
     private Button mSearchMoreButton;
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -116,6 +120,7 @@ public class ChatActivity extends AppCompatActivity
     private Handler h = new Handler(Looper.getMainLooper());
     private boolean isInMessageSearchMode;
     private boolean searchInFiles;
+    private boolean isResumed;
 
 
     @Override
@@ -151,6 +156,9 @@ public class ChatActivity extends AppCompatActivity
         if (intent.getStringExtra(TAG_CLIENT_NAME) != null) {
             PrefUtils.setClientName(this, intent.getStringExtra(TAG_CLIENT_NAME));
         }
+        if (intent.getBundleExtra("bundle") != null) {
+            PrefUtils.setIncomingStyle(this, intent.getBundleExtra("bundle"));
+        }
 
     }
 
@@ -164,6 +172,7 @@ public class ChatActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
 
     //initialy  sets title,click listeners on toolbar.
     private void initToolbar(@NonNull Toolbar t) {
@@ -189,12 +198,16 @@ public class ChatActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mChatController.setActivityIsForeground(true);
+        isResumed = true;
+
     }
+
 
     @Override
     protected void onStop() {
         super.onStop();
         mChatController.setActivityIsForeground(false);
+        isResumed = false;
     }
 
     @SuppressWarnings("all")
@@ -205,8 +218,13 @@ public class ChatActivity extends AppCompatActivity
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mSearchMessageEditText = (AppCompatEditText) findViewById(R.id.search);
         mBottomGallery = (BottomGallery) findViewById(R.id.bottom_gallery);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-        SwipeAwareView sav = (SwipeAwareView) findViewById(R.id.swipe_view);
+        mSwipeRefreshLayout = (MySwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setmSwipeListener(new MySwipeRefreshLayout.SwipeListener() {
+            @Override
+            public void onSwipe() {
+                finish();
+            }
+        });
         mInputEditText = (EditText) findViewById(R.id.input);
         ImageButton SendButton = (ImageButton) findViewById(R.id.send_message);
         final Context c = this;
@@ -223,10 +241,10 @@ public class ChatActivity extends AppCompatActivity
                 openBottomSheetAndGallery();
             }
         });
-        Bundle b = getIntent().getBundleExtra("bundle");
+        Bundle b = PrefUtils.getIncomingStyle(this);
         mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
         mWelcomeScreen.setLogo(b.getInt("logoResId"));
-        mWelcomeScreen.setTextColor(R.color.green_dark);
+        mWelcomeScreen.setTextColor(b.getInt("textColorResId"));
         mWelcomeScreen.setText(b.getString("titleText"), b.getString("subtitleText"));
         mWelcomeScreen.setTitletextSize(b.getFloat("titleSize"));
         mWelcomeScreen.setSubtitleSize(b.getFloat("subtitleSize"));
@@ -284,17 +302,29 @@ public class ChatActivity extends AppCompatActivity
                 mQuoteLayoutHolder.setIsVisible(false);
                 mQuote = null;
                 mFileDescription = null;
+                mChosenPhrase = null;
+                mChatAdapter.setAllMessagesRead();
             }
         });
-
-        if (sav != null) {
+       /* if (sav != null) {
             sav.setSwipeListener(new SwipeAwareView.SwipeListener() {
                 @Override
                 public void onRightSwipe() {
                     finish();
                 }
+
+                @Override
+                public boolean onTouchEvent(MotionEvent event) {
+                    return mRecyclerView.onTouchEvent(event);
+                }
             });
-        }
+        }*/
+       /* mRecyclerView.setOnTouchListener(new SwipeListener(this, new SwipeListener.MySwipeListener() {
+            @Override
+            public void onRightSwipe() {
+                finish();
+            }
+        }));*/
         mConsultNameView = (TextView) findViewById(R.id.consult_name);
         mConsultTitle = (TextView) findViewById(R.id.subtitle);
         mConsultNameView.setOnClickListener(new View.OnClickListener() {
@@ -351,18 +381,13 @@ public class ChatActivity extends AppCompatActivity
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.e(TAG, "afterTextChanged " + s);// TODO: 23.08.2016
                 if (s == null || s.length() == 0) {
-                    Log.e(TAG, "(s == null || s.length() == 0");// TODO: 23.08.2016
                     return;
-                   /* mChatAdapter.undoClear();*/
                 } else {
                     if (!searchInFiles) {
-                        Log.e(TAG, "!searchInFiles");// TODO: 23.08.2016
                         mChatController.requestFilteredPhrases(false, s.toString(), new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
                             @Override
                             public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
-                                Log.e(TAG, "" + result.second);// TODO: 23.08.2016
                                 mChatAdapter.swapItems(result.second);
                             }
 
@@ -371,11 +396,9 @@ public class ChatActivity extends AppCompatActivity
                             }
                         });
                     } else {
-                        Log.e(TAG, "searchInFiles");// TODO: 23.08.2016
                         mChatController.requestFilteredFiles(false, s.toString(), new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
                             @Override
                             public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
-                                Log.e(TAG, "" + result.second);// TODO: 23.08.2016
                                 mChatAdapter.swapItems(result.second);
                             }
 
@@ -449,7 +472,7 @@ public class ChatActivity extends AppCompatActivity
     public void onCameraClick() {
         boolean isCameraGranted = PermissionChecker.isCameraPermissionGranted(this);
         boolean isWriteGranted = PermissionChecker.isWriteExternalPermissionGranted(this);
-        Log.e(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);// TODO: 11.08.2016
+        Log.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             setBottomStateDefault();
             mBottomGallery.setVisibility(View.GONE);
@@ -586,9 +609,15 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void addChatItem(ChatItem item) {
+        Log.d(TAG, "addChatItem " + item);
         if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
             mWelcomeScreen.setVisibility(View.GONE);
             mWelcomeScreen = null;
+        }
+        if (item instanceof ConsultPhrase && isResumed) {
+            ((ConsultPhrase) item).setRead(true);
+        } else if (item instanceof ConsultPhrase) {
+            ((ConsultPhrase) item).setRead(false);
         }
         mChatAdapter.addItems(Arrays.asList(item));
         mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
@@ -596,6 +625,7 @@ public class ChatActivity extends AppCompatActivity
 
     public void addChatItems(final List<ChatItem> list) {
         if (list.size() == 0) return;
+        Log.d(TAG, "addChatItems: " + list);
         h.post(new Runnable() {
             @Override
             public void run() {
@@ -674,7 +704,6 @@ public class ChatActivity extends AppCompatActivity
         mConsultNameView.setVisibility(View.GONE);
         mSearchMessageEditText.setVisibility(View.VISIBLE);
         mSearchMessageEditText.setText("");
-        mSearchMessageEditText.requestFocus();
     }
 
 
@@ -712,6 +741,7 @@ public class ChatActivity extends AppCompatActivity
         super.onDestroy();
         mChatController.unbindActivity();
         unregisterReceiver(mChatActivityReceiver);
+
     }
 
     @Override
@@ -720,9 +750,16 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onImageClick(FileDescription fileDescription) {// TODO: 15.08.2016 move logic to controller
-        if (fileDescription.getFilePath() == null) return;
-        startActivity(ImagesActivity.getStartIntent(this, fileDescription));
+    public void onImageClick(ChatPhrase chatPhrase) {
+        if (chatPhrase.getFileDescription().getFilePath() == null) return;
+        if (chatPhrase instanceof UserPhrase) {
+            if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_SENT_AND_SERVER_RECEIVED) {
+                mChatController.checkAndResendPhrase((UserPhrase) chatPhrase);
+            }
+            if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
+                startActivity(ImagesActivity.getStartIntent(this, chatPhrase.getFileDescription()));
+            }
+        }
     }
 
     @Override
@@ -821,13 +858,32 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        Log.e(TAG, "onBackPressed");// TODO: 23.08.2016  
         boolean isNeedToClose = true;
+        if (mCopyControls.getVisibility() == View.VISIBLE
+                && mSearchMessageEditText.getVisibility() == View.VISIBLE) {
+            unChooseItem(mChosenPhrase);
+            mSearchMessageEditText.requestFocus();
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(mSearchMessageEditText, InputMethodManager.SHOW_IMPLICIT);
+                }
+            }, 100);
+            return;
+        }
+
         if (mCopyControls.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
             isNeedToClose = false;
         }
         if (mSearchMessageEditText.getVisibility() == View.VISIBLE) {
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    mChatAdapter.setAllMessagesRead();
+                }
+            });
             mSearchMessageEditText.setVisibility(View.GONE);
             mSearchMessageEditText.setText("");
             isInMessageSearchMode = false;
@@ -974,23 +1030,34 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.files_and_media) {
+            if (isInMessageSearchMode) mChatAdapter.undoClear();
             startActivity(FilesActivity.getStartIntetent(this));
             return true;
         }
-        if (item.getItemId() == R.id.search) {
+
+        if (item.getItemId() == R.id.search && isInMessageSearchMode) {
+            return true;
+
+        } else if (item.getItemId() == R.id.search) {
             search(false);
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void search(final boolean searchInFiles) {
-        Log.e(TAG, "search searchInFiles = " + searchInFiles);// TODO: 23.08.2016  
+        Log.d(TAG, "searchInFiles: " + searchInFiles);
         isInMessageSearchMode = true;
         this.searchInFiles = searchInFiles;
         setBottomStateDefault();
         setTitleStateSearchingMessage();
-        mSearchMessageEditText.setVisibility(View.VISIBLE);
         mSearchMessageEditText.requestFocus();
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.showSoftInput(mSearchMessageEditText, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 100);
         mChatAdapter.backupAndClear();
         mSwipeRefreshLayout.setEnabled(false);
         mSearchMoreButton.setVisibility(View.VISIBLE);

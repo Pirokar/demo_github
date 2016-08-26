@@ -48,7 +48,7 @@ public abstract class FileDownloader {
                 //   urlConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
                 //  urlConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
                 File outputFile = null;
-                if (FileUtils.getExtensionFromPath(fileName) == FileUtils.PDF) {
+                if (FileUtils.getExtensionFromPath(fileName) == FileUtils.PDF||FileUtils.getExtensionFromPath(fileName) == FileUtils.OTHER_DOC_FORMATS) {
                     outputFile = new File(Environment.getExternalStorageDirectory(),fileName);
                 } else {
                     outputFile = new File(ctx.getDir("files", Context.MODE_PRIVATE), fileName);

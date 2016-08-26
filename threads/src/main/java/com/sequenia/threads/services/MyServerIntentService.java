@@ -35,7 +35,7 @@ public class MyServerIntentService extends PushServerIntentService {
 
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
-        Log.e(TAG, "saveMessages");// TODO: 17.08.2016  
+        Log.i(TAG, "saveMessages");
         if (list == null) return false;
         try {
             for (int i = 0; i < list.size(); i++) {

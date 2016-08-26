@@ -46,7 +46,7 @@ public class ChatBot {
             q = new Quote("Я", up.getQuote().getText(), up.getFileDescription(), System.currentTimeMillis());
         }
 
-        return new ConsultPhrase(fd, q, ConsultInfo.getCurrentConsultName(controller.appContext), UUID.randomUUID().toString(), up.getPhrase(), System.currentTimeMillis(), ConsultInfo.getCurrentConsultName(controller.appContext), ConsultInfo.getCurrentConsultPhoto(controller.appContext));
+        return new ConsultPhrase(fd, q, ConsultInfo.getCurrentConsultName(controller.appContext), UUID.randomUUID().toString(), up.getPhrase(), System.currentTimeMillis(), ConsultInfo.getCurrentConsultName(controller.appContext), ConsultInfo.getCurrentConsultPhoto(controller.appContext),false);
     }
 
     public void answerToUser(final UserPhrase up, final boolean showIsTyping) {
