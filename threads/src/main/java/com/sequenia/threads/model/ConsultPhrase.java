@@ -21,8 +21,20 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
     private FileDescription fileDescription;
     private boolean isChosen;
     private boolean isRead;
+    private final String status;
 
-    public ConsultPhrase(FileDescription fileDescription, Quote quote, String consultName, String messageId, String phrase, long timeStamp, String consultId, String avatarPath, boolean isRead) {
+    public ConsultPhrase(
+            FileDescription fileDescription
+            , Quote quote
+            , String consultName
+            , String messageId
+            , String phrase
+            , long timeStamp
+            , String consultId
+            , String avatarPath
+            , boolean isRead
+            , String status
+            ) {
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.consultName = consultName;
@@ -32,7 +44,13 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
         this.consultId = consultId;
         this.avatarPath = avatarPath;
         this.isRead = isRead;
+        this.status = status;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
 
     public void setFileDescription(FileDescription fileDescription) {
         this.fileDescription = fileDescription;
@@ -150,6 +168,8 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
                 ", quote=" + quote +
                 ", fileDescription=" + fileDescription +
                 ", isChosen=" + isChosen +
+                ", isRead=" + isRead +
+                ", status='" + status + '\'' +
                 '}';
     }
 

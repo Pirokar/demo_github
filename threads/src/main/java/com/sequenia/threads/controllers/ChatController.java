@@ -236,7 +236,6 @@ public class ChatController extends Fragment {
 
     public void bindActivity(ChatActivity ca) {
         activity = ca;
-        activity.connectedConsultId = ConsultInfo.getCurrentConsultId(ca);
         appContext = activity.getApplicationContext();
         currentOffset = 0;
         if (ConsultInfo.istSearchingConsult(activity)) {
@@ -259,7 +258,7 @@ public class ChatController extends Fragment {
             });
         }
         if (ConsultInfo.isConsultConnected(appContext)) {
-            activity.setTitleStateOperatorConnected(ConsultInfo.getCurrentConsultId(appContext), ConsultInfo.getCurrentConsultName(appContext), ConsultInfo.getCurrentConsultTitle(appContext));
+            activity.setStateConsultConnected(ConsultInfo.getCurrentConsultId(appContext), ConsultInfo.getCurrentConsultName(appContext), ConsultInfo.getCurrentConsultTitle(appContext));
         } else if (ConsultInfo.istSearchingConsult(activity)) {
             activity.setStateSearchingConsult();
         } else {
@@ -407,7 +406,7 @@ public class ChatController extends Fragment {
                 if (null != activity) activity.addChatItem(cm);
             }
         });
-        if (cm instanceof ConsultPhrase) {
+        if (cm instanceof ConsultPhrase && ctx != null) {
             PushController.getInstance(ctx).notifyMessageRead(((ConsultPhrase) cm).getId());
         }
         h.postDelayed(new Runnable() {
@@ -443,9 +442,9 @@ public class ChatController extends Fragment {
                 i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
                 i.putExtra(DownloadService.FD_TAG, fileDescription);
                 activity.startService(i);
-            } else if (fileDescription.hasImage() && fileDescription.getFilePath()!=null) {
-                if (activity!=null){
-                    activity.startActivity(ImagesActivity.getStartIntent(activity,fileDescription));
+            } else if (fileDescription.hasImage() && fileDescription.getFilePath() != null) {
+                if (activity != null) {
+                    activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
                 }
             } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
                 Intent target = new Intent(Intent.ACTION_VIEW);
@@ -523,19 +522,40 @@ public class ChatController extends Fragment {
             case MessageMatcher.TYPE_OPERATOR_JOINED:
                 Log.i(TAG, "onSystemMessageFromServer: MessageMatcher.TYPE_OPERATOR_JOINED");
                 Context notNullContext = appContext == null ? ctx : appContext;
-                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_JOINED, bundle.getString("operatorName"), true, System.currentTimeMillis(), bundle.getString("operatorPhoto")), ctx);
+                String title = bundle.getString("alert");
+                if (title != null) title = title.split(" ")[0];
+                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName")
+                                , ConsultConnectionMessage.TYPE_JOINED
+                                , bundle.getString("operatorName")
+                                , false
+                                , System.currentTimeMillis()
+                                , bundle.getString("operatorPhoto")
+                                , bundle.getString("status")
+                                , title)
+                        , ctx);
                 if (null != notNullContext) {
                     ConsultInfo.setCurrentConsultInfo(bundle.getString("operatorName"), bundle, notNullContext);
                     ConsultInfo.setSearchingConsult(false, ctx);
                 }
                 if (activity != null) {
-                    activity.setTitleStateOperatorConnected(bundle.getString("operatorName"), bundle.getString("operatorName"), ConsultInfo.getCurrentConsultTitle(activity));
+                    activity.setStateConsultConnected(bundle.getString("operatorName"), bundle.getString("operatorName"), ConsultInfo.getCurrentConsultTitle(activity));
                 }
                 break;
             case MessageMatcher.TYPE_OPERATOR_LEFT:
                 Log.i(TAG, "onSystemMessageFromServer: MessageMatcher.TYPE_OPERATOR_LEFT");
                 notNullContext = appContext == null ? ctx : appContext;
-                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName"), ConsultConnectionMessage.TYPE_LEFT, bundle.getString("operatorName"), true, System.currentTimeMillis(), ConsultInfo.getConsultPhoto(notNullContext, bundle.getString("operatorName"))), ctx);
+                title = bundle.getString("alert");
+                if (title != null) title = title.split(" ")[0];
+                addMessage(new ConsultConnectionMessage(
+                                bundle.getString("operatorName")
+                                , ConsultConnectionMessage.TYPE_LEFT
+                                , bundle.getString("operatorName")
+                                , false
+                                , System.currentTimeMillis()
+                                , bundle.getString("operatorPhoto")
+                                , bundle.getString("operatorStatus")
+                                , title)
+                        , ctx);
                 if (null != notNullContext) {
                     ConsultInfo.setCurrentConsultLeft(notNullContext);
                     ConsultInfo.setSearchingConsult(false, ctx);
@@ -625,16 +645,30 @@ public class ChatController extends Fragment {
 
     public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {
         Log.i(TAG, "onConsultMessage: " + pushMessage);
+        ChatItem chatItem = MessageFormatter.format(pushMessage);
+        if (chatItem instanceof ConsultConnectionMessage) {
+            if (((ConsultConnectionMessage) chatItem).getType().equals(ConsultConnectionMessage.TYPE_JOINED)) {
+                ConsultInfo.setCurrentConsultInfo((ConsultConnectionMessage) chatItem, ctx);
+                if (activity != null)
+                    activity.setStateConsultConnected(((ConsultConnectionMessage) chatItem).getConsultId(), ((ConsultConnectionMessage) chatItem).getName(), ((ConsultConnectionMessage) chatItem).getTitle());
+            } else {
+                ConsultInfo.setCurrentConsultLeft(ctx);
+                if (activity != null) activity.setTitleStateDefault();
+            }
+        } else if (chatItem instanceof ConsultPhrase && ConsultInfo.getCurrentConsultId(ctx) == null) {
+            if (activity != null) {
+                activity.setStateConsultConnected(((ConsultPhrase) chatItem).getId(), ((ConsultPhrase) chatItem).getConsultName(), "");
+            }
+        }
         ConsultInfo.setCurrentConsultInfo(pushMessage, ctx);
         ConsultInfo.setSearchingConsult(false, ctx);
-        ConsultPhrase consultPhrase = MessageFormatter.format(pushMessage);
-        addMessage(consultPhrase, ctx);
+        addMessage(chatItem, ctx);
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (activity != null) {
                     activity
-                            .setTitleStateOperatorConnected(
+                            .setStateConsultConnected(
                                     ConsultInfo.getCurrentConsultId(activity)
                                     , ConsultInfo.getCurrentConsultName(activity)
                                     , ConsultInfo.getCurrentConsultTitle(activity));

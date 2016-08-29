@@ -40,6 +40,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
     static final String COLUMN_MESSAGE_SEND_STATE = "COLUMN_MESSAGE_SEND_STATE";
     static final String COLUMN_SEX = "COLUMN_SEX";
     static final String COLUMN_CONSULT_ID = "COLUMN_CONSULT_ID";
+    static final String COLUMN_CONSULT_STATUS = "COLUMN_CONSULT_STATUS";
+    static final String COLUMN_CONSULT_TITLE = "COLUMN_CONSULT_TITLE";
     static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
     static final String COLUMN_IS_READ = "COLUMN_IS_READ";
 
@@ -80,11 +82,13 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s integer, " + //sex
                         " %s integer," +//message sent state
                         "%s text," + //consultid
+                        "%s text," + //COLUMN_CONSULT_STATUS
+                        "%s text," +//COLUMN_CONSULT_TITLE
                         "%s text," +//connection type
                         "%s integer)", //isRead
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
-                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID, COLUMN_CONNECTION_TYPE, COLUMN_IS_READ));
+                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID, COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE, COLUMN_IS_READ));
         db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_QUOTE
                         " %s text, " +//header
                         " %s text, " +//body
@@ -180,6 +184,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_AVATAR_PATH, ((ConsultPhrase) phrase).getAvatarPath());
             cv.put(COLUMN_CONSULT_ID, ((ConsultPhrase) phrase).getConsultId());
             cv.put(COLUMN_IS_READ, ((ConsultPhrase) phrase).isRead());
+            cv.put(COLUMN_CONSULT_STATUS, ((ConsultPhrase) phrase).getStatus());
             if (!isDup) {
                 getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             } else {
@@ -214,7 +219,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_MESSAGE_ID, newMessageId);
         getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{oldMessageId});
         cv.clear();
-        cv.put(COLUMN_QUOTE_MESSAGE_ID_EXT,newMessageId);
+        cv.put(COLUMN_QUOTE_MESSAGE_ID_EXT, newMessageId);
         getWritableDatabase().update(TABLE_QUOTE, cv, COLUMN_QUOTE_MESSAGE_ID_EXT + " = ?", new String[]{oldMessageId});
     }
 
@@ -227,6 +232,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_SEX, consultConnectionMessage.getSex() ? "1" : "0");
         cv.put(COLUMN_CONNECTION_TYPE, consultConnectionMessage.getConnectionType());
         cv.put(COLUMN_CONSULT_ID, consultConnectionMessage.getConsultId());
+        cv.put(COLUMN_CONSULT_STATUS, consultConnectionMessage.getStatus());
+        cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.getTitle());
         if (consultConnectionMessage.getName() == null) {
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             return;
@@ -280,12 +287,18 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
                 String connectionType = c.getString(INDEX_CONNECTION_TYPE);
-                ConsultConnectionMessage cc = new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath);
+                int indexStatus = c.getColumnIndex(COLUMN_CONSULT_STATUS);
+                int indextitle = c.getColumnIndex(COLUMN_CONSULT_TITLE);
+                String status = c.isNull(indexStatus) ? null : c.getString(indexStatus);
+                String title = c.isNull(indextitle) ? null : c.getString(indextitle);
+                ConsultConnectionMessage cc =
+                        new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath, status, title);
                 items.add(cc);
             } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
                 String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
+                String status = c.isNull(c.getColumnIndex(COLUMN_CONSULT_STATUS)) ? null : c.getString(c.getColumnIndex(COLUMN_CONSULT_STATUS));
                 boolean isRead = c.getInt(INDEX_IS_READ) == 1;
                 Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
                 ConsultPhrase cp = new ConsultPhrase(
@@ -297,7 +310,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         c.getLong(INDEX_TIMESTAMP),
                         c.getString(INDEX_CONSULT_ID),
                         avatarPath
-                        , isRead);
+                        , isRead
+                        , status);
                 items.add(cp);
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);

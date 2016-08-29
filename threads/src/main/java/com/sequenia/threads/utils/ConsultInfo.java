@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.pushserver.android.PushMessage;
+import com.sequenia.threads.model.ChatItem;
+import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultPhrase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,6 +65,30 @@ public class ConsultInfo {
         setCurrentConsultId(consultId, ctx);
     }
 
+    public static void setCurrentConsultInfo(ConsultConnectionMessage message, Context ctx) {
+        if (ctx == null || message == null) return;
+        SharedPreferences.Editor editor = ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
+        String consultId = message.getConsultId();
+        if (consultId != null) setCurrentConsultId(consultId, ctx);
+        editor.putString(OPERATOR_STATUS + consultId, message.getStatus()).commit();
+        editor.putString(OPERATOR_NAME + consultId, message.getName()).commit();
+        editor.putString(OPERATOR_TITLE + consultId, message.getTitle()).commit();
+        editor.putString(OPERATOR_PHOTO + consultId, message.getAvatarPath()).commit();
+        setCurrentConsultId(consultId, ctx);
+    }
+
+    public static void setCurrentConsultInfo(ConsultPhrase consultPhrase, Context ctx) {
+        if (ctx == null || consultPhrase == null) return;
+        SharedPreferences.Editor editor = ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
+        String consultId = consultPhrase.getConsultId();
+        if (consultId == null) return;
+        setCurrentConsultId(consultPhrase.getConsultId(), ctx);
+        editor.putString(OPERATOR_STATUS + consultId, consultPhrase.getStatus()).commit();
+        editor.putString(OPERATOR_NAME + consultId, consultPhrase.getConsultName()).commit();
+        editor.putString(OPERATOR_PHOTO + consultId, consultPhrase.getAvatarPath()).commit();
+        setCurrentConsultId(consultId, ctx);
+    }
+
     public static void setCurrentConsultInfo(String consultId
             , String operatorStatus
             , String operatorName
@@ -93,6 +120,7 @@ public class ConsultInfo {
         editor.putString(OPERATOR_TITLE + id, title).commit();
         editor.putString(OPERATOR_PHOTO + id, photoUrl).commit();
         editor.putString(OPERATOR_ID + id, operatorInfo.getString("id")).commit();
+        editor.putString(OPERATOR_STATUS + id, operatorInfo.getString("status")).commit();
         setCurrentConsultId(id, ctx);
     }
 

@@ -25,7 +25,7 @@ public class UnreadMessages implements ChatItem {
             if ((count == 1 || (count % 10 == 1)) && count != 11) {
                 phrase = count + " непрочитанное сообщение";
             } else {
-                phrase = count + " непрочитанных сообщение";
+                phrase = count + " непрочитанных сообщений";
             }
         } else {
             if (count == 1) {

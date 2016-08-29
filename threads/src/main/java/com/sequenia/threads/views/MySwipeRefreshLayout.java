@@ -87,20 +87,11 @@ public class MySwipeRefreshLayout extends SwipeRefreshLayout {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        Log.e(TAG, "onTouchEvent " + ev);
-        if (ev.getAction() == MotionEvent.ACTION_MOVE && isSwiping) return true;
-        return super.onTouchEvent(ev);
-    }
-
-    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (nestedRecyclerview == null)
             nestedRecyclerview = (RecyclerView) findViewById(R.id.recycler);
         boolean superb = super.onInterceptTouchEvent(ev);
-        boolean myb = false;
         final int action = MotionEventCompat.getActionMasked(ev);
-
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 initX = ev.getX();
@@ -108,29 +99,22 @@ public class MySwipeRefreshLayout extends SwipeRefreshLayout {
                 mActivePointerId = MotionEventCompat.getPointerId(ev, 0);
                 mVelocityTracker = VelocityTracker.obtain();
                 mVelocityTracker.addMovement(ev);
-                myb = false;
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.e(TAG, "ACTION_MOVE");
                 mVelocityTracker.addMovement(ev);
                 mVelocityTracker.computeCurrentVelocity(1);
-                float xDistance = Math.abs(initX - ev.getX());
+                float xDistance =  Math.abs(initX - ev.getX());
                 float yDistance = Math.abs(initY - ev.getY());
-                Log.e(TAG, "xDistance = " + xDistance);
-                Log.e(TAG, "yDistance = " + yDistance);
                 float velocityX = mVelocityTracker.getXVelocity(ev.getPointerId(0));
                 float velocityY = mVelocityTracker.getYVelocity(ev.getPointerId(0));
-                Log.e(TAG, "velocityX = " + velocityX);
-                Log.e(TAG, "velocityY = " + velocityY);
                 isSwiping = false;
-                if (Math.abs(velocityX) > 1) {
-                    Log.e(TAG, "Math.abs(velocityX) > 1");
+                if (Math.abs(velocityX) > 1 && Math.abs(velocityY) < 1 && yDistance < 50 && (initX < ev.getX())) {
                     isSwiping = true;
-                    myb = true;
+                    if (mSwipeListener != null) mSwipeListener.onSwipe();
+                    mVelocityTracker.clear();
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e(TAG, "ACTION_UP");
                 if (initX == -1 || initY == -1 || mActivePointerId == -1) {
                     mVelocityTracker.clear();
                     break;
@@ -144,21 +128,16 @@ public class MySwipeRefreshLayout extends SwipeRefreshLayout {
                 mVelocityTracker.computeCurrentVelocity(1);
                 velocityX = mVelocityTracker.getXVelocity(ev.getPointerId(0));
                 velocityY = mVelocityTracker.getYVelocity(ev.getPointerId(0));
-                Log.e(TAG, "velocityX = " + velocityX);
-                Log.e(TAG, "velocityY = " + velocityX);
                 if (velocityX > SWIPE_MIN_VELOCITY && xDistance > SWIPE_MIN_DISTANCE && velocityY < 1) {
                     if (initX < ev.getX()) // left to  right
                     {
-                        myb = true;
-                        Log.e(TAG, "bang!!!!!");
                         if (mSwipeListener != null) mSwipeListener.onSwipe();
                     }
                 }
                 mVelocityTracker.clear();
                 break;
         }
-        Log.e(TAG, "returning " + (superb && myb));
-        return superb||myb;
+        return superb;
     }
 
 

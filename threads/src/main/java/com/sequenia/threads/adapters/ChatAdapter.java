@@ -514,7 +514,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (last instanceof ConsultConnectionMessage && prev instanceof ConsultPhrase) {
             list.add(list.size() - 1, new Space(8, prev.getTimeStamp() + 1));
         }
-        if (!isBulk && !isInSearchMode) notifyItemInserted(list.size() - 2);
+        if (!isBulk && !isInSearchMode) notifyItemInserted(list.size() - 1);
     }
 
     public int getCurrentItemCount() {
@@ -629,14 +629,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ConsultPhrase cp = (ConsultPhrase) o;
             FileDescription fileDescription = cp.getFileDescription();
             if (TextUtils.isEmpty(cp.getPhrase())
-                    && (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.JPEG
-                    || FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PNG
-                    || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.JPEG
-                    || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG)) {
+                    && (FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.JPEG
+                    || FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PNG)) {
                 return TYPE_IMAGE_FROM_CONSULT;
             } else if (TextUtils.isEmpty(cp.getPhrase())
-                    && (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF
-                    || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PDF)) {
+                    && (FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PDF
+                    || FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PDF)) {
                 return TYPE_FILE_FROM_CONSULT;
             } else {
                 return TYPE_CONSULT_PHRASE;

@@ -32,7 +32,6 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -63,11 +62,9 @@ import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.PrefUtils;
-import com.sequenia.threads.utils.SwipeListener;
 import com.sequenia.threads.views.BottomGallery;
 import com.sequenia.threads.views.BottomSheetView;
 import com.sequenia.threads.views.MySwipeRefreshLayout;
-import com.sequenia.threads.views.SwipeAwareView;
 import com.sequenia.threads.views.WelcomeScreen;
 
 import java.io.File;
@@ -115,7 +112,7 @@ public class ChatActivity extends AppCompatActivity
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
-    public String connectedConsultId;
+    private String connectedConsultId;
     private ChatActivityReceiver mChatActivityReceiver;
     private Handler h = new Handler(Looper.getMainLooper());
     private boolean isInMessageSearchMode;
@@ -126,6 +123,7 @@ public class ChatActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.ThreadsStyle);
         setContentView(R.layout.activity_chat_activity);
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         if (null != t) initToolbar(t);
@@ -143,7 +141,6 @@ public class ChatActivity extends AppCompatActivity
         IntentFilter intentFilter = new IntentFilter(ACTION_SEARCH_CHAT_FILES);
         intentFilter.addAction(ACTION_SEARCH);
         registerReceiver(mChatActivityReceiver, intentFilter);
-
     }
 
     private void getIncomingSettings(Intent intent) {
@@ -341,7 +338,6 @@ public class ChatActivity extends AppCompatActivity
                     onConsultAvatarClick(connectedConsultId);
             }
         });
-
         mCopyControls = findViewById(R.id.copy_controls);
         mInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -676,13 +672,20 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void setTitleStateDefault() {
-        if (!isInMessageSearchMode) {
-            mConsultTitle.setVisibility(View.GONE);
-            mConsultNameView.setVisibility(View.VISIBLE);
-            mSearchMessageEditText.setVisibility(View.GONE);
-            mSearchMessageEditText.setText("");
-            mConsultNameView.setText(PrefUtils.getDefaultTitle(this));
-        }
+        final Context ctx = this;
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                if (!isInMessageSearchMode) {
+                    mConsultTitle.setVisibility(View.GONE);
+                    mConsultNameView.setVisibility(View.VISIBLE);
+                    mSearchMessageEditText.setVisibility(View.GONE);
+                    mSearchMessageEditText.setText("");
+                    mConsultNameView.setText(PrefUtils.getDefaultTitle(ctx));
+                }
+                connectedConsultId = String.valueOf(-1);
+            }
+        });
     }
 
     private void setTitleStateSearchingConsult() {
@@ -707,23 +710,30 @@ public class ChatActivity extends AppCompatActivity
     }
 
 
-    public void setTitleStateOperatorConnected(String connectedConsultId, String ConsultName, String consultTitle) {
-        if (!isInMessageSearchMode) {
-            mConsultTitle.setVisibility(View.VISIBLE);
-            mConsultNameView.setVisibility(View.VISIBLE);
-        }
-        if (!TextUtils.isEmpty(ConsultName) && !ConsultName.equals("null")) {
-            mConsultNameView.setText(ConsultName);
-        } else {
-            mConsultNameView.setText(getString(R.string.unknown_operator));
-        }
-        if (!TextUtils.isEmpty(consultTitle) && !consultTitle.equals("null")) {
-            mConsultTitle.setText(ConsultName);
-        } else {
-            mConsultTitle.setText("");
-        }
-        this.connectedConsultId = connectedConsultId;
-        mChatAdapter.removeConsultSearching();
+    public void setStateConsultConnected(final String connectedConsultId, final String ConsultName, final String consultTitle) {
+        final ChatActivity a = this;
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                if (!isInMessageSearchMode) {
+                    mConsultTitle.setVisibility(View.VISIBLE);
+                    mConsultNameView.setVisibility(View.VISIBLE);
+                }
+                if (!TextUtils.isEmpty(ConsultName) && !ConsultName.equals("null")) {
+                    mConsultNameView.setText(ConsultName);
+                } else {
+                    mConsultNameView.setText(getString(R.string.unknown_operator));
+                }
+                if (!TextUtils.isEmpty(consultTitle) && !consultTitle.equals("null")) {
+                    mConsultTitle.setText(consultTitle);
+                } else {
+                    mConsultTitle.setText("");
+                }
+                a.connectedConsultId = connectedConsultId;
+                mChatAdapter.removeConsultSearching();
+            }
+        });
+
     }
 
     private void setTitleStateCurrentOperatorConnected() {
@@ -897,7 +907,7 @@ public class ChatActivity extends AppCompatActivity
                     break;
                 case ChatController.CONSULT_STATE_FOUND:
                     String nameTitle[] = mChatController.getCurrentConsultName().split("%%");
-                    setTitleStateOperatorConnected(connectedConsultId, nameTitle[0], nameTitle[1]);
+                    setStateConsultConnected(connectedConsultId, nameTitle[0], nameTitle[1]);
                     break;
                 case ChatController.CONSULT_STATE_SEARCHING:
                     setTitleStateSearchingConsult();

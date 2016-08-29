@@ -106,14 +106,18 @@ public class MessageFormatter {
         return "";
     }
 
-    public static ConsultPhrase format(PushMessage pushMessage) throws JSONException {
+    public static ChatItem format(PushMessage pushMessage) throws JSONException {
         JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
+        if (fullMessage.has("type") && (fullMessage.getString("type").equalsIgnoreCase("OPERATOR_JOINED") || fullMessage.getString("type").equalsIgnoreCase("OPERATOR_LEFT"))) {
+            return getConsultConnectionFromPush(pushMessage);
+        }
         String messageId = pushMessage.getMessageId();
         long timeStamp = pushMessage.getSentAt();
         String message = fullMessage.getString("text") == null ? pushMessage.getShortMessage() : fullMessage.getString("text");
         JSONObject operatorInfo = fullMessage.getJSONObject("operator");
         final String name = operatorInfo.getString("name");
-        String photoUrl = operatorInfo.getString("photoUrl");
+        String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
+        String status = operatorInfo.has("status") && !operatorInfo.isNull("status") ? operatorInfo.getString("status") : null;
         FileDescription fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
         if (fileDescription != null) {
             fileDescription.setFrom(name);
@@ -130,18 +134,44 @@ public class MessageFormatter {
                 , messageId
                 , message
                 , timeStamp
-                , operatorInfo.getString("id")
+                , String.valueOf(operatorInfo.getLong("id"))
                 , photoUrl
-                , false);
+                , false
+                , status
+        );
+    }
+
+    public static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) throws JSONException {
+        JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
+        String messageId = pushMessage.getMessageId();
+        long timeStamp = pushMessage.getSentAt();
+        JSONObject operator = fullMessage.getJSONObject("operator");
+        long operatorId = operator.getLong("id");
+        String name = operator.isNull("name") ? null : operator.getString("name");
+        String status = operator.isNull("status") ? null : operator.getString("status");
+        String type = fullMessage.getString("type").equalsIgnoreCase("OPERATOR_JOINED") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+        boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
+        String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
+        String title = pushMessage.getShortMessage() == null ? null : pushMessage.getShortMessage().split(" ")[0];
+        return new ConsultConnectionMessage(
+                String.valueOf(operatorId)
+                , type
+                , name
+                , gender
+                , timeStamp
+                , photourl
+                , status
+                , title);
     }
 
     public static ArrayList<ConsultPhrase> format(ArrayList<com.pushserver.android.PushMessage> list) {
         ArrayList<ConsultPhrase> cp = new ArrayList<>();
         try {
             for (PushMessage pm : list) {
-                cp.add(format(pm));
+                ChatItem ci = format(pm);
+                if (ci instanceof ConsultPhrase) cp.add((ConsultPhrase) format(pm));
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return cp;
@@ -269,39 +299,62 @@ public class MessageFormatter {
     }
 
     public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
-        Log.e(TAG, "" + messages);
+        Log.e(TAG, "" + messages.subList(messages.size() / 2, messages.size() - 1));
         ArrayList<ChatItem> out = new ArrayList<>();
         try {
             for (InOutMessage message : messages) {
-                if (message.content == null || message.content.length() == 0) continue;
+                if (message == null || message.content == null || message.content.length() == 0)
+                    continue;
                 try {
                     JSONObject body = new JSONObject(message.content);
                     String messageId = String.valueOf(message.messageId);
                     long timeStamp = message.sentAt.millis;
-                    String phraseText = body.has("text") ? body.getString("text") : null;
                     JSONObject operatorInfo = body.has("operator") ? body.getJSONObject("operator") : null;
-                    final String name = operatorInfo != null ? operatorInfo.getString("name") : null;
-                    String photoUrl = operatorInfo != null ? operatorInfo.getString("photoUrl") : null;
-                    FileDescription fileDescription = body.has("attachments") ? fileDescriptionFromJson(body.getJSONArray("attachments")) : null;
-                    if (fileDescription != null) {
-                        fileDescription.setFrom(name);
-                        fileDescription.setTimeStamp(timeStamp);
+                    String name = null;
+                    if (operatorInfo != null && operatorInfo.has("name") && !operatorInfo.isNull("name")) {
+                        name = operatorInfo.getString("name");
                     }
-                    Quote quote = body.has("quotes") ? quoteFromJson(body.getJSONArray("quotes")) : null;
-                    if (quote != null && quote.getFileDescription() != null)
-                        quote.getFileDescription().setTimeStamp(timeStamp);
-                    String operId = operatorInfo != null ? operatorInfo.getString("id") : UUID.randomUUID().toString();
-                    if (!message.incoming) {
-                        out.add(new ConsultPhrase(fileDescription, quote, name, messageId, phraseText, timeStamp, operId, photoUrl, true));
+                    String photoUrl = null;
+                    if (operatorInfo != null && operatorInfo.has("photoUrl") && !operatorInfo.isNull("photoUrl")) {
+                        photoUrl = operatorInfo.getString("photoUrl");
+                    }
+                    String operatorId = null;
+                    if (operatorInfo != null && operatorInfo.has("id") && !operatorInfo.isNull("id")) {
+                        operatorId = operatorInfo.getString("id");
+                    }
+                    String status = null;
+                    if (operatorInfo != null && operatorInfo.has("status") && !operatorInfo.isNull("status")) {
+                        status = operatorInfo.getString("status");
+                    }
+                    boolean gender = false;
+                    if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
+                        gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
+                    }
+                    if (body.has("type") && !body.isNull("type") && (body.getString("type").equalsIgnoreCase("OPERATOR_JOINED") || body.getString("type").equalsIgnoreCase("OPERATOR_LEFT"))) {
+                        String type = body.getString("type").equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+                        out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null));
                     } else {
+                        String phraseText = body.has("text") ? body.getString("text") : null;
+                        FileDescription fileDescription = body.has("attachments") ? fileDescriptionFromJson(body.getJSONArray("attachments")) : null;
                         if (fileDescription != null) {
-                            if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")){
-                                fileDescription.setFrom("Я");
-                            }else {
-                                fileDescription.setFrom("I");
-                            }
+                            fileDescription.setFrom(name);
+                            fileDescription.setTimeStamp(timeStamp);
                         }
-                        out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_SENT_AND_SERVER_RECEIVED));
+                        Quote quote = body.has("quotes") ? quoteFromJson(body.getJSONArray("quotes")) : null;
+                        if (quote != null && quote.getFileDescription() != null)
+                            quote.getFileDescription().setTimeStamp(timeStamp);
+                        if (!message.incoming) {
+                            out.add(new ConsultPhrase(fileDescription, quote, name, messageId, phraseText, timeStamp, operatorId, photoUrl, true, status));
+                        } else {
+                            if (fileDescription != null) {
+                                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+                                    fileDescription.setFrom("Я");
+                                } else {
+                                    fileDescription.setFrom("I");
+                                }
+                            }
+                            out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_SENT_AND_SERVER_RECEIVED));
+                        }
                     }
                 } catch (JSONException e) {
                     String content = message.content;
@@ -315,6 +368,8 @@ public class MessageFormatter {
                                     , name
                                     , true
                                     , message.sentAt.millis
+                                    , null
+                                    , null
                                     , null);
                     out.add(m);
                 }

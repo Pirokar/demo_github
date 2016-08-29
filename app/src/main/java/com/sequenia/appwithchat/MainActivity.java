@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             requestPermissionsAndInit(PERM_REQUEST_CODE);
         }
-       /* Fabric.with(this, new Crashlytics());*/
+        Fabric.with(this, new Crashlytics());
     }
 
     public void onChatButtonClick(View v) {
@@ -74,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
                     .setDefaultChatTitle(getString(R.string.contact_center))
                     .setClientName(nameTextView.getText().toString())
                     .setWelcomeScreenAttrs(R.drawable.logo
-                            ,"Добро пожаловать"
-                            ,"мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст"
-                            ,R.color.green_dark
-                            ,18
-                            ,14)
+                            , "Добро пожаловать"
+                            , "мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст"
+                            , R.color.green_dark
+                            , 18
+                            , 14)
                     .build();
             startActivity(i);
         } else if (mEditText.getText().length() < 5) {

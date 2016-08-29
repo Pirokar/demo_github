@@ -1,5 +1,7 @@
 package com.sequenia.threads.utils;
 
+import com.sequenia.threads.model.FileDescription;
+
 /**
  * Created by yuri on 01.08.2016.
  */
@@ -20,12 +22,21 @@ public class FileUtils {
         if (extension.equalsIgnoreCase("png")) return PNG;
         if (extension.equalsIgnoreCase("pdf")) return PDF;
         if (extension.equalsIgnoreCase("doc")
-                ||extension.equalsIgnoreCase("docx")
-                ||extension.equalsIgnoreCase("xls")
-                ||extension.equalsIgnoreCase("xlsx")
-                ||extension.equalsIgnoreCase("ppt")
-                ||extension.equalsIgnoreCase("pptx")) return OTHER_DOC_FORMATS;
+                || extension.equalsIgnoreCase("docx")
+                || extension.equalsIgnoreCase("xls")
+                || extension.equalsIgnoreCase("xlsx")
+                || extension.equalsIgnoreCase("ppt")
+                || extension.equalsIgnoreCase("pptx")) return OTHER_DOC_FORMATS;
         return UNKNOWN;
+    }
+
+    public static int getExtensionFromFileDescription(FileDescription fileDescription) {
+        if (fileDescription == null || (fileDescription.getIncomingName() == null && fileDescription.getFilePath() == null))
+            return UNKNOWN;
+        if (getExtensionFromPath(fileDescription.getFilePath()) == UNKNOWN && getExtensionFromPath(fileDescription.getIncomingName()) == UNKNOWN)
+            return UNKNOWN;
+
+        return getExtensionFromPath(fileDescription.getFilePath()) != UNKNOWN ? getExtensionFromPath(fileDescription.getFilePath()) : getExtensionFromPath(fileDescription.getIncomingName());
     }
 
     public static String getLastPathSegment(String path) {

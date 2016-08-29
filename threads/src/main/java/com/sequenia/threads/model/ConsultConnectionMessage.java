@@ -9,9 +9,11 @@ public class ConsultConnectionMessage implements ChatItem {
     private final String name;
     private final boolean sex;
     private final long date;
+    private final String status;
     private final String avatarPath;
-    public static final String TYPE_JOINED = "CONSULT_CONNECTED";
-    public static final String TYPE_LEFT = "TYPE_LEFT";
+    public static final String TYPE_JOINED = "OPERATOR_JOINED";
+    public static final String TYPE_LEFT = "OPERATOR_LEFT";
+    private String title;
 
     public String getName() {
         return name;
@@ -26,13 +28,31 @@ public class ConsultConnectionMessage implements ChatItem {
         return date;
     }
 
-    public ConsultConnectionMessage(String consultId, String type, String name, boolean sex, long date, String avatarPath) {
+    public ConsultConnectionMessage(
+            String consultId
+            , String type
+            , String name
+            , boolean sex
+            , long date
+            , String avatarPath
+            , String status
+            , String title) {
         this.consultId = consultId;
         this.type = type;
         this.name = name;
         this.sex = sex;
         this.date = date;
         this.avatarPath = avatarPath;
+        this.status = status;
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public String getConsultId() {
@@ -67,12 +87,14 @@ public class ConsultConnectionMessage implements ChatItem {
         ConsultConnectionMessage that = (ConsultConnectionMessage) o;
 
         if (sex != that.sex) return false;
-        if (date != that.date) return false;
         if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
             return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return avatarPath != null ? avatarPath.equals(that.avatarPath) : that.avatarPath == null;
+        if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        if (avatarPath != null ? !avatarPath.equals(that.avatarPath) : that.avatarPath != null)
+            return false;
+        return title != null ? title.equals(that.title) : that.title == null;
 
     }
 
@@ -82,8 +104,9 @@ public class ConsultConnectionMessage implements ChatItem {
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (sex ? 1 : 0);
-        result = 31 * result + (int) (date ^ (date >>> 32));
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
     }
 
@@ -95,7 +118,9 @@ public class ConsultConnectionMessage implements ChatItem {
                 ", name='" + name + '\'' +
                 ", sex=" + sex +
                 ", date=" + date +
+                ", status='" + status + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
+                ", title='" + title + '\'' +
                 '}';
     }
 }
