@@ -67,12 +67,13 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
                     mSearchEditText.setText("");
                     mSearchEditText.setVisibility(View.GONE);
                     mToolbar.setTitle(getString(R.string.files_and_media));
-                    mFilesAndMediaAdapter.undoClear();
+                    if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
+
                 } else {
                     mSearchEditText.setVisibility(View.VISIBLE);
                     mSearchEditText.requestFocus();
                     mToolbar.setTitle("");
-                    mFilesAndMediaAdapter.backupAndClear();
+                    if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.backupAndClear();
                     mSearchEditText.setText("");
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
@@ -90,15 +91,20 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 String str = null;
-                if (s == null) str = "";
-                str = str == null ? s.toString() : str;
-                mFilesAndMediaAdapter.filter(str);
+                if (s == null) {
+                    str = "";
+                } else {
+                    str = s.toString();
+                }
+                if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.filter(str);
             }
         });
     }
@@ -129,7 +135,7 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
             mSearchEditText.setText("");
             mSearchEditText.setVisibility(View.GONE);
             mToolbar.setTitle(getString(R.string.files_and_media));
-            mFilesAndMediaAdapter.undoClear();
+            if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
         } else {
             super.onBackPressed();
         }

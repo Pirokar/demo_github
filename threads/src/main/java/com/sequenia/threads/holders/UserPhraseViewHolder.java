@@ -84,8 +84,8 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mPhraseTextView.setText(phrase);
         }
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
-        ViewUtils.setClickListener((ViewGroup) itemView,onLongClickListener);
-        ViewUtils.setClickListener((ViewGroup) itemView,onRowClickListener);
+        ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
+        ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
         if (quote != null) {
             mRightTextRow.setVisibility(View.VISIBLE);
             mRightTextRow.setVisibility(View.VISIBLE);
@@ -95,17 +95,21 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.sent_at) + " " + fileSdf.format(quote.getTimeStamp()));
             mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
             if (quote.getFileDescription() != null) {
+                if (quote.getFileDescription().getFilePath() != null)
+                    quote.getFileDescription().setDownloadProgress(100);
                 mFileImageButton.setVisibility(View.VISIBLE);
                 String filename = quote.getFileDescription().getIncomingName();
                 if (filename == null) {
                     filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath()) == null ? "" : FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
                 }
                 mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
-                if (null != fileClickListener) mFileImageButton.setOnClickListener(fileClickListener);
+                if (null != fileClickListener)
+                    mFileImageButton.setOnClickListener(fileClickListener);
                 mFileImageButton.setProgress(quote.getFileDescription().getDownloadProgress());
             }
         }
         if (fileDescription != null) {
+            if (fileDescription.getFilePath() != null) fileDescription.setDownloadProgress(100);
             mRightTextRow.setVisibility(View.VISIBLE);
             mFileImageButton.setVisibility(View.VISIBLE);
             String filename = fileDescription.getIncomingName();
@@ -114,7 +118,6 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             }
             mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
             mRightTextHeader.setText(quote == null ? fileDescription.getFileSentTo() : quote.getPhraseOwnerTitle());
-
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.sent_at) + " " + fileSdf.format(fileDescription.getTimeStamp()));
             if (fileClickListener != null) {
                 mFileImageButton.setOnClickListener(fileClickListener);
@@ -125,9 +128,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             } else {
                 mFileImageButton.setProgress(fileDescription.getDownloadProgress());
             }
-
         }
-
         if (mPhraseTextView.getLayout() != null) {
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
             if (phrase != null && phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {

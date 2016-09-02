@@ -35,7 +35,7 @@ public class ConsultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT>20) {
+        if (Build.VERSION.SDK_INT > 20) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -50,13 +50,13 @@ public class ConsultActivity extends AppCompatActivity {
         String imagePath = i.getStringExtra("imagePath");
         String title = i.getStringExtra("title");
         String moto = i.getStringExtra("moto");
-        if (null != imagePath) {
+        if (null != imagePath && !imagePath.equals("null")) {
             Picasso.with(this).load(imagePath).into(mConsultImageView);
         }
-        if (null != title) {
+        if (null != title && !title.equals("null")) {
             mConsulHeaderTextView.setText(title);
         }
-        if (null != moto)
+        if (null != moto && !moto.equals("null"))
             mConsultMotoTextView.setText(moto);
         if (t == null) return;
         t.setTitle("");
@@ -74,9 +74,9 @@ public class ConsultActivity extends AppCompatActivity {
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
-        if (Build.VERSION.SDK_INT>20) {
+        if (Build.VERSION.SDK_INT > 20) {
             RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0,(int)getResources().getDimension(R.dimen.margin_big),0,0);
+            lp.setMargins(0, (int) getResources().getDimension(R.dimen.margin_big), 0, 0);
             t.setLayoutParams(lp);
         }
     }
@@ -87,11 +87,11 @@ public class ConsultActivity extends AppCompatActivity {
         return true;
     }
 
-    public static Intent getStartIntent(Activity activity, String imagePath, String title, String moto) {
+    public static Intent getStartIntent(Activity activity, String avatarPath, String name, String status) {
         Intent i = new Intent(activity, ConsultActivity.class);
-        i.putExtra("imagePath", imagePath);
-        i.putExtra("title", title);
-        i.putExtra("moto", moto);
+        i.putExtra("imagePath", avatarPath);
+        i.putExtra("title", name);
+        i.putExtra("moto", status);
         return i;
     }
 
@@ -101,7 +101,7 @@ public class ConsultActivity extends AppCompatActivity {
             startActivity(FilesActivity.getStartIntetent(this));
             return true;
         }
-        if (item.getItemId()==R.id.search){
+        if (item.getItemId() == R.id.search) {
             sendBroadcast(new Intent(ChatActivity.ACTION_SEARCH_CHAT_FILES));
             finish();
         }

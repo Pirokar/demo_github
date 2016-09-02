@@ -141,16 +141,8 @@ public class UserPhrase implements ChatPhrase,IsOnlyImage {
 
     @Override
     public String toString() {
-        return "UserPhrase{" +
-                "messageId='" + messageId + '\'' +
-                ", phrase='" + phrase + '\'' +
-                ", withFile=" + withFile +
-                ", sentState=" + sentState +
-                ", mQuote=" + mQuote +
-                ", isWithQuote=" + isWithQuote +
-                ", phraseTimeStamp=" + phraseTimeStamp +
-                ", fileDescription=" + fileDescription +
-                ", isChosen=" + isChosen +
-                '}';
+        return "[UserPhrase] " +
+                "TimeStamp=" + phraseTimeStamp +
+                "";
     }
 }

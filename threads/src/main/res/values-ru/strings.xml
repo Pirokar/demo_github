@@ -55,10 +55,15 @@
     <string name="file_received">Получен файл</string>
     <string name="with_file">(с файлом)</string>
     <string name="download">Загрузить</string>
-    <string name="you_have_unread_messages">у вас есть непрочитанный сообщения</string>
+    <string name="you_have_unread_messages">У вас есть непрочитанные сообщения</string>
     <string name="message_were_unsent">Сообщение не было послано</string>
     <string name="unknown_operator">Неизвестный</string>
     <string name="saved_to">Сохранено в</string>
     <string name="unable_to_save">Сейчас невозможно сохранить файл</string>
     <string name="search_files">Искать файлы</string>
+    <string name="push_left_female">покинула диалог</string>
+    <string name="push_left">покинул диалог</string>
+    <string name="push_connected_female">подключилась к диалогу</string>
+    <string name="push_connected">подключился к диалогу</string>
+    <string name="with_files">(с файлами)</string>
 </resources>

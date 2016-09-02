@@ -52,11 +52,16 @@
     <string name="search_more">Search more</string>
     <string name="one_new_message">1 new message</string>
     <string name="new_messages">new messages</string>
-    <string name="file_received">file received</string>
+    <string name="file_received">File received</string>
     <string name="with_file">(with file)</string>
+    <string name="with_files">(with files)</string>
     <string name="you_have_unread_messages">you have unread messages</string>
     <string name="message_were_unsent">Message not sent</string>
     <string name="unknown_operator">Unknown</string>
     <string name="saved_to">Saved to</string>
     <string name="unable_to_save">Unable to save file</string>
+    <string name="push_left_female">left dialog</string>
+    <string name="push_left">left dialog</string>
+    <string name="push_connected_female">connected to dialog</string>
+    <string name="push_connected">connected to dialog</string>
 </resources>

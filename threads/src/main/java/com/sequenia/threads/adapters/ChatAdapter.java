@@ -41,11 +41,13 @@ import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.FileUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Created by yuri on 09.06.2016.
@@ -121,7 +123,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         public void onClick(View v) {
                             if (null != mAdapterInterface) {
                                 ConsultConnectionMessage cc = (ConsultConnectionMessage) list.get(holder.getAdapterPosition());
-                                mAdapterInterface.onConsultAvatarClick(cc.getConsultId());
+                               if(null != mAdapterInterface) mAdapterInterface.onConsultConnectionClick(cc);
                             }
                         }
                     });
@@ -460,7 +462,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else {
             list = this.list;
         }
-        if (list.size() == 0) {
+        new ChatMessagesOrderer().addAndOrder(list, Arrays.asList(new ChatItem[]{item}));
+        if (!isBulk && !isInSearchMode) notifyItemInserted(list.size() - 1);
+       /* if (list.size() == 0) {
             list.add(new DateRow(item.getTimeStamp()));
             if (!isBulk && !isInSearchMode) notifyItemInserted(0);
         }
@@ -514,7 +518,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (last instanceof ConsultConnectionMessage && prev instanceof ConsultPhrase) {
             list.add(list.size() - 1, new Space(8, prev.getTimeStamp() + 1));
         }
-        if (!isBulk && !isInSearchMode) notifyItemInserted(list.size() - 1);
+        if (!isBulk && !isInSearchMode) notifyItemInserted(list.size() - 1);*/
     }
 
     public int getCurrentItemCount() {
@@ -528,7 +532,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addItems(final List<ChatItem> items) {
-        ArrayList<ChatItem> list = getList();
+     /*   ArrayList<ChatItem> list = getList();
         for (int i = 0; i < items.size(); i++) {
             addItem(items.get(i), true, false);
         }
@@ -607,7 +611,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
                 }
             });
-        }
+        }*/
+        new ChatMessagesOrderer().addAndOrder(getList(), items);
         if (!isInSearchMode) notifyDataSetChanged();
     }
 
@@ -809,6 +814,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onImageClick(ChatPhrase chatPhrase);
 
         void onImageDownloadRequest(FileDescription fileDescription);
+
+        void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
     }
 
     private class MyBroadcastReceiver extends BroadcastReceiver {
@@ -832,5 +839,177 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             list = this.list;
         }
         return list;
+    }
+
+    public static class ChatMessagesOrderer {
+        private void addItemInternal(List<ChatItem> listToInsertTo, ChatItem itemToInsert) {
+            if (listToInsertTo.size() == 0) {
+                listToInsertTo.add(new DateRow(itemToInsert.getTimeStamp()));
+            }
+            if (listToInsertTo.contains(itemToInsert)) return;
+            listToInsertTo.add(itemToInsert);
+            Calendar currentTimeStamp = Calendar.getInstance();
+            Calendar prevTimeStamp = Calendar.getInstance();
+            currentTimeStamp.setTimeInMillis(itemToInsert.getTimeStamp());
+            boolean insertingToStart = listToInsertTo.lastIndexOf(itemToInsert) == 0;
+            if (!insertingToStart) {//if we are not inserting to the start
+                int prevIndex = listToInsertTo.lastIndexOf(itemToInsert) - 1;
+                prevTimeStamp.setTimeInMillis(listToInsertTo.get(prevIndex).getTimeStamp());
+                if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) != prevTimeStamp.get(Calendar.DAY_OF_YEAR)) {
+                    listToInsertTo.add(new DateRow(itemToInsert.getTimeStamp()-1));
+                }
+                if (itemToInsert instanceof ConsultPhrase && listToInsertTo.size() != 1) {
+                    int prev = listToInsertTo.size() - 2;
+                    if (listToInsertTo.get(prev) instanceof ConsultPhrase) {
+                        ((ConsultPhrase) listToInsertTo.get(prev)).setAvatarVisible(false);
+                    }
+                }
+            }
+        }
+
+        private void insertSpacing(List<ChatItem> listToInsertTo) {
+            if (listToInsertTo.size() < 2) return;
+            for (int i = 1; i < listToInsertTo.size(); i++) {
+                ChatItem last = listToInsertTo.get(i);
+                ChatItem prev = listToInsertTo.get(i - 1);
+                if (prev instanceof UserPhrase && last instanceof ConsultConnectionMessage) {// spacing between Consult and Consult connected
+                    listToInsertTo.add(i, new Space(12, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (prev instanceof ConsultPhrase && last instanceof UserPhrase) {// spacing between Consult and User phrase
+                    listToInsertTo.add(i, new Space(12, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (prev instanceof ConsultConnectionMessage && last instanceof ConsultPhrase) {// spacing between Consult connected and Consult phrase
+                    listToInsertTo.add(i, new Space(12, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (last instanceof ConsultPhrase && prev instanceof ConsultPhrase) {// spacing between Consult phrase  and Consult phrase
+                    listToInsertTo.add(i, new Space(2, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (last instanceof UserPhrase && prev instanceof UserPhrase) {// spacing between User phrase  and User phrase
+                    listToInsertTo.add(i, new Space(2, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (prev instanceof UserPhrase && last instanceof ConsultPhrase) {// spacing between User phrase  and Consult phrase
+                    listToInsertTo.add(i, new Space(24, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (last instanceof UserPhrase && prev instanceof ConsultConnectionMessage) {
+                    listToInsertTo.add(i, new Space(12, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (last instanceof ConsultConnectionMessage && prev instanceof ConsultConnectionMessage) {
+                    listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (last instanceof UserPhrase && prev instanceof ConsultConnectionMessage) {
+                    listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
+                    continue;
+                }
+                if (last instanceof ConsultConnectionMessage && prev instanceof ConsultPhrase) {
+                    listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
+                }
+            }
+        }
+        private void removeAllSpacings(List<ChatItem> list) {
+            for (Iterator<ChatItem> iter = list.iterator(); iter.hasNext(); ) {
+                if (iter.next() instanceof Space) iter.remove();
+            }
+        }
+
+        public void addAndOrder(List<ChatItem> listToInsertTo, List<ChatItem> listToAdd) {
+            for (int i = 0; i < listToAdd.size(); i++) {
+                addItemInternal(listToInsertTo, listToAdd.get(i));
+            }
+            Collections.sort(listToInsertTo, new Comparator<ChatItem>() {
+                @Override
+                public int compare(ChatItem lhs, ChatItem rhs) {
+                    return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
+                }
+            });
+            if (listToInsertTo.size() == 0) return;
+            listToInsertTo.add(0, new DateRow(listToInsertTo.get(0).getTimeStamp()));
+            Calendar currentTimeStamp = Calendar.getInstance();
+            Calendar nextTimeStamp = Calendar.getInstance();
+            List<DateRow> daterows = new ArrayList<>();
+            for (ChatItem ci : listToInsertTo) {
+                if (ci instanceof DateRow) {
+                    daterows.add((DateRow) ci);
+                    continue;
+                }
+                int index = listToInsertTo.indexOf(ci);
+                if (index == (listToInsertTo.size() - 1)) continue;//removing dups of date rows
+                if (ci instanceof ConsultPhrase && listToInsertTo.get(index + 1) instanceof ConsultPhrase) {
+                    ((ConsultPhrase) ci).setAvatarVisible(false);
+                }
+            }
+            for (int i = 0; i < daterows.size(); i++) {
+                if (i == (daterows.size() - 1)) continue;
+                currentTimeStamp.setTimeInMillis(daterows.get(i).getTimeStamp());
+                nextTimeStamp.setTimeInMillis(daterows.get(i + 1).getTimeStamp());
+                if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) == nextTimeStamp.get(Calendar.DAY_OF_YEAR)) {
+                    listToInsertTo.remove(daterows.get(i + 1));
+                }
+            }
+            for (ChatItem ci : listToInsertTo) {
+                int index = listToInsertTo.indexOf(ci);
+                if (index == (listToInsertTo.size() - 1))
+                    continue;//removing wrong avatar visibility of consult of date rows
+                if (ci instanceof ConsultPhrase && listToInsertTo.get(index + 1) instanceof ConsultPhrase) {
+                    ((ConsultPhrase) ci).setAvatarVisible(false);
+                }
+            }
+            SearchingConsult sc = null;
+            for (ChatItem ci : listToInsertTo) {
+                if (ci instanceof SearchingConsult) sc = (SearchingConsult) ci;
+            }
+            if (sc != null) {
+                int prevPos = listToInsertTo.lastIndexOf(sc);
+                listToInsertTo.remove(sc);
+                listToInsertTo.add(sc);
+            }
+            boolean hasUnread = false;
+            for (ChatItem ci : listToInsertTo) {
+                if (ci instanceof ConsultPhrase) {
+                    if (!((ConsultPhrase) ci).isRead()) hasUnread = true;
+                }
+            }
+            if (hasUnread) {
+                long lastUnreadStamp = Long.MAX_VALUE;
+                int counter = 0;
+                for (Iterator<ChatItem> iter = listToInsertTo.iterator(); iter.hasNext(); ) {
+                    ChatItem item = iter.next();
+                    if (item instanceof UnreadMessages) iter.remove();
+                    if (item instanceof ConsultPhrase) {
+                        ConsultPhrase cp = ((ConsultPhrase) item);
+                        if (!cp.isRead()) counter++;
+                        if (!cp.isRead() && cp.getTimeStamp() < lastUnreadStamp) {
+                            lastUnreadStamp = cp.getTimeStamp();
+                        }
+                    }
+                }
+                listToInsertTo.add(new UnreadMessages(lastUnreadStamp - 1, counter));
+            }
+            Collections.sort(listToInsertTo, new Comparator<ChatItem>() {
+                @Override
+                public int compare(ChatItem lhs, ChatItem rhs) {
+                    return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
+                }
+            });
+            for (int i = 0; i < listToInsertTo.size(); i++) {
+                if (i == 0) continue;
+                if (listToInsertTo.size() == 1) return;
+                if (listToInsertTo.get(i - 1) instanceof ConsultPhrase
+                        && listToInsertTo.get(i) instanceof ConsultPhrase) {
+                    ((ConsultPhrase) listToInsertTo.get(i)).setAvatarVisible(true);//setting proper visibility of consult avatars
+                    ((ConsultPhrase) listToInsertTo.get(i - 1)).setAvatarVisible(false);
+                }
+            }
+            removeAllSpacings(listToInsertTo);
+            insertSpacing(listToInsertTo);
+            /*if (listToInsertTo.size()>0 && listToInsertTo.get(listToInsertTo.size()-1) instanceof DateRow)listToInsertTo.remove(listToInsertTo.size()-1);*/
+        }
     }
 }

@@ -16,6 +16,7 @@ public class PrefUtils {
     public static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
     public static final String DEFAULT_TITLE_TAG = "DEFAULT_TITLE_TAG";
     public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
+    public static final String PUSH_ICON = "DEFAULT_PUSH_ICON";
 
     private PrefUtils() {
     }
@@ -27,6 +28,13 @@ public class PrefUtils {
 
     public static String getClientName(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + CLIENT_NAME, "");
+    }
+    public static void setPushIconResid(Context ctx, int iconResId) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putInt(PrefUtils.class + PUSH_ICON, iconResId).commit();
+    }
+
+    public static int getPushIconResid(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getInt(PrefUtils.class + PUSH_ICON, -1);
     }
 
     public static void setClientId(Context ctx, String clientId) {

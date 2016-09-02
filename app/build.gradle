@@ -23,8 +23,8 @@ android {
         applicationId "com.sequenia.appwithchat"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 7
-        versionName "1.9_test"
+        versionCode 8
+        versionName "2.0_test"
     }
     buildTypes {
         release {
@@ -49,5 +49,6 @@ dependencies {
         transitive = true;
     }
     compile 'com.android.support:appcompat-v7:23+'
+    testCompile 'com.android.support:appcompat-v7:23+'
     compile 'com.google.android.gms:play-services-gcm:9.4.0'
 }

@@ -161,20 +161,8 @@ public class MessageFormatter {
                 , timeStamp
                 , photourl
                 , status
-                , title);
-    }
-
-    public static ArrayList<ConsultPhrase> format(ArrayList<com.pushserver.android.PushMessage> list) {
-        ArrayList<ConsultPhrase> cp = new ArrayList<>();
-        try {
-            for (PushMessage pm : list) {
-                ChatItem ci = format(pm);
-                if (ci instanceof ConsultPhrase) cp.add((ConsultPhrase) format(pm));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return cp;
+                , title
+                , pushMessage.getMessageId());
     }
 
     private static JSONArray attachmentsFromFileDescription(File file) throws JSONException {
@@ -284,6 +272,18 @@ public class MessageFormatter {
         return fileDescription;
     }
 
+    public static List<ChatItem> formatMessages(List<PushMessage> messages){
+        List<ChatItem> list = new ArrayList<>();
+        try {
+            for (int i = 0; i < messages.size(); i++) {
+                list.add(format(messages.get(i)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public static String getStartMessage(String clientName, String clientId, String email) {
         JSONObject object = new JSONObject();
         try {
@@ -299,7 +299,6 @@ public class MessageFormatter {
     }
 
     public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
-        Log.e(TAG, "" + messages.subList(messages.size() / 2, messages.size() - 1));
         ArrayList<ChatItem> out = new ArrayList<>();
         try {
             for (InOutMessage message : messages) {
@@ -332,7 +331,7 @@ public class MessageFormatter {
                     }
                     if (body.has("type") && !body.isNull("type") && (body.getString("type").equalsIgnoreCase("OPERATOR_JOINED") || body.getString("type").equalsIgnoreCase("OPERATOR_LEFT"))) {
                         String type = body.getString("type").equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-                        out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null));
+                        out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null, messageId));
                     } else {
                         String phraseText = body.has("text") ? body.getString("text") : null;
                         FileDescription fileDescription = body.has("attachments") ? fileDescriptionFromJson(body.getJSONArray("attachments")) : null;
@@ -370,7 +369,8 @@ public class MessageFormatter {
                                     , message.sentAt.millis
                                     , null
                                     , null
-                                    , null);
+                                    , null
+                                    , UUID.randomUUID().toString());
                     out.add(m);
                 }
             }

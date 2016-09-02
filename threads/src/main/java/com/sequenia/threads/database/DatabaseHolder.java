@@ -170,4 +170,14 @@ public class DatabaseHolder {
             }
         });
     }
+
+    public void getChatItemByFileDescription(final FileDescription fileDescription, final CompletionHandler<ChatItem> handler) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                ChatPhrase cp = mMyOpenHelper.getChatphraseByDescription(fileDescription);
+                handler.onComplete(cp);
+            }
+        });
+    }
 }

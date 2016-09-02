@@ -40,10 +40,10 @@ import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.services.DownloadService;
 import com.sequenia.threads.services.NotificationService;
 import com.sequenia.threads.utils.Callback;
-import com.sequenia.threads.utils.ConsultInfo;
-import com.sequenia.threads.services.DownloadService;
+import com.sequenia.threads.utils.ConsultWriter;
 import com.sequenia.threads.utils.DualFilePoster;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.MessageFormatter;
@@ -56,8 +56,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -71,7 +69,6 @@ public class ChatController extends Fragment {
     public static final String DOWNLOADED_SUCCESSFULLY_BROADCAST = "com.sequenia.threads.controllers.DOWNLOADED_SUCCESSFULLY_BROADCAST";
     public static final String DOWNLOAD_ERROR_BROADCAST = "com.sequenia.threads.controllers.DOWNLOAD_ERROR_BROADCAST";
     public static final String CLIENT_ID_IS_SET_BROADCAST = "com.sequenia.threads.controllers.CLIENT_ID_IS_SET_BROADCAST";
-    private Executor mExecutor = Executors.newSingleThreadExecutor();
     public static final int CONSULT_STATE_FOUND = 1;
     public static final int CONSULT_STATE_SEARCHING = 2;
     public static final int CONSULT_STATE_DEFAULT = 3;
@@ -88,6 +85,7 @@ public class ChatController extends Fragment {
     private long lastUserTypingSend = System.currentTimeMillis();
     public static Picasso p;
     private boolean isInitError;
+    private ConsultWriter mConsultWriter;
 
 
     public static ChatController getInstance(final Context ctx, final String clientId) {
@@ -169,9 +167,7 @@ public class ChatController extends Fragment {
                 });
             }
         } catch (Exception e) {
-            if (e instanceof PushServerErrorException) {
-                PushController.getInstance(ctx).init();
-            } else if (e instanceof IllegalStateException) {
+            if (e instanceof IllegalStateException) {
                 PushController.getInstance(ctx).init();
             }
             e.printStackTrace();
@@ -191,8 +187,8 @@ public class ChatController extends Fragment {
     }
 
     public int getStateOfConsult() {
-        if (ConsultInfo.istSearchingConsult(activity)) return CONSULT_STATE_SEARCHING;
-        else if (ConsultInfo.isConsultConnected(activity)) return CONSULT_STATE_FOUND;
+        if (mConsultWriter.istSearchingConsult()) return CONSULT_STATE_SEARCHING;
+        else if (mConsultWriter.isConsultConnected()) return CONSULT_STATE_FOUND;
         else return CONSULT_STATE_DEFAULT;
     }
 
@@ -206,6 +202,8 @@ public class ChatController extends Fragment {
         if (mDatabaseHolder == null) {
             mDatabaseHolder = DatabaseHolder.getInstance(ctx);
         }
+        if (mConsultWriter == null)
+            mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
     }
 
     public void onUserTyping() {
@@ -238,7 +236,7 @@ public class ChatController extends Fragment {
         activity = ca;
         appContext = activity.getApplicationContext();
         currentOffset = 0;
-        if (ConsultInfo.istSearchingConsult(activity)) {
+        if (mConsultWriter.istSearchingConsult()) {
             activity.setStateSearchingConsult();
         }
         if (mDatabaseHolder == null) {
@@ -257,9 +255,9 @@ public class ChatController extends Fragment {
                 }
             });
         }
-        if (ConsultInfo.isConsultConnected(appContext)) {
-            activity.setStateConsultConnected(ConsultInfo.getCurrentConsultId(appContext), ConsultInfo.getCurrentConsultName(appContext), ConsultInfo.getCurrentConsultTitle(appContext));
-        } else if (ConsultInfo.istSearchingConsult(activity)) {
+        if (mConsultWriter.isConsultConnected()) {
+            activity.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName(), mConsultWriter.getCurrentConsultTitle());
+        } else if (mConsultWriter.istSearchingConsult()) {
             activity.setStateSearchingConsult();
         } else {
             activity.setTitleStateDefault();
@@ -274,7 +272,7 @@ public class ChatController extends Fragment {
     }
 
     public boolean isConsultFound() {
-        return ConsultInfo.isConsultConnected(appContext);
+        return mConsultWriter.isConsultConnected();
     }
 
     public void unbindActivity() {
@@ -294,9 +292,9 @@ public class ChatController extends Fragment {
         Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um, activity);
-        if (!ConsultInfo.isConsultConnected(activity)) {
+        if (!mConsultWriter.isConsultConnected()) {
             activity.setStateSearchingConsult();
-            ConsultInfo.setSearchingConsult(true, activity);
+            mConsultWriter.setSearchingConsult(true);
         }
         sendMessage(um);
     }
@@ -309,7 +307,6 @@ public class ChatController extends Fragment {
                         .sendMessageAsync(MessageFormatter.format(userPhrase, null, null), false, new RequestCallback<String, PushServerErrorException>() {
                             @Override
                             public void onResult(String string) {
-                                Log.e(TAG, "onResult sending without files string = " + string);
                                 setMessageState(userPhrase, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
                                 mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
                                 if (activity != null)
@@ -429,13 +426,12 @@ public class ChatController extends Fragment {
             ctx = activity;
         }
         if (ctx != null) {
-            return ConsultInfo.getCurrentConsultName(ctx) + "%%" + ConsultInfo.getCurrentConsultTitle(ctx);
+            return mConsultWriter.getCurrentConsultName() + "%%" + mConsultWriter.getCurrentConsultTitle();
         }
         return "";
     }
 
     public void onFileClick(final FileDescription fileDescription) {
-        Log.i(TAG, "onFileClick: " + fileDescription);
         if (activity != null) {
             if (fileDescription.getFilePath() == null) {
                 Intent i = new Intent(activity, DownloadService.class);
@@ -461,7 +457,7 @@ public class ChatController extends Fragment {
     }
 
     public void checkAndResendPhrase(final UserPhrase userPhrase) {
-        if (userPhrase.getSentState() == MessageState.STATE_SENT || userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
+        if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
             sendMessage(userPhrase);
         }
     }
@@ -469,8 +465,8 @@ public class ChatController extends Fragment {
     void cleanAll() {
         mDatabaseHolder.cleanDatabase();
         if (activity != null) activity.cleanChat();
-        ConsultInfo.setCurrentConsultLeft(appContext);
-        ConsultInfo.setSearchingConsult(false, appContext);
+        mConsultWriter.setCurrentConsultLeft();
+        mConsultWriter.setSearchingConsult(false);
         isSearchingConsult = false;
         h.removeCallbacksAndMessages(null);
         if (activity != null)
@@ -517,10 +513,10 @@ public class ChatController extends Fragment {
     }
 
     public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
-        Log.i(TAG, "onSystemMessageFromServer:");
+        Log.d(TAG, "onSystemMessageFromServer:");
         switch (MessageMatcher.getType(bundle)) {
             case MessageMatcher.TYPE_OPERATOR_JOINED:
-                Log.i(TAG, "onSystemMessageFromServer: MessageMatcher.TYPE_OPERATOR_JOINED");
+                Log.d(TAG, "onSystemMessageFromServer: MessageMatcher.TYPE_OPERATOR_JOINED");
                 Context notNullContext = appContext == null ? ctx : appContext;
                 String title = bundle.getString("alert");
                 if (title != null) title = title.split(" ")[0];
@@ -531,14 +527,15 @@ public class ChatController extends Fragment {
                                 , System.currentTimeMillis()
                                 , bundle.getString("operatorPhoto")
                                 , bundle.getString("status")
-                                , title)
+                                , title
+                                , UUID.randomUUID().toString())
                         , ctx);
                 if (null != notNullContext) {
-                    ConsultInfo.setCurrentConsultInfo(bundle.getString("operatorName"), bundle, notNullContext);
-                    ConsultInfo.setSearchingConsult(false, ctx);
+                    mConsultWriter.setCurrentConsultInfo(bundle.getString("operatorName"), bundle);
+                    mConsultWriter.setSearchingConsult(false);
                 }
                 if (activity != null) {
-                    activity.setStateConsultConnected(bundle.getString("operatorName"), bundle.getString("operatorName"), ConsultInfo.getCurrentConsultTitle(activity));
+                    activity.setStateConsultConnected(bundle.getString("operatorName"), bundle.getString("operatorName"), mConsultWriter.getCurrentConsultTitle());
                 }
                 break;
             case MessageMatcher.TYPE_OPERATOR_LEFT:
@@ -554,19 +551,19 @@ public class ChatController extends Fragment {
                                 , System.currentTimeMillis()
                                 , bundle.getString("operatorPhoto")
                                 , bundle.getString("operatorStatus")
-                                , title)
+                                , title
+                                , UUID.randomUUID().toString())
                         , ctx);
                 if (null != notNullContext) {
-                    ConsultInfo.setCurrentConsultLeft(notNullContext);
-                    ConsultInfo.setSearchingConsult(false, ctx);
+                    mConsultWriter.setCurrentConsultLeft();
+                    mConsultWriter.setSearchingConsult(false);
                 }
                 if (activity != null) {
                     activity.setTitleStateDefault();
                 }
                 break;
             case MessageMatcher.TYPE_OPERATOR_TYPING:
-                notNullContext = appContext == null ? ctx : appContext;
-                addMessage(new ConsultTyping(ConsultInfo.getCurrentConsultId(notNullContext), System.currentTimeMillis(), ConsultInfo.getCurrentConsultPhoto(appContext)), ctx);
+                addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), System.currentTimeMillis(), mConsultWriter.getCurrentAvatarPath()), ctx);
                 break;
             default:
                 Log.e(TAG, "unknown message type " + bundle);
@@ -645,40 +642,61 @@ public class ChatController extends Fragment {
 
     public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {
         Log.i(TAG, "onConsultMessage: " + pushMessage);
-        ChatItem chatItem = MessageFormatter.format(pushMessage);
-        if (chatItem instanceof ConsultConnectionMessage) {
+        final ChatItem chatItem = MessageFormatter.format(pushMessage);
+        ConsultMessageReactor consultReactor = new ConsultMessageReactor(mConsultWriter, new ConsultMessageReactions() {
+            @Override
+            public void consultConnected(final String id, final String name, final String title) {
+                if (activity != null) activity.setStateConsultConnected(id, name, title);
+            }
+
+            @Override
+            public void onConsultLeft() {
+                if (null != activity) activity.setTitleStateDefault();
+            }
+        });
+        consultReactor.onPushMessage(chatItem);
+        addMessage(chatItem, ctx);
+     /*   if (chatItem instanceof ConsultConnectionMessage) {
             if (((ConsultConnectionMessage) chatItem).getType().equals(ConsultConnectionMessage.TYPE_JOINED)) {
                 ConsultInfo.setCurrentConsultInfo((ConsultConnectionMessage) chatItem, ctx);
-                if (activity != null)
-                    activity.setStateConsultConnected(((ConsultConnectionMessage) chatItem).getConsultId(), ((ConsultConnectionMessage) chatItem).getName(), ((ConsultConnectionMessage) chatItem).getTitle());
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (activity != null) {
+                            activity
+                                    .setStateConsultConnected(
+                                            ConsultInfo.getCurrentConsultId(activity)
+                                            , ConsultInfo.getCurrentConsultName(activity)
+                                            , ConsultInfo.getCurrentConsultTitle(activity));
+                        }
+                    }
+                }, 1500);
             } else {
                 ConsultInfo.setCurrentConsultLeft(ctx);
-                if (activity != null) activity.setTitleStateDefault();
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (activity != null) {
+                            activity.setTitleStateDefault();
+                        }
+                    }
+                }, 1500);
             }
         } else if (chatItem instanceof ConsultPhrase && ConsultInfo.getCurrentConsultId(ctx) == null) {
             if (activity != null) {
-                activity.setStateConsultConnected(((ConsultPhrase) chatItem).getId(), ((ConsultPhrase) chatItem).getConsultName(), "");
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.setStateConsultConnected(((ConsultPhrase) chatItem).getId(), ((ConsultPhrase) chatItem).getConsultName(), "");
+                    }
+                }, 1500);
             }
         }
-        ConsultInfo.setCurrentConsultInfo(pushMessage, ctx);
-        ConsultInfo.setSearchingConsult(false, ctx);
-        addMessage(chatItem, ctx);
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (activity != null) {
-                    activity
-                            .setStateConsultConnected(
-                                    ConsultInfo.getCurrentConsultId(activity)
-                                    , ConsultInfo.getCurrentConsultName(activity)
-                                    , ConsultInfo.getCurrentConsultTitle(activity));
-                }
-            }
-        }, 1500);
+        ConsultInfo.setSearchingConsult(false, ctx);*/
     }
 
     public void onConsultChoose(Activity activity, String consultId) {
-        Intent i = ConsultActivity.getStartIntent(activity, ConsultInfo.getConsultPhoto(activity, consultId), ConsultInfo.getConsultName(activity, consultId), ConsultInfo.getConsultStatus(activity, consultId));
+        Intent i = ConsultActivity.getStartIntent(activity, mConsultWriter.getConsultAvatarPath(consultId), mConsultWriter.getConsultName(consultId), mConsultWriter.getConsultStatus(consultId));
         activity.startActivity(i);
     }
 
@@ -841,7 +859,6 @@ public class ChatController extends Fragment {
 
     }
 
-
     private void onSettingClientId(Context ctx) {
         if (mDatabaseHolder.getMessagesCount() == 0 && activity != null) {
             activity.showDownloading();
@@ -885,7 +902,7 @@ public class ChatController extends Fragment {
     }
 
     public String getConsultNameById(String id) {
-        return ConsultInfo.getConsultName(activity, id);
+        return mConsultWriter.getConsultName(id);
     }
 
     private class ProgressReceiver extends BroadcastReceiver {
@@ -918,20 +935,6 @@ public class ChatController extends Fragment {
             } else if (action.equals(CLIENT_ID_IS_SET_BROADCAST)) {
                 onSettingClientId(context);
             }
-        }
-    }
-
-    private class InitThread extends Thread {
-        private Context ctx;
-
-        public InitThread(Context ctx) {
-            this.ctx = ctx;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            PushController.getInstance(ctx).init();
         }
     }
 }

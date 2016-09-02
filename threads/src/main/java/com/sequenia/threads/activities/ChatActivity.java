@@ -43,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sequenia.threads.fragments.FilePickerFragment;
+import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.MyFileFilter;
 import com.sequenia.threads.R;
@@ -86,6 +87,7 @@ public class ChatActivity extends AppCompatActivity
     private static final String TAG = "ChatActivity ";
     private static final String TAG_DEF_TITLE = "TAG_DEF_TITLE";
     private static final String TAG_CLIENT_NAME = "TAG_CLIENT_NAME";
+    private static final String TAG_PUSH_RESID = "TAG_PUSH_RESID";
     private ChatController mChatController;
     private WelcomeScreen mWelcomeScreen;
     private EditText mInputEditText;
@@ -156,6 +158,9 @@ public class ChatActivity extends AppCompatActivity
         if (intent.getBundleExtra("bundle") != null) {
             PrefUtils.setIncomingStyle(this, intent.getBundleExtra("bundle"));
         }
+        if ((intent.getIntExtra(TAG_PUSH_RESID, -1) == -1) && (PrefUtils.getPushIconResid(this) == -1))
+            throw new IllegalStateException("provide push icon resid  to activity!");
+        PrefUtils.setPushIconResid(this, intent.getIntExtra(TAG_PUSH_RESID, -1));
 
     }
 
@@ -616,7 +621,12 @@ public class ChatActivity extends AppCompatActivity
             ((ConsultPhrase) item).setRead(false);
         }
         mChatAdapter.addItems(Arrays.asList(item));
-        mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+            }
+        }, 100);
     }
 
     public void addChatItems(final List<ChatItem> list) {
@@ -673,7 +683,7 @@ public class ChatActivity extends AppCompatActivity
 
     public void setTitleStateDefault() {
         final Context ctx = this;
-        h.post(new Runnable() {
+        h.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (!isInMessageSearchMode) {
@@ -685,7 +695,7 @@ public class ChatActivity extends AppCompatActivity
                 }
                 connectedConsultId = String.valueOf(-1);
             }
-        });
+        },50);
     }
 
     private void setTitleStateSearchingConsult() {
@@ -698,8 +708,14 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void setStateSearchingConsult() {
-        setTitleStateSearchingConsult();
-        mChatAdapter.setSearchingConsult();
+        Log.e(TAG, "setStateSearchingConsult");// TODO: 01.09.2016
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setTitleStateSearchingConsult();
+                mChatAdapter.setSearchingConsult();
+            }
+        },50);
     }
 
     public void setTitleStateSearchingMessage() {
@@ -712,7 +728,7 @@ public class ChatActivity extends AppCompatActivity
 
     public void setStateConsultConnected(final String connectedConsultId, final String ConsultName, final String consultTitle) {
         final ChatActivity a = this;
-        h.post(new Runnable() {
+        h.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (!isInMessageSearchMode) {
@@ -732,7 +748,7 @@ public class ChatActivity extends AppCompatActivity
                 a.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
             }
-        });
+        },50);
 
     }
 
@@ -760,6 +776,14 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
+    public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
+        startActivity(ConsultActivity.getStartIntent(this
+                ,consultConnectionMessage.getAvatarPath()
+                ,consultConnectionMessage.getName()
+                ,consultConnectionMessage.getStatus()));
+    }
+
+    @Override
     public void onImageClick(ChatPhrase chatPhrase) {
         if (chatPhrase.getFileDescription().getFilePath() == null) return;
         if (chatPhrase instanceof UserPhrase) {
@@ -769,6 +793,8 @@ public class ChatActivity extends AppCompatActivity
             if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
                 startActivity(ImagesActivity.getStartIntent(this, chatPhrase.getFileDescription()));
             }
+        } else if (chatPhrase instanceof ConsultPhrase) {
+            startActivity(ImagesActivity.getStartIntent(this, ((ChatPhrase) chatPhrase).getFileDescription()));
         }
     }
 
@@ -805,13 +831,14 @@ public class ChatActivity extends AppCompatActivity
                 ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
                 hideCopyControls();
-
+                if(null != mChosenPhrase)unChooseItem(mChosenPhrase);
             }
         });
         reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String headerText = "";
+
                 if (cp instanceof UserPhrase) {
                     headerText = getString(R.string.I);
 
@@ -1193,6 +1220,11 @@ public class ChatActivity extends AppCompatActivity
             return builder;
         }
 
+        public IntentBuilder setPushIconResid(int resid) {
+            builder.i.putExtra(TAG_PUSH_RESID, resid);
+            return builder;
+        }
+
         public IntentBuilder setWelcomeScreenAttrs(
                 int logoResId
                 , String titleText
@@ -1213,6 +1245,25 @@ public class ChatActivity extends AppCompatActivity
 
         public Intent build() {
             Intent i = builder.i;
+            Bundle b = i.getBundleExtra("bundle");
+            if (i.getStringExtra(TAG) == null)
+                throw new IllegalStateException("you must provide clientId");
+            if (i.getStringExtra(TAG_DEF_TITLE) == null)
+                throw new IllegalStateException("you must provide default chat title string");
+            if (i.getIntExtra(TAG_PUSH_RESID, -1) == -1)
+                throw new IllegalStateException("you must provide default push icon resid");
+            if (b.getInt("logoResId", -1) == -1)
+                throw new IllegalStateException("you must provide logo resource id");
+            if (b.getInt("textColorResId", -1) == -1)
+                throw new IllegalStateException("you must provide textColorResId resource id");
+            if (b.getString("titleText", null) == null)
+                throw new IllegalStateException("you must provide titleText");
+            if (b.getString("subtitleText", null) == null)
+                throw new IllegalStateException("you must provide subtitleText");
+            if (b.getFloat("titleSize", -1f) == -1f)
+                throw new IllegalStateException("you must provide titleSize");
+            if (b.getFloat("titleSize", -1f) == -1f)
+                throw new IllegalStateException("you must provide subtitleSize");
             builder = null;
             return i;
         }

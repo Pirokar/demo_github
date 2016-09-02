@@ -234,6 +234,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_CONSULT_ID, consultConnectionMessage.getConsultId());
         cv.put(COLUMN_CONSULT_STATUS, consultConnectionMessage.getStatus());
         cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.getTitle());
+        cv.put(COLUMN_MESSAGE_ID, consultConnectionMessage.getMessageId());
         if (consultConnectionMessage.getName() == null) {
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             return;
@@ -292,7 +293,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 String status = c.isNull(indexStatus) ? null : c.getString(indexStatus);
                 String title = c.isNull(indextitle) ? null : c.getString(indextitle);
                 ConsultConnectionMessage cc =
-                        new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath, status, title);
+                        new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath, status, title, c.getString(INDEX_MESSAGE_ID));
                 items.add(cc);
             } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
@@ -491,6 +492,66 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 "" + COLUMN_FD_INCOMING_FILENAME
                         + " like ? and " + COLUMN_FD_DOWNLOAD_PATH + " like ?"
                 , new String[]{fileDescription.getIncomingName(), fileDescription.getDownloadPath()});
+    }
+
+    ChatPhrase getChatphraseByDescription(FileDescription fileDescription) {
+        if (fileDescription == null) return null;
+        ChatPhrase cp = null;
+        Cursor c = getWritableDatabase().query(true
+                , TABLE_FILE_DESCRIPTION
+                , new String[]{COLUMN_FD_MESSAGE_ID_EXT}
+                , COLUMN_FD_SIZE + " = " + fileDescription.getSize()
+                        + " and " + COLUMN_FD_DOWNLOAD_PATH + " like " + fileDescription.getDownloadPath()
+                        + " and " + COLUMN_FD_HEADER + " like " + fileDescription.getFrom()
+                , new String[]{}, null, null, null, null);
+        if (c.getCount() > 0) {
+            c.moveToFirst();
+            String id = c.getString(c.getColumnIndex(COLUMN_FD_MESSAGE_ID_EXT));
+            c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES + " where " + COLUMN_MESSAGE_ID + " like " + id, new String[]{});
+            c.moveToFirst();
+            final int INDEX_NAME = c.getColumnIndex(COLUMN_NAME);
+            final int INDEX_AVATAR_PATH = c.getColumnIndex(COLUMN_AVATAR_PATH);
+            final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
+            final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
+            final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
+            final int INDEX_CONNECTION_TYPE = c.getColumnIndex(COLUMN_CONNECTION_TYPE);
+            final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
+            final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
+            int type = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_TYPE));
+            if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
+                String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
+                String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
+                String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
+                String status = c.isNull(c.getColumnIndex(COLUMN_CONSULT_STATUS)) ? null : c.getString(c.getColumnIndex(COLUMN_CONSULT_STATUS));
+                boolean isRead = c.getInt(INDEX_IS_READ) == 1;
+                Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+                cp = new ConsultPhrase(
+                        fd != null && !fd.first ? fd.second : null,
+                        getQuote(c.getString(INDEX_MESSAGE_ID)),
+                        name,
+                        c.getString(INDEX_MESSAGE_ID),
+                        phrase,
+                        c.getLong(INDEX_TIMESTAMP),
+                        c.getString(INDEX_CONSULT_ID),
+                        avatarPath
+                        , isRead
+                        , status);
+            } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
+                String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
+                Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+                cp = new UserPhrase(
+                        c.getString(INDEX_MESSAGE_ID),
+                        phrase,
+                        getQuote(c.getString(INDEX_MESSAGE_ID)),
+                        c.getLong(INDEX_TIMESTAMP),
+                        fd != null && !fd.first ? fd.second : null);
+                int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
+                MessageState ms = sentState == 1 ? MessageState.STATE_SENT : sentState == 2 ? MessageState.STATE_SENT_AND_SERVER_RECEIVED : MessageState.STATE_NOT_SENT;
+                ((UserPhrase) cp).setSentState(ms);
+            }
+        }
+        c.close();
+        return cp;
     }
 
     void cleanDb() {

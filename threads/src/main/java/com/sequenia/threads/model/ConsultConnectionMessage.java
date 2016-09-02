@@ -14,6 +14,7 @@ public class ConsultConnectionMessage implements ChatItem {
     public static final String TYPE_JOINED = "OPERATOR_JOINED";
     public static final String TYPE_LEFT = "OPERATOR_LEFT";
     private String title;
+    private final String messageId;
 
     public String getName() {
         return name;
@@ -36,7 +37,8 @@ public class ConsultConnectionMessage implements ChatItem {
             , long date
             , String avatarPath
             , String status
-            , String title) {
+            , String title
+            , String messageId) {
         this.consultId = consultId;
         this.type = type;
         this.name = name;
@@ -45,6 +47,11 @@ public class ConsultConnectionMessage implements ChatItem {
         this.avatarPath = avatarPath;
         this.status = status;
         this.title = title;
+        this.messageId = messageId;
+    }
+
+    public String getMessageId() {
+        return messageId;
     }
 
     public String getTitle() {
@@ -94,7 +101,8 @@ public class ConsultConnectionMessage implements ChatItem {
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
         if (avatarPath != null ? !avatarPath.equals(that.avatarPath) : that.avatarPath != null)
             return false;
-        return title != null ? title.equals(that.title) : that.title == null;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        return messageId != null ? messageId.equals(that.messageId) : that.messageId == null;
 
     }
 
@@ -107,6 +115,7 @@ public class ConsultConnectionMessage implements ChatItem {
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
         return result;
     }
 
@@ -121,6 +130,7 @@ public class ConsultConnectionMessage implements ChatItem {
                 ", status='" + status + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
                 ", title='" + title + '\'' +
+                ", messageId='" + messageId + '\'' +
                 '}';
     }
 }

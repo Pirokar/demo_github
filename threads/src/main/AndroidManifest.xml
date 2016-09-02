@@ -22,10 +22,10 @@
 
         <activity
             android:name=".activities.ChatActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyle"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".activities.ConsultActivity"
             android:screenOrientation="portrait"
@@ -78,9 +78,10 @@
             </intent-filter>
 
         </receiver>
+
         <meta-data
             android:name="com.pushserver.android.useDefaultDeviceUID"
-            android:value="true"/>
+            android:value="true" />
         <meta-data
             android:name="com.pushserver.android.service"
             android:value="com.sequenia.threads.services.MyServerIntentService" />

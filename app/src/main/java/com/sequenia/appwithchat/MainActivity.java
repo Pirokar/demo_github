@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.pushserver.android.PushController;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.ThreadsInitializer;
 import com.sequenia.threads.activities.ChatActivity;
@@ -38,19 +37,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        View v = findViewById(R.id.version);
+        if(null != v && v instanceof TextView){
+            ((TextView)v).setText(((TextView) v).getText()+" " + BuildConfig.VERSION_NAME);
+        }
         mEditText = (EditText) findViewById(R.id.edit_text);
         nameTextView = (TextView) findViewById(R.id.client_name);
         mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
-                ""
+                "79139055742"
                 : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
         nameTextView.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("name", null) == null ?
-                ""
+                "Серегй Петрович Иванов"
                 : PreferenceManager.getDefaultSharedPreferences(this).getString("name", null));
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
-        mEditText.setText("79139055742");// TODO: set if id
-        nameTextView.setText("Серегй Петрович Иванов");
         if (isCoarseLocGranted && isSmsGranted && isReadPhoneStateGranted) {
             Log.e(TAG, "initing");
             ThreadsInitializer.getInstance(this).init();
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     .getBuilder(this, mEditText.getText().toString())
                     .setDefaultChatTitle(getString(R.string.contact_center))
                     .setClientName(nameTextView.getText().toString())
+                    .setPushIconResid(R.drawable.sample_card)
                     .setWelcomeScreenAttrs(R.drawable.logo
                             , "Добро пожаловать"
                             , "мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст"
