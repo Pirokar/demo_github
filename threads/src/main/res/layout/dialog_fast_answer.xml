@@ -76,7 +76,12 @@
         android:layout_height="56dp"
         android:layout_below="@+id/answer_layout"
         android:layout_marginBottom="@dimen/margin_half"
-        android:background="@color/white_dark"
         android:text="@string/close"
         android:textColor="@android:color/black" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_alignTop="@id/close_button"
+        android:background="@android:color/darker_gray" />
 </RelativeLayout>

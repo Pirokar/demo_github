@@ -11,6 +11,17 @@
 
     </style>
 
+    <style name="Translucent" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/green_light</item>
+        <item name="colorPrimaryDark">@color/green_dark</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
     <style name="FileDialogStyle" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:textColor">@color/green_dark</item>
         <item name="android:windowBackground">@color/white_dark</item>
@@ -18,7 +29,7 @@
 
     <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-      <!--  <item name="colorPrimaryDark">@color/black_transparent</item>-->
+        <!--  <item name="colorPrimaryDark">@color/black_transparent</item>-->
         <item name="android:windowBackground">@color/white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="windowActionBar">false</item>

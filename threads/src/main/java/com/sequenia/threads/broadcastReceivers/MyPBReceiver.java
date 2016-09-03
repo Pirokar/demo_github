@@ -23,8 +23,8 @@ public class MyPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.e(TAG, "onNewPushNotification " + s + " " + bundle);
-        if (MessageMatcher.getType(bundle) == MessageMatcher.TYPE_MESSAGE) return;
-        ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
+        return;
+        //   ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
     }
 
     @Override
@@ -54,6 +54,7 @@ public class MyPBReceiver extends PushBroadcastReceiver {
                         }
                     });
                 }
+
                 @Override
                 public void onError(PushServerErrorException e) {
                     Log.e(TAG, "" + e);

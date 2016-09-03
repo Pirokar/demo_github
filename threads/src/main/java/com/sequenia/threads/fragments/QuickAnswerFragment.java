@@ -101,6 +101,16 @@ public class QuickAnswerFragment extends DialogFragment {
         return d;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog d = getDialog();
+        if(null != d){
+            int width = (int) (getResources().getDisplayMetrics().widthPixels);
+            d.getWindow().setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT);
+        }
+    }
+
     public interface OnQuickAnswer {
         void onQuickAnswer(String answer);
     }

@@ -2,10 +2,12 @@ package com.sequenia.threads.controllers;
 
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
+import com.sequenia.threads.utils.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +29,11 @@ public class PushNotificationFormatter {
         this.withFilesEnding = withFilesEnding;
     }
 
-    public List<String> format(
+    public Tuple<Boolean, List<String>> format(
             List<ChatItem> unreadMessages
             , List<ChatItem> incomingPushes) {
         List<String> outPushes = new ArrayList<>();
+        boolean isWithConsultPhrases = false;
         for (int i = 0; i < incomingPushes.size(); i++) {
             if (incomingPushes.get(i) instanceof ConsultPhrase || incomingPushes.get(i) instanceof ConsultConnectionMessage)
                 unreadMessages.add(incomingPushes.get(i));
@@ -110,6 +113,9 @@ public class PushNotificationFormatter {
             }
             outPushes.add(filesnum == 0 ? youHaveUnreadMessages : youHaveUnreadMessages + " " + withFilesEnding);
         }
-        return outPushes;
+        for (int i = 0; i < incomingPushes.size(); i++) {
+            if (incomingPushes.get(i) instanceof ConsultPhrase)isWithConsultPhrases = true;
+        }
+        return new Tuple<>(isWithConsultPhrases,outPushes);
     }
 }

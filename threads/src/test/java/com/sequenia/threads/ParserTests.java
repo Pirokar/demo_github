@@ -62,25 +62,43 @@ public class ParserTests {
     @Test
     public void testIncomingConnectionPushMessages() throws Exception {
         ConsultConnectionMessage consultConnectionMessage = new ConsultConnectionMessage(
-                "1", ConsultConnectionMessage.TYPE_JOINED, "Test Operator #0", false, 1472452091338L, null, null, "Оператор","100500");
+                "1", ConsultConnectionMessage.TYPE_JOINED, "Test Operator #0", false, 1472452091338L, null, null, "Оператор", "100500");
         assertEquals(MessageFormatter.format(connectionMessage), consultConnectionMessage);
 
         connectionMessage.setShortMessage("");
         consultConnectionMessage = new ConsultConnectionMessage(
-                "1", ConsultConnectionMessage.TYPE_JOINED, "Test Operator #0", false, 1472452091338L, null, null, "","100500");
+                "1", ConsultConnectionMessage.TYPE_JOINED, "Test Operator #0", false, 1472452091338L, null, null, "", "100500");
         assertEquals(MessageFormatter.format(connectionMessage), consultConnectionMessage);
 
         connectionMessage.setShortMessage("Оператор Test Operator #0 присоединился к диалогу");
         connectionMessage.setFullMessage("{\"type\":\"OPERATOR_LEFT\",\"operator\":{\"id\":1,\"name\":\"Test Operator #0\",\"status\":null,\"photoUrl\":null,\"gender\":\"MALE\"}}");
         consultConnectionMessage = new ConsultConnectionMessage(
-                "1", ConsultConnectionMessage.TYPE_LEFT, "Test Operator #0", true, 1472452091338L, null, null, "Оператор","100500");
+                "1", ConsultConnectionMessage.TYPE_LEFT, "Test Operator #0", true, 1472452091338L, null, null, "Оператор", "100500");
         assertEquals(MessageFormatter.format(connectionMessage), consultConnectionMessage);
         connectionMessage.setFullMessage("{\"type\":\"OPERATOR_LEFT\",\"operator\":{\"id\":1,\"name\":\"Test Operator #0\",\"status\":\"ебаться-сраться, це ж я!\",\"photoUrl\":null,\"gender\":\"MALE\"}}");
         connectionMessage.setMessageId("100600");
         consultConnectionMessage = new ConsultConnectionMessage(
-                "1", ConsultConnectionMessage.TYPE_LEFT, "Test Operator #0", true, 1472452091338L, null, "ебаться-сраться, це ж я!", "Оператор","100600");
+                "1", ConsultConnectionMessage.TYPE_LEFT, "Test Operator #0", true, 1472452091338L, null, "ебаться-сраться, це ж я!", "Оператор", "100600");
         assertEquals(MessageFormatter.format(connectionMessage), consultConnectionMessage);
+
+        consultPushPhrase.setMessageId("400017455901");
+        consultPushPhrase.setSentAt(1472811701844L);
+        consultPushPhrase.setFullMessage("{\"type\":\"ON_HOLD\",\"operator\":{\"id\":1,\"name\":\"Test Operator #0\",\"status\":\"Оператор0\",\"photoUrl\":null,\"gender\":\"FEMALE\"},\"text\":\"Оператор готовит ответ, ожидайте\"}, sessionKey=303006ac-fff5-47b2-9d2b-5157c317ce93}]");
+
+        ConsultPhrase phrase = new ConsultPhrase(
+                null
+                , null
+                , "Test Operator #0"
+                , "400017455901"
+                , "Оператор готовит ответ, ожидайте"
+                , 1472811701844L
+                , "1"
+                , null
+                , false
+                , "Оператор0");
+        assertEquals(phrase, MessageFormatter.format(consultPushPhrase));
         before();
+
     }
 
     @Test
@@ -173,7 +191,7 @@ public class ParserTests {
                 , "{\"type\":\"OPERATOR_LEFT\",\"operator\":{\"id\":1,\"name\":\"Test Operator #0\",\"status\":null,\"photoUrl\":null,\"gender\":\"FEMALE\"}}}"
                 , true);
 
-        ConsultConnectionMessage consultConnectionMessage = new ConsultConnectionMessage("1", ConsultConnectionMessage.TYPE_LEFT, "Test Operator #0", false, 1472468279845L, null, null, null,String.valueOf( 400016333202L));
+        ConsultConnectionMessage consultConnectionMessage = new ConsultConnectionMessage("1", ConsultConnectionMessage.TYPE_LEFT, "Test Operator #0", false, 1472468279845L, null, null, null, String.valueOf(400016333202L));
         assertEquals(Lists.newArrayList(consultConnectionMessage), MessageFormatter.format(Lists.newArrayList(message)));
         in.add(message);
         out.add(consultConnectionMessage);
@@ -183,7 +201,7 @@ public class ParserTests {
                 , new DateTime(1472468279845L)
                 , "{\"type\":\"OPERATOR_JOINED\",\"operator\":{\"id\":1,\"name\":\"Test Operator #0\",\"status\":\"qwerty\",\"photoUrl\":\"qwerty\",\"gender\":\"MALE\"}}}"
                 , true);
-        consultConnectionMessage = new ConsultConnectionMessage("1", ConsultConnectionMessage.TYPE_JOINED, "Test Operator #0", true, 1472468279845L, "qwerty", "qwerty", null,String.valueOf("400016333202"));
+        consultConnectionMessage = new ConsultConnectionMessage("1", ConsultConnectionMessage.TYPE_JOINED, "Test Operator #0", true, 1472468279845L, "qwerty", "qwerty", null, String.valueOf("400016333202"));
         assertEquals(Lists.newArrayList(consultConnectionMessage), MessageFormatter.format(Lists.newArrayList(message)));
         in.add(message);
         out.add(consultConnectionMessage);

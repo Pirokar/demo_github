@@ -236,6 +236,9 @@ public class ChatController extends Fragment {
         activity = ca;
         appContext = activity.getApplicationContext();
         currentOffset = 0;
+        if (mConsultWriter == null) {
+            mConsultWriter = new ConsultWriter(ca.getSharedPreferences(TAG, Context.MODE_PRIVATE));
+        }
         if (mConsultWriter.istSearchingConsult()) {
             activity.setStateSearchingConsult();
         }
@@ -418,17 +421,7 @@ public class ChatController extends Fragment {
 
 
     public String getCurrentConsultName() {
-        Context ctx = null;
-        if (activity != null) {
-            ctx = activity;
-        }
-        if (appContext != null) {
-            ctx = activity;
-        }
-        if (ctx != null) {
-            return mConsultWriter.getCurrentConsultName() + "%%" + mConsultWriter.getCurrentConsultTitle();
-        }
-        return "";
+        return mConsultWriter.getCurrentConsultName() + "%%" + mConsultWriter.getCurrentConsultTitle();
     }
 
     public void onFileClick(final FileDescription fileDescription) {
@@ -656,48 +649,15 @@ public class ChatController extends Fragment {
         });
         consultReactor.onPushMessage(chatItem);
         addMessage(chatItem, ctx);
-     /*   if (chatItem instanceof ConsultConnectionMessage) {
-            if (((ConsultConnectionMessage) chatItem).getType().equals(ConsultConnectionMessage.TYPE_JOINED)) {
-                ConsultInfo.setCurrentConsultInfo((ConsultConnectionMessage) chatItem, ctx);
-                h.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (activity != null) {
-                            activity
-                                    .setStateConsultConnected(
-                                            ConsultInfo.getCurrentConsultId(activity)
-                                            , ConsultInfo.getCurrentConsultName(activity)
-                                            , ConsultInfo.getCurrentConsultTitle(activity));
-                        }
-                    }
-                }, 1500);
-            } else {
-                ConsultInfo.setCurrentConsultLeft(ctx);
-                h.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (activity != null) {
-                            activity.setTitleStateDefault();
-                        }
-                    }
-                }, 1500);
-            }
-        } else if (chatItem instanceof ConsultPhrase && ConsultInfo.getCurrentConsultId(ctx) == null) {
-            if (activity != null) {
-                h.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        activity.setStateConsultConnected(((ConsultPhrase) chatItem).getId(), ((ConsultPhrase) chatItem).getConsultName(), "");
-                    }
-                }, 1500);
-            }
-        }
-        ConsultInfo.setSearchingConsult(false, ctx);*/
     }
 
     public void onConsultChoose(Activity activity, String consultId) {
         Intent i = ConsultActivity.getStartIntent(activity, mConsultWriter.getConsultAvatarPath(consultId), mConsultWriter.getConsultName(consultId), mConsultWriter.getConsultStatus(consultId));
         activity.startActivity(i);
+    }
+
+    public void getLastUnreadConsultPhrase(CompletionHandler<ConsultPhrase> handler) {
+        mDatabaseHolder.getLastUnreadPhrase(handler);
     }
 
     public void requestFilteredPhrases(boolean searchInServerHistory

@@ -118,12 +118,15 @@ public class MessageFormatter {
         final String name = operatorInfo.getString("name");
         String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
         String status = operatorInfo.has("status") && !operatorInfo.isNull("status") ? operatorInfo.getString("status") : null;
-        FileDescription fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
+        JSONArray attachmentsArray = fullMessage.has("attachments") ? fullMessage.getJSONArray("attachments") : null;
+        FileDescription fileDescription = null;
+        if(null != attachmentsArray)  fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
         if (fileDescription != null) {
             fileDescription.setFrom(name);
             fileDescription.setTimeStamp(timeStamp);
         }
-        Quote quote = quoteFromJson(fullMessage.getJSONArray("quotes"));
+        Quote quote = null;
+        if (fullMessage.has("quotes")) quote = quoteFromJson(fullMessage.getJSONArray("quotes"));
         if (quote != null && quote.getFileDescription() != null) {
             quote.getFileDescription().setTimeStamp(timeStamp);
         }
@@ -272,7 +275,7 @@ public class MessageFormatter {
         return fileDescription;
     }
 
-    public static List<ChatItem> formatMessages(List<PushMessage> messages){
+    public static List<ChatItem> formatMessages(List<PushMessage> messages) {
         List<ChatItem> list = new ArrayList<>();
         try {
             for (int i = 0; i < messages.size(); i++) {

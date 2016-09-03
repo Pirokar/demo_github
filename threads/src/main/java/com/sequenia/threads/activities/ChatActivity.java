@@ -43,6 +43,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sequenia.threads.fragments.FilePickerFragment;
+import com.sequenia.threads.fragments.QuickAnswerFragment;
+import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.MyFileFilter;
@@ -83,11 +85,13 @@ public class ChatActivity extends AppCompatActivity
         implements
         BottomSheetView.ButtonsListener
         , ChatAdapter.AdapterInterface
-        , FilePickerFragment.SelectedListener {
+        , FilePickerFragment.SelectedListener
+        , QuickAnswerFragment.OnQuickAnswer {
     private static final String TAG = "ChatActivity ";
     private static final String TAG_DEF_TITLE = "TAG_DEF_TITLE";
     private static final String TAG_CLIENT_NAME = "TAG_CLIENT_NAME";
     private static final String TAG_PUSH_RESID = "TAG_PUSH_RESID";
+    public static final String ACTION_SHOW_QUICK_ANSWER = "ACTION_SHOW_QUICK_ANSWER";
     private ChatController mChatController;
     private WelcomeScreen mWelcomeScreen;
     private EditText mInputEditText;
@@ -114,6 +118,7 @@ public class ChatActivity extends AppCompatActivity
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
+    public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
     private String connectedConsultId;
     private ChatActivityReceiver mChatActivityReceiver;
     private Handler h = new Handler(Looper.getMainLooper());
@@ -142,6 +147,7 @@ public class ChatActivity extends AppCompatActivity
         mChatActivityReceiver = new ChatActivityReceiver();
         IntentFilter intentFilter = new IntentFilter(ACTION_SEARCH_CHAT_FILES);
         intentFilter.addAction(ACTION_SEARCH);
+        intentFilter.addAction(ACTION_SEND_QUICK_MESSAGE);
         registerReceiver(mChatActivityReceiver, intentFilter);
     }
 
@@ -158,10 +164,8 @@ public class ChatActivity extends AppCompatActivity
         if (intent.getBundleExtra("bundle") != null) {
             PrefUtils.setIncomingStyle(this, intent.getBundleExtra("bundle"));
         }
-        if ((intent.getIntExtra(TAG_PUSH_RESID, -1) == -1) && (PrefUtils.getPushIconResid(this) == -1))
-            throw new IllegalStateException("provide push icon resid  to activity!");
-        PrefUtils.setPushIconResid(this, intent.getIntExtra(TAG_PUSH_RESID, -1));
-
+        if (intent.getIntExtra(TAG_PUSH_RESID, -1) != -1 && PrefUtils.getPushIconResid(this) != -1)
+            PrefUtils.setPushIconResid(this, intent.getIntExtra(TAG_PUSH_RESID, -1));
     }
 
     static Intent getStartIntent(Context ctx) {
@@ -201,7 +205,6 @@ public class ChatActivity extends AppCompatActivity
         super.onResume();
         mChatController.setActivityIsForeground(true);
         isResumed = true;
-
     }
 
 
@@ -308,25 +311,6 @@ public class ChatActivity extends AppCompatActivity
                 mChatAdapter.setAllMessagesRead();
             }
         });
-       /* if (sav != null) {
-            sav.setSwipeListener(new SwipeAwareView.SwipeListener() {
-                @Override
-                public void onRightSwipe() {
-                    finish();
-                }
-
-                @Override
-                public boolean onTouchEvent(MotionEvent event) {
-                    return mRecyclerView.onTouchEvent(event);
-                }
-            });
-        }*/
-       /* mRecyclerView.setOnTouchListener(new SwipeListener(this, new SwipeListener.MySwipeListener() {
-            @Override
-            public void onRightSwipe() {
-                finish();
-            }
-        }));*/
         mConsultNameView = (TextView) findViewById(R.id.consult_name);
         mConsultTitle = (TextView) findViewById(R.id.subtitle);
         mConsultNameView.setOnClickListener(new View.OnClickListener() {
@@ -411,6 +395,16 @@ public class ChatActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    public void onQuickAnswer(String answer) {
+        if (answer == null) return;
+        if (null != mChatController) {
+            mChatController.onUserInput(new UpcomingUserMessage(answer, null, null));
+            if (null != mQuoteLayoutHolder) mQuoteLayoutHolder.setIsVisible(false);
+            if (null != mChatAdapter) mChatAdapter.setAllMessagesRead();
+        }
     }
 
     private void openBottomSheetAndGallery() {
@@ -610,7 +604,6 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void addChatItem(ChatItem item) {
-        Log.d(TAG, "addChatItem " + item);
         if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
             mWelcomeScreen.setVisibility(View.GONE);
             mWelcomeScreen = null;
@@ -652,29 +645,9 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void showDownloading() {
-        final Context context = this;
-       /* new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mProgressDialog != null) return;Ch
-                mProgressDialog = new ProgressDialog(context);
-                mProgressDialog.setIndeterminate(true);
-                mProgressDialog.setMessage(getString(R.string.retreiving_history));
-                mProgressDialog.show();
-            }
-        }, 100);*/
     }
 
     public void removeDownloading() {
-      /*
-        if (mProgressDialog == null) return;
-        final Context context = this;
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.dismiss();
-            }
-        }, 1000);*/
     }
 
     public void changeStateOfMessage(String messageId, MessageState state) {
@@ -695,7 +668,7 @@ public class ChatActivity extends AppCompatActivity
                 }
                 connectedConsultId = String.valueOf(-1);
             }
-        },50);
+        }, 50);
     }
 
     private void setTitleStateSearchingConsult() {
@@ -708,14 +681,13 @@ public class ChatActivity extends AppCompatActivity
     }
 
     public void setStateSearchingConsult() {
-        Log.e(TAG, "setStateSearchingConsult");// TODO: 01.09.2016
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
                 setTitleStateSearchingConsult();
                 mChatAdapter.setSearchingConsult();
             }
-        },50);
+        }, 50);
     }
 
     public void setTitleStateSearchingMessage() {
@@ -748,7 +720,7 @@ public class ChatActivity extends AppCompatActivity
                 a.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
             }
-        },50);
+        }, 50);
 
     }
 
@@ -778,9 +750,9 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
         startActivity(ConsultActivity.getStartIntent(this
-                ,consultConnectionMessage.getAvatarPath()
-                ,consultConnectionMessage.getName()
-                ,consultConnectionMessage.getStatus()));
+                , consultConnectionMessage.getAvatarPath()
+                , consultConnectionMessage.getName()
+                , consultConnectionMessage.getStatus()));
     }
 
     @Override
@@ -831,7 +803,7 @@ public class ChatActivity extends AppCompatActivity
                 ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
                 hideCopyControls();
-                if(null != mChosenPhrase)unChooseItem(mChosenPhrase);
+                if (null != mChosenPhrase) unChooseItem(mChosenPhrase);
             }
         });
         reply.setOnClickListener(new View.OnClickListener() {
@@ -1188,6 +1160,11 @@ public class ChatActivity extends AppCompatActivity
                 search(true);
             } else if (intent.getAction() != null && intent.getAction().equals(ChatActivity.ACTION_SEARCH)) {
                 search(false);
+            } else if (intent.getAction() != null && intent.getAction().equals(ACTION_SEND_QUICK_MESSAGE)) {
+                String message = intent.getStringExtra(ACTION_SEND_QUICK_MESSAGE);
+                if (null != message) {
+                    onQuickAnswer(message);
+                }
             }
         }
     }

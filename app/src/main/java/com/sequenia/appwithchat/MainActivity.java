@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.pushserver.android.PushController;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.ThreadsInitializer;
 import com.sequenia.threads.activities.ChatActivity;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     .getBuilder(this, mEditText.getText().toString())
                     .setDefaultChatTitle(getString(R.string.contact_center))
                     .setClientName(nameTextView.getText().toString())
-                    .setPushIconResid(R.drawable.sample_card)
+                    .setPushIconResid(R.drawable.random)
                     .setWelcomeScreenAttrs(R.drawable.logo
                             , "Добро пожаловать"
                             , "мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст"

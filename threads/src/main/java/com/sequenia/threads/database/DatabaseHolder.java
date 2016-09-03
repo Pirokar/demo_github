@@ -6,6 +6,7 @@ import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 
@@ -176,6 +177,16 @@ public class DatabaseHolder {
             @Override
             public void run() {
                 ChatPhrase cp = mMyOpenHelper.getChatphraseByDescription(fileDescription);
+                handler.onComplete(cp);
+            }
+        });
+    }
+
+    public void getLastUnreadPhrase(final CompletionHandler<ConsultPhrase> handler) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                ConsultPhrase cp = mMyOpenHelper.getLastUnreadPhrase();
                 handler.onComplete(cp);
             }
         });

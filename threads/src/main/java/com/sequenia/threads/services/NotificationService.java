@@ -17,12 +17,15 @@ import android.util.Log;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.activities.ChatActivity;
+import com.sequenia.threads.activities.FilesActivity;
+import com.sequenia.threads.activities.TranslucentActivity;
 import com.sequenia.threads.controllers.PushNotificationFormatter;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.utils.MessageFormatter;
 import com.sequenia.threads.utils.PrefUtils;
+import com.sequenia.threads.utils.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,101 +66,6 @@ public class NotificationService extends Service {
         if (intent == null) return START_STICKY;
         ArrayList<com.pushserver.android.PushMessage> il = intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
         if (il != null) {
-         /*   List<ChatItem> list = MessageFormatter.formatMessages(il);
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i) instanceof ConsultPhrase || list.get(i) instanceof ConsultConnectionMessage)
-                    unreadMessages.add(list.get(i));
-            }
-            final NotificationCompat.Builder notificationBuilder =
-                    new NotificationCompat.Builder(this);
-            notificationBuilder
-                    .setSmallIcon(PrefUtils.getPushIconResid(getApplication()));
-            if (unreadMessages.size() == 1) {
-                String phrase = null;
-                String notif = "";
-                if (unreadMessages.get(0) instanceof ConsultPhrase) {
-                    ConsultPhrase cp = (ConsultPhrase) unreadMessages.get(0);
-                    phrase = cp.getPhrase();
-                    boolean hasFile = cp.hasFile();
-                    if (!TextUtils.isEmpty(phrase)) {
-                        notif = phrase;
-                        if (hasFile) {
-                            notif = notif + " " + getString(R.string.with_file);
-                        }
-                    } else {
-                        notif = notif + " " + getString(R.string.file_received);
-                    }
-                } else if (unreadMessages.get(0) instanceof ConsultConnectionMessage) {
-                    ConsultConnectionMessage ccm = (ConsultConnectionMessage) unreadMessages.get(0);
-                    if (!ccm.getSex()
-                            && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
-                        notif = ccm.getName() + " " + getString(R.string.connected_female);
-                    } else if (!ccm.getSex()
-                            && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
-                        notif = ccm.getName() + " " + getString(R.string.left_female);
-                    } else if (!ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
-                        notif = ccm.getName() + " " + getString(R.string.connected);
-                    } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
-                        notif = ccm.getName() + " " + getString(R.string.left_dialog);
-                    }
-                }
-                notificationBuilder
-                        .setContentTitle(getString(R.string.one_new_message))
-                        .setContentText(notif);
-
-            } else if (unreadMessages.size() <= 5 && unreadMessages.size() != 0) {
-                String notif = "";
-                NotificationCompat.InboxStyle inboxStyle =
-                        new NotificationCompat.InboxStyle();
-                for (ChatItem ci : unreadMessages) {
-                    notif = "";
-                    if (ci instanceof ConsultPhrase) {
-                        ConsultPhrase cp = (ConsultPhrase) ci;
-                        String phrase = cp.getPhrase();
-                        boolean hasFile = cp.hasFile();
-                        if (!TextUtils.isEmpty(phrase)) {
-                            if (phrase.length() > 40) {
-                                notif += phrase.substring(0, 40).concat("...");
-                            } else {
-                                notif += phrase;
-                            }
-                            if (hasFile) {
-                                notif = notif + " " + getString(R.string.with_file);
-                            }
-                        } else {
-                            notif = notif + " " + getString(R.string.file_received);
-                        }
-                    } else if (ci instanceof ConsultConnectionMessage) {
-                        ConsultConnectionMessage ccm = (ConsultConnectionMessage) unreadMessages.get(0);
-                        if (!ccm.getSex()
-                                && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
-                            notif = ccm.getName() + " " + getString(R.string.connected_female);
-                        } else if (!ccm.getSex()
-                                && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
-                            notif = ccm.getName() + " " + getString(R.string.left_female);
-                        } else if (!ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
-                            notif = ccm.getName() + " " + getString(R.string.connected);
-                        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
-                            notif = ccm.getName() + " " + getString(R.string.left_dialog);
-                        }
-                    }
-                    inboxStyle.addLine(notif);
-                }
-                String title = unreadMessages.size() == 1 ? getString(R.string.one_new_message) : unreadMessages.size() + " " + getString(R.string.new_messages);
-                inboxStyle.setBuilder(notificationBuilder);
-                inboxStyle.setBigContentTitle(title);
-                notificationBuilder
-                        .setStyle(inboxStyle);
-
-            } else if (unreadMessages.size() > 5) {
-                int filesnum = 0;
-                for (ChatItem cp : unreadMessages) {
-                    if (cp instanceof ConsultPhrase && ((ConsultPhrase) cp).hasFile()) filesnum++;
-                }
-                notificationBuilder
-                        .setContentTitle(unreadMessages.size() + " " + getString(R.string.new_messages))
-                        .setContentText(filesnum == 0 ? getString(R.string.you_have_unread_messages) : getString(R.string.you_have_unread_messages) + " " + getString(R.string.with_file));
-            }*/
             List<ChatItem> incoming = MessageFormatter.formatMessages(il);
             PushNotificationFormatter pushNotificationFormatter =
                     new PushNotificationFormatter(getString(R.string.push_connected_female)
@@ -168,13 +76,18 @@ public class NotificationService extends Service {
                             , getString(R.string.with_file)
                             , getString(R.string.you_have_unread_messages)
                             , getString(R.string.with_files));
-            List<String> out = pushNotificationFormatter.format(unreadMessages, incoming);
+            Tuple<Boolean, List<String>> output = pushNotificationFormatter.format(unreadMessages, incoming);
+            List<String> out = output.second;
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             final NotificationCompat.Builder notificationBuilder =
                     new NotificationCompat
-                            .Builder(this)
-                            .setSmallIcon(PrefUtils.getPushIconResid(getApplication()));
-
+                            .Builder(this);
+            if (PrefUtils.getPushIconResid(this) != -1) {
+                final int iconResId = PrefUtils.getPushIconResid(this);
+                notificationBuilder.setSmallIcon(iconResId);
+            } else {
+                notificationBuilder.setSmallIcon(R.drawable.empty);
+            }
             if (unreadMessages.size() == 1 && out.size() == 1) {
                 notificationBuilder
                         .setContentTitle(getString(R.string.one_new_message))
@@ -196,10 +109,24 @@ public class NotificationService extends Service {
                         .setContentText(out.get(0));
             }
             Intent i = new Intent(this, ChatActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pend = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
             notificationBuilder.setContentIntent(pend);
             notificationBuilder.setAutoCancel(true);
+            if (output.first) {
+                Intent buttonIntent = new Intent(this, TranslucentActivity.class);
+                buttonIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                buttonIntent.putExtra("1", true);//have no idea why it's not working
+                PendingIntent buttonPend = PendingIntent.getActivity(
+                        this,
+                        1
+                        , buttonIntent
+                        , PendingIntent.FLAG_CANCEL_CURRENT);
+                notificationBuilder.addAction(
+                        R.drawable.ic_reply_white_24dp,
+                        getString(R.string.answer),
+                        buttonPend);
+            }
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
@@ -213,9 +140,15 @@ public class NotificationService extends Service {
             nc.setContentTitle(getString(R.string.message_were_unsent));
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             Intent i = new Intent(this, ChatActivity.class);
-            PendingIntent pend = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent pend = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+            if (PrefUtils.getPushIconResid(this) != -1) {
+                final int iconResId = PrefUtils.getPushIconResid(this);
+                nc.setSmallIcon(iconResId);
+            } else {
+                nc.setSmallIcon(R.drawable.empty);
+            }
             nc.setContentIntent(pend);
-            nc.setSmallIcon(PrefUtils.getPushIconResid(getApplication()));
             nc.setAutoCancel(true);
             h.postDelayed(new Runnable() {
                 @Override

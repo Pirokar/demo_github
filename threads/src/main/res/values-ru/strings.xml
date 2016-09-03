@@ -66,4 +66,5 @@
     <string name="push_connected_female">подключилась к диалогу</string>
     <string name="push_connected">подключился к диалогу</string>
     <string name="with_files">(с файлами)</string>
+    <string name="answer">Ответить</string>
 </resources>

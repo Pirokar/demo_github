@@ -17,8 +17,17 @@ public class PrefUtils {
     public static final String DEFAULT_TITLE_TAG = "DEFAULT_TITLE_TAG";
     public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
     public static final String PUSH_ICON = "DEFAULT_PUSH_ICON";
+    public static final String NEED_QUICK_ANSWER = "NEED_QUICK_ANSWER";
 
     private PrefUtils() {
+    }
+
+    public static void setNeedAnswer(Context ctx,boolean need) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putBoolean(PrefUtils.class + NEED_QUICK_ANSWER, need).commit();
+    }
+
+    public static boolean isNeedQuickAnswer(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(PrefUtils.class + NEED_QUICK_ANSWER, false);
     }
 
     public static void setClientName(Context ctx, String ClientName) {

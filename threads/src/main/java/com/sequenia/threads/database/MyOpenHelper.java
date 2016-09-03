@@ -265,6 +265,41 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    ConsultPhrase getLastUnreadPhrase() {
+        Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES
+                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_PHRASE.type
+                + " and " + COLUMN_IS_READ + " = 0 order by " + COLUMN_TIMESTAMP + " desc", new String[]{});
+        if (c.getCount() > 0) {
+            c.moveToFirst();
+            final int INDEX_NAME = c.getColumnIndex(COLUMN_NAME);
+            final int INDEX_AVATAR_PATH = c.getColumnIndex(COLUMN_AVATAR_PATH);
+            final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
+            final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
+            final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
+            final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
+            final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
+            String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
+            String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
+            String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
+            String status = c.isNull(c.getColumnIndex(COLUMN_CONSULT_STATUS)) ? null : c.getString(c.getColumnIndex(COLUMN_CONSULT_STATUS));
+            boolean isRead = c.getInt(INDEX_IS_READ) == 1;
+            Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+            ConsultPhrase cp = new ConsultPhrase(
+                    fd != null && !fd.first ? fd.second : null,
+                    getQuote(c.getString(INDEX_MESSAGE_ID)),
+                    name,
+                    c.getString(INDEX_MESSAGE_ID),
+                    phrase,
+                    c.getLong(INDEX_TIMESTAMP),
+                    c.getString(INDEX_CONSULT_ID),
+                    avatarPath
+                    , isRead
+                    , status);
+            return cp;
+        }
+        return null;
+    }
+
     public List<ChatItem> getChatItems(int offset, int limit) {
         List<ChatItem> items = new ArrayList<>();
         String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset), COLUMN_TIMESTAMP);
