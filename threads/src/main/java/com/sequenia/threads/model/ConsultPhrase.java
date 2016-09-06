@@ -125,7 +125,9 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
 
         ConsultPhrase that = (ConsultPhrase) o;
 
-        if (timeStamp != that.timeStamp) return false;
+        if (isAvatarVisible != that.isAvatarVisible) return false;
+        if (avatarPath != null ? !avatarPath.equals(that.avatarPath) : that.avatarPath != null)
+            return false;
         if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
             return false;
         if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
@@ -134,19 +136,23 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
         if (consultName != null ? !consultName.equals(that.consultName) : that.consultName != null)
             return false;
         if (quote != null ? !quote.equals(that.quote) : that.quote != null) return false;
-        return fileDescription != null ? fileDescription.equals(that.fileDescription) : that.fileDescription == null;
+        if (fileDescription != null ? !fileDescription.equals(that.fileDescription) : that.fileDescription != null)
+            return false;
+        return status != null ? status.equals(that.status) : that.status == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = consultId != null ? consultId.hashCode() : 0;
-        result = 31 * result + (int) (timeStamp ^ (timeStamp >>> 32));
+        int result = avatarPath != null ? avatarPath.hashCode() : 0;
+        result = 31 * result + (consultId != null ? consultId.hashCode() : 0);
         result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
         result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
         result = 31 * result + (consultName != null ? consultName.hashCode() : 0);
+        result = 31 * result + (isAvatarVisible ? 1 : 0);
         result = 31 * result + (quote != null ? quote.hashCode() : 0);
         result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
     }
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.views.ViewTypingInProgress;
 
 /**
  * Created by yuri on 09.06.2016.
@@ -28,5 +29,12 @@ public class ConsultIsTypingViewHolder extends RecyclerView.ViewHolder {
 
     public void onBind(View.OnClickListener consultClickListener) {
         mConsultImageView.setOnClickListener(consultClickListener);
+    }
+
+    public void stopTyping() {
+        ((ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress)).removeAnimation();
+    }
+    public void beginTyping(){
+        ((ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress)).animateViews();
     }
 }

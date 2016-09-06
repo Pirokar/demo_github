@@ -4,7 +4,7 @@ package com.sequenia.threads.model;
  * Created by yuri on 10.06.2016.
  */
 public class ConsultTyping implements ChatItem {
-    private final long date;
+    private long date;
     private final String consultId;
     private final String avatarPath;
 
@@ -16,6 +16,10 @@ public class ConsultTyping implements ChatItem {
         this.consultId = consultId;
         this.date = date;
         this.avatarPath = avatarPath;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
     }
 
     public long getDate() {

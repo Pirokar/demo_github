@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.adapters;
 
 import android.util.Log;
 
@@ -6,6 +6,7 @@ import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
+import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.model.DateRow;
 import com.sequenia.threads.model.Space;
 import com.sequenia.threads.model.UserPhrase;
@@ -16,16 +17,19 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
  * Created by yuri on 31.08.2016.
  */
-public class MessageOrdererTest {
+public class ChatMessagesOrdererTest {
     private static final String TAG = "MessageOrdererTest ";
     ChatAdapter.ChatMessagesOrderer mChatMessagesOrderer = new ChatAdapter.ChatMessagesOrderer();
     List<ChatItem> listToInsertTo = new ArrayList<>();
+    private static AtomicLong mAtomicLong = new AtomicLong(0);
 
     @Test
     public void testInsertion() {
@@ -49,6 +53,7 @@ public class MessageOrdererTest {
         assertTrue(listToInsertTo.get(5) instanceof ConsultPhrase);
         assertEquals(((ConsultPhrase) listToInsertTo.get(3)).isAvatarVisible(), false);
         assertEquals(((ConsultPhrase) listToInsertTo.get(5)).isAvatarVisible(), true);
+
         mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultPhrase(null, null, random(), random(), random(), 250, random(), random(), true, random())));
         assertTrue(listToInsertTo.get(0) instanceof DateRow);
         assertTrue(listToInsertTo.get(1) instanceof UserPhrase);
@@ -84,6 +89,25 @@ public class MessageOrdererTest {
         assertTrue(listToInsertTo.get(listToInsertTo.size()-2) instanceof Space);
         assertEquals(((Space) listToInsertTo.get(2)).getHeight(),12);//spacing between user phrase and consult phrase
         assertTrue(listToInsertTo.get(listToInsertTo.size()-1) instanceof ConsultConnectionMessage);
+
+
+    }
+    @Test
+    public void testReverseInsertion(){
+        listToInsertTo = new ArrayList<>();
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultPhrase(null, null, random(), random(), random(), 100, random(), random(), true, random())));
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultPhrase(null, null, random(), random(), random(), 99, random(), random(), true, random())));
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultPhrase(null, null, random(), random(), random(), 98, random(), random(), true, random())));
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultPhrase(null, null, random(), random(), random(), 97, random(), random(), true, random())));
+        assertTrue(listToInsertTo.get(1) instanceof ConsultPhrase);
+        assertEquals(((ConsultPhrase) listToInsertTo.get(1)).isAvatarVisible(),false);
+        assertEquals(listToInsertTo.get(1).getTimeStamp(),97);
+        assertEquals(((ConsultPhrase) listToInsertTo.get(3)).isAvatarVisible(),false);
+        assertEquals(listToInsertTo.get(3).getTimeStamp(),98);
+        assertEquals(((ConsultPhrase) listToInsertTo.get(5)).isAvatarVisible(),false);
+        assertEquals(listToInsertTo.get(5).getTimeStamp(),99);
+        assertEquals(((ConsultPhrase) listToInsertTo.get(7)).isAvatarVisible(),true);
+        assertEquals(listToInsertTo.get(7).getTimeStamp(),100);
     }
 
     @Test
@@ -98,9 +122,35 @@ public class MessageOrdererTest {
         assertTrue(listToInsertTo.get(2) instanceof DateRow);
         assertTrue(listToInsertTo.get(3) instanceof UserPhrase);
     }
+    @Test
+    public void testaddingConsultIsTyping(){
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new UserPhrase(random(), random(), null, 100, null)));
+        assertTrue(listToInsertTo.get(0) instanceof DateRow);
+        assertTrue(listToInsertTo.get(1) instanceof UserPhrase);
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultTyping(random(), Long.MAX_VALUE, "")));
+        assertTrue(listToInsertTo.get(0) instanceof DateRow);
+        assertTrue(listToInsertTo.get(1) instanceof UserPhrase);
+        assertTrue(listToInsertTo.get(2) instanceof DateRow);
+        assertTrue(listToInsertTo.get(3) instanceof Space);
+        assertTrue(listToInsertTo.get(4) instanceof ConsultTyping);
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new UserPhrase(random(), random(), null, 150, null)));
+        assertTrue(listToInsertTo.get(0) instanceof DateRow);
+        assertTrue(listToInsertTo.get(1) instanceof UserPhrase);
+        assertTrue(listToInsertTo.get(2) instanceof Space);//test proper localization of typing
+        assertTrue(listToInsertTo.get(3) instanceof UserPhrase);
+        assertTrue(listToInsertTo.get(4) instanceof DateRow);
+        assertTrue(listToInsertTo.get(5) instanceof Space);
+        assertTrue(listToInsertTo.get(6) instanceof ConsultTyping);
+        assertEquals(7,listToInsertTo.size());
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultTyping(random(), Long.MAX_VALUE, "")));
+        assertTrue(listToInsertTo.get(6) instanceof ConsultTyping);//test that only 1 typing item  can exist
+        assertEquals(7,listToInsertTo.size());
+
+
+    }
 
     private String random() {
-        return UUID.randomUUID().toString();
+        return String.valueOf(mAtomicLong.incrementAndGet());
     }
 
     private List<ChatItem> toList(ChatItem... item) {

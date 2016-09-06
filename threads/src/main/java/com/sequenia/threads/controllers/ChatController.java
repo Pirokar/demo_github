@@ -56,6 +56,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -462,8 +463,21 @@ public class ChatController extends Fragment {
         mConsultWriter.setSearchingConsult(false);
         isSearchingConsult = false;
         h.removeCallbacksAndMessages(null);
-        if (activity != null)
+        if (activity != null) {
             activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (activity != null) {
+                        try {
+                            PushController.getInstance(activity).resetCounterSync();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+        }
     }
 
     public void setActivityIsForeground(boolean isForeground) {
@@ -508,58 +522,9 @@ public class ChatController extends Fragment {
     public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
         Log.d(TAG, "onSystemMessageFromServer:");
         switch (MessageMatcher.getType(bundle)) {
-            case MessageMatcher.TYPE_OPERATOR_JOINED:
-                Log.d(TAG, "onSystemMessageFromServer: MessageMatcher.TYPE_OPERATOR_JOINED");
-                Context notNullContext = appContext == null ? ctx : appContext;
-                String title = bundle.getString("alert");
-                if (title != null) title = title.split(" ")[0];
-                addMessage(new ConsultConnectionMessage(bundle.getString("operatorName")
-                                , ConsultConnectionMessage.TYPE_JOINED
-                                , bundle.getString("operatorName")
-                                , false
-                                , System.currentTimeMillis()
-                                , bundle.getString("operatorPhoto")
-                                , bundle.getString("status")
-                                , title
-                                , UUID.randomUUID().toString())
-                        , ctx);
-                if (null != notNullContext) {
-                    mConsultWriter.setCurrentConsultInfo(bundle.getString("operatorName"), bundle);
-                    mConsultWriter.setSearchingConsult(false);
-                }
-                if (activity != null) {
-                    activity.setStateConsultConnected(bundle.getString("operatorName"), bundle.getString("operatorName"), mConsultWriter.getCurrentConsultTitle());
-                }
-                break;
-            case MessageMatcher.TYPE_OPERATOR_LEFT:
-                Log.i(TAG, "onSystemMessageFromServer: MessageMatcher.TYPE_OPERATOR_LEFT");
-                notNullContext = appContext == null ? ctx : appContext;
-                title = bundle.getString("alert");
-                if (title != null) title = title.split(" ")[0];
-                addMessage(new ConsultConnectionMessage(
-                                bundle.getString("operatorName")
-                                , ConsultConnectionMessage.TYPE_LEFT
-                                , bundle.getString("operatorName")
-                                , false
-                                , System.currentTimeMillis()
-                                , bundle.getString("operatorPhoto")
-                                , bundle.getString("operatorStatus")
-                                , title
-                                , UUID.randomUUID().toString())
-                        , ctx);
-                if (null != notNullContext) {
-                    mConsultWriter.setCurrentConsultLeft();
-                    mConsultWriter.setSearchingConsult(false);
-                }
-                if (activity != null) {
-                    activity.setTitleStateDefault();
-                }
-                break;
             case MessageMatcher.TYPE_OPERATOR_TYPING:
                 addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), System.currentTimeMillis(), mConsultWriter.getCurrentAvatarPath()), ctx);
                 break;
-            default:
-                Log.e(TAG, "unknown message type " + bundle);
         }
     }
 

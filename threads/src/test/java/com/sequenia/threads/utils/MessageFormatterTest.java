@@ -1,9 +1,10 @@
-package com.sequenia.threads;
+package com.sequenia.threads.utils;
 
 import com.advisa.client.api.InOutMessage;
 import com.google.common.collect.Lists;
 import com.mfms.push.api.DateTime;
 import com.pushserver.android.PushMessage;
+import com.sequenia.threads.BuildConfig;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertEquals;
         , sdk = 21
         , constants = BuildConfig.class
 )
-public class ParserTests {
+public class MessageFormatterTest {
     private PushMessage connectionMessage;
     private PushMessage leftMessage;
     private PushMessage consultPushPhrase;

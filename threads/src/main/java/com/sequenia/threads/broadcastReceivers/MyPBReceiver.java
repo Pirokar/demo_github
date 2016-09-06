@@ -22,9 +22,9 @@ public class MyPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
-        Log.e(TAG, "onNewPushNotification " + s + " " + bundle);
-        return;
-        //   ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
+        Log.d(TAG, "onNewPushNotification " + s + " " + bundle);
+        if (MessageMatcher.getType(bundle) == MessageMatcher.TYPE_OPERATOR_TYPING)
+            ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
     }
 
     @Override

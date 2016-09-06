@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sequenia.threads">
 
@@ -19,7 +20,6 @@
     <application
         android:hardwareAccelerated="true"
         android:largeHeap="true">
-
         <activity
             android:name=".activities.ChatActivity"
             android:launchMode="singleTop"
@@ -38,7 +38,6 @@
             android:name=".activities.GalleryActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
-
         <activity
             android:name=".activities.CameraActivity"
             android:screenOrientation="portrait"
@@ -53,10 +52,10 @@
             android:theme="@style/Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 
         <service
             android:name=".services.MyServerIntentService"
@@ -69,7 +68,7 @@
             android:exported="false" />
 
         <receiver
-            android:name="com.sequenia.threads.broadcastReceivers.MyPBReceiver"
+            android:name=".broadcastReceivers.MyPBReceiver"
             android:exported="false"
             android:permission="com.sequenia.appwithchat.permission.pushserver.RECEIVE">
             <intent-filter>
@@ -80,13 +79,13 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.sequenia.threads.broadcastReceivers.MyOtherPBReceiver"
+            android:name=".broadcastReceivers.MyOtherPBReceiver"
             android:exported="false"
-            android:permission="com.pushserver.android.permission.RECEIVE"> <!-- android:permission="com.pushserver.android.permission.RECEIVE">-->
+            android:permission="com.pushserver.android.permission.RECEIVE">
+            <!-- android:permission="com.pushserver.android.permission.RECEIVE"> -->
             <intent-filter>
                 <action android:name="com.pushserver.android.OTHER_PUSH_MESSAGE_EVENT" />
             </intent-filter>
-
         </receiver>
 
         <meta-data
@@ -96,4 +95,5 @@
             android:name="com.pushserver.android.service"
             android:value="com.sequenia.threads.services.MyServerIntentService" />
     </application>
+
 </manifest>

@@ -46,6 +46,7 @@ import com.sequenia.threads.fragments.FilePickerFragment;
 import com.sequenia.threads.fragments.QuickAnswerFragment;
 import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.MyFileFilter;
 import com.sequenia.threads.R;
@@ -620,6 +621,7 @@ public class ChatActivity extends AppCompatActivity
                 mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
         }, 100);
+
     }
 
     public void addChatItems(final List<ChatItem> list) {
@@ -636,6 +638,7 @@ public class ChatActivity extends AppCompatActivity
                 mChatAdapter.addItems(list);
             }
         });
+       if (list.size()==1 && list.get(0) instanceof ConsultTyping)return;//don't scroll if it is just typing item
         h.postDelayed(new Runnable() {
             @Override
             public void run() {

@@ -1,9 +1,14 @@
 package com.sequenia.threads.views;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -14,6 +19,10 @@ import com.sequenia.threads.R;
  * layout/view_typing.xml
  */
 public class ViewTypingInProgress extends LinearLayout {
+    private static final String TAG = "ViewTypingInProgress ";
+    Handler h = new Handler(Looper.getMainLooper());
+    View v1, v2, v3;
+
     public ViewTypingInProgress(Context context) {
         super(context);
         init();
@@ -31,10 +40,9 @@ public class ViewTypingInProgress extends LinearLayout {
 
     private void init() {
         ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_typing, this, true);
-        final ImageView iv1 = (ImageView) findViewById(R.id.first);
-        final ImageView iv2 = (ImageView) findViewById(R.id.second);
-        final ImageView iv3 = (ImageView) findViewById(R.id.third);
-        animateViews(iv1, iv2, iv3);
+        v1 = findViewById(R.id.first);
+        v2 = findViewById(R.id.second);
+        v3 = findViewById(R.id.third);
     }
 
     private void animateViews(final View v1, final View v2, final View v3) {
@@ -51,11 +59,30 @@ public class ViewTypingInProgress extends LinearLayout {
                             @Override
                             public void run() {
                                 v3.animate().scaleX((1f / 1.5f)).scaleY((1f / 1.5f)).setDuration(duration);
+                                if (getVisibility() == GONE) removeAnimation();
                                 animateViews(v1, v2, v3);
                             }
                         });
                     }
                 });
+            }
+        });
+    }
+
+    public void removeAnimation() {
+        v1.clearAnimation();
+        v1.animate().cancel();
+        v2.clearAnimation();
+        v2.animate().cancel();
+        v3.clearAnimation();
+        v3.animate().cancel();
+    }
+
+    public void animateViews() {
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                animateViews(v1, v2, v3);
             }
         });
     }

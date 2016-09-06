@@ -136,7 +136,8 @@ public class MessageFormatter {
                 , name
                 , messageId
                 , message
-                , timeStamp
+               /* , timeStamp*/
+                ,System.currentTimeMillis()// FIXME: 06.09.2016 temporary
                 , String.valueOf(operatorInfo.getLong("id"))
                 , photoUrl
                 , false
@@ -161,7 +162,8 @@ public class MessageFormatter {
                 , type
                 , name
                 , gender
-                , timeStamp
+              /*  , timeStamp*/
+                ,System.currentTimeMillis() // FIXME: 06.09.2016 temporary
                 , photourl
                 , status
                 , title
@@ -378,7 +380,7 @@ public class MessageFormatter {
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "" + messages);// TODO: 12.08.2016
+            Log.e(TAG, "" + messages);
             e.printStackTrace();
         }
         return out;

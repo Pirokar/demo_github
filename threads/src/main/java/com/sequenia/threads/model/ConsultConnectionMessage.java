@@ -78,14 +78,6 @@ public class ConsultConnectionMessage implements ChatItem {
         return type;
     }
 
-    public boolean isSex() {
-        return sex;
-    }
-
-    public long getDate() {
-        return date;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -117,6 +109,14 @@ public class ConsultConnectionMessage implements ChatItem {
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
         return result;
+    }
+
+    public boolean isSex() {
+        return sex;
+    }
+
+    public long getDate() {
+        return date;
     }
 
     @Override
