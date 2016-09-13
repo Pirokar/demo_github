@@ -32,7 +32,7 @@ import com.sequenia.threads.database.DatabaseHolder;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.CompletionHandler;
-import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultInfo;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.model.FileDescription;
@@ -56,7 +56,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -93,7 +92,6 @@ public class ChatController extends Fragment {
         if (instance == null) {
             instance = new ChatController(ctx);
         }
-
         if (PrefUtils.getClientID(ctx) == null) {
             PrefUtils.setClientId(ctx, clientId);
         }
@@ -104,7 +102,7 @@ public class ChatController extends Fragment {
                 PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
                     @Override
                     public void onResult(Void aVoid) {
-                        PushController.getInstance(ctx).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getClientName(ctx), PrefUtils.getClientID(ctx), ""), true, new RequestCallback<String, PushServerErrorException>() {
+                        PushController.getInstance(ctx).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getUserName(ctx), PrefUtils.getClientID(ctx), ""), true, new RequestCallback<String, PushServerErrorException>() {
                             @Override
                             public void onResult(String string) {
                                 Log.e(TAG, "client id was set string =" + string);
@@ -126,6 +124,7 @@ public class ChatController extends Fragment {
                                                     instance.mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
                                                         @Override
                                                         public void onComplete(List<ChatItem> data) {
+
                                                             if (null != instance.activity)
                                                                 instance.activity.addChatItems(data);
                                                             instance.currentOffset = data.size();
@@ -293,6 +292,7 @@ public class ChatController extends Fragment {
 
     public void onUserInput(final UpcomingUserMessage upcomingUserMessage) {
         if (upcomingUserMessage == null) return;
+        if (activity == null) return;
         Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um, activity);
@@ -304,14 +304,23 @@ public class ChatController extends Fragment {
     }
 
     private void sendMessage(final UserPhrase userPhrase) {
+        ConsultInfo consultInfo = null;
+        if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
+            String id = userPhrase.getQuote().getQuotedPhraseId();
+            consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
+        }
         try {
             if (!MessageFormatter.hasFile(userPhrase)) {
                 PushController
                         .getInstance(appContext)
-                        .sendMessageAsync(MessageFormatter.format(userPhrase, null, null), false, new RequestCallback<String, PushServerErrorException>() {
+                        .sendMessageAsync(MessageFormatter.format(
+                                userPhrase
+                                , consultInfo
+                                , null
+                                , null), false, new RequestCallback<String, PushServerErrorException>() {
                             @Override
                             public void onResult(String string) {
-                                setMessageState(userPhrase, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
+                                setMessageState(userPhrase, MessageState.STATE_SENT);
                                 mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
                                 if (activity != null)
                                     activity.setUserPhraseMessageId(userPhrase.getId(), string);
@@ -329,6 +338,7 @@ public class ChatController extends Fragment {
                             }
                         });
             } else {
+                final ConsultInfo finalConsultInfo = consultInfo;
                 new DualFilePoster(
                         userPhrase.getFileDescription() != null ? userPhrase.getFileDescription() : null
                         , userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() != null ? userPhrase.getQuote().getFileDescription() : null : null
@@ -336,25 +346,31 @@ public class ChatController extends Fragment {
                     @Override
                     public void onResult(String mfmsFilePath, String mfmsQuoteFilePath) {
                         Log.e(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
-                        PushController.getInstance(activity).sendMessageAsync(MessageFormatter.format(userPhrase, mfmsQuoteFilePath, mfmsFilePath), false, new RequestCallback<String, PushServerErrorException>() {
-                            @Override
-                            public void onResult(String string) {
-                                Log.e(TAG, "sending with files string = " + string);
-                                setMessageState(userPhrase, MessageState.STATE_SENT_AND_SERVER_RECEIVED);
-                            }
+                        PushController.getInstance(activity).sendMessageAsync(MessageFormatter.format(
+                                userPhrase
+                                , finalConsultInfo
+                                , mfmsQuoteFilePath, mfmsFilePath)
+                                , false
+                                , new RequestCallback<String, PushServerErrorException>() {
+                                    @Override
+                                    public void onResult(String string) {
+                                        Log.e(TAG, "sending with files string = " + string);
+                                        setMessageState(userPhrase, MessageState.STATE_SENT);
+                                    }
 
-                            @Override
-                            public void onError(PushServerErrorException e) {
-                                Log.e(TAG, "error while sending message to server");
-                                setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-                                if (appContext != null) {
-                                    Intent i = new Intent(appContext, NotificationService.class);
-                                    i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
-                                    if (!isActive) appContext.startService(i);
-                                }
-                                if (activity != null && isActive) activity.showConnectionError();
-                            }
-                        });
+                                    @Override
+                                    public void onError(PushServerErrorException e) {
+                                        Log.e(TAG, "error while sending message to server");
+                                        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+                                        if (appContext != null) {
+                                            Intent i = new Intent(appContext, NotificationService.class);
+                                            i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
+                                            if (!isActive) appContext.startService(i);
+                                        }
+                                        if (activity != null && isActive)
+                                            activity.showConnectionError();
+                                    }
+                                });
                     }
 
                     @Override
@@ -407,8 +423,11 @@ public class ChatController extends Fragment {
                 if (null != activity) activity.addChatItem(cm);
             }
         });
-        if (cm instanceof ConsultPhrase && ctx != null) {
+        if (cm instanceof ConsultPhrase
+                && ctx != null
+                && isActive) {
             PushController.getInstance(ctx).notifyMessageRead(((ConsultPhrase) cm).getId());
+            mDatabaseHolder.setMessageWereRead(((ConsultPhrase) cm).getMessageId());
         }
         h.postDelayed(new Runnable() {
             @Override
@@ -452,6 +471,9 @@ public class ChatController extends Fragment {
 
     public void checkAndResendPhrase(final UserPhrase userPhrase) {
         if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
+            if (activity != null) {
+                activity.setMessageState(userPhrase.getMessageId(), MessageState.STATE_SENDING);
+            }
             sendMessage(userPhrase);
         }
     }
@@ -465,34 +487,31 @@ public class ChatController extends Fragment {
         h.removeCallbacksAndMessages(null);
         if (activity != null) {
             activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (activity != null) {
-                        try {
-                            PushController.getInstance(activity).resetCounterSync();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (activity != null) {
+                    try {
+                        PushController.getInstance(activity).resetCounterSync();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-            }).start();
-        }
+            }
+        }).start();
     }
 
     public void setActivityIsForeground(boolean isForeground) {
         this.isActive = isForeground;
-        mDatabaseHolder.setAllMessagesRead(new CompletionHandler<Void>() {
-            @Override
-            public void onComplete(Void data) {
-
+        if (isForeground && activity != null) {
+            List<String> unread = mDatabaseHolder.getUnreaMessagesId();
+            for (String id : unread) {
+                PushController.getInstance(activity).notifyMessageRead(id);
+                mDatabaseHolder.setMessageWereRead(id);
             }
-
-            @Override
-            public void onError(Throwable e, String message, Void data) {
-
-            }
-        });
+        }
         if (isForeground) h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -524,6 +543,16 @@ public class ChatController extends Fragment {
         switch (MessageMatcher.getType(bundle)) {
             case MessageMatcher.TYPE_OPERATOR_TYPING:
                 addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), System.currentTimeMillis(), mConsultWriter.getCurrentAvatarPath()), ctx);
+                break;
+            case MessageMatcher.TYPE_MESSAGES_READ:
+                List<String> list = MessageFormatter.getReadIds(bundle);
+                Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
+                for (String s : list) {
+                    if (activity != null)
+                        activity.setPhraseSentStatus(s, MessageState.STATE_WAS_READ);
+                    if (mDatabaseHolder != null)
+                        mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
+                }
                 break;
         }
     }
@@ -617,7 +646,7 @@ public class ChatController extends Fragment {
     }
 
     public void onConsultChoose(Activity activity, String consultId) {
-        Intent i = ConsultActivity.getStartIntent(activity, mConsultWriter.getConsultAvatarPath(consultId), mConsultWriter.getConsultName(consultId), mConsultWriter.getConsultStatus(consultId));
+        Intent i = ConsultActivity.getStartIntent(activity, mConsultWriter.getPhotoUrl(consultId), mConsultWriter.getName(consultId), mConsultWriter.getStatus(consultId));
         activity.startActivity(i);
     }
 
@@ -827,7 +856,7 @@ public class ChatController extends Fragment {
     }
 
     public String getConsultNameById(String id) {
-        return mConsultWriter.getConsultName(id);
+        return mConsultWriter.getName(id);
     }
 
     private class ProgressReceiver extends BroadcastReceiver {

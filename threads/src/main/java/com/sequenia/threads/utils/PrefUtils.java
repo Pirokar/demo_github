@@ -1,10 +1,11 @@
 package com.sequenia.threads.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 import android.util.Log;
 
 /**
@@ -17,28 +18,31 @@ public class PrefUtils {
     public static final String DEFAULT_TITLE_TAG = "DEFAULT_TITLE_TAG";
     public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
     public static final String PUSH_ICON = "DEFAULT_PUSH_ICON";
-    public static final String NEED_QUICK_ANSWER = "NEED_QUICK_ANSWER";
+    public static final String PUSH_TITLE = "PUSH_TITLE";
 
     private PrefUtils() {
     }
 
-    public static void setNeedAnswer(Context ctx,boolean need) {
-        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putBoolean(PrefUtils.class + NEED_QUICK_ANSWER, need).commit();
+    public static void setPushTitle(Context ctx, @StringRes int resId) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putInt(PrefUtils.class + PUSH_TITLE, resId).commit();
     }
 
-    public static boolean isNeedQuickAnswer(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(PrefUtils.class + NEED_QUICK_ANSWER, false);
+    public static
+    @StringRes
+    int getPushTitle(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getInt(PrefUtils.class + PUSH_TITLE, -1);
     }
 
-    public static void setClientName(Context ctx, String ClientName) {
+    public static void setUserName(Context ctx, String ClientName) {
         if (ClientName == null) throw new IllegalStateException("ClientName is null");
         PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + CLIENT_NAME, ClientName).commit();
     }
 
-    public static String getClientName(Context ctx) {
+    public static String getUserName(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + CLIENT_NAME, "");
     }
-    public static void setPushIconResid(Context ctx, int iconResId) {
+
+    public static void setPushIconResid(Context ctx, @DrawableRes int iconResId) {
         PreferenceManager.getDefaultSharedPreferences(ctx).edit().putInt(PrefUtils.class + PUSH_ICON, iconResId).commit();
     }
 
@@ -55,12 +59,14 @@ public class PrefUtils {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + TAG_CLIENT_ID, null);
     }
 
-    public static void setDefaultTitle(Context ctx, String defTitle) {
-        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + DEFAULT_TITLE_TAG, defTitle).commit();
+    public static void setDefaultChatTitle(Context ctx, @StringRes int defTitle) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putInt(PrefUtils.class + DEFAULT_TITLE_TAG, defTitle).commit();
     }
 
-    public static String getDefaultTitle(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + DEFAULT_TITLE_TAG, null);
+    public static
+    @StringRes
+    int getDefaultChatTitle(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getInt(PrefUtils.class + DEFAULT_TITLE_TAG, -1);
     }
 
     public static void setClientIdWasSet(boolean isSet, Context ctx) {
@@ -79,8 +85,8 @@ public class PrefUtils {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.putInt("logoResId", b.getInt("logoResId")).apply();
         editor.putInt("textColorResId", b.getInt("textColorResId")).apply();
-        editor.putString("titleText", b.getString("titleText")).apply();
-        editor.putString("subtitleText", b.getString("subtitleText")).apply();
+        editor.putInt("titleText", b.getInt("titleText")).apply();
+        editor.putInt("subtitleText", b.getInt("subtitleText")).apply();
         editor.putFloat("titleSize", b.getFloat("titleSize")).apply();
         editor.putFloat("subtitleSize", b.getFloat("subtitleSize")).apply();
     }
@@ -90,8 +96,8 @@ public class PrefUtils {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(ctx);
         b.putInt("logoResId", sp.getInt("logoResId", 0));
         b.putInt("textColorResId", sp.getInt("textColorResId", 0));
-        b.putString("titleText", sp.getString("titleText", ""));
-        b.putString("subtitleText", sp.getString("subtitleText", ""));
+        b.putInt("titleText", sp.getInt("titleText", -1));
+        b.putInt("subtitleText", sp.getInt("subtitleText", -1));
         b.putFloat("titleSize", sp.getFloat("titleSize", 0.0f));
         b.putFloat("subtitleSize", sp.getFloat("subtitleSize", 0.0f));
         return b;

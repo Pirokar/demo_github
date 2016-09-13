@@ -44,7 +44,6 @@
         android:layout_gravity="bottom|left"
         android:layout_marginLeft="@dimen/margin_half"
         android:layout_marginTop="@dimen/margin_big"
-        android:src="@drawable/sample_consult_avatar_small"
         android:visibility="visible" />
 
     <View

@@ -50,11 +50,6 @@
             android:name=".activities.TranslucentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Translucent">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service
@@ -82,7 +77,6 @@
             android:name=".broadcastReceivers.MyOtherPBReceiver"
             android:exported="false"
             android:permission="com.pushserver.android.permission.RECEIVE">
-            <!-- android:permission="com.pushserver.android.permission.RECEIVE"> -->
             <intent-filter>
                 <action android:name="com.pushserver.android.OTHER_PUSH_MESSAGE_EVENT" />
             </intent-filter>

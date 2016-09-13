@@ -42,9 +42,9 @@ public class ConsultWriterTest {
         consultWriter.setCurrentConsultLeft();
         assertEquals(consultWriter.isConsultConnected(), false);
         assertEquals(consultWriter.getCurrentConsultId(), null);
-        assertEquals(consultWriter.getConsultName("1"), "Test Operator #0");
-        assertEquals(consultWriter.getConsultAvatarPath("1"), "avatarApth");
-        assertEquals(consultWriter.getConsultStatus("1"), "status");
+        assertEquals(consultWriter.getName("1"), "Test Operator #0");
+        assertEquals(consultWriter.getPhotoUrl("1"), "avatarApth");
+        assertEquals(consultWriter.getStatus("1"), "status");
         assertEquals(consultWriter.getConsultTitle("1"), "title");
 
         assertEquals(null, consultWriter.getCurrentConsultName());
@@ -71,14 +71,14 @@ public class ConsultWriterTest {
 
         assertEquals(consultWriter.isConsultConnected(), false);
         assertEquals(consultWriter.getCurrentConsultId(), null);
-        assertEquals(consultWriter.getConsultName("1"), "Test Operator #0");
-        assertEquals(consultWriter.getConsultAvatarPath("1"), "avatarApth");
-        assertEquals(consultWriter.getConsultStatus("1"), "status");
+        assertEquals(consultWriter.getName("1"), "Test Operator #0");
+        assertEquals(consultWriter.getPhotoUrl("1"), "avatarApth");
+        assertEquals(consultWriter.getStatus("1"), "status");
         assertEquals(consultWriter.getConsultTitle("1"), "title");
 
-        assertEquals(consultWriter.getConsultName("2"), "Test Operator #1");
-        assertEquals(consultWriter.getConsultAvatarPath("2"), "avatarPath2");
-        assertEquals(consultWriter.getConsultStatus("2"), "status2");
+        assertEquals(consultWriter.getName("2"), "Test Operator #1");
+        assertEquals(consultWriter.getPhotoUrl("2"), "avatarPath2");
+        assertEquals(consultWriter.getStatus("2"), "status2");
         assertEquals(consultWriter.getConsultTitle("2"), null);
 
         consultWriter.setCurrentConsultLeft();

@@ -1,7 +1,6 @@
 package com.sequenia.threads.holders;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.TextView;
 
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.picasso_url_connection_only.Callback;
-import com.sequenia.threads.picasso_url_connection_only.NetworkPolicy;
 import com.sequenia.threads.utils.MaskedTransformer;
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.MessageState;
@@ -86,7 +84,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         }
 
         switch (sentState) {
-            case STATE_SENT_AND_SERVER_RECEIVED:
+            case STATE_WAS_READ:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_all_white_18dp, 0);
                 break;
             case STATE_SENT:
@@ -95,6 +93,8 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             case STATE_NOT_SENT:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_cached_white_18dp, 0);
                 break;
+            case STATE_SENDING:
+                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.empty_space_24dp, 0);
         }
     }
 }

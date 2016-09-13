@@ -14,6 +14,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sequenia.threads.R;
 import com.sequenia.threads.holders.ConsultConnectionMessageViewHolder;
 import com.sequenia.threads.holders.ConsultFileViewHolder;
 import com.sequenia.threads.holders.ConsultIsTypingViewHolder;
@@ -38,6 +39,7 @@ import com.sequenia.threads.model.SearchingConsult;
 import com.sequenia.threads.model.Space;
 import com.sequenia.threads.model.UnreadMessages;
 import com.sequenia.threads.model.UserPhrase;
+import com.sequenia.threads.picasso_url_connection_only.Callback;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.FileUtils;
@@ -118,10 +120,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof ConsultConnectionMessageViewHolder) {
             ConsultConnectionMessage cc = (ConsultConnectionMessage) list.get(position);
             ((ConsultConnectionMessageViewHolder) holder).onBind(
-                    cc.getName()
-                    , cc.getTimeStamp()
-                    , cc.getSex()
-                    , cc.getType().equals(ConsultConnectionMessage.TYPE_JOINED)
+                    cc
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -132,13 +131,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             }
                         }
                     });
-            picasso
-                    .load(cc.getAvatarPath())
-                    .fit()
-                    .centerInside()
-                    .transform(new CircleTransform())
-                    .into(((ConsultConnectionMessageViewHolder) holder)
-                            .mConsultAvatar);
         }
         if (holder instanceof ConsultPhraseHolder) {
             final ConsultPhrase cp = (ConsultPhrase) list.get(position);
@@ -241,11 +233,36 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             });
-            picasso
-                    .load(ct.getAvatarPath())
-                    .fit()
-                    .transform(new CircleTransform())
-                    .into(((ConsultIsTypingViewHolder) holder).mConsultImageView);
+            if (ct.getAvatarPath() != null) {
+                picasso
+                        .load(ct.getAvatarPath())
+                        .fit()
+                        .noPlaceholder()
+                        .transform(new CircleTransform())
+                        .into(((ConsultIsTypingViewHolder) holder).mConsultImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                picasso
+                                        .load(R.drawable.defaultprofile_360)
+                                        .fit()
+                                        .noPlaceholder()
+                                        .transform(new CircleTransform())
+                                        .into(((ConsultIsTypingViewHolder) holder).mConsultImageView);
+                            }
+                        });
+            } else {
+                picasso
+                        .load(R.drawable.defaultprofile_360)
+                        .fit()
+                        .noPlaceholder()
+                        .transform(new CircleTransform())
+                        .into(((ConsultIsTypingViewHolder) holder).mConsultImageView);
+            }
         }
         if (holder instanceof SpaceViewHolder) {
             Space space = (Space) list.get(position);
@@ -496,7 +513,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
-        if ( holder instanceof ConsultIsTypingViewHolder){
+        if (holder instanceof ConsultIsTypingViewHolder) {
             ((ConsultIsTypingViewHolder) holder).beginTyping();
         }
     }
@@ -504,7 +521,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-        if ( holder instanceof ConsultIsTypingViewHolder) ((ConsultIsTypingViewHolder) holder).stopTyping();
+        if (holder instanceof ConsultIsTypingViewHolder)
+            ((ConsultIsTypingViewHolder) holder).stopTyping();
 
     }
 
@@ -752,6 +770,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (item instanceof ConsultTyping) iter.remove();
                 }
             }
+
             if (listToInsertTo.contains(itemToInsert)) return;
             listToInsertTo.add(itemToInsert);
             Calendar currentTimeStamp = Calendar.getInstance();
@@ -771,6 +790,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             }
+
         }
 
         private void insertSpacing(List<ChatItem> listToInsertTo) {
@@ -904,6 +924,19 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
                 listToInsertTo.add(new UnreadMessages(lastUnreadStamp - 1, counter));
             }
+            boolean isWithTyping = false;
+            ConsultTyping ct = null;
+            for (ChatItem ci : listToInsertTo) {
+                if (ci instanceof ConsultTyping) {
+                    isWithTyping = true;
+                    ct = (ConsultTyping) ci;
+                }
+            }
+            if (isWithTyping
+                    && listToInsertTo.size() != 0
+                    && !(listToInsertTo.get(listToInsertTo.size() - 1) instanceof ConsultTyping)) {
+                ct.setDate(listToInsertTo.get(listToInsertTo.size() - 1).getTimeStamp() + 1);
+            }
             Collections.sort(listToInsertTo, new Comparator<ChatItem>() {
                 @Override
                 public int compare(ChatItem lhs, ChatItem rhs) {
@@ -922,6 +955,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     ((ConsultPhrase) current).setAvatarVisible(true);
                 }
             }
+
             insertSpacing(listToInsertTo);
         }
     }

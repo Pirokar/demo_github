@@ -1,15 +1,14 @@
 package com.sequenia.threads.utils;
 
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.advisa.client.api.InOutMessage;
 import com.pushserver.android.PushMessage;
 import com.sequenia.threads.model.ChatItem;
-import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultInfo;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
@@ -23,6 +22,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -46,7 +46,11 @@ public class MessageFormatter {
     private MessageFormatter() {
     }
 
-    public static String format(UpcomingUserMessage upcomingUserMessage, String quoteMfmsFilePath, String mfmsFilePath) {
+    public static String format(
+            UpcomingUserMessage upcomingUserMessage
+            , String quoteMfmsFilePath
+            , String mfmsFilePath) {
+        if (upcomingUserMessage == null) return "";
         try {
             Quote quote = upcomingUserMessage.getQuote();
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
@@ -59,6 +63,7 @@ public class MessageFormatter {
                 quotes.put(quoteJson);
                 if (!TextUtils.isEmpty(quote.getText())) {
                     quoteJson.put("text", quote.getText());
+
                 }
                 if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                     quoteJson.put("attachments", attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
@@ -76,7 +81,11 @@ public class MessageFormatter {
         return "";
     }
 
-    public static String format(UserPhrase upcomingUserMessage, String quoteMfmsFilePath, String mfmsFilePath) {
+    public static String format(
+            UserPhrase upcomingUserMessage
+            , ConsultInfo consultInfo
+            , String quoteMfmsFilePath
+            , String mfmsFilePath) {
         try {
             Quote quote = upcomingUserMessage.getQuote();
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
@@ -90,6 +99,7 @@ public class MessageFormatter {
                 if (!TextUtils.isEmpty(quote.getText())) {
                     quoteJson.put("text", quote.getText());
                 }
+                if(null != consultInfo)quoteJson.put("operator",consultInfo.toJson());
                 if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                     quoteJson.put("attachments", attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
                 }
@@ -120,7 +130,8 @@ public class MessageFormatter {
         String status = operatorInfo.has("status") && !operatorInfo.isNull("status") ? operatorInfo.getString("status") : null;
         JSONArray attachmentsArray = fullMessage.has("attachments") ? fullMessage.getJSONArray("attachments") : null;
         FileDescription fileDescription = null;
-        if(null != attachmentsArray)  fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
+        if (null != attachmentsArray)
+            fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
         if (fileDescription != null) {
             fileDescription.setFrom(name);
             fileDescription.setTimeStamp(timeStamp);
@@ -137,7 +148,7 @@ public class MessageFormatter {
                 , messageId
                 , message
                /* , timeStamp*/
-                ,System.currentTimeMillis()// FIXME: 06.09.2016 temporary
+                , System.currentTimeMillis()// FIXME: 06.09.2016 temporary
                 , String.valueOf(operatorInfo.getLong("id"))
                 , photoUrl
                 , false
@@ -163,7 +174,7 @@ public class MessageFormatter {
                 , name
                 , gender
               /*  , timeStamp*/
-                ,System.currentTimeMillis() // FIXME: 06.09.2016 temporary
+                , System.currentTimeMillis() // FIXME: 06.09.2016 temporary
                 , photourl
                 , status
                 , title
@@ -357,7 +368,7 @@ public class MessageFormatter {
                                     fileDescription.setFrom("I");
                                 }
                             }
-                            out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_SENT_AND_SERVER_RECEIVED));
+                            out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
                         }
                     }
                 } catch (JSONException e) {
@@ -384,6 +395,20 @@ public class MessageFormatter {
             e.printStackTrace();
         }
         return out;
+    }
+
+    public static List<String> getReadIds(Bundle b) {
+        ArrayList<String> ids = new ArrayList<>();
+        try {
+            Object o = b.get("readInMessageIds");
+            if (o instanceof ArrayList) {
+                ids.addAll((Collection<? extends String>) b.get("readInMessageIds"));
+            }
+            if (o instanceof String) ids.add((String) o);
+
+        } catch (Exception e) {
+        }
+        return ids;
     }
 
     public static String getMessageTyping() {

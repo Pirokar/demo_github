@@ -55,12 +55,6 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         mConsultAvatar.setOnLongClickListener(longListener);
         filter.setOnClickListener(listener);
         filter.setOnLongClickListener(longListener);
-        p
-                .load(avatarPath)
-                .fit()
-                .transform(new CircleTransform())
-                .centerInside()
-                .into(mConsultAvatar);
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
@@ -92,6 +86,39 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         }
         if (isAvatarVisible) {
             mConsultAvatar.setVisibility(View.VISIBLE);
+            if (avatarPath != null) {
+                p
+                        .load(avatarPath)
+                        .fit()
+                        .transform(new CircleTransform())
+                        .centerInside()
+                        .noPlaceholder()
+                        .into(mConsultAvatar, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso
+                                        .with(itemView.getContext())
+                                        .load(R.drawable.defaultprofile_360)
+                                        .fit()
+                                        .noPlaceholder()
+                                        .transform(new CircleTransform())
+                                        .into(mConsultAvatar);
+                            }
+                        });
+            } else {
+                p
+                        .load(R.drawable.defaultprofile_360)
+                        .fit()
+                        .noPlaceholder()
+                        .transform(new CircleTransform())
+                        .centerInside()
+                        .into(mConsultAvatar);
+            }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
         }

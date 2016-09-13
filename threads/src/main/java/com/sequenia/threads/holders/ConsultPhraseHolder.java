@@ -25,6 +25,7 @@ import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.Quote;
+import com.sequenia.threads.picasso_url_connection_only.Callback;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.FileUtils;
@@ -98,7 +99,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                 Log.e(TAG, "BANGGGGGGG!!!");
             }
         });
-        ViewUtils.setClickListener((ViewGroup) itemView,onRowLongClickListener);
+        ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
@@ -153,6 +154,32 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                         .with(itemView.getContext())
                         .load(avatarPath)
                         .fit()
+                        .noPlaceholder()
+                        .centerCrop()
+                        .transform(new CircleTransform())
+                        .into(mConsultAvatar, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso
+                                        .with(itemView.getContext())
+                                        .load(R.drawable.defaultprofile_360)
+                                        .fit()
+                                        .noPlaceholder()
+                                        .transform(new CircleTransform())
+                                        .into(mConsultAvatar);
+                            }
+                        });
+            } else {
+                Picasso
+                        .with(itemView.getContext())
+                        .load(R.drawable.defaultprofile_360)
+                        .fit()
+                        .noPlaceholder()
                         .centerCrop()
                         .transform(new CircleTransform())
                         .into(mConsultAvatar);
@@ -166,9 +193,6 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
-        }
-        if (avatarPath == null) {
-            mConsultAvatar.setVisibility(View.GONE);
         }
         if (consultPhrase == null) {
             return;

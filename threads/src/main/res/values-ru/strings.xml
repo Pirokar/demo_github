@@ -66,5 +66,13 @@
     <string name="push_connected_female">подключилась к диалогу</string>
     <string name="push_connected">подключился к диалогу</string>
     <string name="with_files">(с файлами)</string>
-    <string name="answer">Ответить</string>
+    <string name="reply">Ответить</string>
+    <plurals name="plurals_documents" >
+        <item quantity="zero">нет файлов</item>
+        <item quantity="one">%1$d файл</item>
+        <item quantity="two">%1$d файла</item>
+        <item quantity="few">%1$d файла</item>
+        <item quantity="many">%1$d файлов</item>
+        <item quantity="other">%1$d файлов</item>
+    </plurals>
 </resources>

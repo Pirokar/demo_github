@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import android.util.Pair;
 
 import com.sequenia.threads.model.ChatItem;
@@ -88,7 +87,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s integer)", //isRead
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
-                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID, COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE, COLUMN_IS_READ));
+                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID, COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE,COLUMN_CONNECTION_TYPE, COLUMN_IS_READ));
         db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_QUOTE
                         " %s text, " +//header
                         " %s text, " +//body
@@ -132,7 +131,16 @@ class MyOpenHelper extends SQLiteOpenHelper {
                             c.getLong(INDEX_TIMESTAMP),
                             fd != null && !fd.first ? fd.second : null);
                     int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
-                    MessageState ms = sentState == 1 ? MessageState.STATE_SENT : sentState == 2 ? MessageState.STATE_SENT_AND_SERVER_RECEIVED : MessageState.STATE_NOT_SENT;
+                    MessageState ms = MessageState.STATE_WAS_READ;
+                    if (sentState == 0) {
+                        ms = MessageState.STATE_NOT_SENT;
+                    } else if (sentState == 1) {
+                        ms = MessageState.STATE_SENT;
+                    } else if (sentState == 2) {
+                        ms = MessageState.STATE_WAS_READ;
+                    } else if (sentState == 3) {
+                        ms = MessageState.STATE_NOT_SENT;
+                    }
                     up.setSentState(ms);
                     phrasesInDb.add(up);
                 }
@@ -185,6 +193,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_CONSULT_ID, ((ConsultPhrase) phrase).getConsultId());
             cv.put(COLUMN_IS_READ, ((ConsultPhrase) phrase).isRead());
             cv.put(COLUMN_CONSULT_STATUS, ((ConsultPhrase) phrase).getStatus());
+            cv.put(COLUMN_NAME, ((ConsultPhrase) phrase).getConsultName());
             if (!isDup) {
                 getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             } else {
@@ -359,7 +368,16 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         c.getLong(INDEX_TIMESTAMP),
                         fd != null && !fd.first ? fd.second : null);
                 int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
-                MessageState ms = sentState == 1 ? MessageState.STATE_SENT : sentState == 2 ? MessageState.STATE_SENT_AND_SERVER_RECEIVED : MessageState.STATE_NOT_SENT;
+                MessageState ms = MessageState.STATE_WAS_READ;
+                if (sentState == 0) {
+                    ms = MessageState.STATE_NOT_SENT;
+                } else if (sentState == 1) {
+                    ms = MessageState.STATE_SENT;
+                } else if (sentState == 2) {
+                    ms = MessageState.STATE_WAS_READ;
+                } else if (sentState == 3) {
+                    ms = MessageState.STATE_NOT_SENT;
+                }
                 up.setSentState(ms);
                 items.add(up);
             }
@@ -500,6 +518,31 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 , new String[]{String.valueOf(0)});
     }
 
+    void setMessageWereRead(String consultMessageId) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_IS_READ, true);
+        String args[] = new String[1];
+        args[0] = consultMessageId;
+        getWritableDatabase().update(
+                TABLE_MESSAGES
+                , cv
+                , COLUMN_MESSAGE_TYPE + "  = " + MessageTypes.TYPE_CONSULT_PHRASE.type + " and " + COLUMN_MESSAGE_ID + " = ? "
+                , args);
+    }
+
+    List<String> getUnreadMessagesId() {
+        ArrayList<String> ids = new ArrayList<>();
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID +
+                " from " + TABLE_MESSAGES
+                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_PHRASE.type
+                + " and " + COLUMN_IS_READ + " = 0", null);
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            ids.add(c.getString(0));
+        }
+        c.close();
+        return ids;
+    }
+
     private void putFd(FileDescription fileDescription, String id, boolean isFromQuote) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FD_MESSAGE_ID_EXT, id);
@@ -581,7 +624,16 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         c.getLong(INDEX_TIMESTAMP),
                         fd != null && !fd.first ? fd.second : null);
                 int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
-                MessageState ms = sentState == 1 ? MessageState.STATE_SENT : sentState == 2 ? MessageState.STATE_SENT_AND_SERVER_RECEIVED : MessageState.STATE_NOT_SENT;
+                MessageState ms = MessageState.STATE_WAS_READ;
+                if (sentState == 0) {
+                    ms = MessageState.STATE_NOT_SENT;
+                } else if (sentState == 1) {
+                    ms = MessageState.STATE_SENT;
+                } else if (sentState == 2) {
+                    ms = MessageState.STATE_WAS_READ;
+                } else if (sentState == 3) {
+                    ms = MessageState.STATE_NOT_SENT;
+                }
                 ((UserPhrase) cp).setSentState(ms);
             }
         }

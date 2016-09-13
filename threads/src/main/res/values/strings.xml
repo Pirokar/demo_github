@@ -64,5 +64,13 @@
     <string name="push_left">left dialog</string>
     <string name="push_connected_female">connected to dialog</string>
     <string name="push_connected">connected to dialog</string>
-    <string name="answer">Answer</string>
+    <string name="reply">reply</string>
+    <plurals name="plurals_documents">
+        <item quantity="zero">no files</item>
+        <item quantity="one">%1$d file</item>
+        <item quantity="two">%1$d files</item>
+        <item quantity="few">%1$d files</item>
+        <item quantity="many">%1$d files</item>
+        <item quantity="other">%1$d files</item>
+    </plurals>
 </resources>

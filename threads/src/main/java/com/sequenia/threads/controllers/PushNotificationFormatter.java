@@ -16,9 +16,23 @@ import java.util.List;
  * Created by yuri on 01.09.2016.
  */
 public class PushNotificationFormatter {
-    private String connectionMessageFemale, connectionMessageMale, leaveMessageFemale, leaveMessageMale, onlyFileMessage, withFileEnding, youHaveUnreadMessages, withFilesEnding;
+    private String connectionMessageFemale
+            , connectionMessageMale
+            , leaveMessageFemale
+            , leaveMessageMale
+            , onlyFileMessage
+            , withFileEnding
+            , youHaveUnreadMessages
+            , withFilesEnding;
 
-    public PushNotificationFormatter(String connectionMessageFemale, String connectionMessageMale, String leaveMessageFemale, String leaveMessageMale, String onlyFileMessage, String withFileEnding, String youHaveUnreadMessages, String withFilesEnding) {
+    public PushNotificationFormatter(String connectionMessageFemale
+            , String connectionMessageMale
+            , String leaveMessageFemale
+            , String leaveMessageMale
+            , String onlyFileMessage
+            , String withFileEnding
+            , String youHaveUnreadMessages
+            , String withFilesEnding) {
         this.connectionMessageFemale = connectionMessageFemale;
         this.connectionMessageMale = connectionMessageMale;
         this.leaveMessageFemale = leaveMessageFemale;
@@ -28,6 +42,13 @@ public class PushNotificationFormatter {
         this.youHaveUnreadMessages = youHaveUnreadMessages;
         this.withFilesEnding = withFilesEnding;
     }
+
+    /**
+     * @param unreadMessages massages that was unread(not new);
+     * @param incomingPushes new unread messages
+     * @return tuple, where bool value means that messages contain not only system messages(that does't need any reply)
+     * and List<ChatItem> is a sum of unreadMessages+incomingPushes;
+     */
 
     public Tuple<Boolean, List<String>> format(
             List<ChatItem> unreadMessages
@@ -114,8 +135,8 @@ public class PushNotificationFormatter {
             outPushes.add(filesnum == 0 ? youHaveUnreadMessages : youHaveUnreadMessages + " " + withFilesEnding);
         }
         for (int i = 0; i < incomingPushes.size(); i++) {
-            if (incomingPushes.get(i) instanceof ConsultPhrase)isWithConsultPhrases = true;
+            if (incomingPushes.get(i) instanceof ConsultPhrase) isWithConsultPhrases = true;
         }
-        return new Tuple<>(isWithConsultPhrases,outPushes);
+        return new Tuple<>(isWithConsultPhrases, outPushes);
     }
 }

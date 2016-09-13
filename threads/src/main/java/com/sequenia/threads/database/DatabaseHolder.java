@@ -191,4 +191,10 @@ public class DatabaseHolder {
             }
         });
     }
+    public List<String> getUnreaMessagesId(){
+        return mMyOpenHelper.getUnreadMessagesId();
+    }
+    public void setMessageWereRead(String messageId){
+        mMyOpenHelper.setMessageWereRead(messageId);
+    }
 }

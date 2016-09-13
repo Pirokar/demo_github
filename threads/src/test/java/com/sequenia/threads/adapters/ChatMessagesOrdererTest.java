@@ -127,25 +127,30 @@ public class ChatMessagesOrdererTest {
         mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new UserPhrase(random(), random(), null, 100, null)));
         assertTrue(listToInsertTo.get(0) instanceof DateRow);
         assertTrue(listToInsertTo.get(1) instanceof UserPhrase);
-        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultTyping(random(), Long.MAX_VALUE, "")));
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultTyping(random(), 120, "")));
         assertTrue(listToInsertTo.get(0) instanceof DateRow);
         assertTrue(listToInsertTo.get(1) instanceof UserPhrase);
-        assertTrue(listToInsertTo.get(2) instanceof DateRow);
-        assertTrue(listToInsertTo.get(3) instanceof Space);
-        assertTrue(listToInsertTo.get(4) instanceof ConsultTyping);
+        assertTrue(listToInsertTo.get(2) instanceof Space);
+        assertTrue(listToInsertTo.get(3) instanceof ConsultTyping);
         mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new UserPhrase(random(), random(), null, 150, null)));
         assertTrue(listToInsertTo.get(0) instanceof DateRow);
         assertTrue(listToInsertTo.get(1) instanceof UserPhrase);
         assertTrue(listToInsertTo.get(2) instanceof Space);//test proper localization of typing
         assertTrue(listToInsertTo.get(3) instanceof UserPhrase);
-        assertTrue(listToInsertTo.get(4) instanceof DateRow);
-        assertTrue(listToInsertTo.get(5) instanceof Space);
-        assertTrue(listToInsertTo.get(6) instanceof ConsultTyping);
-        assertEquals(7,listToInsertTo.size());
-        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultTyping(random(), Long.MAX_VALUE, "")));
-        assertTrue(listToInsertTo.get(6) instanceof ConsultTyping);//test that only 1 typing item  can exist
-        assertEquals(7,listToInsertTo.size());
+        assertTrue(listToInsertTo.get(4) instanceof Space);
+        assertTrue(listToInsertTo.get(5) instanceof ConsultTyping);
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultTyping(random(), 130, "")));
+        assertTrue(listToInsertTo.get(5) instanceof ConsultTyping);//test that only 1 typing item  can exist
+        assertEquals(6,listToInsertTo.size());
 
+        mChatMessagesOrderer.addAndOrder(listToInsertTo, toList(new ConsultTyping(random(), 120, "")));
+        assertTrue(listToInsertTo.get(0) instanceof DateRow);
+        assertTrue(listToInsertTo.get(1) instanceof UserPhrase);
+        assertTrue(listToInsertTo.get(2) instanceof Space);//test proper localization of typing
+        System.out.println(listToInsertTo);
+        assertTrue(listToInsertTo.get(3) instanceof UserPhrase);
+        assertTrue(listToInsertTo.get(4) instanceof Space);
+        assertTrue(listToInsertTo.get(5) instanceof ConsultTyping);
 
     }
 

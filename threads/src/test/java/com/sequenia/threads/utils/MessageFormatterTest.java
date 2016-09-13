@@ -1,5 +1,7 @@
 package com.sequenia.threads.utils;
 
+import android.os.Bundle;
+
 import com.advisa.client.api.InOutMessage;
 import com.google.common.collect.Lists;
 import com.mfms.push.api.DateTime;
@@ -7,19 +9,26 @@ import com.pushserver.android.PushMessage;
 import com.sequenia.threads.BuildConfig;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultInfo;
 import com.sequenia.threads.model.ConsultPhrase;
+import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.utils.MessageFormatter;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -58,6 +67,8 @@ public class MessageFormatterTest {
         consultPushPhrase.setFullMessage("{\"operator\":{\"id\":1,\"name\":\"Test Operator #0\",\"status\":null,\"photoUrl\":null,\"gender\":\"FEMALE\"},\"text\":\"wetwetwte\",\"receivedDate\":\"2016-08-29T06:28:16Z\",\"attachments\":[],\"quotes\":[]}, sessionKey=fe2ae55b-a02d-420c-9d58-6aa0e765e74c}], readMessageId=[], nextSyncToken=NDAwMDE2MjQ2NTAxLzQwMDAxNjI0NjUwMS80MDAwMTU2ODUxMDE=, needYetAnotherRequest=false}");
         consultPushPhrase.setMessageId(String.valueOf(400016246901L));
         consultPushPhrase.setSentAt(1472452096537L);
+
+
     }
 
     @Test
@@ -114,7 +125,7 @@ public class MessageFormatterTest {
        *//* Intent i = ChatActivity.IntentBuilder.getBuilder(RuntimeEnvironment.application, "79139055742")
                 .setDefaultChatTitle("Контакт центр")
                 .setWelcomeScreenAttrs(R.drawable.logo,"Привет","Пока",R.color.white_dark,15f,10f)
-                .setClientName("Кириллов Кирилл Кириллович")
+                .setUserName("Кириллов Кирилл Кириллович")
                 .build();*//*
         ChatActivity chatActivity = mock(ChatActivity.class);
         try {
@@ -148,7 +159,7 @@ public class MessageFormatterTest {
         assertEquals(ConsultInfo.getCurrentConsultTitle(chatActivity), null);
         assertEquals(consultTitleTextView.getText(), "");
         assert consultTitleTextView.getVisibility() == View.VISIBLE;
-        assertEquals(consultNameTextView.getText(), PrefUtils.getDefaultTitle(chatActivity));
+        assertEquals(consultNameTextView.getText(), PrefUtils.getDefaultChatTitle(chatActivity));
         assert consultNameTextView.getVisibility() == View.VISIBLE;*/
     }
 
@@ -207,5 +218,37 @@ public class MessageFormatterTest {
         in.add(message);
         out.add(consultConnectionMessage);
         assertEquals(MessageFormatter.format(in), out);
+    }
+
+    @Test
+    public void testGetReadIds() throws Exception {
+        Bundle b = mock(Bundle.class);
+        ArrayList<String> strings = new ArrayList<>(Arrays.asList(new String[]{
+                "4211601"
+                , "4210501"
+                , "4210901"
+                , "4211301"
+                , "4211801"
+                , "4211101"
+                , "4211501"
+                , "4210701"}));
+        when(b.get("readInMessageIds")).thenReturn(strings);
+        assertEquals(strings, MessageFormatter.getReadIds(b));
+        assertEquals(new ArrayList<String>(), MessageFormatter.getReadIds(null));
+        assertEquals(new ArrayList<String>(), MessageFormatter.getReadIds(mock(Bundle.class)));
+        Mockito.reset(b);
+        when(b.get("readInMessageIds")).thenReturn("1");
+        assertEquals(Arrays.asList(new String[]{"1"}), MessageFormatter.getReadIds(b));
+        assertEquals(new ArrayList<String>(), MessageFormatter.getReadIds(null));
+        assertEquals(new ArrayList<String>(), MessageFormatter.getReadIds(mock(Bundle.class)));
+    }
+
+    @Test
+    public void testFormat() {
+        UserPhrase userPhrase = new UserPhrase("1", "phrase", new Quote("title", "quoteText", null, 1L), 1L, null);
+        String output = "{\"text\":\"phrase\",\"quotes\":[{\"text\":\"quoteText\",\"operator\":" +
+                "{\"name\":\"title\",\"status\":\"Оператор0\",\"id\":\"1\"}}]}";
+        ConsultInfo consultInfo = new ConsultInfo("title","1","Оператор0",null);
+        assertEquals(output, MessageFormatter.format(userPhrase,consultInfo,null,null));
     }
 }

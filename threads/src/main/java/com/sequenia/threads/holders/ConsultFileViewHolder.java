@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.FileDescription;
+import com.sequenia.threads.picasso_url_connection_only.Callback;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.FileUtils;
@@ -62,12 +63,7 @@ public class ConsultFileViewHolder extends RecyclerView.ViewHolder {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);
         }
         mCircularProgressButton.setOnClickListener(buttonClickListener);
-        Picasso
-                .with(itemView.getContext())
-                .load(avatarPath)
-                .fit()
-                .transform(new CircleTransform())
-                .into(mConsultAvatar);
+
         if (isFilterVisible) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterSecond.setVisibility(View.VISIBLE);
@@ -77,6 +73,39 @@ public class ConsultFileViewHolder extends RecyclerView.ViewHolder {
         }
         if (isAvatarVisible) {
             mConsultAvatar.setVisibility(View.VISIBLE);
+            if (avatarPath!=null) {
+                Picasso
+                        .with(itemView.getContext())
+                        .load(avatarPath)
+                        .fit()
+                        .noPlaceholder()
+                        .transform(new CircleTransform())
+                        .into(mConsultAvatar, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso
+                                        .with(itemView.getContext())
+                                        .load(R.drawable.defaultprofile_360)
+                                        .fit()
+                                        .noPlaceholder()
+                                        .transform(new CircleTransform())
+                                        .into(mConsultAvatar);
+                            }
+                        });
+            } else {
+                Picasso
+                        .with(itemView.getContext())
+                        .load(R.drawable.defaultprofile_360)
+                        .fit()
+                        .noPlaceholder()
+                        .transform(new CircleTransform())
+                        .into(mConsultAvatar);
+            }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
             mFilterSecond.setVisibility(View.GONE);

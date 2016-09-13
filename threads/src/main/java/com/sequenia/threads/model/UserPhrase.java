@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Created by yuri on 10.06.2016.
  */
-public class UserPhrase implements ChatPhrase,IsOnlyImage {
+public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private String messageId;
     private final String phrase;
     private final boolean withFile;
@@ -28,7 +28,7 @@ public class UserPhrase implements ChatPhrase,IsOnlyImage {
         this.mQuote = mQuote;
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
-        sentState = MessageState.STATE_SENT;
+        sentState = MessageState.STATE_SENDING;
     }
 
     public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
@@ -38,7 +38,7 @@ public class UserPhrase implements ChatPhrase,IsOnlyImage {
         this.mQuote = mQuote;
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
-        this.sentState = MessageState.STATE_SENT_AND_SERVER_RECEIVED;
+        this.sentState = MessageState.STATE_WAS_READ;
     }
 
     public void setMessageId(String messageId) {

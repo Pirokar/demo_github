@@ -9,7 +9,7 @@
         android:id="@+id/image"
         android:layout_width="100dp"
         android:layout_height="64dp"
-        android:src="@drawable/sample_consult_avatar_big" />
+        />
 
     <TextView
         android:id="@+id/quote_header"

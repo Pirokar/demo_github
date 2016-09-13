@@ -1,16 +1,10 @@
 package com.sequenia.threads.utils;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.pushserver.android.PushMessage;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by yuri on 14.07.2016.
@@ -77,22 +71,22 @@ public class ConsultWriter {
         sharedPreferences.edit().putString(OPERATOR_ID, consultId).commit();
     }
 
-    public String getConsultName(String id) {
+    public String getName(String id) {
         return sharedPreferences.getString(OPERATOR_NAME + id, null);
     }
 
     public String getCurrentConsultName() {
         if (getCurrentConsultId()==null)return null;
-        return getConsultName(getCurrentConsultId());
+        return getName(getCurrentConsultId());
     }
 
     public String getCurrentConsultStatus() {
         if (getCurrentConsultId()==null)return null;
-        return getConsultStatus(getCurrentConsultId());
+        return getStatus(getCurrentConsultId());
     }
 
 
-    public String getConsultStatus(String id) {
+    public String getStatus(String id) {
         return sharedPreferences.getString(OPERATOR_STATUS + id, null);
     }
 
@@ -105,13 +99,13 @@ public class ConsultWriter {
         return getConsultTitle(getCurrentConsultId());
     }
 
-    public String getConsultAvatarPath(String id) {
+    public String getPhotoUrl(String id) {
         return sharedPreferences.getString(OPERATOR_PHOTO + id, null);
     }
 
     public String getCurrentAvatarPath() {
         if (getCurrentConsultId()==null)return null;
-        return getConsultAvatarPath(getCurrentConsultId());
+        return getPhotoUrl(getCurrentConsultId());
     }
 
 

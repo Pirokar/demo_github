@@ -2,11 +2,9 @@ package com.sequenia.threads.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
@@ -78,7 +76,7 @@ public class UserFileViewHolder extends RecyclerView.ViewHolder {
         }
 
         switch (sentState) {
-            case STATE_SENT_AND_SERVER_RECEIVED:
+            case STATE_WAS_READ:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_all_white_18dp, 0);
                 break;
             case STATE_SENT:
@@ -87,6 +85,8 @@ public class UserFileViewHolder extends RecyclerView.ViewHolder {
             case STATE_NOT_SENT:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_cached_white_18dp, 0);
                 break;
+            case STATE_SENDING:
+                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.empty_space_24dp, 0);
         }
     }
 }

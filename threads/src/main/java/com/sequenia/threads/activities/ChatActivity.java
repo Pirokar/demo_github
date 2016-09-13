@@ -16,8 +16,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +30,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
@@ -44,10 +46,10 @@ import android.widget.Toast;
 
 import com.sequenia.threads.fragments.FilePickerFragment;
 import com.sequenia.threads.fragments.QuickAnswerFragment;
-import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.utils.Callback;
+import com.sequenia.threads.utils.LateTextWatcher;
 import com.sequenia.threads.utils.MyFileFilter;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.BottomGalleryAdapter;
@@ -76,6 +78,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -90,9 +93,9 @@ public class ChatActivity extends AppCompatActivity
         , QuickAnswerFragment.OnQuickAnswer {
     private static final String TAG = "ChatActivity ";
     private static final String TAG_DEF_TITLE = "TAG_DEF_TITLE";
-    private static final String TAG_CLIENT_NAME = "TAG_CLIENT_NAME";
-    private static final String TAG_PUSH_RESID = "TAG_PUSH_RESID";
-    public static final String ACTION_SHOW_QUICK_ANSWER = "ACTION_SHOW_QUICK_ANSWER";
+    private static final String TAG_USER_NAME = "TAG_USER_NAME";
+    private static final String TAG_PUSH_ICON_RESID = "TAG_PUSH_ICON_RESID";
+    private static final String TAG_PUSH_TITLE = "TAG_PUSH_TITLE";
     private ChatController mChatController;
     private WelcomeScreen mWelcomeScreen;
     private EditText mInputEditText;
@@ -131,12 +134,35 @@ public class ChatActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.ThreadsStyle);
         setContentView(R.layout.activity_chat_activity);
-        Toolbar t = (Toolbar) findViewById(R.id.toolbar);
-        if (null != t) initToolbar(t);
         getIncomingSettings(getIntent());
         initViews();
+        initToolbar();
+        initController();
+    }
+
+    private void getIncomingSettings(Intent intent) {
+        if (intent.getStringExtra(TAG) == null && PrefUtils.getClientID(this) == null)
+            throw new IllegalStateException("you must provide valid client id," +
+                    "\r\n it is now null or it'ts length < 5");
+        if (intent.getIntExtra(TAG_DEF_TITLE, -1) != -1) {
+            PrefUtils.setDefaultChatTitle(this, getIntent().getIntExtra(TAG_DEF_TITLE, -1));
+        }
+        if (intent.getStringExtra(TAG_USER_NAME) != null) {
+            PrefUtils.setUserName(this, intent.getStringExtra(TAG_USER_NAME));
+        }
+        if (intent.getBundleExtra("bundle") != null) {
+            PrefUtils.setIncomingStyle(this, intent.getBundleExtra("bundle"));
+        }
+        if (intent.getIntExtra(TAG_PUSH_ICON_RESID, -1) != -1) {
+            PrefUtils.setPushIconResid(this, intent.getIntExtra(TAG_PUSH_ICON_RESID, -1));
+        }
+        if (intent.getIntExtra(TAG_PUSH_TITLE, -1) != -1) {
+            PrefUtils.setPushTitle(this, intent.getIntExtra(TAG_PUSH_TITLE, -1));
+        }
+    }
+
+    private void initController() {
         if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {//mb, someday, we will support orientation change
             mChatController = (ChatController) getFragmentManager().findFragmentByTag(ChatController.TAG);
         } else {
@@ -152,37 +178,14 @@ public class ChatActivity extends AppCompatActivity
         registerReceiver(mChatActivityReceiver, intentFilter);
     }
 
-    private void getIncomingSettings(Intent intent) {
-        if (intent.getStringExtra(TAG) == null && PrefUtils.getClientID(this) == null)
-            throw new IllegalStateException("you must provide valid client id," +
-                    "\r\n it is now null or it'ts length < 5");
-        if (intent.getStringExtra(TAG_DEF_TITLE) != null) {
-            PrefUtils.setDefaultTitle(this, getIntent().getStringExtra(TAG_DEF_TITLE));
-        }
-        if (intent.getStringExtra(TAG_CLIENT_NAME) != null) {
-            PrefUtils.setClientName(this, intent.getStringExtra(TAG_CLIENT_NAME));
-        }
-        if (intent.getBundleExtra("bundle") != null) {
-            PrefUtils.setIncomingStyle(this, intent.getBundleExtra("bundle"));
-        }
-        if (intent.getIntExtra(TAG_PUSH_RESID, -1) != -1 && PrefUtils.getPushIconResid(this) != -1)
-            PrefUtils.setPushIconResid(this, intent.getIntExtra(TAG_PUSH_RESID, -1));
-    }
-
-    static Intent getStartIntent(Context ctx) {
-        Intent i = new Intent(ctx, ChatActivity.class);
-        return i;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
-
-    //initialy  sets title,click listeners on toolbar.
-    private void initToolbar(@NonNull Toolbar t) {
+    private void initToolbar() {
+        Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         t.setTitle("");
         setSupportActionBar(t);
         t.setNavigationOnClickListener(new View.OnClickListener() {
@@ -233,7 +236,6 @@ public class ChatActivity extends AppCompatActivity
         });
         mInputEditText = (EditText) findViewById(R.id.input);
         ImageButton SendButton = (ImageButton) findViewById(R.id.send_message);
-        final Context c = this;
         ImageButton AddAttachmentButton = (ImageButton) findViewById(R.id.add_attachment);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -251,11 +253,14 @@ public class ChatActivity extends AppCompatActivity
         mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
         mWelcomeScreen.setLogo(b.getInt("logoResId"));
         mWelcomeScreen.setTextColor(b.getInt("textColorResId"));
-        mWelcomeScreen.setText(b.getString("titleText"), b.getString("subtitleText"));
+        mWelcomeScreen.setText(getString(b.getInt("titleText")), getString(b.getInt("subtitleText")));
         mWelcomeScreen.setTitletextSize(b.getFloat("titleSize"));
         mWelcomeScreen.setSubtitleSize(b.getFloat("subtitleSize"));
         mSearchMoreButton = (Button) findViewById(R.id.search_more);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange);
+        mConsultNameView = (TextView) findViewById(R.id.consult_name);
+        mConsultTitle = (TextView) findViewById(R.id.subtitle);
+        mCopyControls = findViewById(R.id.copy_controls);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -301,19 +306,22 @@ public class ChatActivity extends AppCompatActivity
                     mWelcomeScreen.setVisibility(View.GONE);
                     mWelcomeScreen = null;
                 }
-                unChooseItem(mChosenPhrase);
-                UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, mFileDescription);
+                List<UpcomingUserMessage> input = Arrays.asList(new UpcomingUserMessage[]{new UpcomingUserMessage(
+                        mFileDescription
+                        , mQuote
+                        , mInputEditText.getText().toString().trim())});
+                sendMessage(input, true);
+              /*  unChooseItem(mChosenPhrase);
+                UpcomingUserMessage uum =
                 mChatController.onUserInput(uum);
                 mInputEditText.setText("");
                 mQuoteLayoutHolder.setIsVisible(false);
                 mQuote = null;
                 mFileDescription = null;
                 mChosenPhrase = null;
-                mChatAdapter.setAllMessagesRead();
+                mChatAdapter.setAllMessagesRead();*/
             }
         });
-        mConsultNameView = (TextView) findViewById(R.id.consult_name);
-        mConsultTitle = (TextView) findViewById(R.id.subtitle);
         mConsultNameView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -328,7 +336,6 @@ public class ChatActivity extends AppCompatActivity
                     onConsultAvatarClick(connectedConsultId);
             }
         });
-        mCopyControls = findViewById(R.id.copy_controls);
         mInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -338,61 +345,44 @@ public class ChatActivity extends AppCompatActivity
                 }
             }
         });
-        mInputEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+        mInputEditText.addTextChangedListener(new LateTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 mChatController.onUserTyping();
             }
         });
-        mSearchMessageEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+        mSearchMessageEditText.addTextChangedListener(new LateTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
+                String request = "";
+                if (!isInMessageSearchMode) return;
                 if (s == null || s.length() == 0) {
-                    return;
+                    request = UUID.randomUUID().toString();
                 } else {
-                    if (!searchInFiles) {
-                        mChatController.requestFilteredPhrases(false, s.toString(), new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
-                            @Override
-                            public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
-                                mChatAdapter.swapItems(result.second);
-                            }
+                    request = s.toString();
+                }
+                if (!searchInFiles) {
+                    mChatController.requestFilteredPhrases(false, request, new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
+                        @Override
+                        public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
+                            mChatAdapter.swapItems(result.second);
+                        }
 
-                            @Override
-                            public void onFail(Exception error) {
-                            }
-                        });
-                    } else {
-                        mChatController.requestFilteredFiles(false, s.toString(), new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
-                            @Override
-                            public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
-                                mChatAdapter.swapItems(result.second);
-                            }
+                        @Override
+                        public void onFail(Exception error) {
+                        }
+                    });
+                } else {
+                    mChatController.requestFilteredFiles(false, request, new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
+                        @Override
+                        public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
+                            mChatAdapter.swapItems(result.second);
+                        }
 
-                            @Override
-                            public void onFail(Exception error) {
-                            }
-                        });
-                    }
+                        @Override
+                        public void onFail(Exception error) {
+                        }
+                    });
                 }
             }
         });
@@ -401,10 +391,30 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onQuickAnswer(String answer) {
         if (answer == null) return;
-        if (null != mChatController) {
-            mChatController.onUserInput(new UpcomingUserMessage(answer, null, null));
-            if (null != mQuoteLayoutHolder) mQuoteLayoutHolder.setIsVisible(false);
-            if (null != mChatAdapter) mChatAdapter.setAllMessagesRead();
+        sendMessage(Arrays.asList(new UpcomingUserMessage[]{new UpcomingUserMessage(null, null, answer)}), false);
+    }
+
+    private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
+        if (mChatController == null) return;
+        for (UpcomingUserMessage message : messages) {
+            mChatController.onUserInput(message);
+        }
+        if (null != mQuoteLayoutHolder) mQuoteLayoutHolder.setIsVisible(false);
+        if (null != mChatAdapter) mChatAdapter.setAllMessagesRead();
+        mBottomSheetView.setSelectedState(false);
+        if (clearInput) {
+            mInputEditText.setText("");
+            mQuoteLayoutHolder.setIsVisible(false);
+            mQuote = null;
+            mFileDescription = null;
+            setBottomStateDefault();
+            hideCopyControls();
+            mAttachedImages.clear();
+            mBottomGallery.setVisibility(View.GONE);
+            if (mChosenPhrase != null && mChatAdapter != null) {
+                mChatAdapter.setItemChosen(false, mChosenPhrase);
+                mChosenPhrase = null;
+            }
         }
     }
 
@@ -518,9 +528,12 @@ public class ChatActivity extends AppCompatActivity
             if (photos.size() == 0) return;
             unChooseItem(mChosenPhrase);
             UpcomingUserMessage uum =
-                    new UpcomingUserMessage(mInputEditText.getText().toString().trim()
+                    new UpcomingUserMessage(new FileDescription(getString(R.string.I)
+                            , photos.get(0)
+                            , new File(photos.get(0).replaceAll("file://", "")).length()
+                            , System.currentTimeMillis())
                             , null
-                            , new FileDescription(getString(R.string.I), photos.get(0), new File(photos.get(0).replaceAll("file://", "")).length(), System.currentTimeMillis()));
+                            , mInputEditText.getText().toString().trim());
             mChatController.onUserInput(uum);
             mInputEditText.setText("");
             mQuoteLayoutHolder.setIsVisible(false);
@@ -528,15 +541,18 @@ public class ChatActivity extends AppCompatActivity
             mFileDescription = null;
             for (int i = 1; i < photos.size(); i++) {
                 uum =
-                        new UpcomingUserMessage(null
+                        new UpcomingUserMessage(
+                                new FileDescription(getString(R.string.I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
                                 , null
-                                , new FileDescription(getString(R.string.I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis()));
+                                , null);
                 mChatController.onUserInput(uum);
             }
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
             mFileDescription = new FileDescription(getResources().getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
-            mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.image), "file://" + data.getStringExtra(CameraActivity.IMAGE_EXTRA));
-            mQuote = null;
+            /*mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.image), "file://" + data.getStringExtra(CameraActivity.IMAGE_EXTRA));
+            mQuote = null;*/
+            UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null);
+            sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), false);
         }
     }
 
@@ -572,14 +588,24 @@ public class ChatActivity extends AppCompatActivity
         if (mAttachedImages == null || mAttachedImages.size() == 0) {
             mBottomGallery.setVisibility(View.GONE);
         } else {
-            UpcomingUserMessage uum = new UpcomingUserMessage(mInputEditText.getText().toString().trim(), mQuote, new FileDescription(getString(R.string.I), mAttachedImages.get(0), new File(mAttachedImages.get(0).replaceAll("file://", "")).length(), System.currentTimeMillis()));
-            mChatController.onUserInput(uum);
+            List<UpcomingUserMessage> messages = new ArrayList<>();
+            messages.add(new UpcomingUserMessage(
+                    new FileDescription(
+                            getString(R.string.I)
+                            , mAttachedImages.get(0)
+                            , new File(mAttachedImages.get(0).replaceAll("file://", "")).length()
+                            , System.currentTimeMillis())
+                    , mQuote
+                    , mInputEditText.getText().toString().trim()));
             for (int i = 1; i < mAttachedImages.size(); i++) {
-                uum = new UpcomingUserMessage(null, null, new FileDescription(getString(R.string.I), mAttachedImages.get(i), new File(mAttachedImages.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis()));
-                mChatController.onUserInput(uum);
+                messages.add(new UpcomingUserMessage(
+                        new FileDescription(getString(R.string.I), mAttachedImages.get(i), new File(mAttachedImages.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
+                        , null
+                        , null));
             }
+            sendMessage(messages, true);
         }
-        mBottomSheetView.setSelectedState(false);
+        /*mBottomSheetView.setSelectedState(false);
         mInputEditText.setText("");
         mQuoteLayoutHolder.setIsVisible(false);
         mQuote = null;
@@ -587,7 +613,7 @@ public class ChatActivity extends AppCompatActivity
         setBottomStateDefault();
         hideCopyControls();
         mAttachedImages.clear();
-        mBottomGallery.setVisibility(View.GONE);
+        mBottomGallery.setVisibility(View.GONE);*/
     }
 
     private void setBottomStateDefault() {
@@ -638,7 +664,8 @@ public class ChatActivity extends AppCompatActivity
                 mChatAdapter.addItems(list);
             }
         });
-       if (list.size()==1 && list.get(0) instanceof ConsultTyping)return;//don't scroll if it is just typing item
+        if (list.size() == 1 && list.get(0) instanceof ConsultTyping)
+            return;//don't scroll if it is just typing item
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -653,7 +680,7 @@ public class ChatActivity extends AppCompatActivity
     public void removeDownloading() {
     }
 
-    public void changeStateOfMessage(String messageId, MessageState state) {
+    public void setMessageState(String messageId, MessageState state) {
         mChatAdapter.changeStateOfMessage(messageId, state);
     }
 
@@ -667,7 +694,7 @@ public class ChatActivity extends AppCompatActivity
                     mConsultNameView.setVisibility(View.VISIBLE);
                     mSearchMessageEditText.setVisibility(View.GONE);
                     mSearchMessageEditText.setText("");
-                    mConsultNameView.setText(PrefUtils.getDefaultTitle(ctx));
+                    mConsultNameView.setText(getString(PrefUtils.getDefaultChatTitle(ctx)));
                 }
                 connectedConsultId = String.valueOf(-1);
             }
@@ -762,7 +789,7 @@ public class ChatActivity extends AppCompatActivity
     public void onImageClick(ChatPhrase chatPhrase) {
         if (chatPhrase.getFileDescription().getFilePath() == null) return;
         if (chatPhrase instanceof UserPhrase) {
-            if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_SENT_AND_SERVER_RECEIVED) {
+            if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_WAS_READ) {
                 mChatController.checkAndResendPhrase((UserPhrase) chatPhrase);
             }
             if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
@@ -809,25 +836,12 @@ public class ChatActivity extends AppCompatActivity
                 if (null != mChosenPhrase) unChooseItem(mChosenPhrase);
             }
         });
+        final Context ctx = this;
         reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String headerText = "";
-
-                if (cp instanceof UserPhrase) {
-                    headerText = getString(R.string.I);
-
-                } else if (cp instanceof ConsultPhrase) {
-                    headerText = mChatController.getConsultNameById(((ConsultPhrase) cp).getConsultId());
-                    if (headerText == null) {
-                        headerText = getString(R.string.consult);
-                    }
-                }
-                if (isEmpty(cp.getPhraseText())) {
-                    mQuote = new Quote(headerText, cp.getPhraseText(), null, System.currentTimeMillis());
-                }
                 String text = cp.getPhraseText();
-                mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
                 hideCopyControls();
                 mRecyclerView.scrollToPosition(position);
                 FileDescription quoteFileDescription = cp.getFileDescription();
@@ -836,7 +850,28 @@ public class ChatActivity extends AppCompatActivity
                 }
                 mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
                 mFileDescription = null;
-
+                if (isEmpty(cp.getPhraseText())) {
+                    mQuote = new Quote(headerText, cp.getPhraseText(), null, System.currentTimeMillis());
+                }
+                if (cp instanceof UserPhrase) {
+                    headerText = getString(R.string.I);
+                    mQuote.setFromConsult(false);
+                    mQuote.setPhraseOwnerTitle(headerText);
+                } else if (cp instanceof ConsultPhrase) {
+                    headerText = ((ConsultPhrase) cp).getConsultName();
+                    mQuote.setFromConsult(true);
+                    mQuote.setQuotedPhraseId(((ConsultPhrase) cp).getConsultId());
+                    if (headerText == null) {
+                        headerText = getString(R.string.consult);
+                    }
+                    mQuote.setPhraseOwnerTitle(headerText);
+                }
+                if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
+                        || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
+                    mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, cp.getFileDescription().getFilePath());
+                } else {
+                    mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
+                }
             }
         });
         mChosenPhrase = cp;
@@ -871,6 +906,7 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         boolean isNeedToClose = true;
+
         if (mCopyControls.getVisibility() == View.VISIBLE
                 && mSearchMessageEditText.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
@@ -885,6 +921,7 @@ public class ChatActivity extends AppCompatActivity
             return;
         }
 
+
         if (mCopyControls.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
             isNeedToClose = false;
@@ -897,8 +934,8 @@ public class ChatActivity extends AppCompatActivity
                 }
             });
             mSearchMessageEditText.setVisibility(View.GONE);
-            mSearchMessageEditText.setText("");
             isInMessageSearchMode = false;
+            mSearchMessageEditText.setText("");
             mChatAdapter.undoClear();
             mSearchMoreButton.setVisibility(View.GONE);
             mSwipeRefreshLayout.setEnabled(true);
@@ -922,6 +959,13 @@ public class ChatActivity extends AppCompatActivity
         }
         if (mBottomGallery.getVisibility() == View.VISIBLE) {
             onHideClick();
+            return;
+        }
+        if (mQuoteLayoutHolder.isVisible()) {
+            mQuoteLayoutHolder.setIsVisible(false);
+            if (mChatAdapter != null && mChosenPhrase != null) {
+                mChatAdapter.setItemChosen(false, mChosenPhrase);
+            }
             return;
         }
         if (isNeedToClose) {
@@ -986,7 +1030,7 @@ public class ChatActivity extends AppCompatActivity
                     .with(getApplicationContext())
                     .load(path)
                     .fit()
-                    .centerInside()
+                    .centerCrop()
                     .into(mQuoteImage);
         }
 
@@ -1188,36 +1232,40 @@ public class ChatActivity extends AppCompatActivity
             return builder;
         }
 
-        public IntentBuilder setDefaultChatTitle(String title) {
-            if (title == null) throw new IllegalArgumentException("null");
-            builder.i.putExtra(TAG_DEF_TITLE, title);
+        public IntentBuilder setDefaultChatTitle(@StringRes int resId) {
+            builder.i.putExtra(TAG_DEF_TITLE, resId);
             return builder;
         }
 
-        public IntentBuilder setClientName(String clientName) {
+        public IntentBuilder setPushTitle(@StringRes int titleResId) {
+            builder.i.putExtra(TAG_PUSH_TITLE, titleResId);
+            return builder;
+        }
+
+        public IntentBuilder setUserName(String clientName) {
             if (clientName == null) throw new IllegalArgumentException("null");
-            builder.i.putExtra(TAG_CLIENT_NAME, clientName);
+            builder.i.putExtra(TAG_USER_NAME, clientName);
             return builder;
         }
 
-        public IntentBuilder setPushIconResid(int resid) {
-            builder.i.putExtra(TAG_PUSH_RESID, resid);
+        public IntentBuilder setPushIconResId(@DrawableRes int resid) {
+            builder.i.putExtra(TAG_PUSH_ICON_RESID, resid);
             return builder;
         }
 
         public IntentBuilder setWelcomeScreenAttrs(
-                int logoResId
-                , String titleText
-                , String subtitleText
-                , int textColorResId
+                @DrawableRes int logoResId
+                , @StringRes int titleText
+                , @StringRes int subtitleText
+                , @ColorRes int textColorResId
                 , float titleSize
                 , float subtitleSize) {
             Bundle b = new Bundle();
             i.putExtra("bundle", b);
             b.putInt("logoResId", logoResId);
             b.putInt("textColorResId", textColorResId);
-            b.putString("titleText", titleText);
-            b.putString("subtitleText", subtitleText);
+            b.putInt("titleText", titleText);
+            b.putInt("subtitleText", subtitleText);
             b.putFloat("titleSize", titleSize);
             b.putFloat("subtitleSize", subtitleSize);
             return this;
@@ -1228,22 +1276,25 @@ public class ChatActivity extends AppCompatActivity
             Bundle b = i.getBundleExtra("bundle");
             if (i.getStringExtra(TAG) == null)
                 throw new IllegalStateException("you must provide clientId");
-            if (i.getStringExtra(TAG_DEF_TITLE) == null)
-                throw new IllegalStateException("you must provide default chat title string");
-            if (i.getIntExtra(TAG_PUSH_RESID, -1) == -1)
+            if (i.getIntExtra(TAG_DEF_TITLE, -1) == -1)
+                throw new IllegalStateException("you must provide default chat res id");
+            if (i.getIntExtra(TAG_PUSH_ICON_RESID, -1) == -1)
                 throw new IllegalStateException("you must provide default push icon resid");
+            if (i.getIntExtra(TAG_PUSH_TITLE, -1) == -1)
+                throw new IllegalStateException("you must provide default push pushTitle");
             if (b.getInt("logoResId", -1) == -1)
                 throw new IllegalStateException("you must provide logo resource id");
             if (b.getInt("textColorResId", -1) == -1)
                 throw new IllegalStateException("you must provide textColorResId resource id");
-            if (b.getString("titleText", null) == null)
+            if (b.getInt("titleText", -1) == -1)
                 throw new IllegalStateException("you must provide titleText");
-            if (b.getString("subtitleText", null) == null)
+            if (b.getInt("subtitleText", -1) == -1)
                 throw new IllegalStateException("you must provide subtitleText");
             if (b.getFloat("titleSize", -1f) == -1f)
                 throw new IllegalStateException("you must provide titleSize");
             if (b.getFloat("titleSize", -1f) == -1f)
                 throw new IllegalStateException("you must provide subtitleSize");
+
             builder = null;
             return i;
         }

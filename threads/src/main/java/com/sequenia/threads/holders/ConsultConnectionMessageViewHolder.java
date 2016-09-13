@@ -9,6 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.picasso_url_connection_only.Callback;
+import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.CircleTransform;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,17 +43,19 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
     }
 
     public void onBind(
-            String consultName
-            , long date
-            , boolean sex
-            , boolean isConnected
+            ConsultConnectionMessage consultConnectionMessage
             , View.OnClickListener listener) {
-        if (consultName == null || consultName.equals("null")) {
+        if (consultConnectionMessage.getName() == null
+                || consultConnectionMessage.getName().equals("null")) {
             Log.d(TAG, "consultName is null");
-            consultName = itemView.getContext().getString(R.string.unknown_operator);
+            headerTextView.setText(itemView.getContext().getString(R.string.unknown_operator));
+        } else {
+            headerTextView.setText(consultConnectionMessage.getName());
         }
-        headerTextView.setText(consultName);
         String connectedText = "";
+        boolean isConnected = consultConnectionMessage.getConnectionType().equals(ConsultConnectionMessage.TYPE_JOINED);
+        boolean sex = consultConnectionMessage.getSex();
+        long date = consultConnectionMessage.getTimeStamp();
         if (sex && isConnected) {
             connectedText = itemView.getContext().getResources().getString(R.string.connected) + " " + sdf.format(new Date(date));
         } else if (!sex && isConnected) {
@@ -63,6 +69,42 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(listener);
+        }
+        if (consultConnectionMessage.getAvatarPath() != null) {
+            Picasso
+                    .with(itemView.getContext())
+                    .load(consultConnectionMessage.getAvatarPath())
+                    .centerInside()
+                    .noPlaceholder()
+                    .fit()
+                    .transform(new CircleTransform())
+                    .into(mConsultAvatar, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            Picasso
+                                    .with(itemView.getContext())
+                                    .load(R.drawable.defaultprofile_360)
+                                    .centerInside()
+                                    .fit()
+                                    .noPlaceholder()
+                                    .transform(new CircleTransform())
+                                    .into(mConsultAvatar);
+                        }
+                    });
+        } else {
+            Picasso
+                    .with(itemView.getContext())
+                    .load(R.drawable.defaultprofile_360)
+                    .centerInside()
+                    .noPlaceholder()
+                    .fit()
+                    .transform(new CircleTransform())
+                    .into(mConsultAvatar);
         }
     }
 }
