@@ -71,14 +71,17 @@ public class ViewTypingInProgress extends LinearLayout {
 
     public void removeAnimation() {
         v1.clearAnimation();
-        v1.animate().cancel();
+        v1.animate().scaleX(1f).scaleY(1f).cancel();
         v2.clearAnimation();
-        v2.animate().cancel();
+        v2.animate().scaleX(1f).scaleY(1f).cancel();
         v3.clearAnimation();
-        v3.animate().cancel();
+        v3.animate().scaleX(1f).scaleY(1f).cancel();
     }
 
     public void animateViews() {
+        v1.animate().scaleX(1f).scaleY(1f).setDuration(0).start();
+        v2.animate().scaleX(1f).scaleY(1f).setDuration(0).start();
+        v3.animate().scaleX(1f).scaleY(1f).setDuration(0).start();
         h.post(new Runnable() {
             @Override
             public void run() {

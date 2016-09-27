@@ -61,7 +61,7 @@ public class ConsultWriterTest {
                 , "2"
                 , "avatarPath2"
                 , false
-                , "status2"));
+                , "status2",false));
         assertEquals("2", consultWriter.getCurrentConsultId());
         assertEquals("Test Operator #1", consultWriter.getCurrentConsultName());
         assertEquals("avatarPath2", consultWriter.getCurrentAvatarPath());
@@ -105,7 +105,7 @@ public class ConsultWriterTest {
                 , "2"
                 , "avatarPath2"
                 , false
-                , "status2"));
+                , "status2",false));
         assertEquals(null, consultWriter.getCurrentConsultTitle());
 
         consultWriter.setSearchingConsult(true);

@@ -6,8 +6,8 @@ package com.sequenia.threads.utils;
 
 
 public class Tuple<F, S> {
-    public final F first;
-    public final S second;
+    public F first;
+    public S second;
 
     public Tuple(F first, S second) {
         this.first = first;

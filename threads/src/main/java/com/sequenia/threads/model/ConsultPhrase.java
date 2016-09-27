@@ -12,6 +12,7 @@ import java.util.UUID;
 public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
     private final String avatarPath;
     private final String consultId;
+    private final boolean sex;
     private final long timeStamp;
     private final String phrase;
     private final String messageId;
@@ -34,7 +35,7 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
             , String avatarPath
             , boolean isRead
             , String status
-            ) {
+            ,boolean sex) {
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.consultName = consultName;
@@ -45,12 +46,16 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
         this.avatarPath = avatarPath;
         this.isRead = isRead;
         this.status = status;
+        this.sex = sex;
     }
 
     public String getStatus() {
         return status;
     }
 
+    public boolean getSex() {
+        return sex;
+    }
 
     public void setFileDescription(FileDescription fileDescription) {
         this.fileDescription = fileDescription;
@@ -164,18 +169,7 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
     @Override
     public String toString() {
         return "ConsultPhrase{" +
-                "avatarPath='" + avatarPath + '\'' +
-                ", consultId='" + consultId + '\'' +
                 ", timeStamp=" + timeStamp +
-                ", phrase='" + phrase + '\'' +
-                ", messageId='" + messageId + '\'' +
-                ", consultName='" + consultName + '\'' +
-                ", isAvatarVisible=" + isAvatarVisible +
-                ", quote=" + quote +
-                ", fileDescription=" + fileDescription +
-                ", isChosen=" + isChosen +
-                ", isRead=" + isRead +
-                ", status='" + status + '\'' +
                 '}';
     }
 

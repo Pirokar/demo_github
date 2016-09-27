@@ -1,7 +1,10 @@
-package com.sequenia.threads.utils;
+package com.sequenia.threads.formatters;
 
 import android.os.Bundle;
 
+import com.sequenia.threads.utils.MessageMatcher;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -30,7 +33,7 @@ public class MessageMatcherTest {
         when(b.getString("collapse_key")).thenReturn("do_not_collapse");
         when(b.getInt("newMessagesAvailable")).thenReturn(1);
         when(b.getStringArrayList("readInMessageIds")).thenReturn(null);
-        assertEquals(MessageMatcher.TYPE_OPERATOR_TYPING, MessageMatcher.getType(b));
+        Assert.assertEquals(MessageMatcher.TYPE_OPERATOR_TYPING, MessageMatcher.getType(b));
 
         ArrayList<String> integers = new ArrayList<>(Arrays.asList(new String[]{
                 "4211601"

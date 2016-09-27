@@ -5,6 +5,7 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 
 import com.pushserver.android.PushController;
+import com.sequenia.threads.AnalyticsTracker;
 
 import java.util.HashMap;
 
@@ -24,7 +25,7 @@ public class ThreadsInitializer {
     }
 
     private ThreadsInitializer(Context ctx) {
-        isInited = ctx.getSharedPreferences(this.getClass().toString(), Context.MODE_PRIVATE).getBoolean("init", false);
+        isInited = ctx.getSharedPreferences(this.getClass().toString(), Context.MODE_PRIVATE).getBoolean("initIfNotInited", false);
         this.ctx = ctx;
         isInited = PrefUtils.isClientIdSet(ctx);
     }
@@ -32,6 +33,7 @@ public class ThreadsInitializer {
     public synchronized boolean init() throws IllegalArgumentException {
         if (PermissionChecker.isCoarseLocationPermissionGranted(ctx) && PermissionChecker.isReadSmsPermissionGranted(ctx) && PermissionChecker.isReadPhoneStatePermissionGranted(ctx)) {
             PushController.getInstance(ctx).init();
+
             return true;
         }
         return false;

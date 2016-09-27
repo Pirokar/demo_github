@@ -1,8 +1,11 @@
 package com.sequenia.threads.model;
 
+import android.content.ClipboardManager;
 import android.text.TextUtils;
 
 import com.sequenia.threads.utils.FileUtils;
+
+import static com.sequenia.threads.utils.FileUtils.*;
 
 import java.util.UUID;
 
@@ -19,6 +22,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private final long phraseTimeStamp;
     private FileDescription fileDescription;
     private boolean isChosen;
+    public boolean isCopy = false;
 
 
     public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
@@ -39,6 +43,33 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
         this.sentState = MessageState.STATE_WAS_READ;
+    }
+    public boolean isWithPhrase(){
+        return !TextUtils.isEmpty(phrase);
+    }
+
+    public boolean isCopy() {
+        return isCopy;
+    }
+
+    public void setCopy(boolean copy) {
+        isCopy = copy;
+    }
+
+    public boolean hasFile() {
+        return fileDescription != null
+                || (mQuote != null
+                && mQuote.getFileDescription() != null);
+    }
+
+    public boolean hasText() {
+        return !TextUtils.isEmpty(phrase);
+    }
+
+
+    public boolean hasQuote() {
+        return mQuote != null;
+
     }
 
     public void setMessageId(String messageId) {
@@ -64,7 +95,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     }
 
     public boolean isWithFile() {
-        return withFile;
+        return fileDescription!=null||(mQuote!=null && mQuote.getFileDescription()!=null);
     }
 
     public void setFileDescription(FileDescription fileDescription) {
@@ -72,7 +103,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     }
 
     public boolean isWithQuote() {
-        return isWithQuote;
+        return mQuote!=null;
     }
 
     public MessageState getSentState() {
@@ -133,16 +164,25 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         return fileDescription != null
                 && TextUtils.isEmpty(phrase)
                 && mQuote == null
-                && (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.JPEG
-                || FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PNG
-                || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG
-                || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.JPEG);
+                && (getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.JPEG
+                || getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PNG
+                || getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG
+                || getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.JPEG);
     }
 
     @Override
     public String toString() {
-        return "[UserPhrase] " +
-                "TimeStamp=" + phraseTimeStamp +
-                "";
+        return "UserPhrase{" +
+                "messageId='" + messageId + '\'' +
+                ", phrase='" + phrase + '\'' +
+                ", withFile=" + withFile +
+                ", sentState=" + sentState +
+                ", mQuote=" + mQuote +
+                ", isWithQuote=" + isWithQuote +
+                ", phraseTimeStamp=" + phraseTimeStamp +
+                ", fileDescription=" + fileDescription +
+                ", isChosen=" + isChosen +
+                ", isCopy=" + isCopy +
+                '}';
     }
 }

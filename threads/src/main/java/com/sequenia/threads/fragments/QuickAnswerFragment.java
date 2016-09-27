@@ -3,12 +3,17 @@ package com.sequenia.threads.fragments;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -16,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.activities.TranslucentActivity;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
 
@@ -23,8 +29,8 @@ import com.sequenia.threads.utils.CircleTransform;
  * Created by yuri on 02.09.2016.
  */
 public class QuickAnswerFragment extends DialogFragment {
+    private EditText mEditText;
     private static final String TAG = "QuickAnswerFragment ";
-    private OnQuickAnswer mOnQuickAnswer;
 
     public static QuickAnswerFragment getInstance(
             String avatarPath,
@@ -45,18 +51,15 @@ public class QuickAnswerFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.dialog_fast_answer, container, false);
         TextView consultNameTextView = (TextView) v.findViewById(R.id.consult_name);
         TextView textView = (TextView) v.findViewById(R.id.question);
-        final EditText editText = (EditText) v.findViewById(R.id.answer);
+        mEditText = (EditText) v.findViewById(R.id.answer);
         ImageView imageView = (ImageView) v.findViewById(R.id.consult_image);
         ImageButton imageButton = (ImageButton) v.findViewById(R.id.send);
-        mOnQuickAnswer = null;
-        try {
-            mOnQuickAnswer = (OnQuickAnswer) getActivity();
-        } catch (ClassCastException e) {
-            Log.e(TAG, "activity must implement OnQuickAnswer interface to catch result from this dialog");
-        }
         v.findViewById(R.id.close_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
+                Intent answerIntent = new Intent(TranslucentActivity.ACTION_CANCEL);
+                manager.sendBroadcast(answerIntent);
                 dismiss();
             }
         });
@@ -72,7 +75,6 @@ public class QuickAnswerFragment extends DialogFragment {
                         .fit()
                         .transform(new CircleTransform())
                         .into(imageView);
-
             }
             if (null != consultName && !consultName.equals("null"))
                 consultNameTextView.setText(consultName);
@@ -83,10 +85,11 @@ public class QuickAnswerFragment extends DialogFragment {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mOnQuickAnswer) {
-                    mOnQuickAnswer.onQuickAnswer(editText.getText().toString());
-                }
-                editText.setText("");
+                LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
+                Intent answerIntent = new Intent(TranslucentActivity.ACTION_ANSWER);
+                answerIntent.putExtra(TranslucentActivity.ACTION_ANSWER, mEditText.getText().toString());
+                manager.sendBroadcast(answerIntent);
+                mEditText.setText("");
                 dismiss();
             }
         });
@@ -98,20 +101,29 @@ public class QuickAnswerFragment extends DialogFragment {
         Dialog d = super.onCreateDialog(savedInstanceState);
         int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9f);
         d.getWindow().setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT);
+        d.setCancelable(false);
         return d;
     }
+
 
     @Override
     public void onStart() {
         super.onStart();
         Dialog d = getDialog();
-        if(null != d){
+        if (null != d) {
             int width = (int) (getResources().getDisplayMetrics().widthPixels);
             d.getWindow().setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT);
+            d.setCancelable(false);
         }
     }
 
-    public interface OnQuickAnswer {
-        void onQuickAnswer(String answer);
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (null != mEditText) {
+            mEditText.requestFocus();
+            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+
     }
 }

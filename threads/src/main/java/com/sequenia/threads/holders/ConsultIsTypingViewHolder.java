@@ -32,9 +32,11 @@ public class ConsultIsTypingViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void stopTyping() {
-        ((ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress)).removeAnimation();
+        ((ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress))
+                .removeAnimation();
     }
     public void beginTyping(){
-        ((ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress)).animateViews();
+        ((ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress)
+        ).animateViews();
     }
 }

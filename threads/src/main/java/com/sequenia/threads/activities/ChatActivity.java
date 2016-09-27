@@ -44,6 +44,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sequenia.threads.AnalyticsTracker;
 import com.sequenia.threads.fragments.FilePickerFragment;
 import com.sequenia.threads.fragments.QuickAnswerFragment;
 import com.sequenia.threads.model.ConsultConnectionMessage;
@@ -85,17 +86,17 @@ import static android.text.TextUtils.isEmpty;
 /**
  *
  */
-public class ChatActivity extends AppCompatActivity
+public class ChatActivity extends BaseActivity
         implements
         BottomSheetView.ButtonsListener
         , ChatAdapter.AdapterInterface
-        , FilePickerFragment.SelectedListener
-        , QuickAnswerFragment.OnQuickAnswer {
+        , FilePickerFragment.SelectedListener {
     private static final String TAG = "ChatActivity ";
     private static final String TAG_DEF_TITLE = "TAG_DEF_TITLE";
     private static final String TAG_USER_NAME = "TAG_USER_NAME";
     private static final String TAG_PUSH_ICON_RESID = "TAG_PUSH_ICON_RESID";
     private static final String TAG_PUSH_TITLE = "TAG_PUSH_TITLE";
+    private static final String TAG_GA_RESID = "TAG_GA_RESID";
     private ChatController mChatController;
     private WelcomeScreen mWelcomeScreen;
     private EditText mInputEditText;
@@ -130,7 +131,6 @@ public class ChatActivity extends AppCompatActivity
     private boolean searchInFiles;
     private boolean isResumed;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +139,7 @@ public class ChatActivity extends AppCompatActivity
         initViews();
         initToolbar();
         initController();
+
     }
 
     private void getIncomingSettings(Intent intent) {
@@ -159,6 +160,9 @@ public class ChatActivity extends AppCompatActivity
         }
         if (intent.getIntExtra(TAG_PUSH_TITLE, -1) != -1) {
             PrefUtils.setPushTitle(this, intent.getIntExtra(TAG_PUSH_TITLE, -1));
+        }
+        if (intent.getStringExtra(TAG_GA_RESID) != null) {
+            PrefUtils.setGaTrackerId(this, intent.getStringExtra(TAG_GA_RESID));
         }
     }
 
@@ -253,7 +257,7 @@ public class ChatActivity extends AppCompatActivity
         mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
         mWelcomeScreen.setLogo(b.getInt("logoResId"));
         mWelcomeScreen.setTextColor(b.getInt("textColorResId"));
-        mWelcomeScreen.setText(getString(b.getInt("titleText")), getString(b.getInt("subtitleText")));
+        mWelcomeScreen.setText(getString(b.getInt("titleText")), getString(b.getInt("contentText")));
         mWelcomeScreen.setTitletextSize(b.getFloat("titleSize"));
         mWelcomeScreen.setSubtitleSize(b.getFloat("subtitleSize"));
         mSearchMoreButton = (Button) findViewById(R.id.search_more);
@@ -309,17 +313,8 @@ public class ChatActivity extends AppCompatActivity
                 List<UpcomingUserMessage> input = Arrays.asList(new UpcomingUserMessage[]{new UpcomingUserMessage(
                         mFileDescription
                         , mQuote
-                        , mInputEditText.getText().toString().trim())});
+                        , mInputEditText.getText().toString().trim(), isCopy(mInputEditText.getText().toString()))});
                 sendMessage(input, true);
-              /*  unChooseItem(mChosenPhrase);
-                UpcomingUserMessage uum =
-                mChatController.onUserInput(uum);
-                mInputEditText.setText("");
-                mQuoteLayoutHolder.setIsVisible(false);
-                mQuote = null;
-                mFileDescription = null;
-                mChosenPhrase = null;
-                mChatAdapter.setAllMessagesRead();*/
             }
         });
         mConsultNameView.setOnClickListener(new View.OnClickListener() {
@@ -358,8 +353,11 @@ public class ChatActivity extends AppCompatActivity
                 if (!isInMessageSearchMode) return;
                 if (s == null || s.length() == 0) {
                     request = UUID.randomUUID().toString();
+                    mSearchMoreButton.setVisibility(View.GONE);
                 } else {
                     request = s.toString();
+                    if (mSearchMoreButton.getVisibility() == View.GONE)
+                        mSearchMoreButton.setVisibility(View.VISIBLE);
                 }
                 if (!searchInFiles) {
                     mChatController.requestFilteredPhrases(false, request, new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
@@ -386,12 +384,6 @@ public class ChatActivity extends AppCompatActivity
                 }
             }
         });
-    }
-
-    @Override
-    public void onQuickAnswer(String answer) {
-        if (answer == null) return;
-        sendMessage(Arrays.asList(new UpcomingUserMessage[]{new UpcomingUserMessage(null, null, answer)}), false);
     }
 
     private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
@@ -533,7 +525,8 @@ public class ChatActivity extends AppCompatActivity
                             , new File(photos.get(0).replaceAll("file://", "")).length()
                             , System.currentTimeMillis())
                             , null
-                            , mInputEditText.getText().toString().trim());
+                            , mInputEditText.getText().toString().trim()
+                            , isCopy(mInputEditText.getText().toString()));
             mChatController.onUserInput(uum);
             mInputEditText.setText("");
             mQuoteLayoutHolder.setIsVisible(false);
@@ -544,16 +537,21 @@ public class ChatActivity extends AppCompatActivity
                         new UpcomingUserMessage(
                                 new FileDescription(getString(R.string.I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
                                 , null
-                                , null);
+                                , null
+                                , false);
                 mChatController.onUserInput(uum);
             }
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
             mFileDescription = new FileDescription(getResources().getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
-            /*mQuoteLayoutHolder.setText(mChatController.getCurrentConsultName().split("%%")[0], getResources().getString(R.string.image), "file://" + data.getStringExtra(CameraActivity.IMAGE_EXTRA));
-            mQuote = null;*/
-            UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null);
-            sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), false);
+            UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
+            sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
         }
+    }
+
+    private boolean isCopy(String text) {
+        if (TextUtils.isEmpty(text)) return false;
+        if (TextUtils.isEmpty(PrefUtils.getLastCopyText(this))) return false;
+        return text.contains(PrefUtils.getLastCopyText(this));
     }
 
     @Override
@@ -588,6 +586,7 @@ public class ChatActivity extends AppCompatActivity
         if (mAttachedImages == null || mAttachedImages.size() == 0) {
             mBottomGallery.setVisibility(View.GONE);
         } else {
+
             List<UpcomingUserMessage> messages = new ArrayList<>();
             messages.add(new UpcomingUserMessage(
                     new FileDescription(
@@ -596,24 +595,17 @@ public class ChatActivity extends AppCompatActivity
                             , new File(mAttachedImages.get(0).replaceAll("file://", "")).length()
                             , System.currentTimeMillis())
                     , mQuote
-                    , mInputEditText.getText().toString().trim()));
+                    , mInputEditText.getText().toString().trim()
+                    , isCopy(mInputEditText.getText().toString())));
             for (int i = 1; i < mAttachedImages.size(); i++) {
                 messages.add(new UpcomingUserMessage(
                         new FileDescription(getString(R.string.I), mAttachedImages.get(i), new File(mAttachedImages.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
                         , null
-                        , null));
+                        , null
+                        , false));
             }
             sendMessage(messages, true);
         }
-        /*mBottomSheetView.setSelectedState(false);
-        mInputEditText.setText("");
-        mQuoteLayoutHolder.setIsVisible(false);
-        mQuote = null;
-        mFileDescription = null;
-        setBottomStateDefault();
-        hideCopyControls();
-        mAttachedImages.clear();
-        mBottomGallery.setVisibility(View.GONE);*/
     }
 
     private void setBottomStateDefault() {
@@ -796,6 +788,7 @@ public class ChatActivity extends AppCompatActivity
                 startActivity(ImagesActivity.getStartIntent(this, chatPhrase.getFileDescription()));
             }
         } else if (chatPhrase instanceof ConsultPhrase) {
+            AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setAttachmentWasOpened();
             startActivity(ImagesActivity.getStartIntent(this, ((ChatPhrase) chatPhrase).getFileDescription()));
         }
     }
@@ -827,16 +820,17 @@ public class ChatActivity extends AppCompatActivity
         mConsultTitle.setVisibility(View.GONE);
         ImageButton reply = (ImageButton) mCopyControls.findViewById(R.id.reply);
         ImageButton copy = (ImageButton) mCopyControls.findViewById(R.id.content_copy);
+        final Context ctx = this;
         copy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
                 hideCopyControls();
+                PrefUtils.setLastCopyText(ctx, cp.getPhraseText());
                 if (null != mChosenPhrase) unChooseItem(mChosenPhrase);
             }
         });
-        final Context ctx = this;
         reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -868,7 +862,7 @@ public class ChatActivity extends AppCompatActivity
                 }
                 if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                         || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
-                    mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, cp.getFileDescription().getFilePath());
+                    mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? getString(R.string.image) : text, cp.getFileDescription().getFilePath());
                 } else {
                     mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
                 }
@@ -987,6 +981,12 @@ public class ChatActivity extends AppCompatActivity
         mChatAdapter.updateProgress(filedescription);
     }
 
+    public void setAllMessagesWereRead() {
+        if (null != mChatAdapter) {
+            mChatAdapter.setAllMessagesRead();
+        }
+    }
+
     private class QuoteLayoutHolder {
         private View view;
         private TextView mHeader;
@@ -1095,6 +1095,7 @@ public class ChatActivity extends AppCompatActivity
             return true;
 
         } else if (item.getItemId() == R.id.search) {
+            AnalyticsTracker.getInstance(this,PrefUtils.getGaTrackerId(this)).setTextSearchWasOpened();
             search(false);
         }
         return super.onOptionsItemSelected(item);
@@ -1116,7 +1117,6 @@ public class ChatActivity extends AppCompatActivity
         }, 100);
         mChatAdapter.backupAndClear();
         mSwipeRefreshLayout.setEnabled(false);
-        mSearchMoreButton.setVisibility(View.VISIBLE);
         mSearchMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1207,11 +1207,6 @@ public class ChatActivity extends AppCompatActivity
                 search(true);
             } else if (intent.getAction() != null && intent.getAction().equals(ChatActivity.ACTION_SEARCH)) {
                 search(false);
-            } else if (intent.getAction() != null && intent.getAction().equals(ACTION_SEND_QUICK_MESSAGE)) {
-                String message = intent.getStringExtra(ACTION_SEND_QUICK_MESSAGE);
-                if (null != message) {
-                    onQuickAnswer(message);
-                }
             }
         }
     }
@@ -1237,19 +1232,20 @@ public class ChatActivity extends AppCompatActivity
             return builder;
         }
 
-        public IntentBuilder setPushTitle(@StringRes int titleResId) {
-            builder.i.putExtra(TAG_PUSH_TITLE, titleResId);
-            return builder;
-        }
-
         public IntentBuilder setUserName(String clientName) {
             if (clientName == null) throw new IllegalArgumentException("null");
             builder.i.putExtra(TAG_USER_NAME, clientName);
             return builder;
         }
 
-        public IntentBuilder setPushIconResId(@DrawableRes int resid) {
-            builder.i.putExtra(TAG_PUSH_ICON_RESID, resid);
+        public IntentBuilder setPushStyle(@DrawableRes int defIconResid, @StringRes int DefTitleResId) {
+            builder.i.putExtra(TAG_PUSH_ICON_RESID, defIconResid);
+            builder.i.putExtra(TAG_PUSH_TITLE, DefTitleResId);
+            return builder;
+        }
+
+        public IntentBuilder setGATrackerId(String GATrackerId) {
+            builder.i.putExtra(TAG_GA_RESID, GATrackerId);
             return builder;
         }
 
@@ -1265,7 +1261,7 @@ public class ChatActivity extends AppCompatActivity
             b.putInt("logoResId", logoResId);
             b.putInt("textColorResId", textColorResId);
             b.putInt("titleText", titleText);
-            b.putInt("subtitleText", subtitleText);
+            b.putInt("contentText", subtitleText);
             b.putFloat("titleSize", titleSize);
             b.putFloat("subtitleSize", subtitleSize);
             return this;
@@ -1277,26 +1273,30 @@ public class ChatActivity extends AppCompatActivity
             if (i.getStringExtra(TAG) == null)
                 throw new IllegalStateException("you must provide clientId");
             if (i.getIntExtra(TAG_DEF_TITLE, -1) == -1)
-                throw new IllegalStateException("you must provide default chat res id");
+                Log.e(TAG, "you must provide default chat res id");
             if (i.getIntExtra(TAG_PUSH_ICON_RESID, -1) == -1)
-                throw new IllegalStateException("you must provide default push icon resid");
+                Log.e(TAG, "you must provide default push icon resid");
             if (i.getIntExtra(TAG_PUSH_TITLE, -1) == -1)
-                throw new IllegalStateException("you must provide default push pushTitle");
+                Log.e(TAG, "you must provide default push pushTitle");
             if (b.getInt("logoResId", -1) == -1)
-                throw new IllegalStateException("you must provide logo resource id");
+                Log.e(TAG, "you must provide logo resource id");
             if (b.getInt("textColorResId", -1) == -1)
-                throw new IllegalStateException("you must provide textColorResId resource id");
+                Log.e(TAG, "you must provide textColorResId resource id");
+            if (b.getString(TAG_GA_RESID, null) == null)
+                Log.e(TAG, "you must provide google analytics xml res id ");
             if (b.getInt("titleText", -1) == -1)
-                throw new IllegalStateException("you must provide titleText");
-            if (b.getInt("subtitleText", -1) == -1)
-                throw new IllegalStateException("you must provide subtitleText");
+                Log.e(TAG, "you must provide titleText");
+            if (b.getInt("contentText", -1) == -1)
+                Log.e(TAG, "you must provide contentText");
             if (b.getFloat("titleSize", -1f) == -1f)
-                throw new IllegalStateException("you must provide titleSize");
+                Log.e(TAG, "you must provide titleSize");
             if (b.getFloat("titleSize", -1f) == -1f)
-                throw new IllegalStateException("you must provide subtitleSize");
+                Log.e(TAG, "you must provide subtitleSize");
 
             builder = null;
             return i;
         }
+
+
     }
 }

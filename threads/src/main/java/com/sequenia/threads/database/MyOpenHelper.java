@@ -87,7 +87,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s integer)", //isRead
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
-                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID, COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE,COLUMN_CONNECTION_TYPE, COLUMN_IS_READ));
+                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID, COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE, COLUMN_IS_READ));
         db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_QUOTE
                         " %s text, " +//header
                         " %s text, " +//body
@@ -194,6 +194,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_IS_READ, ((ConsultPhrase) phrase).isRead());
             cv.put(COLUMN_CONSULT_STATUS, ((ConsultPhrase) phrase).getStatus());
             cv.put(COLUMN_NAME, ((ConsultPhrase) phrase).getConsultName());
+            cv.put(COLUMN_SEX, ((ConsultPhrase) phrase).getSex());
             if (!isDup) {
                 getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             } else {
@@ -287,6 +288,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
             final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
             final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
+            final int INDEX_SEX = c.getColumnIndex(COLUMN_SEX);
             String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
             String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
             String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
@@ -303,7 +305,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                     c.getString(INDEX_CONSULT_ID),
                     avatarPath
                     , isRead
-                    , status);
+                    , status
+                    , c.getInt(INDEX_SEX) == 1);
             return cp;
         }
         return null;
@@ -325,6 +328,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         final int INDEX_CONNECTION_TYPE = c.getColumnIndex(COLUMN_CONNECTION_TYPE);
         final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
         final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
+        final int INDEX_SEX = c.getColumnIndex(COLUMN_SEX);
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             int type = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_TYPE));
             if (type == MessageTypes.TYPE_CONSULT_CONNECTED.type) {
@@ -356,7 +360,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         c.getString(INDEX_CONSULT_ID),
                         avatarPath
                         , isRead
-                        , status);
+                        , status
+                        , c.getInt(INDEX_SEX) == 1);
                 items.add(cp);
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
@@ -595,6 +600,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             final int INDEX_CONNECTION_TYPE = c.getColumnIndex(COLUMN_CONNECTION_TYPE);
             final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
             final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
+            final int INDEX_SEX = c.getColumnIndex(COLUMN_SEX);
             int type = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_TYPE));
             if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
@@ -613,7 +619,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         c.getString(INDEX_CONSULT_ID),
                         avatarPath
                         , isRead
-                        , status);
+                        , status
+                        , c.getInt(INDEX_SEX) == 1);
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
                 Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));

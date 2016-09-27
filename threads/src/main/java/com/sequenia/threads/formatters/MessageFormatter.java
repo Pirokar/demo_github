@@ -1,4 +1,4 @@
-package com.sequenia.threads.utils;
+package com.sequenia.threads.formatters;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -99,7 +99,7 @@ public class MessageFormatter {
                 if (!TextUtils.isEmpty(quote.getText())) {
                     quoteJson.put("text", quote.getText());
                 }
-                if(null != consultInfo)quoteJson.put("operator",consultInfo.toJson());
+                if (null != consultInfo) quoteJson.put("operator", consultInfo.toJson());
                 if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                     quoteJson.put("attachments", attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
                 }
@@ -141,6 +141,7 @@ public class MessageFormatter {
         if (quote != null && quote.getFileDescription() != null) {
             quote.getFileDescription().setTimeStamp(timeStamp);
         }
+        boolean gender = operatorInfo.isNull("gender") ? false : operatorInfo.getString("gender").equalsIgnoreCase("male");
         return new ConsultPhrase(
                 fileDescription
                 , quote
@@ -153,6 +154,7 @@ public class MessageFormatter {
                 , photoUrl
                 , false
                 , status
+                , gender
         );
     }
 
@@ -359,7 +361,17 @@ public class MessageFormatter {
                         if (quote != null && quote.getFileDescription() != null)
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (!message.incoming) {
-                            out.add(new ConsultPhrase(fileDescription, quote, name, messageId, phraseText, timeStamp, operatorId, photoUrl, true, status));
+                            out.add(new ConsultPhrase(fileDescription
+                                    , quote
+                                    , name
+                                    , messageId
+                                    , phraseText
+                                    , timeStamp
+                                    , operatorId
+                                    , photoUrl
+                                    , true
+                                    , status
+                                    , gender));
                         } else {
                             if (fileDescription != null) {
                                 if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {

@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
+import com.sequenia.threads.AnalyticsTracker;
 import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.activities.ConsultActivity;
 import com.sequenia.threads.activities.ImagesActivity;
@@ -46,7 +48,7 @@ import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.ConsultWriter;
 import com.sequenia.threads.utils.DualFilePoster;
 import com.sequenia.threads.utils.FileUtils;
-import com.sequenia.threads.utils.MessageFormatter;
+import com.sequenia.threads.formatters.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.utils.PrefUtils;
 
@@ -86,6 +88,7 @@ public class ChatController extends Fragment {
     public static Picasso p;
     private boolean isInitError;
     private ConsultWriter mConsultWriter;
+    private AnalyticsTracker mAnalyticsTracker;
 
 
     public static ChatController getInstance(final Context ctx, final String clientId) {
@@ -95,83 +98,68 @@ public class ChatController extends Fragment {
         if (PrefUtils.getClientID(ctx) == null) {
             PrefUtils.setClientId(ctx, clientId);
         }
-        try {
-            if (!PrefUtils.isClientIdSet(ctx)
-                    || !PrefUtils.getClientID(ctx).equals(clientId)) {
-                Log.i(TAG, "setting client id async");
-                PushController.getInstance(ctx).setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
-                    @Override
-                    public void onResult(Void aVoid) {
-                        PushController.getInstance(ctx).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getUserName(ctx), PrefUtils.getClientID(ctx), ""), true, new RequestCallback<String, PushServerErrorException>() {
-                            @Override
-                            public void onResult(String string) {
-                                Log.e(TAG, "client id was set string =" + string);
-                                PrefUtils.setClientId(ctx, clientId);
-                                PrefUtils.setClientIdWasSet(true, ctx);
-                                instance.cleanAll();
-                                if (instance.mDatabaseHolder.getMessagesCount() == 0 && instance.activity != null) {
-                                    instance.activity.showDownloading();
-                                    PushController.getInstance(instance.activity).getMessageHistoryAsync(20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+        final PushIniter initer = new PushIniter(ctx, clientId);
+        initer.initIfNotInited(new Callback<Void, Exception>() {
+            @Override
+            public void onSuccess(Void result) {
+                instance.cleanAll();
+                if (instance.mDatabaseHolder.getMessagesCount() == 0 && instance.activity != null) {
+                    instance.activity.showDownloading();
+                    PushController.getInstance(instance.activity).getMessageHistoryAsync(20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+                        @Override
+                        public void onError(PushServerErrorException e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResult(List<InOutMessage> inOutMessages) {
+                            ArrayList<ChatItem> phrases = MessageFormatter.format(inOutMessages);
+                            if (null != instance.activity) {
+                                instance.activity.removeDownloading();
+                            }
+
+                            instance.mDatabaseHolder.putMessagesAsync(phrases, new CompletionHandler<Void>() {
+                                @Override
+                                public void onComplete(Void data) {
+                                    instance.mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
                                         @Override
-                                        public void onResult(List<InOutMessage> inOutMessages) {
-                                            ArrayList<ChatItem> phrases = MessageFormatter.format(inOutMessages);
-                                            if (null != instance.activity) {
-                                                instance.activity.removeDownloading();
-                                            }
-                                            instance.mDatabaseHolder.putMessagesAsync(phrases, new CompletionHandler<Void>() {
-                                                @Override
-                                                public void onComplete(Void data) {
-                                                    instance.mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
-                                                        @Override
-                                                        public void onComplete(List<ChatItem> data) {
+                                        public void onComplete(List<ChatItem> data) {
 
-                                                            if (null != instance.activity)
-                                                                instance.activity.addChatItems(data);
-                                                            instance.currentOffset = data.size();
-                                                        }
-
-                                                        @Override
-                                                        public void onError(Throwable e, String message, List<ChatItem> data) {
-
-                                                        }
-                                                    });
-                                                }
-
-                                                @Override
-                                                public void onError(Throwable e, String message, Void data) {
-
-                                                }
-                                            });
+                                            if (null != instance.activity)
+                                                instance.activity.addChatItems(data);
+                                            instance.currentOffset = data.size();
                                         }
 
                                         @Override
-                                        public void onError(PushServerErrorException e) {
-
+                                        public void onError(Throwable e, String message, List<ChatItem> data) {
+                                            e.printStackTrace();
                                         }
                                     });
                                 }
-                            }
 
-                            @Override
-                            public void onError(PushServerErrorException e) {
+                                @Override
+                                public void onError(Throwable e, String message, Void data) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                    });
+                }
+            }
 
-                            }
-                        });
+            @Override
+            public void onFail(Exception error) {
+                initer.initIfNotInited(new Callback<Void, Exception>() {
+                    @Override
+                    public void onSuccess(Void result) {
                     }
 
                     @Override
-                    public void onError(PushServerErrorException e) {
-                        Log.e(TAG, "error while setting client id" + e);
-                        e.printStackTrace();
+                    public void onFail(Exception error) {
                     }
                 });
             }
-        } catch (Exception e) {
-            if (e instanceof IllegalStateException) {
-                PushController.getInstance(ctx).init();
-            }
-            e.printStackTrace();
-        }
+        });
         return instance;
     }
 
@@ -204,6 +192,8 @@ public class ChatController extends Fragment {
         }
         if (mConsultWriter == null)
             mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
+        appContext = ctx;
+        mAnalyticsTracker = AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx));
     }
 
     public void onUserTyping() {
@@ -292,12 +282,14 @@ public class ChatController extends Fragment {
 
     public void onUserInput(final UpcomingUserMessage upcomingUserMessage) {
         if (upcomingUserMessage == null) return;
-        if (activity == null) return;
+        if (appContext == null && activity == null) return;
+        Context ctx = activity;
+        if (ctx == null) ctx = appContext;
         Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
         final UserPhrase um = convert(upcomingUserMessage);
-        addMessage(um, activity);
+        addMessage(um, ctx);
         if (!mConsultWriter.isConsultConnected()) {
-            activity.setStateSearchingConsult();
+            if (activity != null) activity.setStateSearchingConsult();
             mConsultWriter.setSearchingConsult(true);
         }
         sendMessage(um);
@@ -309,8 +301,13 @@ public class ChatController extends Fragment {
             String id = userPhrase.getQuote().getQuotedPhraseId();
             consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
         }
+        Log.i(TAG, "sendMessage: "+userPhrase);
+        if (userPhrase.isWithPhrase()) mAnalyticsTracker.setTextWasSent();
+        if (userPhrase.isWithFile()) mAnalyticsTracker.setFileWasSent();
+        if (userPhrase.isWithQuote()) mAnalyticsTracker.setQuoteWasSent();
+        if (userPhrase.isCopy()) mAnalyticsTracker.setCopyWasSent();
         try {
-            if (!MessageFormatter.hasFile(userPhrase)) {
+            if (!userPhrase.hasFile()) {
                 PushController
                         .getInstance(appContext)
                         .sendMessageAsync(MessageFormatter.format(
@@ -320,6 +317,7 @@ public class ChatController extends Fragment {
                                 , null), false, new RequestCallback<String, PushServerErrorException>() {
                             @Override
                             public void onResult(String string) {
+                                Log.d(TAG, "server answer on pharse sent with id " + string);
                                 setMessageState(userPhrase, MessageState.STATE_SENT);
                                 mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
                                 if (activity != null)
@@ -461,6 +459,7 @@ public class ChatController extends Fragment {
                 target.setDataAndType(Uri.fromFile(file), "application/pdf");
                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 try {
+                    mAnalyticsTracker.setAttachmentWasOpened();
                     startActivity(target);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
@@ -506,10 +505,15 @@ public class ChatController extends Fragment {
     public void setActivityIsForeground(boolean isForeground) {
         this.isActive = isForeground;
         if (isForeground && activity != null) {
-            List<String> unread = mDatabaseHolder.getUnreaMessagesId();
-            for (String id : unread) {
-                PushController.getInstance(activity).notifyMessageRead(id);
-                mDatabaseHolder.setMessageWereRead(id);
+            ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null
+                    && cm.getActiveNetworkInfo() != null
+                    && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
+                List<String> unread = mDatabaseHolder.getUnreaMessagesId();
+                for (String id : unread) {
+                    PushController.getInstance(activity).notifyMessageRead(id);
+                    mDatabaseHolder.setMessageWereRead(id);
+                }
             }
         }
         if (isForeground) h.postDelayed(new Runnable() {
@@ -535,7 +539,9 @@ public class ChatController extends Fragment {
         if (message.getFileDescription() != null && !message.getFileDescription().getFilePath().contains("file://")) {
             message.getFileDescription().setFilePath("file://" + message.getFileDescription().getFilePath());
         }
-        return new UserPhrase("local" + UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription());
+        UserPhrase up = new UserPhrase("local" + UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription());
+        up.setCopy(message.isCopyied());
+        return up;
     }
 
     public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
@@ -630,7 +636,7 @@ public class ChatController extends Fragment {
     public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {
         Log.i(TAG, "onConsultMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
-        ConsultMessageReactor consultReactor = new ConsultMessageReactor(mConsultWriter, new ConsultMessageReactions() {
+        ConsultMessageReaction consultReactor = new ConsultMessageReaction(mConsultWriter, new ConsultMessageReactions() {
             @Override
             public void consultConnected(final String id, final String name, final String title) {
                 if (activity != null) activity.setStateConsultConnected(id, name, title);
@@ -643,6 +649,9 @@ public class ChatController extends Fragment {
         });
         consultReactor.onPushMessage(chatItem);
         addMessage(chatItem, ctx);
+        if (chatItem instanceof ConsultPhrase) {
+            mAnalyticsTracker.setConsultMessageWasReceived();
+        }
     }
 
     public void onConsultChoose(Activity activity, String consultId) {
@@ -857,6 +866,25 @@ public class ChatController extends Fragment {
 
     public String getConsultNameById(String id) {
         return mConsultWriter.getName(id);
+    }
+
+    void setAllMessagesWereRead() {
+        if (activity == null && appContext == null) return;
+        Context cxt = activity;
+        if (cxt == null) cxt = appContext;
+        cxt.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+        DatabaseHolder.getInstance(cxt).setAllMessagesRead(new CompletionHandler<Void>() {
+            @Override
+            public void onComplete(Void data) {
+
+            }
+
+            @Override
+            public void onError(Throwable e, String message, Void data) {
+
+            }
+        });
+        if (activity != null) activity.setAllMessagesWereRead();
     }
 
     private class ProgressReceiver extends BroadcastReceiver {

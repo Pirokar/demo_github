@@ -1,4 +1,6 @@
-package com.sequenia.threads.utils;
+package com.sequenia.threads.formatters;
+
+import com.sequenia.threads.formatters.MarshmellowPushMessageFormatter;
 
 import org.junit.Test;
 
@@ -14,8 +16,8 @@ public class ImagesPluralsTest {
 
     @Test
     public void testGetForQuantity() throws Exception {
-        PushMessageFormatter.ImagesPlurals filesPlurals
-                = new PushMessageFormatter.ImagesPlurals(Locale.forLanguageTag("ru"));
+        ImagesPlurals filesPlurals
+                = new ImagesPlurals(Locale.forLanguageTag("ru"));
 
         assertEquals("Изображение",filesPlurals.getForQuantity(1));
         assertEquals("изображения",filesPlurals.getForQuantity(2));
@@ -37,7 +39,7 @@ public class ImagesPluralsTest {
         assertEquals("изображений",filesPlurals.getForQuantity(35));
 
         filesPlurals
-                = new PushMessageFormatter.ImagesPlurals(Locale.forLanguageTag("en"));
+                = new ImagesPlurals(Locale.forLanguageTag("en"));
         assertEquals("image",filesPlurals.getForQuantity(1));
         assertEquals("images",filesPlurals.getForQuantity(2));
         assertEquals("images",filesPlurals.getForQuantity(3));

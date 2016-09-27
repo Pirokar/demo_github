@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.annotation.XmlRes;
 import android.util.Log;
 
 /**
@@ -19,8 +20,26 @@ public class PrefUtils {
     public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
     public static final String PUSH_ICON = "DEFAULT_PUSH_ICON";
     public static final String PUSH_TITLE = "PUSH_TITLE";
+    public static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
+    public static final String GA_TRACKER_ID = "GA_TRACKER_ID";
 
     private PrefUtils() {
+    }
+
+    public static String getGaTrackerId(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + GA_TRACKER_ID, null);
+    }
+
+    public static void setGaTrackerId(Context ctx, String GATrackerId) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + GA_TRACKER_ID, GATrackerId).commit();
+    }
+
+    public static void setLastCopyText(Context ctx, String text) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + LAST_COPY_TEXT, text).commit();
+    }
+
+    public static String getLastCopyText(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + LAST_COPY_TEXT, null);
     }
 
     public static void setPushTitle(Context ctx, @StringRes int resId) {
@@ -86,7 +105,7 @@ public class PrefUtils {
         editor.putInt("logoResId", b.getInt("logoResId")).apply();
         editor.putInt("textColorResId", b.getInt("textColorResId")).apply();
         editor.putInt("titleText", b.getInt("titleText")).apply();
-        editor.putInt("subtitleText", b.getInt("subtitleText")).apply();
+        editor.putInt("contentText", b.getInt("contentText")).apply();
         editor.putFloat("titleSize", b.getFloat("titleSize")).apply();
         editor.putFloat("subtitleSize", b.getFloat("subtitleSize")).apply();
     }
@@ -97,7 +116,7 @@ public class PrefUtils {
         b.putInt("logoResId", sp.getInt("logoResId", 0));
         b.putInt("textColorResId", sp.getInt("textColorResId", 0));
         b.putInt("titleText", sp.getInt("titleText", -1));
-        b.putInt("subtitleText", sp.getInt("subtitleText", -1));
+        b.putInt("contentText", sp.getInt("contentText", -1));
         b.putFloat("titleSize", sp.getFloat("titleSize", 0.0f));
         b.putFloat("subtitleSize", sp.getFloat("subtitleSize", 0.0f));
         return b;

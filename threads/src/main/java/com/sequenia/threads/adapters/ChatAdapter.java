@@ -448,8 +448,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setSearchingConsult() {
         ArrayList<ChatItem> list = getOriginalList();
-        SearchingConsult sc = new SearchingConsult(Long.MAX_VALUE);
-        if (list.contains(sc)) return;
+        boolean containsSearch = false;
+        for (ChatItem ci:list) {
+            if (ci instanceof SearchingConsult)containsSearch = true;
+        }
+        if (containsSearch)return;
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR,23);
+        c.set(Calendar.MINUTE,59);
+        c.set(Calendar.SECOND,59);
+        SearchingConsult sc = new SearchingConsult(c.getTimeInMillis());
         list.add(sc);
         if (!isInSearchMode) notifyItemInserted(list.lastIndexOf(sc));
     }
@@ -493,6 +501,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (ci instanceof ConsultTyping) withTyping = true;
         }
         if (withTyping) {
+            removeConsultIsTyping();
             typingHandler.removeCallbacksAndMessages(null);
             typingHandler.postDelayed(new Runnable() {
                 @Override
@@ -503,7 +512,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         if (items.size() == 1
                 && items.get(0) instanceof ConsultPhrase) {
-            Log.e(TAG, "removeConsultIsTyping");
             removeConsultIsTyping();
         }
         new ChatMessagesOrderer().addAndOrder(getOriginalList(), items);
@@ -762,7 +770,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private void addItemInternal(List<ChatItem> listToInsertTo, ChatItem itemToInsert) {
             if (listToInsertTo.size() == 0) {
-                listToInsertTo.add(new DateRow(itemToInsert.getTimeStamp()));
+                listToInsertTo.add(new DateRow(itemToInsert.getTimeStamp() - 2));
             }
             if (itemToInsert instanceof ConsultTyping) {
                 for (Iterator<ChatItem> iter = listToInsertTo.listIterator(); iter.hasNext(); ) {
@@ -770,7 +778,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (item instanceof ConsultTyping) iter.remove();
                 }
             }
-
             if (listToInsertTo.contains(itemToInsert)) return;
             listToInsertTo.add(itemToInsert);
             Calendar currentTimeStamp = Calendar.getInstance();
@@ -781,7 +788,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 int prevIndex = listToInsertTo.lastIndexOf(itemToInsert) - 1;
                 prevTimeStamp.setTimeInMillis(listToInsertTo.get(prevIndex).getTimeStamp());
                 if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) != prevTimeStamp.get(Calendar.DAY_OF_YEAR)) {
-                    listToInsertTo.add(new DateRow(itemToInsert.getTimeStamp() - 1));
+                    listToInsertTo.add(new DateRow(itemToInsert.getTimeStamp() - 2));
                 }
                 if (itemToInsert instanceof ConsultPhrase && listToInsertTo.size() != 1) {
                     int prev = listToInsertTo.size() - 2;
@@ -862,7 +869,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
             if (listToInsertTo.size() == 0) return;
-            listToInsertTo.add(0, new DateRow(listToInsertTo.get(0).getTimeStamp()));
+            listToInsertTo.add(0, new DateRow(listToInsertTo.get(0).getTimeStamp() - 2));
             Calendar currentTimeStamp = Calendar.getInstance();
             Calendar nextTimeStamp = Calendar.getInstance();
             List<DateRow> daterows = new ArrayList<>();
@@ -916,14 +923,27 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (item instanceof UnreadMessages) iter.remove();
                     if (item instanceof ConsultPhrase) {
                         ConsultPhrase cp = ((ConsultPhrase) item);
-                        if (!cp.isRead()) counter++;
                         if (!cp.isRead() && cp.getTimeStamp() < lastUnreadStamp) {
                             lastUnreadStamp = cp.getTimeStamp();
                         }
                     }
                 }
+                for (ChatItem ci : listToInsertTo) {
+                    if (ci instanceof ConsultPhrase) {
+                        ConsultPhrase cp = ((ConsultPhrase) ci);
+                        if (cp.getTimeStamp() > (lastUnreadStamp - 1)) {
+                            counter++;
+                        }
+                    }
+                }
                 listToInsertTo.add(new UnreadMessages(lastUnreadStamp - 1, counter));
             }
+            Collections.sort(listToInsertTo, new Comparator<ChatItem>() {
+                @Override
+                public int compare(ChatItem lhs, ChatItem rhs) {
+                    return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
+                }
+            });
             boolean isWithTyping = false;
             ConsultTyping ct = null;
             for (ChatItem ci : listToInsertTo) {
@@ -937,6 +957,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     && !(listToInsertTo.get(listToInsertTo.size() - 1) instanceof ConsultTyping)) {
                 ct.setDate(listToInsertTo.get(listToInsertTo.size() - 1).getTimeStamp() + 1);
             }
+
             Collections.sort(listToInsertTo, new Comparator<ChatItem>() {
                 @Override
                 public int compare(ChatItem lhs, ChatItem rhs) {

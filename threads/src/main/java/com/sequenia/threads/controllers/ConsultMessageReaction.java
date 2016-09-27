@@ -10,12 +10,12 @@ import com.sequenia.threads.utils.ConsultWriter;
 /**
  * Created by yuri on 01.09.2016.
  */
-public class ConsultMessageReactor {
-    private static final String TAG = "ConsultMessageReactor ";
+public class ConsultMessageReaction {
+    private static final String TAG = "ConsultMessageReaction ";
     ConsultWriter consultWriter;
     ConsultMessageReactions reactions;
 
-    public ConsultMessageReactor(ConsultWriter consultWriter, ConsultMessageReactions reactions) {
+    public ConsultMessageReaction(ConsultWriter consultWriter, ConsultMessageReactions reactions) {
         this.consultWriter = consultWriter;
         this.reactions = reactions;
     }

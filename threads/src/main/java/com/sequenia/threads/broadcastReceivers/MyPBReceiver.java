@@ -9,7 +9,7 @@ import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
-import com.sequenia.threads.utils.MessageFormatter;
+import com.sequenia.threads.formatters.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.controllers.ChatController;
 import com.sequenia.threads.utils.PrefUtils;
@@ -43,7 +43,7 @@ public class MyPBReceiver extends PushBroadcastReceiver {
                     PushController.getInstance(context).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getUserName(context), PrefUtils.getClientID(context), ""), true, new RequestCallback<String, PushServerErrorException>() {
                         @Override
                         public void onResult(String string) {
-                            Log.e(TAG, "client id was set string = " + string);// TODO: 09.08.2016
+                            Log.e(TAG, "client id was set string = " + string);
                             context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
                             PrefUtils.setClientIdWasSet(true, context);
                         }

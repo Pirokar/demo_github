@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.sequenia.threads.AnalyticsTracker;
 import com.sequenia.threads.utils.BucketsGalleryDecorator;
 import com.sequenia.threads.utils.GalleryDecorator;
 import com.sequenia.threads.R;
@@ -30,6 +31,7 @@ import com.sequenia.threads.adapters.GalleryAdaper;
 import com.sequenia.threads.adapters.PhotoBucketsGalleryAdapter;
 import com.sequenia.threads.model.MediaPhoto;
 import com.sequenia.threads.model.PhotoBucketItem;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,7 @@ import java.util.List;
 /**
  * Created by yuri on 06.07.2016.
  */
-public class GalleryActivity extends AppCompatActivity
+public class GalleryActivity extends BaseActivity
         implements
         PhotoBucketsGalleryAdapter.OnItemClick
         , GalleryAdaper.OnGalleryItemClick {
@@ -59,6 +61,7 @@ public class GalleryActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
+        AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setGalleryWasOpened();
         initViews();
     }
 

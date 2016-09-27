@@ -1,7 +1,7 @@
 package com.sequenia.threads;
 
+import com.sequenia.threads.controllers.ConsultMessageReaction;
 import com.sequenia.threads.controllers.ConsultMessageReactions;
-import com.sequenia.threads.controllers.ConsultMessageReactor;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.utils.ConsultWriter;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
  */
 
 public class ConsultReactionsTest {
-    ConsultMessageReactor consultMessageReactor;
+    ConsultMessageReaction consultMessageReaction;
     MockReactions reactions;
     private ConsultConnectionMessage connectionMessage;
     private ConsultConnectionMessage leftMessage;
@@ -35,18 +35,18 @@ public class ConsultReactionsTest {
     @Before
     public void setup() {
         reactions = new MockReactions();
-        consultMessageReactor = new ConsultMessageReactor(
+        consultMessageReaction = new ConsultMessageReaction(
                 consultWriter
                 , reactions);
         connectionMessage = new ConsultConnectionMessage(operatorsid1, ConsultConnectionMessage.TYPE_JOINED, operatorname1, false, 1, ",", "", operatortitle1, "");
         leftMessage = new ConsultConnectionMessage(operatorsid1, ConsultConnectionMessage.TYPE_LEFT, operatorname1, false, 1, ",", "", operatortitle1, "");
-        consulPhrase = new ConsultPhrase(null, null, operatorname1, "", "", 0, operatorsid1, "", false, "");
+        consulPhrase = new ConsultPhrase(null, null, operatorname1, "", "", 0, operatorsid1, "", false, "",false);
     }
 
     @Test
     public void testTestReaction() throws Exception {
         consultWriter.setSearchingConsult(true);
-        consultMessageReactor.onPushMessage(connectionMessage);
+        consultMessageReaction.onPushMessage(connectionMessage);
         assertEquals(operatorsid1, reactions.getId());
         assertEquals(operatorname1, reactions.getName());
         assertEquals(operatortitle1, reactions.getTitle());//test inititial consult connection reaction
@@ -56,7 +56,7 @@ public class ConsultReactionsTest {
         assertEquals(consultWriter.istSearchingConsult(), false);
         assertEquals(consultWriter.isConsultConnected(), true);
 
-        consultMessageReactor.onPushMessage(leftMessage);
+        consultMessageReaction.onPushMessage(leftMessage);
         assertEquals(null, reactions.getId());
         assertEquals(null, reactions.getName());
         assertEquals(null, reactions.getTitle());
@@ -68,7 +68,7 @@ public class ConsultReactionsTest {
 
 
         consultWriter.setSearchingConsult(true);
-        consultMessageReactor.onPushMessage(consulPhrase);
+        consultMessageReaction.onPushMessage(consulPhrase);
         assertEquals(operatorsid1, reactions.getId());
         assertEquals(operatorname1, reactions.getName());
         assertEquals(null, reactions.getTitle());
@@ -79,8 +79,8 @@ public class ConsultReactionsTest {
         assertEquals(consultWriter.istSearchingConsult(), false);
         assertEquals(consultWriter.isConsultConnected(), true);
 
-        consulPhrase = new ConsultPhrase(null, null, operatorname2, "", "", 0, operatorsid2, "", false, "");
-        consultMessageReactor.onPushMessage(consulPhrase);
+        consulPhrase = new ConsultPhrase(null, null, operatorname2, "", "", 0, operatorsid2, "", false, "",false);
+        consultMessageReaction.onPushMessage(consulPhrase);
         assertEquals(operatorsid2, reactions.getId());
         assertEquals(operatorname2, reactions.getName());
         assertEquals(null, reactions.getTitle());
@@ -90,7 +90,7 @@ public class ConsultReactionsTest {
         assertEquals(consultWriter.istSearchingConsult(), false);
         assertEquals(consultWriter.isConsultConnected(), true);
 
-        consultMessageReactor.onPushMessage(leftMessage);
+        consultMessageReaction.onPushMessage(leftMessage);
         assertEquals(null, reactions.getId());
         assertEquals(null, reactions.getName());
         assertEquals(null, reactions.getTitle());

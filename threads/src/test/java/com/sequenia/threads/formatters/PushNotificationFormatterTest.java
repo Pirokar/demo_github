@@ -1,4 +1,4 @@
-package com.sequenia.threads;
+package com.sequenia.threads.formatters;
 
 import android.support.annotation.PluralsRes;
 import android.util.Pair;
@@ -60,7 +60,7 @@ public class PushNotificationFormatterTest {
         unreadMessages.clear();
 
 
-        ConsultPhrase onlyFile = new ConsultPhrase(mock(FileDescription.class), null, null, "", null, 0L, "", "", false, "");
+        ConsultPhrase onlyFile = new ConsultPhrase(mock(FileDescription.class), null, null, "", null, 0L, "", "", false, "",false);
         incomingPushes.add(onlyFile);
         out = mPushNotificationFormatter.format(unreadMessages, incomingPushes);
         assertEquals(1, out.second.size());
@@ -71,7 +71,7 @@ public class PushNotificationFormatterTest {
 
         incomingPushes.clear();
         unreadMessages.clear();
-        ConsultPhrase MessageWithFile = new ConsultPhrase(mock(FileDescription.class), null, null, "", "phrase", 0L, "", "", false, "");
+        ConsultPhrase MessageWithFile = new ConsultPhrase(mock(FileDescription.class), null, null, "", "phrase", 0L, "", "", false, "",false);
         incomingPushes.add(MessageWithFile);
         out = mPushNotificationFormatter.format(unreadMessages, incomingPushes);
         assertEquals(1, out.second.size());
@@ -91,7 +91,7 @@ public class PushNotificationFormatterTest {
         assertEquals(false, out.first);
 
         incomingPushes.clear();
-        ConsultPhrase p1 = new ConsultPhrase(null, null, "Oper1", "", "first message from consult", 0L, "", "", false, "");
+        ConsultPhrase p1 = new ConsultPhrase(null, null, "Oper1", "", "first message from consult", 0L, "", "", false, "",false);
         incomingPushes.add(p1);
         out = mPushNotificationFormatter.format(unreadMessages, incomingPushes);//test that several messages shows right
         assertEquals(2, out.second.size());
@@ -99,7 +99,7 @@ public class PushNotificationFormatterTest {
         assertEquals("first message from consult", out.second.get(1));
         assertEquals(true, out.first);
 
-        ConsultPhrase p2 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", "second message from consult", 0L, "", "", false, "");
+        ConsultPhrase p2 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", "second message from consult", 0L, "", "", false, "",false);
         incomingPushes.clear();
         incomingPushes.add(p2);
         out = mPushNotificationFormatter.format(unreadMessages, incomingPushes);//test that several messages shows right with file
@@ -110,7 +110,7 @@ public class PushNotificationFormatterTest {
         assertEquals(true, out.first);
 
         incomingPushes.clear();
-        ConsultPhrase p3 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", null, 0L, "", "", false, "");
+        ConsultPhrase p3 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", null, 0L, "", "", false, "",false);
         incomingPushes.add(p3);
         out = mPushNotificationFormatter.format(unreadMessages, incomingPushes);//test that several messages with files
         assertEquals(4, out.second.size());
@@ -120,7 +120,7 @@ public class PushNotificationFormatterTest {
         assertEquals("Получен файл", out.second.get(3));
         assertEquals(true, out.first);
 
-        ConsultPhrase p4 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", "fouth consult pharse", 0L, "", "", false, "");
+        ConsultPhrase p4 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", "fouth consult pharse", 0L, "", "", false, "",false);
         incomingPushes.clear();
         incomingPushes.add(p4);
         out = mPushNotificationFormatter.format(unreadMessages, incomingPushes);//test that several messages with files
@@ -133,14 +133,14 @@ public class PushNotificationFormatterTest {
         assertEquals(true, out.first);
 
         incomingPushes.clear();
-        ConsultPhrase p5 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", "fifth consult pharse", 0L, "", "", false, "");
+        ConsultPhrase p5 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", "fifth consult pharse", 0L, "", "", false, "",false);
         incomingPushes.add(p5);
         out = mPushNotificationFormatter.format(unreadMessages, incomingPushes);//test 6 ьуыыфпуы works
         assertEquals(1, out.second.size());
         assertEquals("У вас есть непрочитанные сообщения (с файлами)", out.second.get(0));
 
         incomingPushes.clear();
-        ConsultPhrase p6 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", "fifth consult pharse", 0L, "", "", false, "");
+        ConsultPhrase p6 = new ConsultPhrase(new FileDescription("", "", 0L, 0L), null, "Oper1", "", "fifth consult pharse", 0L, "", "", false, "",false);
         incomingPushes.add(p6);
         out = mPushNotificationFormatter.format(unreadMessages, incomingPushes);//test that 7 messages works
         assertEquals(1, out.second.size());

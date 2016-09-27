@@ -11,10 +11,9 @@ import android.widget.TextView;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.model.FileDescription;
-import com.sequenia.threads.picasso_url_connection_only.Callback;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.FileUtils;
-import com.sequenia.threads.utils.RussianFormatSymbols;
+import com.sequenia.threads.formatters.RussianFormatSymbols;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

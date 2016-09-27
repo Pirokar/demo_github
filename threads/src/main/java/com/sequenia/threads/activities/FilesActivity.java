@@ -17,10 +17,12 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.sequenia.threads.AnalyticsTracker;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.FilesAndMediaAdapter;
 import com.sequenia.threads.controllers.FilesAndMediaController;
 import com.sequenia.threads.model.FileDescription;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +30,7 @@ import java.util.List;
 /**
  * Created by yuri on 01.07.2016.
  */
-public class FilesActivity extends AppCompatActivity implements FilesAndMediaAdapter.OnFileClick {
+public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.OnFileClick {
     private static final String TAG = "FilesActivity ";
     private FilesAndMediaController mFilesAndMediaController;
     private RecyclerView mRecyclerView;
@@ -63,12 +65,13 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
         findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx)).setFileSearchWasOpened();
+                AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx)).setImageSearchWasOpened();
                 if (mSearchEditText.getVisibility() == View.VISIBLE) {
                     mSearchEditText.setText("");
                     mSearchEditText.setVisibility(View.GONE);
                     mToolbar.setTitle(getString(R.string.files_and_media));
                     if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
-
                 } else {
                     mSearchEditText.setVisibility(View.VISIBLE);
                     mSearchEditText.requestFocus();
@@ -83,8 +86,6 @@ public class FilesActivity extends AppCompatActivity implements FilesAndMediaAda
                         }
                     }, 100);
                 }
-                /*ctx.sendBroadcast(new Intent(ChatActivity.ACTION_SEARCH_CHAT_FILES));
-                finish();*/
             }
         });
         mSearchEditText.addTextChangedListener(new TextWatcher() {

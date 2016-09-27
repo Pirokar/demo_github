@@ -1,4 +1,4 @@
-package com.sequenia.threads.utils;
+package com.sequenia.threads.formatters;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -14,6 +14,7 @@ import com.sequenia.threads.R;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
+import com.sequenia.threads.utils.Tuple;
 
 import java.util.List;
 import java.util.Locale;
@@ -23,12 +24,12 @@ import static com.sequenia.threads.utils.FileUtils.*;
 /**
  * Created by yuri on 12.09.2016.
  */
-public class PushMessageFormatter {
+public class MarshmellowPushMessageFormatter {
     private Context ctx;
     List<ChatItem> unreadMessages;
     List<ChatItem> incomingPushes;
 
-    public PushMessageFormatter(
+    public MarshmellowPushMessageFormatter(
             Context ctx
             , List<ChatItem> unreadChatItems
             , List<ChatItem> incomingPushes) {
@@ -145,24 +146,7 @@ public class PushMessageFormatter {
     }
 
     String getConnectionPhrase(ConsultConnectionMessage ccm) {
-        String out = "";
-        String temp = "";
-        if (!ccm.getSex()
-                && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
-            temp = ctx.getString(R.string.push_connected_female);
-            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
-        } else if (!ccm.getSex()
-                && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
-            temp = ctx.getString(R.string.push_left_female);
-            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
-        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
-            temp = ctx.getString(R.string.push_connected);
-            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
-        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
-            temp = ctx.getString(R.string.push_left);
-            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
-        }
-        return out;
+        return new ConnectionPhrase(ctx).getConnectionPhrase(ccm);
     }
 
     public Tuple<Boolean, PushContents> getFormattedMessageAsPushContents() {
@@ -256,53 +240,6 @@ public class PushMessageFormatter {
                 , imagesCount != 0 && plainFilesCount == 0));
     }
 
-    static class FilesPlurals {//coz bugs in russian plurals
-        private Locale locale;
-
-        public FilesPlurals(Locale locale) {
-            this.locale = locale;
-        }
-
-        String getForQuantity(int quantity) {
-            if (locale.getLanguage().equalsIgnoreCase("ru")) {
-                if (quantity == 1 || (quantity % 10 == 1) && quantity != 11) return "файл";
-                else if ((quantity > 1 && quantity < 5)
-                        || (quantity > 20 && (quantity % 10 == 2 || quantity % 10 == 3 || quantity % 10 == 4)))
-                    return "файла";
-                else return "файлов";
-
-            } else {
-                if (quantity == 1) return "file";
-                else return "files";
-            }
-        }
-    }
-
-
-    static class ImagesPlurals {//coz bugs in russian plurals
-        private Locale locale;
-
-        public ImagesPlurals(Locale locale) {
-            this.locale = locale;
-        }
-
-        String getForQuantity(int quantity) {
-            if (locale.getLanguage().equalsIgnoreCase("ru")) {
-                if(quantity==1){
-                    return "Изображение";
-                }
-                if (quantity == 1 || (quantity % 10 == 1) && quantity != 11) return "изображение";
-                else if ((quantity > 1 && quantity < 5)
-                        || (quantity > 20 && (quantity % 10 == 2 || quantity % 10 == 3 || quantity % 10 == 4)))
-                    return "изображения";
-                else return "изображений";
-
-            } else {
-                if (quantity == 1) return "image";
-                else return "images";
-            }
-        }
-    }
 
     public static class PushContents {
         public final String consultName;

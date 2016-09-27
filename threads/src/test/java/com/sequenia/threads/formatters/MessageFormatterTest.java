@@ -1,4 +1,4 @@
-package com.sequenia.threads.utils;
+package com.sequenia.threads.formatters;
 
 import android.os.Bundle;
 
@@ -13,7 +13,7 @@ import com.sequenia.threads.model.ConsultInfo;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.model.UserPhrase;
-import com.sequenia.threads.utils.MessageFormatter;
+import com.sequenia.threads.formatters.MessageFormatter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -107,7 +107,8 @@ public class MessageFormatterTest {
                 , "1"
                 , null
                 , false
-                , "Оператор0");
+                , "Оператор0"
+                ,false);
         assertEquals(phrase, MessageFormatter.format(consultPushPhrase));
         before();
 
@@ -115,7 +116,7 @@ public class MessageFormatterTest {
 
     @Test
     public void testIncomingConsultPhrase() throws Exception {
-        ConsultPhrase consultPhrase = new ConsultPhrase(null, null, "Test Operator #0", "400016246901", "wetwetwte", 1472452096537L, "1", null, false, null);
+        ConsultPhrase consultPhrase = new ConsultPhrase(null, null, "Test Operator #0", "400016246901", "wetwetwte", 1472452096537L, "1", null, false, null,false);
         assertEquals(MessageFormatter.format(consultPushPhrase), consultPhrase);
     }
 
@@ -179,7 +180,7 @@ public class MessageFormatterTest {
                 , new DateTime(1472468279845L)
                 , "{\"operator\":{\"id\":1,\"name\":\"Test Operator #0\",\"status\":null,\"photoUrl\":null,\"gender\":\"FEMALE\"},\"text\":\"answer\",\"receivedDate\":\"2016-08-29T10:57:58Z\",\"attachments\":[],\"quotes\":[]}}"
                 , true);
-        ConsultPhrase consultPhrase = new ConsultPhrase(null, null, "Test Operator #0", "400016333202", "answer", 1472468279845L, "1", null, true, null);
+        ConsultPhrase consultPhrase = new ConsultPhrase(null, null, "Test Operator #0", "400016333202", "answer", 1472468279845L, "1", null, true, null,false);
         in.add(message);
         out.add(consultPhrase);
         list1.add(message);
@@ -192,7 +193,7 @@ public class MessageFormatterTest {
                 , new DateTime(1472468279845L)
                 , "{\"operator\":{\"id\":1,\"name\":\"Test Operator #0\",\"status\":\"qwert\",\"photoUrl\":null,\"gender\":\"FEMALE\"},\"text\":\"answer\",\"receivedDate\":\"2016-08-29T10:57:58Z\",\"attachments\":[],\"quotes\":[]}}"
                 , true);
-        consultPhrase = new ConsultPhrase(null, null, "Test Operator #0", "400016333202", "answer", 1472468279845L, "1", null, false, "qwert");
+        consultPhrase = new ConsultPhrase(null, null, "Test Operator #0", "400016333202", "answer", 1472468279845L, "1", null, false, "qwert",false);
         assertEquals(MessageFormatter.format(Lists.newArrayList(message)), Lists.newArrayList(consultPhrase));
         in.add(message);
         out.add(consultPhrase);

@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * Created by yuri on 05.08.2016.
  */
-public class ImagesActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
+public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
     private Toolbar mToolbar;
     private int collectionSize;
     private static final String TAG = "ImagesActivity ";

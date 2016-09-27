@@ -110,10 +110,5 @@ public class ConsultFileViewHolder extends RecyclerView.ViewHolder {
             mConsultAvatar.setVisibility(View.GONE);
             mFilterSecond.setVisibility(View.GONE);
         }
-        if (avatarPath == null) {
-            mConsultAvatar.setVisibility(View.GONE);
-            mFilterSecond.setVisibility(View.GONE);
-        }
-
     }
 }

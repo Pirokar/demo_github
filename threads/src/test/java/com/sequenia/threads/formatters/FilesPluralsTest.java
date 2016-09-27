@@ -1,4 +1,7 @@
-package com.sequenia.threads.utils;
+package com.sequenia.threads.formatters;
+
+import com.sequenia.threads.formatters.FilesPlurals;
+import com.sequenia.threads.formatters.MarshmellowPushMessageFormatter;
 
 import org.junit.Test;
 
@@ -14,8 +17,8 @@ public class FilesPluralsTest {
 
     @Test
     public void testGetForQuantity() throws Exception {
-        PushMessageFormatter.FilesPlurals filesPlurals
-                = new PushMessageFormatter.FilesPlurals(Locale.forLanguageTag("ru"));
+        FilesPlurals filesPlurals
+                = new FilesPlurals(Locale.forLanguageTag("ru"));
 
         assertEquals("файл",filesPlurals.getForQuantity(1));
         assertEquals("файла",filesPlurals.getForQuantity(2));
@@ -37,7 +40,7 @@ public class FilesPluralsTest {
         assertEquals("файлов",filesPlurals.getForQuantity(35));
 
         filesPlurals
-                = new PushMessageFormatter.FilesPlurals(Locale.forLanguageTag("en"));
+                = new FilesPlurals(Locale.forLanguageTag("en"));
         assertEquals("file",filesPlurals.getForQuantity(1));
         assertEquals("files",filesPlurals.getForQuantity(2));
         assertEquals("files",filesPlurals.getForQuantity(3));

@@ -52,6 +52,7 @@
     <string name="search_more">Искать дальше</string>
     <string name="one_new_message">1 новое сообщение</string>
     <string name="new_messages">новых сообщений</string>
+    <string name="new_">новых</string>
     <string name="file_received">Получен файл</string>
     <string name="with_file">(с файлом)</string>
     <string name="download">Загрузить</string>
@@ -67,12 +68,9 @@
     <string name="push_connected">подключился к диалогу</string>
     <string name="with_files">(с файлами)</string>
     <string name="reply">Ответить</string>
-    <plurals name="plurals_documents" >
-        <item quantity="zero">нет файлов</item>
-        <item quantity="one">%1$d файл</item>
-        <item quantity="two">%1$d файла</item>
-        <item quantity="few">%1$d файла</item>
-        <item quantity="many">%1$d файлов</item>
-        <item quantity="other">%1$d файлов</item>
-    </plurals>
+    <string name="send_male">прислал</string>
+    <string name="send_female">прислала</string>
+    <string name="touch_to_look">Дотроньтесь для просмотра</string>
+    <string name="touch_to_download">Дотроньтесь чтобы скачать</string>
+    <string name="answer">ОТВЕТИТЬ</string>
 </resources>

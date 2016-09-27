@@ -8,7 +8,7 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
+
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -16,15 +16,15 @@ repositories {
 }
 apply plugin: 'io.fabric'
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.sequenia.appwithchat"
         minSdkVersion 17
-        targetSdkVersion 23
-        versionCode 9
-        versionName "2.1_test"
+        targetSdkVersion 24
+        versionCode 11
+        versionName "2.4_test"
     }
     buildTypes {
         release {
@@ -48,7 +48,10 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.6@aar') {
         transitive = true;
     }
-    testCompile 'com.android.support:appcompat-v7:23+'
-    compile 'com.android.support:appcompat-v7:23+'
-    compile 'com.google.android.gms:play-services-gcm:9.4.0'
+    testCompile 'com.android.support:appcompat-v7:24+'
+    compile 'com.android.support:appcompat-v7:24+'
+    compile 'com.google.android.gms:play-services-gcm:9.6.0'
+    compile 'com.google.android.gms:play-services-analytics:9.6.0'
+    compile 'com.google.android.gms:play-services-analytics-impl:9.6.0'
 }
+/*apply plugin: 'com.google.gms.google-services'*/

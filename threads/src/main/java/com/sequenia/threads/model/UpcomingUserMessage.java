@@ -9,13 +9,18 @@ public class UpcomingUserMessage {
     private final String text;
     private final Quote quote;
     private final FileDescription fileDescription;
+    private boolean copyied;
 
-    public UpcomingUserMessage(FileDescription fileDescription, Quote quote, String text) {
+    public UpcomingUserMessage(FileDescription fileDescription, Quote quote, String text, boolean copyied) {
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.text = text;
+        this.copyied = copyied;
     }
 
+    public boolean isCopyied() {
+        return copyied;
+    }
 
     public String getText() {
         return text;
@@ -36,6 +41,7 @@ public class UpcomingUserMessage {
                 "text='" + text + '\'' +
                 ", quote=" + quote +
                 ", fileDescription=" + fileDescription +
+                ", copyied=" + copyied +
                 '}';
     }
 }

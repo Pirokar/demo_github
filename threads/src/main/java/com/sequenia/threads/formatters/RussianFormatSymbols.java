@@ -1,4 +1,4 @@
-package com.sequenia.threads.utils;
+package com.sequenia.threads.formatters;
 
 import java.text.DateFormatSymbols;
 

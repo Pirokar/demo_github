@@ -7,10 +7,12 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.sequenia.threads.AnalyticsTracker;
 import com.sequenia.threads.controllers.ChatController;
 import com.sequenia.threads.database.DatabaseHolder;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.utils.FileDownloader;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -34,7 +36,7 @@ public class DownloadService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "onStartCommand");
-        if (intent==null)return START_STICKY;
+        if (intent == null) return START_STICKY;
         final FileDescription fileDescription = intent.getParcelableExtra(FD_TAG);
         if (fileDescription == null) return START_STICKY;
         if (fileDescription.getDownloadPath() == null || fileDescription.getFilePath() != null) {
@@ -58,6 +60,7 @@ public class DownloadService extends Service {
                 DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
                 runningDownloads.remove(fileDescription);
                 sendFinishBroadcast(fileDescription);
+                AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context)).setUserUploadedFile(file.length() / 1024);
                 if (runningDownloads.size() == 0) stopSelf();
             }
 
@@ -91,7 +94,7 @@ public class DownloadService extends Service {
                 });
             }
         } else if (intent.getAction().equals(START_DOWNLOAD_WITH_NO_STOP)) {
-            if (!runningDownloads.containsKey(fileDescription)){
+            if (!runningDownloads.containsKey(fileDescription)) {
                 runningDownloads.put(fileDescription, fileDownloader);
                 fileDescription.setDownloadProgress(1);
                 sendDownloadProgressBroadcast(fileDescription);

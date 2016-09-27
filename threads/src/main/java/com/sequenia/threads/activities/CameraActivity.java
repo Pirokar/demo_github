@@ -21,8 +21,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.sequenia.threads.AnalyticsTracker;
 import com.sequenia.threads.R;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,7 +38,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by yuri on 08.07.2016.
  */
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends BaseActivity {
     private static final String TAG = "CameraActivity ";
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
     private Camera mCamera;
@@ -53,6 +55,7 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setCameraWasOpened();
         setContentView(R.layout.activity_camera);
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(t);

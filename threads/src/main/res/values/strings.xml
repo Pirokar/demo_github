@@ -65,12 +65,10 @@
     <string name="push_connected_female">connected to dialog</string>
     <string name="push_connected">connected to dialog</string>
     <string name="reply">reply</string>
-    <plurals name="plurals_documents">
-        <item quantity="zero">no files</item>
-        <item quantity="one">%1$d file</item>
-        <item quantity="two">%1$d files</item>
-        <item quantity="few">%1$d files</item>
-        <item quantity="many">%1$d files</item>
-        <item quantity="other">%1$d files</item>
-    </plurals>
+    <string name="send_male">send</string>
+    <string name="send_female">send</string>
+    <string name="touch_to_look">Touch to look</string>
+    <string name="touch_to_download">Touch to download</string>
+    <string name="new_">new</string>
+    <string name="answer">ANSWER</string>
 </resources>

@@ -19,14 +19,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.sequenia.threads.AnalyticsTracker;
 import com.sequenia.threads.BuildConfig;
 import com.sequenia.threads.R;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 01.07.2016.
  */
-public class ConsultActivity extends AppCompatActivity {
+public class ConsultActivity extends BaseActivity {
     private static final String TAG = "ConsultActivity ";
     private TextView mConsulHeaderTextView;
     private TextView mConsultMotoTextView;
@@ -35,6 +37,7 @@ public class ConsultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setConsultScreenOpened();
         if (Build.VERSION.SDK_INT > 20) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE

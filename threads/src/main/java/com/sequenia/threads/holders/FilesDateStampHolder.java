@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
-import com.sequenia.threads.utils.RussianFormatSymbols;
+import com.sequenia.threads.formatters.RussianFormatSymbols;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
