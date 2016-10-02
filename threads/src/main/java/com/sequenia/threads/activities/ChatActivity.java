@@ -387,16 +387,18 @@ public class ChatActivity extends BaseActivity
     }
 
     private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
+        Log.e(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) return;
         for (UpcomingUserMessage message : messages) {
             mChatController.onUserInput(message);
         }
-        if (null != mQuoteLayoutHolder) mQuoteLayoutHolder.setIsVisible(false);
+        if (null != mQuoteLayoutHolder && !isInMessageSearchMode)
+            mQuoteLayoutHolder.setIsVisible(false);
         if (null != mChatAdapter) mChatAdapter.setAllMessagesRead();
         mBottomSheetView.setSelectedState(false);
         if (clearInput) {
             mInputEditText.setText("");
-            mQuoteLayoutHolder.setIsVisible(false);
+            if (!isInMessageSearchMode) mQuoteLayoutHolder.setIsVisible(false);
             mQuote = null;
             mFileDescription = null;
             setBottomStateDefault();
@@ -617,8 +619,8 @@ public class ChatActivity extends BaseActivity
                 input.setVisibility(View.VISIBLE);
             }
         });
-        mSearchMessageEditText.setVisibility(View.GONE);
-        mSearchMessageEditText.setText("");
+        if (!isInMessageSearchMode) mSearchMessageEditText.setVisibility(View.GONE);
+        if (!isInMessageSearchMode) mSearchMessageEditText.setText("");
         mBottomGallery.setVisibility(View.GONE);
     }
 
@@ -636,7 +638,8 @@ public class ChatActivity extends BaseActivity
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                if (!isInMessageSearchMode)
+                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
         }, 100);
 
@@ -661,7 +664,8 @@ public class ChatActivity extends BaseActivity
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                if (!isInMessageSearchMode)
+                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
         }, 600);
     }
@@ -1095,7 +1099,7 @@ public class ChatActivity extends BaseActivity
             return true;
 
         } else if (item.getItemId() == R.id.search) {
-            AnalyticsTracker.getInstance(this,PrefUtils.getGaTrackerId(this)).setTextSearchWasOpened();
+            AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setTextSearchWasOpened();
             search(false);
         }
         return super.onOptionsItemSelected(item);
@@ -1282,8 +1286,8 @@ public class ChatActivity extends BaseActivity
                 Log.e(TAG, "you must provide logo resource id");
             if (b.getInt("textColorResId", -1) == -1)
                 Log.e(TAG, "you must provide textColorResId resource id");
-            if (b.getString(TAG_GA_RESID, null) == null)
-                Log.e(TAG, "you must provide google analytics xml res id ");
+            if (i.getStringExtra(TAG_GA_RESID) == null)
+                Log.e(TAG, "you must provide google analytics id");
             if (b.getInt("titleText", -1) == -1)
                 Log.e(TAG, "you must provide titleText");
             if (b.getInt("contentText", -1) == -1)

@@ -81,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
                     .getBuilder(this, mEditText.getText().toString())
                     .setDefaultChatTitle(R.string.contact_center)
                     .setUserName(nameTextView.getText().toString())
-                    .setPushStyle(R.drawable.img,R.string.default_title)
-                /*    .setGATrackerId("UA-48198875-10")*/
-                    .setGATrackerId("UA-84778424-1")
+                    .setPushStyle(R.drawable.img, R.string.default_title)
+                    .setGATrackerId("UA-48198875-10")
+                 /*   .setGATrackerId("UA-84778424-1")*/
                     .setWelcomeScreenAttrs(R.drawable.logo
                             , R.string.welcome
                             , R.string.subtitle_text
@@ -128,11 +128,11 @@ public class MainActivity extends AppCompatActivity {
                 = android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
         boolean isAccessNetworkStateGranted
                 = android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) == android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
-      ArrayList<String> permissions = new ArrayList<>();
+        ArrayList<String> permissions = new ArrayList<>();
         if (!isCoarseLocGranted) permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         if (!isSmsGranted) permissions.add(Manifest.permission.READ_SMS);
-        if (!isReadPhoneStateGranted)permissions.add(Manifest.permission.READ_PHONE_STATE);
-        if (!isWriteExternalGranted)permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (!isReadPhoneStateGranted) permissions.add(Manifest.permission.READ_PHONE_STATE);
+        if (!isWriteExternalGranted) permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         Log.e(TAG, "isAccessNetworkStateGranted = " + isAccessNetworkStateGranted);
         ActivityCompat.requestPermissions(this, permissions.toArray(new String[]{}), requestCode);
     }

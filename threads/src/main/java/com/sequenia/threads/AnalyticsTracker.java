@@ -16,6 +16,7 @@ public class AnalyticsTracker {
     private GoogleAnalytics analytics;
     private Tracker tracker;
     private HitBuilders.EventBuilder eventBuilder;
+    private boolean dryRun = false;
 
     public static AnalyticsTracker getInstance(Context ctx, String GATrackerId) {
         if (instance == null) instance = new AnalyticsTracker(ctx, GATrackerId);
@@ -25,8 +26,8 @@ public class AnalyticsTracker {
     private AnalyticsTracker(Context ctx, String GATrackerId) {
         Log.i(TAG, "AnalyticsTracker: GATrackerId =" + GATrackerId);
         analytics = GoogleAnalytics.getInstance(ctx);
-        analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
         analytics.setLocalDispatchPeriod(1);
+        analytics.setDryRun(dryRun);
         if (!analytics.isInitialized()) analytics.initialize();
         tracker = analytics.newTracker(GATrackerId);
         if (!tracker.isInitialized()) tracker.initialize();

@@ -22,8 +22,26 @@ public class PrefUtils {
     public static final String PUSH_TITLE = "PUSH_TITLE";
     public static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
     public static final String GA_TRACKER_ID = "GA_TRACKER_ID";
+    public static final String IS_UUID_SET = "IS_UUID_SET";
+    public static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
     private PrefUtils() {
+    }
+
+    public static void setDeviceUUidWasSet(boolean isSet, Context ctx) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putBoolean(PrefUtils.class + IS_UUID_SET, isSet).apply();
+    }
+
+    public static boolean isDeviceUUidWasSet(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(PrefUtils.class + IS_UUID_SET, false);
+    }
+
+    public static String getDeviceAddress(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + DEVICE_ADDRESS, null);
+    }
+
+    public static void setDeviceAddress(Context ctx, String deviceAddress) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + DEVICE_ADDRESS, deviceAddress).commit();
     }
 
     public static String getGaTrackerId(Context ctx) {

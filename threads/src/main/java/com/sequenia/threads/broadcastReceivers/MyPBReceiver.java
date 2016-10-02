@@ -23,7 +23,8 @@ public class MyPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.d(TAG, "onNewPushNotification " + s + " " + bundle);
-        if (MessageMatcher.getType(bundle) == MessageMatcher.TYPE_OPERATOR_TYPING||MessageMatcher.getType(bundle)==MessageMatcher.TYPE_MESSAGES_READ)
+        if (MessageMatcher.getType(bundle) == MessageMatcher.TYPE_OPERATOR_TYPING
+                ||MessageMatcher.getType(bundle)==MessageMatcher.TYPE_MESSAGES_READ)
             ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
     }
 
@@ -34,7 +35,7 @@ public class MyPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressChanged(final Context context, String s) {
-        Log.d(TAG, "onDeviceAddressChanged " + s);
+        Log.i(TAG, "onDeviceAddressChanged " + s);
         if (!PrefUtils.isClientIdSet(context) && PrefUtils.getClientID(context) != null) {
             PushController.getInstance(context).setClientIdAsync(PrefUtils.getClientID(context), new RequestCallback<Void, PushServerErrorException>() {
                 @Override

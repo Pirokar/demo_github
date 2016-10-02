@@ -50,6 +50,7 @@
         <activity
             android:name=".activities.TranslucentActivity"
             android:screenOrientation="portrait"
+            android:label=""
             android:launchMode="singleInstance"
             android:theme="@style/Translucent">
         </activity>

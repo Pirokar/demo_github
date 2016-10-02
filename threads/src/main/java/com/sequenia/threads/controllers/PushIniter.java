@@ -34,6 +34,7 @@ public class PushIniter {
             if (!PrefUtils.isClientIdSet(context)
                     || !PrefUtils.getClientID(context).equals(clientId)) {
                 Log.i(TAG, "setting client id async");
+
                 PushController
                         .getInstance(context)
                         .setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
@@ -42,7 +43,7 @@ public class PushIniter {
                                 PushController
                                         .getInstance(context)
                                         .sendMessageAsync(MessageFormatter
-                                                .getStartMessage(PrefUtils.getUserName(context), PrefUtils.getClientID(context), ""), true, new RequestCallback<String, PushServerErrorException>() {
+                                                .getStartMessage(PrefUtils.getUserName(context), clientId, ""), true, new RequestCallback<String, PushServerErrorException>() {
                                             @Override
                                             public void onResult(String string) {
                                                 Log.e(TAG, "client id was set string =" + string);

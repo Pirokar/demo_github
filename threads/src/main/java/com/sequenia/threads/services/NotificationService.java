@@ -374,7 +374,7 @@ public class NotificationService extends Service {
         buttonIntent.setFlags(/*Intent.FLAG_ACTIVITY_CLEAR_TOP
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP
                         |*/ Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                      /*  | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS*/
                 /*| Intent.FLAG_ACTIVITY_CLEAR_TASK*/);
         PendingIntent buttonPend = PendingIntent.getActivity(
                 this,
