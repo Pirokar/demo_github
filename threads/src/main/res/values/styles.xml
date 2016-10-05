@@ -113,4 +113,32 @@
         <item name="android:background">@null</item>
         <item name="android:textAllCaps">true</item>
     </style>
+
+    <style name="timestamp">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/margin_half</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="userBuble">
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginLeft">@dimen/user_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/user_margin_right</item>
+        <item name="android:layout_marginTop">@dimen/margin_quarter</item>
+        <item name="android:background">@drawable/bubble_blue</item>
+        <item name="android:paddingRight">@dimen/margin_half</item>
+    </style>
+
+    <style name="consultBubble">
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/consultant_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/consultant_margin_right</item>
+        <item name="android:layout_marginTop">@dimen/margin_quarter</item>
+        <item name="android:background">@drawable/bubble_white</item>
+        <item name="android:paddingRight">@dimen/margin_half</item>
+    </style>
 </resources>

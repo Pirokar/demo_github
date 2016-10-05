@@ -29,7 +29,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
     private View filterSecond;
 
     public ImageFromUserViewHolder(ViewGroup parent) {
-        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image_from_user, parent, false));
+        super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_imager_from, parent, false));
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mImage = (ImageView) itemView.findViewById(R.id.image);
         filter = itemView.findViewById(R.id.filter);

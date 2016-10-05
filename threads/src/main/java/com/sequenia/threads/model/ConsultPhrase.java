@@ -9,8 +9,8 @@ import java.util.UUID;
 /**
  * Created by yuri on 10.06.2016.
  */
-public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
-    private final String avatarPath;
+public class ConsultPhrase implements ChatPhrase, IsOnlyImage,ConsultChatPhrase {
+    private String avatarPath;
     private final String consultId;
     private final boolean sex;
     private final long timeStamp;
@@ -65,6 +65,9 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage {
         return isRead;
     }
 
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
+    }
 
     public void setRead(boolean read) {
         isRead = read;

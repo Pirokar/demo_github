@@ -2,5 +2,5 @@
     <string name="app_name">AppWithChat</string>
     <string name="default_title">Заголовок</string>
     <string name="welcome">Добро пожаловать</string>
-    <string name="subtitle_text">мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст мелкий текст</string>
+    <string name="subtitle_text">Отправьте ваш вопрос, первый освободившийся оператор на него ответит</string>
 </resources>

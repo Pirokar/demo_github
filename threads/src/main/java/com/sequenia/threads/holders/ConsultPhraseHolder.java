@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
@@ -48,7 +50,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     public ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterViewSecond;
-    private View mTextFrame;
+    private RelativeLayout mPhraseFrame;
 
     public ConsultPhraseHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
@@ -67,10 +69,10 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy");
         }
-        mTextFrame = itemView.findViewById(R.id.frame);
+        mPhraseFrame = (RelativeLayout) itemView.findViewById(R.id.phrase_frame);
     }
 
-    public void onBind(final String consultPhrase
+    public void onBind(final String phrase
             , String avatarPath
             , long timeStamp
             , boolean isAvatarVisible
@@ -80,18 +82,12 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             , View.OnLongClickListener onRowLongClickListener
             , View.OnClickListener onAvatarClickListener
             , boolean isChosen) {
-        if (consultPhrase == null) {
+        if (phrase == null) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(consultPhrase);
+            mPhraseTextView.setText(phrase);
         }
-        mCircularProgressButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e(TAG, "BANGGGGGGG!!!");
-            }
-        });
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
         if (quote != null) {
@@ -187,10 +183,37 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
-        if (consultPhrase == null) {
+        if (phrase == null) {
             return;
         }
-        if (mPhraseTextView.getLayout() != null) {
+        RelativeLayout.LayoutParams timeStampParams = (RelativeLayout.LayoutParams) mTimeStampTextView.getLayoutParams();
+        int ruleRightOf = RelativeLayout.RIGHT_OF;
+        int ruleAlignRight = RelativeLayout.ALIGN_RIGHT;
+        int ruleAlignParentRight = RelativeLayout.ALIGN_PARENT_RIGHT;
+        if (quote == null && fileDescription == null) {
+            mPhraseTextView.getLayoutParams().width = RelativeLayout.LayoutParams.WRAP_CONTENT;
+            timeStampParams.removeRule(ruleAlignParentRight);
+            if (phrase == null || phrase.length() < 35) {
+                timeStampParams.removeRule(ruleAlignRight);
+                timeStampParams.addRule(ruleRightOf, mPhraseTextView.getId());
+            } else {
+                timeStampParams.addRule(ruleAlignRight, mPhraseTextView.getId());
+                timeStampParams.removeRule(ruleRightOf);
+
+                int lastSize = phrase.length() % 40;
+                if (lastSize > 28) {
+                    mPhraseTextView.setText(phrase + "\n ");
+                }
+            }
+        } else {
+            mPhraseTextView.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
+            timeStampParams.addRule(ruleAlignParentRight);
+            int lastSize = phrase.length() % 40;
+            if (lastSize > 28) {
+                mPhraseTextView.setText(phrase + "\n ");
+            }
+        }
+     /*   if (mPhraseTextView.getLayout() != null) {
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
             if (consultPhrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(consultPhrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
                 mPhraseTextView.setText(consultPhrase + "\n ");
@@ -221,6 +244,6 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                     }
                 }
             });
-        }
+        }*/
     }
 }

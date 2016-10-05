@@ -9,7 +9,9 @@ import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
+import com.sequenia.threads.controllers.PushIniter;
 import com.sequenia.threads.formatters.MessageFormatter;
+import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.controllers.ChatController;
 import com.sequenia.threads.utils.PrefUtils;
@@ -24,7 +26,7 @@ public class MyPBReceiver extends PushBroadcastReceiver {
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.d(TAG, "onNewPushNotification " + s + " " + bundle);
         if (MessageMatcher.getType(bundle) == MessageMatcher.TYPE_OPERATOR_TYPING
-                ||MessageMatcher.getType(bundle)==MessageMatcher.TYPE_MESSAGES_READ)
+                || MessageMatcher.getType(bundle) == MessageMatcher.TYPE_MESSAGES_READ)
             ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
     }
 
@@ -36,7 +38,32 @@ public class MyPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onDeviceAddressChanged(final Context context, String s) {
         Log.i(TAG, "onDeviceAddressChanged " + s);
-        if (!PrefUtils.isClientIdSet(context) && PrefUtils.getClientID(context) != null) {
+        PushController.getInstance(context).sendMessageAsync(MessageFormatter
+                .getStartMessage(PrefUtils.getUserName(context), PrefUtils.getClientID(context), ""), true, new RequestCallback<String, PushServerErrorException>() {
+            @Override
+            public void onResult(String s) {
+                context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
+                PrefUtils.setClientIdWasSet(true, context);
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+
+            }
+        });
+       /* new PushIniter(context,PrefUtils.getClientID(context)).initIfNotInited(new Callback<Void, Exception>() {
+            @Override
+            public void onSuccess(Void result) {
+                PrefUtils.setClientIdWasSet(true, context);
+            }
+
+            @Override
+            public void onFail(Exception error) {
+
+            }*/
+    }
+
+       /* if (!PrefUtils.isClientIdSet(context) && PrefUtils.getClientID(context) != null) {
             PushController.getInstance(context).setClientIdAsync(PrefUtils.getClientID(context), new RequestCallback<Void, PushServerErrorException>() {
                 @Override
                 public void onResult(Void aVoid) {
@@ -61,8 +88,8 @@ public class MyPBReceiver extends PushBroadcastReceiver {
                     Log.e(TAG, "" + e);
                 }
             });
-        }
-    }
+        }*/
+
 
     @Override
     public void onDeviceAddressProblems(Context context, String s) {

@@ -115,6 +115,10 @@ public class DatabaseHolder {
         });
     }
 
+    public List<ChatPhrase> queryChatPhrasesSync(final String query) {
+        return mMyOpenHelper.getSortedPhrases(query);
+    }
+
     public void queryFilesAsync(final String query, final CompletionHandler<List<ChatPhrase>> callback) {
         executorService.execute(new Runnable() {
             @Override
@@ -125,6 +129,10 @@ public class DatabaseHolder {
                 callback.onComplete(list);
             }
         });
+    }
+
+    public List<ChatPhrase> queryFilesSync(final String query) {
+        return mMyOpenHelper.queryFiles(query);
     }
 
     public void putMessagesAsync(final List<ChatItem> items, final CompletionHandler<Void> completionHandler) {
@@ -146,6 +154,20 @@ public class DatabaseHolder {
             }
         });
 
+    }
+
+    public void putMessagesSync(final List<ChatItem> items) {
+        mMyOpenHelper.getWritableDatabase().beginTransaction();
+        for (ChatItem item : items) {
+            if (item instanceof ChatPhrase) {
+                mMyOpenHelper.putChatPhrase((ChatPhrase) item);
+            }
+            if (item instanceof ConsultConnectionMessage) {
+                mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
+            }
+        }
+        mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
+        mMyOpenHelper.getWritableDatabase().endTransaction();
     }
 
     public void setUserPhraseMessageId(String oldId, String newId) {
@@ -191,10 +213,17 @@ public class DatabaseHolder {
             }
         });
     }
-    public List<String> getUnreaMessagesId(){
+
+    public List<String> getUnreaMessagesId() {
         return mMyOpenHelper.getUnreadMessagesId();
     }
-    public void setMessageWereRead(String messageId){
+
+    public void setMessageWereRead(String messageId) {
         mMyOpenHelper.setMessageWereRead(messageId);
+    }
+
+    public String getLastConsultAvatarPathSync(String id) {
+        if (id == null) return null;
+        return mMyOpenHelper.getLastOperatorAvatar(id);
     }
 }

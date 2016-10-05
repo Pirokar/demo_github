@@ -648,6 +648,19 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return cp;
     }
 
+    public String getLastOperatorAvatar(String id) {
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_AVATAR_PATH
+                + " from " + TABLE_MESSAGES
+                + " where " + COLUMN_CONSULT_ID + " =  " + id
+                + " order by " + COLUMN_TIMESTAMP + " desc", null);
+        if (c.getCount() == 0) {
+            c.close();
+            return null;
+        }
+        c.moveToFirst();
+        return c.getString(c.getColumnIndex(COLUMN_AVATAR_PATH));
+    }
+
     void cleanDb() {
         getWritableDatabase().execSQL("delete * from " + TABLE_MESSAGES);
         getWritableDatabase().execSQL("delete * from " + TABLE_FILE_DESCRIPTION);

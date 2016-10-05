@@ -15,14 +15,7 @@
             <option value="$PROJECT_DIR$/threads" />
           </set>
         </option>
-        <option name="myModules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/push-api-release-1.0-37-2016-09-05-16-28" />
-            <option value="$PROJECT_DIR$/threads" />
-          </set>
-        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

@@ -10,7 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-
         android:padding="@dimen/margin_half">
 
         <TableRow
@@ -18,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_quarter"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <com.sequenia.threads.views.CircularProgressButton
                 android:id="@+id/button_download"
@@ -39,7 +38,6 @@
                 android:background="@android:color/white" />
 
             <LinearLayout
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -56,16 +54,17 @@
 
                 <TextView
                     android:id="@+id/file_specs"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:text="счет на оплату 1,2mb 436666666666364"
+
+                    android:text="счет на оплату 1,2mb"
                     android:textColor="@android:color/white" />
 
                 <TextView
                     android:id="@+id/send_at"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
@@ -74,52 +73,47 @@
             </LinearLayout>
         </TableRow>
 
-        <RelativeLayout
-
-            android:id="@+id/phrase_frame"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <com.wefika.flowlayout.FlowLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right">
 
             <TextView
                 android:id="@+id/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/margin_quarter"
-                android:text="Как-то так...aaaaa6"
+                android:text="Как-то так...rrrrrrrrrrrrrrrrrrrrrrrrrrr33 rrrrrrrrrrrrrrr"
                 android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/timestamp"
+                style="@style/timestamp"
+                android:layout_gravity="right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/text"
+                android:layout_marginLeft="@dimen/margin_material"
                 android:drawablePadding="@dimen/margin_quarter"
-                android:paddingBottom="4dp"
-                android:gravity="right"
-                android:paddingLeft="@dimen/margin_half"
-                android:text="10:19"
-                android:textColor="@android:color/white" />
-
-
-        </RelativeLayout>
-
+                android:paddingBottom="@dimen/margin_quarter"
+                android:text="10:19" />
+        </com.wefika.flowlayout.FlowLayout>
     </LinearLayout>
 
 
-    <View
-        android:id="@+id/filter"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_quarter"
-        android:layout_alignBottom="@+id/phrase_content"
-        android:layout_alignParentTop="true"
-        android:layout_below="@+id/phrase_content"
-        android:background="@color/blue_transparent" />
+      <View
+          android:id="@+id/filter"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/margin_quarter"
+          android:layout_alignBottom="@+id/phrase_content"
+          android:layout_alignParentTop="true"
+          android:layout_below="@+id/phrase_content"
+          android:background="@color/blue_transparent" />
 
-    <View
-        android:id="@+id/filter_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_quarter"
-        android:layout_below="@+id/phrase_content"
-        android:background="@color/blue_transparent" />
+      <View
+          android:id="@+id/filter_bottom"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/margin_quarter"
+          android:layout_below="@+id/phrase_content"
+          android:background="@color/blue_transparent" />
 
 </RelativeLayout>

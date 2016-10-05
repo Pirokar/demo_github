@@ -1,32 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
+
         android:id="@+id/bubble"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="@dimen/user_margin_left"
-        android:layout_marginRight="@dimen/user_margin_right"
-        android:layout_marginTop="@dimen/margin_quarter"
-        android:background="@drawable/bubble_blue"
-        android:paddingRight="@dimen/margin_three_fourth">
+        style="@style/userBuble">
 
 
         <com.sequenia.threads.views.CircularProgressButton
-            android:layout_centerVertical="true"
             android:id="@+id/button_download"
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/margin_half"
+            android:background="@drawable/ic_insert_file_white_36dp"
             app:completed_drawable="@drawable/ic_insert_file_white_36dp"
             app:in_progress_label="@drawable/ic_clear_blue_36dp"
-            app:start_download_label="@drawable/ic_vertical_align_bottom_24dp"
-            android:background="@drawable/ic_insert_file_white_36dp" />
+            app:start_download_label="@drawable/ic_vertical_align_bottom_24dp" />
 
         <TextView
             android:id="@+id/header"
@@ -55,15 +49,12 @@
 
         <TextView
             android:id="@+id/timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/timestamp"
             android:layout_alignParentRight="true"
             android:layout_alignRight="@+id/header"
             android:layout_below="@+id/header"
             android:layout_marginTop="@dimen/margin_quarter"
-            android:paddingBottom="@dimen/margin_half"
-            android:text="10:19"
-            android:textColor="@android:color/white" />
+            android:text="10:19" />
 
     </RelativeLayout>
 

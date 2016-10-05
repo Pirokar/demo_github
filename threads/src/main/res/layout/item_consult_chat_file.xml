@@ -6,13 +6,8 @@
 
     <RelativeLayout
         android:id="@+id/bubble"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/consultant_margin_left"
-        android:layout_marginRight="@dimen/consultant_margin_right"
-        android:layout_marginTop="@dimen/margin_quarter"
-        android:background="@drawable/bubble_white"
-        android:paddingRight="@dimen/margin_three_fourth">
+
+        style="@style/consultBubble">
 
         <com.sequenia.threads.views.CircularProgressButton
             android:id="@+id/circ_button"

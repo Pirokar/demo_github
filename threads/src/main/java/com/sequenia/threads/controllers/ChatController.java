@@ -34,6 +34,8 @@ import com.sequenia.threads.database.DatabaseHolder;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.CompletionHandler;
+import com.sequenia.threads.model.ConsultChatPhrase;
+import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultInfo;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
@@ -56,8 +58,11 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -89,6 +94,7 @@ public class ChatController extends Fragment {
     private boolean isInitError;
     private ConsultWriter mConsultWriter;
     private AnalyticsTracker mAnalyticsTracker;
+    private Executor mExecutor = Executors.newSingleThreadExecutor();
 
 
     public static ChatController getInstance(final Context ctx, final String clientId) {
@@ -236,15 +242,19 @@ public class ChatController extends Fragment {
             mDatabaseHolder = DatabaseHolder.getInstance(activity);
         }
         if (mDatabaseHolder.getMessagesCount() > 0) {
-            mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
+            mExecutor.execute(new Runnable() {
                 @Override
-                public void onComplete(List<ChatItem> data) {
-                    if (null != activity) activity.addChatItems(data);
-                    currentOffset = data.size();
-                }
-
-                @Override
-                public void onError(Throwable e, String message, List<ChatItem> data) {
+                public void run() {
+                    final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+                    if (null != activity) {
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                activity.addChatItems(items);
+                            }
+                        });
+                    }
+                    currentOffset = items.size();
                 }
             });
         }
@@ -266,6 +276,21 @@ public class ChatController extends Fragment {
 
     public boolean isConsultFound() {
         return mConsultWriter.isConsultConnected();
+    }
+
+    private List<? extends ChatItem> setLastAvatars(List<? extends ChatItem> list) {
+        for (ChatItem ci : list) {
+            if (ci instanceof ConsultConnectionMessage) {
+                ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
+                ccm.setAvatarPath(mDatabaseHolder.getLastConsultAvatarPathSync(ccm.getConsultId()));
+            }
+            if (ci instanceof ConsultPhrase) {
+                ConsultPhrase cp = (ConsultPhrase) ci;
+                cp.setAvatarPath(mDatabaseHolder.getLastConsultAvatarPathSync(cp.getConsultId()));
+            }
+        }
+
+        return list;
     }
 
     public void unbindActivity() {
@@ -301,7 +326,7 @@ public class ChatController extends Fragment {
             String id = userPhrase.getQuote().getQuotedPhraseId();
             consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
         }
-        Log.i(TAG, "sendMessage: "+userPhrase);
+        Log.i(TAG, "sendMessage: " + userPhrase);
         if (userPhrase.isWithPhrase()) mAnalyticsTracker.setTextWasSent();
         if (userPhrase.isWithFile()) mAnalyticsTracker.setFileWasSent();
         if (userPhrase.isWithQuote()) mAnalyticsTracker.setQuoteWasSent();
@@ -418,7 +443,14 @@ public class ChatController extends Fragment {
         h.post(new Runnable() {
             @Override
             public void run() {
-                if (null != activity) activity.addChatItem(cm);
+                if (null != activity) {
+                    ChatItem ci = setLastAvatars(Arrays.asList(new ChatItem[]{cm})).get(0);
+                    activity.addChatItem(ci);
+                    if (ci instanceof ConsultChatPhrase){
+                        activity.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath()
+                                ,((ConsultChatPhrase) ci).getConsultId());
+                    }
+                }
             }
         });
         if (cm instanceof ConsultPhrase
@@ -568,7 +600,47 @@ public class ChatController extends Fragment {
             callback.onSuccess(new ArrayList<ChatItem>());
             return;
         }
-        final int[] currentOffset = {activity.getCurrentItemsCount()};
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final int[] currentOffset = {activity.getCurrentItemsCount()};
+                final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                if (items.size() == 20) {
+                    h.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onSuccess(items);
+                        }
+                    });
+
+                } else {
+                    try {
+                        List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(currentOffset[0] + 20);
+                        mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
+                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                        currentOffset[0] += chatItems.size();
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(chatItems);
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                        currentOffset[0] += chatItems.size();
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(chatItems);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+       /* final int[] currentOffset = {activity.getCurrentItemsCount()};
         mDatabaseHolder.getChatItemsAsync(currentOffset[0], 20, new CompletionHandler<List<ChatItem>>() {
             @Override
             public void onComplete(final List<ChatItem> data) {
@@ -623,7 +695,7 @@ public class ChatController extends Fragment {
             public void onError(Throwable e, String message, List<ChatItem> data) {
                 callback.onFail(e);
             }
-        });
+        });*/
     }
 
     public void onImageDownloadRequest(FileDescription fileDescription) {
@@ -668,25 +740,47 @@ public class ChatController extends Fragment {
             , final Callback<Pair<Boolean, List<ChatPhrase>>, Exception> callback) {
 
         if (!searchInServerHistory) {
-            mDatabaseHolder.queryChatPhrasesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
+            mExecutor.execute(new Runnable() {
                 @Override
-                public void onComplete(final List<ChatPhrase> data) {
+                public void run() {
+                    final List<ChatPhrase> list = (List<ChatPhrase>) setLastAvatars(mDatabaseHolder.queryChatPhrasesSync(query));
                     h.post(new Runnable() {
                         @Override
                         public void run() {
-                            callback.onSuccess(new Pair<>(true, data));
+                            callback.onSuccess(new Pair<>(true, list));
                         }
                     });
-                }
-
-                @Override
-                public void onError(Throwable e, String message, List<ChatPhrase> data) {
-
                 }
             });
         } else {
             final int querySize = mDatabaseHolder.getMessagesCount() + searchOffset;
-            PushController.getInstance(activity).getMessageHistoryAsync(querySize, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+            mExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        final List<InOutMessage> inOutMessages = PushController.getInstance(activity).getMessageHistory(querySize);
+                        mDatabaseHolder.putMessagesSync(MessageFormatter.format(inOutMessages));
+                        final List<ChatPhrase> phrases = (List<ChatPhrase>) setLastAvatars(mDatabaseHolder.queryChatPhrasesSync(query));
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(new Pair<>(inOutMessages.size() >= querySize, phrases));
+                            }
+                        });
+                        searchOffset += 20;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        final List<ChatPhrase> phrases = (List<ChatPhrase>) setLastAvatars(mDatabaseHolder.queryChatPhrasesSync(query));
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(new Pair<>(false, phrases));
+                            }
+                        });
+                    }
+                }
+            });
+          /*  PushController.getInstance(activity).getMessageHistoryAsync(querySize, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
                 @Override
                 public void onResult(final List<InOutMessage> inOutMessages) {
                     mDatabaseHolder.putMessagesAsync(MessageFormatter.format(inOutMessages), new CompletionHandler<Void>() {
@@ -739,6 +833,7 @@ public class ChatController extends Fragment {
                     });
                 }
             });
+        }*/
         }
     }
 

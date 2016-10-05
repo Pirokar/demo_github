@@ -13,6 +13,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.holders.ConsultConnectionMessageViewHolder;
@@ -449,14 +450,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void setSearchingConsult() {
         ArrayList<ChatItem> list = getOriginalList();
         boolean containsSearch = false;
-        for (ChatItem ci:list) {
-            if (ci instanceof SearchingConsult)containsSearch = true;
+        for (ChatItem ci : list) {
+            if (ci instanceof SearchingConsult) containsSearch = true;
         }
-        if (containsSearch)return;
+        if (containsSearch) return;
         Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR,23);
-        c.set(Calendar.MINUTE,59);
-        c.set(Calendar.SECOND,59);
+        c.set(Calendar.HOUR, 23);
+        c.set(Calendar.MINUTE, 59);
+        c.set(Calendar.SECOND, 59);
         SearchingConsult sc = new SearchingConsult(c.getTimeInMillis());
         list.add(sc);
         if (!isInSearchMode) notifyItemInserted(list.lastIndexOf(sc));
@@ -766,6 +767,31 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return null;
     }
 
+    public void notifyAvatarChanged(String newUrl, String consultId) {
+        if (newUrl==null||consultId==null)return;
+        List<ChatItem> list = getOriginalList();
+        for (ChatItem ci : list) {
+            if (ci instanceof ConsultPhrase) {
+                ConsultPhrase cp = (ConsultPhrase) ci;
+                if(!cp.getConsultId().equals(consultId))continue;
+                String oldUrl = cp.getAvatarPath();
+                if (!oldUrl.equals(newUrl)) {
+                    cp.setAvatarPath(newUrl);
+                    if (!isInSearchMode)notifyItemChanged(list.lastIndexOf(cp));
+                }
+            }
+            if (ci instanceof ConsultConnectionMessage){
+                ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
+                if (!ccm.getConsultId().equals(consultId))continue;
+                String oldUrl = ccm.getAvatarPath();
+                if (!oldUrl.equals(newUrl)) {
+                    ccm.setAvatarPath(newUrl);
+                    if (!isInSearchMode)notifyItemChanged(list.lastIndexOf(ci));
+                }
+            }
+        }
+    }
+
     public static class ChatMessagesOrderer {
 
         private void addItemInternal(List<ChatItem> listToInsertTo, ChatItem itemToInsert) {
@@ -818,11 +844,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     continue;
                 }
                 if (last instanceof ConsultPhrase && prev instanceof ConsultPhrase) {// spacing between Consult phrase  and Consult phrase
-                    listToInsertTo.add(i, new Space(2, prev.getTimeStamp() + 1));
+                    listToInsertTo.add(i, new Space(0, prev.getTimeStamp() + 1));
                     continue;
                 }
                 if (last instanceof UserPhrase && prev instanceof UserPhrase) {// spacing between User phrase  and User phrase
-                    listToInsertTo.add(i, new Space(2, prev.getTimeStamp() + 1));
+                    listToInsertTo.add(i, new Space(0, prev.getTimeStamp() + 1));
                     continue;
                 }
                 if (prev instanceof UserPhrase && last instanceof ConsultPhrase) {// spacing between User phrase  and Consult phrase

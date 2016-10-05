@@ -188,6 +188,15 @@ public class ChatActivity extends BaseActivity
         return true;
     }
 
+    public void notifyConsultAvatarChanged(final String newAvatarUrl, final String consultId){
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mChatAdapter!=null)mChatAdapter.notifyAvatarChanged(newAvatarUrl,consultId);
+            }
+        });
+    }
+
     private void initToolbar() {
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         t.setTitle("");

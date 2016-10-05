@@ -3,14 +3,14 @@ package com.sequenia.threads.model;
 /**
  * Created by yuri on 10.06.2016.
  */
-public class ConsultConnectionMessage implements ChatItem {
+public class ConsultConnectionMessage implements ChatItem,ConsultChatPhrase {
     private final String consultId;
     private final String type;
     private final String name;
     private final boolean sex;
     private final long date;
     private final String status;
-    private final String avatarPath;
+    private String avatarPath;
     public static final String TYPE_JOINED = "OPERATOR_JOINED";
     public static final String TYPE_LEFT = "OPERATOR_LEFT";
     private String title;
@@ -48,6 +48,10 @@ public class ConsultConnectionMessage implements ChatItem {
         this.status = status;
         this.title = title;
         this.messageId = messageId;
+    }
+
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
     }
 
     public String getMessageId() {

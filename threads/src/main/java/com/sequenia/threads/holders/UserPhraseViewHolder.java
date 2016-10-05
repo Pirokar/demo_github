@@ -5,10 +5,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -23,6 +25,7 @@ import com.sequenia.threads.utils.ViewUtils;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -43,6 +46,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat fileSdf;
     private View mFilterView;
     private View mFilterViewSecond;
+    private RelativeLayout phraseFrame;
 
 
     public UserPhraseViewHolder(ViewGroup parent) {
@@ -62,6 +66,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mRightTextHeader = (TextView) itemView.findViewById(R.id.to);
         mRightTextTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
+        phraseFrame = (RelativeLayout) itemView.findViewById(R.id.phrase_frame);
     }
 
     public void onBind(final String phrase
@@ -82,6 +87,9 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
+        if (fileDescription == null && quote == null) {
+            mRightTextRow.setVisibility(View.GONE);
+        }
         if (quote != null) {
             mRightTextRow.setVisibility(View.VISIBLE);
             mRightTextRow.setVisibility(View.VISIBLE);
@@ -125,13 +133,43 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                 mFileImageButton.setProgress(fileDescription.getDownloadProgress());
             }
         }
-        if (mPhraseTextView.getLayout() != null) {
+        RelativeLayout.LayoutParams timeStampParams = (RelativeLayout.LayoutParams) mTimeStampTextView.getLayoutParams();
+        int ruleRightOf = RelativeLayout.RIGHT_OF;
+        int ruleAlignRight = RelativeLayout.ALIGN_RIGHT;
+        int ruleAlignParentRight = RelativeLayout.ALIGN_PARENT_RIGHT;
+        if (quote == null && fileDescription == null) {
+            phraseFrame.getLayoutParams().width = RelativeLayout.LayoutParams.WRAP_CONTENT;
+            timeStampParams.removeRule(ruleAlignParentRight);
+            if (phrase == null || phrase.length() < 35) {
+                timeStampParams.removeRule(ruleAlignRight);
+                timeStampParams.addRule(ruleRightOf, mPhraseTextView.getId());
+            } else {
+                timeStampParams.addRule(ruleAlignRight, mPhraseTextView.getId());
+                timeStampParams.removeRule(ruleRightOf);
+
+                int lastSize = phrase.length() % 36;
+                if (lastSize > 28) {
+                    mPhraseTextView.setText(phrase + "\n ");
+                }
+            }
+        } else {
+            phraseFrame.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
+            timeStampParams.addRule(ruleAlignParentRight);
+            int lastSize = phrase.length() % 36;
+            if (lastSize > 28) {
+                mPhraseTextView.setText(phrase + "\n ");
+            }
+        }
+
+        /*if (mPhraseTextView.getLayout() != null) {
             float density = itemView.getContext().getResources().getDisplayMetrics().density;
             if (phrase != null && phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-                mPhraseTextView.setText(phrase + "\n ");
-                Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
-                LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
+
+              *//*  *//**//**//**//*Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
+                LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);*//**//**//**//**//*
             }
+        }*/
+          /*
         } else {
             mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -147,8 +185,8 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                                 && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length())
                                 > (mTimeStampTextView.getLeft() - density * 40)) {
                             mPhraseTextView.setText(phrase + "\n ");
-                            Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
-                            LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
+                           *//* Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
+                            LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);*//*
                         }
                         mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     } catch (Throwable e) {
@@ -156,7 +194,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                     }
                 }
             });
-        }
+        }*/
         if (mRightTextHeader.getText() == null || mRightTextHeader.getText().toString().equals("null")) {
             mRightTextHeader.setVisibility(View.GONE);
         } else {
@@ -184,8 +222,6 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
         if (phrase == null) return;
-        if (fileDescription == null && quote == null) {
-            mRightTextRow.setVisibility(View.GONE);
-        }
     }
 }
+
