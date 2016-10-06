@@ -100,6 +100,18 @@ public class ChatController extends Fragment {
         if (instance == null) {
             instance = new ChatController(ctx);
         }
+        if (!clientId.equals(PrefUtils.getClientID(ctx))) {
+            instance.mExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        instance.cleanAllAndResetCount();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
         if (PrefUtils.getClientID(ctx) == null) {
             PrefUtils.setClientId(ctx, clientId);
         }
@@ -112,16 +124,13 @@ public class ChatController extends Fragment {
                     @Override
                     public void run() {
                         try {
-                            instance.cleanAllAndResetCount();
                             if (instance.mDatabaseHolder.getMessagesCount() == 0 && instance.activity != null) {
                                 instance.activity.showDownloading();
                                 List<InOutMessage> messages = PushController.getInstance(instance.activity).getMessageHistory(20);
                                 instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
                                 ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
                                 instance.activity.addChatItems(phrases);
-                                if (null != instance.activity) {
-                                    instance.activity.removeDownloading();
-                                }
+                                instance.activity.removeDownloading();
                             }
                         } catch (PushServerErrorException e) {
                             e.printStackTrace();
@@ -133,6 +142,7 @@ public class ChatController extends Fragment {
             @Override
             public void onFail(Exception error) {
                 Log.e(TAG, "onFail " + error);
+               /* PrefUtils.setClientId(ctx, null);*/
             }
         });
         return instance;
@@ -775,12 +785,13 @@ public class ChatController extends Fragment {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                if (activity!=null){
+                if (activity != null) {
                     try {
                         cleanAllAndResetCount();
                         List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(20);
                         mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-                        if (activity!=null)activity.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
+                        if (activity != null)
+                            activity.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
                         currentOffset = messages.size();
                     } catch (PushServerErrorException e) {
                         e.printStackTrace();
