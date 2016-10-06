@@ -6,6 +6,7 @@ import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultInfo;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
@@ -225,5 +226,8 @@ public class DatabaseHolder {
     public String getLastConsultAvatarPathSync(String id) {
         if (id == null) return null;
         return mMyOpenHelper.getLastOperatorAvatar(id);
+    }
+    public ConsultInfo getConsultInfoSync(String id){
+        return mMyOpenHelper.getLastConsultInfo(id);
     }
 }

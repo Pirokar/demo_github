@@ -10,6 +10,7 @@ import android.util.Pair;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.ConsultConnectionMessage;
+import com.sequenia.threads.model.ConsultInfo;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
@@ -28,39 +29,39 @@ import java.util.Locale;
 class MyOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "MyOpenHelper ";
     private static final int VERSION = 1;
-    static final String TABLE_MESSAGES = "TABLE_MESSAGES";
-    static final String COLUMN_TABLE_ID = "TABLE_ID";
-    static final String COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP";
-    static final String COLUMN_PHRASE = "COLUMN_PHRASE";
-    static final String COLUMN_MESSAGE_TYPE = "COLUMN_MESSAGE_TYPE";
-    static final String COLUMN_NAME = "COLUMN_NAME";
-    static final String COLUMN_AVATAR_PATH = "COLUMN_AVATAR_PATH";
-    static final String COLUMN_MESSAGE_ID = "COLUMN_MESSAGE_ID";
-    static final String COLUMN_MESSAGE_SEND_STATE = "COLUMN_MESSAGE_SEND_STATE";
-    static final String COLUMN_SEX = "COLUMN_SEX";
-    static final String COLUMN_CONSULT_ID = "COLUMN_CONSULT_ID";
-    static final String COLUMN_CONSULT_STATUS = "COLUMN_CONSULT_STATUS";
-    static final String COLUMN_CONSULT_TITLE = "COLUMN_CONSULT_TITLE";
-    static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
-    static final String COLUMN_IS_READ = "COLUMN_IS_READ";
+    private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
+    private static final String COLUMN_TABLE_ID = "TABLE_ID";
+    private static final String COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP";
+    private static final String COLUMN_PHRASE = "COLUMN_PHRASE";
+    private static final String COLUMN_MESSAGE_TYPE = "COLUMN_MESSAGE_TYPE";
+    private static final String COLUMN_NAME = "COLUMN_NAME";
+    private static final String COLUMN_AVATAR_PATH = "COLUMN_AVATAR_PATH";
+    private static final String COLUMN_MESSAGE_ID = "COLUMN_MESSAGE_ID";
+    private static final String COLUMN_MESSAGE_SEND_STATE = "COLUMN_MESSAGE_SEND_STATE";
+    private static final String COLUMN_SEX = "COLUMN_SEX";
+    private static final String COLUMN_CONSULT_ID = "COLUMN_CONSULT_ID";
+    private static final String COLUMN_CONSULT_STATUS = "COLUMN_CONSULT_STATUS";
+    private static final String COLUMN_CONSULT_TITLE = "COLUMN_CONSULT_TITLE";
+    private static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
+    private static final String COLUMN_IS_READ = "COLUMN_IS_READ";
 
 
-    static final String TABLE_QUOTE = "TABLE_QUOTE";
-    static final String COLUMN_QUOTE_HEADER = "COLUMN_QUOTE_HEADER";
-    static final String COLUMN_QUOTE_BODY = "COLUMN_QUOTE_BODY";
-    static final String COLUMN_QUOTE_TIMESTAMP = "COLUMN_QUOTE_TIMESTAMP";
-    static final String COLUMN_QUOTE_MESSAGE_ID_EXT = "COLUMN_QUOTE_MESSAGE_ID_EXT";
+    private static final String TABLE_QUOTE = "TABLE_QUOTE";
+    private static final String COLUMN_QUOTE_HEADER = "COLUMN_QUOTE_HEADER";
+    private static final String COLUMN_QUOTE_BODY = "COLUMN_QUOTE_BODY";
+    private static final String COLUMN_QUOTE_TIMESTAMP = "COLUMN_QUOTE_TIMESTAMP";
+    private static final String COLUMN_QUOTE_MESSAGE_ID_EXT = "COLUMN_QUOTE_MESSAGE_ID_EXT";
 
-    static final String TABLE_FILE_DESCRIPTION = "TABLE_FILE_DESCRIPTION";
-    static final String COLUMN_FD_HEADER = "COLUMN_FD_HEADER";
-    static final String COLUMN_FD_PATH = "COLUMN_FD_PATH";
-    static final String COLUMN_FD_DOWNLOAD_PATH = "COLUMN_WEB_PATH";
-    static final String COLUMN_FD_DOWNLOAD_PROGRESS = "COLUMN_FD_DOWNLOAD_PROGRESS";
-    static final String COLUMN_FD_TIMESTAMP = "COLUMN_FD_TIMESTAMP";
-    static final String COLUMN_FD_SIZE = "COLUMN_FD_SIZE";
-    static final String COLUMN_FD_IS_FROM_QUOTE = "COLUMN_FD_IS_FROM_QUOTE";
-    static final String COLUMN_FD_INCOMING_FILENAME = "COLUMN_FD_INCOMING_FILENAME";
-    static final String COLUMN_FD_MESSAGE_ID_EXT = "COLUMN_FD_MESSAGE_ID_EXT";
+    private static final String TABLE_FILE_DESCRIPTION = "TABLE_FILE_DESCRIPTION";
+    private static final String COLUMN_FD_HEADER = "COLUMN_FD_HEADER";
+    private static final String COLUMN_FD_PATH = "COLUMN_FD_PATH";
+    private static final String COLUMN_FD_DOWNLOAD_PATH = "COLUMN_WEB_PATH";
+    private static final String COLUMN_FD_DOWNLOAD_PROGRESS = "COLUMN_FD_DOWNLOAD_PROGRESS";
+    private static final String COLUMN_FD_TIMESTAMP = "COLUMN_FD_TIMESTAMP";
+    private static final String COLUMN_FD_SIZE = "COLUMN_FD_SIZE";
+    private static final String COLUMN_FD_IS_FROM_QUOTE = "COLUMN_FD_IS_FROM_QUOTE";
+    private static final String COLUMN_FD_INCOMING_FILENAME = "COLUMN_FD_INCOMING_FILENAME";
+    private static final String COLUMN_FD_MESSAGE_ID_EXT = "COLUMN_FD_MESSAGE_ID_EXT";
     private ArrayList<UserPhrase> cashedPhrases = new ArrayList<>();
     private long lastPhraseRequest = System.currentTimeMillis();
 
@@ -665,5 +666,21 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().execSQL("delete * from " + TABLE_MESSAGES);
         getWritableDatabase().execSQL("delete * from " + TABLE_FILE_DESCRIPTION);
         getWritableDatabase().execSQL("delete * from " + TABLE_QUOTE);
+    }
+
+    ConsultInfo getLastConsultInfo(String id) {
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_AVATAR_PATH + ", " + COLUMN_NAME + ", " + COLUMN_CONSULT_STATUS
+                + " from " + TABLE_MESSAGES
+                + " where " + COLUMN_CONSULT_ID + " =  ? "
+                + " order by " + COLUMN_TIMESTAMP + " desc", new String[]{id});
+        if (c.getCount() == 0) {
+            c.close();
+            return null;
+        }
+        c.moveToFirst();
+        return new ConsultInfo(c.getString(c.getColumnIndex(COLUMN_NAME))
+                , id
+                , c.getString(c.getColumnIndex(COLUMN_CONSULT_STATUS))
+                , c.getString(c.getColumnIndex(COLUMN_AVATAR_PATH)));
     }
 }

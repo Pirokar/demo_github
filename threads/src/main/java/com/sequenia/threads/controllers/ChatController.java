@@ -91,7 +91,6 @@ public class ChatController extends Fragment {
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
     public static Picasso p;
-    private boolean isInitError;
     private ConsultWriter mConsultWriter;
     private AnalyticsTracker mAnalyticsTracker;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
@@ -109,66 +108,31 @@ public class ChatController extends Fragment {
             @Override
             public void onSuccess(Void result) {
                 Log.i(TAG, "onSuccess: ");
-                instance.cleanAll();
-                if (instance.mDatabaseHolder.getMessagesCount() == 0 && instance.activity != null) {
-                    instance.activity.showDownloading();
-                    PushController
-                            .getInstance(instance.activity)
-                            .getMessageHistoryAsync(20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-                                @Override
-                                public void onError(PushServerErrorException e) {
-                                    e.printStackTrace();
+                instance.mExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            instance.cleanAllAndResetCount();
+                            if (instance.mDatabaseHolder.getMessagesCount() == 0 && instance.activity != null) {
+                                instance.activity.showDownloading();
+                                List<InOutMessage> messages = PushController.getInstance(instance.activity).getMessageHistory(20);
+                                instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
+                                ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
+                                instance.activity.addChatItems(phrases);
+                                if (null != instance.activity) {
+                                    instance.activity.removeDownloading();
                                 }
-
-                                @Override
-                                public void onResult(List<InOutMessage> inOutMessages) {
-                                    ArrayList<ChatItem> phrases = MessageFormatter.format(inOutMessages);
-                                    if (null != instance.activity) {
-                                        instance.activity.removeDownloading();
-                                    }
-
-                                    instance.mDatabaseHolder.putMessagesAsync(phrases, new CompletionHandler<Void>() {
-                                        @Override
-                                        public void onComplete(Void data) {
-                                            instance.mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
-                                                @Override
-                                                public void onComplete(List<ChatItem> data) {
-
-                                                    if (null != instance.activity)
-                                                        instance.activity.addChatItems(data);
-                                                    instance.currentOffset = data.size();
-                                                }
-
-                                                @Override
-                                                public void onError(Throwable e, String message, List<ChatItem> data) {
-                                                    e.printStackTrace();
-                                                }
-                                            });
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e, String message, Void data) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                }
-                            });
-                }
+                            }
+                        } catch (PushServerErrorException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
 
             @Override
             public void onFail(Exception error) {
                 Log.e(TAG, "onFail " + error);
-                /*PushController.getInstance(ctx).init();
-                initer.initIfNotInited(new Callback<Void, Exception>() {
-                    @Override
-                    public void onSuccess(Void result) {
-                    }
-
-                    @Override
-                    public void onFail(Exception error) {
-                    }
-                });*/
             }
         });
         return instance;
@@ -514,28 +478,20 @@ public class ChatController extends Fragment {
         }
     }
 
-    void cleanAll() {
-        Log.i(TAG, "cleanAll: ");
+    void cleanAllAndResetCount() throws PushServerErrorException {
+        Log.i(TAG, "cleanAllAndResetCount: ");
         mDatabaseHolder.cleanDatabase();
         if (activity != null) activity.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
         mConsultWriter.setSearchingConsult(false);
         isSearchingConsult = false;
+        searchOffset = 0;
+        currentOffset = 0;
         h.removeCallbacksAndMessages(null);
         if (activity != null) {
             activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
-
         }
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    PushController.getInstance(activity).resetCounterSync();
-                } catch (PushServerErrorException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        PushController.getInstance(activity).resetCounterSync();
     }
 
     public void setActivityIsForeground(boolean isForeground) {
@@ -600,6 +556,7 @@ public class ChatController extends Fragment {
     }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
+        Log.e(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(activity));
         if (!PrefUtils.isClientIdSet(activity)) {
             callback.onSuccess(new ArrayList<ChatItem>());
             return;
@@ -675,7 +632,9 @@ public class ChatController extends Fragment {
     }
 
     public void onConsultChoose(Activity activity, String consultId) {
-        Intent i = ConsultActivity.getStartIntent(activity, mConsultWriter.getPhotoUrl(consultId), mConsultWriter.getName(consultId), mConsultWriter.getStatus(consultId));
+        ConsultInfo info = mDatabaseHolder.getConsultInfoSync(consultId);
+        if (info == null) info = new ConsultInfo("", consultId, "", "");
+        Intent i = ConsultActivity.getStartIntent(activity, info.getPhotoUrl(), info.getName(), info.getStatus());
         activity.startActivity(i);
     }
 
@@ -813,23 +772,22 @@ public class ChatController extends Fragment {
 
     private void onSettingClientId(Context ctx) {
         Log.i(TAG, "onSettingClientId:");
-        cleanAll();
-        if (activity != null) {
-            mExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (activity!=null){
                     try {
+                        cleanAllAndResetCount();
                         List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(20);
                         mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-                        activity.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
+                        if (activity!=null)activity.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
                         currentOffset = messages.size();
-
                     } catch (PushServerErrorException e) {
                         e.printStackTrace();
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     public String getConsultNameById(String id) {

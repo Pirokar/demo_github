@@ -42,9 +42,11 @@ public class MyPBReceiver extends PushBroadcastReceiver {
             @Override
             public void run() {
                 try {
-                    if (PrefUtils.getNewClientID(context)==null)return;
+                    if (PrefUtils.getNewClientID(context) == null) return;
                     PushController.getInstance(context).setClientId(PrefUtils.getNewClientID(context));
-                    PushController.getInstance(context).sendMessage(MessageFormatter.getStartMessage(PrefUtils.getUserName(context),PrefUtils.getNewClientID(context),""),true);
+                    PushController.getInstance(context).sendMessage(MessageFormatter.getStartMessage(PrefUtils.getUserName(context), PrefUtils.getNewClientID(context), ""), true);
+                    PrefUtils.setClientId(context, PrefUtils.getNewClientID(context));
+                    PrefUtils.setClientIdWasSet(true,context);
                     context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
                 } catch (PushServerErrorException e) {
                     e.printStackTrace();

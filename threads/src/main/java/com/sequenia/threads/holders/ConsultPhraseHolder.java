@@ -86,6 +86,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             , View.OnLongClickListener onRowLongClickListener
             , View.OnClickListener onAvatarClickListener
             , boolean isChosen) {
+        mConsultAvatar.setImageBitmap(null);
         if (phrase == null) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {

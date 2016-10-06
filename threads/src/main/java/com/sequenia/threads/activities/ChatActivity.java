@@ -188,11 +188,11 @@ public class ChatActivity extends BaseActivity
         return true;
     }
 
-    public void notifyConsultAvatarChanged(final String newAvatarUrl, final String consultId){
+    public void notifyConsultAvatarChanged(final String newAvatarUrl, final String consultId) {
         h.post(new Runnable() {
             @Override
             public void run() {
-                if (mChatAdapter!=null)mChatAdapter.notifyAvatarChanged(newAvatarUrl,consultId);
+                if (mChatAdapter != null) mChatAdapter.notifyAvatarChanged(newAvatarUrl, consultId);
             }
         });
     }
@@ -784,10 +784,7 @@ public class ChatActivity extends BaseActivity
 
     @Override
     public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
-        startActivity(ConsultActivity.getStartIntent(this
-                , consultConnectionMessage.getAvatarPath()
-                , consultConnectionMessage.getName()
-                , consultConnectionMessage.getStatus()));
+        mChatController.onConsultChoose(this, consultConnectionMessage.getConsultId());
     }
 
     @Override
@@ -1085,15 +1082,21 @@ public class ChatActivity extends BaseActivity
     }
 
     public void cleanChat() {
-        mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), this, this);
-        mRecyclerView.setAdapter(mChatAdapter);
-        setTitleStateDefault();
-        if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
-            mWelcomeScreen.setVisibility(View.GONE);
-            mWelcomeScreen = null;
-        }
-        mInputEditText.clearFocus();
-        showHelloScreen();
+        final ChatActivity activity = this;
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), activity, activity);
+                mRecyclerView.setAdapter(mChatAdapter);
+                setTitleStateDefault();
+                if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
+                    mWelcomeScreen.setVisibility(View.GONE);
+                    mWelcomeScreen = null;
+                }
+                mInputEditText.clearFocus();
+                showHelloScreen();
+            }
+        });
     }
 
     @Override
