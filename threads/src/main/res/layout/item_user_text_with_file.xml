@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-
+        android:gravity="right"
         android:padding="@dimen/margin_half">
 
         <TableRow
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_quarter"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <com.sequenia.threads.views.CircularProgressButton
                 android:id="@+id/button_download"
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/margin_quarter"
-                android:text="Как-то так...aaaaa6"
+                android:text="Как-то так...aaaaa66666666ggggggggggg"
                 android:textColor="@android:color/white" />
 
             <TextView
@@ -93,6 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/text"
+                android:layout_toRightOf="@+id/text"
                 android:drawablePadding="@dimen/margin_quarter"
                 android:paddingBottom="4dp"
                 android:gravity="right"

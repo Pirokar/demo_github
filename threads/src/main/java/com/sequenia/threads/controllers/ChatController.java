@@ -108,53 +108,58 @@ public class ChatController extends Fragment {
         initer.initIfNotInited(new Callback<Void, Exception>() {
             @Override
             public void onSuccess(Void result) {
+                Log.i(TAG, "onSuccess: ");
                 instance.cleanAll();
                 if (instance.mDatabaseHolder.getMessagesCount() == 0 && instance.activity != null) {
                     instance.activity.showDownloading();
-                    PushController.getInstance(instance.activity).getMessageHistoryAsync(20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-                        @Override
-                        public void onError(PushServerErrorException e) {
-                            e.printStackTrace();
-                        }
-
-                        @Override
-                        public void onResult(List<InOutMessage> inOutMessages) {
-                            ArrayList<ChatItem> phrases = MessageFormatter.format(inOutMessages);
-                            if (null != instance.activity) {
-                                instance.activity.removeDownloading();
-                            }
-
-                            instance.mDatabaseHolder.putMessagesAsync(phrases, new CompletionHandler<Void>() {
+                    PushController
+                            .getInstance(instance.activity)
+                            .getMessageHistoryAsync(20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
                                 @Override
-                                public void onComplete(Void data) {
-                                    instance.mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
-                                        @Override
-                                        public void onComplete(List<ChatItem> data) {
+                                public void onError(PushServerErrorException e) {
+                                    e.printStackTrace();
+                                }
 
-                                            if (null != instance.activity)
-                                                instance.activity.addChatItems(data);
-                                            instance.currentOffset = data.size();
+                                @Override
+                                public void onResult(List<InOutMessage> inOutMessages) {
+                                    ArrayList<ChatItem> phrases = MessageFormatter.format(inOutMessages);
+                                    if (null != instance.activity) {
+                                        instance.activity.removeDownloading();
+                                    }
+
+                                    instance.mDatabaseHolder.putMessagesAsync(phrases, new CompletionHandler<Void>() {
+                                        @Override
+                                        public void onComplete(Void data) {
+                                            instance.mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
+                                                @Override
+                                                public void onComplete(List<ChatItem> data) {
+
+                                                    if (null != instance.activity)
+                                                        instance.activity.addChatItems(data);
+                                                    instance.currentOffset = data.size();
+                                                }
+
+                                                @Override
+                                                public void onError(Throwable e, String message, List<ChatItem> data) {
+                                                    e.printStackTrace();
+                                                }
+                                            });
                                         }
 
                                         @Override
-                                        public void onError(Throwable e, String message, List<ChatItem> data) {
+                                        public void onError(Throwable e, String message, Void data) {
                                             e.printStackTrace();
                                         }
                                     });
                                 }
-
-                                @Override
-                                public void onError(Throwable e, String message, Void data) {
-                                    e.printStackTrace();
-                                }
                             });
-                        }
-                    });
                 }
             }
 
             @Override
             public void onFail(Exception error) {
+                Log.e(TAG, "onFail " + error);
+                /*PushController.getInstance(ctx).init();
                 initer.initIfNotInited(new Callback<Void, Exception>() {
                     @Override
                     public void onSuccess(Void result) {
@@ -163,7 +168,7 @@ public class ChatController extends Fragment {
                     @Override
                     public void onFail(Exception error) {
                     }
-                });
+                });*/
             }
         });
         return instance;
@@ -446,9 +451,9 @@ public class ChatController extends Fragment {
                 if (null != activity) {
                     ChatItem ci = setLastAvatars(Arrays.asList(new ChatItem[]{cm})).get(0);
                     activity.addChatItem(ci);
-                    if (ci instanceof ConsultChatPhrase){
+                    if (ci instanceof ConsultChatPhrase) {
                         activity.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath()
-                                ,((ConsultChatPhrase) ci).getConsultId());
+                                , ((ConsultChatPhrase) ci).getConsultId());
                     }
                 }
             }
@@ -510,6 +515,7 @@ public class ChatController extends Fragment {
     }
 
     void cleanAll() {
+        Log.i(TAG, "cleanAll: ");
         mDatabaseHolder.cleanDatabase();
         if (activity != null) activity.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
@@ -520,18 +526,16 @@ public class ChatController extends Fragment {
             activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
 
         }
-        new Thread(new Runnable() {
+        mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                if (activity != null) {
-                    try {
-                        PushController.getInstance(activity).resetCounterSync();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    PushController.getInstance(activity).resetCounterSync();
+                } catch (PushServerErrorException e) {
+                    e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     public void setActivityIsForeground(boolean isForeground) {
@@ -640,62 +644,6 @@ public class ChatController extends Fragment {
                 }
             }
         });
-       /* final int[] currentOffset = {activity.getCurrentItemsCount()};
-        mDatabaseHolder.getChatItemsAsync(currentOffset[0], 20, new CompletionHandler<List<ChatItem>>() {
-            @Override
-            public void onComplete(final List<ChatItem> data) {
-                if (data.size() == 20) {
-                    callback.onSuccess(data);
-                } else {
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            PushController.getInstance(activity).getMessageHistoryAsync(currentOffset[0] + 20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-                                @Override
-                                public void onResult(List<InOutMessage> inOutMessages) {
-                                    mDatabaseHolder.putMessagesAsync(MessageFormatter.format(inOutMessages), new CompletionHandler<Void>() {
-                                        @Override
-                                        public void onComplete(Void data) {
-                                            mDatabaseHolder.getChatItemsAsync(currentOffset[0], 20, new CompletionHandler<List<ChatItem>>() {
-                                                @Override
-                                                public void onComplete(List<ChatItem> data) {
-                                                    callback.onSuccess(data);
-                                                    currentOffset[0] += data.size();
-                                                }
-
-                                                @Override
-                                                public void onError(Throwable e, String message, List<ChatItem> data) {
-                                                    callback.onSuccess(data);
-                                                    currentOffset[0] += data.size();
-                                                }
-                                            });
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e, String message, Void data) {
-                                            callback.onSuccess(new ArrayList<ChatItem>());
-                                            currentOffset[0] += 0;
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onError(PushServerErrorException e) {
-                                    callback.onSuccess(data);
-                                    currentOffset[0] += data.size();
-                                }
-                            });
-                        }
-                    });
-
-                }
-            }
-
-            @Override
-            public void onError(Throwable e, String message, List<ChatItem> data) {
-                callback.onFail(e);
-            }
-        });*/
     }
 
     public void onImageDownloadRequest(FileDescription fileDescription) {
@@ -780,60 +728,6 @@ public class ChatController extends Fragment {
                     }
                 }
             });
-          /*  PushController.getInstance(activity).getMessageHistoryAsync(querySize, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-                @Override
-                public void onResult(final List<InOutMessage> inOutMessages) {
-                    mDatabaseHolder.putMessagesAsync(MessageFormatter.format(inOutMessages), new CompletionHandler<Void>() {
-                        @Override
-                        public void onComplete(final Void avoid) {
-                            mDatabaseHolder.queryChatPhrasesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
-                                @Override
-                                public void onComplete(final List<ChatPhrase> data) {
-                                    h.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callback.onSuccess(new Pair<>(inOutMessages.size() >= querySize, data));
-                                            searchOffset += 20;
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onError(Throwable e, String message, List<ChatPhrase> data) {
-                                    callback.onFail((Exception) e);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onError(Throwable e, String message, Void data) {
-                            callback.onFail((Exception) e);
-                        }
-                    });
-
-                }
-
-                @Override
-                public void onError(PushServerErrorException e) {
-                    mDatabaseHolder.queryChatPhrasesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
-                        @Override
-                        public void onComplete(final List<ChatPhrase> data) {
-                            h.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callback.onSuccess(new Pair<>(true, data));
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onError(Throwable e, String message, List<ChatPhrase> data) {
-                            callback.onFail((Exception) e);
-                        }
-                    });
-                }
-            });
-        }*/
         }
     }
 
@@ -918,42 +812,21 @@ public class ChatController extends Fragment {
     }
 
     private void onSettingClientId(Context ctx) {
-        if (mDatabaseHolder.getMessagesCount() == 0 && activity != null) {
-            activity.showDownloading();
-            PushController.getInstance(instance.activity).getMessageHistoryAsync(20, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
+        Log.i(TAG, "onSettingClientId:");
+        cleanAll();
+        if (activity != null) {
+            mExecutor.execute(new Runnable() {
                 @Override
-                public void onResult(List<InOutMessage> inOutMessages) {
-                    activity.removeDownloading();
-                    ArrayList<ChatItem> phrases = MessageFormatter.format(inOutMessages);
-                    mDatabaseHolder.putMessagesAsync(phrases, new CompletionHandler<Void>() {
-                        @Override
-                        public void onComplete(Void data) {
-                            mDatabaseHolder.getChatItemsAsync(0, 20, new CompletionHandler<List<ChatItem>>() {
-                                @Override
-                                public void onComplete(List<ChatItem> data) {
-                                    if (null != activity) {
-                                        activity.addChatItems(data);
-                                        currentOffset = data.size();
-                                    }
-                                }
+                public void run() {
+                    try {
+                        List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(20);
+                        mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
+                        activity.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
+                        currentOffset = messages.size();
 
-                                @Override
-                                public void onError(Throwable e, String message, List<ChatItem> data) {
-                                    activity.removeDownloading();
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onError(Throwable e, String message, Void data) {
-                            activity.removeDownloading();
-                        }
-                    });
-                }
-
-                @Override
-                public void onError(PushServerErrorException e) {
-                    activity.removeDownloading();
+                    } catch (PushServerErrorException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }

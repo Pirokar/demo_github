@@ -15,6 +15,7 @@ import android.util.Log;
 public class PrefUtils {
     private static final String TAG = "PrefUtils ";
     public static final String TAG_CLIENT_ID = "TAG_CLIENT_ID";
+    public static final String TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID";
     public static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
     public static final String DEFAULT_TITLE_TAG = "DEFAULT_TITLE_TAG";
     public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
@@ -87,13 +88,21 @@ public class PrefUtils {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getInt(PrefUtils.class + PUSH_ICON, -1);
     }
 
+    public static void setNewClientId(Context ctx, String clientId) {
+        if (clientId == null) throw new IllegalStateException("clientId is null");
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + TAG_NEW_CLIENT_ID, clientId).commit();
+    }
+
+    public static String getNewClientID(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + TAG_NEW_CLIENT_ID, null);
+    }
     public static void setClientId(Context ctx, String clientId) {
         if (clientId == null) throw new IllegalStateException("clientId is null");
         PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + TAG_CLIENT_ID, clientId).commit();
     }
 
     public static String getClientID(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + TAG_CLIENT_ID, null);
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + TAG_CLIENT_ID, "");
     }
 
     public static void setDefaultChatTitle(Context ctx, @StringRes int defTitle) {

@@ -1,9 +1,12 @@
 package com.sequenia.threads.holders;
 
 import android.content.Intent;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +24,7 @@ import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.formatters.RussianFormatSymbols;
+import com.sequenia.threads.utils.UserPhrasesCash;
 import com.sequenia.threads.utils.ViewUtils;
 import com.sequenia.threads.views.CircularProgressButton;
 
@@ -47,6 +51,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private View mFilterView;
     private View mFilterViewSecond;
     private RelativeLayout phraseFrame;
+    private UserPhrasesCash cash = UserPhrasesCash.getInstance();
 
 
     public UserPhraseViewHolder(ViewGroup parent) {
@@ -140,16 +145,31 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         if (quote == null && fileDescription == null) {
             phraseFrame.getLayoutParams().width = RelativeLayout.LayoutParams.WRAP_CONTENT;
             timeStampParams.removeRule(ruleAlignParentRight);
-            if (phrase == null || phrase.length() < 35) {
+            int screenWidth = itemView.getResources().getDisplayMetrics().widthPixels;
+            int maxOneLineLength = 21;
+            if (screenWidth == 768) maxOneLineLength = 23;
+            if (screenWidth == 1080) maxOneLineLength = 24;
+            if (phrase == null || phrase.length() < maxOneLineLength) {
                 timeStampParams.removeRule(ruleAlignRight);
                 timeStampParams.addRule(ruleRightOf, mPhraseTextView.getId());
             } else {
-                timeStampParams.addRule(ruleAlignRight, mPhraseTextView.getId());
                 timeStampParams.removeRule(ruleRightOf);
-
-                int lastSize = phrase.length() % 36;
-                if (lastSize > 28) {
-                    mPhraseTextView.setText(phrase + "\n ");
+                timeStampParams.addRule(ruleAlignRight, mPhraseTextView.getId());
+                if (cash.contains(phrase)) {
+                    mPhraseTextView.setText(phrase+"\n");
+                }else {
+                    mPhraseTextView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Layout l = mPhraseTextView.getLayout();
+                            if (l == null) return;
+                            if (l.getPrimaryHorizontal(mPhraseTextView.getText().length())
+                                    > (mTimeStampTextView.getLeft())) {
+                                mPhraseTextView.setText(phrase + "\n");
+                                cash.add(phrase);
+                            }
+                        }
+                    });
                 }
             }
         } else {
@@ -160,41 +180,6 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                 mPhraseTextView.setText(phrase + "\n ");
             }
         }
-
-        /*if (mPhraseTextView.getLayout() != null) {
-            float density = itemView.getContext().getResources().getDisplayMetrics().density;
-            if (phrase != null && phrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(phrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-
-              *//*  *//**//**//**//*Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
-                LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);*//**//**//**//**//*
-            }
-        }*/
-          /*
-        } else {
-            mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    try {
-                        if (mPhraseTextView.getLayout() == null) {
-                            mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            return;
-                        }
-                        float density = itemView.getContext().getResources().getDisplayMetrics().density;
-                        if (phrase != null
-                                && phrase.length() > 1
-                                && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length())
-                                > (mTimeStampTextView.getLeft() - density * 40)) {
-                            mPhraseTextView.setText(phrase + "\n ");
-                           *//* Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
-                            LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);*//*
-                        }
-                        mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }*/
         if (mRightTextHeader.getText() == null || mRightTextHeader.getText().toString().equals("null")) {
             mRightTextHeader.setVisibility(View.GONE);
         } else {

@@ -37,59 +37,21 @@ public class MyPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressChanged(final Context context, String s) {
-        Log.i(TAG, "onDeviceAddressChanged " + s);
-        PushController.getInstance(context).sendMessageAsync(MessageFormatter
-                .getStartMessage(PrefUtils.getUserName(context), PrefUtils.getClientID(context), ""), true, new RequestCallback<String, PushServerErrorException>() {
+        Log.e(TAG, "onDeviceAddressChanged " + s);
+        new Thread(new Runnable() {
             @Override
-            public void onResult(String s) {
-                context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
-                PrefUtils.setClientIdWasSet(true, context);
+            public void run() {
+                try {
+                    if (PrefUtils.getNewClientID(context)==null)return;
+                    PushController.getInstance(context).setClientId(PrefUtils.getNewClientID(context));
+                    PushController.getInstance(context).sendMessage(MessageFormatter.getStartMessage(PrefUtils.getUserName(context),PrefUtils.getNewClientID(context),""),true);
+                    context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
+                } catch (PushServerErrorException e) {
+                    e.printStackTrace();
+                }
             }
-
-            @Override
-            public void onError(PushServerErrorException e) {
-
-            }
-        });
-       /* new PushIniter(context,PrefUtils.getClientID(context)).initIfNotInited(new Callback<Void, Exception>() {
-            @Override
-            public void onSuccess(Void result) {
-                PrefUtils.setClientIdWasSet(true, context);
-            }
-
-            @Override
-            public void onFail(Exception error) {
-
-            }*/
+        }).start();
     }
-
-       /* if (!PrefUtils.isClientIdSet(context) && PrefUtils.getClientID(context) != null) {
-            PushController.getInstance(context).setClientIdAsync(PrefUtils.getClientID(context), new RequestCallback<Void, PushServerErrorException>() {
-                @Override
-                public void onResult(Void aVoid) {
-                    Log.d(TAG, "client id was set");
-                    PushController.getInstance(context).sendMessageAsync(MessageFormatter.getStartMessage(PrefUtils.getUserName(context), PrefUtils.getClientID(context), ""), true, new RequestCallback<String, PushServerErrorException>() {
-                        @Override
-                        public void onResult(String string) {
-                            Log.e(TAG, "client id was set string = " + string);
-                            context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
-                            PrefUtils.setClientIdWasSet(true, context);
-                        }
-
-                        @Override
-                        public void onError(PushServerErrorException e) {
-
-                        }
-                    });
-                }
-
-                @Override
-                public void onError(PushServerErrorException e) {
-                    Log.e(TAG, "" + e);
-                }
-            });
-        }*/
-
 
     @Override
     public void onDeviceAddressProblems(Context context, String s) {

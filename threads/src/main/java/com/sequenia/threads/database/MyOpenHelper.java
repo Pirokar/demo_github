@@ -648,11 +648,11 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return cp;
     }
 
-    public String getLastOperatorAvatar(String id) {
+    String getLastOperatorAvatar(String id) {
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_AVATAR_PATH
                 + " from " + TABLE_MESSAGES
-                + " where " + COLUMN_CONSULT_ID + " =  " + id
-                + " order by " + COLUMN_TIMESTAMP + " desc", null);
+                + " where " + COLUMN_CONSULT_ID + " =  ? "
+                + " order by " + COLUMN_TIMESTAMP + " desc", new String[]{id});
         if (c.getCount() == 0) {
             c.close();
             return null;

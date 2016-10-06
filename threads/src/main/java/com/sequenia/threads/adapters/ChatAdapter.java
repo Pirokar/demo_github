@@ -768,25 +768,25 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void notifyAvatarChanged(String newUrl, String consultId) {
-        if (newUrl==null||consultId==null)return;
+        if (newUrl == null || consultId == null) return;
         List<ChatItem> list = getOriginalList();
         for (ChatItem ci : list) {
             if (ci instanceof ConsultPhrase) {
                 ConsultPhrase cp = (ConsultPhrase) ci;
-                if(!cp.getConsultId().equals(consultId))continue;
+                if (!cp.getConsultId().equals(consultId)) continue;
                 String oldUrl = cp.getAvatarPath();
-                if (!oldUrl.equals(newUrl)) {
+                if (oldUrl == null || !oldUrl.equals(newUrl)) {
                     cp.setAvatarPath(newUrl);
-                    if (!isInSearchMode)notifyItemChanged(list.lastIndexOf(cp));
+                    if (!isInSearchMode) notifyItemChanged(list.lastIndexOf(cp));
                 }
             }
-            if (ci instanceof ConsultConnectionMessage){
+            if (ci instanceof ConsultConnectionMessage) {
                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
-                if (!ccm.getConsultId().equals(consultId))continue;
+                if (!ccm.getConsultId().equals(consultId)) continue;
                 String oldUrl = ccm.getAvatarPath();
-                if (!oldUrl.equals(newUrl)) {
+                if  (oldUrl==null|| !oldUrl.equals(newUrl)) {
                     ccm.setAvatarPath(newUrl);
-                    if (!isInSearchMode)notifyItemChanged(list.lastIndexOf(ci));
+                    if (!isInSearchMode) notifyItemChanged(list.lastIndexOf(ci));
                 }
             }
         }

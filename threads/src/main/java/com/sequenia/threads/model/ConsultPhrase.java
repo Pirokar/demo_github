@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Created by yuri on 10.06.2016.
  */
-public class ConsultPhrase implements ChatPhrase, IsOnlyImage,ConsultChatPhrase {
+public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase {
     private String avatarPath;
     private final String consultId;
     private final boolean sex;
@@ -35,7 +35,7 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage,ConsultChatPhrase 
             , String avatarPath
             , boolean isRead
             , String status
-            ,boolean sex) {
+            , boolean sex) {
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.consultName = consultName;
@@ -172,8 +172,8 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage,ConsultChatPhrase 
     @Override
     public String toString() {
         return "ConsultPhrase{" +
-                ", timeStamp=" + timeStamp +
-                '}';
+                "timeStamp=" + timeStamp +
+                "phrase = " + phrase + "}";
     }
 
     public String getMessageId() {

@@ -24,17 +24,20 @@ public class PushIniter {
     private Context context;
     private String clientId;
 
-    public PushIniter(Context context, String clientId) {
+    PushIniter(Context context, String clientId) {
         this.context = context;
         this.clientId = clientId;
     }
 
-    public void initIfNotInited(final Callback<Void, Exception> handler) {
+    void initIfNotInited(final Callback<Void, Exception> handler) {
         try {
+            PrefUtils.setNewClientId(context, clientId);
+            Log.i(TAG, "initIfNotInited: PrefUtils.getClientID(context) = " + PrefUtils.getClientID(context) +
+                    "\nclientId = " + clientId
+                    + "\nPrefUtils.isClientIdSet = " + PrefUtils.isClientIdSet(context));
             if (!PrefUtils.isClientIdSet(context)
                     || !PrefUtils.getClientID(context).equals(clientId)) {
                 Log.i(TAG, "setting client id async");
-
                 PushController
                         .getInstance(context)
                         .setClientIdAsync(clientId, new RequestCallback<Void, PushServerErrorException>() {
@@ -73,5 +76,23 @@ public class PushIniter {
             }
             e.printStackTrace();
         }
+    }
+
+    public static void onAddressChanged(Context ctx) {
+        PushController.getInstance(ctx)
+                .sendMessageAsync(MessageFormatter
+                        .getStartMessage(PrefUtils.getUserName(ctx)
+                                , PrefUtils.getNewClientID(ctx)// TODO: 05.10.2016 implement new client name and email
+                                , ""), true, new RequestCallback<String, PushServerErrorException>() {
+                    @Override
+                    public void onResult(String s) {
+                        Log.i(TAG, "onResult: "+s);
+                    }
+
+                    @Override
+                    public void onError(PushServerErrorException e) {
+                        Log.i(TAG, "onError: "+e);
+                    }
+                });
     }
 }

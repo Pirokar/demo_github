@@ -1,9 +1,11 @@
 package com.sequenia.threads.holders;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -23,6 +25,7 @@ import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.picasso_url_connection_only.Callback;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
+import com.sequenia.threads.utils.ConsultPhrasesCash;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.formatters.RussianFormatSymbols;
 import com.sequenia.threads.utils.ViewUtils;
@@ -51,6 +54,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     private View mFilterView;
     private View mFilterViewSecond;
     private RelativeLayout mPhraseFrame;
+    private ConsultPhrasesCash cash = ConsultPhrasesCash.getInstance();
 
     public ConsultPhraseHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
@@ -183,67 +187,54 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
-        if (phrase == null) {
-            return;
-        }
+        if (phrase == null) return;
         RelativeLayout.LayoutParams timeStampParams = (RelativeLayout.LayoutParams) mTimeStampTextView.getLayoutParams();
         int ruleRightOf = RelativeLayout.RIGHT_OF;
         int ruleAlignRight = RelativeLayout.ALIGN_RIGHT;
         int ruleAlignParentRight = RelativeLayout.ALIGN_PARENT_RIGHT;
         if (quote == null && fileDescription == null) {
+            if (mTimeStampTextView.getVisibility() == View.INVISIBLE)
+                mTimeStampTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.getLayoutParams().width = RelativeLayout.LayoutParams.WRAP_CONTENT;
             timeStampParams.removeRule(ruleAlignParentRight);
-            if (phrase == null || phrase.length() < 35) {
+            if (phrase == null || phrase.length() < 28) {
                 timeStampParams.removeRule(ruleAlignRight);
                 timeStampParams.addRule(ruleRightOf, mPhraseTextView.getId());
             } else {
                 timeStampParams.addRule(ruleAlignRight, mPhraseTextView.getId());
                 timeStampParams.removeRule(ruleRightOf);
-
-                int lastSize = phrase.length() % 40;
-                if (lastSize > 28) {
-                    mPhraseTextView.setText(phrase + "\n ");
+                if (cash.contains(phrase)) {
+                    mPhraseTextView.setText(phrase + "\n");
+                } else {
+                    Layout l = mPhraseTextView.getLayout();
+                    if (l != null) {
+                        if (l.getPrimaryHorizontal(mPhraseTextView.length()) + 25 > mTimeStampTextView.getLeft()) {
+                            mPhraseTextView.setText(phrase + "\n");
+                            cash.add(phrase);
+                        }
+                    } else {
+                        mPhraseTextView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Layout l = mPhraseTextView.getLayout();
+                                if (l == null) return;
+                                if (l.getPrimaryHorizontal(mPhraseTextView.length()) + 25 > mTimeStampTextView.getLeft()) {
+                                    mPhraseTextView.setText(phrase + "\n");
+                                    cash.add(phrase);
+                                }
+                            }
+                        });
+                    }
                 }
             }
         } else {
             mPhraseTextView.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
-            timeStampParams.addRule(ruleAlignParentRight);
+            mTimeStampTextView.setVisibility(View.INVISIBLE);
             int lastSize = phrase.length() % 40;
             if (lastSize > 28) {
                 mPhraseTextView.setText(phrase + "\n ");
             }
         }
-     /*   if (mPhraseTextView.getLayout() != null) {
-            float density = itemView.getContext().getResources().getDisplayMetrics().density;
-            if (consultPhrase.length() > 1 && mPhraseTextView.getLayout().getPrimaryHorizontal(consultPhrase.length() - 1) > (mTimeStampTextView.getLeft() - density * 40)) {
-                mPhraseTextView.setText(consultPhrase + "\n ");
-                Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
-                LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
-            }
-        } else {
-            mPhraseTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    try {
-                        if (mPhraseTextView.getLayout() == null) {
-                            mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            return;
-                        }
-                        float density = itemView.getContext().getResources().getDisplayMetrics().density;
-                        if (consultPhrase != null
-                                && consultPhrase.length() > 1
-                                && mPhraseTextView.getLayout().getPrimaryHorizontal(mPhraseTextView.getText().length())
-                                > (mTimeStampTextView.getLeft() - density * 40)) {
-                            mPhraseTextView.setText(consultPhrase + "\n ");
-                            Intent i = new Intent(ChatAdapter.ACTION_CHANGED).putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
-                            LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(i);
-                        }
-                        mPhraseTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }*/
+
     }
 }

@@ -118,7 +118,7 @@ public class AnalyticsTracker {
     }
 
     public void setUserUploadedFile(long sizeKb) {
-        Log.i(TAG, "setUserUploadedFile: " + sizeKb);
+        Log.i(TAG, "setUserUploadedFile: " + sizeKb + "kb");
         tracker.send(eventBuilder.setCategory("file_loading").setAction(String.valueOf(sizeKb)).build());
         nullifyBuilder();
     }

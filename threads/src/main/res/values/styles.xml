@@ -128,7 +128,7 @@
         <item name="android:layout_marginLeft">@dimen/user_margin_left</item>
         <item name="android:layout_marginRight">@dimen/user_margin_right</item>
         <item name="android:layout_marginTop">@dimen/margin_quarter</item>
-        <item name="android:background">@drawable/bubble_blue</item>
+        <item name="android:background">@drawable/a_user_bubble</item>
         <item name="android:paddingRight">@dimen/margin_half</item>
     </style>
 
