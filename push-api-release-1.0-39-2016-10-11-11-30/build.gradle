@@ -1,5 +1,5 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('push-api-release-1.0-37-2016-09-05-16-28.aar'))
+artifacts.add("default", file('push-api-release-1.0-39-2016-10-11-11-30.aar'))
 task testClasses {
     doLast {
         println ''

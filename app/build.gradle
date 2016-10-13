@@ -23,8 +23,8 @@ android {
         applicationId "com.sequenia.appwithchat"
         minSdkVersion 17
         targetSdkVersion 24
-        versionCode 11
-        versionName "2.41_test"
+        versionCode 13
+        versionName "2.6_test"
     }
     buildTypes {
         release {

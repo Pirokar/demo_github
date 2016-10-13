@@ -1,6 +1,7 @@
 package com.sequenia.threads.holders;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +83,6 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             filter.setVisibility(View.INVISIBLE);
             filterSecond.setVisibility(View.INVISIBLE);
         }
-
         switch (sentState) {
             case STATE_WAS_READ:
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_all_white_18dp, 0);

@@ -26,6 +26,7 @@ import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.formatters.RussianFormatSymbols;
 import com.sequenia.threads.utils.UserPhrasesCash;
 import com.sequenia.threads.utils.ViewUtils;
+import com.sequenia.threads.views.CashedLayoutTextView;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
@@ -39,7 +40,7 @@ import java.util.Locale;
  */
 public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "UserPhraseViewHolder ";
-    private TextView mPhraseTextView;
+    private CashedLayoutTextView mPhraseTextView;
     private TableRow mRightTextRow;
     private TextView mRightTextDescr;
     private TextView mRightTextHeader;
@@ -56,7 +57,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
 
     public UserPhraseViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
-        mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
+        mPhraseTextView = (CashedLayoutTextView) itemView.findViewById(R.id.text);
         mRightTextRow = (TableRow) itemView.findViewById(R.id.right_text_row);
         mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);

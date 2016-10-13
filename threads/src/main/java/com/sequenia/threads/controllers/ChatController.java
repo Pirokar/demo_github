@@ -95,7 +95,7 @@ public class ChatController extends Fragment {
     private AnalyticsTracker mAnalyticsTracker;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
 
-
+//// TODO: 12.10.2016 fix photos and file read status 
     public static ChatController getInstance(final Context ctx, final String clientId) {
         if (instance == null) {
             instance = new ChatController(ctx);
@@ -358,6 +358,8 @@ public class ChatController extends Fragment {
                                     public void onResult(String string) {
                                         Log.e(TAG, "sending with files string = " + string);
                                         setMessageState(userPhrase, MessageState.STATE_SENT);
+                                        if (activity!=null)activity.setUserPhraseMessageId(userPhrase.getId(),string);
+                                        mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(),string);
                                     }
 
                                     @Override
@@ -547,7 +549,7 @@ public class ChatController extends Fragment {
     }
 
     public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
-        Log.d(TAG, "onSystemMessageFromServer:");
+        Log.i(TAG, "onSystemMessageFromServer:");
         switch (MessageMatcher.getType(bundle)) {
             case MessageMatcher.TYPE_OPERATOR_TYPING:
                 addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), System.currentTimeMillis(), mConsultWriter.getCurrentAvatarPath()), ctx);

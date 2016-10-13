@@ -319,6 +319,7 @@ public class ChatActivity extends BaseActivity
                     mWelcomeScreen.setVisibility(View.GONE);
                     mWelcomeScreen = null;
                 }
+                Log.e(TAG, "" + mQuote);// TODO: 13.10.2016
                 List<UpcomingUserMessage> input = Arrays.asList(new UpcomingUserMessage[]{new UpcomingUserMessage(
                         mFileDescription
                         , mQuote
@@ -855,7 +856,7 @@ public class ChatActivity extends BaseActivity
                 mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
                 mFileDescription = null;
                 if (isEmpty(cp.getPhraseText())) {
-                    mQuote = new Quote(headerText, cp.getPhraseText(), null, System.currentTimeMillis());
+                    mQuote = new Quote(headerText, cp.getPhraseText(), quoteFileDescription, System.currentTimeMillis());
                 }
                 if (cp instanceof UserPhrase) {
                     headerText = getString(R.string.I);
@@ -978,6 +979,7 @@ public class ChatActivity extends BaseActivity
     }
 
     public void setPhraseSentStatus(String id, MessageState messageState) {
+        Log.i(TAG, "setPhraseSentStatus: " + messageState);
         mChatAdapter.changeStateOfMessage(id, messageState);
     }
 
