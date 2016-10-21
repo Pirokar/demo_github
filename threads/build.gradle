@@ -39,5 +39,5 @@ dependencies {
     /*   compile 'com.google.android.gms:play-services-gcm:9.0.2'*/
     compile 'com.google.android.gms:play-services-analytics-impl:9.6.0'
     compile 'com.wefika:flowlayout:+'
-    compile project(':push-api-release-1.0-39-2016-10-11-11-30')
+    compile project(':push-api-release-1.0-41-2016-10-18-17-22')
 }

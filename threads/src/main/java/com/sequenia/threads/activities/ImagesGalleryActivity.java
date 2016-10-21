@@ -85,7 +85,6 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
 
     @Override
     public void onPageSelected(int position) {
-        Log.e(TAG, "onPageSelected");// TODO: 05.08.2016  
         mToolbar.setTitle(position+1 + " " + getString(R.string.from) + " " + collectionSize);
     }
 

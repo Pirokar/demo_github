@@ -41,7 +41,6 @@ public class SwipeListener implements View.OnTouchListener {
             final float xDistance = Math.abs(e1.getX() - e2.getX());
             final float yDistance = Math.abs(e1.getY() - e2.getY());
             if (xDistance < SWIPE_X_MIN_DISTANCE || yDistance > SWIPE_Y_MAX_DISTANCE) {
-                Log.e(TAG, "xDistance < SWIPE_X_MIN_DISTANCE || yDistance > SWIPE_Y_MAX_DISTANCE");// TODO: 25.08.2016  
                 return false;
             }
             velocityX = Math.abs(velocityX);
@@ -49,7 +48,6 @@ public class SwipeListener implements View.OnTouchListener {
             if (velocityX > SWIPE_MIN_VELOCITY && xDistance > SWIPE_MIN_DISTANCE) {
                 if (e1.getX() < e2.getX()) // left to  right
                     if (null != listener) {
-                        Log.e(TAG, "onRightSwipe");// TODO: 22.08.2016
                         listener.onRightSwipe();
                         return true;
                     }

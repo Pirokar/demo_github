@@ -319,7 +319,6 @@ public class ChatActivity extends BaseActivity
                     mWelcomeScreen.setVisibility(View.GONE);
                     mWelcomeScreen = null;
                 }
-                Log.e(TAG, "" + mQuote);// TODO: 13.10.2016
                 List<UpcomingUserMessage> input = Arrays.asList(new UpcomingUserMessage[]{new UpcomingUserMessage(
                         mFileDescription
                         , mQuote

@@ -103,7 +103,6 @@ public class NotificationService extends Service {
                 getNstyleNotif(notificationBuilder, items, new CompletionHandler<Notification>() {
                     @Override
                     public void onComplete(final Notification data) {
-                        Log.e(TAG, "oncomplete");// TODO: 15.09.2016  
                         Runnable r = new Runnable() {
                             @Override
                             public void run() {

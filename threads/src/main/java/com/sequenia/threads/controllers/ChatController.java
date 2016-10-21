@@ -95,7 +95,6 @@ public class ChatController extends Fragment {
     private AnalyticsTracker mAnalyticsTracker;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
 
-//// TODO: 12.10.2016 fix photos and file read status 
     public static ChatController getInstance(final Context ctx, final String clientId) {
         if (instance == null) {
             instance = new ChatController(ctx);

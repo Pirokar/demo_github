@@ -85,7 +85,6 @@ public class SwipeAwareView extends View {
             if (velocityX > SWIPE_MIN_VELOCITY && xDistance > SWIPE_MIN_DISTANCE) {
                 if (e1.getX() < e2.getX()) // left to  right
                     if (null != mSwipeListener) {
-                        Log.e(TAG, "onRightSwipe");// TODO: 22.08.2016  
                         mSwipeListener.onRightSwipe();
                         events.clear();
                         return true;
