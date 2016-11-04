@@ -47,7 +47,7 @@ public class QuickAnswerController extends Fragment {
     }
 
     public void onUserAnswer(UpcomingUserMessage upcomingUserMessage) {
-        Log.e(TAG, "onUserAnswer");
+        Log.i(TAG, "onUserAnswer");
         if (activity == null && context == null) {
             Log.e(TAG, "onUserAnswer context is null");
             return;
@@ -57,6 +57,5 @@ public class QuickAnswerController extends Fragment {
                 .getInstance(ctx, PrefUtils.getClientID(ctx));
         cc.onUserInput(upcomingUserMessage);
         cc.setAllMessagesWereRead();
-
     }
 }

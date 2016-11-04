@@ -183,9 +183,9 @@ public class CameraActivity extends BaseActivity {
                                             out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), matrix, true);
                                             raw.recycle();
                                         }
-                                        final File output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "THR-" + System.currentTimeMillis() + ".jpg");
+                                        final File output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "THR-" + System.currentTimeMillis() + ".jpg");
                                         try {
-                                            out.compress(Bitmap.CompressFormat.JPEG, 80, new FileOutputStream(output));
+                                            out.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(output));
                                             mCurrentPhoto = output.getAbsolutePath();
                                         } catch (FileNotFoundException e) {
                                             Log.e(TAG, "error while saving image to disk");
@@ -194,6 +194,7 @@ public class CameraActivity extends BaseActivity {
                                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                                             @Override
                                             public void run() {
+                                                Log.e(TAG, ""+output.getAbsolutePath());
                                                 setStateImagePreview("file://" + output.getAbsolutePath());
                                             }
                                         });
@@ -322,8 +323,8 @@ public class CameraActivity extends BaseActivity {
         List<String> supportedFocusModes = cp.getSupportedFocusModes();
         if (null != supportedFocusModes) {
             for (String mode : supportedFocusModes) {
-                if (mode.equals(Camera.Parameters.FOCUS_MODE_AUTO)) {
-                    cp.setFlashMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                if (mode.equals(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                    cp.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                 }
             }
         }

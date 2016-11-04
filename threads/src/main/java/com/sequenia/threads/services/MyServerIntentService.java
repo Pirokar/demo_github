@@ -22,7 +22,7 @@ public class MyServerIntentService extends PushServerIntentService {
 
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
-        Log.i(TAG, "saveMessages");
+        Log.i(TAG, "saveMessages " + list);
         if (list == null) return false;
         try {
             for (int i = 0; i < list.size(); i++) {

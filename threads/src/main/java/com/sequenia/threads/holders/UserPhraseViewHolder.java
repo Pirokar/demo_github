@@ -1,36 +1,35 @@
 package com.sequenia.threads.holders;
 
 import android.content.Intent;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.ChatAdapter;
+import com.sequenia.threads.formatters.RussianFormatSymbols;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.utils.FileUtils;
-import com.sequenia.threads.formatters.RussianFormatSymbols;
 import com.sequenia.threads.utils.UserPhrasesCash;
 import com.sequenia.threads.utils.ViewUtils;
 import com.sequenia.threads.views.CashedLayoutTextView;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -40,7 +39,7 @@ import java.util.Locale;
  */
 public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "UserPhraseViewHolder ";
-    private CashedLayoutTextView mPhraseTextView;
+    private TextView mPhraseTextView;
     private TableRow mRightTextRow;
     private TextView mRightTextDescr;
     private TextView mRightTextHeader;
@@ -51,13 +50,10 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat fileSdf;
     private View mFilterView;
     private View mFilterViewSecond;
-    private RelativeLayout phraseFrame;
-    private UserPhrasesCash cash = UserPhrasesCash.getInstance();
-
 
     public UserPhraseViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
-        mPhraseTextView = (CashedLayoutTextView) itemView.findViewById(R.id.text);
+        mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
         mRightTextRow = (TableRow) itemView.findViewById(R.id.right_text_row);
         mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
@@ -72,10 +68,9 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mRightTextHeader = (TextView) itemView.findViewById(R.id.to);
         mRightTextTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
-        phraseFrame = (RelativeLayout) itemView.findViewById(R.id.phrase_frame);
     }
 
-    public void onBind(final String phrase
+    public void onBind(String phrase
             , long timeStamp
             , MessageState sentState
             , Quote quote
@@ -88,7 +83,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(phrase);
+            mPhraseTextView.setText(Html.fromHtml(phrase + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
         }
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
@@ -139,26 +134,51 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                 mFileImageButton.setProgress(fileDescription.getDownloadProgress());
             }
         }
-        RelativeLayout.LayoutParams timeStampParams = (RelativeLayout.LayoutParams) mTimeStampTextView.getLayoutParams();
+
+      /*  RelativeLayout.LayoutParams timeStampParams = (RelativeLayout.LayoutParams) mTimeStampTextView.getLayoutParams();
+        RelativeLayout.LayoutParams textViewParams = (RelativeLayout.LayoutParams) mPhraseTextView.getLayoutParams();
         int ruleRightOf = RelativeLayout.RIGHT_OF;
         int ruleAlignRight = RelativeLayout.ALIGN_RIGHT;
-        int ruleAlignParentRight = RelativeLayout.ALIGN_PARENT_RIGHT;
+        int ruleAlignLeft = RelativeLayout.ALIGN_LEFT;
+        final int ruleAlignParentRight = RelativeLayout.ALIGN_PARENT_RIGHT;
+        int maxOneLineLength = 21;
+        boolean fullsize = false;
         if (quote == null && fileDescription == null) {
             phraseFrame.getLayoutParams().width = RelativeLayout.LayoutParams.WRAP_CONTENT;
+            textViewParams.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        } else {
+            fullsize = true;
+            phraseFrame.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
+            textViewParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            timeStampParams.removeRule(ruleRightOf);
+            timeStampParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        }
+        int lastLineLength = 0;
+        if (phrase != null) {
+            String[] lines = phrase.split("\r\n|\r|\n");
+            lastLineLength = lines[lines.length - 1].length();
             timeStampParams.removeRule(ruleAlignParentRight);
             int screenWidth = itemView.getResources().getDisplayMetrics().widthPixels;
-            int maxOneLineLength = 21;
-            if (screenWidth == 768) maxOneLineLength = 23;
-            if (screenWidth == 1080) maxOneLineLength = 24;
-            if (phrase == null || phrase.length() < maxOneLineLength) {
-                timeStampParams.removeRule(ruleAlignRight);
-                timeStampParams.addRule(ruleRightOf, mPhraseTextView.getId());
+            if (screenWidth == 768) maxOneLineLength = 19;
+            if (screenWidth == 1080) maxOneLineLength = 20;
+            if (TextUtils.isEmpty(phrase) || lastLineLength < maxOneLineLength) {
+                if (!fullsize) {
+                    timeStampParams.removeRule(ruleAlignRight);
+                    timeStampParams.addRule(ruleRightOf, mPhraseTextView.getId());
+                }else {
+                    timeStampParams.removeRule(ruleRightOf);
+                    timeStampParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                }
             } else {
                 timeStampParams.removeRule(ruleRightOf);
                 timeStampParams.addRule(ruleAlignRight, mPhraseTextView.getId());
-                if (cash.contains(phrase)) {
-                    mPhraseTextView.setText(phrase+"\n");
-                }else {
+                if (cash.contains(phrase) == UserPhrasesCash.FOUND_WITH_NEW_LINE) {
+                    mPhraseTextView.setText(phrase + "\n");
+
+                } else if (cash.contains(phrase) == UserPhrasesCash.FOUND_WITHOUT_NEW_LINE) {
+                    mPhraseTextView.setText(phrase);
+                } else {
+                    final String finalPhrase = phrase;
                     mPhraseTextView.post(new Runnable() {
                         @Override
                         public void run() {
@@ -166,22 +186,23 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                             if (l == null) return;
                             if (l.getPrimaryHorizontal(mPhraseTextView.getText().length())
                                     > (mTimeStampTextView.getLeft())) {
-                                mPhraseTextView.setText(phrase + "\n");
-                                cash.add(phrase);
+                                mPhraseTextView.setText(finalPhrase + "\n");
+                                cash.addWithNewLine(finalPhrase);
+                            } else {
+                                cash.addWithoutNewLine(finalPhrase);
                             }
                         }
                     });
+                    Intent i = new Intent(ChatAdapter.ACTION_CHANGED);
+                    i.putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
+                    LocalBroadcastManager
+                            .getInstance(itemView.getContext())
+                            .sendBroadcast(i);
                 }
             }
-        } else {
-            phraseFrame.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
-            timeStampParams.addRule(ruleAlignParentRight);
-            int lastSize = phrase.length() % 36;
-            if (lastSize > 28) {
-                mPhraseTextView.setText(phrase + "\n ");
-            }
-        }
-        if (mRightTextHeader.getText() == null || mRightTextHeader.getText().toString().equals("null")) {
+        }*/
+        if (mRightTextHeader.getText() == null ||
+                mRightTextHeader.getText().toString().equals("null")) {
             mRightTextHeader.setVisibility(View.GONE);
         } else {
             mRightTextHeader.setVisibility(View.VISIBLE);
@@ -200,10 +221,13 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.empty_space_24dp, 0);
                 break;
         }
+
         if (isChosen) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterViewSecond.setVisibility(View.VISIBLE);
-        } else {
+        } else
+
+        {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }

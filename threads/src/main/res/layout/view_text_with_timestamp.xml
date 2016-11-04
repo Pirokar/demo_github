@@ -1,17 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_toRightOf="@+id/imageView"
+    android:orientation="horizontal">
 
     <TextView
+        android:id="@+id/txtTimeFrom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="wetwqetwetwetwwetwetwet"
-        android:textColor="@android:color/black" />
+        android:layout_gravity="bottom|right"
+        android:padding="4dp"
+        android:text="Time"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="10dp"
+        android:textStyle="italic" />
 
     <TextView
+        android:id="@+id/txtMsgFrom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="10:19"
-        android:textColor="@android:color/black" />
-</RelativeLayout>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignTop="@+id/imageView"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/lblMsgFrom"
+        android:layout_toRightOf="@+id/imageView"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:text="textetxtetex  &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
+        android:textColor="@color/black"
+        android:textSize="16dp" />
+</FrameLayout>
+

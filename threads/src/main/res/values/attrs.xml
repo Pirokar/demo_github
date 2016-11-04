@@ -13,4 +13,8 @@
         <attr name="title_text" format="string"/>
         <attr name="subtitle_text" format="string"/>
     </declare-styleable>
+    <declare-styleable name="MyTextView">
+        <attr name="textSize" format="integer"/>
+        <attr name="textColor" format="color"/>
+    </declare-styleable>
 </resources>

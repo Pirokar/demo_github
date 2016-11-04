@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -72,7 +73,8 @@ public class MessageFormatter {
             if (fileDescription != null && mfmsFilePath != null) {
                 formattedMessage.put("attachments", attachmentsFromFileDescription(fileDescription, mfmsFilePath));
             }
-            return formattedMessage.toString().replaceAll("\\\\", "");
+            //   return formattedMessage.toString().replaceAll("\\\\", "");
+            return formattedMessage.toString();
         } catch (JSONException e) {
             Log.e(TAG, "error formatting json");
             e.printStackTrace();
@@ -91,6 +93,7 @@ public class MessageFormatter {
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
             JSONObject formattedMessage = new JSONObject();
             formattedMessage.put("text", upcomingUserMessage.getPhrase());
+
             if (quote != null) {
                 JSONArray quotes = new JSONArray();
                 formattedMessage.put("quotes", quotes);
@@ -107,7 +110,8 @@ public class MessageFormatter {
             if (fileDescription != null && mfmsFilePath != null) {
                 formattedMessage.put("attachments", attachmentsFromFileDescription(fileDescription, mfmsFilePath));
             }
-            return formattedMessage.toString().replaceAll("\\\\", "");
+            //   return formattedMessage.toString().replaceAll("\\\\", "");
+            return formattedMessage.toString();
         } catch (JSONException e) {
             Log.e(TAG, "error formatting json");
             e.printStackTrace();
@@ -260,7 +264,12 @@ public class MessageFormatter {
             quoteFileDescription = fileDescriptionFromJson(quotes.getJSONObject(0).getJSONArray("attachments"));
         }
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && quotes.getJSONObject(0).has("operator")) {
-            consultName = quotes.getJSONObject(0).getJSONObject("operator").getString("name");
+            try {
+                consultName = quotes.getJSONObject(0).getJSONObject("operator").getString("name");
+            } catch (JSONException e) {
+                Log.e(TAG, "" + quotes);
+                e.printStackTrace();
+            }
         }
         if (quoteString != null || quoteFileDescription != null) {
             quote = new Quote(consultName, quoteString, quoteFileDescription, System.currentTimeMillis());
@@ -384,29 +393,46 @@ public class MessageFormatter {
                         }
                     }
                 } catch (JSONException e) {
-                    String content = message.content;
-                    int end = !content.contains("отключил") ? content.indexOf("присоединил") : content.indexOf("отключил");
-                    String name = content.substring(content.indexOf(" "), end).trim();
-                    String type = content.contains("отключил") ? ConsultConnectionMessage.TYPE_LEFT : ConsultConnectionMessage.TYPE_JOINED;
-                    ConsultConnectionMessage m =
-                            new ConsultConnectionMessage(
-                                    content.substring(content.indexOf(" " + 1) == -1 ? 0 : content.indexOf(" " + 1))
-                                    , type
-                                    , name
-                                    , true
-                                    , message.sentAt.millis
-                                    , null
-                                    , null
-                                    , null
-                                    , UUID.randomUUID().toString());
-                    out.add(m);
+                    e.printStackTrace();
+                    Log.e(TAG, "error parsing message" + message);
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "error while formatting");
             Log.e(TAG, "" + messages);
             e.printStackTrace();
         }
         return out;
+    }
+
+    private static ConsultConnectionMessage getConsultConnectionMessageFromInout(InOutMessage message) throws JSONException {
+        JSONObject body = new JSONObject(message.content);
+        String type = body.getString("type").equalsIgnoreCase("OPERATOR_JOINED") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+        JSONObject operator = body.getJSONObject("operator");
+        long operatorId = operator.getLong("id");
+        String name = operator.isNull("name") ? null : operator.getString("name");
+        String status = operator.isNull("status") ? null : operator.getString("status");
+        boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
+        String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
+        String title = "";
+        try {
+            title = body.getString("text").split(" ")[0];
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ConsultConnectionMessage c =
+                new ConsultConnectionMessage(
+                        String.valueOf(operatorId)
+                        , type
+                        , name
+                        , gender
+                        , message.sentAt.millis
+                        , photourl
+                        , status
+                        , title
+                        , String.valueOf(message.messageId));
+        return c;
     }
 
     public static List<String> getReadIds(Bundle b) {
@@ -414,11 +440,25 @@ public class MessageFormatter {
         try {
             Object o = b.get("readInMessageIds");
             if (o instanceof ArrayList) {
-                ids.addAll((Collection<? extends String>) b.get("readInMessageIds"));
+                Log.i(TAG, "getReadIds o instanceof ArrayList");
+                ids.addAll((Collection<? extends String>) b.getStringArrayList("readInMessageIds"));
+
+                Log.e(TAG, "getReadIds = ");
             }
-            if (o instanceof String) ids.add((String) o);
+            if (o instanceof String) {
+                Log.i(TAG, "getReadIds o instanceof String " + o);
+                String contents = (String) o;
+                if (!contents.contains(",")){
+                    ids.add((String) o);
+                }else {
+                    String[] idsArray = contents.replaceAll("\\[", "").replaceAll("\\]","").split(",");
+                    ids.addAll(Arrays.asList(idsArray));
+                }
+
+            }
 
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return ids;
     }

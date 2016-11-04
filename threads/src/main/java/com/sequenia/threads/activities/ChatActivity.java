@@ -401,7 +401,7 @@ public class ChatActivity extends BaseActivity
         for (UpcomingUserMessage message : messages) {
             mChatController.onUserInput(message);
         }
-        if (null != mQuoteLayoutHolder && !isInMessageSearchMode)
+        if (null != mQuoteLayoutHolder)
             mQuoteLayoutHolder.setIsVisible(false);
         if (null != mChatAdapter) mChatAdapter.setAllMessagesRead();
         mBottomSheetView.setSelectedState(false);
@@ -749,8 +749,6 @@ public class ChatActivity extends BaseActivity
                 }
                 if (!TextUtils.isEmpty(consultTitle) && !consultTitle.equals("null")) {
                     mConsultTitle.setText(consultTitle);
-                } else {
-                    mConsultTitle.setText("");
                 }
                 a.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
@@ -970,6 +968,7 @@ public class ChatActivity extends BaseActivity
             if (mChatAdapter != null && mChosenPhrase != null) {
                 mChatAdapter.setItemChosen(false, mChosenPhrase);
             }
+            mQuote=null;
             return;
         }
         if (isNeedToClose) {
@@ -978,7 +977,6 @@ public class ChatActivity extends BaseActivity
     }
 
     public void setPhraseSentStatus(String id, MessageState messageState) {
-        Log.i(TAG, "setPhraseSentStatus: " + messageState);
         mChatAdapter.changeStateOfMessage(id, messageState);
     }
 

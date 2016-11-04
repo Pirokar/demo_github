@@ -465,13 +465,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void removeConsultSearching() {
         ArrayList<ChatItem> list = getOriginalList();
-        for (ChatItem cm : list) {
-            if (cm instanceof SearchingConsult) {
-                int i = list.indexOf(cm);
-                list.remove(cm);
-                if (!isInSearchMode) notifyItemRemoved(i);
+        for (Iterator<ChatItem> iter = list.iterator();
+             iter.hasNext(); ) {
+            ChatItem ch = iter.next();
+            if (ch instanceof SearchingConsult) {
+                iter.remove();
             }
         }
+
     }
 
     private void addItem(List<? extends ChatItem> listoInsert, boolean isBulk, boolean forceNotSearchMode) {
@@ -593,8 +594,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void changeStateOfMessage(String id, MessageState state) {
-        for (ChatItem cm : list) {
+        for (ChatItem cm : getOriginalList()) {
             if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(id))) {
+                Log.i(TAG, "changeStateOfMessage: changing read state");
                 ((UserPhrase) cm).setSentState(state);
             }
         }
@@ -784,7 +786,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
                 if (!ccm.getConsultId().equals(consultId)) continue;
                 String oldUrl = ccm.getAvatarPath();
-                if  (oldUrl==null|| !oldUrl.equals(newUrl)) {
+                if (oldUrl == null || !oldUrl.equals(newUrl)) {
                     ccm.setAvatarPath(newUrl);
                     if (!isInSearchMode) notifyItemChanged(list.lastIndexOf(ci));
                 }

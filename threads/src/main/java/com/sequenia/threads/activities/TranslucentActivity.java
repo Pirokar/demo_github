@@ -73,6 +73,7 @@ public class TranslucentActivity
             if (intent.getAction().equalsIgnoreCase(ACTION_CANCEL)) {
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
+                Log.i(TAG, "onReceive: ACTION_ANSWER");
                 controller.onUserAnswer(new UpcomingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER),false));
                 finish();
             }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
     android:id="@+id/itemview_root"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -11,12 +11,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TableLayout
+        <LinearLayout
+            style="@style/consultBubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/consultant_margin_left"
             android:layout_marginRight="@dimen/consultant_margin_right"
-            style="@style/consultBubble"
             android:background="@drawable/bubble_white"
             android:orientation="vertical"
             android:padding="@dimen/margin_half">
@@ -31,10 +31,10 @@
 
                 <com.sequenia.threads.views.CircularProgressButton
                     android:id="@+id/button_download"
+                    style="@style/CircularProgressButtonStyle"
                     app:completed_drawable="@drawable/ic_insert_file_blue_36dp"
                     app:in_progress_label="@drawable/ic_clear_blue_36dp"
-                    app:start_download_label="@drawable/ic_vertical_align_bottom_24dp"
-                    style="@style/CircularProgressButtonStyle" />
+                    app:start_download_label="@drawable/ic_vertical_align_bottom_24dp" />
 
                 <View
                     android:layout_width="1dp"
@@ -78,33 +78,71 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/phrase_frame">
-                <TextView
-                    android:id="@+id/text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:paddingBottom="@dimen/margin_quarter"
-
-                    android:text="Как-то так....eryeryeryeryeryeryeryeryeyr"
-                    android:textColor="@android:color/black" />
+            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/imageView"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:paddingLeft="@dimen/margin_half"
                     android:id="@+id/timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|right"
-                    android:drawablePadding="@dimen/margin_quarter"
-                    android:gravity="center_vertical"
-                    android:paddingBottom="@dimen/margin_quarter"
+                    android:layout_marginBottom="2dp"
+                    android:padding="4dp"
                     android:text="10:19"
-                    android:layout_alignBottom="@+id/text"
                     android:textColor="@android:color/black" />
 
-            </RelativeLayout>
-        </TableLayout>
+                <TextView
+                    android:id="@+id/text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_marginTop="0dp"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="10dp"
+
+                    android:paddingRight="10dp"
+                    android:paddingTop="5dp"
+                    android:text="textetxtetex &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
+            </FrameLayout>
+            <!-- <RelativeLayout
+                 android:id="@+id/phrase_frame"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_gravity="right"
+                 android:gravity="right">
+
+                 <TextView
+                     android:id="@+id/text"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:gravity="center_vertical"
+                     android:paddingBottom="@dimen/margin_quarter"
+
+                     android:text="Как-то так....eryeyeryeryeyr 235325235 32 "
+                     android:textColor="@android:color/black" />
+
+                 <TextView
+                     android:layout_alignRight="@+id/text"
+                     android:id="@+id/timestamp"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_alignBaseline="@+id/text"
+                     android:layout_below="@id/text"
+                     android:lines="1"
+
+                     android:minWidth="50dp"
+                     android:paddingLeft="@dimen/margin_half"
+                     android:text="10:19"
+                     android:textColor="@android:color/black" />
+
+             </RelativeLayout>-->
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/image"
@@ -117,7 +155,7 @@
 
     </LinearLayout>
 
-  <View
+    <View
         android:id="@+id/filter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -127,10 +165,10 @@
         android:visibility="visible" />
 
     <View
-        android:layout_below="@+id/phrase_content"
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_below="@+id/phrase_content"
         android:background="@color/blue_transparent"
         android:visibility="visible" />
 </RelativeLayout>

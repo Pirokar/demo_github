@@ -17,14 +17,14 @@ repositories {
 apply plugin: 'io.fabric'
 android {
     compileSdkVersion 24
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.sequenia.appwithchat"
         minSdkVersion 17
         targetSdkVersion 24
         versionCode 13
-        versionName "2.6_test"
+        versionName "2.7_test"
     }
     buildTypes {
         release {

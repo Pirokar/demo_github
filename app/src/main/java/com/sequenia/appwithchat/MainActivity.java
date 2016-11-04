@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.pushserver.android.PushController;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.ThreadsInitializer;
 import com.sequenia.threads.activities.ChatActivity;
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             if (grantedum == grantResults.length) {
-                ThreadsInitializer.getInstance(this).init();
+                PushController.getInstance(this).init();
                 if (requestCode == PERM_REQUEST_CODE_CLICK) {
                     onChatButtonClick(null);
                 }

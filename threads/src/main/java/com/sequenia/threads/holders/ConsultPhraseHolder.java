@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.text.format.Formatter;
@@ -15,7 +16,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
@@ -28,6 +31,7 @@ import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.ConsultPhrasesCash;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.formatters.RussianFormatSymbols;
+import com.sequenia.threads.utils.UserPhrasesCash;
 import com.sequenia.threads.utils.ViewUtils;
 import com.sequenia.threads.views.CircularProgressButton;
 
@@ -53,8 +57,6 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     public ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterViewSecond;
-    private RelativeLayout mPhraseFrame;
-    private ConsultPhrasesCash cash = ConsultPhrasesCash.getInstance();
 
     public ConsultPhraseHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
@@ -73,10 +75,9 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy");
         }
-        mPhraseFrame = (RelativeLayout) itemView.findViewById(R.id.phrase_frame);
     }
 
-    public void onBind(final String phrase
+    public void onBind(String phrase
             , String avatarPath
             , long timeStamp
             , boolean isAvatarVisible
@@ -91,7 +92,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(phrase);
+            mPhraseTextView.setText(Html.fromHtml(phrase + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
         }
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
@@ -189,53 +190,5 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
         if (phrase == null) return;
-        RelativeLayout.LayoutParams timeStampParams = (RelativeLayout.LayoutParams) mTimeStampTextView.getLayoutParams();
-        int ruleRightOf = RelativeLayout.RIGHT_OF;
-        int ruleAlignRight = RelativeLayout.ALIGN_RIGHT;
-        int ruleAlignParentRight = RelativeLayout.ALIGN_PARENT_RIGHT;
-        if (quote == null && fileDescription == null) {
-            if (mTimeStampTextView.getVisibility() == View.INVISIBLE)
-                mTimeStampTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.getLayoutParams().width = RelativeLayout.LayoutParams.WRAP_CONTENT;
-            timeStampParams.removeRule(ruleAlignParentRight);
-            if (phrase == null || phrase.length() < 28) {
-                timeStampParams.removeRule(ruleAlignRight);
-                timeStampParams.addRule(ruleRightOf, mPhraseTextView.getId());
-            } else {
-                timeStampParams.addRule(ruleAlignRight, mPhraseTextView.getId());
-                timeStampParams.removeRule(ruleRightOf);
-                if (cash.contains(phrase)) {
-                    mPhraseTextView.setText(phrase + "\n");
-                } else {
-                    Layout l = mPhraseTextView.getLayout();
-                    if (l != null) {
-                        if (l.getPrimaryHorizontal(mPhraseTextView.length()) + 25 > mTimeStampTextView.getLeft()) {
-                            mPhraseTextView.setText(phrase + "\n");
-                            cash.add(phrase);
-                        }
-                    } else {
-                        mPhraseTextView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Layout l = mPhraseTextView.getLayout();
-                                if (l == null) return;
-                                if (l.getPrimaryHorizontal(mPhraseTextView.length()) + 25 > mTimeStampTextView.getLeft()) {
-                                    mPhraseTextView.setText(phrase + "\n");
-                                    cash.add(phrase);
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        } else {
-            mPhraseTextView.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
-            mTimeStampTextView.setVisibility(View.INVISIBLE);
-            int lastSize = phrase.length() % 40;
-            if (lastSize > 28) {
-                mPhraseTextView.setText(phrase + "\n ");
-            }
-        }
-
     }
 }

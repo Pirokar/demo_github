@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Created by yuri on 19.09.2016.
  */
+@Deprecated
 public class PushIniter {
     private static final String TAG = "PushIniter ";
     private Context context;
