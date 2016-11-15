@@ -2,21 +2,28 @@ package com.sequenia.threads.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.ImagesAdapter;
 import com.sequenia.threads.database.DatabaseHolder;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.FileDescription;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 05.08.2016.
@@ -70,6 +77,19 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
                 finish();
             }
         });
+        ChatStyle style = PrefUtils.getIncomingStyle(this);
+       /* if (null != style) {
+            if (style.chatBackgroundColor != INVALID)     findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+            if (style.chatToolbarColorResId != INVALID)    mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+            if (style.chatToolbarColorResId != INVALID)    mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+            if (style.chatToolbarTextColorResId != INVALID)     ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
+            if (style.chatToolbarTextColorResId != INVALID)     mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
+        }*/
+    }
+
+    @Override
+    protected void setActivityStyle(ChatStyle style) {
+
     }
 
     public static Intent getStartIntent(Context context, FileDescription fileDescription) {

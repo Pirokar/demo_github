@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval"
-    android:thickness="1dp"
-    android:useLevel="false">
-    <solid android:color="@color/orange"  />
+    android:shape="ring"
+    android:thickness="2dp"
+    android:useLevel="false"
+
+    >
+    <gradient
+        android:centerY="0.50"
+        android:endColor="@color/orange"
+        android:startColor="@android:color/transparent"
+        android:centerColor="@color/orange"
+        android:type="sweep"/>
 
     <size
-        android:width="48dp"
-        android:height="48dp" />
+        android:width="30dp"
+        android:height="30dp" />
 </shape>
 

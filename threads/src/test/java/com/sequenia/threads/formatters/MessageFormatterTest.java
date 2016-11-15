@@ -124,8 +124,8 @@ public class MessageFormatterTest {
     public void testConsultConnectionMessageReaction() throws Exception {
       /*  ChatController chatController = new ChatController();
        *//* Intent i = ChatActivity.IntentBuilder.getBuilder(RuntimeEnvironment.application, "79139055742")
-                .setDefaultChatTitle("Контакт центр")
-                .setWelcomeScreenAttrs(R.drawable.logo,"Привет","Пока",R.color.white_dark,15f,10f)
+                .setChatTitleStyle("Контакт центр")
+                .setWelcomeScreenStyle(R.drawable.logo,"Привет","Пока",R.color.white_dark,15f,10f)
                 .setUserName("Кириллов Кирилл Кириллович")
                 .build();*//*
         ChatActivity chatActivity = mock(ChatActivity.class);

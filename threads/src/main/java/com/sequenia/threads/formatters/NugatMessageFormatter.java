@@ -209,7 +209,7 @@ public class NugatMessageFormatter {
         @Override
         public String toString() {
             return "PushContents{" +
-                    "titleText='" + titleText + '\'' +
+                    "welocmeScreenTitleText='" + titleText + '\'' +
                     ", contentText='" + contentText + '\'' +
                     ", hasAvatar=" + hasAvatar +
                     ", hasImage=" + hasImage +

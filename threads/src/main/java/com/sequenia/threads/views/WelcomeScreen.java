@@ -2,8 +2,12 @@ package com.sequenia.threads.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
@@ -42,7 +46,7 @@ public class WelcomeScreen extends LinearLayout {
         logoView.setImageResource(drawableResourse);
         float titleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_title, 12);
         float subtitleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_subtitle, 12);
-        int textColor = typedArray.getColor(R.styleable.WelcomeScreen_text_color, getResources().getColor(android.R.color.black));
+        @ColorInt int textColor = typedArray.getColor(R.styleable.WelcomeScreen_text_color, getResources().getColor(android.R.color.black));
         String titleText = typedArray.getString(R.styleable.WelcomeScreen_title_text);
         String subtitleText = typedArray.getString(R.styleable.WelcomeScreen_subtitle_text);
         title = (TextView) findViewById(R.id.welcome_title);
@@ -57,11 +61,15 @@ public class WelcomeScreen extends LinearLayout {
         if (TextUtils.isEmpty(subtitleText)) {
             subTitle.setVisibility(GONE);
         } else {
-            subTitle.setText(titleText);
+            subTitle.setText(subtitleText);
         }
         subTitle.setTextSize(subtitleSize);
         subTitle.setTextColor(textColor);
         typedArray.recycle();
+    }
+    public WelcomeScreen setBackground(@ColorRes int color){
+        setBackgroundColor(ContextCompat.getColor(getContext(),color));
+        return this;
     }
 
     public WelcomeScreen setTitletextSize(float size) {

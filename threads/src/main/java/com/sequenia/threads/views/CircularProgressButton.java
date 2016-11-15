@@ -63,10 +63,12 @@ public class CircularProgressButton extends FrameLayout {
         if (progress > 0 && progress < 100) {
             if (mcp.getVisibility() == INVISIBLE) mcp.setVisibility(VISIBLE);
             if (background.getVisibility() == INVISIBLE) background.setVisibility(VISIBLE);
-            if (!background.getBackground().equals(progressBackgroundDrawable)) {
+            /*if (background.getBackground() == null
+                    || !background.getBackground().equals(progressBackgroundDrawable)) {
                 background.setBackground(progressBackgroundDrawable);
-            }
-            if (!mImageLabel.getBackground().equals(inProgress)) {
+            }*/
+            if (mImageLabel.getBackground() == null
+                    || !mImageLabel.getBackground().equals(inProgress)) {
                 mImageLabel.setBackground(inProgress);
             }
             if (getBackground() != null) {
@@ -125,7 +127,7 @@ public class CircularProgressButton extends FrameLayout {
     }
 
     public void setOnClickListener(View.OnClickListener ocl) {
-        ViewUtils.setClickListener((ViewGroup) findViewById(R.id.frame),ocl);
+        ViewUtils.setClickListener((ViewGroup) findViewById(R.id.frame), ocl);
     }
 }
 

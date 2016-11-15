@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.os.EnvironmentCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -45,6 +47,10 @@ import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.FileUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -614,31 +620,31 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     public void updateProgress(FileDescription fileDescription) {
-        for (int i = 0; i < list.size(); i++) {
-            if (fileDescription.getFilePath() == null
-                    && (getItemViewType(i) == TYPE_IMAGE_FROM_USER || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT) && !isInSearchMode)
-                continue;
-            if (list.get(i) instanceof ConsultPhrase) {
-                ConsultPhrase cp = (ConsultPhrase) list.get(i);
-                if (cp.getFileDescription() != null && cp.getFileDescription().equals(fileDescription)) {
-                    cp.setFileDescription(fileDescription);
-                    if (!isInSearchMode) notifyItemChanged(list.indexOf(cp));
-                } else if (cp.getQuote() != null && cp.getQuote().getFileDescription() != null && cp.getQuote().getFileDescription().equals(fileDescription)) {
-                    cp.getQuote().setFileDescription(fileDescription);
-                    if (!isInSearchMode) notifyItemChanged(list.indexOf(cp));
-                }
-            } else if (list.get(i) instanceof UserPhrase) {
-                UserPhrase up = (UserPhrase) list.get(i);
+            for (int i = 0; i < list.size(); i++) {
+                if (fileDescription.getFilePath() == null
+                        && (getItemViewType(i) == TYPE_IMAGE_FROM_USER || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT) && !isInSearchMode)
+                    continue;
+                if (list.get(i) instanceof ConsultPhrase) {
+                    ConsultPhrase cp = (ConsultPhrase) list.get(i);
+                    if (cp.getFileDescription() != null && cp.getFileDescription().equals(fileDescription)) {
+                        cp.setFileDescription(fileDescription);
+                        if (!isInSearchMode) notifyItemChanged(list.indexOf(cp));
+                    } else if (cp.getQuote() != null && cp.getQuote().getFileDescription() != null && cp.getQuote().getFileDescription().equals(fileDescription)) {
+                        cp.getQuote().setFileDescription(fileDescription);
+                        if (!isInSearchMode) notifyItemChanged(list.indexOf(cp));
+                    }
+                } else if (list.get(i) instanceof UserPhrase) {
+                    UserPhrase up = (UserPhrase) list.get(i);
 
-                if (up.getFileDescription() != null && up.getFileDescription().equals(fileDescription)) {
-                    up.setFileDescription(fileDescription);
-                    if (!isInSearchMode) notifyItemChanged(list.indexOf(up));
-                } else if (up.getQuote() != null && up.getQuote().getFileDescription() != null && up.getQuote().getFileDescription().equals(fileDescription)) {
-                    up.getQuote().setFileDescription(fileDescription);
-                    if (!isInSearchMode) notifyItemChanged(list.indexOf(up));
+                    if (up.getFileDescription() != null && up.getFileDescription().equals(fileDescription)) {
+                        up.setFileDescription(fileDescription);
+                        if (!isInSearchMode) notifyItemChanged(list.indexOf(up));
+                    } else if (up.getQuote() != null && up.getQuote().getFileDescription() != null && up.getQuote().getFileDescription().equals(fileDescription)) {
+                        up.getQuote().setFileDescription(fileDescription);
+                        if (!isInSearchMode) notifyItemChanged(list.indexOf(up));
+                    }
                 }
             }
-        }
         if (backupList != null && backupList.size() > 0 && isInSearchMode)
             for (int i = 0; i < backupList.size(); i++) {
                 if (fileDescription.getFilePath() == null
@@ -699,7 +705,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void swapItems(List<ChatPhrase> list) {
-        Log.e(TAG, "swapItems");
+
         this.list.clear();
         addItem(list, true, true);
         notifyDataSetChanged();

@@ -3,6 +3,8 @@ package com.sequenia.threads.views;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.ColorRes;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +45,11 @@ public class ViewTypingInProgress extends LinearLayout {
         v1 = findViewById(R.id.first);
         v2 = findViewById(R.id.second);
         v3 = findViewById(R.id.third);
+    }
+    public void setColor(@ColorRes int color){
+        v1.setBackgroundColor(ContextCompat.getColor(getContext(),color));
+        v2.setBackgroundColor(ContextCompat.getColor(getContext(),color));
+        v3.setBackgroundColor(ContextCompat.getColor(getContext(),color));
     }
 
     private void animateViews(final View v1, final View v2, final View v3) {

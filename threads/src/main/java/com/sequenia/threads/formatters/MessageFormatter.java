@@ -394,6 +394,20 @@ public class MessageFormatter {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    if (e.getMessage() != null && e.getMessage().contains("annot be converted to")) {
+                        String cont = message.content;
+                        String type = cont.contains("присоедини")?ConsultConnectionMessage.TYPE_JOINED:ConsultConnectionMessage.TYPE_LEFT;
+                        String title =null;
+                        String name = null;
+                        try {
+                            name =  cont.split(" ")[1];
+                            title =    cont.split(" ")[0];
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                        ConsultConnectionMessage ccm = new ConsultConnectionMessage(name,type,name,cont.contains("лся")?true:false,message.sentAt.millis,null,null,title,String.valueOf(message.messageId));
+                        out.add(ccm);
+                    }
                     Log.e(TAG, "error parsing message" + message);
                 }
             }
@@ -438,20 +452,22 @@ public class MessageFormatter {
     public static List<String> getReadIds(Bundle b) {
         ArrayList<String> ids = new ArrayList<>();
         try {
+            if (b==null)return new ArrayList<>();
             Object o = b.get("readInMessageIds");
+
             if (o instanceof ArrayList) {
                 Log.i(TAG, "getReadIds o instanceof ArrayList");
-                ids.addAll((Collection<? extends String>) b.getStringArrayList("readInMessageIds"));
+                ids.addAll((Collection<? extends String>) b.get("readInMessageIds"));
 
                 Log.e(TAG, "getReadIds = ");
             }
             if (o instanceof String) {
                 Log.i(TAG, "getReadIds o instanceof String " + o);
                 String contents = (String) o;
-                if (!contents.contains(",")){
+                if (!contents.contains(",")) {
                     ids.add((String) o);
-                }else {
-                    String[] idsArray = contents.replaceAll("\\[", "").replaceAll("\\]","").split(",");
+                } else {
+                    String[] idsArray = contents.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
                     ids.addAll(Arrays.asList(idsArray));
                 }
 

@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.XmlRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,12 +16,11 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushController;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.ThreadsInitializer;
-import com.sequenia.threads.activities.ChatActivity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -77,22 +75,37 @@ public class MainActivity extends AppCompatActivity {
             requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK);
         } else if (mEditText.getText().length() > 5) {
             ThreadsInitializer.getInstance(this).init();
-            Intent i = ChatActivity
+            Intent i = ChatStyle
                     .IntentBuilder
-                    .getBuilder(this, mEditText.getText().toString())
-                    .setDefaultChatTitle(R.string.contact_center)
-                    .setUserName(nameTextView.getText().toString())
-                    .setPushStyle(R.drawable.img, R.string.default_title)
-                    .setGATrackerId("UA-48198875-10")
-                 /*   .setGATrackerId("UA-84778424-1")*/
-                    .setWelcomeScreenAttrs(R.drawable.logo
+                    .getBuilder(this, mEditText.getText().toString(),nameTextView.getText().toString())
+                  /*  .setChatTitleStyle(R.string.contact_center,
+                            android.R.color.holo_red_dark,
+                            android.R.color.holo_blue_bright,
+                            R.color.white_dark)
+                    .setChatBodyStyle(
+                            android.R.color.holo_green_dark,
+                            android.R.color.holo_blue_dark,
+                            android.R.color.holo_orange_dark,
+                            android.R.color.holo_orange_dark,
+                            android.R.color.holo_blue_bright,
+                            android.R.color.holo_green_dark,
+                            android.R.color.black,
+                            android.R.color.holo_purple,
+                            android.R.color.black,
+                            R.drawable.defaultprofile_360,
+                            R.drawable.no_image,
+                            R.style.FileDialogStyle)
+                    .setGoogleAnalyticsEnabled(false)
+                    .setPushNotificationStyle(R.drawable.img,R.string.default_title,android.R.color.transparent,android.R.color.black)*/
+                    .setWelcomeScreenStyle(R.drawable.random
                             , R.string.welcome
                             , R.string.subtitle_text
-                            , R.color.green_dark
+                            , android.R.color.black
                             , 18
                             , 14)
                     .build();
             startActivity(i);
+
         } else if (mEditText.getText().length() < 5) {
             Toast.makeText(this, "client id must have length more than 4 chars", Toast.LENGTH_SHORT).show();
         }

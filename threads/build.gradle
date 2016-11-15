@@ -2,12 +2,14 @@ apply plugin: 'com.android.library'
 
 
 android {
+
     compileSdkVersion 24
     buildToolsVersion '24.0.2'
 
     lintOptions {
         disable 'InvalidPackage'
     }
+
 
     defaultConfig {
         minSdkVersion 17
@@ -17,27 +19,30 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    afterEvaluate {
+       copy{
+           from buildDir.absolutePath+'/outputs/aar'
+           into 'H:\\AndroidProjects\\TTEst\\threads-debug'
+       }
     }
 
 }
 dependencies {
     testCompile fileTree(include: ['*.jar'], dir: 'libs')
-    /*  testCompile 'junit:junit:4.12'*/
     testCompile 'org.json:json:20140107'
     testCompile 'org.robolectric:robolectric:3.1.2'
     testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    /*   compile 'com.google.android.gms:play-services-gcm:9.0.2'*/
-    compile 'com.google.android.gms:play-services-analytics-impl:9.6.0'
-    compile 'com.wefika:flowlayout:+'
+    testCompile 'com.android.support:appcompat-v7:+'
+    compile "com.android.support:appcompat-v7:$appcompat_v7"
+    compile "com.android.support:recyclerview-v7:$recyclerview_v7"
+    compile "com.google.android.gms:play-services-analytics-impl:$play_services_analytics_impl"
     compile project(':push-api-release-1.0-41-2016-10-18-17-22')
 }
+
+

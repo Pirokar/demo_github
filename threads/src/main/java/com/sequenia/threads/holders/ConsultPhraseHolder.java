@@ -1,37 +1,32 @@
 package com.sequenia.threads.holders;
 
-import android.content.Intent;
-import android.graphics.Rect;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.text.format.Formatter;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
-import com.sequenia.threads.adapters.ChatAdapter;
+import com.sequenia.threads.formatters.RussianFormatSymbols;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.picasso_url_connection_only.Callback;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
-import com.sequenia.threads.utils.ConsultPhrasesCash;
 import com.sequenia.threads.utils.FileUtils;
-import com.sequenia.threads.formatters.RussianFormatSymbols;
-import com.sequenia.threads.utils.UserPhrasesCash;
+import com.sequenia.threads.utils.PrefUtils;
 import com.sequenia.threads.utils.ViewUtils;
 import com.sequenia.threads.views.CircularProgressButton;
 
@@ -39,11 +34,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.sequenia.threads.model.ChatStyle.INVALID;
+
 /**
  * Created by yuri on 08.06.2016.
  * layout/item_consultant_text_with_file.xml
  */
-public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
+public class ConsultPhraseHolder extends BaseHolder {
     private static final String TAG = "ConsultPhraseHolder ";
     private View fileRow;
     private CircularProgressButton mCircularProgressButton;
@@ -57,6 +54,10 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
     public ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterViewSecond;
+    private static ChatStyle style;
+    private ImageView mBubble;
+    @DrawableRes
+    private int defIcon;
 
     public ConsultPhraseHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
@@ -75,7 +76,26 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
         } else {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy");
         }
+        mBubble = (ImageView) itemView.findViewById(R.id.bubble);
+        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
+        if (style != null) {
+            if (style.incomingMessageBubbleColor != INVALID)
+                mBubble.setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+            if (style.incomingMessageTextColor != INVALID) {
+                setTextColorToViews(new TextView[]{mPhraseTextView,
+                        mTimeStampTextView,
+                        rightTextHeader,
+                        mRightTextDescr,
+                        rightTextFileStamp}, style.incomingMessageTextColor);
+            }
+            defIcon = style.defaultIncomingMessageAvatar == INVALID ? R.drawable.defaultprofile_360 : style.defaultIncomingMessageAvatar;
+            if (style.outgoingMessageBubbleColor != INVALID) {
+                setTintToProgressButton(mCircularProgressButton,style.outgoingMessageBubbleColor);
+                itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageBubbleColor));
+            }
+        }
     }
+
 
     public void onBind(String phrase
             , String avatarPath
@@ -92,7 +112,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(Html.fromHtml(phrase + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
+            mPhraseTextView.setText(Html.fromHtml(phrase + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
         }
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
@@ -142,6 +162,8 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             fileRow.setVisibility(View.GONE);
         }
         if (isAvatarVisible) {
+            mBubble.setPadding(0,0,0, ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16,itemView.getResources().getDisplayMetrics())));
+            mBubble.invalidate();
             mConsultAvatar.setVisibility(View.VISIBLE);
             mConsultAvatar.setOnClickListener(onAvatarClickListener);
             if (avatarPath != null) {
@@ -162,7 +184,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
                             public void onError() {
                                 Picasso
                                         .with(itemView.getContext())
-                                        .load(R.drawable.defaultprofile_360)
+                                        .load(defIcon)
                                         .fit()
                                         .noPlaceholder()
                                         .transform(new CircleTransform())
@@ -172,7 +194,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             } else {
                 Picasso
                         .with(itemView.getContext())
-                        .load(R.drawable.defaultprofile_360)
+                        .load(defIcon)
                         .fit()
                         .noPlaceholder()
                         .centerCrop()
@@ -181,6 +203,7 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
+            mBubble.setPadding(0,0,0,((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,itemView.getResources().getDisplayMetrics())));
         }
         if (isChosen) {
             mFilterView.setVisibility(View.VISIBLE);
@@ -189,6 +212,6 @@ public class ConsultPhraseHolder extends RecyclerView.ViewHolder {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
-        if (phrase == null) return;
+
     }
 }

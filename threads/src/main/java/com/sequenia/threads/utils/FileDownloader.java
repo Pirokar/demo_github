@@ -43,13 +43,9 @@ public abstract class FileDownloader {
                 urlConnection.setDoInput(true);
                 urlConnection.setConnectTimeout(15000);
                 urlConnection.setReadTimeout(15000);
-                //    urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0");
-                //    urlConnection.setRequestProperty("content-type", "binary/data");
-                //   urlConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                //  urlConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
-                File outputFile = null;
-                if (FileUtils.getExtensionFromPath(fileName) == FileUtils.PDF||FileUtils.getExtensionFromPath(fileName) == FileUtils.OTHER_DOC_FORMATS) {
-                    outputFile = new File(Environment.getExternalStorageDirectory(),fileName);
+                File outputFile;
+                if (FileUtils.getExtensionFromPath(fileName) == FileUtils.PDF || FileUtils.getExtensionFromPath(fileName) == FileUtils.OTHER_DOC_FORMATS) {
+                    outputFile = new File(Environment.getExternalStorageDirectory(), fileName);
                 } else {
                     outputFile = new File(ctx.getDir("files", Context.MODE_PRIVATE), fileName);
                 }
@@ -80,10 +76,15 @@ public abstract class FileDownloader {
                 fileOutputStream.flush();
                 fileOutputStream.close();
                 if (!isStopped) onComplete(outputFile);
+            } catch (Exception e) {
+                Log.e(TAG, "1 "+e);
+                e.printStackTrace();
+                onError(e);
             } finally {
                 urlConnection.disconnect();
             }
         } catch (Exception e) {
+            Log.e(TAG, "2 "+e);
             e.printStackTrace();
             onError(e);
         }

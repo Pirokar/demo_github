@@ -1,5 +1,6 @@
 package com.sequenia.threads.fragments;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -11,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.model.ChatStyle;
+import com.sequenia.threads.utils.PrefUtils;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 28.06.2016.

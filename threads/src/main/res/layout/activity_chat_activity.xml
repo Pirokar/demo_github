@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/chat_root"
     android:layout_height="match_parent"
     tools:context=".activities.ChatActivity">
 
@@ -42,16 +44,17 @@
             android:layout_height="match_parent"
             android:background="@color/white_dark"
             android:visibility="visible"
-            app:text_color="@color/blue"
+            app:text_color="@color/gray_text"
+            app:title_text="@string/welcome"
+            app:text_size_title="8sp"
+            app:subtitle_text="@string/subtitle_text"
+            app:text_size_subtitle="6sp"
+            app:image_src="@drawable/logo"
            />
-    <!-- <com.sequenia.threads.views.SwipeAwareView
-            android:id="@+id/swipe_view"
-            android:layout_width="160dp"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar" />-->
     </FrameLayout>
 
     <LinearLayout
+
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -107,7 +110,6 @@
                 android:minWidth="1dp"
                 android:padding="@dimen/margin_half"
                 android:scaleType="centerCrop"
-                android:src="@drawable/sample"
                 android:visibility="visible" />
 
             <ImageButton
@@ -133,7 +135,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@android:color/white">
+           >
 
             <EditText
                 android:id="@+id/input"

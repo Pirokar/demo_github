@@ -32,6 +32,7 @@ import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.activities.ConsultActivity;
 import com.sequenia.threads.activities.ImagesActivity;
 import com.sequenia.threads.database.DatabaseHolder;
+import com.sequenia.threads.formatters.MessageFormatter;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 import com.sequenia.threads.model.CompletionHandler;
@@ -51,7 +52,6 @@ import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.ConsultWriter;
 import com.sequenia.threads.utils.DualFilePoster;
 import com.sequenia.threads.utils.FileUtils;
-import com.sequenia.threads.formatters.MessageFormatter;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.utils.PrefUtils;
 
@@ -60,6 +60,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -71,8 +72,8 @@ import java.util.concurrent.Executors;
  * all work here, mvc, right?
  * don't forget to unbindActivity() in ChatActivity onDestroy, to avoid leaks;
  */
-public class ChatController extends Fragment {
-    static final Handler h = new Handler(Looper.getMainLooper());
+public class ChatController {
+    private static final Handler h = new Handler(Looper.getMainLooper());
     public static final String PROGRESS_BROADCAST = "com.sequenia.threads.controllers.PROGRESS_BROADCAST";
     public static final String DOWNLOADED_SUCCESSFULLY_BROADCAST = "com.sequenia.threads.controllers.DOWNLOADED_SUCCESSFULLY_BROADCAST";
     public static final String DOWNLOAD_ERROR_BROADCAST = "com.sequenia.threads.controllers.DOWNLOAD_ERROR_BROADCAST";
@@ -82,46 +83,47 @@ public class ChatController extends Fragment {
     public static final int CONSULT_STATE_DEFAULT = 3;
     public static final String TAG = "ChatController ";
     private ProgressReceiver mProgressReceiver;
-    ChatActivity activity;
+    private ChatActivity activity;
     boolean isSearchingConsult;
-    DatabaseHolder mDatabaseHolder;
-    Context appContext;
+    private DatabaseHolder mDatabaseHolder;
+    private Context appContext;
     private static ChatController instance;
     int currentOffset = 0;
     private int searchOffset = 0;
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
-    public static Picasso p;
     private ConsultWriter mConsultWriter;
     private AnalyticsTracker mAnalyticsTracker;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
     public static Executor networkExecutor = Executors.newSingleThreadExecutor();
 
-    public static ChatController getInstance(final Context ctx, final String clientId) {
+    public static ChatController getInstance(final Context ctx, String clientId) {
+        Log.i(TAG, "getInstance clientId = " + clientId);
         if (instance == null) {
             instance = new ChatController(ctx);
         }
-        if (clientId == null)
-            throw new IllegalStateException("clientId is null");// TODO: 04.11.2016
-
+        if (clientId == null) clientId = PrefUtils.getClientID(ctx);
         if (TextUtils.isEmpty(PrefUtils.getClientID(ctx))
                 || !clientId.equals(PrefUtils.getClientID(ctx))) {
             Log.i(TAG, "setting new client id");
             Log.i(TAG, "clientId = " + clientId);
             Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
+            final String finalClientId = clientId;
             instance.mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    PrefUtils.setNewClientId(ctx, clientId);
-                    if (PrefUtils.getDeviceAddress(ctx)==null){
+                    PrefUtils.setNewClientId(ctx, finalClientId);
+                    if (PrefUtils.getDeviceAddress(ctx) == null) {
                         Log.e(TAG, "device address was not set, returning");
                         return;
                     }
                     try {
-                        PushController.getInstance(ctx).setClientId(clientId);
-                        PrefUtils.setClientId(ctx, clientId);
+                        instance.cleanAllAndResetCount();
+
+                        PushController.getInstance(ctx).setClientId(finalClientId);
+                        PrefUtils.setClientId(ctx, finalClientId);
                         PushController.getInstance(ctx)
-                                .sendMessage(MessageFormatter.getStartMessage(PrefUtils.getUserName(ctx), clientId, ""), true);
+                                .sendMessage(MessageFormatter.getStartMessage(PrefUtils.getUserName(ctx), finalClientId, ""), true);
                         instance.cleanAllAndResetCount();
                         List<InOutMessage> messages = PushController.getInstance(instance.activity).getMessageHistory(20);
                         instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
@@ -138,26 +140,10 @@ public class ChatController extends Fragment {
         return instance;
     }
 
-    public ChatController() {
-
-    }
-
-    @Override
-
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
     public int getStateOfConsult() {
         if (mConsultWriter.istSearchingConsult()) return CONSULT_STATE_SEARCHING;
         else if (mConsultWriter.isConsultConnected()) return CONSULT_STATE_FOUND;
         else return CONSULT_STATE_DEFAULT;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     @SuppressLint("all")
@@ -225,6 +211,32 @@ public class ChatController extends Fragment {
                         });
                     }
                     currentOffset = items.size();
+                    mExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (activity != null) {
+                                try {
+                                    PushController.getInstance(activity).resetCounterSync();
+                                    List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
+                                    List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
+                                    if (!(dbItems.size() == serverItems.size() && dbItems.containsAll(serverItems))) {
+                                        Log.e(TAG, "not same!");
+                                        mDatabaseHolder.putMessagesSync(serverItems);
+                                        h.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+                                                if (null != activity) activity.addChatItems(items);
+                                            }
+                                        });
+                                    }
+                                } catch (PushServerErrorException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }
+                    });
                 }
             });
         }
@@ -268,12 +280,6 @@ public class ChatController extends Fragment {
         activity = null;
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return null;
-    }
-
     public void onUserInput(final UpcomingUserMessage upcomingUserMessage) {
         Log.i(TAG, "onUserInput: " + upcomingUserMessage);
         if (upcomingUserMessage == null) return;
@@ -300,10 +306,14 @@ public class ChatController extends Fragment {
             consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
         }
         Log.i(TAG, "sendMessage: " + userPhrase);
-        if (userPhrase.isWithPhrase()) mAnalyticsTracker.setTextWasSent();
-        if (userPhrase.isWithFile()) mAnalyticsTracker.setFileWasSent();
-        if (userPhrase.isWithQuote()) mAnalyticsTracker.setQuoteWasSent();
-        if (userPhrase.isCopy()) mAnalyticsTracker.setCopyWasSent();
+        Log.i(TAG, "sendMessage: " + mAnalyticsTracker);
+        if (userPhrase.isWithPhrase())
+            if (null != mAnalyticsTracker) mAnalyticsTracker.setTextWasSent();
+        if (userPhrase.isWithFile())
+            if (null != mAnalyticsTracker) mAnalyticsTracker.setFileWasSent();
+        if (userPhrase.isWithQuote())
+            if (null != mAnalyticsTracker) mAnalyticsTracker.setQuoteWasSent();
+        if (userPhrase.isCopy()) if (null != mAnalyticsTracker) mAnalyticsTracker.setCopyWasSent();
         try {
             if (!userPhrase.hasFile()) {
                 PushController
@@ -451,6 +461,7 @@ public class ChatController extends Fragment {
     }
 
     public void onFileClick(final FileDescription fileDescription) {
+        Log.i(TAG, "onFileClick " + fileDescription);
         if (activity != null) {
             if (fileDescription.getFilePath() == null) {
                 Intent i = new Intent(activity, DownloadService.class);
@@ -468,7 +479,7 @@ public class ChatController extends Fragment {
                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 try {
                     mAnalyticsTracker.setAttachmentWasOpened();
-                    startActivity(target);
+                    if (activity != null) activity.startActivity(target);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
                 }
@@ -553,11 +564,9 @@ public class ChatController extends Fragment {
                 List<String> list = MessageFormatter.getReadIds(bundle);
                 Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
                 for (String s : list) {
-                    if (activity != null){
-
+                    if (activity != null) {
                         activity.setPhraseSentStatus(s, MessageState.STATE_WAS_READ);
                     }
-
                     if (mDatabaseHolder != null)
                         mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
                 }
@@ -575,39 +584,28 @@ public class ChatController extends Fragment {
             @Override
             public void run() {
                 final int[] currentOffset = {activity.getCurrentItemsCount()};
-                final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
-                if (items.size() == 20) {
+                try {
+                    List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(currentOffset[0] + 20);
+                    mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
+                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                    currentOffset[0] += chatItems.size();
                     h.post(new Runnable() {
                         @Override
                         public void run() {
-                            callback.onSuccess(items);
+                            callback.onSuccess(chatItems);
                         }
                     });
 
-                } else {
-                    try {
-                        List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(currentOffset[0] + 20);
-                        mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
-                        currentOffset[0] += chatItems.size();
-                        h.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSuccess(chatItems);
-                            }
-                        });
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
-                        currentOffset[0] += chatItems.size();
-                        h.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSuccess(chatItems);
-                            }
-                        });
-                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                    currentOffset[0] += chatItems.size();
+                    h.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onSuccess(chatItems);
+                        }
+                    });
                 }
             }
         });
@@ -835,19 +833,21 @@ public class ChatController extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive:");
+            Log.i(TAG, "onReceive:");
             String action = intent.getAction();
             if (action == null) return;
             if (action.equals(PROGRESS_BROADCAST)) {
-                Log.d(TAG, "onReceive: PROGRESS_BROADCAST " + intent.getParcelableExtra(DownloadService.FD_TAG));
+                Log.i(TAG, "onReceive: PROGRESS_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 if (activity != null && fileDescription != null)
                     activity.updateProgress(fileDescription);
             } else if (action.equals(DOWNLOADED_SUCCESSFULLY_BROADCAST)) {
+                Log.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 if (activity != null && fileDescription != null)
                     activity.updateProgress(fileDescription);
             } else if (action.equals(DOWNLOAD_ERROR_BROADCAST)) {
+                Log.i(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 if (activity != null && fileDescription != null) {
                     Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);

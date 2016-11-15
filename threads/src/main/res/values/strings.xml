@@ -5,7 +5,7 @@
     <string name="searching_operator">Searching operator...</string>
     <string name="your_message">Your message...</string>
     <string name="no_connection">No internet connection</string>
-    <string name="no_connection_details">Turn on mobile data or use WI-FI to to resend message</string>
+    <string name="no_connection_details">Turn on mobile data or use WI-FI to resend message</string>
     <string name="close">Close</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
@@ -47,7 +47,7 @@
     <string name="error">Error happened while </string>
     <string name="from">from</string>
     <string name="in">in</string>
-    <string name="no_pdf_support">No application support this type of file</string>
+    <string name="no_pdf_support">No application supports this type of file</string>
     <string name="retreiving_history">Retrieving history</string>
     <string name="search_more">Search more</string>
     <string name="one_new_message">1 new message</string>
@@ -71,4 +71,7 @@
     <string name="touch_to_download">Touch to download</string>
     <string name="new_">new</string>
     <string name="answer">ANSWER</string>
+    <string name="welcome">Welcome</string>
+    <string name="subtitle_text">Send us your question and the first vacant operator will answer it</string>
+    <string name="check_connection">problems with internet connection</string>
 </resources>

@@ -5,8 +5,8 @@
     android:useLevel="false" >
 
     <size
-        android:width="18dp"
-        android:height="18dp" />
+        android:width="24dp"
+        android:height="24dp" />
 
     <gradient
         android:centerColor="#90ff9600"

@@ -5,8 +5,13 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,8 +27,12 @@ import android.widget.TextView;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.activities.TranslucentActivity;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
+import com.sequenia.threads.utils.PrefUtils;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 02.09.2016.
@@ -31,6 +40,7 @@ import com.sequenia.threads.utils.CircleTransform;
 public class QuickAnswerFragment extends DialogFragment {
     private EditText mEditText;
     private static final String TAG = "QuickAnswerFragment ";
+    private ChatStyle style;
 
     public static QuickAnswerFragment getInstance(
             String avatarPath,
@@ -48,6 +58,7 @@ public class QuickAnswerFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        style = PrefUtils.getIncomingStyle(getActivity());
         View v = inflater.inflate(R.layout.dialog_fast_answer, container, false);
         TextView consultNameTextView = (TextView) v.findViewById(R.id.consult_name);
         TextView textView = (TextView) v.findViewById(R.id.question);
@@ -93,7 +104,37 @@ public class QuickAnswerFragment extends DialogFragment {
                 dismiss();
             }
         });
+        if (style!=null){
+            if (style.chatBackgroundColor!=INVALID){
+                v.findViewById(R.id.layout_root).setBackgroundColor(getColorInt(style.chatBackgroundColor));
+            }
+            if (style.chatToolbarColorResId!=INVALID){
+                v.findViewById(R.id.header).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
+            }
+            if (style.chatToolbarTextColorResId!=INVALID){
+                consultNameTextView.setTextColor(getColorInt(style.chatToolbarTextColorResId));
+            }
+            if (style.incomingMessageTextColor!=INVALID){
+                ((TextView) v.findViewById(R.id.question)).setTextColor(getColorInt(style.incomingMessageTextColor));
+                ((TextView) v.findViewById(R.id.close_button)).setTextColor(getColorInt(style.incomingMessageTextColor));
+                mEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
+            }
+            if (style.chatMessageInputColor!=INVALID){
+                v.findViewById(R.id.answer_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
+            }
+            if (style.chatBodyIconsTint!=INVALID){
+                Drawable d =imageButton.getDrawable();
+                d.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+                imageButton.setImageDrawable(d);
+            }
+            if (style.chatMessageInputHintTextColor!=INVALID){
+                mEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
+            }
+        }
         return v;
+    }
+    private @ColorInt int  getColorInt(@ColorRes int colorResId){
+        return ContextCompat.getColor(getActivity(), colorResId);
     }
 
     @Override

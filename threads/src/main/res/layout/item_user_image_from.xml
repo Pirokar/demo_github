@@ -16,7 +16,7 @@
         android:layout_marginRight="@dimen/user_margin_right"
         android:layout_marginBottom="@dimen/margin_quarter"
         android:scaleType="fitCenter"
-        android:src="@drawable/sample_card" />
+        />
 
 
     <TextView

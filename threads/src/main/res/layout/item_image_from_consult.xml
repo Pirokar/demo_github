@@ -13,7 +13,7 @@
         android:minHeight="240dp"
         android:layout_marginTop="@dimen/margin_quarter"
         android:scaleType="fitCenter"
-        android:src="@drawable/sample_card" />
+        />
 
     <TextView
         android:id="@+id/timestamp"

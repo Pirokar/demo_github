@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -26,6 +25,7 @@ import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.activities.TranslucentActivity;
 import com.sequenia.threads.formatters.NugatMessageFormatter;
 import com.sequenia.threads.model.ChatItem;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
@@ -46,6 +46,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.sequenia.threads.model.ChatStyle.INVALID;
+
 /**
  * Created by yuri on 17.08.2016.
  */
@@ -61,6 +63,7 @@ public class NotificationService extends Service {
     private ArrayList<Runnable> unreadMessagesRunnables = new ArrayList<>();
     Handler h = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private ChatStyle style;
 
     public NotificationService() {
 
@@ -75,6 +78,7 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand");
+        if (style == null) style = PrefUtils.getIncomingStyle(this);
         if (mBroadcastReceiver == null) {
             mBroadcastReceiver = new myBroadcastReceiver();
             getApplicationContext().registerReceiver(mBroadcastReceiver, new IntentFilter(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
@@ -126,12 +130,13 @@ public class NotificationService extends Service {
             Intent i = new Intent(this, ChatActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pend = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-            if (PrefUtils.getPushIconResid(this) != -1) {
-                final int iconResId = PrefUtils.getPushIconResid(this);
+            if (style.defPushIconResid != INVALID) {
+                final int iconResId = style.defPushIconResid;
                 nc.setSmallIcon(iconResId);
             } else {
                 nc.setSmallIcon(R.drawable.empty);
             }
+
             nc.setContentIntent(pend);
             nc.setAutoCancel(true);
             h.postDelayed(new Runnable() {
@@ -198,35 +203,43 @@ public class NotificationService extends Service {
                     .transform(new CircleTransform())
                     .into(avatarTarget);
 
-            Target smallPicTarger = new TargetNoError() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    pushSmall.setImageViewBitmap(R.id.image_small, bitmap);
-                    pushBig.setImageViewBitmap(R.id.image_small, bitmap);
-                }
-            };
-            Picasso
-                    .with(this)
-                    .load(PrefUtils.getPushIconResid(this))
-                    .transform(new CircleTransform())
-                    .into(smallPicTarger);
+            if (style != null && style.defPushIconResid != INVALID) {
+                Target smallPicTarger = new TargetNoError() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {//round icon in corner
+                        pushSmall.setImageViewBitmap(R.id.image_small, bitmap);
+                        pushBig.setImageViewBitmap(R.id.image_small, bitmap);
+                    }
+                };
+                Picasso
+                        .with(this)
+                        .load(style.defPushIconResid)
+                        .transform(new CircleTransform())
+                        .into(smallPicTarger);
+            }
         } else {
-            if (PrefUtils.getPushIconResid(this) != -1) {
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), PrefUtils.getPushIconResid(this));
+            if (style != null && style.defPushIconResid != INVALID) {
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResid);
                 pushSmall.setImageViewBitmap(R.id.image, icon);
                 pushBig.setImageViewBitmap(R.id.image, icon);
-            } else {
-
             }
         }
-        if (PrefUtils.getPushTitle(this) != -1) {
-            builder.setContentTitle(getString(PrefUtils.getPushTitle(this)));
-            pushSmall.setTextViewText(R.id.title, getString(PrefUtils.getPushTitle(this)));
-            pushBig.setTextViewText(R.id.title, getString(PrefUtils.getPushTitle(this)));
+        if (style != null && style.defTitleResId != INVALID) {
+            builder.setContentTitle(getString(style.defTitleResId));
+            pushSmall.setTextViewText(R.id.title, getString(style.defTitleResId));
+            pushBig.setTextViewText(R.id.title, getString(style.defTitleResId));
         }
-
+        int color = style != null && style.pushBackgroundColorResId != INVALID ? style.pushBackgroundColorResId : android.R.color.white;
+        if (style != null && style.pushBackgroundColorResId != INVALID) {
+            pushSmall.setInt(R.id.root_small, "setBackgroundColor", getResources().getColor(color));
+            pushBig.setInt(R.id.root_big, "setBackgroundColor", getResources().getColor(color));
+        }
+        if (style != null && style.incomingMessageTextColor != INVALID) {
+            pushSmall.setInt(R.id.root_small, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
+            pushBig.setInt(R.id.root_big, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
+        }
         builder
-                .setColor(getResources().getColor(android.R.color.white))
+                .setColor(getResources().getColor(color))
                 .setSmallIcon(R.drawable.empty);
         pushSmall.setTextViewText(R.id.consult_name, pushText.second.consultName + ":");
         pushSmall.setTextViewText(R.id.text, pushText.second.contentDescription.trim());
@@ -252,8 +265,6 @@ public class NotificationService extends Service {
         }
         pushBig.setTextViewText(R.id.reply, getString(R.string.reply));
         builder.setContent(pushSmall);
-
-
         PendingIntent pend = getChatIntent();
         builder.setContentIntent(pend);
         builder.setAutoCancel(true);
@@ -278,7 +289,8 @@ public class NotificationService extends Service {
             , List<ChatItem> items, final CompletionHandler<Notification> completionHandler) {
         builder.setShowWhen(true);
         if (Build.VERSION.SDK_INT > 23) {
-            builder.setColor(getColor(android.R.color.holo_red_light));
+            if (style != null && style.nugatPushAccentColorResId != INVALID)
+                builder.setColor(getColor(style.nugatPushAccentColorResId));
         }
         final Tuple<Boolean, NugatMessageFormatter.PushContents> out
                 = new NugatMessageFormatter(this, unreadMessages, items).getFormattedMessageAsPushContents();
@@ -302,10 +314,8 @@ public class NotificationService extends Service {
             builder.setContentText(pushContents.contentText);
         }
         if (!pushContents.hasImage && !pushContents.hasPlainFiles) {
-            if (PrefUtils.getPushIconResid(this) != -1) {
-                builder.setSmallIcon(PrefUtils.getPushIconResid(this));
-            } else {
-                builder.setSmallIcon(R.drawable.sample);
+            if (style != null && style.defPushIconResid != INVALID) {
+                builder.setSmallIcon(style.defPushIconResid);
             }
             executor.execute(new Runnable() {
                 @Override
@@ -370,11 +380,8 @@ public class NotificationService extends Service {
 
     private PendingIntent getFastAnswerIntent() {
         Intent buttonIntent = new Intent(this, TranslucentActivity.class);
-        buttonIntent.setFlags(/*Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        |*/ Intent.FLAG_ACTIVITY_NEW_TASK
-                      /*  | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS*/
-                /*| Intent.FLAG_ACTIVITY_CLEAR_TASK*/);
+        buttonIntent.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent buttonPend = PendingIntent.getActivity(
                 this,
                 1

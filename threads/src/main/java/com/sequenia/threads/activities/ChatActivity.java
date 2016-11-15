@@ -12,18 +12,19 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +37,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,28 +48,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sequenia.threads.AnalyticsTracker;
-import com.sequenia.threads.fragments.FilePickerFragment;
-import com.sequenia.threads.fragments.QuickAnswerFragment;
-import com.sequenia.threads.model.ConsultConnectionMessage;
-import com.sequenia.threads.model.ConsultTyping;
-import com.sequenia.threads.utils.Callback;
-import com.sequenia.threads.utils.LateTextWatcher;
-import com.sequenia.threads.utils.MyFileFilter;
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.BottomGalleryAdapter;
 import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.controllers.ChatController;
+import com.sequenia.threads.fragments.FilePickerFragment;
 import com.sequenia.threads.fragments.NoConnectionDialogFragment;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
+import com.sequenia.threads.model.ChatStyle;
+import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
+import com.sequenia.threads.model.ConsultTyping;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
+import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.FileUtils;
+import com.sequenia.threads.utils.LateTextWatcher;
+import com.sequenia.threads.utils.MyFileFilter;
 import com.sequenia.threads.utils.PermissionChecker;
 import com.sequenia.threads.utils.PrefUtils;
 import com.sequenia.threads.views.BottomGallery;
@@ -76,12 +79,15 @@ import com.sequenia.threads.views.WelcomeScreen;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import static android.text.TextUtils.isEmpty;
+import static com.sequenia.threads.model.ChatStyle.INVALID;
+
 
 /**
  *
@@ -92,11 +98,7 @@ public class ChatActivity extends BaseActivity
         , ChatAdapter.AdapterInterface
         , FilePickerFragment.SelectedListener {
     private static final String TAG = "ChatActivity ";
-    private static final String TAG_DEF_TITLE = "TAG_DEF_TITLE";
-    private static final String TAG_USER_NAME = "TAG_USER_NAME";
-    private static final String TAG_PUSH_ICON_RESID = "TAG_PUSH_ICON_RESID";
-    private static final String TAG_PUSH_TITLE = "TAG_PUSH_TITLE";
-    private static final String TAG_GA_RESID = "TAG_GA_RESID";
+    public static final String TAG_GAENABLED = "TAG_GAENABLED";
     private ChatController mChatController;
     private WelcomeScreen mWelcomeScreen;
     private EditText mInputEditText;
@@ -130,49 +132,41 @@ public class ChatActivity extends BaseActivity
     private boolean isInMessageSearchMode;
     private boolean searchInFiles;
     private boolean isResumed;
+    private ChatStyle style;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_activity);
         getIncomingSettings(getIntent());
+        if (style.chatStatusBarColorResId != INVALID && Build.VERSION.SDK_INT > 20) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+        }
+        setContentView(R.layout.activity_chat_activity);
         initViews();
         initToolbar();
         initController();
-
+        setActivityStyle(PrefUtils.getIncomingStyle(this));
     }
 
     private void getIncomingSettings(Intent intent) {
-        if (intent.getStringExtra(TAG) == null && PrefUtils.getClientID(this) == null)
+        if (intent.getStringExtra("clientId") == null && PrefUtils.getClientID(this).equals(""))
             throw new IllegalStateException("you must provide valid client id," +
                     "\r\n it is now null or it'ts length < 5");
-        if (intent.getIntExtra(TAG_DEF_TITLE, -1) != -1) {
-            PrefUtils.setDefaultChatTitle(this, getIntent().getIntExtra(TAG_DEF_TITLE, -1));
+        if (intent.getBooleanExtra("style", false)) {
+            ChatStyle style = ChatStyle.styleFromIntent(intent);
+            PrefUtils.setIncomingStyle(this, style);
         }
-        if (intent.getStringExtra(TAG_USER_NAME) != null) {
-            PrefUtils.setUserName(this, intent.getStringExtra(TAG_USER_NAME));
-        }
-        if (intent.getBundleExtra("bundle") != null) {
-            PrefUtils.setIncomingStyle(this, intent.getBundleExtra("bundle"));
-        }
-        if (intent.getIntExtra(TAG_PUSH_ICON_RESID, -1) != -1) {
-            PrefUtils.setPushIconResid(this, intent.getIntExtra(TAG_PUSH_ICON_RESID, -1));
-        }
-        if (intent.getIntExtra(TAG_PUSH_TITLE, -1) != -1) {
-            PrefUtils.setPushTitle(this, intent.getIntExtra(TAG_PUSH_TITLE, -1));
-        }
-        if (intent.getStringExtra(TAG_GA_RESID) != null) {
-            PrefUtils.setGaTrackerId(this, intent.getStringExtra(TAG_GA_RESID));
-        }
+        if (intent.getStringExtra("userName") != null)
+            PrefUtils.setUserName(this, intent.getStringExtra("userName"));
+        style = PrefUtils.getIncomingStyle(this);
+
     }
 
     private void initController() {
-        if (null != getFragmentManager().findFragmentByTag(ChatController.TAG)) {//mb, someday, we will support orientation change
-            mChatController = (ChatController) getFragmentManager().findFragmentByTag(ChatController.TAG);
-        } else {
-            mChatController = ChatController.getInstance(this, getIntent().getStringExtra(TAG));
-            getFragmentManager().beginTransaction().add(mChatController, ChatController.TAG).commit();
-        }
+        mChatController = ChatController.getInstance(this, getIntent().getStringExtra("clientId"));
         mChatController.bindActivity(this);
         if (mChatController.isNeedToShowWelcome()) mWelcomeScreen.setVisibility(View.VISIBLE);
         mChatActivityReceiver = new ChatActivityReceiver();
@@ -198,23 +192,15 @@ public class ChatActivity extends BaseActivity
     }
 
     private void initToolbar() {
-        Toolbar t = (Toolbar) findViewById(R.id.toolbar);
-        t.setTitle("");
-        setSupportActionBar(t);
-        t.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
-        t.showOverflowMenu();
-        Drawable overflowDrawable = t.getOverflowIcon();
-        try {
-            overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
-        } catch (Resources.NotFoundException e) {
-            e.printStackTrace();
-        }
-
+        mToolbar.showOverflowMenu();
     }
 
     @Override
@@ -262,13 +248,7 @@ public class ChatActivity extends BaseActivity
                 openBottomSheetAndGallery();
             }
         });
-        Bundle b = PrefUtils.getIncomingStyle(this);
         mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
-        mWelcomeScreen.setLogo(b.getInt("logoResId"));
-        mWelcomeScreen.setTextColor(b.getInt("textColorResId"));
-        mWelcomeScreen.setText(getString(b.getInt("titleText")), getString(b.getInt("contentText")));
-        mWelcomeScreen.setTitletextSize(b.getFloat("titleSize"));
-        mWelcomeScreen.setSubtitleSize(b.getFloat("subtitleSize"));
         mSearchMoreButton = (Button) findViewById(R.id.search_more);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange);
         mConsultNameView = (TextView) findViewById(R.id.consult_name);
@@ -393,10 +373,89 @@ public class ChatActivity extends BaseActivity
                 }
             }
         });
+
     }
 
+    @Override
+    protected void setActivityStyle(ChatStyle style) {
+        if (style != null) {
+            if (style.chatBackgroundColor != INVALID)
+                findViewById(R.id.chat_root).setBackgroundColor(getColorInt(style.chatBackgroundColor));
+            if (style.chatMessageInputColor != INVALID) {
+                findViewById(R.id.input_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
+                findViewById(R.id.input).setBackgroundColor(getColorInt(style.chatMessageInputColor));
+                mBottomSheetView.setBackgroundColor(getColorInt(style.chatMessageInputColor));
+                mCopyControls.setBackgroundColor(getColorInt(style.chatMessageInputColor));
+                mBottomGallery.setBackgroundColor(getColorInt(style.chatMessageInputColor));
+                findViewById(R.id.bottom_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
+            }
+            if (style.chatToolbarTextColorResId != INVALID) {
+                mSearchMessageEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
+                mToolbar.getOverflowIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+                mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+            }
+            if (style.chatMessageInputHintTextColor != INVALID) {
+                mInputEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
+                mSearchMessageEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
+
+            }
+            if (style.incomingMessageTextColor != INVALID) {
+                mInputEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
+            }
+            if (style.chatBodyIconsTint != INVALID) {
+                @IdRes int views[] = {
+                        R.id.content_copy
+                        , R.id.reply
+                        , R.id.send_message
+                        , R.id.add_attachment
+                        , R.id.quote_clear
+                        , R.id.quote_clear,};
+                for (@IdRes int i : views) {
+                    ImageView iv = (ImageView) findViewById(i);
+                    setTint(iv, style.chatBodyIconsTint);
+                }
+                mBottomSheetView.setButtonsTint(style.chatBodyIconsTint);
+            }
+            if (style.welcomeScreenLogoResId != INVALID)
+                mWelcomeScreen.setLogo(style.welcomeScreenLogoResId);
+            if (style.welcomeScreenTextColorResId != INVALID)
+                mWelcomeScreen.setTextColor(style.welcomeScreenTextColorResId);
+            if (style.welcomeScreenTitleTextResId != INVALID)
+                mWelcomeScreen.setText(getString(style.welcomeScreenTitleTextResId), getString(style.welcomeScreenSubtitleTextResId));
+            if (style.titleSizeInSp != INVALID)
+                mWelcomeScreen.setTitletextSize(style.titleSizeInSp);
+            if (style.subtitleSizeInSp != INVALID)
+                mWelcomeScreen.setSubtitleSize(style.subtitleSizeInSp);
+            if (style.chatBackgroundColor != INVALID)
+                mWelcomeScreen.setBackground(style.chatBackgroundColor);
+
+        }
+        Drawable overflowDrawable = mToolbar.getOverflowIcon();
+        if (style != null) {
+            if (style.chatToolbarColorResId != INVALID) {
+                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+            }
+            if (style.chatToolbarTextColorResId != INVALID) {
+                mConsultTitle.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
+                mConsultNameView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
+            }
+
+        }
+
+        try {
+            if (style != null && style.chatToolbarTextColorResId != INVALID) {
+                overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+            } else {
+                overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
+            }
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
-        Log.e(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
+        Log.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) return;
         for (UpcomingUserMessage message : messages) {
             mChatController.onUserInput(message);
@@ -699,7 +758,11 @@ public class ChatActivity extends BaseActivity
                     mConsultNameView.setVisibility(View.VISIBLE);
                     mSearchMessageEditText.setVisibility(View.GONE);
                     mSearchMessageEditText.setText("");
-                    mConsultNameView.setText(getString(PrefUtils.getDefaultChatTitle(ctx)));
+                    if (style != null && style.chatTitleTextResId!=INVALID) {
+                        mConsultNameView.setText(style.chatTitleTextResId);
+                    }else {
+                        mConsultNameView.setText(getString(R.string.contact_center));
+                    }
                 }
                 connectedConsultId = String.valueOf(-1);
             }
@@ -812,6 +875,10 @@ public class ChatActivity extends BaseActivity
             Toast.makeText(this, R.string.error_no_file, Toast.LENGTH_SHORT).show();
             mChatAdapter.onDownloadError(fileDescription);
         }
+        if (t instanceof UnknownHostException) {
+            Toast.makeText(this, R.string.check_connection, Toast.LENGTH_SHORT).show();
+            mChatAdapter.onDownloadError(fileDescription);
+        }
     }
 
     @Override
@@ -821,8 +888,17 @@ public class ChatActivity extends BaseActivity
             return;
         }
         unChooseItem(cp);
-        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
-        mToolbar.setBackgroundColor(getResources().getColor(android.R.color.white));
+        if (style != null && style.chatBodyIconsTint != INVALID) {
+            Drawable d = getResources().getDrawable(R.drawable.ic_arrow_back_blue_24dp);
+            d.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+            mToolbar.setNavigationIcon(d);
+            mToolbar.getOverflowIcon().setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+        } else mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
+        if (style != null && style.chatMessageInputColor != INVALID) {
+            mToolbar.setBackgroundColor(getColorInt(style.chatMessageInputColor));
+        } else {
+            mToolbar.setBackgroundColor(getResources().getColor(android.R.color.white));
+        }
         mCopyControls.setVisibility(View.VISIBLE);
         mConsultNameView.setVisibility(View.GONE);
         mConsultTitle.setVisibility(View.GONE);
@@ -892,8 +968,21 @@ public class ChatActivity extends BaseActivity
 
     private void hideCopyControls() {
         setTitleStateCurrentOperatorConnected();
-        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        mToolbar.setBackgroundColor(getResources().getColor(R.color.green_light));
+        if (style != null && style.chatToolbarTextColorResId != INVALID) {
+            Drawable d = getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp);
+            d.setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            mToolbar.setNavigationIcon(d);
+            mToolbar.getOverflowIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+        } else {
+            mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        }
+        if (style != null && style.chatToolbarColorResId != INVALID) {
+            mToolbar.setBackgroundColor(getColorInt(style.chatToolbarColorResId));
+        } else {
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.green_light));
+        }
+
+
         mCopyControls.setVisibility(View.GONE);
         if (!isInMessageSearchMode) mConsultNameView.setVisibility(View.VISIBLE);
         if (mChatController != null && mChatController.isConsultFound() && !isInMessageSearchMode) {
@@ -908,7 +997,17 @@ public class ChatActivity extends BaseActivity
     @Override
     public void onBackPressed() {
         boolean isNeedToClose = true;
-
+        if (mBottomSheetView.getVisibility() == View.VISIBLE && mBottomGallery.getVisibility() == View.VISIBLE) {
+            mBottomSheetView.setVisibility(View.GONE);
+            findViewById(R.id.input_layout).setVisibility(View.VISIBLE);
+            onHideClick();
+            return;
+        }
+        if (mBottomSheetView.getVisibility() == View.VISIBLE) {
+            mBottomSheetView.setVisibility(View.GONE);
+            findViewById(R.id.input_layout).setVisibility(View.VISIBLE);
+            return;
+        }
         if (mCopyControls.getVisibility() == View.VISIBLE
                 && mSearchMessageEditText.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
@@ -968,7 +1067,7 @@ public class ChatActivity extends BaseActivity
             if (mChatAdapter != null && mChosenPhrase != null) {
                 mChatAdapter.setItemChosen(false, mChosenPhrase);
             }
-            mQuote=null;
+            mQuote = null;
             return;
         }
         if (isNeedToClose) {
@@ -1100,6 +1199,7 @@ public class ChatActivity extends BaseActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         if (item.getItemId() == R.id.files_and_media) {
             if (isInMessageSearchMode) mChatAdapter.undoClear();
             startActivity(FilesActivity.getStartIntetent(this));
@@ -1110,6 +1210,11 @@ public class ChatActivity extends BaseActivity
             return true;
 
         } else if (item.getItemId() == R.id.search) {
+            if (mWelcomeScreen != null) {
+                mWelcomeScreen.setVisibility(View.GONE);
+                ((ViewGroup) findViewById(android.R.id.content)).removeView(mWelcomeScreen);
+                mWelcomeScreen = null;
+            }
             AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setTextSearchWasOpened();
             search(false);
         }
@@ -1226,92 +1331,9 @@ public class ChatActivity extends BaseActivity
         }
     }
 
-    public static class IntentBuilder {
-        private Intent i;
-        static IntentBuilder builder;
-        private Context ctx;
-
-        private IntentBuilder() {
-        }
-
-        public static IntentBuilder getBuilder(Context ctx, String clientId) {
-            builder = new IntentBuilder();
-            builder.i = new Intent(ctx, ChatActivity.class);
-            builder.i.putExtra(TAG, clientId);
-            builder.ctx = ctx;
-            return builder;
-        }
-
-        public IntentBuilder setDefaultChatTitle(@StringRes int resId) {
-            builder.i.putExtra(TAG_DEF_TITLE, resId);
-            return builder;
-        }
-
-        public IntentBuilder setUserName(String clientName) {
-            if (clientName == null) throw new IllegalArgumentException("null");
-            builder.i.putExtra(TAG_USER_NAME, clientName);
-            return builder;
-        }
-
-        public IntentBuilder setPushStyle(@DrawableRes int defIconResid, @StringRes int DefTitleResId) {
-            builder.i.putExtra(TAG_PUSH_ICON_RESID, defIconResid);
-            builder.i.putExtra(TAG_PUSH_TITLE, DefTitleResId);
-            return builder;
-        }
-
-        public IntentBuilder setGATrackerId(String GATrackerId) {
-            builder.i.putExtra(TAG_GA_RESID, GATrackerId);
-            return builder;
-        }
-
-        public IntentBuilder setWelcomeScreenAttrs(
-                @DrawableRes int logoResId
-                , @StringRes int titleText
-                , @StringRes int subtitleText
-                , @ColorRes int textColorResId
-                , float titleSize
-                , float subtitleSize) {
-            Bundle b = new Bundle();
-            i.putExtra("bundle", b);
-            b.putInt("logoResId", logoResId);
-            b.putInt("textColorResId", textColorResId);
-            b.putInt("titleText", titleText);
-            b.putInt("contentText", subtitleText);
-            b.putFloat("titleSize", titleSize);
-            b.putFloat("subtitleSize", subtitleSize);
-            return this;
-        }
-
-        public Intent build() {
-            Intent i = builder.i;
-            Bundle b = i.getBundleExtra("bundle");
-            if (i.getStringExtra(TAG) == null)
-                throw new IllegalStateException("you must provide clientId");
-            if (i.getIntExtra(TAG_DEF_TITLE, -1) == -1)
-                Log.e(TAG, "you must provide default chat res id");
-            if (i.getIntExtra(TAG_PUSH_ICON_RESID, -1) == -1)
-                Log.e(TAG, "you must provide default push icon resid");
-            if (i.getIntExtra(TAG_PUSH_TITLE, -1) == -1)
-                Log.e(TAG, "you must provide default push pushTitle");
-            if (b.getInt("logoResId", -1) == -1)
-                Log.e(TAG, "you must provide logo resource id");
-            if (b.getInt("textColorResId", -1) == -1)
-                Log.e(TAG, "you must provide textColorResId resource id");
-            if (i.getStringExtra(TAG_GA_RESID) == null)
-                Log.e(TAG, "you must provide google analytics id");
-            if (b.getInt("titleText", -1) == -1)
-                Log.e(TAG, "you must provide titleText");
-            if (b.getInt("contentText", -1) == -1)
-                Log.e(TAG, "you must provide contentText");
-            if (b.getFloat("titleSize", -1f) == -1f)
-                Log.e(TAG, "you must provide titleSize");
-            if (b.getFloat("titleSize", -1f) == -1f)
-                Log.e(TAG, "you must provide subtitleSize");
-
-            builder = null;
-            return i;
-        }
-
-
+    private void setTint(ImageView view, @ColorRes int colorRes) {
+        @ColorInt int color = ContextCompat.getColor(this, colorRes);
+        view.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
+
 }

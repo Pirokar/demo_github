@@ -9,7 +9,7 @@
         android:id="@+id/welcome_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo" />
+         />
 
     <TextView
         android:layout_marginLeft="@dimen/margin_material"
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_half"
         android:gravity="center"
-        android:text="Добро пожаловать в контакт центр" />
+        />
 
     <TextView
         android:layout_marginLeft="24dp"
@@ -29,5 +29,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_quarter"
         android:gravity="center"
-        android:text="Отправьте ваш вопрос и первый освободившийся оператор на него ответит" />
+         />
 </merge>

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -18,10 +19,14 @@ import android.widget.TextView;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.AnimatedArrayAdapter;
+import com.sequenia.threads.model.ChatStyle;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 
 /**
@@ -69,7 +74,13 @@ public class FilePickerFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v;
         AlertDialog dialog;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyle);
+        ChatStyle style = PrefUtils.getIncomingStyle(this.getActivity());
+        AlertDialog.Builder builder;
+        if (style != null && style.fileBrowserDialogStyleResId != INVALID) {
+            builder = new AlertDialog.Builder(getActivity(),  style.fileBrowserDialogStyleResId);
+        } else {
+            builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyleTransparent);
+        }
         builder.setTitle(getString(R.string.choose_file));
         builder.setNeutralButton(getString(R.string.folder_up), this);
         builder.setNegativeButton(getString(R.string.cancel), this);
@@ -114,7 +125,8 @@ public class FilePickerFragment extends DialogFragment
         for (int i = 0; i < folders.length; i++) {
             String absPath = folders[i].getAbsolutePath();
             int slashPos = absPath.lastIndexOf("/");
-            folderNames[i + 1] = absPath.substring(slashPos);
+            if (folders[i].isDirectory())folderNames[i + 1] = absPath.substring(slashPos);
+            else folderNames[i + 1] = absPath.substring(slashPos+1);
         }
         return folderNames;
     }

@@ -42,7 +42,7 @@ public class MyPBReceiver extends PushBroadcastReceiver {
             @Override
             public void run() {
                 try {
-                    PrefUtils.setDeviceAddress(context,s);
+                    if (s!=null) PrefUtils.setDeviceAddress(context,s);
                     Log.e(TAG, "PrefUtils.getNewClientID(context) = " + PrefUtils.getNewClientID(context));
                     if (PrefUtils.getNewClientID(context) == null) return;
                     PushController

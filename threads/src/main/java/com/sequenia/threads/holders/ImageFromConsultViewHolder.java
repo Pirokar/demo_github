@@ -1,5 +1,7 @@
 package com.sequenia.threads.holders;
 
+import android.support.annotation.DrawableRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,15 +10,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.picasso_url_connection_only.Callback;
-import com.sequenia.threads.picasso_url_connection_only.NetworkPolicy;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
 import com.sequenia.threads.utils.MaskedTransformer;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 30.06.2016.
@@ -28,6 +33,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     private View filter;
     private View filterSecond;
+    private static ChatStyle style;
 
     public ImageFromConsultViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image_from_consult, parent, false));
@@ -36,6 +42,12 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.consult_avatar);
         filter = itemView.findViewById(R.id.filter);
         filterSecond = itemView.findViewById(R.id.filter_second);
+        if (null == style) {
+            style = PrefUtils.getIncomingStyle(itemView.getContext());
+        }
+        if (null != style && style.incomingMessageTextColor!=INVALID) {
+            mTimeStampTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.incomingMessageTextColor));
+        }
     }
 
     public void onBind(String avatarPath
@@ -71,11 +83,19 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
 
                         @Override
                         public void onError() {
-                            mImage.setImageResource(R.drawable.no_image);
+                            if (style!=null && style.imagePlaceholder!=INVALID){
+                                mImage.setImageResource(style.imagePlaceholder);
+                            }else {
+                                mImage.setImageResource(R.drawable.no_image);
+                            }
                         }
                     });
         } else if (isDownloadError) {
-            mImage.setImageResource(R.drawable.no_image);
+            if (style!=null && style.imagePlaceholder!=INVALID){
+                mImage.setImageResource(style.imagePlaceholder);
+            }else {
+                mImage.setImageResource(R.drawable.no_image);
+            }
         }
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);
@@ -84,9 +104,12 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             filter.setVisibility(View.INVISIBLE);
             filterSecond.setVisibility(View.INVISIBLE);
         }
+        @DrawableRes int resId = R.drawable.defaultprofile_360;
+        if (style!=null && style.defaultIncomingMessageAvatar!=INVALID)resId = style.defaultIncomingMessageAvatar;
         if (isAvatarVisible) {
             mConsultAvatar.setVisibility(View.VISIBLE);
             if (avatarPath != null) {
+                final int finalResId = resId;
                 p
                         .load(avatarPath)
                         .fit()
@@ -103,7 +126,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                             public void onError() {
                                 Picasso
                                         .with(itemView.getContext())
-                                        .load(R.drawable.defaultprofile_360)
+                                        .load(finalResId)
                                         .fit()
                                         .noPlaceholder()
                                         .transform(new CircleTransform())
@@ -112,7 +135,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                         });
             } else {
                 p
-                        .load(R.drawable.defaultprofile_360)
+                        .load(resId)
                         .fit()
                         .noPlaceholder()
                         .transform(new CircleTransform())

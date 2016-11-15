@@ -71,11 +71,9 @@ public class ConsultReactionsTest {
         consultMessageReaction.onPushMessage(consulPhrase);
         assertEquals(operatorsid1, reactions.getId());
         assertEquals(operatorname1, reactions.getName());
-        assertEquals(null, reactions.getTitle());
         assertEquals(operatorsid1, consultWriter.getCurrentConsultId());
         assertEquals(operatorname1, consultWriter.getCurrentConsultName());
 
-        assertEquals(null, consultWriter.getCurrentConsultTitle());
         assertEquals(consultWriter.istSearchingConsult(), false);
         assertEquals(consultWriter.isConsultConnected(), true);
 

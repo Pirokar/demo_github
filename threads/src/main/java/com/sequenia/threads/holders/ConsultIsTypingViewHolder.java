@@ -7,7 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.model.ChatStyle;
+import com.sequenia.threads.utils.PrefUtils;
 import com.sequenia.threads.views.ViewTypingInProgress;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 09.06.2016.
@@ -15,17 +19,20 @@ import com.sequenia.threads.views.ViewTypingInProgress;
  */
 public class ConsultIsTypingViewHolder extends RecyclerView.ViewHolder {
     public ImageView mConsultImageView;
+    public ViewTypingInProgress mViewTypingInProgress;
+    private ChatStyle style;
 
     public ConsultIsTypingViewHolder(ViewGroup parent) {
         super((LayoutInflater.from(parent.getContext())).inflate(R.layout.item_consult_typing, parent, false));
         mConsultImageView = (ImageView) itemView.findViewById(R.id.image);
+        mViewTypingInProgress = (ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress);
+        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
+        if (null != style) {
+            if (style.chatToolbarTextColorResId!=INVALID){
+                mViewTypingInProgress.setColor(style.chatToolbarTextColorResId);
+            }
+        }
     }
-
-    public ConsultIsTypingViewHolder(View itemView) {
-        super(itemView);
-        mConsultImageView = (ImageView) itemView.findViewById(R.id.image);
-    }
-
 
     public void onBind(View.OnClickListener consultClickListener) {
         mConsultImageView.setOnClickListener(consultClickListener);
@@ -35,7 +42,8 @@ public class ConsultIsTypingViewHolder extends RecyclerView.ViewHolder {
         ((ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress))
                 .removeAnimation();
     }
-    public void beginTyping(){
+
+    public void beginTyping() {
         ((ViewTypingInProgress) itemView.findViewById(R.id.typing_in_progress)
         ).animateViews();
     }

@@ -62,7 +62,6 @@ public class ConsultWriter {
         editor.putString(OPERATOR_STATUS + consultId, consultPhrase.getStatus()).commit();
         editor.putString(OPERATOR_NAME + consultId, consultPhrase.getConsultName()).commit();
         editor.putString(OPERATOR_PHOTO + consultId, consultPhrase.getAvatarPath()).commit();
-        editor.putString(OPERATOR_TITLE + consultId, null).commit();
         setCurrentConsultId(consultId);
     }
 

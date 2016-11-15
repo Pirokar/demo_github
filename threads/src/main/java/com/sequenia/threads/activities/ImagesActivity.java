@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -19,14 +21,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.sequenia.threads.R;
 import com.sequenia.threads.adapters.ImagesAdapter;
 import com.sequenia.threads.database.DatabaseHolder;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.utils.FileUtils;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +41,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 05.08.2016.
@@ -55,6 +62,9 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Drawable d = getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp);
+        d.setColorFilter(getColorInt(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+        mToolbar.setNavigationIcon(d);
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +100,22 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
                 finish();
             }
         });
+        ChatStyle style = PrefUtils.getIncomingStyle(this);
+       /* if (null != style) {
+            if (style.chatBackgroundColor != INVALID)
+                findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+            if (style.chatToolbarColorResId != INVALID)
+                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+            if (style.chatToolbarColorResId != INVALID)
+                mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+            if (style.chatToolbarTextColorResId != INVALID)
+                mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
+        }*/
+    }
+
+    @Override
+    protected void setActivityStyle(ChatStyle style) {
+
     }
 
     @Override
@@ -138,8 +164,8 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
         if (requestCode == CODE_REQUQEST_DOWNLOAD) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 downloadImage();
-            }else {
-                Toast.makeText(this,R.string.unable_to_save,Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, R.string.unable_to_save, Toast.LENGTH_SHORT).show();
             }
         }
     }

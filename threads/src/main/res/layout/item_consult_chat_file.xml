@@ -4,6 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <ImageView
+        android:id="@+id/bubble_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/bubble"
+        android:layout_alignLeft="@+id/bubble"
+        android:layout_alignRight="@+id/bubble"
+        android:layout_alignTop="@+id/bubble"
+        android:scaleType="fitXY"
+        android:src="@drawable/bubble_white" />
+
     <RelativeLayout
         android:id="@+id/bubble"
 

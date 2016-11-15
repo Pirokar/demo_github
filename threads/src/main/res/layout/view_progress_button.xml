@@ -8,18 +8,17 @@
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/circle_gray_48dp" />
-
+        />
     <View
         android:id="@+id/label_image"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_gravity="center"
-        android:background="@drawable/ic_vertical_align_bottom_24dp" />
+        />
 
     <com.sequenia.threads.views.MyCircleProgress
         android:id="@+id/circular_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/progress_circle_orange" />
+        />
 </FrameLayout>

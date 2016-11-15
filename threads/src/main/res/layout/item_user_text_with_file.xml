@@ -4,6 +4,20 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
+<ImageView
+    android:id="@+id/bubble"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_alignRight="@+id/phrase_content"
+    android:layout_alignLeft="@+id/phrase_content"
+    android:layout_alignBottom="@+id/phrase_content"
+    android:layout_alignTop="@+id/phrase_content"
+    android:src="@drawable/a_user_bubble"
+    android:scaleType="fitXY"
+    android:paddingTop="@dimen/margin_quarter"
+    android:paddingBottom="@dimen/margin_quarter"
+    />
+
     <LinearLayout
         android:id="@+id/phrase_content"
         style="@style/userBuble"
@@ -14,15 +28,14 @@
         android:padding="@dimen/margin_half">
 
         <TableRow
-            android:layout_gravity="left"
             android:id="@+id/right_text_row"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="left"
             android:layout_marginBottom="@dimen/margin_quarter"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <com.sequenia.threads.views.CircularProgressButton
-                android:visibility="gone"
                 android:id="@+id/button_download"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
@@ -30,12 +43,13 @@
                 android:layout_marginBottom="@dimen/margin_half"
                 android:layout_marginTop="@dimen/margin_half"
                 android:background="@drawable/ic_insert_file_white_36dp"
+                android:visibility="gone"
                 app:completed_drawable="@drawable/ic_insert_file_white_36dp"
                 app:in_progress_label="@drawable/ic_clear_blue_36dp"
                 app:start_download_label="@drawable/ic_vertical_align_bottom_24dp" />
 
             <View
-
+                android:id="@+id/delimeter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/margin_quarter"
@@ -77,37 +91,40 @@
             </LinearLayout>
         </TableRow>
 
-        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/imageView"
             android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="2dp"
-            android:padding="4dp"
-            android:text="10:19"
-            android:textColor="@android:color/white" />
+            <TextView
+                android:id="@+id/timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="2dp"
+                android:drawablePadding="@dimen/margin_quarter"
+                android:padding="@dimen/margin_half"
+                android:text="10:19"
+                android:textColor="@android:color/white" />
 
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginTop="0dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginTop="0dp"
+                android:paddingBottom="@dimen/margin_half"
+                android:paddingLeft="10dp"
 
-            android:paddingRight="10dp"
-            android:paddingTop="5dp"
-            android:text="textetxtetex &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
-            android:textColor="@android:color/white"
-            android:textSize="16dp" />
+
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+
+                android:text="textetxtetex &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
+                android:textColor="@android:color/white"
+                android:textSize="16dp" />
         </FrameLayout>
 
     </LinearLayout>

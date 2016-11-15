@@ -11,12 +11,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.sequenia.threads.controllers.QuickAnswerController;
 import com.sequenia.threads.fragments.QuickAnswerFragment;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.utils.PrefUtils;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 03.09.2016.
@@ -33,8 +38,16 @@ public class TranslucentActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ChatStyle style = PrefUtils.getIncomingStyle(this);
+        if (style!=null && style.chatStatusBarColorResId != INVALID && Build.VERSION.SDK_INT > 20) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+        }
         mQuickAnswerReceiver = new QuickAnswerReceiver();
         controller = QuickAnswerController.getInstance();
+
     }
 
     @Override
@@ -63,6 +76,7 @@ public class TranslucentActivity
     protected void onStop() {
         super.onStop();
         controller.unBind();
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mQuickAnswerReceiver);
     }
 
@@ -74,7 +88,7 @@ public class TranslucentActivity
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
                 Log.i(TAG, "onReceive: ACTION_ANSWER");
-                controller.onUserAnswer(new UpcomingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER),false));
+                controller.onUserAnswer(new UpcomingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER), false));
                 finish();
             }
         }

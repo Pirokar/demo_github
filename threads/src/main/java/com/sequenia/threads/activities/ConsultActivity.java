@@ -9,21 +9,22 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sequenia.threads.AnalyticsTracker;
-import com.sequenia.threads.BuildConfig;
 import com.sequenia.threads.R;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.PrefUtils;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -33,6 +34,7 @@ public class ConsultActivity extends BaseActivity {
     private TextView mConsulHeaderTextView;
     private TextView mConsultMotoTextView;
     private ImageView mConsultImageView;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,7 +47,8 @@ public class ConsultActivity extends BaseActivity {
             getWindow().setStatusBarColor(getResources().getColor(R.color.black_transparent));
         }
         setContentView(R.layout.activity_consult_page);
-        Toolbar t = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        ChatStyle style = PrefUtils.getIncomingStyle(this);
         mConsulHeaderTextView = (TextView) findViewById(R.id.consult_title);
         mConsultMotoTextView = (TextView) findViewById(R.id.consult_moto);
         mConsultImageView = (ImageView) findViewById(R.id.image);
@@ -61,17 +64,16 @@ public class ConsultActivity extends BaseActivity {
         }
         if (null != moto && !moto.equals("null"))
             mConsultMotoTextView.setText(moto);
-        if (t == null) return;
-        t.setTitle("");
-        setSupportActionBar(t);
-        t.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        t.showOverflowMenu();
-        Drawable overflowDrawable = t.getOverflowIcon();
+        mToolbar.showOverflowMenu();
+        Drawable overflowDrawable = mToolbar.getOverflowIcon();
         try {
             overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
         } catch (Resources.NotFoundException e) {
@@ -80,7 +82,29 @@ public class ConsultActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT > 20) {
             RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(0, (int) getResources().getDimension(R.dimen.margin_big), 0, 0);
-            t.setLayoutParams(lp);
+            mToolbar.setLayoutParams(lp);
+        }
+
+    }
+
+    @Override
+    protected void setActivityStyle(ChatStyle style) {
+        if (style != null) {
+            if (style.chatToolbarColorResId != INVALID)
+                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+            if (style.chatBackgroundColor != INVALID)
+                findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+            if (style.chatToolbarTextColorResId != INVALID)
+                mConsulHeaderTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
+            if (style.chatToolbarTextColorResId != INVALID)
+                mConsultMotoTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
+            if (style.chatToolbarTextColorResId != INVALID)
+                mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+            if (style.chatToolbarTextColorResId != INVALID) {
+                mToolbar.getOverflowIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+                mToolbar.getNavigationIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+
+            }
         }
     }
 

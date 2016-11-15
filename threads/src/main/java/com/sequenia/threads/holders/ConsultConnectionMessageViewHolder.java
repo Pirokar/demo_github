@@ -1,5 +1,8 @@
 package com.sequenia.threads.holders;
 
+import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,13 +12,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.picasso_url_connection_only.Callback;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.CircleTransform;
+import com.sequenia.threads.utils.PrefUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 09.06.2016.
@@ -27,19 +34,20 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
     private TextView headerTextView;
     private TextView connectedMessage;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private static ChatStyle style;
+    private @DrawableRes int defIcon;
 
     public ConsultConnectionMessageViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consult_connected, parent, false));
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
         headerTextView = (TextView) itemView.findViewById(R.id.quote_header);
         connectedMessage = (TextView) itemView.findViewById(R.id.text);
-    }
-
-    public ConsultConnectionMessageViewHolder(View itemView) {
-        super(itemView);
-        mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
-        headerTextView = (TextView) itemView.findViewById(R.id.quote_header);
-        connectedMessage = (TextView) itemView.findViewById(R.id.text);
+        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
+        if (null != style && style.connectionMessageTextColor != INVALID) {
+            headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
+            connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
+        }
+        defIcon =  style!=null && style.defaultIncomingMessageAvatar!=INVALID?style.defaultIncomingMessageAvatar:R.drawable.defaultprofile_360;
     }
 
     public void onBind(
@@ -88,7 +96,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
                         public void onError() {
                             Picasso
                                     .with(itemView.getContext())
-                                    .load(R.drawable.defaultprofile_360)
+                                    .load(defIcon)
                                     .centerInside()
                                     .fit()
                                     .noPlaceholder()
@@ -99,7 +107,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         } else {
             Picasso
                     .with(itemView.getContext())
-                    .load(R.drawable.defaultprofile_360)
+                    .load(defIcon)
                     .centerInside()
                     .noPlaceholder()
                     .fit()

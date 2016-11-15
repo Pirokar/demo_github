@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.sequenia.threads.AnalyticsTracker;
 import com.sequenia.threads.R;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.utils.PrefUtils;
 
@@ -57,6 +58,7 @@ public class CameraActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setCameraWasOpened();
         setContentView(R.layout.activity_camera);
+        setActivityStyle(PrefUtils.getIncomingStyle(this));
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(t);
         t.setNavigationOnClickListener(new View.OnClickListener() {
@@ -67,6 +69,12 @@ public class CameraActivity extends BaseActivity {
         });
         t.setTitle("");
         initPreview();
+    }
+
+
+    @Override
+    protected void setActivityStyle(ChatStyle style) {
+
     }
 
     private void initPreview() {
@@ -281,9 +289,14 @@ public class CameraActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
         if (mSurfaceView.getVisibility() == View.VISIBLE) {
-            mCamera.stopPreview();
-            mCamera.release();
-            isCameraReleased = true;
+            if (mCamera==null){
+                Toast.makeText(this,getString(R.string.no_cameras_detected),Toast.LENGTH_SHORT).show();
+
+            }else {
+                mCamera.stopPreview();
+                mCamera.release();
+                isCameraReleased = true;
+            }
         }
     }
 

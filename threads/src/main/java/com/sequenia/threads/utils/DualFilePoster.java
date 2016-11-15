@@ -16,7 +16,7 @@ public abstract class DualFilePoster {
     public DualFilePoster(final FileDescription fileDescription, final FileDescription quoteFileDescription, final Context ctx) {
         this.fileDescription = fileDescription;
         this.qoteFileDescription = quoteFileDescription;
-        Log.e(TAG, "filePath = " + fileDescription + " quoteFilePath = " + quoteFileDescription);
+        Log.i(TAG, "filePath = " + fileDescription + " quoteFilePath = " + quoteFileDescription);
         final DualFilePoster poster = this;
         if (fileDescription != null) {
             new FilePoster(fileDescription, ctx).post(new Callback<String, Exception>() {

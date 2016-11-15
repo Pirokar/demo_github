@@ -9,6 +9,8 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.ColorRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.sequenia.threads.AnalyticsTracker;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.utils.BucketsGalleryDecorator;
 import com.sequenia.threads.utils.GalleryDecorator;
 import com.sequenia.threads.R;
@@ -35,6 +38,8 @@ import com.sequenia.threads.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 06.07.2016.
@@ -55,6 +60,7 @@ public class GalleryActivity extends BaseActivity
     private Button mSendButton;
     public static final String PHOTOS_REQUEST_CODE_TAG = "PHOTOS_REQUEST_CODE_TAG";
     public static final String PHOTOS_TAG = "PHOTOS_TAG";
+    private Toolbar mToolbar;
 
 
     @Override
@@ -63,6 +69,24 @@ public class GalleryActivity extends BaseActivity
         setContentView(R.layout.activity_gallery);
         AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setGalleryWasOpened();
         initViews();
+       /* ChatStyle style = PrefUtils.getIncomingStyle(this);
+        if (null != style) {
+            if (style.chatBackgroundColor != INVALID)
+                findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+            if (style.chatToolbarColorResId != INVALID)
+                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+            if (style.chatToolbarTextColorResId != INVALID)
+                mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
+            if (style.chatToolbarTextColorResId != INVALID)
+                mToolbar.getOverflowIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+            if (style.chatToolbarTextColorResId != INVALID)
+                mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+        }*/
+    }
+
+    @Override
+    protected void setActivityStyle(ChatStyle style) {
+
     }
 
     private void initViews() {
@@ -74,16 +98,16 @@ public class GalleryActivity extends BaseActivity
                 setStateSearchingPhoto();
             }
         });
-        Toolbar t = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(t);
-        t.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
         //  t.showOverflowMenu();
-        Drawable overflowDrawable = t.getOverflowIcon();
+        Drawable overflowDrawable = mToolbar.getOverflowIcon();
         try {
             overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
         } catch (Resources.NotFoundException e) {
@@ -158,7 +182,6 @@ public class GalleryActivity extends BaseActivity
         i.putExtra(PHOTOS_REQUEST_CODE_TAG, requestCode);
         return i;
     }
-
 
 
     @Override

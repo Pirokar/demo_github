@@ -26,7 +26,10 @@
         <item name="android:textColor">@color/green_dark</item>
         <item name="android:windowBackground">@color/white_dark</item>
     </style>
-
+    <style name="FileDialogStyleTransparent" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@color/green_dark</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
     <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <!--  <item name="colorPrimaryDark">@color/black_transparent</item>-->
@@ -128,7 +131,6 @@
         <item name="android:layout_marginLeft">@dimen/user_margin_left</item>
         <item name="android:layout_marginRight">@dimen/user_margin_right</item>
         <item name="android:layout_marginTop">@dimen/margin_quarter</item>
-        <item name="android:background">@drawable/a_user_bubble</item>
         <item name="android:paddingRight">@dimen/margin_half</item>
     </style>
 
@@ -138,7 +140,7 @@
         <item name="android:layout_marginLeft">@dimen/consultant_margin_left</item>
         <item name="android:layout_marginRight">@dimen/consultant_margin_right</item>
         <item name="android:layout_marginTop">@dimen/margin_quarter</item>
-        <item name="android:background">@drawable/bubble_white</item>
+
         <item name="android:paddingRight">@dimen/margin_half</item>
     </style>
 </resources>

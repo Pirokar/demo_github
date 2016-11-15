@@ -4,11 +4,16 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.sequenia.threads.AnalyticsTracker;
+import com.sequenia.threads.model.ChatItem;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.utils.PrefUtils;
 import com.sequenia.threads.utils.Tuple;
 
@@ -34,6 +39,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        invalidateOptionsMenu();
+    }
+    @Override
     protected void onResume() {
         super.onResume();
         for (Tuple<BaseActivity, Boolean> tuple : activities) {
@@ -51,7 +61,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         }, 1000);
     }
 
-
+    protected abstract void setActivityStyle(ChatStyle style);
+    protected
+    @ColorInt
+    int getColorInt(@ColorRes int color) {
+        return ContextCompat.getColor(this, color);
+    }
     @Override
     protected void onPause() {
         super.onPause();

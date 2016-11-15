@@ -1,43 +1,43 @@
 package com.sequenia.threads.holders;
 
-import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.Layout;
-import android.text.TextUtils;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.sequenia.threads.R;
-import com.sequenia.threads.adapters.ChatAdapter;
 import com.sequenia.threads.formatters.RussianFormatSymbols;
+import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.Quote;
 import com.sequenia.threads.utils.FileUtils;
-import com.sequenia.threads.utils.UserPhrasesCash;
+import com.sequenia.threads.utils.PrefUtils;
 import com.sequenia.threads.utils.ViewUtils;
-import com.sequenia.threads.views.CashedLayoutTextView;
 import com.sequenia.threads.views.CircularProgressButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.sequenia.threads.model.ChatStyle.INVALID;
+
 /**
  * Created by yuri on 08.06.2016.
  * layout/item_user_text_with_file.xml
  */
-public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
+public class UserPhraseViewHolder extends BaseHolder {
     private static final String TAG = "UserPhraseViewHolder ";
     private TextView mPhraseTextView;
     private TableRow mRightTextRow;
@@ -50,6 +50,11 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat fileSdf;
     private View mFilterView;
     private View mFilterViewSecond;
+    private static ChatStyle style;
+    private ImageView mBubble;
+    private static
+    @ColorInt
+    int messageColor;
 
     public UserPhraseViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -68,6 +73,20 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mRightTextHeader = (TextView) itemView.findViewById(R.id.to);
         mRightTextTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
+        mBubble = (ImageView) itemView.findViewById(R.id.bubble);
+        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
+        if (style != null) {
+            if (style.outgoingMessageBubbleColor != INVALID)
+                mBubble.setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+            if (style.outgoingMessageTextColor != INVALID) {
+                messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
+                setTextColorToViews(new TextView[]{mRightTextDescr,mPhraseTextView,mRightTextHeader,mRightTextTimeStamp,mTimeStampTextView},style.outgoingMessageTextColor);
+            }
+            if (style.incomingMessageBubbleColor != INVALID) {
+                setTintToProgressButton(mFileImageButton,style.incomingMessageBubbleColor);
+                itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.incomingMessageBubbleColor));
+            }
+        }
     }
 
     public void onBind(String phrase
@@ -83,7 +102,8 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(Html.fromHtml(phrase + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
+            mPhraseTextView.setText(Html.fromHtml(phrase +
+                    " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
         }
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
@@ -108,8 +128,7 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                     filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath()) == null ? "" : FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
                 }
                 mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
-                if (null != fileClickListener)
-                    mFileImageButton.setOnClickListener(fileClickListener);
+                if (null != fileClickListener) mFileImageButton.setOnClickListener(fileClickListener);
                 mFileImageButton.setProgress(quote.getFileDescription().getDownloadProgress());
             }
         }
@@ -134,104 +153,48 @@ public class UserPhraseViewHolder extends RecyclerView.ViewHolder {
                 mFileImageButton.setProgress(fileDescription.getDownloadProgress());
             }
         }
-
-      /*  RelativeLayout.LayoutParams timeStampParams = (RelativeLayout.LayoutParams) mTimeStampTextView.getLayoutParams();
-        RelativeLayout.LayoutParams textViewParams = (RelativeLayout.LayoutParams) mPhraseTextView.getLayoutParams();
-        int ruleRightOf = RelativeLayout.RIGHT_OF;
-        int ruleAlignRight = RelativeLayout.ALIGN_RIGHT;
-        int ruleAlignLeft = RelativeLayout.ALIGN_LEFT;
-        final int ruleAlignParentRight = RelativeLayout.ALIGN_PARENT_RIGHT;
-        int maxOneLineLength = 21;
-        boolean fullsize = false;
-        if (quote == null && fileDescription == null) {
-            phraseFrame.getLayoutParams().width = RelativeLayout.LayoutParams.WRAP_CONTENT;
-            textViewParams.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        } else {
-            fullsize = true;
-            phraseFrame.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
-            textViewParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-            timeStampParams.removeRule(ruleRightOf);
-            timeStampParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        }
-        int lastLineLength = 0;
-        if (phrase != null) {
-            String[] lines = phrase.split("\r\n|\r|\n");
-            lastLineLength = lines[lines.length - 1].length();
-            timeStampParams.removeRule(ruleAlignParentRight);
-            int screenWidth = itemView.getResources().getDisplayMetrics().widthPixels;
-            if (screenWidth == 768) maxOneLineLength = 19;
-            if (screenWidth == 1080) maxOneLineLength = 20;
-            if (TextUtils.isEmpty(phrase) || lastLineLength < maxOneLineLength) {
-                if (!fullsize) {
-                    timeStampParams.removeRule(ruleAlignRight);
-                    timeStampParams.addRule(ruleRightOf, mPhraseTextView.getId());
-                }else {
-                    timeStampParams.removeRule(ruleRightOf);
-                    timeStampParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                }
-            } else {
-                timeStampParams.removeRule(ruleRightOf);
-                timeStampParams.addRule(ruleAlignRight, mPhraseTextView.getId());
-                if (cash.contains(phrase) == UserPhrasesCash.FOUND_WITH_NEW_LINE) {
-                    mPhraseTextView.setText(phrase + "\n");
-
-                } else if (cash.contains(phrase) == UserPhrasesCash.FOUND_WITHOUT_NEW_LINE) {
-                    mPhraseTextView.setText(phrase);
-                } else {
-                    final String finalPhrase = phrase;
-                    mPhraseTextView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Layout l = mPhraseTextView.getLayout();
-                            if (l == null) return;
-                            if (l.getPrimaryHorizontal(mPhraseTextView.getText().length())
-                                    > (mTimeStampTextView.getLeft())) {
-                                mPhraseTextView.setText(finalPhrase + "\n");
-                                cash.addWithNewLine(finalPhrase);
-                            } else {
-                                cash.addWithoutNewLine(finalPhrase);
-                            }
-                        }
-                    });
-                    Intent i = new Intent(ChatAdapter.ACTION_CHANGED);
-                    i.putExtra(ChatAdapter.ACTION_CHANGED, getAdapterPosition());
-                    LocalBroadcastManager
-                            .getInstance(itemView.getContext())
-                            .sendBroadcast(i);
-                }
-            }
-        }*/
         if (mRightTextHeader.getText() == null ||
                 mRightTextHeader.getText().toString().equals("null")) {
             mRightTextHeader.setVisibility(View.GONE);
         } else {
             mRightTextHeader.setVisibility(View.VISIBLE);
         }
+        Drawable d;
         switch (sentState) {
             case STATE_WAS_READ:
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_all_white_18dp, 0);
+                d = itemView.getResources().getDrawable(R.drawable.ic_done_all_white_18dp);
+                if (messageColor != INVALID) {
+                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
+                }
+                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_white_18dp, 0);
+                d = itemView.getResources().getDrawable(R.drawable.ic_done_white_18dp);
+                if (messageColor != INVALID) {
+                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
+                }
+                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_cached_white_18dp, 0);
+                d = itemView.getResources().getDrawable(R.drawable.ic_cached_white_18dp);
+                if (messageColor != INVALID) {
+                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
+                }
+                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:
-                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.empty_space_24dp, 0);
+                d = itemView.getResources().getDrawable(R.drawable.empty_space_24dp);
+                mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
         }
-
         if (isChosen) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterViewSecond.setVisibility(View.VISIBLE);
-        } else
-
-        {
+        } else {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
-        if (phrase == null) return;
     }
 }
+
 
