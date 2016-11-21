@@ -22,9 +22,5 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-ext {
-    play_services_analytics_impl = "9.6.1"
-    recyclerview_v7 = "24+"
-    appcompat_v7 = "24+"
-}
+
 

@@ -2,7 +2,6 @@ package com.sequenia.threads.controllers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,13 +12,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.advisa.client.api.InOutMessage;
@@ -45,7 +40,6 @@ import com.sequenia.threads.model.FileDescription;
 import com.sequenia.threads.model.MessageState;
 import com.sequenia.threads.model.UpcomingUserMessage;
 import com.sequenia.threads.model.UserPhrase;
-import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.services.DownloadService;
 import com.sequenia.threads.services.NotificationService;
 import com.sequenia.threads.utils.Callback;
@@ -60,7 +54,6 @@ import org.json.JSONException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -113,24 +106,24 @@ public class ChatController {
                 @Override
                 public void run() {
                     PrefUtils.setNewClientId(ctx, finalClientId);
-                    if (PrefUtils.getDeviceAddress(ctx) == null) {
+                   /* if (PrefUtils.getDeviceAddress(ctx) == null) {
                         Log.e(TAG, "device address was not set, returning");
                         return;
-                    }
+                    }*/
                     try {
-                        instance.cleanAllAndResetCount();
-
-                        PushController.getInstance(ctx).setClientId(finalClientId);
+                        instance.cleanAll();
+                        PushController.getInstance(ctx).setDeviceUid(UUID.randomUUID().toString());
+                        /*PushController.getInstance(ctx).setClientId(finalClientId);
                         PrefUtils.setClientId(ctx, finalClientId);
                         PushController.getInstance(ctx)
                                 .sendMessage(MessageFormatter.getStartMessage(PrefUtils.getUserName(ctx), finalClientId, ""), true);
-                        instance.cleanAllAndResetCount();
+                        PushController.getInstance(ctx).resetCounterSync();
                         List<InOutMessage> messages = PushController.getInstance(instance.activity).getMessageHistory(20);
                         instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
                         ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
                         instance.activity.addChatItems(phrases);
                         instance.activity.removeDownloading();
-                        PrefUtils.setClientIdWasSet(true, ctx);
+                        PrefUtils.setClientIdWasSet(true, ctx);*/
                     } catch (PushServerErrorException e) {
                         e.printStackTrace();
                     }
@@ -496,8 +489,8 @@ public class ChatController {
         }
     }
 
-    void cleanAllAndResetCount() throws PushServerErrorException {
-        Log.i(TAG, "cleanAllAndResetCount: ");
+    void cleanAll() throws PushServerErrorException {
+        Log.i(TAG, "cleanAll: ");
         mDatabaseHolder.cleanDatabase();
         if (activity != null) activity.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
@@ -509,7 +502,6 @@ public class ChatController {
         if (activity != null) {
             activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         }
-        PushController.getInstance(activity).resetCounterSync();
     }
 
     public void setActivityIsForeground(boolean isForeground) {
@@ -780,14 +772,15 @@ public class ChatController {
 
     }
 
-    private void onSettingClientId(Context ctx) {
+    private void onSettingClientId(final Context ctx) {
         Log.i(TAG, "onSettingClientId:");
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 if (activity != null) {
                     try {
-                        cleanAllAndResetCount();
+                        cleanAll();
+                        PushController.getInstance(ctx).resetCounterSync();
                         List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(20);
                         mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
                         if (activity != null)
