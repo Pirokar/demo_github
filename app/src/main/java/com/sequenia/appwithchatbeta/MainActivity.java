@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat;
+package com.sequenia.appwithchatbeta;
 
 import android.Manifest;
 import android.content.Intent;

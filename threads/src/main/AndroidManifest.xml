@@ -69,7 +69,7 @@
         <receiver
             android:name=".broadcastReceivers.MyPBReceiver"
             android:exported="false"
-            android:permission="com.sequenia.appwithchat.permission.pushserver.RECEIVE">
+            android:permission="com.sequenia.appwithchatbeta.permission.pushserver.RECEIVE">
             <intent-filter>
                 <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT" />
                 <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT" />

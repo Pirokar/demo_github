@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat;
+package com.sequenia.appwithchatbeta;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

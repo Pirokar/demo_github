@@ -20,7 +20,7 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.sequenia.appwithchat"
+        applicationId "com.sequenia.appwithchatbeta"
         minSdkVersion 17
         targetSdkVersion 25
         versionCode 13

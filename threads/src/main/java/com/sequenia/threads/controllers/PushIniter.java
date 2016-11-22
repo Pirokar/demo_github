@@ -3,18 +3,12 @@ package com.sequenia.threads.controllers;
 import android.content.Context;
 import android.util.Log;
 
-import com.advisa.client.api.InOutMessage;
 import com.pushserver.android.PushController;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 import com.sequenia.threads.formatters.MessageFormatter;
-import com.sequenia.threads.model.ChatItem;
-import com.sequenia.threads.model.CompletionHandler;
 import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.PrefUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yuri on 19.09.2016.
@@ -47,7 +41,7 @@ public class PushIniter {
                                 PushController
                                         .getInstance(context)
                                         .sendMessageAsync(MessageFormatter
-                                                .getStartMessage(PrefUtils.getUserName(context), clientId, ""), true, new RequestCallback<String, PushServerErrorException>() {
+                                                .createClientAboutMessage(PrefUtils.getUserName(context), clientId, ""), true, new RequestCallback<String, PushServerErrorException>() {
                                             @Override
                                             public void onResult(String string) {
                                                 Log.e(TAG, "client id was set string =" + string);
@@ -82,7 +76,7 @@ public class PushIniter {
     public static void onAddressChanged(Context ctx) {
         PushController.getInstance(ctx)
                 .sendMessageAsync(MessageFormatter
-                        .getStartMessage(PrefUtils.getUserName(ctx)
+                        .createClientAboutMessage(PrefUtils.getUserName(ctx)
                                 , PrefUtils.getNewClientID(ctx)// TODO: 05.10.2016 implement new client name and email
                                 , ""), true, new RequestCallback<String, PushServerErrorException>() {
                     @Override

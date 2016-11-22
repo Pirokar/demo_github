@@ -116,7 +116,7 @@ public class ChatController {
                         /*PushController.getInstance(ctx).setClientId(finalClientId);
                         PrefUtils.setClientId(ctx, finalClientId);
                         PushController.getInstance(ctx)
-                                .sendMessage(MessageFormatter.getStartMessage(PrefUtils.getUserName(ctx), finalClientId, ""), true);
+                                .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils.getUserName(ctx), finalClientId, ""), true);
                         PushController.getInstance(ctx).resetCounterSync();
                         List<InOutMessage> messages = PushController.getInstance(instance.activity).getMessageHistory(20);
                         instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
@@ -249,6 +249,7 @@ public class ChatController {
         activity.registerReceiver(mProgressReceiver, intentFilter);
     }
 
+
     public boolean isConsultFound() {
         return mConsultWriter.isConsultConnected();
     }
@@ -264,7 +265,6 @@ public class ChatController {
                 cp.setAvatarPath(mDatabaseHolder.getLastConsultAvatarPathSync(cp.getConsultId()));
             }
         }
-
         return list;
     }
 
@@ -780,13 +780,26 @@ public class ChatController {
                 if (activity != null) {
                     try {
                         cleanAll();
+                        PushController
+                                .getInstance(ctx)
+                                .setClientId(PrefUtils.getNewClientID(ctx));
+                        PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
+                        PrefUtils.setClientIdWasSet(true, ctx);
+
                         PushController.getInstance(ctx).resetCounterSync();
+
+                        PushController
+                                .getInstance(ctx)
+                                .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils
+                                                .getUserName(ctx),
+                                        PrefUtils.getNewClientID(ctx),""), true);
+
                         List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(20);
                         mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
                         if (activity != null)
                             activity.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
                         currentOffset = messages.size();
-                    } catch (PushServerErrorException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

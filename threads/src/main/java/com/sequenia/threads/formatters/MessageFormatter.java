@@ -311,7 +311,7 @@ public class MessageFormatter {
         return list;
     }
 
-    public static String getStartMessage(String clientName, String clientId, String email) {
+    public static String createClientAboutMessage(String clientName, String clientId, String email) {
         JSONObject object = new JSONObject();
         try {
             object.put("name", clientName);
