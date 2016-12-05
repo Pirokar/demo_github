@@ -79,7 +79,7 @@ public class FilePickerFragment extends DialogFragment
         if (style != null && style.fileBrowserDialogStyleResId != INVALID) {
             builder = new AlertDialog.Builder(getActivity(),  style.fileBrowserDialogStyleResId);
         } else {
-            builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyleTransparent);
+            builder = new AlertDialog.Builder(getActivity(),R.style.FileDialogStyleTransparent);
         }
         builder.setTitle(getString(R.string.choose_file));
         builder.setNeutralButton(getString(R.string.folder_up), this);

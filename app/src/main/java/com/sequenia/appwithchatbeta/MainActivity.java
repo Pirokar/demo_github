@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity {
                             R.style.FileDialogStyle)
                     .setGoogleAnalyticsEnabled(false)
                     .setPushNotificationStyle(R.drawable.img,R.string.default_title,android.R.color.transparent,android.R.color.black)*/
-                    .setWelcomeScreenStyle(R.drawable.random
+                    .setWelcomeScreenStyle(R.drawable.logo
                             , R.string.welcome
                             , R.string.subtitle_text
-                            , android.R.color.black
+                            , R.color.gray_text
                             , 18
                             , 14)
                     .build();

@@ -88,7 +88,7 @@
 
         <meta-data
             android:name="com.pushserver.android.useDefaultDeviceUID"
-            android:value="false" />
+            android:value="true" />
         <meta-data
             android:name="com.pushserver.android.service"
             android:value="com.sequenia.threads.services.MyServerIntentService" />

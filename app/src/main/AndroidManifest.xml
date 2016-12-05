@@ -48,9 +48,9 @@
             android:value="300000" />
       <meta-data
             android:name="com.pushserver.android.providerUid"
-            android:value="PH5AckgzOkYoSz82QVN1M2ovbiZePEdBMi80QHFdOm0vUmk6NUA0T1ddQTkpVSZBLXJ+Pgo=" />
+            android:value="PH5AckgzOkYoSz82QVN1M2ovcChjSUFSVCtqL1MmRjkucXFkWCQzfj4K" />
         <meta-data
             android:name="com.pushserver.android.uploadServerUrl"
-            android:value=" https://pushserver.mfms.ru/brooma/file/upload" />
+            android:value="http://pushservertest.mfms.ru/push-test/file/upload" />
     </application>
 </manifest>

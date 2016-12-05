@@ -3,4 +3,5 @@
     android:shape="oval">
     <item android:drawable="@drawable/circle_white" />
     <item android:drawable="@drawable/aqua_ring" />
+    
 </layer-list>

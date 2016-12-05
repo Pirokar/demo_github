@@ -24,11 +24,11 @@
 
     <style name="FileDialogStyle" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:textColor">@color/green_dark</item>
-        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:windowBackground">@color/blue_transparent</item>
     </style>
     <style name="FileDialogStyleTransparent" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:textColor">@color/green_dark</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+
     </style>
     <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->

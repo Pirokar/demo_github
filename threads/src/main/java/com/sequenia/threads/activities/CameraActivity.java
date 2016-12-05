@@ -202,7 +202,6 @@ public class CameraActivity extends BaseActivity {
                                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Log.e(TAG, ""+output.getAbsolutePath());
                                                 setStateImagePreview("file://" + output.getAbsolutePath());
                                             }
                                         });
@@ -259,7 +258,12 @@ public class CameraActivity extends BaseActivity {
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.GONE);
         ImageView image = (ImageView) findViewById(R.id.photo_preview);
         image.setVisibility(View.VISIBLE);
-        Picasso.with(this).load(imagePath).fit().centerCrop().into(image);
+        Picasso
+                .with(this)
+                .load(imagePath)
+                .fit()
+                .centerCrop()
+                .into(image);
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         t.setVisibility(View.GONE);
         t.setTitle("");
@@ -342,8 +346,13 @@ public class CameraActivity extends BaseActivity {
             }
         }
         List<Camera.Size> sizes = cp.getSupportedPreviewSizes();
-        Camera.Size optimalSize = getOptimalPreviewSize(sizes, getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
-        cp.setPreviewSize(optimalSize.width, optimalSize.height);
+        Camera.Size optimalSize = getOptimalPreviewSize(sizes,
+                getResources().getDisplayMetrics().widthPixels,
+                getResources().getDisplayMetrics().heightPixels);
+        Log.e(TAG, "optimalSize .width =" + optimalSize.width);
+        Log.e(TAG, "optimalSize .height =" + optimalSize.height);
+        cp.setPreviewSize(optimalSize.width,optimalSize.height);
+        cp.setPictureSize(optimalSize.width,optimalSize.height);
         mCamera.setParameters(cp);
         mCamera.setDisplayOrientation(90);
     }
@@ -357,22 +366,24 @@ public class CameraActivity extends BaseActivity {
         Camera.Size optimalSize = null;
         double minDiff = Double.MAX_VALUE;
         int targetHeight = h;
-
         for (Camera.Size size : sizes) {
+            Log.e(TAG, "targetHeight = " + targetHeight);
+            Log.e(TAG, "size.width = " + size.width);
+            Log.e(TAG, "size.height = " + size.height);
             double ratio = (double) size.width / size.height;
             if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-            if (Math.abs(size.height - targetHeight) < minDiff) {
+            if (Math.abs(size.width - targetHeight) < minDiff) {
                 optimalSize = size;
-                minDiff = Math.abs(size.height - targetHeight);
+                minDiff = Math.abs(size.width - targetHeight);
             }
         }
 
         if (optimalSize == null) {
             minDiff = Double.MAX_VALUE;
             for (Camera.Size size : sizes) {
-                if (Math.abs(size.height - targetHeight) < minDiff) {
+                if (Math.abs(size.width - targetHeight) < minDiff) {
                     optimalSize = size;
-                    minDiff = Math.abs(size.height - targetHeight);
+                    minDiff = Math.abs(size.width - targetHeight);
                 }
             }
         }

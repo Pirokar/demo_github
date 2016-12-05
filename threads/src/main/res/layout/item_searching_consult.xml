@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="64dp"
-    android:orientation="vertical"
-   >
+             android:layout_width="match_parent"
+             android:layout_height="64dp"
+             android:orientation="vertical"
+    >
 
     <ProgressBar
-
         android:id="@+id/progress"
         android:layout_width="@dimen/default_chat_row_height"
         android:layout_height="@dimen/default_chat_row_height"
@@ -15,6 +14,6 @@
         android:background="@drawable/circle_aqua_outline"
         android:indeterminate="true"
         android:indeterminateDrawable="@drawable/circle_with_circle"
-
-        android:padding="14dp" />
+        android:padding="14dp"
+        />
 </FrameLayout>

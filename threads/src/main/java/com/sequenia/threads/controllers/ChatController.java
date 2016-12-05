@@ -23,6 +23,7 @@ import com.pushserver.android.PushMessage;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 import com.sequenia.threads.AnalyticsTracker;
+import com.sequenia.threads.BuildConfig;
 import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.activities.ConsultActivity;
 import com.sequenia.threads.activities.ImagesActivity;
@@ -91,29 +92,29 @@ public class ChatController {
     public static Executor networkExecutor = Executors.newSingleThreadExecutor();
 
     public static ChatController getInstance(final Context ctx, String clientId) {
-        Log.i(TAG, "getInstance clientId = " + clientId);
+        if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
         if (instance == null) {
             instance = new ChatController(ctx);
         }
         if (clientId == null) clientId = PrefUtils.getClientID(ctx);
         if (TextUtils.isEmpty(PrefUtils.getClientID(ctx))
                 || !clientId.equals(PrefUtils.getClientID(ctx))) {
-            Log.i(TAG, "setting new client id");
-            Log.i(TAG, "clientId = " + clientId);
-            Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
+            if (BuildConfig.DEBUG)  Log.i(TAG, "setting new client id");
+            if (BuildConfig.DEBUG)  Log.i(TAG, "clientId = " + clientId);
+            if (BuildConfig.DEBUG) Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
             final String finalClientId = clientId;
             instance.mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
                     PrefUtils.setNewClientId(ctx, finalClientId);
-                   /* if (PrefUtils.getDeviceAddress(ctx) == null) {
-                        Log.e(TAG, "device address was not set, returning");
+                    if (PrefUtils.getDeviceAddress(ctx) == null) {
+                        if (BuildConfig.DEBUG)  Log.e(TAG, "device address was not set, returning");
                         return;
-                    }*/
+                    }
                     try {
                         instance.cleanAll();
-                        PushController.getInstance(ctx).setDeviceUid(UUID.randomUUID().toString());
-                        /*PushController.getInstance(ctx).setClientId(finalClientId);
+                      /*  PushController.getInstance(ctx).setDeviceUid(UUID.randomUUID().toString());*/
+                        PushController.getInstance(ctx).setClientId(finalClientId);
                         PrefUtils.setClientId(ctx, finalClientId);
                         PushController.getInstance(ctx)
                                 .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils.getUserName(ctx), finalClientId, ""), true);
@@ -123,7 +124,7 @@ public class ChatController {
                         ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
                         instance.activity.addChatItems(phrases);
                         instance.activity.removeDownloading();
-                        PrefUtils.setClientIdWasSet(true, ctx);*/
+                        PrefUtils.setClientIdWasSet(true, ctx);
                     } catch (PushServerErrorException e) {
                         e.printStackTrace();
                     }
@@ -177,7 +178,7 @@ public class ChatController {
     }
 
     public void bindActivity(ChatActivity ca) {
-        Log.i(TAG, "bindActivity:");
+        if (BuildConfig.DEBUG) Log.i(TAG, "bindActivity:");
         activity = ca;
         appContext = activity.getApplicationContext();
         currentOffset = 0;
@@ -213,7 +214,7 @@ public class ChatController {
                                     List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
                                     List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
                                     if (!(dbItems.size() == serverItems.size() && dbItems.containsAll(serverItems))) {
-                                        Log.e(TAG, "not same!");
+                                        if (BuildConfig.DEBUG)  Log.i(TAG, "not same!");
                                         mDatabaseHolder.putMessagesSync(serverItems);
                                         h.post(new Runnable() {
                                             @Override
@@ -274,15 +275,15 @@ public class ChatController {
     }
 
     public void onUserInput(final UpcomingUserMessage upcomingUserMessage) {
-        Log.i(TAG, "onUserInput: " + upcomingUserMessage);
+        if (BuildConfig.DEBUG)  Log.i(TAG, "onUserInput: " + upcomingUserMessage);
         if (upcomingUserMessage == null) return;
         if (appContext == null && activity == null) {
-            Log.e(TAG, "(appContext == null && activity == null");
+            if (BuildConfig.DEBUG)  Log.e(TAG, "(appContext == null && activity == null");
             return;
         }
         Context ctx = activity;
         if (ctx == null) ctx = appContext;
-        Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
+        if (BuildConfig.DEBUG)  Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um, ctx);
         if (!mConsultWriter.isConsultConnected()) {
@@ -298,8 +299,8 @@ public class ChatController {
             String id = userPhrase.getQuote().getQuotedPhraseId();
             consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
         }
-        Log.i(TAG, "sendMessage: " + userPhrase);
-        Log.i(TAG, "sendMessage: " + mAnalyticsTracker);
+        if (BuildConfig.DEBUG)  Log.i(TAG, "sendMessage: " + userPhrase);
+        if (BuildConfig.DEBUG)  Log.i(TAG, "sendMessage: " + mAnalyticsTracker);
         if (userPhrase.isWithPhrase())
             if (null != mAnalyticsTracker) mAnalyticsTracker.setTextWasSent();
         if (userPhrase.isWithFile())
@@ -318,7 +319,7 @@ public class ChatController {
                                 , null), false, new RequestCallback<String, PushServerErrorException>() {
                             @Override
                             public void onResult(String string) {
-                                Log.d(TAG, "server answer on pharse sent with id " + string);
+                                if (BuildConfig.DEBUG)  Log.d(TAG, "server answer on pharse sent with id " + string);
                                 setMessageState(userPhrase, MessageState.STATE_SENT);
                                 mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
                                 if (activity != null)
@@ -336,6 +337,7 @@ public class ChatController {
                                 }
                             }
                         });
+
             } else {
                 final ConsultInfo finalConsultInfo = consultInfo;
                 new DualFilePoster(
@@ -344,7 +346,7 @@ public class ChatController {
                         , activity) {
                     @Override
                     public void onResult(String mfmsFilePath, String mfmsQuoteFilePath) {
-                        Log.e(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
+                        if (BuildConfig.DEBUG) Log.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
                         PushController.getInstance(activity).sendMessageAsync(MessageFormatter.format(
                                 userPhrase
                                 , finalConsultInfo
@@ -353,7 +355,7 @@ public class ChatController {
                                 , new RequestCallback<String, PushServerErrorException>() {
                                     @Override
                                     public void onResult(String string) {
-                                        Log.e(TAG, "sending with files string = " + string);
+                                        if (BuildConfig.DEBUG)  Log.i(TAG, "sending with files string = " + string);
                                         setMessageState(userPhrase, MessageState.STATE_SENT);
                                         if (activity != null)
                                             activity.setUserPhraseMessageId(userPhrase.getId(), string);
@@ -454,7 +456,7 @@ public class ChatController {
     }
 
     public void onFileClick(final FileDescription fileDescription) {
-        Log.i(TAG, "onFileClick " + fileDescription);
+        if (BuildConfig.DEBUG)  Log.i(TAG, "onFileClick " + fileDescription);
         if (activity != null) {
             if (fileDescription.getFilePath() == null) {
                 Intent i = new Intent(activity, DownloadService.class);
@@ -490,7 +492,7 @@ public class ChatController {
     }
 
     void cleanAll() throws PushServerErrorException {
-        Log.i(TAG, "cleanAll: ");
+        if (BuildConfig.DEBUG) Log.i(TAG, "cleanAll: ");
         mDatabaseHolder.cleanDatabase();
         if (activity != null) activity.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
@@ -547,14 +549,14 @@ public class ChatController {
     }
 
     public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
-        Log.i(TAG, "onSystemMessageFromServer:");
+        if (BuildConfig.DEBUG) Log.i(TAG, "onSystemMessageFromServer:");
         switch (MessageMatcher.getType(bundle)) {
             case MessageMatcher.TYPE_OPERATOR_TYPING:
                 addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), System.currentTimeMillis(), mConsultWriter.getCurrentAvatarPath()), ctx);
                 break;
             case MessageMatcher.TYPE_MESSAGES_READ:
                 List<String> list = MessageFormatter.getReadIds(bundle);
-                Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
+                if (BuildConfig.DEBUG)  Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
                 for (String s : list) {
                     if (activity != null) {
                         activity.setPhraseSentStatus(s, MessageState.STATE_WAS_READ);
@@ -567,7 +569,7 @@ public class ChatController {
     }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
-        Log.e(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(activity));
+        if (BuildConfig.DEBUG)  Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(activity));
         if (!PrefUtils.isClientIdSet(activity)) {
             callback.onSuccess(new ArrayList<ChatItem>());
             return;
@@ -611,7 +613,7 @@ public class ChatController {
     }
 
     public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {
-        Log.i(TAG, "onConsultMessage: " + pushMessage);
+        if (BuildConfig.DEBUG)  Log.i(TAG, "onConsultMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
         ConsultMessageReaction consultReactor = new ConsultMessageReaction(
                 mConsultWriter,
@@ -773,7 +775,7 @@ public class ChatController {
     }
 
     private void onSettingClientId(final Context ctx) {
-        Log.i(TAG, "onSettingClientId:");
+        if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -792,7 +794,7 @@ public class ChatController {
                                 .getInstance(ctx)
                                 .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils
                                                 .getUserName(ctx),
-                                        PrefUtils.getNewClientID(ctx),""), true);
+                                        PrefUtils.getNewClientID(ctx), ""), true);
 
                         List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(20);
                         mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
@@ -839,21 +841,21 @@ public class ChatController {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "onReceive:");
+            if (BuildConfig.DEBUG)  Log.i(TAG, "onReceive:");
             String action = intent.getAction();
             if (action == null) return;
             if (action.equals(PROGRESS_BROADCAST)) {
-                Log.i(TAG, "onReceive: PROGRESS_BROADCAST ");
+                if (BuildConfig.DEBUG)  Log.i(TAG, "onReceive: PROGRESS_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 if (activity != null && fileDescription != null)
                     activity.updateProgress(fileDescription);
             } else if (action.equals(DOWNLOADED_SUCCESSFULLY_BROADCAST)) {
-                Log.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ");
+                if (BuildConfig.DEBUG)  Log.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 if (activity != null && fileDescription != null)
                     activity.updateProgress(fileDescription);
             } else if (action.equals(DOWNLOAD_ERROR_BROADCAST)) {
-                Log.i(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ");
+                if (BuildConfig.DEBUG)  Log.i(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 if (activity != null && fileDescription != null) {
                     Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);

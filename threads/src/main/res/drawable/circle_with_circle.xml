@@ -11,6 +11,7 @@
         <item
             android:width="36dp"
             android:height="36dp"
+            android:gravity="center"
             android:drawable="@drawable/ring_orange"
             />
 
