@@ -86,7 +86,7 @@ public class PushIniter {
 
                     @Override
                     public void onError(PushServerErrorException e) {
-                        Log.i(TAG, "onError: "+e);
+                        Log.i(TAG, "onFileDonwloaderError: "+e);
                     }
                 });
     }

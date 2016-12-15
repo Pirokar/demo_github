@@ -26,10 +26,12 @@
         <item name="android:textColor">@color/green_dark</item>
         <item name="android:windowBackground">@color/blue_transparent</item>
     </style>
+
     <style name="FileDialogStyleTransparent" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:textColor">@color/green_dark</item>
 
     </style>
+
     <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <!--  <item name="colorPrimaryDark">@color/black_transparent</item>-->

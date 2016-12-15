@@ -42,7 +42,7 @@ public class FilePickerFragment extends DialogFragment
     private static final String PREVIOUS_FOLDER_DOTS = "...";
     private ListView mListView;
     private Button mOkButton, mCancelButton, mDirectoryUpButton;
-    private AnimatedArrayAdapter mAnimatedArrayAdapter;
+    private  ArrayAdapter<String> mAnimatedArrayAdapter;
     private SelectedListener mSelectedListener;
     private FileFilter mFileFilter;
     private boolean isFilterEnabled;
@@ -77,23 +77,25 @@ public class FilePickerFragment extends DialogFragment
         ChatStyle style = PrefUtils.getIncomingStyle(this.getActivity());
         AlertDialog.Builder builder;
         if (style != null && style.fileBrowserDialogStyleResId != INVALID) {
-            builder = new AlertDialog.Builder(getActivity(),  style.fileBrowserDialogStyleResId);
+            builder = new AlertDialog.Builder(getActivity(), style.fileBrowserDialogStyleResId);
         } else {
-            builder = new AlertDialog.Builder(getActivity(),R.style.FileDialogStyleTransparent);
+            builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyleTransparent);
+
         }
         builder.setTitle(getString(R.string.choose_file));
         builder.setNeutralButton(getString(R.string.folder_up), this);
         builder.setNegativeButton(getString(R.string.cancel), this);
         dialog = builder.create();
         v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_directory_picker, null);
+
         dialog.setView(v);
         mListView = (ListView) v.findViewById(R.id.folder_list);
-        mAnimatedArrayAdapter = new AnimatedArrayAdapter(getActivity(), R.layout.item_filepicker, R.id.text);
-        mAnimatedArrayAdapter.setAnimationToRows(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in_fast));
+        mAnimatedArrayAdapter = new  ArrayAdapter<String>(getActivity(), R.layout.item_filepicker, R.id.text);
         mListView.setAdapter(travelToFolder(currentAbsoluteDir, mAnimatedArrayAdapter));
         mListView.setOnItemClickListener(this);
         return dialog;
     }
+
 
     public void setFileFilter(FileFilter filefilter) {
         mFileFilter = filefilter;
@@ -125,8 +127,8 @@ public class FilePickerFragment extends DialogFragment
         for (int i = 0; i < folders.length; i++) {
             String absPath = folders[i].getAbsolutePath();
             int slashPos = absPath.lastIndexOf("/");
-            if (folders[i].isDirectory())folderNames[i + 1] = absPath.substring(slashPos);
-            else folderNames[i + 1] = absPath.substring(slashPos+1);
+            if (folders[i].isDirectory()) folderNames[i + 1] = absPath.substring(slashPos);
+            else folderNames[i + 1] = absPath.substring(slashPos + 1);
         }
         return folderNames;
     }
@@ -171,7 +173,7 @@ public class FilePickerFragment extends DialogFragment
             travelToParentDir(currentAbsoluteDir, mAnimatedArrayAdapter);
             return;
         }
-        File pointedFileToTravel = new File(currentAbsoluteDir.toString() + textViewText);
+        File pointedFileToTravel = new File(currentAbsoluteDir.toString() + "/" + textViewText);
         currentAbsoluteDir = pointedFileToTravel;
         if (pointedFileToTravel.exists() && mSelectedListener != null) {
             if (mFileFilter != null && mFileFilter.accept(pointedFileToTravel.getAbsoluteFile())) {
@@ -184,7 +186,6 @@ public class FilePickerFragment extends DialogFragment
 
     public interface SelectedListener {
         void onFileSelected(File directory);
-
     }
 
     public void setOnDirSelectedListener(SelectedListener getDirectory) {

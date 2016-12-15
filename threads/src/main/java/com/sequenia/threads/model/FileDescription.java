@@ -88,6 +88,27 @@ public class FileDescription implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FileDescription)) return false;
+
+        FileDescription that = (FileDescription) o;
+
+        if (size != that.size) return false;
+        if (timeStamp != that.timeStamp) return false;
+        return from != null ? from.equals(that.from) : that.from == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = from != null ? from.hashCode() : 0;
+        result = 31 * result + (int) (size ^ (size >>> 32));
+        result = 31 * result + (int) (timeStamp ^ (timeStamp >>> 32));
+        return result;
+    }
+
+    @Override
     public int describeContents() {
         return hashCode();
     }
@@ -125,30 +146,6 @@ public class FileDescription implements Parcelable {
             return new FileDescription[size];
         }
     };
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FileDescription)) return false;
-
-        FileDescription that = (FileDescription) o;
-
-        if (size != that.size) return false;
-        if (from != null ? !from.equals(that.from) : that.from != null) return false;
-        if (downloadPath != null ? !downloadPath.equals(that.downloadPath) : that.downloadPath != null)
-            return false;
-        return incomingName != null ? incomingName.equals(that.incomingName) : that.incomingName == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = from != null ? from.hashCode() : 0;
-        result = 31 * result + (downloadPath != null ? downloadPath.hashCode() : 0);
-        result = 31 * result + (incomingName != null ? incomingName.hashCode() : 0);
-        result = 31 * result + (int) (size ^ (size >>> 32));
-        return result;
-    }
 
     public String getFrom() {
         return from;

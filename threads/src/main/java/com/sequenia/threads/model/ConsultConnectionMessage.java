@@ -94,10 +94,6 @@ public class ConsultConnectionMessage implements ChatItem,ConsultChatPhrase {
             return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (status != null ? !status.equals(that.status) : that.status != null) return false;
-        if (avatarPath != null ? !avatarPath.equals(that.avatarPath) : that.avatarPath != null)
-            return false;
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
         return messageId != null ? messageId.equals(that.messageId) : that.messageId == null;
 
     }
@@ -108,9 +104,6 @@ public class ConsultConnectionMessage implements ChatItem,ConsultChatPhrase {
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (sex ? 1 : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
-        result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
         return result;
     }

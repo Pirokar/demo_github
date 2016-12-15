@@ -16,9 +16,10 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushController;
+import com.sequenia.appwithchatdev.BuildConfig;
+import com.sequenia.appwithchatdev.R;
 import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.utils.PermissionChecker;
-import com.sequenia.threads.utils.ThreadsInitializer;
 
 import java.util.ArrayList;
 
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PushController.getInstance(this).init();
         setContentView(R.layout.activity_main);
         View v = findViewById(R.id.version);
         if (null != v && v instanceof TextView) {
@@ -60,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                 && isWriteExternalGranted
                 && isAccessNetworkStateGranted) {
             Log.e(TAG, "initing");
-            ThreadsInitializer.getInstance(this).init();
         } else {
             requestPermissionsAndInit(PERM_REQUEST_CODE);
         }
@@ -74,10 +75,9 @@ public class MainActivity extends AppCompatActivity {
                 || !PermissionChecker.isReadPhoneStatePermissionGranted(this)) {
             requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK);
         } else if (mEditText.getText().length() > 5) {
-            ThreadsInitializer.getInstance(this).init();
             Intent i = ChatStyle
                     .IntentBuilder
-                    .getBuilder(this, mEditText.getText().toString(),nameTextView.getText().toString())
+                    .getBuilder(this, mEditText.getText().toString(), nameTextView.getText().toString())
                   /*  .setChatTitleStyle(R.string.contact_center,
                             android.R.color.holo_red_dark,
                             android.R.color.holo_blue_bright,
@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             if (grantedum == grantResults.length) {
-                PushController.getInstance(this).init();
                 if (requestCode == PERM_REQUEST_CODE_CLICK) {
                     onChatButtonClick(null);
                 }

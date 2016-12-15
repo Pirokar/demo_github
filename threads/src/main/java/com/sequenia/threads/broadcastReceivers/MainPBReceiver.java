@@ -6,12 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.pushserver.android.PushBroadcastReceiver;
-import com.pushserver.android.PushController;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
-import com.sequenia.threads.controllers.PushIniter;
-import com.sequenia.threads.formatters.MessageFormatter;
-import com.sequenia.threads.utils.Callback;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.controllers.ChatController;
 import com.sequenia.threads.utils.PrefUtils;
@@ -19,8 +13,8 @@ import com.sequenia.threads.utils.PrefUtils;
 /**
  * Created by yuri on 22.06.2016.
  */
-public class MyPBReceiver extends PushBroadcastReceiver {
-    private static final String TAG = "MyPBReceiver ";
+public class MainPBReceiver extends PushBroadcastReceiver {
+    private static final String TAG = "MainPBReceiver ";
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
@@ -42,9 +36,7 @@ public class MyPBReceiver extends PushBroadcastReceiver {
             @Override
             public void run() {
                 if (s != null) PrefUtils.setDeviceAddress(context, s);
-                Log.e(TAG, "PrefUtils.getNewClientID(context) = " + PrefUtils.getNewClientID(context));
-                context.sendBroadcast(new Intent(ChatController.CLIENT_ID_IS_SET_BROADCAST));
-
+                context.sendBroadcast(new Intent(ChatController.DEVICE_ID_IS_SET_BROADCAST));
             }
         }).start();
     }
@@ -56,6 +48,6 @@ public class MyPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onError(Context context, String s) {
-        Log.e(TAG, "onError " + s);
+        Log.e(TAG, "onFileDonwloaderError " + s);
     }
 }

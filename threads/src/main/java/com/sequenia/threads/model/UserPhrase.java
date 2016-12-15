@@ -72,6 +72,26 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserPhrase)) return false;
+
+        UserPhrase that = (UserPhrase) o;
+
+        if (messageId != null ? !messageId.equals(that.messageId) : that.messageId != null)
+            return false;
+        return phrase != null ? phrase.equals(that.phrase) : that.phrase == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = messageId != null ? messageId.hashCode() : 0;
+        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
+        return result;
+    }
+
     public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
@@ -134,30 +154,6 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
     public void setChosen(boolean chosen) {
         isChosen = chosen;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserPhrase)) return false;
-
-        UserPhrase that = (UserPhrase) o;
-
-        if (messageId != null ? !messageId.equals(that.messageId) : that.messageId != null)
-            return false;
-        if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
-        if (mQuote != null ? !mQuote.equals(that.mQuote) : that.mQuote != null) return false;
-        return fileDescription != null ? fileDescription.equals(that.fileDescription) : that.fileDescription == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = messageId != null ? messageId.hashCode() : 0;
-        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
-        result = 31 * result + (mQuote != null ? mQuote.hashCode() : 0);
-        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
-        return result;
     }
 
     public boolean isOnlyImage() {

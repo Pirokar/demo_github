@@ -35,7 +35,7 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onError(Context context, String s) {
-        Log.e(TAG, "onError " + s);
+        Log.e(TAG, "onFileDonwloaderError " + s);
     }
 
 

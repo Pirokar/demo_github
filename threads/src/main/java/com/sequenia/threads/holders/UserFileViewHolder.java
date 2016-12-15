@@ -26,7 +26,7 @@ import java.util.Date;
 import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
- * Created by yuri on 01.07.2016.
+ *
  */
 public class UserFileViewHolder extends BaseHolder {
     private static final String TAG = "UserFileViewHolder ";
@@ -54,14 +54,18 @@ public class UserFileViewHolder extends BaseHolder {
         mBubble = (ImageView) itemView.findViewById(R.id.bubble_1);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
-            if (style.outgoingMessageBubbleColor!=INVALID){
+            if (style.outgoingMessageBubbleColor != INVALID) {
                 mBubble.setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             }
             if (style.outgoingMessageTextColor != INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-                setTextColorToViews(new TextView[] {mFileHeader,mSizeTextView,mTimeStampTextView},style.outgoingMessageTextColor);
+                setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.outgoingMessageTextColor);
             }
-            if (style.incomingMessageBubbleColor!=INVALID)setTintToProgressButton(mCircularProgressButton,style.incomingMessageBubbleColor);
+            if (style.incomingMessageBubbleColor != INVALID) {
+                setTintToProgressButton(mCircularProgressButton, style.incomingMessageBubbleColor);
+            }else {
+                setTintToProgressButton(mCircularProgressButton, android.R.color.white);
+            }
         }
     }
 

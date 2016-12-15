@@ -3,15 +3,14 @@ package com.sequenia.threads.holders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -45,6 +44,7 @@ public class UserPhraseViewHolder extends BaseHolder {
     private TextView mRightTextHeader;
     private TextView mRightTextTimeStamp;
     private TextView mTimeStampTextView;
+    private FrameLayout mPhraseFrame;
     private CircularProgressButton mFileImageButton;
     private SimpleDateFormat sdf;
     private SimpleDateFormat fileSdf;
@@ -63,6 +63,7 @@ public class UserPhraseViewHolder extends BaseHolder {
         mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mFileImageButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
+        mPhraseFrame = (FrameLayout) itemView.findViewById(R.id.phrase_frame);
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             fileSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
@@ -80,11 +81,13 @@ public class UserPhraseViewHolder extends BaseHolder {
                 mBubble.setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             if (style.outgoingMessageTextColor != INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-                setTextColorToViews(new TextView[]{mRightTextDescr,mPhraseTextView,mRightTextHeader,mRightTextTimeStamp,mTimeStampTextView},style.outgoingMessageTextColor);
+                setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
             }
             if (style.incomingMessageBubbleColor != INVALID) {
-                setTintToProgressButton(mFileImageButton,style.incomingMessageBubbleColor);
+                setTintToProgressButton(mFileImageButton, style.incomingMessageBubbleColor);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.incomingMessageBubbleColor));
+            } else {
+                setTintToProgressButton(mFileImageButton, android.R.color.white);
             }
         }
     }
@@ -102,7 +105,7 @@ public class UserPhraseViewHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(Html.fromHtml(phrase +
+            mPhraseTextView.setText(Html.fromHtml(phrase.trim().replaceAll("\n", "<br>") +
                     " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
         }
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
@@ -128,7 +131,8 @@ public class UserPhraseViewHolder extends BaseHolder {
                     filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath()) == null ? "" : FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
                 }
                 mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
-                if (null != fileClickListener) mFileImageButton.setOnClickListener(fileClickListener);
+                if (null != fileClickListener)
+                    mFileImageButton.setOnClickListener(fileClickListener);
                 mFileImageButton.setProgress(quote.getFileDescription().getDownloadProgress());
             }
         }
@@ -152,6 +156,11 @@ public class UserPhraseViewHolder extends BaseHolder {
             } else {
                 mFileImageButton.setProgress(fileDescription.getDownloadProgress());
             }
+        }
+        if (quote != null || fileDescription != null) {
+            mPhraseFrame.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            mPhraseFrame.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         if (mRightTextHeader.getText() == null ||
                 mRightTextHeader.getText().toString().equals("null")) {

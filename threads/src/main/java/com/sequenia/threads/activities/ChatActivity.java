@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -572,6 +573,9 @@ public class ChatActivity extends BaseActivity
 
     @Override
     public void onFileSelected(File fileOrDirectory) {
+
+        Log.i(TAG, "onFileSelected: " + fileOrDirectory);
+
         mFileDescription = new FileDescription(getString(R.string.I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
         mQuoteLayoutHolder.setText(getString(R.string.I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
         mQuote = null;
@@ -703,19 +707,20 @@ public class ChatActivity extends BaseActivity
             ((ConsultPhrase) item).setRead(false);
         }
         mChatAdapter.addItems(Arrays.asList(item));
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isInMessageSearchMode)
-                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
-            }
-        }, 100);
-
+        if (item instanceof UserPhrase) {
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isInMessageSearchMode)
+                        mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                }
+            }, 100);
+        }
     }
 
     public void addChatItems(final List<ChatItem> list) {
         if (list.size() == 0) return;
-        Log.d(TAG, "addChatItems: " + list);
+        Log.i(TAG, "addChatItems: list.size" + list.size());
         h.post(new Runnable() {
             @Override
             public void run() {
@@ -738,10 +743,9 @@ public class ChatActivity extends BaseActivity
         }, 600);
     }
 
-    public void showDownloading() {
-    }
 
-    public void removeDownloading() {
+    public void removeSearching() {
+        if (null != mChatAdapter) mChatAdapter.removeConsultSearching();
     }
 
     public void setMessageState(String messageId, MessageState state) {
@@ -758,9 +762,9 @@ public class ChatActivity extends BaseActivity
                     mConsultNameView.setVisibility(View.VISIBLE);
                     mSearchMessageEditText.setVisibility(View.GONE);
                     mSearchMessageEditText.setText("");
-                    if (style != null && style.chatTitleTextResId!=INVALID) {
+                    if (style != null && style.chatTitleTextResId != INVALID) {
                         mConsultNameView.setText(style.chatTitleTextResId);
-                    }else {
+                    } else {
                         mConsultNameView.setText(getString(R.string.contact_center));
                     }
                 }
@@ -947,6 +951,16 @@ public class ChatActivity extends BaseActivity
                 if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                         || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
                     mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? getString(R.string.image) : text, cp.getFileDescription().getFilePath());
+                } else if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PDF) {
+                    String fileName = "";
+                    try {
+                        fileName = cp.getFileDescription().getIncomingName() == null ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath())) : cp.getFileDescription().getIncomingName();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText,
+                            fileName,
+                            null);
                 } else {
                     mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
                 }
@@ -1086,6 +1100,7 @@ public class ChatActivity extends BaseActivity
     }
 
     public void updateProgress(FileDescription filedescription) {
+
         mChatAdapter.updateProgress(filedescription);
     }
 
@@ -1177,6 +1192,14 @@ public class ChatActivity extends BaseActivity
         });
         ncdf.setCancelable(true);
         ncdf.show(getFragmentManager(), null);
+    }
+    public void showFullError(String error) {
+        AlertDialog d = new AlertDialog
+                .Builder(this)
+                .setMessage(error)
+                .setCancelable(true)
+                .create();
+        d.show();
     }
 
     public void cleanChat() {

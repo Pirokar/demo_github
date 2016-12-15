@@ -43,9 +43,10 @@
     <string name="choose_file">Выберите файл</string>
     <string name="choose">Выбрат</string>
     <string name="folder_up">Выше</string>
-    <string name="now_you_are_in_directory">Вы наодитесь в </string>
+    <string name="now_you_are_in_directory">Вы находитесь в </string>
     <string name="from">из</string>
     <string name="in">в</string>
+    <string name="title_default">Заголовок</string>
     <string name="error">Произошла ошибка </string>
     <string name="no_pdf_support">Устройство не поддерживает данный формат файлов</string>
     <string name="retreiving_history">Загружаем историю</string>
@@ -57,7 +58,7 @@
     <string name="with_file">(с файлом)</string>
     <string name="download">Загрузить</string>
     <string name="you_have_unread_messages">У вас есть непрочитанные сообщения</string>
-    <string name="message_were_unsent">Сообщение не было послано</string>
+    <string name="message_were_unsent">Сообщение не было отправлено</string>
     <string name="unknown_operator">Неизвестный</string>
     <string name="saved_to">Сохранено в</string>
     <string name="unable_to_save">Сейчас невозможно сохранить файл</string>

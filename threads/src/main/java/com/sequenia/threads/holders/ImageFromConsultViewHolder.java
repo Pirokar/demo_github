@@ -104,7 +104,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             filter.setVisibility(View.INVISIBLE);
             filterSecond.setVisibility(View.INVISIBLE);
         }
-        @DrawableRes int resId = R.drawable.defaultprofile_360;
+        @DrawableRes int resId = R.drawable.blank_avatar_round;
         if (style!=null && style.defaultIncomingMessageAvatar!=INVALID)resId = style.defaultIncomingMessageAvatar;
         if (isAvatarVisible) {
             mConsultAvatar.setVisibility(View.VISIBLE);

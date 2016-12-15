@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,6 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             , boolean isDownloadError
             , boolean isChosen
             , MessageState sentState) {
-
         final Picasso p = Picasso.with(itemView.getContext());
         mTimeStampTextView.setOnLongClickListener(longListener);
         ViewGroup vg = (ViewGroup) itemView;

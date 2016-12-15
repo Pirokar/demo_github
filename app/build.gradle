@@ -20,11 +20,11 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.sequenia.appwithchatbeta"
+        applicationId "com.sequenia.appwithchatdev"
         minSdkVersion 17
         targetSdkVersion 25
         versionCode 13
-        versionName "2.81_test"
+        versionName "2.88_test"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName);
     }
     buildTypes {

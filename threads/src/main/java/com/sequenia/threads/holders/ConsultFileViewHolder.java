@@ -73,7 +73,8 @@ public class ConsultFileViewHolder extends BaseHolder {
         String name = null;
         mFileHeader.setText(fileDescription.getIncomingName() == null ? FileUtils.getLastPathSegment(fileDescription.getFilePath()) : fileDescription.getIncomingName());
         if (mFileHeader.getText().toString().equalsIgnoreCase("null")) mFileHeader.setText("");
-        mSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
+        mSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(),
+                fileDescription.getSize()));
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         ViewGroup vg = (ViewGroup) itemView;
@@ -91,7 +92,7 @@ public class ConsultFileViewHolder extends BaseHolder {
         }
         if (isAvatarVisible) {
             mConsultAvatar.setVisibility(View.VISIBLE);
-            @DrawableRes int resiD = R.drawable.defaultprofile_360;
+            @DrawableRes int resiD = R.drawable.blank_avatar_round;
             if (style!=null && style.defaultIncomingMessageAvatar!=INVALID)resiD = style.defaultIncomingMessageAvatar;
 
             if (avatarPath != null) {

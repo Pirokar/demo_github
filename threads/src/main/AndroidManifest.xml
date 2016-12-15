@@ -58,7 +58,7 @@
         </activity>
 
         <service
-            android:name=".services.MyServerIntentService"
+            android:name=".services.IncomingMessagesIntentService"
             android:exported="false" />
         <service
             android:name=".services.DownloadService"
@@ -66,17 +66,7 @@
         <service
             android:name=".services.NotificationService"
             android:exported="false" />
-        <receiver
-            android:name=".broadcastReceivers.MyPBReceiver"
-            android:exported="false"
-            android:permission="com.sequenia.appwithchatbeta.permission.pushserver.RECEIVE">
-            <intent-filter>
-                <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT" />
-                <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT" />
-                <action android:name="com.pushserver.android.DEVICE_ADDRESS_CHANGED_EVENT" />
-                <action android:name="com.pushserver.android.ERROR_EVENT" />
-            </intent-filter>
-        </receiver>
+
         <receiver
             android:name=".broadcastReceivers.MyOtherPBReceiver"
             android:exported="false"
@@ -89,9 +79,7 @@
         <meta-data
             android:name="com.pushserver.android.useDefaultDeviceUID"
             android:value="true" />
-        <meta-data
-            android:name="com.pushserver.android.service"
-            android:value="com.sequenia.threads.services.MyServerIntentService" />
+
     </application>
 
 </manifest>

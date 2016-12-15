@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-<ImageView
-    android:id="@+id/bubble"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_alignRight="@+id/phrase_content"
-    android:layout_alignLeft="@+id/phrase_content"
-    android:layout_alignBottom="@+id/phrase_content"
-    android:layout_alignTop="@+id/phrase_content"
-    android:src="@drawable/a_user_bubble"
-    android:scaleType="fitXY"
-    android:paddingTop="@dimen/margin_quarter"
-    android:paddingBottom="@dimen/margin_quarter"
-    />
+    <ImageView
+        android:id="@+id/bubble"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/phrase_content"
+        android:layout_alignLeft="@+id/phrase_content"
+        android:layout_alignRight="@+id/phrase_content"
+        android:layout_alignTop="@+id/phrase_content"
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/a_user_bubble"
+        />
 
     <LinearLayout
         android:id="@+id/phrase_content"
@@ -25,9 +25,10 @@
         android:layout_height="wrap_content"
         android:gravity="right"
         android:orientation="vertical"
-        android:padding="@dimen/margin_half">
+        android:padding="@dimen/margin_quarter">
 
         <TableRow
+            android:paddingTop="@dimen/margin_quarter"
             android:id="@+id/right_text_row"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,20 +47,21 @@
                 android:visibility="gone"
                 app:completed_drawable="@drawable/ic_insert_file_white_36dp"
                 app:in_progress_label="@drawable/ic_clear_blue_36dp"
-                app:start_download_label="@drawable/ic_vertical_align_bottom_24dp" />
+                app:start_download_label="@drawable/ic_vertical_align_bottom_24dp"/>
 
             <View
+                android:layout_marginTop="@dimen/margin_quarter"
                 android:id="@+id/delimeter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/margin_quarter"
-                android:background="@android:color/white" />
+                android:background="@android:color/white"/>
 
             <LinearLayout
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingRight="2dp">
 
                 <TextView
                     android:id="@+id/to"
@@ -69,7 +71,7 @@
                     android:layout_marginTop="2dp"
                     android:paddingRight="80dp"
                     android:text="Иван Петров"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"/>
 
                 <TextView
                     android:id="@+id/file_specs"
@@ -78,7 +80,7 @@
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:text="счет на оплату 1,2mb 436666666666364"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"/>
 
                 <TextView
                     android:id="@+id/send_at"
@@ -87,11 +89,12 @@
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:text="отправлено 21 апр 2016"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"/>
             </LinearLayout>
         </TableRow>
 
         <FrameLayout
+            android:id="@+id/phrase_frame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -107,7 +110,7 @@
                 android:drawablePadding="@dimen/margin_quarter"
                 android:padding="@dimen/margin_half"
                 android:text="10:19"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"/>
 
             <TextView
                 android:id="@+id/text"
@@ -116,15 +119,15 @@
                 android:layout_gravity="left|center_vertical"
                 android:layout_marginTop="0dp"
                 android:paddingBottom="@dimen/margin_half"
-                android:paddingLeft="10dp"
+                android:paddingLeft="4dp"
 
 
-                android:paddingRight="10dp"
+                android:paddingRight="4dp"
                 android:paddingTop="5dp"
 
                 android:text="textetxtetex &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
                 android:textColor="@android:color/white"
-                android:textSize="16dp" />
+                android:textSize="16dp"/>
         </FrameLayout>
 
     </LinearLayout>
@@ -137,13 +140,13 @@
         android:layout_alignBottom="@+id/phrase_content"
         android:layout_alignParentTop="true"
         android:layout_below="@+id/phrase_content"
-        android:background="@color/blue_transparent" />
+        android:background="@color/blue_transparent"/>
 
     <View
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
         android:layout_below="@+id/phrase_content"
-        android:background="@color/blue_transparent" />
+        android:background="@color/blue_transparent"/>
 
 </RelativeLayout>

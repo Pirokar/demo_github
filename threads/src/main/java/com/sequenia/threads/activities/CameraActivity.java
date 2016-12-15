@@ -1,6 +1,7 @@
 package com.sequenia.threads.activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -10,7 +11,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -191,18 +191,42 @@ public class CameraActivity extends BaseActivity {
                                             out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), matrix, true);
                                             raw.recycle();
                                         }
-                                        final File output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "THR-" + System.currentTimeMillis() + ".jpg");
+                                        String filename = "thr" + System.currentTimeMillis() + ".jpg";
+                                        File output = null;
                                         try {
-                                            out.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(output));
+
+                                            output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+                                                    filename);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            try {
+                                                output = new File(getPackageManager().getApplicationInfo(getPackageName(), 0).dataDir + File.separator + filename);
+                                            } catch (PackageManager.NameNotFoundException e1) {
+                                                e1.printStackTrace();
+                                            }
+
+                                        }
+                                        if (output == null) {
+                                            output = new File(getFilesDir(), filename);
+                                        }
+                                        try {
+                                            FileOutputStream fio = new FileOutputStream(output);
+                                            out.compress(Bitmap.CompressFormat.JPEG, 100, fio);
+                                            try {
+                                                fio.flush();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
                                             mCurrentPhoto = output.getAbsolutePath();
                                         } catch (FileNotFoundException e) {
                                             Log.e(TAG, "error while saving image to disk");
                                             e.printStackTrace();
                                         }
+                                        final File finalOutput = output;
                                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                                             @Override
                                             public void run() {
-                                                setStateImagePreview("file://" + output.getAbsolutePath());
+                                                setStateImagePreview("file://" + finalOutput.getAbsolutePath());
                                             }
                                         });
                                     }
@@ -293,10 +317,10 @@ public class CameraActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
         if (mSurfaceView.getVisibility() == View.VISIBLE) {
-            if (mCamera==null){
-                Toast.makeText(this,getString(R.string.no_cameras_detected),Toast.LENGTH_SHORT).show();
+            if (mCamera == null) {
+                Toast.makeText(this, getString(R.string.no_cameras_detected), Toast.LENGTH_SHORT).show();
 
-            }else {
+            } else {
                 mCamera.stopPreview();
                 mCamera.release();
                 isCameraReleased = true;
@@ -349,10 +373,8 @@ public class CameraActivity extends BaseActivity {
         Camera.Size optimalSize = getOptimalPreviewSize(sizes,
                 getResources().getDisplayMetrics().widthPixels,
                 getResources().getDisplayMetrics().heightPixels);
-        Log.e(TAG, "optimalSize .width =" + optimalSize.width);
-        Log.e(TAG, "optimalSize .height =" + optimalSize.height);
-        cp.setPreviewSize(optimalSize.width,optimalSize.height);
-        cp.setPictureSize(optimalSize.width,optimalSize.height);
+        cp.setPreviewSize(optimalSize.width, optimalSize.height);
+        cp.setPictureSize(optimalSize.width, optimalSize.height);
         mCamera.setParameters(cp);
         mCamera.setDisplayOrientation(90);
     }
@@ -367,9 +389,6 @@ public class CameraActivity extends BaseActivity {
         double minDiff = Double.MAX_VALUE;
         int targetHeight = h;
         for (Camera.Size size : sizes) {
-            Log.e(TAG, "targetHeight = " + targetHeight);
-            Log.e(TAG, "size.width = " + size.width);
-            Log.e(TAG, "size.height = " + size.height);
             double ratio = (double) size.width / size.height;
             if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
             if (Math.abs(size.width - targetHeight) < minDiff) {

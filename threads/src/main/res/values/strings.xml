@@ -52,6 +52,7 @@
     <string name="search_more">Search more</string>
     <string name="one_new_message">1 new message</string>
     <string name="new_messages">new messages</string>
+    <string name="title_default">Header</string>
     <string name="file_received">File received</string>
     <string name="with_file">(with file)</string>
     <string name="with_files">(with files)</string>

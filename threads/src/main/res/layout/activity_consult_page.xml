@@ -10,7 +10,7 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="280dp"
-        android:src="@drawable/defaultprofile_360"
+        android:src="@drawable/blank_avatar_round"
         android:scaleType="centerCrop"
         />
     <View

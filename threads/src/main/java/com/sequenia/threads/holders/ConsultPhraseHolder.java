@@ -1,12 +1,8 @@
 package com.sequenia.threads.holders;
 
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.Formatter;
@@ -14,6 +10,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -56,6 +53,7 @@ public class ConsultPhraseHolder extends BaseHolder {
     private View mFilterViewSecond;
     private static ChatStyle style;
     private ImageView mBubble;
+    private FrameLayout mPhraseFrame;
     @DrawableRes
     private int defIcon;
 
@@ -71,6 +69,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
+        mPhraseFrame = (FrameLayout) itemView.findViewById(R.id.phrase_frame);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {
@@ -88,9 +87,9 @@ public class ConsultPhraseHolder extends BaseHolder {
                         mRightTextDescr,
                         rightTextFileStamp}, style.incomingMessageTextColor);
             }
-            defIcon = style.defaultIncomingMessageAvatar == INVALID ? R.drawable.defaultprofile_360 : style.defaultIncomingMessageAvatar;
+            defIcon = style.defaultIncomingMessageAvatar == INVALID ? R.drawable.blank_avatar_round : style.defaultIncomingMessageAvatar;
             if (style.outgoingMessageBubbleColor != INVALID) {
-                setTintToProgressButton(mCircularProgressButton,style.outgoingMessageBubbleColor);
+                setTintToProgressButton(mCircularProgressButton, style.outgoingMessageBubbleColor);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageBubbleColor));
             }
         }
@@ -112,7 +111,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(Html.fromHtml(phrase + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
+            mPhraseTextView.setText(Html.fromHtml(phrase.trim().replaceAll("\n", "<br>") + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
         }
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
@@ -161,8 +160,14 @@ public class ConsultPhraseHolder extends BaseHolder {
         if (fileDescription == null && quote == null) {
             fileRow.setVisibility(View.GONE);
         }
+        if (fileDescription != null
+                || quote != null) {
+            mPhraseFrame.getLayoutParams().width =FrameLayout.LayoutParams.MATCH_PARENT;
+        } else {
+            mPhraseFrame.getLayoutParams().width = FrameLayout.LayoutParams.WRAP_CONTENT;
+        }
         if (isAvatarVisible) {
-            mBubble.setPadding(0,0,0, ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16,itemView.getResources().getDisplayMetrics())));
+            mBubble.setPadding(0, 0, 0, ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, itemView.getResources().getDisplayMetrics())));
             mBubble.invalidate();
             mConsultAvatar.setVisibility(View.VISIBLE);
             mConsultAvatar.setOnClickListener(onAvatarClickListener);
@@ -203,7 +208,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
-            mBubble.setPadding(0,0,0,((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,itemView.getResources().getDisplayMetrics())));
+            mBubble.setPadding(0, 0, 0, ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, itemView.getResources().getDisplayMetrics())));
         }
         if (isChosen) {
             mFilterView.setVisibility(View.VISIBLE);

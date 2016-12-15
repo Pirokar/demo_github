@@ -65,7 +65,7 @@ public class DownloadService extends Service {
             }
 
             @Override
-            public void onError(final Exception e) {
+            public void onFileDonwloaderError(final Exception e) {
                 Log.e(TAG, "error while downloading file " + e);
                 e.printStackTrace();
                 fileDescription.setDownloadProgress(0);

@@ -79,14 +79,14 @@ public abstract class FileDownloader {
             } catch (Exception e) {
                 Log.e(TAG, "1 "+e);
                 e.printStackTrace();
-                onError(e);
+                onFileDonwloaderError(e);
             } finally {
                 urlConnection.disconnect();
             }
         } catch (Exception e) {
             Log.e(TAG, "2 "+e);
             e.printStackTrace();
-            onError(e);
+            onFileDonwloaderError(e);
         }
     }
 
@@ -94,5 +94,5 @@ public abstract class FileDownloader {
 
     public abstract void onComplete(File file);
 
-    public abstract void onError(Exception e);
+    public abstract void onFileDonwloaderError(Exception e);
 }

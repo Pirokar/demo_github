@@ -1,6 +1,5 @@
 package com.sequenia.threads.holders;
 
-import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -47,7 +46,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
             headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
             connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
         }
-        defIcon =  style!=null && style.defaultIncomingMessageAvatar!=INVALID?style.defaultIncomingMessageAvatar:R.drawable.defaultprofile_360;
+        defIcon =  style!=null && style.defaultIncomingMessageAvatar!=INVALID?style.defaultIncomingMessageAvatar:R.drawable.blank_avatar_round;
     }
 
     public void onBind(

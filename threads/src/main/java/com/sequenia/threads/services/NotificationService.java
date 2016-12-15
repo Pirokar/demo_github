@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -23,6 +24,8 @@ import android.widget.RemoteViews;
 import com.sequenia.threads.R;
 import com.sequenia.threads.activities.ChatActivity;
 import com.sequenia.threads.activities.TranslucentActivity;
+import com.sequenia.threads.formatters.MarshmellowPushMessageFormatter;
+import com.sequenia.threads.formatters.MessageFormatter;
 import com.sequenia.threads.formatters.NugatMessageFormatter;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatStyle;
@@ -32,9 +35,7 @@ import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.picasso_url_connection_only.Target;
 import com.sequenia.threads.utils.CircleTransform;
-import com.sequenia.threads.formatters.MessageFormatter;
 import com.sequenia.threads.utils.PrefUtils;
-import com.sequenia.threads.formatters.MarshmellowPushMessageFormatter;
 import com.sequenia.threads.utils.TargetNoError;
 import com.sequenia.threads.utils.Tuple;
 
@@ -53,9 +54,9 @@ import static com.sequenia.threads.model.ChatStyle.INVALID;
  */
 public class NotificationService extends Service {
     private static final String TAG = "NotificationService ";
-    public static final String ACTION_ALL_MESSAGES_WERE_READ = "com.sequenia.threads.services.MyServerIntentService.ACTION_MESSAGES_WERE_READ";
-    public static final String ACTION_ADD_UNREAD_MESSAGE = "com.sequenia.threads.services.MyServerIntentService.ACTION_ADD_UNREAD_MESSAGE";
-    public static final String ACTION_ADD_UNSENT_MESSAGE = "com.sequenia.threads.services.MyServerIntentService.ACTION_ADD_UNSENT_MESSAGE";
+    public static final String ACTION_ALL_MESSAGES_WERE_READ = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_MESSAGES_WERE_READ";
+    public static final String ACTION_ADD_UNREAD_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE";
+    public static final String ACTION_ADD_UNSENT_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNSENT_MESSAGE";
     private static final int UNREAD_MESSAGE_PUSH_ID = 0;
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
     private myBroadcastReceiver mBroadcastReceiver;
@@ -190,30 +191,58 @@ public class NotificationService extends Service {
             }
         }
         if (avatarPath != null) {
-            Target avatarTarget = new TargetNoError() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    pushSmall.setImageViewBitmap(R.id.image, bitmap);
-                    pushBig.setImageViewBitmap(R.id.image, bitmap);
-                }
-            };
             Picasso
                     .with(this)
                     .load(avatarPath)
+                    .fit()
+                    .centerCrop()
                     .transform(new CircleTransform())
-                    .into(avatarTarget);
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            pushSmall.setImageViewBitmap(R.id.image, bitmap);
+                            pushBig.setImageViewBitmap(R.id.image, bitmap);
+                        }
 
-            if (style != null && style.defPushIconResid != INVALID) {
-                Target smallPicTarger = new TargetNoError() {
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
+                            pushSmall.setImageViewBitmap(R.id.image, big);
+                            pushBig.setImageViewBitmap(R.id.image, big);
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
+
+            if (style != null
+                    && style.defPushIconResid != INVALID) {
+                Target smallPicTarger = new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {//round icon in corner
                         pushSmall.setImageViewBitmap(R.id.image_small, bitmap);
                         pushBig.setImageViewBitmap(R.id.image_small, bitmap);
                     }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
+                        pushSmall.setImageViewBitmap(R.id.image_small, big);
+                        pushBig.setImageViewBitmap(R.id.image_small, big);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
                 };
                 Picasso
                         .with(this)
                         .load(style.defPushIconResid)
+                        .fit()
+                        .centerCrop()
                         .transform(new CircleTransform())
                         .into(smallPicTarger);
             }
@@ -222,12 +251,20 @@ public class NotificationService extends Service {
                 Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResid);
                 pushSmall.setImageViewBitmap(R.id.image, icon);
                 pushBig.setImageViewBitmap(R.id.image, icon);
+            } else {
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_rect);
+                pushSmall.setImageViewBitmap(R.id.image, icon);
+                pushBig.setImageViewBitmap(R.id.image, icon);
             }
         }
         if (style != null && style.defTitleResId != INVALID) {
             builder.setContentTitle(getString(style.defTitleResId));
             pushSmall.setTextViewText(R.id.title, getString(style.defTitleResId));
             pushBig.setTextViewText(R.id.title, getString(style.defTitleResId));
+        } else {
+            builder.setContentTitle(getString(R.string.title_default));
+            pushSmall.setTextViewText(R.id.title, getString(R.string.title_default));
+            pushBig.setTextViewText(R.id.title, getString(R.string.title_default));
         }
         int color = style != null && style.pushBackgroundColorResId != INVALID ? style.pushBackgroundColorResId : android.R.color.white;
         if (style != null && style.pushBackgroundColorResId != INVALID) {
@@ -309,6 +346,7 @@ public class NotificationService extends Service {
                     .into(avatarTarget);
         }
         builder.setContentTitle(pushContents.titleText);
+
         if (!pushContents.hasImage && !pushContents.hasPlainFiles && pushContents.phrasesCount > 1) {
         } else {
             builder.setContentText(pushContents.contentText);
@@ -316,6 +354,8 @@ public class NotificationService extends Service {
         if (!pushContents.hasImage && !pushContents.hasPlainFiles) {
             if (style != null && style.defPushIconResid != INVALID) {
                 builder.setSmallIcon(style.defPushIconResid);
+            } else {
+                builder.setSmallIcon(R.drawable.done);
             }
             executor.execute(new Runnable() {
                 @Override

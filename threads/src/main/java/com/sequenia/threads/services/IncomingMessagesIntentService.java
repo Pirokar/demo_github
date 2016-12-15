@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by yuri on 22.06.2016.
+ *
  */
-public class MyServerIntentService extends PushServerIntentService {
-    private static final String TAG = "MyServerIntentService ";
+public class IncomingMessagesIntentService extends PushServerIntentService {
+    private static final String TAG = "MessagesIntentService ";
 
 
     @Override
