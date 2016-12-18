@@ -534,6 +534,7 @@ public class ChatActivity extends BaseActivity
                 mChatAdapter.setItemChosen(false, mChosenPhrase);
                 mChosenPhrase = null;
             }
+            if (isInMessageSearchMode)onBackPressed();
         }
     }
 

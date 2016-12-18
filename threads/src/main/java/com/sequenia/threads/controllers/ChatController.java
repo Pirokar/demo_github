@@ -500,7 +500,7 @@ public class ChatController {
                     }
                     if (query.isEmpty() || !query.equals(lastSearchQuery)) seeker = new Seeker();
                     lastSearchQuery = query;
-                    List<ChatItem> list = seeker.seek(lastItems, forward, query);
+                    List<ChatItem> list = seeker.seek(lastItems, !forward, query);
                     callback.onCall(list);
                 } catch (Exception e) {
                     e.printStackTrace();

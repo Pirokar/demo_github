@@ -1,5 +1,7 @@
 package com.sequenia.threads.utils;
 
+import android.util.Log;
+
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
 
@@ -11,11 +13,12 @@ import java.util.List;
 
 public class Seeker {
     private String lastQuery = "";
+    private static final String TAG = "Seeker ";
 
     public List<ChatItem> seek(List<ChatItem> target,
                                boolean forward,
                                String query) {
-        if (target==null||target.size()==0)return target;
+        if (target == null || target.size() == 0) return target;
         if (query == null || query.length() == 0) {
             for (ChatItem ci : target) {
                 if (ci instanceof ChatPhrase) if (((ChatPhrase) ci).isHighlight())
@@ -42,16 +45,19 @@ public class Seeker {
         }
         lastQuery = new String(query);
         if (forward) {
-            if (lastChosenIndex == (target.size() - 1)) {//if it is last
+            Log.e(TAG, "lastChosenIndex = " + lastChosenIndex);
+            if (lastChosenIndex == 0) {//if it is last
                 ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
                 return target;
             } else {
                 boolean isFound = false;
-                for (int i = lastChosenIndex + 1; i < target.size(); i++) {
+                int initial = lastChosenIndex == -1 ? target.size() - 1 : lastChosenIndex - 1;
+                for (int i = initial; i > 0; i--) {
                     if (target.get(i) instanceof ChatPhrase
                             && ((ChatPhrase) target.get(i)).getPhraseText() != null
                             && ((ChatPhrase) target.get(i)).getPhraseText().toLowerCase().contains(query)) {
                         ((ChatPhrase) target.get(i)).setHighLighted(true);
+                        Log.e(TAG, "i = " + i);
                         return target;
                     }
                 }
@@ -64,7 +70,7 @@ public class Seeker {
             }
         } else {
             if (lastChosenIndex == -1) {
-                for (int i = 0; i < target.size(); i++) {
+                for (int i = target.size() - 1; i > 0; i--) {
                     if (target.get(i) instanceof ChatPhrase
                             && ((ChatPhrase) target.get(i)).getPhraseText() != null
                             && ((ChatPhrase) target.get(i)).getPhraseText().toLowerCase().contains(query)) {
@@ -78,9 +84,8 @@ public class Seeker {
                 ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
                 return target;
             }
-            ;
             boolean isFound = false;
-            for (int i = (lastChosenIndex - 1); i > 0; i--) {
+            for (int i = lastChosenIndex + 1; i < target.size(); i++) {
                 if (target.get(i) instanceof ChatPhrase
                         && ((ChatPhrase) target.get(i)).getPhraseText() != null
                         && ((ChatPhrase) target.get(i)).getPhraseText().toLowerCase().contains(query)) {

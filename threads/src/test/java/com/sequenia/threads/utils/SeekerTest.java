@@ -72,87 +72,87 @@ public class SeekerTest {
 
         s.seek(items, true, "test");
         result = findHighlight(items);
-        assertEquals("must be 1 item and not dup", false, result.first);
-        assertEquals("must be 1 item and not dup", 1, ((int) result.second));
+        assertEquals("must be 12 item and not dup", false, result.first);
+        assertEquals("must be 12 item and not dup", 12, ((int) result.second));
 
         s.seek(items, false, "test");
         result = findHighlight(items);
-        assertEquals("must be 1 item and not dup", false, result.first);
-        assertEquals("backward must still choose last", 1, ((int) result.second));
+        assertEquals("must be 12 item and not dup", false, result.first);
+        assertEquals("backward must still choose last", 12, ((int) result.second));
 
         s.seek(items, true, "test");
         result = findHighlight(items);
-        assertEquals("must be 2 item and not dup", false, result.first);
-        assertEquals("must be 2 item and not dup", 2, ((int) result.second));
+        assertEquals("must be 11 item and not dup", false, result.first);
+        assertEquals("must be 11 item and not dup", 11, ((int) result.second));
 
         s.seek(items, true, "test");
         result = findHighlight(items);
-        assertEquals("must be 3 item and not dup", false, result.first);
-        assertEquals("must be 3 item and not dup",3, ((int) result.second));
+        assertEquals("must be 10 item and not dup", false, result.first);
+        assertEquals("must be 10 item and not dup", 10, ((int) result.second));
 
         s.seek(items, true, "test");
         result = findHighlight(items);
-        assertEquals("must be 4 item and not dup", false, result.first);
-        assertEquals("must be 4 item and not dup",4, ((int) result.second));
+        assertEquals("must be 9 item and not dup", false, result.first);
+        assertEquals("must be 9 item and not dup", 9, ((int) result.second));
 
         s.seek(items, false, "test");
         result = findHighlight(items);
-        assertEquals("must be 3 item and not dup", false, result.first);
-        assertEquals("must correctly seek back",3, ((int) result.second));
+        assertEquals("must be 10  item and not dup", false, result.first);
+        assertEquals("must correctly seek back", 10, ((int) result.second));
 
         s.seek(items, false, "test");
         result = findHighlight(items);
-        assertEquals("must be 2 item and not dup", false, result.first);
-        assertEquals("must correctly seek back",2, ((int) result.second));
+        assertEquals("must be 11 item and not dup", false, result.first);
+        assertEquals("must correctly seek back", 11, ((int) result.second));
 
         s.seek(items, false, "test");
         result = findHighlight(items);
-        assertEquals("must be 1 item and not dup", false, result.first);
-        assertEquals("must correctly seek back",1, ((int) result.second));
+        assertEquals("must be 12 item and not dup", false, result.first);
+        assertEquals("must correctly seek back", 12, ((int) result.second));
 
         s.seek(items, false, "test");
         result = findHighlight(items);
-        assertEquals("must be 1 item and not dup", false, result.first);
-        assertEquals("must correctly seek back even after end",1, ((int) result.second));
+        assertEquals("must be 12 item and not dup", false, result.first);
+        assertEquals("must correctly seek back even after end", 12, ((int) result.second));
 
         s.seek(items, false, "");
         result = findHighlight(items);
         assertEquals("must correctly clear list", false, result.first);
-        assertEquals("must correctly clear list",-1, ((int) result.second));
+        assertEquals("must correctly clear list", -1, ((int) result.second));
 
         s.seek(items, false, "t");
         result = findHighlight(items);
         assertEquals("must correctly do initial search", false, result.first);
-        assertEquals("must correctly do initial search",1, ((int) result.second));
+        assertEquals("must correctly do initial search", 12, ((int) result.second));
 
         s.seek(items, true, "t");
         result = findHighlight(items);
         assertEquals("must correctly do initial search", false, result.first);
-        assertEquals("must correctly do initial search",2, ((int) result.second));
+        assertEquals("must correctly do initial search", 11, ((int) result.second));
 
         s.seek(items, false, "t");
         result = findHighlight(items);
         assertEquals("must correctly do initial search", false, result.first);
-        assertEquals("must correctly do initial search",1, ((int) result.second));
+        assertEquals("must correctly do initial search", 12, ((int) result.second));
 
         s.seek(items, false, "");
         result = findHighlight(items);
         assertEquals("must correctly clear list", false, result.first);
-        assertEquals("must correctly clear list",-1, ((int) result.second));
+        assertEquals("must correctly clear list", -1, ((int) result.second));
 
         for (int i = 0; i < 25; i++) {
             s.seek(items, false, "test");
         }
         result = findHighlight(items);
         assertEquals("must correctly work with many queryies", false, result.first);
-        assertEquals("must correctly work with many queryies",1, ((int) result.second));
+        assertEquals("must correctly work with many queryies", 12, ((int) result.second));
 
         for (int i = 0; i < 25; i++) {
             s.seek(items, true, "test");
         }
         result = findHighlight(items);
         assertEquals("must correctly work with many queryies", false, result.first);
-        assertEquals("must correctly work with many queryies",12, ((int) result.second));
+        assertEquals("must correctly work with many queryies", 1, ((int) result.second));
 
         items.clear();
         for (int i = 0; i < 25; i++) {
@@ -160,13 +160,13 @@ public class SeekerTest {
         }
         result = findHighlight(items);
         assertEquals("must work on empty lists", false, result.first);
-        assertEquals("must work on empty lists",-1, ((int) result.second));
+        assertEquals("must work on empty lists", -1, ((int) result.second));
         for (int i = 0; i < 25; i++) {
             s.seek(items, false, "test");
         }
         result = findHighlight(items);
         assertEquals("must work on empty lists", false, result.first);
-        assertEquals("must work on empty lists",-1, ((int) result.second));
+        assertEquals("must work on empty lists", -1, ((int) result.second));
     }
 
     private Pair<Boolean, Integer> findHighlight(List<ChatItem> items) {

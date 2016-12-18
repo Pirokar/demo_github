@@ -24,7 +24,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 25
         versionCode 13
-        versionName "2.88_test"
+        versionName "2.89_test"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName);
     }
     buildTypes {
