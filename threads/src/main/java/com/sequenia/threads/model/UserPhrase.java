@@ -1,13 +1,12 @@
 package com.sequenia.threads.model;
 
-import android.content.ClipboardManager;
 import android.text.TextUtils;
 
 import com.sequenia.threads.utils.FileUtils;
 
-import static com.sequenia.threads.utils.FileUtils.*;
-
 import java.util.UUID;
+
+import static com.sequenia.threads.utils.FileUtils.getExtensionFromPath;
 
 /**
  * Created by yuri on 10.06.2016.
@@ -44,7 +43,8 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         this.fileDescription = fileDescription;
         this.sentState = MessageState.STATE_WAS_READ;
     }
-    public boolean isWithPhrase(){
+
+    public boolean isWithPhrase() {
         return !TextUtils.isEmpty(phrase);
     }
 
@@ -60,6 +60,16 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         return fileDescription != null
                 || (mQuote != null
                 && mQuote.getFileDescription() != null);
+    }
+
+    @Override
+    public boolean isHighlight() {
+        return isChosen;
+    }
+
+    @Override
+    public void setHighLighted(boolean isHighlight) {
+        setChosen(isHighlight);
     }
 
     public boolean hasText() {
@@ -115,7 +125,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     }
 
     public boolean isWithFile() {
-        return fileDescription!=null||(mQuote!=null && mQuote.getFileDescription()!=null);
+        return fileDescription != null || (mQuote != null && mQuote.getFileDescription() != null);
     }
 
     public void setFileDescription(FileDescription fileDescription) {
@@ -123,7 +133,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     }
 
     public boolean isWithQuote() {
-        return mQuote!=null;
+        return mQuote != null;
     }
 
     public MessageState getSentState() {
@@ -169,16 +179,8 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     @Override
     public String toString() {
         return "UserPhrase{" +
-                "messageId='" + messageId + '\'' +
-                ", phrase='" + phrase + '\'' +
-                ", withFile=" + withFile +
-                ", sentState=" + sentState +
-                ", mQuote=" + mQuote +
-                ", isWithQuote=" + isWithQuote +
-                ", phraseTimeStamp=" + phraseTimeStamp +
-                ", fileDescription=" + fileDescription +
+                "phrase='" + phrase + '\'' +
                 ", isChosen=" + isChosen +
-                ", isCopy=" + isCopy +
-                '}';
+                '}'+"\n";
     }
 }

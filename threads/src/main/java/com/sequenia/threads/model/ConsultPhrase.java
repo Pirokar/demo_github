@@ -4,8 +4,6 @@ import android.text.TextUtils;
 
 import com.sequenia.threads.utils.FileUtils;
 
-import java.util.UUID;
-
 /**
  * Created by yuri on 10.06.2016.
  */
@@ -134,11 +132,9 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     @Override
     public String toString() {
         return "ConsultPhrase{" +
-                "phrase='" + phrase + '\'' +
-                ", messageId='" + messageId + '\'' +
-                ", consultName='" + consultName + '\'' +
-                ", fileDescription=" + fileDescription +
-                '}';
+                "isChosen=" + isChosen +
+                ", phrase='" + phrase + '\'' +
+                '}'+"\n";
     }
 
     @Override
@@ -156,6 +152,16 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
             return false;
         return consultName != null ? consultName.equals(that.consultName) : that.consultName == null;
 
+    }
+
+    @Override
+    public boolean isHighlight() {
+        return isChosen;
+    }
+
+    @Override
+    public void setHighLighted(boolean isHighlighted) {
+        isChosen = isHighlighted;
     }
 
     @Override

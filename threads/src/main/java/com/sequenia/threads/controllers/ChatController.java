@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Pair;
 import android.widget.Toast;
 
 import com.advisa.client.api.InOutMessage;
@@ -44,17 +43,20 @@ import com.sequenia.threads.model.UserPhrase;
 import com.sequenia.threads.services.DownloadService;
 import com.sequenia.threads.services.NotificationService;
 import com.sequenia.threads.utils.Callback;
+import com.sequenia.threads.utils.CallbackNoError;
 import com.sequenia.threads.utils.ConsultWriter;
 import com.sequenia.threads.utils.DualFilePoster;
 import com.sequenia.threads.utils.FileUtils;
 import com.sequenia.threads.utils.MessageMatcher;
 import com.sequenia.threads.utils.PrefUtils;
+import com.sequenia.threads.utils.Seeker;
 
 import org.json.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -89,6 +91,13 @@ public class ChatController {
     private ConsultWriter mConsultWriter;
     private AnalyticsTracker mAnalyticsTracker;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
+    private List<ChatItem> lastItems = new ArrayList<>();
+    private Seeker seeker = new Seeker();
+    private long lastFancySearchDate = 0;
+    private String lastSearchQuery = "";
+    private boolean isAllMessagesDownloaded = false;
+    private boolean isDownloadingMessages;
+    private Executor mMessagesExecutor = Executors.newSingleThreadExecutor();
 
     public static ChatController getInstance(final Context ctx,
                                              String clientId) {
@@ -461,6 +470,73 @@ public class ChatController {
         }, 60000);
     }
 
+    public void fancySearch(final String query,
+                            final boolean forward,
+                            final CallbackNoError<List<ChatItem>> callback) {
+        if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (System.currentTimeMillis() > (lastFancySearchDate + 3000)) {
+                        List<ChatItem> fromDb = mDatabaseHolder.getChatItems(0, -1);
+                        if (lastItems == null || lastItems.size() == 0) lastItems = fromDb;
+                        else {
+                            if (lastSearchQuery.equalsIgnoreCase(query)) {
+                                for (ChatItem ci : lastItems) {
+                                    if (ci instanceof ChatPhrase) {
+                                        if (((ChatPhrase) ci).isHighlight()) {
+                                            ChatPhrase cp = (ChatPhrase) ci;
+                                            if (fromDb.contains(cp)) {
+                                                ((ChatPhrase) fromDb.get(fromDb.lastIndexOf(cp))).setHighLighted(true);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            lastItems = fromDb;
+                        }
+                        lastFancySearchDate = System.currentTimeMillis();
+                    }
+                    if (query.isEmpty() || !query.equals(lastSearchQuery)) seeker = new Seeker();
+                    lastSearchQuery = query;
+                    List<ChatItem> list = seeker.seek(lastItems, forward, query);
+                    callback.onCall(list);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    private void downloadMessagesTillEnd() {
+        if (isDownloadingMessages) return;
+        Log.e(TAG, "downloadMessagesTillEnd"); // TODO: 18.12.2016
+        if (isAllMessagesDownloaded) return;
+        if (appContext == null) return;
+        mMessagesExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final int chunk = 100;
+                    isDownloadingMessages = true;
+                    List<InOutMessage> items = PushController.getInstance(appContext).getNextMessageHistory(chunk);
+                    if (items == null || items.size() == 0) return;
+                    currentOffset += items.size();
+                    isAllMessagesDownloaded = items.size() != chunk;
+                    List<ChatItem> chatItems = MessageFormatter.format(items);
+                    mDatabaseHolder.putMessagesSync(chatItems);
+                    isDownloadingMessages = false;
+                    if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
+                } catch (PushServerErrorException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
     void addMessage(final ChatItem cm, Context ctx) {
         mDatabaseHolder.putChatItem(cm);
         h.post(new Runnable() {
@@ -689,7 +765,7 @@ public class ChatController {
         mDatabaseHolder.getLastUnreadPhrase(handler);
     }
 
-    public void requestFilteredPhrases(boolean searchInServerHistory
+   /* public void requestFilteredPhrases(boolean searchInServerHistory
             , final String query
             , final Callback<Pair<Boolean, List<ChatPhrase>>, Exception> callback) {
 
@@ -735,8 +811,8 @@ public class ChatController {
                 }
             });
         }
-    }
-
+    }*/
+/*
     public void requestFilteredFiles(boolean searchInServerHistory
             , final String query
             , final Callback<Pair<Boolean, List<ChatPhrase>>, Exception> callback) {
@@ -815,7 +891,7 @@ public class ChatController {
             });
         }
 
-    }
+    }*/
 
     private void onSettingClientId(final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");

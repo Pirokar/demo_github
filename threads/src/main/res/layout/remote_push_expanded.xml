@@ -11,7 +11,7 @@
         android:id="@+id/image"
         android:layout_width="56dp"
         android:layout_height="56dp"
-       android:layout_margin="@dimen/margin_half" />
+       android:padding="@dimen/margin_half" />
     <ImageView
         android:layout_width="20dp"
         android:layout_height="20dp"

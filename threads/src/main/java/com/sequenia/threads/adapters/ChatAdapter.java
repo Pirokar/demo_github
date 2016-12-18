@@ -53,9 +53,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * Created by yuri on 09.06.2016.
- * main adapter of chat activity
- * consist of 6 types of rows
+
  */
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "ChatAdapter ";
@@ -72,6 +70,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_FILE_FROM_CONSULT = 11;
     private static final int TYPE_UNREAD_MESSAGES = 12;
     private boolean isRemovingTyping = false;
+
 
     ArrayList<ChatItem> list;
     ArrayList<ChatItem> backupList = new ArrayList<>();
@@ -253,6 +252,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         .load(R.drawable.blank_avatar_round)
                                         .fit()
                                         .noPlaceholder()
+                                        .centerCrop()
                                         .transform(new CircleTransform())
                                         .into(((ConsultIsTypingViewHolder) holder).mConsultImageView);
                             }
@@ -423,6 +423,28 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 notifyItemRemoved(list.indexOf(item));
             }
         }
+    }
+
+    public void removeHighlight() {
+        for (int i = 0; i < getOriginalList().size(); i++) {
+            if (getOriginalList().get(i) instanceof ChatPhrase &&
+                    ((ChatPhrase) getOriginalList().get(i)).isHighlight()) {
+                ((ChatPhrase) getOriginalList().get(i)).setHighLighted(false);
+                notifyItemChanged(i);
+            }
+        }
+    }
+
+    public int setItemHighlighted(ChatPhrase chatPhrase) {
+        int index = -1;
+        for (int i = 0; i < getOriginalList().size(); i++) {
+            if (getOriginalList().get(i).equals(chatPhrase)) {
+                ((ChatPhrase) getOriginalList().get(i)).setHighLighted(true);
+                index = i;
+                notifyItemChanged(index);
+            }
+        }
+        return index;
     }
 
     public boolean isConsultTyping() {
@@ -647,7 +669,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         && (getItemViewType(i) == TYPE_IMAGE_FROM_USER || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT))
                     continue;
                 if (backupList.get(i) instanceof ConsultPhrase) {
-                    ConsultPhrase cp = (ConsultPhrase) list.get(i);
+                    ConsultPhrase cp = (ConsultPhrase) backupList.get(i);
                     if (cp.getFileDescription() != null && cp.getFileDescription().equals(fileDescription)) {
                         cp.setFileDescription(fileDescription);
                         notifyItemChanged(backupList.indexOf(cp));
@@ -701,7 +723,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void swapItems(List<ChatPhrase> list) {
-
         this.list.clear();
         addItem(list, true, true);
         notifyDataSetChanged();

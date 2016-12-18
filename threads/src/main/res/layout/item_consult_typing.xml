@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/default_chat_row_height"
-    android:layout_marginTop="@dimen/margin_material">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/default_chat_row_height"
+                android:layout_marginTop="@dimen/margin_material">
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="0.15"
-        android:padding="@dimen/margin_half"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:scaleType="centerCrop"
-         />
+        android:padding="8dp"
+        />
 
     <com.sequenia.threads.views.ViewTypingInProgress
         android:id="@+id/typing_in_progress"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="0.85" />
-</LinearLayout>
+        android:layout_toRightOf="@+id/image"
+        />
+</RelativeLayout>

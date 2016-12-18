@@ -11,4 +11,8 @@ public interface ChatPhrase extends ChatItem {
     Quote getQuote();
 
     FileDescription getFileDescription();
+
+    boolean isHighlight();
+
+    void setHighLighted(boolean isHighlight);
 }
