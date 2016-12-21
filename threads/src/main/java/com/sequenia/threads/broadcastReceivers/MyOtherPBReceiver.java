@@ -13,24 +13,24 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
-        Log.e(TAG, "onNewPushNotification " + s + " " + bundle);
+        Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
     }
 
     @Override
     public void onStatusChanged(Context context, String s) {
-        Log.e(TAG, "onStatusChanged " + s);
+        Log.i(TAG, "onStatusChanged " + s);
 
     }
 
     @Override
     public void onDeviceAddressChanged(Context context, String s) {
-        Log.e(TAG, "onDeviceAddressChanged " + s);
+        Log.i(TAG, "onDeviceAddressChanged " + s);
 
     }
 
     @Override
     public void onDeviceAddressProblems(Context context, String s) {
-        Log.e(TAG, "onDeviceAddressProblems " + s);
+        Log.i(TAG, "onDeviceAddressProblems " + s);
     }
 
     @Override

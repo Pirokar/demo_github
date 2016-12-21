@@ -132,26 +132,9 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     @Override
     public String toString() {
         return "ConsultPhrase{" +
-                "isChosen=" + isChosen +
+                "messageId='" + messageId + '\'' +
                 ", phrase='" + phrase + '\'' +
-                '}'+"\n";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ConsultPhrase)) return false;
-
-        ConsultPhrase that = (ConsultPhrase) o;
-
-        if (sex != that.sex) return false;
-        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
-            return false;
-        if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
-        if (messageId != null ? !messageId.equals(that.messageId) : that.messageId != null)
-            return false;
-        return consultName != null ? consultName.equals(that.consultName) : that.consultName == null;
-
+                '}';
     }
 
     @Override
@@ -165,12 +148,39 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConsultPhrase)) return false;
+
+        ConsultPhrase that = (ConsultPhrase) o;
+
+        if (sex != that.sex) return false;
+        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
+            return false;
+        if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
+        try {
+            Long thisId = Long.parseLong(messageId);
+            Long thatId = Long.parseLong(that.messageId);
+            if (Math.abs(thisId - thatId) > 5) return false;
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        if (quote != null ? !quote.equals(that.quote) : that.quote != null) return false;
+        if (fileDescription != null ? !fileDescription.equals(that.fileDescription) : that.fileDescription != null)
+            return false;
+        return status != null ? status.equals(that.status) : that.status == null;
+
+    }
+
+    @Override
     public int hashCode() {
         int result = consultId != null ? consultId.hashCode() : 0;
         result = 31 * result + (sex ? 1 : 0);
         result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
-        result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
-        result = 31 * result + (consultName != null ? consultName.hashCode() : 0);
+        result = 31 * result + (quote != null ? quote.hashCode() : 0);
+        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
     }
 

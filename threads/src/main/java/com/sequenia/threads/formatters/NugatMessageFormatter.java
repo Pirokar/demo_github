@@ -13,7 +13,11 @@ import com.sequenia.threads.utils.Tuple;
 import java.util.List;
 import java.util.Locale;
 
-import static com.sequenia.threads.utils.FileUtils.*;
+import static android.text.TextUtils.isEmpty;
+import static com.sequenia.threads.utils.FileUtils.JPEG;
+import static com.sequenia.threads.utils.FileUtils.PDF;
+import static com.sequenia.threads.utils.FileUtils.PNG;
+import static com.sequenia.threads.utils.FileUtils.getExtensionFromFileDescription;
 
 /**
  * Created by yuri on 14.09.2016.
@@ -48,17 +52,17 @@ public class NugatMessageFormatter {
         for (ChatItem ci : unreadMessages) {
             if (ci instanceof ConsultConnectionMessage) {
                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
-                if (ccm.getName() != null) name = ccm.getName();
+                name = ccm.getName();
                 overallPhrasesCount++;
                 phrase = connectionPhrase.getConnectionPhrase(ccm);
-                if (TextUtils.isEmpty(ccm.getAvatarPath())) avatarPath = ccm.getAvatarPath();
                 sex = ccm.getSex();
+                avatarPath = ((ConsultConnectionMessage) ci).getAvatarPath();
             }
             if (ci instanceof ConsultPhrase) {
                 ConsultPhrase consultPhrase = (ConsultPhrase) ci;
                 isNeedAnswer = true;
                 overallPhrasesCount++;
-                if (!TextUtils.isEmpty(consultPhrase.getPhrase())) {
+                if (!isEmpty(consultPhrase.getPhrase())) {
                     phrase = consultPhrase.getPhrase();
                 }
                 sex = consultPhrase.getSex();
@@ -86,15 +90,14 @@ public class NugatMessageFormatter {
                         docName = fileDescription.getIncomingName();
                     }
                 }
-                if (!TextUtils.isEmpty(consultPhrase.getAvatarPath()))
-                    avatarPath = consultPhrase.getAvatarPath();
+                avatarPath = consultPhrase.getAvatarPath();
             }
         }
         String titletext = name;
         if (imagesCount != 0 && plainFilesCount == 0) {
             ImagesPlurals imagesPlurals = new ImagesPlurals(Locale.getDefault());
             if (imagesCount != 0 && plainFilesCount == 0) {
-                if (TextUtils.isEmpty(phrase)) phrase = ctx.getString(R.string.touch_to_look);
+                if (isEmpty(phrase)) phrase = ctx.getString(R.string.touch_to_look);
                 String send = sex ? ctx.getString(R.string.send_male) : ctx.getString(R.string.send_female);
                 titletext += " " + send + " ";
                 if (imagesCount == 1) {
@@ -113,8 +116,8 @@ public class NugatMessageFormatter {
             } else {
                 titletext += (plainFilesCount + imagesCount) + " " + filesPlurals.getForQuantity((imagesCount + plainFilesCount));
             }
-            if (TextUtils.isEmpty(phrase) && plainFilesCount == 1) phrase = docName;
-            else if (TextUtils.isEmpty(phrase) && plainFilesCount != 1) {
+            if (isEmpty(phrase) && plainFilesCount == 1) phrase = docName;
+            else if (isEmpty(phrase) && plainFilesCount != 1) {
                 phrase = ctx.getString(R.string.touch_to_download);
             }
         } else if (plainFilesCount == 0 && imagesCount == 0 && unreadMessages.size() > 1) {
@@ -128,7 +131,7 @@ public class NugatMessageFormatter {
         PushContents pushContents = new PushContents(
                 titletext
                 , phrase
-                , avatarPath != null
+                , !isEmpty(avatarPath)
                 , imagesCount != 0
                 , imagesCount
                 , overallPhrasesCount

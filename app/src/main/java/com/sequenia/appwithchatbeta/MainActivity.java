@@ -95,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
                             R.drawable.defaultprofile_360,
                             R.drawable.no_image,
                             R.style.FileDialogStyle)
-                    .setGoogleAnalyticsEnabled(false)
-                    .setPushNotificationStyle(R.drawable.img,R.string.default_title,android.R.color.transparent,android.R.color.black)*/
+                    .setGoogleAnalyticsEnabled(false)*/
+                    .setPushNotificationStyle(R.drawable.push_icon_def,R.string.default_title,ChatStyle.INVALID,ChatStyle.INVALID)
                     .setWelcomeScreenStyle(R.drawable.logo
                             , R.string.welcome
                             , R.string.subtitle_text

@@ -30,8 +30,7 @@ import com.sequenia.threads.formatters.NugatMessageFormatter;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.model.CompletionHandler;
-import com.sequenia.threads.model.ConsultConnectionMessage;
-import com.sequenia.threads.model.ConsultPhrase;
+import com.sequenia.threads.model.ConsultChatPhrase;
 import com.sequenia.threads.picasso_url_connection_only.Picasso;
 import com.sequenia.threads.picasso_url_connection_only.Target;
 import com.sequenia.threads.utils.CircleTransform;
@@ -47,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static android.text.TextUtils.isEmpty;
 import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
@@ -182,33 +182,30 @@ public class NotificationService extends Service {
 
         String avatarPath = null;
         for (int i = unreadMessages.size() - 1; i >= 0; i--) {
-            if (avatarPath == null) {
-                if (unreadMessages.get(i) instanceof ConsultConnectionMessage) {
-                    avatarPath = ((ConsultConnectionMessage) unreadMessages.get(i)).getAvatarPath();
-                } else if (unreadMessages.get(i) instanceof ConsultPhrase) {
-                    avatarPath = ((ConsultPhrase) unreadMessages.get(i)).getAvatarPath();
+            if (isEmpty(avatarPath)) {
+                if (unreadMessages.get(i) instanceof ConsultChatPhrase) {
+                    avatarPath = ((ConsultChatPhrase) unreadMessages.get(i)).getAvatarPath();
+                    break;
                 }
             }
         }
-        if (avatarPath != null) {
+        if (!isEmpty(avatarPath)) {
             Picasso
                     .with(this)
                     .load(avatarPath)
-                    .fit()
-                    .centerCrop()
                     .transform(new CircleTransform())
                     .into(new Target() {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            pushSmall.setImageViewBitmap(R.id.image, bitmap);
-                            pushBig.setImageViewBitmap(R.id.image, bitmap);
+                            pushSmall.setImageViewBitmap(R.id.icon_large, bitmap);
+                            pushBig.setImageViewBitmap(R.id.icon_large, bitmap);
                         }
 
                         @Override
                         public void onBitmapFailed(Drawable errorDrawable) {
                             Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
-                            pushSmall.setImageViewBitmap(R.id.image, big);
-                            pushBig.setImageViewBitmap(R.id.image, big);
+                            pushSmall.setImageViewBitmap(R.id.icon_large, big);
+                            pushBig.setImageViewBitmap(R.id.icon_large, big);
                         }
 
                         @Override
@@ -217,44 +214,53 @@ public class NotificationService extends Service {
                         }
                     });
 
+            Target smallPicTarger = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {//round icon in corner
+                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap);
+                    pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
+                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, big);
+                    pushBig.setImageViewBitmap(R.id.icon_small_corner, big);
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            };
+
             if (style != null
                     && style.defPushIconResid != INVALID) {
-                Target smallPicTarger = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {//round icon in corner
-                        pushSmall.setImageViewBitmap(R.id.image_small, bitmap);
-                        pushBig.setImageViewBitmap(R.id.image_small, bitmap);
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
-                        pushSmall.setImageViewBitmap(R.id.image_small, big);
-                        pushBig.setImageViewBitmap(R.id.image_small, big);
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
                 Picasso
                         .with(this)
                         .load(style.defPushIconResid)
-                        .fit()
-                        .centerCrop()
+                        .transform(new CircleTransform())
+                        .into(smallPicTarger);
+            } else {
+                Picasso
+                        .with(this)
+                        .load(R.drawable.defult_big_icon)
                         .transform(new CircleTransform())
                         .into(smallPicTarger);
             }
         } else {
             if (style != null && style.defPushIconResid != INVALID) {
                 Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResid);
-                pushSmall.setImageViewBitmap(R.id.image, icon);
-                pushBig.setImageViewBitmap(R.id.image, icon);
+                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner,null);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner,null);
             } else {
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_rect);
-                pushSmall.setImageViewBitmap(R.id.image, icon);
-                pushBig.setImageViewBitmap(R.id.image, icon);
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_big_icon);
+                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner,null);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner,null);
             }
         }
         if (style != null && style.defTitleResId != INVALID) {

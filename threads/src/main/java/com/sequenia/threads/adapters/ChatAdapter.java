@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -29,6 +28,7 @@ import com.sequenia.threads.holders.UserFileViewHolder;
 import com.sequenia.threads.holders.UserPhraseViewHolder;
 import com.sequenia.threads.model.ChatItem;
 import com.sequenia.threads.model.ChatPhrase;
+import com.sequenia.threads.model.ConsultChatPhrase;
 import com.sequenia.threads.model.ConsultConnectionMessage;
 import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.model.ConsultTyping;
@@ -51,6 +51,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import static android.text.TextUtils.isEmpty;
 
 /**
 
@@ -233,7 +235,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             });
-            if (ct.getAvatarPath() != null) {
+            if (!isEmpty(ct.getAvatarPath())) {
                 picasso
                         .load(ct.getAvatarPath())
                         .fit()
@@ -425,6 +427,30 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    public void setAvatar(String consultId, String newAvatarImageUrl) {
+        if (isEmpty(consultId)) return;
+        for (int i = 0; i < getOriginalList().size(); i++) {
+            ChatItem item = getOriginalList().get(i);
+            if (item instanceof ConsultChatPhrase) {
+                ConsultChatPhrase p = (ConsultChatPhrase) item;
+                if (p.getConsultId().equals(consultId) && isEmpty(newAvatarImageUrl) && isEmpty(p.getAvatarPath()))
+                    continue;
+                if (p.getConsultId().equals(consultId)
+                        && isEmpty(p.getAvatarPath())) {
+                    p.setAvatarPath(newAvatarImageUrl);
+                    notifyItemChanged(i);
+                    continue;
+                }
+                if (newAvatarImageUrl == null) newAvatarImageUrl = "";
+                if (p.getConsultId().equals(consultId)
+                        && (!p.getAvatarPath().equals(newAvatarImageUrl))) {
+                    p.setAvatarPath(newAvatarImageUrl);
+                    notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
     public void removeHighlight() {
         for (int i = 0; i < getOriginalList().size(); i++) {
             if (getOriginalList().get(i) instanceof ChatPhrase &&
@@ -577,11 +603,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (o instanceof ConsultPhrase) {
             ConsultPhrase cp = (ConsultPhrase) o;
             FileDescription fileDescription = cp.getFileDescription();
-            if (TextUtils.isEmpty(cp.getPhrase())
+            if (isEmpty(cp.getPhrase())
                     && (FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.JPEG
                     || FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PNG)) {
                 return TYPE_IMAGE_FROM_CONSULT;
-            } else if (TextUtils.isEmpty(cp.getPhrase())
+            } else if (isEmpty(cp.getPhrase())
                     && (FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PDF
                     || FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PDF)) {
                 return TYPE_FILE_FROM_CONSULT;
@@ -606,7 +632,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } else if (up.getFileDescription().getIncomingName() != null) {
                 extension = FileUtils.getExtensionFromPath(up.getFileDescription().getIncomingName());
             }
-            if ((extension == FileUtils.PDF || extension == FileUtils.OTHER_DOC_FORMATS) && TextUtils.isEmpty(up.getPhrase())) {
+            if ((extension == FileUtils.PDF || extension == FileUtils.OTHER_DOC_FORMATS) && isEmpty(up.getPhrase())) {
                 return TYPE_FILE_FROM_USER;
             } else {
                 return TYPE_USER_PHRASE;
@@ -703,14 +729,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public void backupAndClear() {
+   /* public void backupAndClear() {
         backupList = new ArrayList<>(list);
         list.clear();
         notifyDataSetChanged();
         isInSearchMode = true;
-    }
+    }*/
 
-    public void undoClear() {
+   /* public void undoClear() {
         isInSearchMode = false;
         list = new ArrayList<>(backupList);
         Collections.sort(list, new Comparator<ChatItem>() {
@@ -720,14 +746,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         });
         notifyDataSetChanged();
-    }
+    }*/
 
-    public void swapItems(List<ChatPhrase> list) {
-        this.list.clear();
-        addItem(list, true, true);
-        notifyDataSetChanged();
-    }
-
+    /* public void swapItems(List<ChatPhrase> list) {
+         this.list.clear();
+         addItem(list, true, true);
+         notifyDataSetChanged();
+     }
+ */
     public void onDownloadError(FileDescription fileDescription) {
         ArrayList<ChatItem> list = getOriginalList();
         for (int i = 0; i < list.size(); i++) {

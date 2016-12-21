@@ -6,4 +6,6 @@ package com.sequenia.threads.model;
 public interface ConsultChatPhrase{
     String getConsultId();
     String getAvatarPath();
+    void setAvatarPath(String newAvatar);
+
 }

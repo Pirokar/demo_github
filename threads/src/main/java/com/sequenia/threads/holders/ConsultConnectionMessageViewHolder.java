@@ -21,6 +21,7 @@ import com.sequenia.threads.utils.PrefUtils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static android.text.TextUtils.isEmpty;
 import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
@@ -77,7 +78,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(listener);
         }
-        if (consultConnectionMessage.getAvatarPath() != null) {
+        if (!isEmpty(consultConnectionMessage.getAvatarPath())) {
             Picasso
                     .with(itemView.getContext())
                     .load(consultConnectionMessage.getAvatarPath())

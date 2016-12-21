@@ -4,7 +4,6 @@ import android.graphics.PorterDuff;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.text.Html;
-import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -31,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static android.text.TextUtils.isEmpty;
 import static com.sequenia.threads.model.ChatStyle.INVALID;
 
 /**
@@ -121,7 +121,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             rightTextHeader.setText(quote.getPhraseOwnerTitle());
             mRightTextDescr.setText(quote.getText());
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
-            if (TextUtils.isEmpty(quote.getPhraseOwnerTitle())) {
+            if (isEmpty(quote.getPhraseOwnerTitle())) {
                 rightTextHeader.setVisibility(View.GONE);
             } else {
                 rightTextHeader.setVisibility(View.VISIBLE);
@@ -147,7 +147,7 @@ public class ConsultPhraseHolder extends BaseHolder {
                 mCircularProgressButton.setOnClickListener(fileClickListener);
             }
             rightTextHeader.setText(fileDescription.getFileSentTo() == null ? "" : fileDescription.getFileSentTo());
-            if (!TextUtils.isEmpty(rightTextHeader.getText())) {
+            if (!isEmpty(rightTextHeader.getText())) {
                 rightTextHeader.setVisibility(View.VISIBLE);
             } else {
                 rightTextHeader.setVisibility(View.GONE);
@@ -162,7 +162,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         }
         if (fileDescription != null
                 || quote != null) {
-            mPhraseFrame.getLayoutParams().width =FrameLayout.LayoutParams.MATCH_PARENT;
+            mPhraseFrame.getLayoutParams().width = FrameLayout.LayoutParams.MATCH_PARENT;
         } else {
             mPhraseFrame.getLayoutParams().width = FrameLayout.LayoutParams.WRAP_CONTENT;
         }
@@ -171,7 +171,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             mBubble.invalidate();
             mConsultAvatar.setVisibility(View.VISIBLE);
             mConsultAvatar.setOnClickListener(onAvatarClickListener);
-            if (avatarPath != null) {
+            if (!isEmpty(avatarPath)) {
                 Picasso
                         .with(itemView.getContext())
                         .load(avatarPath)

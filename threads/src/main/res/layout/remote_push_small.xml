@@ -6,7 +6,7 @@
     android:background="@android:color/white">
 
     <ImageView
-        android:id="@+id/image"
+        android:id="@+id/icon_large"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:padding="@dimen/margin_half"
@@ -14,11 +14,11 @@
         />
 
     <ImageView
-        android:id="@+id/image_small"
+        android:id="@+id/icon_small_corner"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_alignBottom="@+id/image"
-        android:layout_alignRight="@+id/image" />
+        android:layout_alignBottom="@+id/icon_large"
+        android:layout_alignRight="@+id/icon_large" />
 
     <TextView
         android:id="@+id/title"
@@ -27,7 +27,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="@dimen/margin_quarter"
         android:layout_marginTop="@dimen/margin_half"
-        android:layout_toRightOf="@+id/image"
+        android:layout_toRightOf="@+id/icon_large"
         android:textColor="@android:color/black"
         android:textSize="18sp" />
 

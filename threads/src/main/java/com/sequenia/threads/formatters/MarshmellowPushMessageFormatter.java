@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 
@@ -17,9 +16,14 @@ import com.sequenia.threads.model.ConsultPhrase;
 import com.sequenia.threads.utils.Tuple;
 
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 
-import static com.sequenia.threads.utils.FileUtils.*;
+import static android.text.TextUtils.isEmpty;
+import static com.sequenia.threads.utils.FileUtils.JPEG;
+import static com.sequenia.threads.utils.FileUtils.PDF;
+import static com.sequenia.threads.utils.FileUtils.PNG;
+import static com.sequenia.threads.utils.FileUtils.getExtensionFromFileDescription;
 
 /**
  * Created by yuri on 12.09.2016.
@@ -60,13 +64,13 @@ public class MarshmellowPushMessageFormatter {
             if (ci instanceof ConsultPhrase) {
                 isNeedAnswer = true;
                 if (consultName == null) consultName = ((ConsultPhrase) ci).getConsultName() + ": ";
-                if (!TextUtils.isEmpty(((ConsultPhrase) ci).getPhrase())) {
+                if (!isEmpty(((ConsultPhrase) ci).getPhrase())) {
                     phrase = ((ConsultPhrase) ci).getPhrase();
                 }
             } else if (ci instanceof ConsultConnectionMessage) {
                 if (consultName == null)
                     consultName = ((ConsultConnectionMessage) ci).getName() + ": ";
-                if (!TextUtils.isEmpty(getConnectionPhrase((ConsultConnectionMessage) ci))) {
+                if (!isEmpty(getConnectionPhrase((ConsultConnectionMessage) ci))) {
                     phrase = getConnectionPhrase((ConsultConnectionMessage) ci);
                 }
             }
@@ -163,19 +167,30 @@ public class MarshmellowPushMessageFormatter {
                     || incomingPushes.get(i) instanceof ConsultConnectionMessage)
                 unreadMessages.add(incomingPushes.get(i));
         }
+
         for (ChatItem ci : unreadMessages) {
             if (ci instanceof ConsultPhrase) {
                 isNeedAnswer = true;
-                if (consultName == null) consultName = ((ConsultPhrase) ci).getConsultName();
-                if (!TextUtils.isEmpty(((ConsultPhrase) ci).getPhrase())) {
+                // if (consultName == null) consultName = ((ConsultPhrase) ci).getConsultName();
+                if (!isEmpty(((ConsultPhrase) ci).getPhrase())) {
                     phrase = ((ConsultPhrase) ci).getPhrase();
                 }
             } else if (ci instanceof ConsultConnectionMessage) {
-                if (consultName == null)
-                    consultName = ((ConsultConnectionMessage) ci).getName();
-                if (!TextUtils.isEmpty(getConnectionPhrase((ConsultConnectionMessage) ci))) {
+               /* if (consultName == null)
+                    consultName = ((ConsultConnectionMessage) ci).getName();*/
+                if (!isEmpty(getConnectionPhrase((ConsultConnectionMessage) ci))) {
                     phrase = getConnectionPhrase((ConsultConnectionMessage) ci);
                 }
+            }
+        }
+        ListIterator<ChatItem> itemListIterator = unreadMessages.listIterator(unreadMessages.size());
+        while (itemListIterator.hasPrevious()) {
+            ChatItem ci = itemListIterator.previous();
+            if (ci instanceof ConsultPhrase) {
+                if (isEmpty(consultName)) consultName = ((ConsultPhrase) ci).getConsultName();
+            }
+            if (ci instanceof ConsultConnectionMessage) {
+                if (isEmpty(consultName)) consultName = ((ConsultConnectionMessage) ci).getName();
             }
         }
         if (phrase == null) phrase = "";

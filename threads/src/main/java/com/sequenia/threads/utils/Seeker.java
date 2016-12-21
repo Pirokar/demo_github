@@ -45,7 +45,6 @@ public class Seeker {
         }
         lastQuery = new String(query);
         if (forward) {
-            Log.e(TAG, "lastChosenIndex = " + lastChosenIndex);
             if (lastChosenIndex == 0) {//if it is last
                 ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
                 return target;
@@ -57,7 +56,6 @@ public class Seeker {
                             && ((ChatPhrase) target.get(i)).getPhraseText() != null
                             && ((ChatPhrase) target.get(i)).getPhraseText().toLowerCase().contains(query)) {
                         ((ChatPhrase) target.get(i)).setHighLighted(true);
-                        Log.e(TAG, "i = " + i);
                         return target;
                     }
                 }

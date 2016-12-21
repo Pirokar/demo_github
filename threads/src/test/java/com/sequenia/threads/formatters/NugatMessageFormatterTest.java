@@ -91,7 +91,7 @@ public class NugatMessageFormatterTest {
         incomingPushes.add(onlyImage);
         out = new NugatMessageFormatter(mContext, unreadMessages, incomingPushes).getFormattedMessageAsPushContents();
         assertEquals(true, out.first);
-        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислал изображение", "Дотроньтесь для просмотра", false, true, 1, 1, false,  null, imageDescr.getDownloadPath()), out.second);
+        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислал изображение", "Дотроньтесь для просмотра", false, true, 1, 1, false,  "", imageDescr.getDownloadPath()), out.second);
 
         unreadMessages.clear();
         incomingPushes.clear();
@@ -108,7 +108,7 @@ public class NugatMessageFormatterTest {
         incomingPushes.add(onlyImage);
         out = new NugatMessageFormatter(mContext, unreadMessages, incomingPushes).getFormattedMessageAsPushContents();
         assertEquals(true, out.first);
-        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислал 3 изображения", "Дотроньтесь для просмотра", false, true,3, 3, false,  null, imageDescr.getDownloadPath()), out.second);
+        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислал 3 изображения", "Дотроньтесь для просмотра", false, true,3, 3, false,  "", imageDescr.getDownloadPath()), out.second);
 
         unreadMessages.clear();
         incomingPushes.clear();
@@ -126,14 +126,14 @@ public class NugatMessageFormatterTest {
         unreadMessages.add(onlyFile);
         out = new NugatMessageFormatter(mContext, unreadMessages, incomingPushes).getFormattedMessageAsPushContents();
         assertEquals(true, out.first);
-        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислала файл", "doc.pdf", false, false,0, 1, true,  null, null), out.second);
+        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислала файл", "doc.pdf", false, false,0, 1, true,  "", null), out.second);
 
         unreadMessages.clear();
         incomingPushes.clear();
         incomingPushes.add(messageWithFile);
         out = new NugatMessageFormatter(mContext, unreadMessages, incomingPushes).getFormattedMessageAsPushContents();
         assertEquals(true, out.first);
-        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислала файл", "phrase", false, false,0, 1, true,  null, null), out.second);
+        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислала файл", "phrase", false, false,0, 1, true,  "", null), out.second);
 
 
         unreadMessages.clear();
@@ -145,7 +145,7 @@ public class NugatMessageFormatterTest {
         unreadMessages.add(onlyFile);
         out = new NugatMessageFormatter(mContext, unreadMessages, incomingPushes).getFormattedMessageAsPushContents();
         assertEquals(true, out.first);
-        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислала 5 файлов", "Дотроньтесь чтобы скачать", false, false,0, 5, true,  null, null), out.second);
+        assertEquals(new NugatMessageFormatter.PushContents("Татьяна прислала 5 файлов", "Дотроньтесь чтобы скачать", false, false,0, 5, true,  "", null), out.second);
 
         unreadMessages.clear();
         incomingPushes.clear();

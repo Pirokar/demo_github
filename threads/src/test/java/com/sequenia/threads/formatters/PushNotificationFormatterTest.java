@@ -159,5 +159,8 @@ public class PushNotificationFormatterTest {
         assertEquals(1, out.second.size());
         assertEquals("У вас есть непрочитанные сообщения", out.second.get(0));
         assertEquals(false, out.first);
+
+
+
     }
 }

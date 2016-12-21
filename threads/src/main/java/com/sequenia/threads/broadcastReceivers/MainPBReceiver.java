@@ -18,7 +18,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
-        Log.d(TAG, "onNewPushNotification " + s + " " + bundle);
+        Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
         if (MessageMatcher.getType(bundle) == MessageMatcher.TYPE_OPERATOR_TYPING
                 || MessageMatcher.getType(bundle) == MessageMatcher.TYPE_MESSAGES_READ)
             ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
@@ -31,7 +31,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressChanged(final Context context, final String s) {
-        Log.e(TAG, "onDeviceAddressChanged " + s);
+        Log.i(TAG, "onDeviceAddressChanged " + s);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -43,7 +43,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressProblems(Context context, String s) {
-        Log.e(TAG, "onDeviceAddressProblems " + s);
+        Log.i(TAG, "onDeviceAddressProblems " + s);
     }
 
     @Override

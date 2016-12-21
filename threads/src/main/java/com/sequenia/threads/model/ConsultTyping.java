@@ -3,10 +3,10 @@ package com.sequenia.threads.model;
 /**
  * Created by yuri on 10.06.2016.
  */
-public class ConsultTyping implements ChatItem {
+public class ConsultTyping implements ChatItem,ConsultChatPhrase {
     private long date;
     private final String consultId;
-    private final String avatarPath;
+    private String avatarPath;
 
     public long getTimeStamp() {
         return date;
@@ -16,6 +16,11 @@ public class ConsultTyping implements ChatItem {
         this.consultId = consultId;
         this.date = date;
         this.avatarPath = avatarPath;
+    }
+
+    @Override
+    public void setAvatarPath(String newAvatar) {
+        this.avatarPath = newAvatar;
     }
 
     public void setDate(long date) {

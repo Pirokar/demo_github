@@ -25,7 +25,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
 
     public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
-        this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
+        this.messageId = messageId == null ? "localID: " + UUID.randomUUID().toString() : messageId;
         this.phrase = phrase;
         this.withFile = fileDescription != null;
         this.mQuote = mQuote;
@@ -35,7 +35,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     }
 
     public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
-        this.messageId = messageId == null ? UUID.randomUUID().toString() : messageId;
+        this.messageId = messageId == null ? "localID: " + UUID.randomUUID().toString() : messageId;
         this.phrase = phrase;
         this.withFile = fileDescription != null;
         this.mQuote = mQuote;
@@ -181,6 +181,6 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         return "UserPhrase{" +
                 "phrase='" + phrase + '\'' +
                 ", isChosen=" + isChosen +
-                '}'+"\n";
+                '}' + "\n";
     }
 }

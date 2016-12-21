@@ -33,7 +33,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -85,9 +84,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static android.text.TextUtils.isEmpty;
 import static com.sequenia.threads.model.ChatStyle.INVALID;
@@ -138,6 +134,7 @@ public class ChatActivity extends BaseActivity
     private boolean searchInFiles;
     private boolean isResumed;
     private ChatStyle style;
+    private Handler mSearchHandler = new Handler(Looper.getMainLooper());
 
 
     @Override
@@ -363,74 +360,54 @@ public class ChatActivity extends BaseActivity
             public void afterTextChanged(Editable s) {
                 String request = "";
                 if (!isInMessageSearchMode) return;
-                if (s == null || s.length() == 0) {
-                    request = UUID.randomUUID().toString();
-                    mSearchMoreButton.setVisibility(View.GONE);
-                } else {
-                    doFancySearch(s.toString(), true);
-                   /* if (mSearchMoreButton.getVisibility() == View.GONE)
-                        mSearchMoreButton.setVisibility(View.VISIBLE);*/// TODO: 18.12.2016
-                }
-              /*  if (!searchInFiles) {
-                    mChatController.requestFilteredPhrases(false, request, new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
-                        @Override
-                        public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
-                            mChatAdapter.swapItems(result.second);
-                        }
-
-                        @Override
-                        public void onFail(Exception error) {
-                        }
-                    });
-                }*/ /*else {
-                    mChatController.requestFilteredFiles(false, request, new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
-                        @Override
-                        public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
-                            mChatAdapter.swapItems(result.second);
-                        }
-
-                        @Override
-                        public void onFail(Exception error) {
-                        }
-                    });
-                }*/
+                doFancySearch(s.toString(), true);
             }
         });
-
     }
 
-    private void doFancySearch(String request,
-                               boolean forward) {
-        final ChatPhrase[] highlighted = {null};
-        mChatController.fancySearch(request, forward, new CallbackNoError<List<ChatItem>>() {
+    private void doFancySearch(final String request,
+                               final boolean forward) {
+        if (isEmpty(request)) {
+            mChatAdapter.removeHighlight();
+            mSearchHandler.removeCallbacksAndMessages(null);
+            return;
+        }
+        mSearchHandler.removeCallbacksAndMessages(null);
+        mSearchHandler.postDelayed(new Runnable() {
             @Override
-            public void onCall(final List<ChatItem> data) {
-                h.post(new Runnable() {
+            public void run() {
+                final ChatPhrase[] highlighted = {null};
+                mChatController.fancySearch(request, forward, new CallbackNoError<List<ChatItem>>() {
                     @Override
-                    public void run() {
-                        for (int i = 0; i < data.size(); i++) {
-                            if (data.get(i) instanceof ChatPhrase) {
-                                if (((ChatPhrase) data.get(i)).isHighlight()) {
-                                    highlighted[0] = (ChatPhrase) data.get(i);
-                                    break;
+                    public void onCall(final List<ChatItem> data) {
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0; i < data.size(); i++) {
+                                    if (data.get(i) instanceof ChatPhrase) {
+                                        if (((ChatPhrase) data.get(i)).isHighlight()) {
+                                            highlighted[0] = (ChatPhrase) data.get(i);
+                                            break;
+                                        }
+                                    }
                                 }
-                            }
-                        }
 
-                        mChatAdapter.addItems(data);
-                        mChatAdapter.removeHighlight();
+                                mChatAdapter.addItems(data);
+                                mChatAdapter.removeHighlight();
+                            }
+                        });
+                        h.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (highlighted[0] == null) return;
+                                int index = mChatAdapter.setItemHighlighted(highlighted[0]);
+                                if (index != -1) mRecyclerView.scrollToPosition(index);
+                            }
+                        }, 60);
                     }
                 });
-                h.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (highlighted[0] == null) return;
-                        int index = mChatAdapter.setItemHighlighted(highlighted[0]);
-                        if (index != -1) mRecyclerView.smoothScrollToPosition(index);
-                    }
-                }, 60);
             }
-        });
+        }, 400);
     }
 
     @Override
@@ -534,7 +511,7 @@ public class ChatActivity extends BaseActivity
                 mChatAdapter.setItemChosen(false, mChosenPhrase);
                 mChosenPhrase = null;
             }
-            if (isInMessageSearchMode)onBackPressed();
+            if (isInMessageSearchMode) onBackPressed();
         }
     }
 
@@ -767,6 +744,9 @@ public class ChatActivity extends BaseActivity
             }
         }
         mChatAdapter.addItems(Arrays.asList(item));
+        if (item instanceof ConsultPhrase) {
+            mChatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
+        }
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -781,7 +761,6 @@ public class ChatActivity extends BaseActivity
 
     public void addChatItems(final List<ChatItem> list) {
         if (list.size() == 0) return;
-        Log.i(TAG, "addChatItems: list.size" + list.size());
         h.post(new Runnable() {
             @Override
             public void run() {
@@ -1072,7 +1051,7 @@ public class ChatActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
-        if(null != mChatAdapter)mChatAdapter.removeHighlight();
+        if (null != mChatAdapter) mChatAdapter.removeHighlight();
         boolean isNeedToClose = true;
         if (mBottomSheetView.getVisibility() == View.VISIBLE && mBottomGallery.getVisibility() == View.VISIBLE) {
             mBottomSheetView.setVisibility(View.GONE);
@@ -1108,7 +1087,7 @@ public class ChatActivity extends BaseActivity
             isInMessageSearchMode = false;
             mSearchMessageEditText.setText("");
             //  mChatAdapter.undoClear();
-            mRecyclerView.smoothScrollToPosition(mChatAdapter.getCurrentItemCount() - 1);
+            mRecyclerView.scrollToPosition(mChatAdapter.getCurrentItemCount() - 1);
             mSearchMoreButton.setVisibility(View.GONE);
             mSwipeRefreshLayout.setEnabled(true);
             int state = mChatController.getStateOfConsult();
@@ -1282,7 +1261,7 @@ public class ChatActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == R.id.files_and_media) {
-            if (isInMessageSearchMode) mChatAdapter.undoClear();
+            if (isInMessageSearchMode) onBackPressed();
             startActivity(FilesActivity.getStartIntetent(this));
             return true;
         }
