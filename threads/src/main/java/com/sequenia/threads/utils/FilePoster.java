@@ -29,7 +29,7 @@ public class FilePoster {
                     .getInstance(context)
                     .sendFileAsync(new File(fileDescription.getFilePath().replaceAll("file://", ""))
                             , ""
-                            , TimeUnit.DAYS.toMillis(7)
+                            , TimeUnit.DAYS.toMillis(0)
                             , new RequestProgressCallback() {
                                 @Override
                                 public void onProgress(double v) {

@@ -25,12 +25,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    afterEvaluate {
-       copy{
-           from buildDir.absolutePath+'/outputs/aar'
-           into 'H:\\AndroidProjects\\TTEst\\threads-debug'
-       }
-    }
 
 }
 dependencies {
