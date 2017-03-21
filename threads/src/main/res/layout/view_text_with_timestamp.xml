@@ -6,7 +6,7 @@
     android:layout_toRightOf="@+id/imageView"
     android:orientation="horizontal">
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/txtTimeFrom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:textSize="10dp"
         android:textStyle="italic" />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/txtMsgFrom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatbeta;
+package com.sequenia.appwithchat;
 
 import org.junit.Test;
 

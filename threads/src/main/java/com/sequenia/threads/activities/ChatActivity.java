@@ -432,6 +432,8 @@ public class ChatActivity extends BaseActivity
                 mInputEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
                 mSearchMessageEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
 
+                mSearchMessageEditText.setHintTextColor(getColorInt(R.color.toolbar_edit_text_hint));
+
             }
             if (style.incomingMessageTextColor != INVALID) {
                 mInputEditText.setTextColor(getColorInt(style.incomingMessageTextColor));

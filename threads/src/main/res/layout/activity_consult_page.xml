@@ -27,7 +27,7 @@
 
 
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:textSize="@dimen/text_medium"
         android:id="@+id/consult_title"
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
         android:textColor="@android:color/white"
        />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:padding="@dimen/margin_big"
         android:id="@+id/consult_moto"
         android:layout_width="match_parent"

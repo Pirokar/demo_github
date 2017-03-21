@@ -400,7 +400,7 @@ public class ChatController {
                                             if (new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists()) {
                                                 error += "\nsize = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).length();
                                             }
-                                            activity.showFullError(error);
+//                                            activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
                                             // activity.showConnectionError();
                                         }
 
@@ -429,7 +429,7 @@ public class ChatController {
                             }
                             if (e.getCause() != null)
                                 error += "\ncause = " + e.getCause().toString();
-                            activity.showFullError(error);
+//                            activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
                         }
                         // activity.showConnectionError();
                     }
@@ -448,7 +448,7 @@ public class ChatController {
                         + "\n" + e.getMessage()
                         + "\n" + e.toString();
                 error += "\ncause = " + e.getCause().toString();
-                activity.showFullError(error);
+//                activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
 
             } //activity.showConnectionError();
         }

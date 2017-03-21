@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sequenia.threads.widget.CustomFontTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="56dp"
@@ -10,4 +11,4 @@
     android:textColor="@color/gray_text"
     android:textSize="@dimen/text_medium">
 
-</TextView>
+</com.sequenia.threads.widget.CustomFontTextView>

@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.ChatActivity">
 
-    <Button
+    <com.sequenia.threads.widget.CustomFontButton
         android:id="@+id/search_more"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -17,25 +17,21 @@
         android:layout_marginRight="@dimen/margin_big"
         android:background="@android:color/transparent"
         android:text="@string/search_more"
-        android:textColor="@color/green_dark"
+        android:textColor="@color/welcome_screen_text"
         android:visibility="gone"/>
 
     <FrameLayout
         android:id="@+id/chat_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_layout"
-        android:layout_below="@+id/search_more">
+        android:layout_below="@+id/toolbar"
+        android:layout_alignParentStart="true">
 
         <com.sequenia.threads.views.MySwipeRefreshLayout
             android:id="@+id/swipe_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
         </com.sequenia.threads.views.MySwipeRefreshLayout>
 
         <com.sequenia.threads.views.WelcomeScreen
@@ -46,11 +42,16 @@
             android:visibility="visible"
             app:image_src="@drawable/logo"
             app:subtitle_text="@string/subtitle_text"
-            app:text_color="@color/gray_text"
+            app:text_color="@color/welcome_screen_text"
             app:text_size_subtitle="6sp"
             app:text_size_title="8sp"
             app:title_text="@string/welcome"
             />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </FrameLayout>
 
     <LinearLayout
@@ -68,7 +69,7 @@
             android:layout_height="64dp"
             android:visibility="gone">
 
-            <TextView
+            <com.sequenia.threads.widget.CustomFontTextView
                 android:id="@+id/quote_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -76,10 +77,10 @@
                 android:layout_marginTop="@dimen/margin_three_fourth"
                 android:layout_toRightOf="@+id/quote_image"
                 android:text="Мария Павлова"
-                android:textColor="@android:color/black"
+                android:textColor="@color/quote_name"
                 android:textSize="@dimen/text_medium"/>
 
-            <TextView
+            <com.sequenia.threads.widget.CustomFontTextView
                 android:id="@+id/quote_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,7 +92,7 @@
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="Добрый день!Подскажите номер вашей карты"
-                android:textColor="@color/gray_text"/>
+                android:textColor="@color/quote_message"/>
 
             <ImageButton
                 android:id="@+id/quote_past"
@@ -137,7 +138,7 @@
             android:layout_alignParentBottom="true"
             >
 
-            <EditText
+            <com.sequenia.threads.widget.CustomFontEditText
                 android:id="@+id/input"
                 style="@style/InputEditTextStyle"
                 android:background="@android:color/transparent"
@@ -189,7 +190,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@color/green_light"
+        android:background="@color/toolbar_background"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp">
 
         <LinearLayout
@@ -229,7 +230,7 @@
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-            <TextView
+            <com.sequenia.threads.widget.CustomFontTextView
                 android:id="@+id/consult_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -238,7 +239,7 @@
                 android:textSize="20sp"
                 android:visibility="visible"/>
 
-            <TextView
+            <com.sequenia.threads.widget.CustomFontTextView
                 android:id="@+id/subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -251,7 +252,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <android.support.v7.widget.AppCompatEditText
+                <com.sequenia.threads.widget.CustomFontEditText
                     android:id="@+id/search"
                     android:visibility="visible"
                     android:layout_width="match_parent"
@@ -263,7 +264,7 @@
                     android:hint="@string/search_messages"
                     android:lines="1"
                     android:textColor="@android:color/white"
-                    android:textColorHint="@color/hint_color"
+                    android:textColorHint="@color/toolbar_edit_text_hint"
                     android:textCursorDrawable="@null"
                     android:textSize="@dimen/text_big"
                     />

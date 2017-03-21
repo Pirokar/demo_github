@@ -66,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
+                    <com.sequenia.threads.widget.CustomFontTextView
                         android:id="@+id/to"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                         android:text="Иван Петров"
                         android:textColor="@color/black"/>
 
-                    <TextView
+                    <com.sequenia.threads.widget.CustomFontTextView
                         android:id="@+id/file_specs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                         android:text="счет на оплату 1,2mb dfffffffffffffffffdddddddddddddddddddddddddddddddddddddddddddddddd"
                         android:textColor="@color/gray_text"/>
 
-                    <TextView
+                    <com.sequenia.threads.widget.CustomFontTextView
                         android:id="@+id/send_at"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -106,7 +106,7 @@
                 android:id="@+id/phrase_frame"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.sequenia.threads.widget.CustomFontTextView
 
                     android:id="@+id/timestamp"
                     android:layout_width="wrap_content"
@@ -117,7 +117,7 @@
                     android:text="10:19"
                     android:textColor="@android:color/black"/>
 
-                <TextView
+                <com.sequenia.threads.widget.CustomFontTextView
                     android:id="@+id/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

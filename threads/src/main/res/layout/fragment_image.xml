@@ -14,7 +14,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.9" />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/from"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -26,7 +26,7 @@
         android:textSize="@dimen/text_regular"
         />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/date"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -11,7 +11,7 @@
         android:layout_height="64dp"
         />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/quote_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:textColor="@color/gray_text"
         android:textSize="18sp" />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

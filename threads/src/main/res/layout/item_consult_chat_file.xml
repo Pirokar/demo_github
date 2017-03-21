@@ -33,7 +33,7 @@
             app:in_progress_label="@drawable/ic_clear_blue_36dp"
             app:start_download_label="@drawable/ic_vertical_align_bottom_24dp" />
 
-        <TextView
+        <com.sequenia.threads.widget.CustomFontTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
             android:textColor="@color/gray_text" />
 
 
-        <TextView
+        <com.sequenia.threads.widget.CustomFontTextView
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
             android:text="1,2 mb"
             android:textColor="@color/gray_text" />
 
-        <TextView
+        <com.sequenia.threads.widget.CustomFontTextView
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

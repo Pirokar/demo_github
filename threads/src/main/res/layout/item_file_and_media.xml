@@ -14,7 +14,7 @@
         android:padding="@dimen/margin_half"
         android:src="@drawable/ic_insert_file_blue_42dp" />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/file_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         android:text=""
         android:textColor="@android:color/black" />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/file_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
         android:text=""
         android:textColor="@android:color/black" />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

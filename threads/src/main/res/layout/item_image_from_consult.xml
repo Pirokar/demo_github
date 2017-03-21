@@ -15,7 +15,7 @@
         android:scaleType="fitCenter"
         />
 
-    <TextView
+    <com.sequenia.threads.widget.CustomFontTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

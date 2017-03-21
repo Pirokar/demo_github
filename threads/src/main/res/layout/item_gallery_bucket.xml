@@ -19,7 +19,7 @@
         android:background="#99000000"
         android:orientation="horizontal">
 
-        <TextView
+        <com.sequenia.threads.widget.CustomFontTextView
             android:id="@+id/bucket_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -32,7 +32,7 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/text_regular" />
 
-        <TextView
+        <com.sequenia.threads.widget.CustomFontTextView
             android:id="@+id/photos_count"
             android:layout_width="0dp"
             android:layout_height="match_parent"

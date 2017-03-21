@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatbeta;
+package com.sequenia.appwithchat;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,8 +16,8 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushController;
-import com.sequenia.appwithchatdev.BuildConfig;
-import com.sequenia.appwithchatdev.R;
+import com.sequenia.appwithchat.BuildConfig;
+import com.sequenia.appwithchat.R;
 import com.sequenia.threads.model.ChatStyle;
 import com.sequenia.threads.utils.PermissionChecker;
 
@@ -43,12 +43,12 @@ public class MainActivity extends AppCompatActivity {
         }
         mEditText = (EditText) findViewById(R.id.edit_text);
         nameTextView = (TextView) findViewById(R.id.client_name);
-        mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
-                "79139055742"
-                : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
-        nameTextView.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("name", null) == null ?
-                "Серегй Петрович Иванов"
-                : PreferenceManager.getDefaultSharedPreferences(this).getString("name", null));
+//        mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
+//                "79139055742"
+//                : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
+//        nameTextView.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("name", null) == null ?
+//                "Серегй Петрович Иванов"
+//                : PreferenceManager.getDefaultSharedPreferences(this).getString("name", null));
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
@@ -78,31 +78,32 @@ public class MainActivity extends AppCompatActivity {
             Intent i = ChatStyle
                     .IntentBuilder
                     .getBuilder(this, mEditText.getText().toString(), nameTextView.getText().toString())
-                  /*  .setChatTitleStyle(R.string.contact_center,
-                            android.R.color.holo_red_dark,
-                            android.R.color.holo_blue_bright,
-                            R.color.white_dark)
+                    .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar
+                            R.color.toolbar_background,//ToolBar background
+                            R.color.toolbar_widget,//Toolbar widget
+                            R.color.status_bar)//status bar
                     .setChatBodyStyle(
-                            android.R.color.holo_green_dark,
-                            android.R.color.holo_blue_dark,
-                            android.R.color.holo_orange_dark,
-                            android.R.color.holo_orange_dark,
-                            android.R.color.holo_blue_bright,
-                            android.R.color.holo_green_dark,
-                            android.R.color.black,
-                            android.R.color.holo_purple,
-                            android.R.color.black,
-                            R.drawable.defaultprofile_360,
-                            R.drawable.no_image,
-                            R.style.FileDialogStyle)
-                    .setGoogleAnalyticsEnabled(false)*/
+                            R.color.chat_background,//фон чата
+                            R.color.chat_message_hint_input_text,//подсказка в EditText
+                            R.color.chat_message_input_background,//заливка EditText
+                            R.color.incoming_message_bubble_background,//заливка бабла входящего сообщения
+                            R.color.outgoing_message_bubble_background,//заливка бабла исходящего сообщения
+                            R.color.incoming_message_text,//цвет текста входящего сообщения
+                            R.color.outgoing_message_text,//цвет текста исходящего сообщения
+                            R.color.chatbody_icons_tint,//цвет иконок в поле сообщения
+                            R.color.connection_message_text_color,//цвет текста сообщения о соединениии
+                            R.drawable.no_image,//аватар по умолчанию входящего сообщения
+                            R.drawable.no_image,//заглушка картинки
+                            R.style.FileDialogStyle)//стиль диалога выбора файла
+//                    .setGoogleAnalyticsEnabled(false)
                     .setPushNotificationStyle(R.drawable.push_icon_def,R.string.default_title,ChatStyle.INVALID,ChatStyle.INVALID)
-                    .setWelcomeScreenStyle(R.drawable.logo
-                            , R.string.welcome
-                            , R.string.subtitle_text
-                            , R.color.gray_text
-                            , 18
-                            , 14)
+                    .setWelcomeScreenStyle(
+                            R.drawable.logo//логотип экрана приветствия
+                            , R.string.welcome//заголовок экрана приветствия
+                            , R.string.subtitle_text//подзаголовок экрана приветствия
+                            , R.color.welcome_screen_text//цвет текста на экране приветствия
+                            , 18//размер шрифта заголовка
+                            , 14)//размер шрифта подзаголовка
                     .build();
             startActivity(i);
 
