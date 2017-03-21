@@ -36,8 +36,8 @@
     <color name="menu_item_text">#83B144</color>
     <color name="toolbar_edit_text_hint">#B5D18F</color>
 
+    <color name="grey">#999999</color>
 
-    <color name="quote_arrow_color">#999999</color>
     <color name="quote_name">#333333</color>
     <color name="quote_message">#999999</color>
 

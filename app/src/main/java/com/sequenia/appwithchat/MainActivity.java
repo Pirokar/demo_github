@@ -92,11 +92,14 @@ public class MainActivity extends AppCompatActivity {
                             R.color.outgoing_message_text,//цвет текста исходящего сообщения
                             R.color.chatbody_icons_tint,//цвет иконок в поле сообщения
                             R.color.connection_message_text_color,//цвет текста сообщения о соединениии
-                            R.drawable.no_image,//аватар по умолчанию входящего сообщения
+                            R.drawable.sample_consult_avatar_small,//аватар по умолчанию входящего сообщения
                             R.drawable.no_image,//заглушка картинки
                             R.style.FileDialogStyle)//стиль диалога выбора файла
 //                    .setGoogleAnalyticsEnabled(false)
-                    .setPushNotificationStyle(R.drawable.push_icon_def,R.string.default_title,ChatStyle.INVALID,ChatStyle.INVALID)
+                    .setPushNotificationStyle(R.drawable.push_icon_def,
+                            R.string.default_title,
+                            ChatStyle.INVALID,
+                            ChatStyle.INVALID)
                     .setWelcomeScreenStyle(
                             R.drawable.logo//логотип экрана приветствия
                             , R.string.welcome//заголовок экрана приветствия

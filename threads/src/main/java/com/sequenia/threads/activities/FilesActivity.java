@@ -136,7 +136,10 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
             if (style.chatToolbarColorResId != INVALID)  mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
             if (style.chatToolbarTextColorResId != INVALID) ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
             if (style.chatToolbarTextColorResId != INVALID) mSearchEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
-            if (style.chatMessageInputHintTextColor != INVALID) mSearchEditText.setHintTextColor(getColorInt(style.chatToolbarTextColorResId));
+            if (style.chatMessageInputHintTextColor != INVALID) mSearchEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
+
+            mSearchEditText.setHintTextColor(getColorInt(R.color.toolbar_edit_text_hint));
+
             if (style.chatToolbarTextColorResId != INVALID)   mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
         }
     }

@@ -66,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.sequenia.threads.widget.CustomFontTextView
+                    <com.sequenia.threads.widget.BoldCustomFontTextView
                         android:id="@+id/to"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
                         android:layout_marginTop="2dp"
                         android:paddingRight="80dp"
                         android:text="Иван Петров"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/incoming_message_text"/>
 
                     <com.sequenia.threads.widget.CustomFontTextView
                         android:id="@+id/file_specs"
@@ -86,14 +86,14 @@
                         android:text="счет на оплату 1,2mb dfffffffffffffffffdddddddddddddddddddddddddddddddddddddddddddddddd"
                         android:textColor="@color/gray_text"/>
 
-                    <com.sequenia.threads.widget.CustomFontTextView
+                    <com.sequenia.threads.widget.LightCustomFontTextView
                         android:id="@+id/send_at"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/margin_half"
                         android:layout_marginTop="2dp"
                         android:text="отправлено 21 апр 2016"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/welcome_screen_text"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -115,7 +115,7 @@
                     android:paddingBottom="@dimen/margin_half"
                     android:paddingRight="4dp"
                     android:text="10:19"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@color/incoming_message_text"/>
 
                 <com.sequenia.threads.widget.CustomFontTextView
                     android:id="@+id/text"
@@ -129,7 +129,7 @@
                     android:paddingRight="10dp"
                     android:paddingTop="5dp"
                     android:text="textetxtetex &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
-                    android:textColor="@color/black"
+                    android:textColor="@color/incoming_message_text"
 
                     android:textSize="16dp"/>
             </FrameLayout>

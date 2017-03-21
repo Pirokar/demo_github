@@ -40,7 +40,7 @@
             android:layout_height="match_parent"
             android:background="@color/white_dark"
             android:visibility="visible"
-            app:image_src="@drawable/logo"
+            app:image_src="@drawable/logo_2"
             app:subtitle_text="@string/subtitle_text"
             app:text_color="@color/welcome_screen_text"
             app:text_size_subtitle="6sp"
