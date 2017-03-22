@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sequenia.threads.widget.CustomFontTextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/text"
-    android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:gravity="center_vertical"
-    android:paddingLeft="@dimen/margin_big"
-    android:text="@string/recently"
-    android:textAllCaps="true"
-    android:textColor="@color/gray_text">
 
-</com.sequenia.threads.widget.CustomFontTextView>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="@color/chat_background">
+
+    <com.sequenia.threads.widget.CustomFontTextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/margin_big"
+        android:paddingRight="@dimen/margin_big"
+        android:text="@string/recently"
+        android:textAllCaps="true"
+        android:textColor="@color/gray_text"/>
+
+</LinearLayout>

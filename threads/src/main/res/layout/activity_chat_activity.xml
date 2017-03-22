@@ -25,7 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/bottom_layout">
 
         <com.sequenia.threads.views.MySwipeRefreshLayout
             android:id="@+id/swipe_refresh"
@@ -55,7 +56,6 @@
     </FrameLayout>
 
     <LinearLayout
-
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

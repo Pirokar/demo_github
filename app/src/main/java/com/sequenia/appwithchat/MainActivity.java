@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                             ChatStyle.INVALID,
                             ChatStyle.INVALID)
                     .setWelcomeScreenStyle(
-                            R.drawable.logo//логотип экрана приветствия
+                            R.drawable.logo_2//логотип экрана приветствия
                             , R.string.welcome//заголовок экрана приветствия
                             , R.string.subtitle_text//подзаголовок экрана приветствия
                             , R.color.welcome_screen_text//цвет текста на экране приветствия

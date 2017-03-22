@@ -107,13 +107,13 @@
           android:layout_alignBottom="@+id/phrase_content"
           android:layout_alignParentTop="true"
           android:layout_below="@+id/phrase_content"
-          android:background="@color/blue_transparent" />
+          android:background="@color/toolbar_background_transparent" />
 
       <View
           android:id="@+id/filter_bottom"
           android:layout_width="match_parent"
           android:layout_height="@dimen/margin_quarter"
           android:layout_below="@+id/phrase_content"
-          android:background="@color/blue_transparent" />
+          android:background="@color/toolbar_background_transparent" />
 
 </RelativeLayout>

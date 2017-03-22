@@ -3,6 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bubble"
+        android:layout_alignParentTop="true"
+        android:background="@color/toolbar_background_transparent" />
+
+    <View
+        android:id="@+id/filter_second"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_quarter"
+        android:layout_below="@+id/filter"
+        android:background="@color/toolbar_background_transparent" />
+
    <ImageView
     android:id="@+id/bubble_1"
     android:layout_width="0dp"
@@ -12,12 +28,13 @@
     android:layout_alignBottom="@+id/bubble"
     android:layout_alignTop="@+id/bubble"
     android:src="@drawable/a_user_bubble"
-    android:scaleType="fitXY"
-    />
+    android:scaleType="fitXY" />
+
     <RelativeLayout
 
         android:id="@+id/bubble"
-        style="@style/userBuble">
+        style="@style/userBuble"
+        android:paddingRight="17dp">
 
 
         <com.sequenia.threads.views.CircularProgressButton
@@ -68,18 +85,5 @@
 
     </RelativeLayout>
 
-    <View
-        android:id="@+id/filter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true"
-        android:background="@color/blue_transparent" />
 
-    <View
-        android:id="@+id/filter_second"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_quarter"
-        android:layout_below="@+id/filter"
-        android:background="@color/blue_transparent" />
 </RelativeLayout>

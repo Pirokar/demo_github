@@ -5,6 +5,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/phrase_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/toolbar_background_transparent"
+        android:visibility="visible"/>
+
+    <View
+        android:id="@+id/filter_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@+id/phrase_content"
+        android:background="@color/toolbar_background_transparent"
+        android:visibility="visible"/>
+
     <ImageView
         android:id="@+id/bubble"
         android:layout_width="0dp"
@@ -24,14 +41,15 @@
         android:id="@+id/phrase_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="9dp">
 
         <LinearLayout
             android:paddingLeft="@dimen/margin_quarter"
             style="@style/consultBubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/consultant_margin_left"
+            android:layout_marginLeft="45dp"
             android:layout_marginRight="@dimen/consultant_margin_right"
             android:orientation="vertical"
             android:paddingTop="2dp"
@@ -76,24 +94,24 @@
                         android:text="Иван Петров"
                         android:textColor="@color/incoming_message_text"/>
 
-                    <com.sequenia.threads.widget.CustomFontTextView
+                    <com.sequenia.threads.widget.LightCustomFontTextView
                         android:id="@+id/file_specs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/margin_half"
                         android:layout_marginTop="2dp"
-
                         android:text="счет на оплату 1,2mb dfffffffffffffffffdddddddddddddddddddddddddddddddddddddddddddddddd"
                         android:textColor="@color/gray_text"/>
 
-                    <com.sequenia.threads.widget.LightCustomFontTextView
+                    <com.sequenia.threads.widget.CustomFontTextView
                         android:id="@+id/send_at"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/margin_half"
                         android:layout_marginTop="2dp"
                         android:text="отправлено 21 апр 2016"
-                        android:textColor="@color/welcome_screen_text"/>
+                        android:textColor="@color/welcome_screen_text"
+                        android:textSize="12sp"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -137,31 +155,15 @@
         </LinearLayout>
 
         <ImageView
-
             android:id="@+id/image"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="bottom|left"
-            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginLeft="0dp"
             android:layout_marginTop="-8dp"
             android:visibility="visible"/>
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/filter"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignBottom="@id/phrase_content"
-        android:layout_alignParentTop="true"
-        android:background="@color/blue_transparent"
-        android:visibility="visible"/>
 
-    <View
-        android:id="@+id/filter_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@+id/phrase_content"
-        android:background="@color/blue_transparent"
-        android:visibility="visible"/>
 </RelativeLayout>

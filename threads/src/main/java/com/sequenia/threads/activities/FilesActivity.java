@@ -131,6 +131,9 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
         if (null != style) {
             if (style.chatBackgroundColor != INVALID)
                 findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+
+            findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, R.color.white));
+
             if (style.chatToolbarColorResId != INVALID)
                 mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
             if (style.chatToolbarColorResId != INVALID)  mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));

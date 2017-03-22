@@ -3,6 +3,7 @@ package com.sequenia.threads.holders;
 import android.graphics.PorterDuff;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.format.Formatter;
 import android.util.TypedValue;
@@ -61,6 +62,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
         fileRow = itemView.findViewById(R.id.right_text_row);
         mCircularProgressButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
+
         rightTextHeader = (TextView) itemView.findViewById(R.id.to);
         mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         rightTextFileStamp = (TextView) itemView.findViewById(R.id.send_at);

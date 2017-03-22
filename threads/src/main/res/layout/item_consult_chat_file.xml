@@ -4,6 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bubble"
+        android:layout_alignParentTop="true"
+        android:background="@color/toolbar_background_transparent" />
+
+    <View
+        android:id="@+id/filter_second"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_material"
+        android:layout_below="@+id/filter"
+        android:background="@color/toolbar_background_transparent" />
+
+    <ImageView
+        android:id="@+id/consult_avatar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_below="@+id/bubble"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="@dimen/margin_half"
+        android:layout_marginTop="-12dp"
+        android:visibility="visible" />
+
+
     <ImageView
         android:id="@+id/bubble_1"
         android:layout_width="0dp"
@@ -17,7 +43,7 @@
 
     <RelativeLayout
         android:id="@+id/bubble"
-
+        android:paddingLeft="15dp"
         style="@style/consultBubble">
 
         <com.sequenia.threads.views.CircularProgressButton
@@ -69,29 +95,5 @@
 
     </RelativeLayout>
 
-    <ImageView
 
-        android:id="@+id/consult_avatar"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_below="@id/bubble"
-        android:layout_gravity="bottom|left"
-        android:layout_marginLeft="@dimen/margin_half"
-        android:layout_marginTop="-12dp"
-        android:visibility="visible" />
-
-    <View
-        android:id="@+id/filter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true"
-        android:background="@color/blue_transparent" />
-
-    <View
-        android:id="@+id/filter_second"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_material"
-        android:layout_below="@+id/filter"
-        android:background="@color/blue_transparent" />
 </RelativeLayout>

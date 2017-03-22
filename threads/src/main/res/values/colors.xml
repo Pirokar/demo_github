@@ -41,7 +41,9 @@
     <color name="quote_name">#333333</color>
     <color name="quote_message">#999999</color>
 
+    <color name="toolbar_background_transparent">#3083B144</color>
 
+    <color name="white">#ffffff</color>
 
 
 </resources>
