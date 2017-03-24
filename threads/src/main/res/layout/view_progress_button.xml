@@ -16,7 +16,7 @@
         android:layout_gravity="center"
         />
 
-    <com.sequenia.threads.views.MyCircleProgress
+    <im.threads.views.MyCircleProgress
         android:id="@+id/circular_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

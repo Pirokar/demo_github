@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.sequenia.appwithchat">
+          package="com.sequenia.appwithchatdev">
 
     <permission
-        android:name="com.sequenia.appwithchat.permission.C2D_MESSAGE"
+        android:name="com.sequenia.appwithchatdev.permission.C2D_MESSAGE"
         android:protectionLevel="signature"/>
     <permission
-        android:name="com.sequenia.appwithchat.permission.pushserver.RECEIVE"
+        android:name="com.sequenia.appwithchatdev.permission.pushserver.RECEIVE"
         android:protectionLevel="signature"/>
 
-    <uses-permission android:name="com.sequenia.appwithchat.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="com.sequenia.appwithchatdev.permission.C2D_MESSAGE"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
     <uses-permission android:name="com.google.android.c2dm.permission.SEND"/>
-    <uses-permission android:name="com.sequenia.appwithchat.permission.pushserver.RECEIVE"/>
+    <uses-permission android:name="com.sequenia.appwithchatdev.permission.pushserver.RECEIVE"/>
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity android:name="com.sequenia.appwithchat.MainActivity"
+        <activity android:name="com.sequenia.appwithchatdev.MainActivity"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -27,9 +27,9 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name="com.sequenia.threads.broadcastReceivers.MainPBReceiver"
+            android:name="im.threads.broadcastReceivers.MainPBReceiver"
             android:exported="false"
-            android:permission="com.sequenia.appwithchat.permission.pushserver.RECEIVE">
+            android:permission="com.sequenia.appwithchatdev.permission.pushserver.RECEIVE">
             <intent-filter>
                 <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT"/>
                 <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT"/>
@@ -39,7 +39,7 @@
         </receiver>
         <meta-data
             android:name="com.pushserver.android.service"
-            android:value="com.sequenia.threads.services.IncomingMessagesIntentService"/>
+            android:value="im.threads.services.IncomingMessagesIntentService"/>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="7dea244530b440655e927fed9654a59108f414bc"/>
@@ -49,6 +49,9 @@
         <meta-data
             android:name="com.pushserver.android.serverUrl"
             android:value="https://pushserver.mfms.ru/brooma"/>
+        <!--<meta-data-->
+            <!--android:name="com.pushserver.android.serverUrl"-->
+            <!--android:value="https://gatepush10.mfms.ru:18042"/>-->
         <meta-data
             android:name="com.pushserver.android.logs"
             android:value="true"/>
@@ -59,12 +62,15 @@
         <meta-data
             android:name="com.pushserver.android.heartbeatInterval"
             android:value="300000"/>
-       <meta-data
+        <!--<meta-data-->
+            <!--android:name="com.pushserver.android.providerUid"-->
+            <!--android:value="PH5AckgzOkYoSz82QVN1M2ovbiZePEdBMi80QHFdOm0vUyZGOS5tXCZgRWM1WiYkM34+Cg=="/>-->
+        <meta-data
             android:name="com.pushserver.android.providerUid"
             android:value="PH5AckgzOkYoSz82QVN1M2ovbiZePEdBMi80QHFdOm0ubVwmYEVjNVomJDN+Pgo"/>
-      <!-- <meta-data
-            android:name="com.pushserver.android.providerUid"
-            android:value="PH5AckgzOkYoSz82QVN1M2ovcChjSUFSVCtqL1MmRjkucXFkWCQzfj4K"/>-->
+        <!--<meta-data-->
+            <!--android:name="com.pushserver.android.providerUid"-->
+            <!--android:value="PH5AckgzOkYoSz82QVN1M2ovcChjSUFSVCtqL1MmRjkucXFkWCQzfj4K"/>-->
         <meta-data
             android:name="com.pushserver.android.uploadServerUrl"
             android:value="https://pushserver.mfms.ru/brooma/file/upload"/>

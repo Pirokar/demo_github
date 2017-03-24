@@ -12,7 +12,7 @@
         android:padding="8dp"
         />
 
-    <com.sequenia.threads.views.ViewTypingInProgress
+    <im.threads.views.ViewTypingInProgress
         android:id="@+id/typing_in_progress"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

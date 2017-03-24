@@ -20,7 +20,7 @@
         android:layout_alignBottom="@+id/icon_large"
         android:layout_alignRight="@+id/icon_large" />
 
-    <com.sequenia.threads.widget.CustomFontTextView
+    <im.threads.widget.CustomFontTextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         android:layout_below="@+id/title"
         android:orientation="horizontal">
 
-        <com.sequenia.threads.widget.CustomFontTextView
+        <im.threads.widget.CustomFontTextView
             android:id="@+id/consult_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
             android:layout_height="18dp"
             android:layout_gravity="center_vertical" />
 
-        <com.sequenia.threads.widget.CustomFontTextView
+        <im.threads.widget.CustomFontTextView
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

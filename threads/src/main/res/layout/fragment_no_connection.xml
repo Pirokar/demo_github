@@ -9,14 +9,14 @@
     android:paddingRight="@dimen/margin_big"
     android:paddingTop="@dimen/margin_big">
 
-    <com.sequenia.threads.widget.CustomFontTextView
+    <im.threads.widget.CustomFontTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_connection"
         android:textColor="@color/black"
         android:textSize="26sp" />
 
-    <com.sequenia.threads.widget.CustomFontTextView
+    <im.threads.widget.CustomFontTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_big"
@@ -24,7 +24,7 @@
         android:textColor="#656565"
         android:textSize="@dimen/margin_big" />
 
-    <com.sequenia.threads.widget.CustomFontButton
+    <im.threads.widget.CustomFontButton
         android:id="@+id/close"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"

@@ -4,25 +4,25 @@
     android:layout_height="100dp"
     android:orientation="horizontal">
 
-    <com.sequenia.threads.widget.CustomFontButton
+    <im.threads.widget.CustomFontButton
         android:id="@+id/camera"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:drawableTop="@drawable/ic_camera_alt_blue_42dp"
         android:text="@string/camera" />
 
-    <com.sequenia.threads.widget.CustomFontButton
+    <im.threads.widget.CustomFontButton
         android:id="@+id/gallery"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:drawableTop="@drawable/ic_insert_photo_blue_42dp"
         android:text="@string/gallery" />
 
-    <com.sequenia.threads.widget.CustomFontButton
+    <im.threads.widget.CustomFontButton
         android:id="@+id/file"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:drawableTop="@drawable/ic_insert_file_blue_42dp"
         android:text="@string/file" />
 
-    <com.sequenia.threads.widget.CustomFontButton
+    <im.threads.widget.CustomFontButton
         android:id="@+id/bmsheet_hide"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:drawableTop="@drawable/ic_keyboard_arrow_down_blue_42dp"

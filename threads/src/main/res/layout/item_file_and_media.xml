@@ -14,7 +14,7 @@
         android:padding="@dimen/margin_half"
         android:src="@drawable/ic_insert_file_blue_42dp" />
 
-    <com.sequenia.threads.widget.CustomFontTextView
+    <im.threads.widget.CustomFontTextView
         android:id="@+id/file_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,20 +24,18 @@
         android:layout_toRightOf="@id/file_button"
         android:ellipsize="end"
         android:lines="1"
-        android:text=""
-        android:textColor="@color/welcome_screen_text" />
+        android:text="" />
 
-    <com.sequenia.threads.widget.CustomFontTextView
+    <im.threads.widget.CustomFontTextView
         android:id="@+id/file_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/file_title"
         android:layout_marginTop="@dimen/margin_quarter"
         android:layout_toRightOf="@+id/file_button"
-        android:text=""
-        android:textColor="@color/welcome_screen_text" />
+        android:text="" />
 
-    <com.sequenia.threads.widget.CustomFontTextView
+    <im.threads.widget.CustomFontTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,6 +44,5 @@
         android:layout_below="@+id/file_title"
         android:layout_marginRight="@dimen/margin_big"
         android:layout_marginTop="@dimen/margin_quarter"
-        android:text=""
-        android:textColor="@color/welcome_screen_text" />
+        android:text="" />
 </RelativeLayout>

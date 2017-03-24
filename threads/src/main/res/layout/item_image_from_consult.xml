@@ -15,7 +15,7 @@
         android:scaleType="fitCenter"
         />
 
-    <com.sequenia.threads.widget.CustomFontTextView
+    <im.threads.widget.CustomFontTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,13 +47,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/image"
-        android:layout_alignParentTop="true"
-        android:background="@color/toolbar_background_transparent" />
+        android:layout_alignParentTop="true" />
 
     <View
         android:id="@+id/filter_second"
         android:layout_width="match_parent"
         android:layout_height="24dp"
-        android:layout_below="@+id/filter"
-        android:background="@color/toolbar_background_transparent" />
+        android:layout_below="@+id/filter" />
 </RelativeLayout>

@@ -20,7 +20,7 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.sequenia.appwithchat"
+        applicationId "com.sequenia.appwithchatdev"
         minSdkVersion 17
         targetSdkVersion 25
         versionCode 13
@@ -45,11 +45,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
+    //testCompile 'junit:junit:4.12'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.6@aar') {
         transitive = true;
     }
-    testCompile 'com.android.support:appcompat-v7:25+'
+    //testCompile 'com.android.support:appcompat-v7:25+'
     compile 'com.android.support:appcompat-v7:25+'
     compile 'com.google.android.gms:play-services-gcm:9.6+'
     compile 'com.google.android.gms:play-services-analytics:9.6.+'

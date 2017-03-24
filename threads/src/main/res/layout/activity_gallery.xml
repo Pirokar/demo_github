@@ -23,7 +23,7 @@
             android:orientation="horizontal"
             android:visibility="gone">
 
-            <com.sequenia.threads.widget.CustomFontEditText
+            <im.threads.widget.CustomFontEditText
                 android:id="@+id/search_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -64,7 +64,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_search_white_24dp" />
 
-        <com.sequenia.threads.widget.CustomFontTextView
+        <im.threads.widget.CustomFontTextView
             android:id="@+id/search_photo_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
             android:textAllCaps="true"
             android:textColor="@android:color/white" />
 
-        <com.sequenia.threads.widget.CustomFontTextView
+        <im.threads.widget.CustomFontTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/search_photo_title"
@@ -93,7 +93,7 @@
         android:layout_above="@+id/bottom_buttons"
         android:layout_below="@+id/search_label_layout" />
 
-    <com.sequenia.threads.widget.CustomFontTextView
+    <im.threads.widget.CustomFontTextView
         android:paddingTop="84dp"
         android:id="@+id/nothing_found_label"
         android:layout_width="wrap_content"
@@ -115,14 +115,14 @@
         android:background="#333333"
         android:visibility="gone">
 
-        <com.sequenia.threads.widget.CustomFontButton
+        <im.threads.widget.CustomFontButton
 
             android:id="@+id/cancel"
             android:layout_gravity="left"
             android:text="@string/cancel"
             style="@style/bottomButtonTransparent" />
 
-        <com.sequenia.threads.widget.CustomFontButton
+        <im.threads.widget.CustomFontButton
             android:id="@+id/send"
 
             android:layout_gravity="right"

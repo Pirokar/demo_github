@@ -5,6 +5,9 @@
     <color name="colorAccent">#FF4081</color>
 
 
+
+
+
     <color name="toolbar_background">#83B144</color>
     <color name="toolbar_widget">#ffffff</color>
     <color name="status_bar">#698D35</color>
@@ -22,4 +25,13 @@
     <color name="file_browser_dialog_text">#83B144</color>
     <color name="file_browser_window_background">#ffffff</color>
     <color name="welcome_screen_text">#707070</color>
+
+    <color name="menu_item_text">#83B144</color>
+    <color name="toolbar_edit_text_hint">#B5D18F</color>
+    <color name="toolbar_background_transparent">#3083B144</color>
+
+    <color name="push_background">#3083B144</color>
+    <color name="nugat_push_accent">#83B144</color>
+
+
 </resources>

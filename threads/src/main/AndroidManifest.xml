@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sequenia.threads">
+    package="im.threads">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -22,7 +22,7 @@
         android:hardwareAccelerated="true"
         android:largeHeap="true">
         <activity
-            android:name=".activities.ChatActivity"
+            android:name="im.threads.activities.ChatActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyle"
@@ -30,27 +30,27 @@
 
             />
         <activity
-            android:name=".activities.ConsultActivity"
+            android:name="im.threads.activities.ConsultActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyleConsultPage" />
         <activity
-            android:name=".activities.FilesActivity"
+            android:name="im.threads.activities.FilesActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyle" />
         <activity
-            android:name=".activities.GalleryActivity"
+            android:name="im.threads.activities.GalleryActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
         <activity
-            android:name=".activities.CameraActivity"
+            android:name="im.threads.activities.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
         <activity
-            android:name=".activities.ImagesActivity"
+            android:name="im.threads.activities.ImagesActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
         <activity
-            android:name=".activities.TranslucentActivity"
+            android:name="im.threads.activities.TranslucentActivity"
             android:screenOrientation="portrait"
             android:label=""
             android:launchMode="singleInstance"
@@ -58,17 +58,17 @@
         </activity>
 
         <service
-            android:name=".services.IncomingMessagesIntentService"
+            android:name="im.threads.services.IncomingMessagesIntentService"
             android:exported="false" />
         <service
-            android:name=".services.DownloadService"
+            android:name="im.threads.services.DownloadService"
             android:exported="false" />
         <service
-            android:name=".services.NotificationService"
+            android:name="im.threads.services.NotificationService"
             android:exported="false" />
 
         <receiver
-            android:name=".broadcastReceivers.MyOtherPBReceiver"
+            android:name="im.threads.broadcastReceivers.MyOtherPBReceiver"
             android:exported="false"
             android:permission="com.pushserver.android.permission.RECEIVE">
             <intent-filter>

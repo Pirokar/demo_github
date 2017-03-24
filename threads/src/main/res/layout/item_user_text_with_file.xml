@@ -10,15 +10,13 @@
         android:layout_height="@dimen/margin_quarter"
         android:layout_alignBottom="@+id/phrase_content"
         android:layout_alignParentTop="true"
-        android:layout_below="@+id/phrase_content"
-        android:background="@color/toolbar_background_transparent"/>
+        android:layout_below="@+id/phrase_content"/>
 
     <View
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
-        android:layout_below="@+id/phrase_content"
-        android:background="@color/toolbar_background_transparent"/>
+        android:layout_below="@+id/phrase_content"/>
 
 
     <ImageView
@@ -55,7 +53,7 @@
             android:layout_marginBottom="@dimen/margin_quarter"
             android:visibility="gone">
 
-            <com.sequenia.threads.views.CircularProgressButton
+            <im.threads.views.CircularProgressButton
                 android:id="@+id/button_download"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
@@ -82,33 +80,30 @@
                 android:orientation="vertical"
                 android:paddingRight="2dp">
 
-                <com.sequenia.threads.widget.BoldCustomFontTextView
+                <im.threads.widget.BoldCustomFontTextView
                     android:id="@+id/to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:paddingRight="80dp"
-                    android:text="Иван Петров"
-                    android:textColor="@color/outgoing_message_text"/>
+                    android:text="Иван Петров" />
 
-                <com.sequenia.threads.widget.LightCustomFontTextView
+                <im.threads.widget.LightCustomFontTextView
                     android:id="@+id/file_specs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:text="счет на оплату 1,2mb 436666666666364"
-                    android:textColor="@color/outgoing_message_text"/>
+                    android:text="счет на оплату 1,2mb 436666666666364" />
 
-                <com.sequenia.threads.widget.CustomFontTextView
+                <im.threads.widget.CustomFontTextView
                     android:id="@+id/send_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:text="отправлено 21 апр 2016"
-                    android:textColor="@color/outgoing_message_text"
                     android:textSize="12sp"/>
             </LinearLayout>
         </TableRow>
@@ -121,7 +116,7 @@
             android:layout_toRightOf="@+id/imageView"
             android:orientation="horizontal">
 
-            <com.sequenia.threads.widget.CustomFontTextView
+            <im.threads.widget.CustomFontTextView
                 android:id="@+id/timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -129,10 +124,9 @@
                 android:layout_marginBottom="2dp"
                 android:drawablePadding="@dimen/margin_quarter"
                 android:padding="@dimen/margin_half"
-                android:text="10:19"
-                android:textColor="@color/outgoing_message_text"/>
+                android:text="10:19" />
 
-            <com.sequenia.threads.widget.CustomFontTextView
+            <im.threads.widget.CustomFontTextView
                 android:id="@+id/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -140,13 +134,9 @@
                 android:layout_marginTop="0dp"
                 android:paddingBottom="@dimen/margin_half"
                 android:paddingLeft="4dp"
-
-
                 android:paddingRight="4dp"
                 android:paddingTop="5dp"
-
                 android:text="textetxtetex &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
-                android:textColor="@color/outgoing_message_text"
                 android:textSize="16dp"/>
         </FrameLayout>
 

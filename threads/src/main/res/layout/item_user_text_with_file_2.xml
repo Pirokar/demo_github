@@ -4,6 +4,22 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_quarter"
+        android:layout_alignBottom="@+id/phrase_content"
+        android:layout_alignParentTop="true"
+        android:layout_below="@+id/phrase_content"
+        android:background="@android:color/holo_green_light" />
+
+    <View
+        android:id="@+id/filter_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_quarter"
+        android:layout_below="@+id/phrase_content"
+        android:background="@android:color/holo_green_light" />
+
     <LinearLayout
         android:id="@+id/phrase_content"
         style="@style/userBuble"
@@ -19,7 +35,7 @@
             android:layout_marginBottom="@dimen/margin_quarter"
             android:visibility="gone">
 
-            <com.sequenia.threads.views.CircularProgressButton
+            <im.threads.views.CircularProgressButton
                 android:id="@+id/button_download"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
@@ -42,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.sequenia.threads.widget.CustomFontTextView
+                <im.threads.widget.CustomFontTextView
                     android:id="@+id/to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -52,7 +68,7 @@
                     android:text="Иван Петров"
                     android:textColor="@android:color/white" />
 
-                <com.sequenia.threads.widget.CustomFontTextView
+                <im.threads.widget.CustomFontTextView
                     android:id="@+id/file_specs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -62,7 +78,7 @@
                     android:text="счет на оплату 1,2mb"
                     android:textColor="@android:color/white" />
 
-                <com.sequenia.threads.widget.CustomFontTextView
+                <im.threads.widget.CustomFontTextView
                     android:id="@+id/send_at"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,22 +114,5 @@
                 android:text="10:19" />
         </com.wefika.flowlayout.FlowLayout>
     </LinearLayout>
-
-
-      <View
-          android:id="@+id/filter"
-          android:layout_width="match_parent"
-          android:layout_height="@dimen/margin_quarter"
-          android:layout_alignBottom="@+id/phrase_content"
-          android:layout_alignParentTop="true"
-          android:layout_below="@+id/phrase_content"
-          android:background="@color/toolbar_background_transparent" />
-
-      <View
-          android:id="@+id/filter_bottom"
-          android:layout_width="match_parent"
-          android:layout_height="@dimen/margin_quarter"
-          android:layout_below="@+id/phrase_content"
-          android:background="@color/toolbar_background_transparent" />
 
 </RelativeLayout>

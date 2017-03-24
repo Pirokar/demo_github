@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat;
+package com.sequenia.appwithchatdev;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,10 +16,9 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushController;
-import com.sequenia.appwithchat.BuildConfig;
-import com.sequenia.appwithchat.R;
-import com.sequenia.threads.model.ChatStyle;
-import com.sequenia.threads.utils.PermissionChecker;
+
+import im.threads.model.ChatStyle;
+import im.threads.utils.PermissionChecker;
 
 import java.util.ArrayList;
 
@@ -78,35 +77,38 @@ public class MainActivity extends AppCompatActivity {
             Intent i = ChatStyle
                     .IntentBuilder
                     .getBuilder(this, mEditText.getText().toString(), nameTextView.getText().toString())
-                    .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar
-                            R.color.toolbar_background,//ToolBar background
-                            R.color.toolbar_widget,//Toolbar widget
-                            R.color.status_bar)//status bar
+                    .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
+                            R.color.toolbar_background,//ToolBar background chatTitleBackgroundColorResId
+                            R.color.toolbar_widget,//Toolbar widget chatTitleWidgetsColorResId
+                            R.color.status_bar,//status bar chatStatusBarColorResId
+                            R.color.menu_item_text,//menu item text menuItemTextColorResId
+                            R.color.toolbar_edit_text_hint)//Toolbar EditText hint color chatToolbarHintTextColor
                     .setChatBodyStyle(
-                            R.color.chat_background,//фон чата
-                            R.color.chat_message_hint_input_text,//подсказка в EditText
-                            R.color.chat_message_input_background,//заливка EditText
-                            R.color.incoming_message_bubble_background,//заливка бабла входящего сообщения
-                            R.color.outgoing_message_bubble_background,//заливка бабла исходящего сообщения
-                            R.color.incoming_message_text,//цвет текста входящего сообщения
-                            R.color.outgoing_message_text,//цвет текста исходящего сообщения
-                            R.color.chatbody_icons_tint,//цвет иконок в поле сообщения
-                            R.color.connection_message_text_color,//цвет текста сообщения о соединениии
-                            R.drawable.sample_consult_avatar_small,//аватар по умолчанию входящего сообщения
-                            R.drawable.no_image,//заглушка картинки
-                            R.style.FileDialogStyle)//стиль диалога выбора файла
+                            R.color.chat_background,//фон чата chatBackgroundColor
+                            R.color.toolbar_background_transparent,//подсветка выделения элементов chatHighlightingColor
+                            R.color.chat_message_hint_input_text,//подсказка в EditText chatMessageHintInputTextColor
+                            R.color.chat_message_input_background,//заливка EditText chatMessageInputBackgroundColor
+                            R.color.incoming_message_bubble_background,//заливка бабла входящего сообщения incomingMessageBubbleColor
+                            R.color.outgoing_message_bubble_background,//заливка бабла исходящего сообщения outgoingMessageBubbleColor
+                            R.color.incoming_message_text,//цвет текста входящего сообщения incomingMessageTextColor
+                            R.color.outgoing_message_text,//цвет текста исходящего сообщения outgoingMessageTextColor
+                            R.color.chatbody_icons_tint,//цвет иконок в поле сообщения chatBodyIconsTint
+                            R.color.connection_message_text_color,//цвет текста сообщения о соединениии connectionMessageTextColor
+                            R.drawable.sample_consult_avatar_small,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
+                            R.drawable.no_image,//заглушка картинки imagePlaceholder
+                            R.style.FileDialogStyle)//стиль диалога выбора файла fileBrowserDialogStyleResId
 //                    .setGoogleAnalyticsEnabled(false)
                     .setPushNotificationStyle(R.drawable.push_icon_def,
                             R.string.default_title,
                             ChatStyle.INVALID,
                             ChatStyle.INVALID)
                     .setWelcomeScreenStyle(
-                            R.drawable.logo_2//логотип экрана приветствия
-                            , R.string.welcome//заголовок экрана приветствия
-                            , R.string.subtitle_text//подзаголовок экрана приветствия
-                            , R.color.welcome_screen_text//цвет текста на экране приветствия
-                            , 18//размер шрифта заголовка
-                            , 14)//размер шрифта подзаголовка
+                            R.drawable.logo_2//логотип экрана приветствия welcomeScreenLogoResId
+                            , R.string.welcome//заголовок экрана приветствия welcomeScreenTitleTextResId
+                            , R.string.subtitle_text//подзаголовок экрана приветствия welcomeScreenSubtitleTextResId
+                            , R.color.welcome_screen_text//цвет текста на экране приветствия welcomeScreenTextColorResId
+                            , 18//размер шрифта заголовка titleSizeInSp
+                            , 14)//размер шрифта подзаголовка subtitleSizeInSp
                     .build();
             startActivity(i);
 

@@ -9,15 +9,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true"
-        android:background="@color/toolbar_background_transparent" />
+        android:layout_alignParentTop="true" />
 
     <View
         android:id="@+id/filter_second"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
-        android:layout_below="@+id/filter"
-        android:background="@color/toolbar_background_transparent" />
+        android:layout_below="@+id/filter" />
 
    <ImageView
     android:id="@+id/bubble_1"
@@ -37,7 +35,7 @@
         android:paddingRight="17dp">
 
 
-        <com.sequenia.threads.views.CircularProgressButton
+        <im.threads.views.CircularProgressButton
             android:id="@+id/button_download"
             android:layout_width="42dp"
             android:layout_height="42dp"
@@ -49,7 +47,7 @@
             app:in_progress_label="@drawable/ic_clear_blue_36dp"
             app:start_download_label="@drawable/ic_vertical_align_bottom_24dp" />
 
-        <com.sequenia.threads.widget.CustomFontTextView
+        <im.threads.widget.CustomFontTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,7 +58,7 @@
             android:textColor="@android:color/white" />
 
 
-        <com.sequenia.threads.widget.CustomFontTextView
+        <im.threads.widget.CustomFontTextView
 
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
@@ -74,7 +72,7 @@
             android:text="1,2 mb"
             android:textColor="@android:color/white" />
 
-        <com.sequenia.threads.widget.CustomFontTextView
+        <im.threads.widget.CustomFontTextView
             android:id="@+id/timestamp"
             style="@style/timestamp"
             android:layout_alignParentRight="true"
