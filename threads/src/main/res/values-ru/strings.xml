@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Threads</string>
-    <string name="contact_center">Контакт центр</string>
     <string name="search_hint">Поиск сообщений</string>
     <string name="searching_operator">Поиск оператора...</string>
     <string name="your_message">Ваше сообщение...</string>
@@ -74,7 +73,5 @@
     <string name="touch_to_look">Дотроньтесь для просмотра</string>
     <string name="touch_to_download">Дотроньтесь чтобы скачать</string>
     <string name="answer">ОТВЕТИТЬ</string>
-    <string name="welcome">Добро пожаловать</string>
-    <string name="subtitle_text">Отправьте ваш вопрос, \nпервый освободившийся \nоператор на него ответит</string>
     <string name="check_connection">Проблемы с доступом в интрнет, проверьте соединение</string>
 </resources>
