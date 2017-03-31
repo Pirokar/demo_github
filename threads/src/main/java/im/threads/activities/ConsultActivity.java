@@ -117,7 +117,7 @@ public class ConsultActivity extends BaseActivity {
         searchMenuItem.setTitle(s);
 
         MenuItem filesAndMedia = menu.getItem(1);
-        SpannableString s2 = new SpannableString(searchMenuItem.getTitle());
+        SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
         s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s2.length(), 0);
         filesAndMedia.setTitle(s2);
 

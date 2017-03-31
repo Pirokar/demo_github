@@ -28,6 +28,7 @@ import im.threads.holders.UserFileViewHolder;
 import im.threads.holders.UserPhraseViewHolder;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
+import im.threads.model.ChatStyle;
 import im.threads.model.ConsultChatPhrase;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
@@ -43,6 +44,7 @@ import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
+import im.threads.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -225,6 +227,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         if (holder instanceof ConsultIsTypingViewHolder) {
+            ChatStyle style = PrefUtils.getIncomingStyle(ctx);
+            int defaultImageResId;
+            if (style != null && style.imagePlaceholder != ChatStyle.INVALID) {
+                defaultImageResId = style.imagePlaceholder;
+            } else {
+                defaultImageResId = R.drawable.blank_avatar_round;
+            }
             ConsultTyping ct = (ConsultTyping) list.get(holder.getAdapterPosition());
             ((ConsultIsTypingViewHolder) holder).onBind(new View.OnClickListener() {
                 @Override
@@ -236,6 +245,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
             if (!isEmpty(ct.getAvatarPath())) {
+                final int finalDefaultImageRes = defaultImageResId;
                 picasso
                         .load(ct.getAvatarPath())
                         .fit()
@@ -251,7 +261,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             @Override
                             public void onError() {
                                 picasso
-                                        .load(R.drawable.blank_avatar_round)
+                                        .load(finalDefaultImageRes)
                                         .fit()
                                         .noPlaceholder()
                                         .centerCrop()
@@ -261,7 +271,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         });
             } else {
                 picasso
-                        .load(R.drawable.blank_avatar_round)
+                        .load(defaultImageResId)
                         .fit()
                         .noPlaceholder()
                         .transform(new CircleTransform())

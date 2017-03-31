@@ -94,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
                             R.color.outgoing_message_text,//цвет текста исходящего сообщения outgoingMessageTextColor
                             R.color.chatbody_icons_tint,//цвет иконок в поле сообщения chatBodyIconsTint
                             R.color.connection_message_text_color,//цвет текста сообщения о соединениии connectionMessageTextColor
-                            R.drawable.sample_consult_avatar_small,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
-                            R.drawable.no_image,//заглушка картинки imagePlaceholder
+                            R.drawable.blank_avatar_round,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
+                            R.drawable.blank_avatar_round,//заглушка картинки тайпинга imagePlaceholder
                             R.style.FileDialogStyle)//стиль диалога выбора файла fileBrowserDialogStyleResId
 //                    .setGoogleAnalyticsEnabled(false)
                     .setPushNotificationStyle(R.drawable.push_icon_def,
