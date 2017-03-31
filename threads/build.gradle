@@ -42,6 +42,12 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.android.support:recyclerview-v7:+'
     compile project(':push-api-release-1.0-41-2016-10-18-17-22')
+    /*
+    *Если нужен retrofit, то необходимо использовать
+    * версию 2.1.0 (okhttp 3.3.0), т.к. только эта версия
+    * использует библиотеку okio 1.8.0, которая подгружается
+    * в библиотеке mfms
+    * */
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
 

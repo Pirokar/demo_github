@@ -33,31 +33,14 @@ public class ServiceGenerator {
                         .baseUrl(apiBaseUrl)
                         .addConverterFactory(GsonConverterFactory.create());
 
-//        Interceptor interceptor = new Interceptor() {
-//            @Override
-//            public Response intercept(Chain chain) throws IOException {
-//                Request original = chain.request();
-//
-//                Request request = original.newBuilder()
-//                        .header("X-Client-Token", token)
-//                        .method(original.method(), original.body())
-//                        .build();
-//
-//                return chain.proceed(request);
-//            }
-//        };
-
         HttpLoggingInterceptor logging =
                 new HttpLoggingInterceptor()
                         .setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
-//        httpClient.addInterceptor(interceptor);
         builder.client(httpClient.build());
-
         Retrofit retrofit = builder.build();
-
         return retrofit.create(RetrofitService.class);
     }
 }
