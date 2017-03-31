@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="280dp"
         android:src="@drawable/blank_avatar_round"
-        android:scaleType="centerCrop"
-        />
+        android:scaleType="centerCrop" />
     <View
         android:layout_width="match_parent"
         android:layout_height="100dp"

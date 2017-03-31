@@ -53,12 +53,19 @@ public class ConsultActivity extends BaseActivity {
         mConsulHeaderTextView = (TextView) findViewById(R.id.consult_title);
         mConsultMotoTextView = (TextView) findViewById(R.id.consult_moto);
         mConsultImageView = (ImageView) findViewById(R.id.image);
+
+        if (style != null && style.imagePlaceholder != ChatStyle.INVALID) {
+            mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.imagePlaceholder));
+        }
+
         Intent i = getIntent();
         String imagePath = i.getStringExtra("imagePath");
         String title = i.getStringExtra("title");
         String moto = i.getStringExtra("moto");
         if (null != imagePath && !imagePath.equals("null")) {
-            Picasso.with(this).load(imagePath).into(mConsultImageView);
+            Picasso.with(this)
+                    .load(imagePath)
+                    .into(mConsultImageView);
         }
         if (null != title && !title.equals("null")) {
             mConsulHeaderTextView.setText(title);
