@@ -6,21 +6,20 @@
     android:id="@+id/root_big">
 
     <ImageView
-
         android:scaleType="centerCrop"
         android:id="@+id/icon_large"
         android:layout_width="56dp"
         android:layout_height="56dp"
        android:padding="@dimen/margin_half" />
+
     <ImageView
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:id="@+id/icon_small_corner"
         android:layout_alignBottom="@+id/icon_large"
-        android:layout_alignRight="@+id/icon_large"
-        />
+        android:layout_alignRight="@+id/icon_large" />
 
-    <im.threads.widget.CustomFontTextView
+    <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,7 +38,7 @@
         android:layout_below="@+id/title"
         android:orientation="horizontal">
 
-        <im.threads.widget.CustomFontTextView
+        <TextView
             android:id="@+id/consult_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,14 +47,12 @@
             android:textStyle="bold" />
 
         <ImageView
-
             android:id="@+id/attach_image"
             android:layout_width="18sp"
             android:layout_height="18dp"
-            android:layout_gravity="center_vertical"
-            />
+            android:layout_gravity="center_vertical" />
 
-        <im.threads.widget.CustomFontTextView
+        <TextView
             android:layout_marginLeft="1dp"
             android:id="@+id/text"
             android:layout_width="match_parent"
@@ -64,6 +61,7 @@
             android:lines="1"
             android:textSize="12sp"
             android:textColor="#90000000" />
+
     </LinearLayout>
 
     <FrameLayout
@@ -73,7 +71,7 @@
         android:layout_below="@+id/icon_large"
         android:background="#c3c3c3" />
 
-    <im.threads.widget.CustomFontButton
+    <Button
         android:textAllCaps="true"
         android:id="@+id/reply"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
@@ -86,4 +84,5 @@
         android:drawableLeft="@drawable/ic_reply_gray_24dp"
         android:textColor="@android:color/black"
         android:textSize="@dimen/text_small" />
+
 </RelativeLayout>

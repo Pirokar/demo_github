@@ -408,7 +408,7 @@ public class ChatController {
                     }
 
                     @Override
-                    public void onError(Exception e) {
+                    public void onError(Throwable e) {
                         Log.e(TAG, "error while sending files to server");
                         e.printStackTrace();
                         setMessageState(userPhrase, MessageState.STATE_NOT_SENT);

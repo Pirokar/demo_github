@@ -277,8 +277,8 @@ public class NotificationService extends Service {
             pushBig.setInt(R.id.root_big, "setBackgroundColor", getResources().getColor(color));
         }
         if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
-            pushSmall.setInt(R.id.root_small, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
-            pushBig.setInt(R.id.root_big, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
+            pushSmall.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
+            pushBig.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
         }
         builder
                 .setColor(getResources().getColor(color))

@@ -19,20 +19,20 @@ public abstract class DualFilePoster {
         Log.i(TAG, "filePath = " + fileDescription + " quoteFilePath = " + quoteFileDescription);
         final DualFilePoster poster = this;
         if (fileDescription != null) {
-            new FilePoster(fileDescription, ctx).post(new Callback<String, Exception>() {
+            new FilePoster(fileDescription, ctx).post(new Callback<String, Throwable>() {
                 @Override
                 public void onSuccess(final String mfmsPath) {
                     if (quoteFileDescription == null) {
                         poster.onResult(mfmsPath, null);
                     } else {
-                        new FilePoster(quoteFileDescription, ctx).post(new Callback<String, Exception>() {
+                        new FilePoster(quoteFileDescription, ctx).post(new Callback<String, Throwable>() {
                             @Override
                             public void onSuccess(String quoteMfmsPath) {
                                 poster.onResult(mfmsPath, quoteMfmsPath);
                             }
 
                             @Override
-                            public void onFail(Exception error) {
+                            public void onFail(Throwable error) {
                                 poster.onError(error);
                             }
                         });
@@ -40,19 +40,19 @@ public abstract class DualFilePoster {
                 }
 
                 @Override
-                public void onFail(Exception error) {
+                public void onFail(Throwable error) {
                     poster.onError(error);
                 }
             });
         } else if (fileDescription == null && quoteFileDescription != null) {
-            new FilePoster(quoteFileDescription, ctx).post(new Callback<String, Exception>() {
+            new FilePoster(quoteFileDescription, ctx).post(new Callback<String, Throwable>() {
                 @Override
                 public void onSuccess(String result) {
                     poster.onResult(null, result);
                 }
 
                 @Override
-                public void onFail(Exception error) {
+                public void onFail(Throwable error) {
                     poster.onError(error);
                 }
             });
@@ -69,6 +69,6 @@ public abstract class DualFilePoster {
 
     public abstract void onResult(String mfmsFilePath, String mfmsQuoteFilePath);
 
-    public abstract void onError(Exception e);
+    public abstract void onError(Throwable e);
 
 }

@@ -274,7 +274,7 @@ public class ChatActivity extends BaseActivity
         mSearchMoreButton = (Button) findViewById(R.id.search_more);
         mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(this, style.welcomeScreenTextColorResId));
         mSearchMoreButton.setTextColor(ContextCompat.getColor(this, style.welcomeScreenTextColorResId));
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.orange);
+        mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
         mConsultNameView = (TextView) findViewById(R.id.consult_name);
         mConsultTitle = (TextView) findViewById(R.id.subtitle);
         mCopyControls = findViewById(R.id.copy_controls);
