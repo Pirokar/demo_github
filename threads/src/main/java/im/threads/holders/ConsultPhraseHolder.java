@@ -89,9 +89,9 @@ public class ConsultPhraseHolder extends BaseHolder {
                         rightTextFileStamp}, style.incomingMessageTextColor);
             }
             defIcon = style.defaultIncomingMessageAvatar == ChatStyle.INVALID ? R.drawable.blank_avatar_round : style.defaultIncomingMessageAvatar;
-            if (style.outgoingMessageBubbleColor != ChatStyle.INVALID) {
-                setTintToProgressButton(mCircularProgressButton, style.outgoingMessageBubbleColor);
-                itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageBubbleColor));
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
+                setTintToProgressButton(mCircularProgressButton, style.chatToolbarColorResId);
+                itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
             }
             if (style.chatHighlightingColor != ChatStyle.INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

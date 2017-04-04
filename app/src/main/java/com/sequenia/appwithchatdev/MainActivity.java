@@ -17,11 +17,10 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushController;
 
-import im.threads.model.ChatStyle;
-import im.threads.utils.PermissionChecker;
-
 import java.util.ArrayList;
 
+import im.threads.model.ChatStyle;
+import im.threads.utils.PermissionChecker;
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {

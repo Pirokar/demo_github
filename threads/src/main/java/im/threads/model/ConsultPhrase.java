@@ -21,6 +21,7 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     private boolean isChosen;
     private boolean isRead;
     private final String status;
+    private boolean found;
 
     public ConsultPhrase(
             FileDescription fileDescription
@@ -140,6 +141,16 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     @Override
     public boolean isHighlight() {
         return isChosen;
+    }
+
+    @Override
+    public boolean isFound() {
+        return found;
+    }
+
+    @Override
+    public void setFound(boolean found) {
+         this.found = found;
     }
 
     @Override

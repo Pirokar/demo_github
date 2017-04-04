@@ -43,9 +43,9 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         if (null == style) {
             style = PrefUtils.getIncomingStyle(itemView.getContext());
         }
-        if (null != style && style.incomingMessageTextColor!= ChatStyle.INVALID) {
-            mTimeStampTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.incomingMessageTextColor));
-        }
+//        if (null != style && style.incomingMessageTextColor!= ChatStyle.INVALID) {
+//            mTimeStampTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.incomingMessageTextColor));
+//        }
         if (style != null && style.chatHighlightingColor != ChatStyle.INVALID) {
             filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
             filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

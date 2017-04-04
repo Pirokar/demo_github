@@ -22,6 +22,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private FileDescription fileDescription;
     private boolean isChosen;
     public boolean isCopy = false;
+    private boolean found;
 
 
     public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
@@ -70,6 +71,16 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     @Override
     public void setHighLighted(boolean isHighlight) {
         setChosen(isHighlight);
+    }
+
+    @Override
+    public boolean isFound() {
+        return found;
+    }
+
+    @Override
+    public void setFound(boolean found) {
+        this.found = found;
     }
 
     public boolean hasText() {

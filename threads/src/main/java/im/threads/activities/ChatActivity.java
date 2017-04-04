@@ -137,6 +137,9 @@ public class ChatActivity extends BaseActivity
     private ChatStyle style;
     private Handler mSearchHandler = new Handler(Looper.getMainLooper());
 
+    private ImageButton searchUp;
+    private ImageButton searchDown;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -268,8 +271,8 @@ public class ChatActivity extends BaseActivity
             }
         });
         mSearchLo = findViewById(R.id.search_lo);
-        ImageButton searchUp = (ImageButton) findViewById(R.id.search_up_ib);
-        ImageButton searchDown = (ImageButton) findViewById(R.id.search_down_ib);
+        searchUp = (ImageButton) findViewById(R.id.search_up_ib);
+        searchDown = (ImageButton) findViewById(R.id.search_down_ib);
         mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
         mSearchMoreButton = (Button) findViewById(R.id.search_more);
         mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(this, style.welcomeScreenTextColorResId));
@@ -388,6 +391,8 @@ public class ChatActivity extends BaseActivity
         if (isEmpty(request)) {
             mChatAdapter.removeHighlight();
             mSearchHandler.removeCallbacksAndMessages(null);
+            searchUp.setAlpha(0.5f);
+            searchDown.setAlpha(0.5f);
             return;
         }
         mSearchHandler.removeCallbacksAndMessages(null);
@@ -401,14 +406,54 @@ public class ChatActivity extends BaseActivity
                         h.post(new Runnable() {
                             @Override
                             public void run() {
+                                int first = -1;
+                                int last = -1;
+
                                 for (int i = 0; i < data.size(); i++) {
                                     if (data.get(i) instanceof ChatPhrase) {
-                                        if (((ChatPhrase) data.get(i)).isHighlight()) {
-                                            highlighted[0] = (ChatPhrase) data.get(i);
+                                        if (((ChatPhrase) data.get(i)).isFound()) {
+                                            first = i;
                                             break;
                                         }
                                     }
                                 }
+                                for (int i = data.size() - 1; i >= 0; i--) {
+                                    if (data.get(i) instanceof ChatPhrase) {
+                                        if (((ChatPhrase) data.get(i)).isFound()) {
+                                            last = i;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (first == -1 && last == -1) {
+                                    searchUp.setAlpha(0.5f);
+                                    searchDown.setAlpha(0.5f);
+                                }
+
+                                for (int i = 0; i < data.size(); i++) {
+                                    if (data.get(i) instanceof ChatPhrase) {
+                                        if (((ChatPhrase) data.get(i)).isHighlight()) {
+                                            highlighted[0] = (ChatPhrase) data.get(i);
+
+                                            if (first != -1 && i > first) {
+                                                searchDown.setAlpha(1.0f);
+                                            } else {
+                                                searchDown.setAlpha(0.5f);
+                                            }
+
+                                            if (last != -1 && i < last) {
+                                                searchUp.setAlpha(1.0f);
+                                            } else {
+                                                searchUp.setAlpha(0.5f);
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                }
+
+
 
                                 mChatAdapter.addItems(data);
                                 mChatAdapter.removeHighlight();
@@ -427,6 +472,7 @@ public class ChatActivity extends BaseActivity
             }
         }, 400);
     }
+
 
     @Override
     protected void setActivityStyle(ChatStyle style) {

@@ -42,6 +42,15 @@ public class Seeker {
                 ((ChatPhrase) ci).setHighLighted(false);
         }
         lastQuery = new String(query);
+
+        for (ChatItem chatItem : target) {
+            if(chatItem instanceof ChatPhrase) {
+                ((ChatPhrase) chatItem).setFound(
+                        ((ChatPhrase) chatItem).getPhraseText() != null
+                                && ((ChatPhrase) chatItem).getPhraseText().toLowerCase().contains(query));
+            }
+        }
+
         if (forward) {
             if (lastChosenIndex == 0) {//if it is last
                 ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
@@ -49,7 +58,7 @@ public class Seeker {
             } else {
                 boolean isFound = false;
                 int initial = lastChosenIndex == -1 ? target.size() - 1 : lastChosenIndex - 1;
-                for (int i = initial; i > 0; i--) {
+                for (int i = initial; i >= 0; i--) {
                     if (target.get(i) instanceof ChatPhrase
                             && ((ChatPhrase) target.get(i)).getPhraseText() != null
                             && ((ChatPhrase) target.get(i)).getPhraseText().toLowerCase().contains(query)) {
@@ -66,7 +75,7 @@ public class Seeker {
             }
         } else {
             if (lastChosenIndex == -1) {
-                for (int i = target.size() - 1; i > 0; i--) {
+                for (int i = target.size() - 1; i >= 0; i--) {
                     if (target.get(i) instanceof ChatPhrase
                             && ((ChatPhrase) target.get(i)).getPhraseText() != null
                             && ((ChatPhrase) target.get(i)).getPhraseText().toLowerCase().contains(query)) {
@@ -76,10 +85,10 @@ public class Seeker {
                 }
                 return target;
             }
-            if ((lastChosenIndex - 1) < 0) {
-                ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
-                return target;
-            }
+//            if ((lastChosenIndex - 1) < 0) {
+//                ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
+//                return target;
+//            }
             boolean isFound = false;
             for (int i = lastChosenIndex + 1; i < target.size(); i++) {
                 if (target.get(i) instanceof ChatPhrase

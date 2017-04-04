@@ -50,8 +50,7 @@
             android:layout_marginLeft="45dp"
             android:layout_marginRight="@dimen/consultant_margin_right"
             android:orientation="vertical"
-            android:paddingTop="2dp"
-            >
+            android:paddingTop="2dp">
 
             <LinearLayout
                 android:paddingTop="@dimen/margin_half"
@@ -120,7 +119,6 @@
                 android:orientation="horizontal">
 
                 <im.threads.widget.CustomFontTextView
-
                     android:id="@+id/timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

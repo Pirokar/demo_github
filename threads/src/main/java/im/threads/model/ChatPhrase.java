@@ -15,4 +15,8 @@ public interface ChatPhrase extends ChatItem {
     boolean isHighlight();
 
     void setHighLighted(boolean isHighlight);
+
+    boolean isFound();
+
+    void setFound(boolean found);
 }

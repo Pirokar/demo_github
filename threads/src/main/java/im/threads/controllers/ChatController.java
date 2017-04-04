@@ -988,4 +988,12 @@ public class ChatController {
             }
         }
     }
+
+    public DatabaseHolder getmDatabaseHolder() {
+        return mDatabaseHolder;
+    }
+
+    public Executor getmExecutor() {
+        return mExecutor;
+    }
 }
