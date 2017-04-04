@@ -21,6 +21,7 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     private boolean isChosen;
     private boolean isRead;
     private final String status;
+    //для поиска сообщений в чате
     private boolean found;
 
     public ConsultPhrase(

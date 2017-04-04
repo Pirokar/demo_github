@@ -22,6 +22,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private FileDescription fileDescription;
     private boolean isChosen;
     public boolean isCopy = false;
+    //для поиска сообщений в чате
     private boolean found;
 
 

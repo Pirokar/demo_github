@@ -409,6 +409,7 @@ public class ChatActivity extends BaseActivity
                                 int first = -1;
                                 int last = -1;
 
+                                //для поиска - ищем индекс первого совпадения
                                 for (int i = 0; i < data.size(); i++) {
                                     if (data.get(i) instanceof ChatPhrase) {
                                         if (((ChatPhrase) data.get(i)).isFound()) {
@@ -417,6 +418,7 @@ public class ChatActivity extends BaseActivity
                                         }
                                     }
                                 }
+                                //для поиска - ищем индекс последнего совпадения
                                 for (int i = data.size() - 1; i >= 0; i--) {
                                     if (data.get(i) instanceof ChatPhrase) {
                                         if (((ChatPhrase) data.get(i)).isFound()) {
@@ -426,22 +428,18 @@ public class ChatActivity extends BaseActivity
                                     }
                                 }
 
-                                if (first == -1 && last == -1) {
-                                    searchUp.setAlpha(0.5f);
-                                    searchDown.setAlpha(0.5f);
-                                }
-
                                 for (int i = 0; i < data.size(); i++) {
                                     if (data.get(i) instanceof ChatPhrase) {
                                         if (((ChatPhrase) data.get(i)).isHighlight()) {
                                             highlighted[0] = (ChatPhrase) data.get(i);
 
+                                            //для поиска - если можно перемещаться, подсвечиваем
                                             if (first != -1 && i > first) {
                                                 searchDown.setAlpha(1.0f);
                                             } else {
                                                 searchDown.setAlpha(0.5f);
                                             }
-
+                                            //для поиска - если можно перемещаться, подсвечиваем
                                             if (last != -1 && i < last) {
                                                 searchUp.setAlpha(1.0f);
                                             } else {

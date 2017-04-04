@@ -43,6 +43,8 @@ public class Seeker {
         }
         lastQuery = new String(query);
 
+        //для поиска сообщений в чате - пробегаемся по всем сообщениям и отмечаем
+        //те, которые соответствуют запросу
         for (ChatItem chatItem : target) {
             if(chatItem instanceof ChatPhrase) {
                 ((ChatPhrase) chatItem).setFound(
