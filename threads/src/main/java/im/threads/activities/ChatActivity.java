@@ -457,8 +457,6 @@ public class ChatActivity extends BaseActivity
                                     }
                                 }
 
-
-
                                 mChatAdapter.addItems(data);
                                 mChatAdapter.removeHighlight();
                             }
@@ -948,7 +946,6 @@ public class ChatActivity extends BaseActivity
         super.onDestroy();
         mChatController.unbindActivity();
         unregisterReceiver(mChatActivityReceiver);
-
     }
 
     @Override

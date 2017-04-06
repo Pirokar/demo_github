@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +21,17 @@ import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
+
+import org.json.JSONException;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import im.threads.AnalyticsTracker;
 import im.threads.BuildConfig;
 import im.threads.activities.ChatActivity;
@@ -47,21 +57,10 @@ import im.threads.utils.Callback;
 import im.threads.utils.CallbackNoError;
 import im.threads.utils.ConsultWriter;
 import im.threads.utils.DualFilePoster;
-import im.threads.utils.FilePoster;
 import im.threads.utils.FileUtils;
 import im.threads.utils.MessageMatcher;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.Seeker;
-
-import org.json.JSONException;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -591,11 +590,10 @@ public class ChatController {
             } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
                 Intent target = new Intent(Intent.ACTION_VIEW);
                 File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
-//                target.setDataAndType(Uri.fromFile(file), "application/pdf");
                 target.setDataAndType(FileProvider.getUriForFile(
                         activity, BuildConfig.APPLICATION_ID + ".fileprovider", file), "application/pdf"
                 );
-                target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 try {
                     mAnalyticsTracker.setAttachmentWasOpened();
                     if (activity != null) activity.startActivity(target);

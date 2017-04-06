@@ -103,7 +103,6 @@ public class FilePoster {
                     @Override
                     public void onFailure(Call<FileUploadResponse> call, Throwable t) {
                         callback.onFail(t);
-                        Log.i("++++++++", t.toString());
                     }
                 });
 
