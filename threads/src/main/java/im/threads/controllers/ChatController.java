@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ import im.threads.utils.Callback;
 import im.threads.utils.CallbackNoError;
 import im.threads.utils.ConsultWriter;
 import im.threads.utils.DualFilePoster;
+import im.threads.utils.FilePoster;
 import im.threads.utils.FileUtils;
 import im.threads.utils.MessageMatcher;
 import im.threads.utils.PrefUtils;
@@ -589,7 +591,10 @@ public class ChatController {
             } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
                 Intent target = new Intent(Intent.ACTION_VIEW);
                 File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
-                target.setDataAndType(Uri.fromFile(file), "application/pdf");
+//                target.setDataAndType(Uri.fromFile(file), "application/pdf");
+                target.setDataAndType(FileProvider.getUriForFile(
+                        activity, BuildConfig.APPLICATION_ID + ".fileprovider", file), "application/pdf"
+                );
                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 try {
                     mAnalyticsTracker.setAttachmentWasOpened();
@@ -690,7 +695,7 @@ public class ChatController {
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
         if (BuildConfig.DEBUG) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(activity));
-        if (!PrefUtils.isClientIdSet(activity)) {
+        if (!PrefUtils.isClientIdNotEmpty(activity)) {
             callback.onSuccess(new ArrayList<ChatItem>());
             return;
         }

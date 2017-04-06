@@ -273,6 +273,12 @@ public class ChatActivity extends BaseActivity
         mSearchLo = findViewById(R.id.search_lo);
         searchUp = (ImageButton) findViewById(R.id.search_up_ib);
         searchDown = (ImageButton) findViewById(R.id.search_down_ib);
+        if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+            searchUp.getDrawable().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            searchUp.setAlpha(0.5f);
+            searchDown.getDrawable().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            searchDown.setAlpha(0.5f);
+        }
         mWelcomeScreen = (WelcomeScreen) findViewById(R.id.welcome);
         mSearchMoreButton = (Button) findViewById(R.id.search_more);
         mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(this, style.welcomeScreenTextColorResId));
@@ -1361,8 +1367,8 @@ public class ChatActivity extends BaseActivity
         setBottomStateDefault();
         setTitleStateSearchingMessage();
         mSearchMessageEditText.requestFocus();
-        setMenuVisibility(false);
         mToolbar.hideOverflowMenu();
+        setMenuVisibility(false);
         h.postDelayed(new Runnable() {
             @Override
             public void run() {

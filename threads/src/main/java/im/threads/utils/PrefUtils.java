@@ -105,6 +105,11 @@ public class PrefUtils {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(PrefUtils.class + IS_CLIENT_ID_SET_TAG, false);
     }
 
+    public static boolean isClientIdNotEmpty(Context ctx) {
+        String clientId = getClientID(ctx);
+        return !clientId.isEmpty();
+    }
+
     public static void setIncomingStyle(Context ctx, ChatStyle style) {
         if (ctx == null || style == null) {
             Log.i(TAG, "setIncomingStyle: ctx or bundle is null");

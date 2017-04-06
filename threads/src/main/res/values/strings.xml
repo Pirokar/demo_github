@@ -73,4 +73,5 @@
     <string name="answer">ANSWER</string>
     <string name="check_connection">problems with internet connection</string>
     <string name="contact_center">Контакт центр</string>
+    <string name="typing">Печатает…</string>
 </resources>

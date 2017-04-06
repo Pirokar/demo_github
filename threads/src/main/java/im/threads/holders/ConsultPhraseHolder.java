@@ -80,7 +80,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
             if (style.incomingMessageBubbleColor != ChatStyle.INVALID)
-                mBubble.setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+                mBubble.getDrawable().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             if (style.incomingMessageTextColor != ChatStyle.INVALID) {
                 setTextColorToViews(new TextView[]{mPhraseTextView,
                         mTimeStampTextView,

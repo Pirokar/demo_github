@@ -53,7 +53,7 @@ public class ConsultFileViewHolder extends BaseHolder {
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
             if (style.incomingMessageBubbleColor != INVALID)
-                mBubble.setColorFilter(style.incomingMessageBubbleColor, PorterDuff.Mode.SRC_ATOP);
+                mBubble.getDrawable().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             if (style.incomingMessageTextColor != INVALID) {
                 setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.incomingMessageTextColor);
             }
