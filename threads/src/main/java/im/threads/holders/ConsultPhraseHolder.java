@@ -90,7 +90,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             }
             defIcon = style.defaultIncomingMessageAvatar == ChatStyle.INVALID ? R.drawable.blank_avatar_round : style.defaultIncomingMessageAvatar;
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                setTintToProgressButton(mCircularProgressButton, style.chatToolbarColorResId);
+                setTintToProgressButtonConsult(mCircularProgressButton, style.chatToolbarColorResId);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
             }
             if (style.chatHighlightingColor != ChatStyle.INVALID) {

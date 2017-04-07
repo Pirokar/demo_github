@@ -55,6 +55,7 @@ public class CircularProgressButton extends FrameLayout {
         background.setVisibility(VISIBLE);
         mImageLabel.setBackground(startDownloadDrawable);
         progressBackgroundDrawable = ContextCompat.getDrawable(getContext(), R.drawable.circle_gray_48dp);
+        background.setBackground(progressBackgroundDrawable);
         this.setBackground(null);
     }
 
@@ -63,10 +64,10 @@ public class CircularProgressButton extends FrameLayout {
         if (progress > 0 && progress < 100) {
             if (mcp.getVisibility() == INVISIBLE) mcp.setVisibility(VISIBLE);
             if (background.getVisibility() == INVISIBLE) background.setVisibility(VISIBLE);
-            /*if (background.getBackground() == null
+            if (background.getBackground() == null
                     || !background.getBackground().equals(progressBackgroundDrawable)) {
                 background.setBackground(progressBackgroundDrawable);
-            }*/
+            }
             if (mImageLabel.getBackground() == null
                     || !mImageLabel.getBackground().equals(inProgress)) {
                 mImageLabel.setBackground(inProgress);

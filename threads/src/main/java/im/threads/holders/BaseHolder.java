@@ -36,10 +36,21 @@ public abstract class BaseHolder extends RecyclerView.ViewHolder {
             tv.setColorFilter(getColorInt(colorRes), PorterDuff.Mode.SRC_ATOP);
         }
     }
-    protected void setTintToProgressButton(CircularProgressButton button, @ColorRes int colorRes){
-        Drawable completed = itemView.getResources().getDrawable(R.drawable.ic_insert_file_blue_36dp);
-        Drawable inProgress = itemView.getResources().getDrawable(R.drawable.ic_clear_blue_36dp);
-        Drawable download = itemView.getResources().getDrawable(R.drawable.ic_vertical_align_bottom_24dp);
+    protected void setTintToProgressButtonUser(CircularProgressButton button, @ColorRes int colorRes, @ColorRes int colorResInsideCurcle){
+        Drawable completed = itemView.getResources().getDrawable(R.drawable.file_image_user);
+        Drawable inProgress = itemView.getResources().getDrawable(R.drawable.ic_clear_blue_user_36dp);
+        Drawable download = itemView.getResources().getDrawable(R.drawable.ic_vertical_align_bottom_user_24dp);
+        setTintToViews(new Drawable[]{completed}, colorRes);
+        setTintToViews(new Drawable[]{inProgress, download}, colorResInsideCurcle);
+        button.setCompletedDrawable(completed);
+        button.setStartDownloadDrawable(download);
+        button.setInProgress(inProgress);
+    }
+
+    protected void setTintToProgressButtonConsult(CircularProgressButton button, @ColorRes int colorRes){
+        Drawable completed = itemView.getResources().getDrawable(R.drawable.file_image_consult);
+        Drawable inProgress = itemView.getResources().getDrawable(R.drawable.ic_clear_blue_consult_36dp);
+        Drawable download = itemView.getResources().getDrawable(R.drawable.ic_vertical_align_bottom_consult_24dp);
         setTintToViews(new Drawable[]{completed, inProgress, download}, colorRes);
         button.setCompletedDrawable(completed);
         button.setStartDownloadDrawable(download);

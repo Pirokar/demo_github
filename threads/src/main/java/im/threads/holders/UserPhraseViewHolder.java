@@ -81,11 +81,11 @@ public class UserPhraseViewHolder extends BaseHolder {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
             }
-            if (style.incomingMessageBubbleColor != ChatStyle.INVALID) {
-                setTintToProgressButton(mFileImageButton, style.incomingMessageBubbleColor);
+            if (style.incomingMessageBubbleColor != ChatStyle.INVALID && style.outgoingMessageBubbleColor != ChatStyle.INVALID) {
+                setTintToProgressButtonUser(mFileImageButton, style.incomingMessageBubbleColor, style.outgoingMessageBubbleColor);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.incomingMessageBubbleColor));
             } else {
-                setTintToProgressButton(mFileImageButton, android.R.color.white);
+                setTintToProgressButtonUser(mFileImageButton, android.R.color.white, android.R.color.holo_green_light);
             }
             if (style.chatHighlightingColor != ChatStyle.INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

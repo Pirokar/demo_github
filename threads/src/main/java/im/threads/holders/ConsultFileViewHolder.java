@@ -57,8 +57,8 @@ public class ConsultFileViewHolder extends BaseHolder {
             if (style.incomingMessageTextColor != INVALID) {
                 setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.incomingMessageTextColor);
             }
-            if (style.chatToolbarColorResId != INVALID) {
-                setTintToProgressButton(mCircularProgressButton, style.chatToolbarColorResId);
+            if (style.outgoingMessageBubbleColor != INVALID) {
+                setTintToProgressButtonConsult(mCircularProgressButton, style.outgoingMessageBubbleColor);
             }
             if (style.chatHighlightingColor != ChatStyle.INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

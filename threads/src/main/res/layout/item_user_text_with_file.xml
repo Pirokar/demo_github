@@ -60,11 +60,11 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginBottom="@dimen/margin_half"
                 android:layout_marginTop="@dimen/margin_half"
-                android:background="@drawable/ic_insert_file_white_36dp"
+                android:background="@drawable/file_image_user"
                 android:visibility="gone"
-                app:completed_drawable="@drawable/ic_insert_file_white_36dp"
-                app:in_progress_label="@drawable/ic_clear_blue_36dp"
-                app:start_download_label="@drawable/ic_vertical_align_bottom_24dp"/>
+                app:completed_drawable="@drawable/file_image_user"
+                app:in_progress_label="@drawable/ic_clear_blue_user_36dp"
+                app:start_download_label="@drawable/ic_vertical_align_bottom_user_24dp"/>
 
             <View
                 android:layout_marginTop="@dimen/margin_quarter"
