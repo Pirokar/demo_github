@@ -14,6 +14,7 @@ import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
+import im.threads.utils.PrefUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,10 +38,11 @@ public class FileAndMediaViewHolder extends BaseHolder {
         fileHeaderTextView = (TextView) itemView.findViewById(R.id.file_title);
         fileSizeTextView = (TextView) itemView.findViewById(R.id.file_size);
         timeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
-        tintedDrawable = itemView.getResources().getDrawable(R.drawable.ic_insert_file_blue_36dp);
+        tintedDrawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
+        style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
             if (style.incomingMessageTextColor != ChatStyle.INVALID){
-                setTextColorToViews(new TextView[]{fileHeaderTextView, fileSizeTextView, timeStampTextView},style.welcomeScreenTextColorResId);
+                setTextColorToViews(new TextView[]{fileHeaderTextView, fileSizeTextView, timeStampTextView}, style.incomingMessageTextColor);
             }
 
             if (style.chatBodyIconsTint != ChatStyle.INVALID) {
