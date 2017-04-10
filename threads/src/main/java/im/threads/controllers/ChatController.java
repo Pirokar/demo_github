@@ -39,6 +39,7 @@ import im.threads.activities.ConsultActivity;
 import im.threads.activities.ImagesActivity;
 import im.threads.database.DatabaseHolder;
 import im.threads.formatters.MessageFormatter;
+import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.CompletionHandler;
@@ -79,7 +80,7 @@ public class ChatController {
     public static final int CONSULT_STATE_DEFAULT = 3;
     public static final String TAG = "ChatController ";
     private ProgressReceiver mProgressReceiver;
-    private ChatActivity activity;
+    private ChatFragment fragment;
     boolean isSearchingConsult;
     private DatabaseHolder mDatabaseHolder;
     private Context appContext;
@@ -122,7 +123,7 @@ public class ChatController {
                     }
                     try {
                         instance.cleanAll();
-                        instance.activity.removeSearching();
+                        instance.fragment.removeSearching();
                         instance.mConsultWriter.setCurrentConsultLeft();
                       /*  PushController.getInstance(ctx).setDeviceUid(UUID.randomUUID().toString());*/
                         PushController.getInstance(ctx).setClientId(finalClientId);
@@ -130,10 +131,10 @@ public class ChatController {
                         PushController.getInstance(ctx)
                                 .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils.getUserName(ctx), finalClientId, ""), true);
                         PushController.getInstance(ctx).resetCounterSync();
-                        List<InOutMessage> messages = PushController.getInstance(instance.activity).getMessageHistory(20);
+                        List<InOutMessage> messages = PushController.getInstance(instance.fragment.getActivity()).getMessageHistory(20);
                         instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
                         ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
-                        instance.activity.addChatItems(phrases);
+                        instance.fragment.addChatItems(phrases);
                         PrefUtils.setClientIdWasSet(true, ctx);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -167,7 +168,7 @@ public class ChatController {
         if ((currentTime - lastUserTypingSend) >= 3000) {
             lastUserTypingSend = currentTime;
             try {
-                PushController.getInstance(activity).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
+                PushController.getInstance(fragment.getActivity()).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
                     @Override
                     public void onResult(String aVoid) {
 
@@ -188,16 +189,17 @@ public class ChatController {
         return !(mDatabaseHolder.getMessagesCount() > 0);
     }
 
-    public void bindActivity(ChatActivity ca) {
+    public void bindFragment(ChatFragment f) {
         if (BuildConfig.DEBUG) Log.i(TAG, "bindActivity:");
-        activity = ca;
+        fragment = f;
+        final Activity activity = f.getActivity();
         appContext = activity.getApplicationContext();
         currentOffset = 0;
         if (mConsultWriter == null) {
-            mConsultWriter = new ConsultWriter(ca.getSharedPreferences(TAG, Context.MODE_PRIVATE));
+            mConsultWriter = new ConsultWriter(f.getActivity().getSharedPreferences(TAG, Context.MODE_PRIVATE));
         }
         if (mConsultWriter.istSearchingConsult()) {
-            activity.setStateSearchingConsult();
+            fragment.setStateSearchingConsult();
         }
         if (mDatabaseHolder == null) {
             mDatabaseHolder = DatabaseHolder.getInstance(activity);
@@ -207,11 +209,11 @@ public class ChatController {
                 @Override
                 public void run() {
                     final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-                    if (null != activity) {
+                    if (null != fragment) {
                         h.post(new Runnable() {
                             @Override
                             public void run() {
-                                activity.addChatItems(items);
+                                fragment.addChatItems(items);
                             }
                         });
                     }
@@ -219,7 +221,7 @@ public class ChatController {
                     mExecutor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            if (activity != null) {
+                            if (fragment != null) {
                                 try {
                                     PushController.getInstance(activity).resetCounterSync();
                                     List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
@@ -232,7 +234,7 @@ public class ChatController {
                                             @Override
                                             public void run() {
                                                 final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-                                                if (null != activity) activity.addChatItems(items);
+                                                if (null != fragment) fragment.addChatItems(items);
                                             }
                                         });
                                     }
@@ -247,11 +249,11 @@ public class ChatController {
             });
         }
         if (mConsultWriter.isConsultConnected()) {
-            activity.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName(), mConsultWriter.getCurrentConsultTitle());
+            fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName(), mConsultWriter.getCurrentConsultTitle());
         } else if (mConsultWriter.istSearchingConsult()) {
-            activity.setStateSearchingConsult();
+            fragment.setStateSearchingConsult();
         } else {
-            activity.setTitleStateDefault();
+            fragment.setTitleStateDefault();
         }
         mProgressReceiver = new ProgressReceiver();
         IntentFilter intentFilter = new IntentFilter();
@@ -282,24 +284,32 @@ public class ChatController {
     }
 
     public void unbindActivity() {
-        if (activity != null) activity.unregisterReceiver(mProgressReceiver);
-        activity = null;
+        if (fragment != null) {
+            Activity activity = fragment.getActivity();
+            activity.unregisterReceiver(mProgressReceiver);
+        }
+        fragment = null;
     }
 
     public void onUserInput(final UpcomingUserMessage upcomingUserMessage) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onUserInput: " + upcomingUserMessage);
         if (upcomingUserMessage == null) return;
-        if (appContext == null && activity == null) {
+        if (appContext == null && fragment == null) {
             if (BuildConfig.DEBUG) Log.e(TAG, "(appContext == null && activity == null");
             return;
         }
-        Context ctx = activity;
+        Context ctx = null;
+        if(fragment != null) {
+            ctx = fragment.getActivity();
+        }
         if (ctx == null) ctx = appContext;
         if (BuildConfig.DEBUG) Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um, ctx);
         if (!mConsultWriter.isConsultConnected()) {
-            if (activity != null) activity.setStateSearchingConsult();
+            if (fragment != null) {
+                fragment.setStateSearchingConsult();
+            }
             mConsultWriter.setSearchingConsult(true);
         }
         sendMessage(um);
@@ -335,14 +345,14 @@ public class ChatController {
                                     Log.d(TAG, "server answer on pharse sent with id " + string);
                                 setMessageState(userPhrase, MessageState.STATE_SENT);
                                 mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
-                                if (activity != null)
-                                    activity.setUserPhraseMessageId(userPhrase.getId(), string);
+                                if (fragment != null)
+                                    fragment.setUserPhraseMessageId(userPhrase.getId(), string);
                             }
 
                             @Override
                             public void onError(PushServerErrorException e) {
                                 setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-                                if (activity != null && isActive) activity.showConnectionError();
+                                if (fragment != null && isActive) fragment.showConnectionError();
                                 if (appContext != null) {
                                     Intent i = new Intent(appContext, NotificationService.class);
                                     i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
@@ -356,12 +366,12 @@ public class ChatController {
                 new DualFilePoster(
                         userPhrase.getFileDescription() != null ? userPhrase.getFileDescription() : null
                         , userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() != null ? userPhrase.getQuote().getFileDescription() : null : null
-                        , activity) {
+                        , fragment.getActivity()) {
                     @Override
                     public void onResult(String mfmsFilePath, String mfmsQuoteFilePath) {
                         if (BuildConfig.DEBUG)
                             Log.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
-                        PushController.getInstance(activity).sendMessageAsync(MessageFormatter.format(
+                        PushController.getInstance(fragment.getActivity()).sendMessageAsync(MessageFormatter.format(
                                 userPhrase
                                 , finalConsultInfo
                                 , mfmsQuoteFilePath, mfmsFilePath)
@@ -372,8 +382,9 @@ public class ChatController {
                                         if (BuildConfig.DEBUG)
                                             Log.i(TAG, "sending with files string = " + string);
                                         setMessageState(userPhrase, MessageState.STATE_SENT);
-                                        if (activity != null)
-                                            activity.setUserPhraseMessageId(userPhrase.getId(), string);
+                                        if(fragment != null) {
+                                            fragment.setUserPhraseMessageId(userPhrase.getId(), string);
+                                        }
                                         mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
                                     }
 
@@ -387,7 +398,7 @@ public class ChatController {
                                             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
                                             if (!isActive) appContext.startService(i);
                                         }
-                                        if (activity != null && isActive) {//// TODO: 15.12.2016  for test
+                                        if (fragment != null && isActive) {//// TODO: 15.12.2016  for test
                                             String error =
                                                     "error 382  sending message to server" +
                                                             "\ncode = " + e.getErrorCode()
@@ -418,7 +429,7 @@ public class ChatController {
                             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
                             if (!isActive) appContext.startService(i);
                         }
-                        if (activity != null && isActive) {
+                        if (fragment != null && isActive) {
                             String error = " error 405  sending files to server"
                                     + "\n" + e.getMessage()
                                     + "\n" + e.toString()
@@ -439,11 +450,11 @@ public class ChatController {
             e.printStackTrace();
             setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
             if (e instanceof PushServerErrorException) {
-                PushController.getInstance(activity).init();
+                PushController.getInstance(fragment.getActivity()).init();
             } else if (e instanceof IllegalStateException) {
-                PushController.getInstance(activity).init();
+                PushController.getInstance(fragment.getActivity()).init();
             }
-            if (activity != null && isActive) {
+            if (fragment != null && isActive) {
                 String error = "Generic error 423"
                         + "\n" + e.getMessage()
                         + "\n" + e.toString();
@@ -460,9 +471,9 @@ public class ChatController {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if (activity != null)
+                        if (fragment != null)
                             try {
-                                PushController.getInstance(activity).notifyMessageUpdateNeeded();
+                                PushController.getInstance(fragment.getActivity()).notifyMessageUpdateNeeded();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -544,11 +555,11 @@ public class ChatController {
         h.post(new Runnable() {
             @Override
             public void run() {
-                if (null != activity) {
+                if (null != fragment) {
                     ChatItem ci = setLastAvatars(Arrays.asList(new ChatItem[]{cm})).get(0);
-                    activity.addChatItem(ci);
+                    fragment.addChatItem(ci);
                     if (ci instanceof ConsultChatPhrase) {
-                        activity.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath()
+                        fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath()
                                 , ((ConsultChatPhrase) ci).getConsultId());
                     }
                 }
@@ -563,8 +574,8 @@ public class ChatController {
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (activity != null && isActive) {
-                    activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+                if (fragment != null && isActive) {
+                    fragment.getActivity().sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
                 }
             }
         }, 1500);
@@ -577,7 +588,8 @@ public class ChatController {
 
     public void onFileClick(final FileDescription fileDescription) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onFileClick " + fileDescription);
-        if (activity != null) {
+        if (fragment != null) {
+            Activity activity = fragment.getActivity();
             if (fileDescription.getFilePath() == null) {
                 Intent i = new Intent(activity, DownloadService.class);
                 i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
@@ -606,8 +618,8 @@ public class ChatController {
 
     public void checkAndResendPhrase(final UserPhrase userPhrase) {
         if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
-            if (activity != null) {
-                activity.setMessageState(userPhrase.getMessageId(), MessageState.STATE_SENDING);
+            if (fragment != null) {
+                fragment.setMessageState(userPhrase.getMessageId(), MessageState.STATE_SENDING);
             }
             sendMessage(userPhrase);
         }
@@ -616,28 +628,28 @@ public class ChatController {
     void cleanAll() throws PushServerErrorException {
         if (BuildConfig.DEBUG) Log.i(TAG, "cleanAll: ");
         mDatabaseHolder.cleanDatabase();
-        if (activity != null) activity.cleanChat();
+        if (fragment != null) fragment.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
         mConsultWriter.setSearchingConsult(false);
         isSearchingConsult = false;
         searchOffset = 0;
         currentOffset = 0;
         h.removeCallbacksAndMessages(null);
-        if (activity != null) {
-            activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+        if (fragment != null) {
+            fragment.getActivity().sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         }
     }
 
     public void setActivityIsForeground(boolean isForeground) {
         this.isActive = isForeground;
-        if (isForeground && activity != null) {
-            ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (isForeground && fragment != null) {
+            ConnectivityManager cm = (ConnectivityManager) fragment.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
             if (cm != null
                     && cm.getActiveNetworkInfo() != null
                     && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
                 List<String> unread = mDatabaseHolder.getUnreaMessagesId();
                 for (String id : unread) {
-                    PushController.getInstance(activity).notifyMessageRead(id);
+                    PushController.getInstance(fragment.getActivity()).notifyMessageRead(id);
                     mDatabaseHolder.setMessageWereRead(id);
                 }
             }
@@ -645,16 +657,16 @@ public class ChatController {
         if (isForeground) h.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (activity != null)
-                    activity.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+                if (fragment != null)
+                    fragment.getActivity().sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
             }
         }, 1500);
     }
 
     void setMessageState(UserPhrase up, MessageState messageState) {
         up.setSentState(messageState);
-        if (activity != null) {
-            activity.setPhraseSentStatus(up.getId(), up.getSentState());
+        if (fragment != null) {
+            fragment.setPhraseSentStatus(up.getId(), up.getSentState());
         }
         mDatabaseHolder.setStateOfUserPhrase(up.getId(), up.getSentState());
     }
@@ -681,8 +693,8 @@ public class ChatController {
                 if (BuildConfig.DEBUG)
                     Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
                 for (String s : list) {
-                    if (activity != null) {
-                        activity.setPhraseSentStatus(s, MessageState.STATE_WAS_READ);
+                    if (fragment != null) {
+                        fragment.setPhraseSentStatus(s, MessageState.STATE_WAS_READ);
                     }
                     if (mDatabaseHolder != null)
                         mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
@@ -692,17 +704,17 @@ public class ChatController {
     }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(activity));
-        if (!PrefUtils.isClientIdNotEmpty(activity)) {
+        if (BuildConfig.DEBUG) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(fragment.getActivity()));
+        if (!PrefUtils.isClientIdNotEmpty(fragment.getActivity())) {
             callback.onSuccess(new ArrayList<ChatItem>());
             return;
         }
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final int[] currentOffset = {activity.getCurrentItemsCount()};
+                final int[] currentOffset = {fragment.getCurrentItemsCount()};
                 try {
-                    List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(currentOffset[0] + 20);
+                    List<InOutMessage> messages = PushController.getInstance(fragment.getActivity()).getMessageHistory(currentOffset[0] + 20);
                     mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
                     final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
                     currentOffset[0] += chatItems.size();
@@ -729,10 +741,10 @@ public class ChatController {
     }
 
     public void onImageDownloadRequest(FileDescription fileDescription) {
-        Intent i = new Intent(activity, DownloadService.class);
+        Intent i = new Intent(fragment.getActivity(), DownloadService.class);
         i.setAction(DownloadService.START_DOWNLOAD_WITH_NO_STOP);
         i.putExtra(DownloadService.FD_TAG, fileDescription);
-        activity.startService(i);
+        fragment.getActivity().startService(i);
     }
 
     public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {
@@ -743,12 +755,12 @@ public class ChatController {
                 new ConsultMessageReactions() {
                     @Override
                     public void consultConnected(final String id, final String name, final String title) {
-                        if (activity != null) activity.setStateConsultConnected(id, name, title);
+                        if (fragment != null) fragment.setStateConsultConnected(id, name, title);
                     }
 
                     @Override
                     public void onConsultLeft() {
-                        if (null != activity) activity.setTitleStateDefault();
+                        if (null != fragment) fragment.setTitleStateDefault();
                     }
                 });
         consultReactor.onPushMessage(chatItem);
@@ -902,7 +914,7 @@ public class ChatController {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                if (activity != null) {
+                if (fragment != null) {
                     if (PrefUtils.getNewClientID(ctx) == null) return;
                     try {
                         cleanAll();
@@ -920,10 +932,10 @@ public class ChatController {
                                                 .getUserName(ctx),
                                         PrefUtils.getNewClientID(ctx), ""), true);
 
-                        List<InOutMessage> messages = PushController.getInstance(activity).getMessageHistory(20);
+                        List<InOutMessage> messages = PushController.getInstance(fragment.getActivity()).getMessageHistory(20);
                         mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-                        if (activity != null)
-                            activity.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
+                        if (fragment != null)
+                            fragment.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
                         currentOffset = messages.size();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -938,8 +950,11 @@ public class ChatController {
     }
 
     void setAllMessagesWereRead() {
-        if (activity == null && appContext == null) return;
-        Context cxt = activity;
+        if (fragment == null && appContext == null) return;
+        Context cxt = null;
+        if(fragment != null) {
+            cxt = fragment.getActivity();
+        }
         if (cxt == null) cxt = appContext;
         cxt.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         DatabaseHolder.getInstance(cxt).setAllMessagesRead(new CompletionHandler<Void>() {
@@ -953,7 +968,7 @@ public class ChatController {
 
             }
         });
-        if (activity != null) activity.setAllMessagesWereRead();
+        if (fragment != null) fragment.setAllMessagesWereRead();
     }
 
     private class ProgressReceiver extends BroadcastReceiver {
@@ -971,20 +986,20 @@ public class ChatController {
             if (action.equals(PROGRESS_BROADCAST)) {
                 Log.i(TAG, "onReceive: PROGRESS_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
-                if (activity != null && fileDescription != null)
-                    activity.updateProgress(fileDescription);
+                if (fragment != null && fileDescription != null)
+                    fragment.updateProgress(fileDescription);
             } else if (action.equals(DOWNLOADED_SUCCESSFULLY_BROADCAST)) {
                 Log.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 fileDescription.setDownloadProgress(100);
-                if (activity != null)
-                    activity.updateProgress(fileDescription);
+                if (fragment != null)
+                    fragment.updateProgress(fileDescription);
             } else if (action.equals(DOWNLOAD_ERROR_BROADCAST)) {
                 Log.i(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
-                if (activity != null && fileDescription != null) {
+                if (fragment != null && fileDescription != null) {
                     Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
-                    activity.onDownloadError(fileDescription, t);
+                    fragment.onDownloadError(fileDescription, t);
                 }
             } else if (action.equals(DEVICE_ID_IS_SET_BROADCAST)) {
                 onSettingClientId(context);

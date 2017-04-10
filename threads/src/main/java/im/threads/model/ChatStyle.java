@@ -9,17 +9,20 @@ import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.util.Log;
 
-import im.threads.activities.ChatActivity;
-
 import java.io.Serializable;
 
-import static im.threads.activities.ChatActivity.TAG_GAENABLED;
+import im.threads.activities.ChatActivity;
+
+import static im.threads.fragments.ChatFragment.TAG_GAENABLED;
 
 /**
  * Created by yuri on 08.11.2016.
  */
 
 public class ChatStyle implements Serializable {
+
+    public static final String CHAT_FRAGMENT_BUNDLE = "chatFragmentBundle";
+
     public static final int INVALID = -1;
     @StringRes
     public final int chatTitleTextResId;
@@ -141,16 +144,16 @@ public class ChatStyle implements Serializable {
         this.chatHighlightingColor = chatHighlightingColor;
     }
 
-    public static ChatStyle styleFromIntent(Intent i) {
-        Bundle welcomScreenStyle = i.getBundleExtra("setWelcomeScreenStyle");
+    public static ChatStyle styleFromBundle(Bundle b) {
+        Bundle welcomScreenStyle = b.getBundle("setWelcomeScreenStyle");
         boolean isWeclomeExists = welcomScreenStyle != null;
-        Bundle pushNotificationStyle = i.getBundleExtra("setPushNotificationStyle");
+        Bundle pushNotificationStyle = b.getBundle("setPushNotificationStyle");
         boolean isPushNotificationStyleExists = pushNotificationStyle != null;
-        Bundle chatBodyStyle = i.getBundleExtra("setChatBodyStyle");
+        Bundle chatBodyStyle = b.getBundle("setChatBodyStyle");
         boolean isChatBodyStyleExists = chatBodyStyle != null;
-        Bundle chatTitleStyle = i.getBundleExtra("setChatTitleStyle");
+        Bundle chatTitleStyle = b.getBundle("setChatTitleStyle");
         boolean isChatTitleStyleExists = chatTitleStyle != null;
-        boolean isGaEnabled = i.getBooleanExtra(TAG_GAENABLED, true);
+        boolean isGaEnabled = b.getBoolean(TAG_GAENABLED, true);
         return new ChatStyle(
                 isChatBodyStyleExists ? chatBodyStyle.getInt("chatBackgroundColor") : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt("chatHighlightingColor") : INVALID,
@@ -295,44 +298,44 @@ public class ChatStyle implements Serializable {
                 '}';
     }
 
-    public static class IntentBuilder {
-        private static final String TAG = "IntentBuilder ";
-        private Intent i;
-        static IntentBuilder builder;
+    public static class BundleBuilder {
+        private static final String TAG = "BundleBuilder ";
+        private Bundle b;
+        static BundleBuilder builder;
         private Context ctx;
 
-        private IntentBuilder() {
+        private BundleBuilder() {
         }
 
-        public static IntentBuilder getBuilder(Context ctx, String clientId, String userName) {
+        public static BundleBuilder getBuilder(Context ctx, String clientId, String userName) {
 
-            builder = new IntentBuilder();
-            builder.i = new Intent(ctx, ChatActivity.class);
-            builder.i.putExtra("clientId", clientId);
+            builder = new BundleBuilder();
+            builder.b = new Bundle();
+            builder.b.putString("clientId", clientId);
             builder.ctx = ctx;
-            builder.i.putExtra("userName", userName);
+            builder.b.putString("userName", userName);
             return builder;
         }
 
-        public IntentBuilder setChatTitleStyle(
+        public BundleBuilder setChatTitleStyle(
                 @StringRes int chatTitleTextResId,
                 @ColorRes int chatTitleBackgroundColorResId,
                 @ColorRes int chatTitleWidgetsColorResId,
                 @ColorRes int chatStatusBarColorResId,
                 @ColorRes int menuItemTextColorResId,
                 @ColorRes int chatToolbarHintTextColor) {
-            Bundle b = new Bundle();
-            builder.i.putExtra("setChatTitleStyle", b);
-            b.putInt("chatTitleTextResId", chatTitleTextResId);
-            b.putInt("chatTitleBackgroundColorResId", chatTitleBackgroundColorResId);
-            b.putInt("chatTitleWidgetsColorResId", chatTitleWidgetsColorResId);
-            b.putInt("chatStatusBarColorResId", chatStatusBarColorResId);
-            b.putInt("menuItemTextColorResId", menuItemTextColorResId);
-            b.putInt("chatToolbarHintTextColor", chatToolbarHintTextColor);
+            Bundle bundle = new Bundle();
+            builder.b.putBundle("setChatTitleStyle", bundle);
+            bundle.putInt("chatTitleTextResId", chatTitleTextResId);
+            bundle.putInt("chatTitleBackgroundColorResId", chatTitleBackgroundColorResId);
+            bundle.putInt("chatTitleWidgetsColorResId", chatTitleWidgetsColorResId);
+            bundle.putInt("chatStatusBarColorResId", chatStatusBarColorResId);
+            bundle.putInt("menuItemTextColorResId", menuItemTextColorResId);
+            bundle.putInt("chatToolbarHintTextColor", chatToolbarHintTextColor);
             return builder;
         }
 
-        public IntentBuilder setChatBodyStyle(
+        public BundleBuilder setChatBodyStyle(
                 @ColorRes int chatBackgroundColor,
                 @ColorRes int chatHighlightingColor,
                 @ColorRes int chatMessageHintInputTextColor,
@@ -346,79 +349,83 @@ public class ChatStyle implements Serializable {
                 @DrawableRes int defaultIncomingMessageAvatar,
                 @DrawableRes int imagePlaceholder,
                 @StyleRes int fileBrowserDialogStyleResId) {
-            Bundle b = new Bundle();
-            builder.i.putExtra("setChatBodyStyle", b);
-            b.putInt("chatBackgroundColor", chatBackgroundColor);
-            b.putInt("chatHighlightingColor", chatHighlightingColor);
-            b.putInt("chatMessageInputBackgroundColor", chatMessageInputBackgroundColor);
-            b.putInt("chatMessageHintInputTextColor", chatMessageHintInputTextColor);
-            b.putInt("incomingMessageBubbleColor", incomingMessageBubbleColor);
-            b.putInt("outgoingMessageBubbleColor", outgoingMessageBubbleColor);
-            b.putInt("incomingMessageTextColor", incomingMessageTextColor);
-            b.putInt("outgoingMessageTextColor", outgoingMessageTextColor);
-            b.putInt("defaultAvatar", defaultIncomingMessageAvatar);
-            b.putInt("imagePlaceholder", imagePlaceholder);
-            b.putInt("chatBodyIconsTint", chatBodyIconsTint);
-            b.putInt("connectionMessageTextColor", connectionMessageTextColor);
-            b.putInt("dialogStyleResId", fileBrowserDialogStyleResId);
+            Bundle bundle = new Bundle();
+            builder.b.putBundle("setChatBodyStyle", bundle);
+            bundle.putInt("chatBackgroundColor", chatBackgroundColor);
+            bundle.putInt("chatHighlightingColor", chatHighlightingColor);
+            bundle.putInt("chatMessageInputBackgroundColor", chatMessageInputBackgroundColor);
+            bundle.putInt("chatMessageHintInputTextColor", chatMessageHintInputTextColor);
+            bundle.putInt("incomingMessageBubbleColor", incomingMessageBubbleColor);
+            bundle.putInt("outgoingMessageBubbleColor", outgoingMessageBubbleColor);
+            bundle.putInt("incomingMessageTextColor", incomingMessageTextColor);
+            bundle.putInt("outgoingMessageTextColor", outgoingMessageTextColor);
+            bundle.putInt("defaultAvatar", defaultIncomingMessageAvatar);
+            bundle.putInt("imagePlaceholder", imagePlaceholder);
+            bundle.putInt("chatBodyIconsTint", chatBodyIconsTint);
+            bundle.putInt("connectionMessageTextColor", connectionMessageTextColor);
+            bundle.putInt("dialogStyleResId", fileBrowserDialogStyleResId);
             return builder;
         }
 
 
-        public IntentBuilder setPushNotificationStyle(@DrawableRes int defIconResid,
+        public BundleBuilder setPushNotificationStyle(@DrawableRes int defIconResid,
                                                       @StringRes int defTitleResId,
                                                       @ColorRes int pushBackgroundColorResId,
                                                       @ColorRes int nugatPushAccentColorResId) {
-            Bundle b = new Bundle();
-            i.putExtra("setPushNotificationStyle", b);
-            b.putInt("defIconResid", defIconResid);
-            b.putInt("defTitleResId", defTitleResId);
-            b.putInt("pushBackgroundColorResId", pushBackgroundColorResId);
-            b.putInt("nugatPushAccentColorResId", nugatPushAccentColorResId);
+            Bundle bundle = new Bundle();
+            b.putBundle("setPushNotificationStyle", bundle);
+            bundle.putInt("defIconResid", defIconResid);
+            bundle.putInt("defTitleResId", defTitleResId);
+            bundle.putInt("pushBackgroundColorResId", pushBackgroundColorResId);
+            bundle.putInt("nugatPushAccentColorResId", nugatPushAccentColorResId);
             return builder;
         }
 
-        public IntentBuilder setGoogleAnalyticsEnabled(boolean isEnabled) {
-            builder.i.putExtra(TAG_GAENABLED, isEnabled);
+        public BundleBuilder setGoogleAnalyticsEnabled(boolean isEnabled) {
+            builder.b.putBoolean(TAG_GAENABLED, isEnabled);
             return builder;
         }
 
-        public IntentBuilder setWelcomeScreenStyle(
+        public BundleBuilder setWelcomeScreenStyle(
                 @DrawableRes int welcomeScreenLogoResId
                 , @StringRes int welcomeScreenTitleTextResId
                 , @StringRes int welcomeScreenSubtitleTextResId
                 , @ColorRes int welcomeScreenTextColorResId
                 , int titleSizeInSp
                 , int subtitleSizeInSp) {
-            Bundle b = new Bundle();
-            i.putExtra("setWelcomeScreenStyle", b);
-            b.putInt("welcomeScreenLogoResId", welcomeScreenLogoResId);
-            b.putInt("welcomeScreenTextColorResId", welcomeScreenTextColorResId);
-            b.putInt("welcomeScreenTitleTextResId", welcomeScreenTitleTextResId);
-            b.putInt("welcomeScreenSubtitleTextResId", welcomeScreenSubtitleTextResId);
-            b.putInt("titleSizeInSp", titleSizeInSp);
-            b.putInt("subtitleSizeInSp", subtitleSizeInSp);
+            Bundle bundle = new Bundle();
+            b.putBundle("setWelcomeScreenStyle", bundle);
+            bundle.putInt("welcomeScreenLogoResId", welcomeScreenLogoResId);
+            bundle.putInt("welcomeScreenTextColorResId", welcomeScreenTextColorResId);
+            bundle.putInt("welcomeScreenTitleTextResId", welcomeScreenTitleTextResId);
+            bundle.putInt("welcomeScreenSubtitleTextResId", welcomeScreenSubtitleTextResId);
+            bundle.putInt("titleSizeInSp", titleSizeInSp);
+            bundle.putInt("subtitleSizeInSp", subtitleSizeInSp);
             return this;
         }
 
 
-        public Intent build() {
-            Intent i = builder.i;
-            if (i.getBundleExtra("setWelcomeScreenStyle") == null)
+        public Bundle build() {
+            Bundle b = builder.b;
+            if (b.getBundle("setWelcomeScreenStyle") == null)
                 Log.e(TAG, "you must provide welcome screen  attributes. now using default");
-            if (i.getBundleExtra("setPushNotificationStyle") == null)
+            if (b.getBundle("setPushNotificationStyle") == null)
                 Log.e(TAG, "you must provide push notifications style. now using default");
-            if (i.getBundleExtra("setChatBodyStyle") == null)
+            if (b.getBundle("setChatBodyStyle") == null)
                 Log.e(TAG, "you must chat body style. now using default");
-            if (i.getBundleExtra("setChatTitleStyle") == null)
+            if (b.getBundle("setChatTitleStyle") == null)
                 Log.e(TAG, "you must chat title style. now using default");
-            if (i.getStringExtra("clientId") == null)
+            if (b.getString("clientId") == null)
                 throw new IllegalStateException("client id is obligatory");
-            i.putExtra("style", true);
+            b.putBoolean("style", true);
             builder = null;
-            return i;
+            return b;
         }
 
-
+        public Intent buildIntent() {
+            Intent i = new Intent(ctx, ChatActivity.class);
+            i.putExtra(CHAT_FRAGMENT_BUNDLE, build());
+            return i;
+        }
     }
 }

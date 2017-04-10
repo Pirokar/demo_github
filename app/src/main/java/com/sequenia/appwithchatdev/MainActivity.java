@@ -19,6 +19,7 @@ import com.pushserver.android.PushController;
 
 import java.util.ArrayList;
 
+import im.threads.activities.ChatActivity;
 import im.threads.model.ChatStyle;
 import im.threads.utils.PermissionChecker;
 import io.fabric.sdk.android.Fabric;
@@ -41,12 +42,12 @@ public class MainActivity extends AppCompatActivity {
         }
         mEditText = (EditText) findViewById(R.id.edit_text);
         nameTextView = (TextView) findViewById(R.id.client_name);
-//        mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
-//                "79139055742"
-//                : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
-//        nameTextView.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("name", null) == null ?
-//                "Серегй Петрович Иванов"
-//                : PreferenceManager.getDefaultSharedPreferences(this).getString("name", null));
+        //mEditText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null) == null ?
+        //        "79139055742"
+        //        : PreferenceManager.getDefaultSharedPreferences(this).getString("edit", null));
+        //nameTextView.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("name", null) == null ?
+        //        "Серегй Петрович Иванов"
+        //        : PreferenceManager.getDefaultSharedPreferences(this).getString("name", null));
         boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(this);
         boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(this);
         boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(this);
@@ -73,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 || !PermissionChecker.isReadPhoneStatePermissionGranted(this)) {
             requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK);
         } else if (mEditText.getText().length() > 5) {
-            Intent i = ChatStyle
-                    .IntentBuilder
+            Intent i = ChatStyle.BundleBuilder
                     .getBuilder(this, mEditText.getText().toString(), nameTextView.getText().toString())
                     .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
                             R.color.toolbar_background,//ToolBar background chatTitleBackgroundColorResId
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                             R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
                             R.drawable.blank_avatar_round_main,//заглушка картинки тайпинга imagePlaceholder
                             R.style.FileDialogStyle)//стиль диалога выбора файла fileBrowserDialogStyleResId
-//                    .setGoogleAnalyticsEnabled(false)
+                    //.setGoogleAnalyticsEnabled(false)
                     .setPushNotificationStyle(R.drawable.push_icon_def,
                             R.string.default_title,
                             ChatStyle.INVALID,
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                             , R.color.welcome_screen_text//цвет текста на экране приветствия welcomeScreenTextColorResId
                             , 18//размер шрифта заголовка titleSizeInSp
                             , 14)//размер шрифта подзаголовка subtitleSizeInSp
-                    .build();
+                    .buildIntent();
             startActivity(i);
 
         } else if (mEditText.getText().length() < 5) {

@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import im.threads.AnalyticsTracker;
 import im.threads.R;
+import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatStyle;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.PrefUtils;
@@ -152,7 +153,7 @@ public class ConsultActivity extends BaseActivity {
             return true;
         }
         if (item.getItemId() == R.id.search) {
-            sendBroadcast(new Intent(ChatActivity.ACTION_SEARCH_CHAT_FILES));
+            sendBroadcast(new Intent(ChatFragment.ACTION_SEARCH_CHAT_FILES));
             finish();
         }
         return super.onOptionsItemSelected(item);
