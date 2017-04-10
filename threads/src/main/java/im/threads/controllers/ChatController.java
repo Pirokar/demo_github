@@ -34,7 +34,6 @@ import java.util.concurrent.Executors;
 
 import im.threads.AnalyticsTracker;
 import im.threads.BuildConfig;
-import im.threads.activities.ChatActivity;
 import im.threads.activities.ConsultActivity;
 import im.threads.activities.ImagesActivity;
 import im.threads.database.DatabaseHolder;
@@ -65,9 +64,9 @@ import im.threads.utils.Seeker;
 
 /**
  * Created by yuri on 08.06.2016.
- * controller for chat Activity. all bells and whistles in activity,
+ * controller for chat Fragment. all bells and whistles in fragment,
  * all work here, mvc, right?
- * don't forget to unbindActivity() in ChatActivity onDestroy, to avoid leaks;
+ * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
  */
 public class ChatController {
     private static final Handler h = new Handler(Looper.getMainLooper());

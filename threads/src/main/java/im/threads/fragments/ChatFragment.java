@@ -145,7 +145,7 @@ public class ChatFragment extends Fragment
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
     private String connectedConsultId;
-    private ChatActivityReceiver mChatActivityReceiver;
+    private ChatReceiver mChatReceiver;
     private Handler h = new Handler(Looper.getMainLooper());
     private boolean isInMessageSearchMode;
     private boolean searchInFiles;
@@ -190,11 +190,11 @@ public class ChatFragment extends Fragment
         mChatController = ChatController.getInstance(activity, getArguments().getString("clientId"));
         mChatController.bindFragment(this);
         if (mChatController.isNeedToShowWelcome()) mWelcomeScreen.setVisibility(View.VISIBLE);
-        mChatActivityReceiver = new ChatActivityReceiver();
+        mChatReceiver = new ChatReceiver();
         IntentFilter intentFilter = new IntentFilter(ACTION_SEARCH_CHAT_FILES);
         intentFilter.addAction(ACTION_SEARCH);
         intentFilter.addAction(ACTION_SEND_QUICK_MESSAGE);
-        activity.registerReceiver(mChatActivityReceiver, intentFilter);
+        activity.registerReceiver(mChatReceiver, intentFilter);
     }
 
     private void initViews() {
@@ -995,20 +995,23 @@ public class ChatFragment extends Fragment
 
     public void cleanChat() {
         final ChatFragment fragment = this;
-        h.post(new Runnable() {
-            @Override
-            public void run() {
-                mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), fragment.getActivity(), fragment);
-                mRecyclerView.setAdapter(mChatAdapter);
-                setTitleStateDefault();
-                if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
-                    mWelcomeScreen.setVisibility(View.GONE);
-                    mWelcomeScreen = null;
+        final Activity activity = getActivity();
+        if(isAdded() && activity != null) {
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), activity, fragment);
+                    mRecyclerView.setAdapter(mChatAdapter);
+                    setTitleStateDefault();
+                    if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
+                        mWelcomeScreen.setVisibility(View.GONE);
+                        mWelcomeScreen = null;
+                    }
+                    mInputEditText.clearFocus();
+                    showHelloScreen();
                 }
-                mInputEditText.clearFocus();
-                showHelloScreen();
-            }
-        });
+            });
+        }
     }
 
     private void showHelloScreen() {
@@ -1036,14 +1039,19 @@ public class ChatFragment extends Fragment
 
 
     public void onDownloadError(FileDescription fileDescription, Throwable t) {
-        updateProgress(fileDescription);
-        if (t instanceof FileNotFoundException) {
-            Toast.makeText(getActivity(), R.string.error_no_file, Toast.LENGTH_SHORT).show();
-            mChatAdapter.onDownloadError(fileDescription);
-        }
-        if (t instanceof UnknownHostException) {
-            Toast.makeText(getActivity(), R.string.check_connection, Toast.LENGTH_SHORT).show();
-            mChatAdapter.onDownloadError(fileDescription);
+        if(isAdded()) {
+            Activity activity = getActivity();
+            if(activity != null) {
+                updateProgress(fileDescription);
+                if (t instanceof FileNotFoundException) {
+                    Toast.makeText(activity, R.string.error_no_file, Toast.LENGTH_SHORT).show();
+                    mChatAdapter.onDownloadError(fileDescription);
+                }
+                if (t instanceof UnknownHostException) {
+                    Toast.makeText(activity, R.string.check_connection, Toast.LENGTH_SHORT).show();
+                    mChatAdapter.onDownloadError(fileDescription);
+                }
+            }
         }
     }
 
@@ -1108,12 +1116,17 @@ public class ChatFragment extends Fragment
     }
 
     public void showFullError(String error) {
-        AlertDialog d = new AlertDialog
-                .Builder(getActivity())
-                .setMessage(error)
-                .setCancelable(true)
-                .create();
-        d.show();
+        if(isAdded()) {
+            Activity activity = getActivity();
+            if(activity != null) {
+                AlertDialog d = new AlertDialog
+                        .Builder(getActivity())
+                        .setMessage(error)
+                        .setCancelable(true)
+                        .create();
+                d.show();
+            }
+        }
     }
 
     @Override
@@ -1355,7 +1368,7 @@ public class ChatFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
         mChatController.unbindActivity();
-        getActivity().unregisterReceiver(mChatActivityReceiver);
+        getActivity().unregisterReceiver(mChatReceiver);
     }
 
     private void search(final boolean searchInFiles) {
@@ -1500,7 +1513,7 @@ public class ChatFragment extends Fragment
         }
     }
 
-    private class ChatActivityReceiver extends BroadcastReceiver {
+    private class ChatReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals(ACTION_SEARCH_CHAT_FILES)) {
