@@ -148,6 +148,7 @@ public class ChatFragment extends Fragment
     private MySwipeRefreshLayout mSwipeRefreshLayout;
     private Button mSearchMoreButton;
     private View mSearchLo;
+    private ImageButton backButton;
     private String connectedConsultId;
     private ChatReceiver mChatReceiver;
 
@@ -378,7 +379,10 @@ public class ChatFragment extends Fragment
             if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
                 mSearchMessageEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
                 mToolbar.getOverflowIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
-                mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+                Drawable backButtonDrawable = backButton.getDrawable();
+                if(backButtonDrawable != null) {
+                    backButtonDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+                }
             }
             if (style.chatMessageInputHintTextColor != ChatStyle.INVALID) {
                 mInputEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
@@ -834,7 +838,7 @@ public class ChatFragment extends Fragment
                 mChatAdapter.setItemChosen(false, mChosenPhrase);
                 mChosenPhrase = null;
             }
-            if (isInMessageSearchMode) onBackPressed();
+            if (isInMessageSearchMode) onActivityBackPressed();
         }
     }
 
@@ -1170,7 +1174,7 @@ public class ChatFragment extends Fragment
         Activity activity = getActivity();
 
         if (item.getItemId() == R.id.files_and_media) {
-            if (isInMessageSearchMode) onBackPressed();
+            if (isInMessageSearchMode) onActivityBackPressed();
             startActivity(FilesActivity.getStartIntetent(activity));
             return true;
         }
@@ -1292,16 +1296,24 @@ public class ChatFragment extends Fragment
     }
 
     private void initToolbar() {
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
         mToolbar.setTitle("");
-        activity.setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.showOverflowMenu();
+        backButton = (ImageButton) rootView.findViewById(R.id.chat_back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                onActivityBackPressed();
             }
         });
-        mToolbar.showOverflowMenu();
+    }
+
+    private void onActivityBackPressed() {
+        if(isAdded()) {
+            Activity activity = getActivity();
+            if(activity != null) {
+                activity.onBackPressed();
+            }
+        }
     }
 
     /**
