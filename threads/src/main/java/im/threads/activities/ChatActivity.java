@@ -13,7 +13,7 @@ import im.threads.model.ChatStyle;
 
 
 /**
- *
+ * Вся логика находится во фрагменте. Смотрите ChatFragment
  */
 public class ChatActivity extends BaseActivity {
 
