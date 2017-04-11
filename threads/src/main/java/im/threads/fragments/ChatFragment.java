@@ -114,7 +114,19 @@ public class ChatFragment extends Fragment
     private static final String TAG = "ChatFragment ";
     public static final String TAG_GAENABLED = "TAG_GAENABLED";
 
+    public static final int REQUEST_CODE_PHOTOS = 100;
+    public static final int REQUEST_CODE_PHOTO = 101;
+    public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 102;
+    public static final int REQUEST_PERMISSION_CAMERA = 103;
+    public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
+    public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
+    public static final String ACTION_SEARCH = "ACTION_SEARCH";
+    public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
+
     private View rootView;
+
+    private Handler mSearchHandler = new Handler(Looper.getMainLooper());
+    private Handler h = new Handler(Looper.getMainLooper());
 
     private ChatController mChatController;
     private WelcomeScreen mWelcomeScreen;
@@ -136,22 +148,13 @@ public class ChatFragment extends Fragment
     private MySwipeRefreshLayout mSwipeRefreshLayout;
     private Button mSearchMoreButton;
     private View mSearchLo;
-    public static final int REQUEST_CODE_PHOTOS = 100;
-    public static final int REQUEST_CODE_PHOTO = 101;
-    public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 102;
-    public static final int REQUEST_PERMISSION_CAMERA = 103;
-    public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
-    public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
-    public static final String ACTION_SEARCH = "ACTION_SEARCH";
-    public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
     private String connectedConsultId;
     private ChatReceiver mChatReceiver;
-    private Handler h = new Handler(Looper.getMainLooper());
+
     private boolean isInMessageSearchMode;
     private boolean searchInFiles;
     private boolean isResumed;
     private ChatStyle style;
-    private Handler mSearchHandler = new Handler(Looper.getMainLooper());
 
     private ImageButton searchUp;
     private ImageButton searchDown;
@@ -1388,56 +1391,8 @@ public class ChatFragment extends Fragment
                 imm.showSoftInput(mSearchMessageEditText, InputMethodManager.SHOW_IMPLICIT);
             }
         }, 100);
-        //   mChatAdapter.backupAndClear();
         mSwipeRefreshLayout.setEnabled(false);
-
         mSearchMoreButton.setVisibility(View.GONE);
-
-      /*  mSearchMoreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mSearchMessageEditText.getText() != null && mSearchMessageEditText.getText().length() > 0) {
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    if (!searchInFiles) {
-                        mChatController.requestFilteredPhrases(true, mSearchMessageEditText.getText().toString(), new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
-                            @Override
-                            public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
-                                mSwipeRefreshLayout.setRefreshing(false);
-                                if (result.first) {
-                                    mSearchMoreButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    mSearchMoreButton.setVisibility(View.GONE);
-                                }
-                                mChatAdapter.swapItems(result.second);
-                            }
-
-                            @Override
-                            public void onFail(Exception error) {
-                                mSwipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                    } else {
-                        mChatController.requestFilteredFiles(true, mSearchMessageEditText.getText().toString(), new Callback<Pair<Boolean, List<ChatPhrase>>, Exception>() {
-                            @Override
-                            public void onSuccess(Pair<Boolean, List<ChatPhrase>> result) {
-                                mSwipeRefreshLayout.setRefreshing(false);
-                                if (result.first) {
-                                    mSearchMoreButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    mSearchMoreButton.setVisibility(View.GONE);
-                                }
-                                mChatAdapter.swapItems(result.second);
-                            }
-
-                            @Override
-                            public void onFail(Exception error) {
-                                mSwipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                    }
-                }
-            }
-        });*/
     }
 
     @ColorInt

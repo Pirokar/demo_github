@@ -139,7 +139,6 @@ public class ChatController {
                         instance.cleanAll();
                         instance.fragment.removeSearching();
                         instance.mConsultWriter.setCurrentConsultLeft();
-                      /*  PushController.getInstance(ctx).setDeviceUid(UUID.randomUUID().toString());*/
                         PushController.getInstance(ctx).setClientId(finalClientId);
                         PrefUtils.setClientId(ctx, finalClientId);
                         PushController.getInstance(ctx)
@@ -799,134 +798,6 @@ public class ChatController {
         mDatabaseHolder.getLastUnreadPhrase(handler);
     }
 
-   /* public void requestFilteredPhrases(boolean searchInServerHistory
-            , final String query
-            , final Callback<Pair<Boolean, List<ChatPhrase>>, Exception> callback) {
-
-        if (!searchInServerHistory) {
-            mExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    final List<ChatPhrase> list = (List<ChatPhrase>) setLastAvatars(mDatabaseHolder.queryChatPhrasesSync(query));
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(new Pair<>(true, list));
-                        }
-                    });
-                }
-            });
-        } else {
-            final int querySize = mDatabaseHolder.getMessagesCount() + searchOffset;
-            mExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        final List<InOutMessage> inOutMessages = PushController.getInstance(activity).getMessageHistory(querySize);
-                        mDatabaseHolder.putMessagesSync(MessageFormatter.format(inOutMessages));
-                        final List<ChatPhrase> phrases = (List<ChatPhrase>) setLastAvatars(mDatabaseHolder.queryChatPhrasesSync(query));
-                        h.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSuccess(new Pair<>(inOutMessages.size() >= querySize, phrases));
-                            }
-                        });
-                        searchOffset += 20;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        final List<ChatPhrase> phrases = (List<ChatPhrase>) setLastAvatars(mDatabaseHolder.queryChatPhrasesSync(query));
-                        h.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSuccess(new Pair<>(false, phrases));
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    }*/
-/*
-    public void requestFilteredFiles(boolean searchInServerHistory
-            , final String query
-            , final Callback<Pair<Boolean, List<ChatPhrase>>, Exception> callback) {
-
-        if (!searchInServerHistory) {
-            mDatabaseHolder.queryFilesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
-                @Override
-                public void onComplete(final List<ChatPhrase> data) {
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(new Pair<>(true, data));
-                        }
-                    });
-                }
-
-                @Override
-                public void onError(Throwable e, String message, List<ChatPhrase> data) {
-                    callback.onFail((Exception) e);
-                }
-            });
-        } else {
-            final int querySize = mDatabaseHolder.getMessagesCount() + searchOffset;
-            PushController.getInstance(activity).getMessageHistoryAsync(querySize, new RequestCallback<List<InOutMessage>, PushServerErrorException>() {
-                @Override
-                public void onResult(final List<InOutMessage> inOutMessages) {
-                    mDatabaseHolder.putMessagesAsync(MessageFormatter.format(inOutMessages), new CompletionHandler<Void>() {
-                        @Override
-                        public void onComplete(final Void avoid) {
-                            mDatabaseHolder.queryFilesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
-                                @Override
-                                public void onComplete(final List<ChatPhrase> data) {
-                                    h.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callback.onSuccess(new Pair<>(inOutMessages.size() >= querySize, data));
-                                            searchOffset += 20;
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onError(Throwable e, String message, List<ChatPhrase> data) {
-                                    callback.onFail((Exception) e);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onError(Throwable e, String message, Void data) {
-                            callback.onFail((Exception) e);
-                        }
-                    });
-
-                }
-
-                @Override
-                public void onError(PushServerErrorException e) {
-                    mDatabaseHolder.queryChatPhrasesAsync(query, new CompletionHandler<List<ChatPhrase>>() {
-                        @Override
-                        public void onComplete(final List<ChatPhrase> data) {
-                            h.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callback.onSuccess(new Pair<>(true, data));
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onError(Throwable e, String message, List<ChatPhrase> data) {
-                            callback.onFail((Exception) e);
-                        }
-                    });
-                }
-            });
-        }
-
-    }*/
-
     private void onSettingClientId(final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");
         mExecutor.execute(new Runnable() {
@@ -1028,13 +899,5 @@ public class ChatController {
                 onSettingClientId(context);
             }
         }
-    }
-
-    public DatabaseHolder getmDatabaseHolder() {
-        return mDatabaseHolder;
-    }
-
-    public Executor getmExecutor() {
-        return mExecutor;
     }
 }

@@ -10,7 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
     </list>
@@ -48,25 +47,21 @@
       <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="113" column="57" selection-start-line="113" selection-start-column="57" selection-end-line="113" selection-end-column="57" />
+            <state relative-caret-position="-11443">
+              <caret line="67" column="29" selection-start-line="67" selection-start-column="29" selection-end-line="67" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#5366#7099#0" expanded="true" />
-                <element signature="e#7098#7099#0" expanded="true" />
-                <element signature="e#27036#27934#0" expanded="true" />
-                <element signature="e#27933#27934#0" expanded="true" />
+                <element signature="e#5366#6995#0" expanded="true" />
+                <element signature="e#6994#6995#0" expanded="true" />
+                <element signature="e#8521#8522#0" expanded="true" />
+                <element signature="e#8585#8586#0" expanded="true" />
+                <element signature="e#9314#11593#0" expanded="true" />
+                <element signature="e#9587#9807#0" expanded="true" />
+                <element signature="e#9806#9807#0" expanded="true" />
+                <element signature="e#11592#11593#0" expanded="true" />
+                <element signature="e#26932#27830#0" expanded="true" />
+                <element signature="e#27829#27830#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NotificationService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/NotificationService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1195">
-              <caret line="316" column="28" selection-start-line="316" selection-start-column="25" selection-end-line="316" selection-end-column="28" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -74,10 +69,23 @@
       <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="275">
-              <caret line="192" column="79" selection-start-line="192" selection-start-column="79" selection-end-line="192" selection-end-column="79" />
+            <state relative-caret-position="-3373">
+              <caret line="1208" column="48" selection-start-line="1208" selection-start-column="48" selection-end-line="1208" selection-end-column="48" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#10913#12744#0" expanded="true" />
+                <element signature="e#11327#12560#0" expanded="true" />
+                <element signature="e#11920#12459#0" expanded="true" />
+                <element signature="e#12458#12459#0" expanded="true" />
+                <element signature="e#12559#12560#0" expanded="true" />
+                <element signature="e#12743#12744#0" expanded="true" />
+                <element signature="e#14639#14811#0" expanded="true" />
+                <element signature="e#14810#14811#0" expanded="true" />
+                <element signature="e#14850#15122#0" expanded="true" />
+                <element signature="e#15121#15122#0" expanded="true" />
+                <element signature="e#15163#15436#0" expanded="true" />
+                <element signature="e#15435#15436#0" expanded="true" />
+                <element signature="e#15493#15757#0" expanded="true" />
+                <element signature="e#15756#15757#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -3441,12 +3449,6 @@
           <properties />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java</url>
-          <line>167</line>
-          <properties />
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
       </breakpoints>
       <option name="time" value="6" />
     </breakpoint-manager>
@@ -3459,10 +3461,16 @@
           <caret line="996" column="67" selection-start-line="996" selection-start-column="67" selection-end-line="996" selection-end-column="67" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#5366#7099#0" expanded="true" />
-            <element signature="e#7098#7099#0" expanded="true" />
-            <element signature="e#27036#27934#0" expanded="true" />
-            <element signature="e#27933#27934#0" expanded="true" />
+            <element signature="e#5366#6995#0" expanded="true" />
+            <element signature="e#6994#6995#0" expanded="true" />
+            <element signature="e#8521#8522#0" expanded="true" />
+            <element signature="e#8585#8586#0" expanded="true" />
+            <element signature="e#9314#11593#0" expanded="true" />
+            <element signature="e#9587#9807#0" expanded="true" />
+            <element signature="e#9806#9807#0" expanded="true" />
+            <element signature="e#11592#11593#0" expanded="true" />
+            <element signature="e#26932#27830#0" expanded="true" />
+            <element signature="e#27829#27830#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3472,7 +3480,20 @@
         <state relative-caret-position="21120">
           <caret line="1525" column="1" selection-start-line="1525" selection-start-column="1" selection-end-line="1525" selection-end-column="1" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#10913#12744#0" expanded="true" />
+            <element signature="e#11327#12560#0" expanded="true" />
+            <element signature="e#11920#12459#0" expanded="true" />
+            <element signature="e#12458#12459#0" expanded="true" />
+            <element signature="e#12559#12560#0" expanded="true" />
+            <element signature="e#12743#12744#0" expanded="true" />
+            <element signature="e#14639#14811#0" expanded="true" />
+            <element signature="e#14810#14811#0" expanded="true" />
+            <element signature="e#14850#15122#0" expanded="true" />
+            <element signature="e#15121#15122#0" expanded="true" />
+            <element signature="e#15163#15436#0" expanded="true" />
+            <element signature="e#15435#15436#0" expanded="true" />
+            <element signature="e#15493#15757#0" expanded="true" />
+            <element signature="e#15756#15757#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3536,6 +3557,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1890">
           <caret line="139" column="16" selection-start-line="139" selection-start-column="16" selection-end-line="139" selection-end-column="16" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -3735,20 +3757,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="113" column="57" selection-start-line="113" selection-start-column="57" selection-end-line="113" selection-end-column="57" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#5366#7099#0" expanded="true" />
-            <element signature="e#7098#7099#0" expanded="true" />
-            <element signature="e#27036#27934#0" expanded="true" />
-            <element signature="e#27933#27934#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/NotificationService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1195">
@@ -3757,12 +3765,45 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="192" column="79" selection-start-line="192" selection-start-column="79" selection-end-line="192" selection-end-column="79" />
+        <state relative-caret-position="-11443">
+          <caret line="67" column="29" selection-start-line="67" selection-start-column="29" selection-end-line="67" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#5366#6995#0" expanded="true" />
+            <element signature="e#6994#6995#0" expanded="true" />
+            <element signature="e#8521#8522#0" expanded="true" />
+            <element signature="e#8585#8586#0" expanded="true" />
+            <element signature="e#9314#11593#0" expanded="true" />
+            <element signature="e#9587#9807#0" expanded="true" />
+            <element signature="e#9806#9807#0" expanded="true" />
+            <element signature="e#11592#11593#0" expanded="true" />
+            <element signature="e#26932#27830#0" expanded="true" />
+            <element signature="e#27829#27830#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3373">
+          <caret line="1208" column="48" selection-start-line="1208" selection-start-column="48" selection-end-line="1208" selection-end-column="48" />
+          <folding>
+            <element signature="e#10913#12744#0" expanded="true" />
+            <element signature="e#11327#12560#0" expanded="true" />
+            <element signature="e#11920#12459#0" expanded="true" />
+            <element signature="e#12458#12459#0" expanded="true" />
+            <element signature="e#12559#12560#0" expanded="true" />
+            <element signature="e#12743#12744#0" expanded="true" />
+            <element signature="e#14639#14811#0" expanded="true" />
+            <element signature="e#14810#14811#0" expanded="true" />
+            <element signature="e#14850#15122#0" expanded="true" />
+            <element signature="e#15121#15122#0" expanded="true" />
+            <element signature="e#15163#15436#0" expanded="true" />
+            <element signature="e#15435#15436#0" expanded="true" />
+            <element signature="e#15493#15757#0" expanded="true" />
+            <element signature="e#15756#15757#0" expanded="true" />
           </folding>
         </state>
       </provider>
