@@ -31,6 +31,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -109,7 +110,8 @@ public class ChatFragment extends Fragment
         implements
             BottomSheetView.ButtonsListener
             , ChatAdapter.AdapterInterface
-            , FilePickerFragment.SelectedListener {
+            , FilePickerFragment.SelectedListener
+            , PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "ChatFragment ";
     public static final String TAG_GAENABLED = "TAG_GAENABLED";
@@ -149,6 +151,7 @@ public class ChatFragment extends Fragment
     private Button mSearchMoreButton;
     private View mSearchLo;
     private ImageButton backButton;
+    private ImageButton popupMenuButton;
     private String connectedConsultId;
     private ChatReceiver mChatReceiver;
 
@@ -378,7 +381,12 @@ public class ChatFragment extends Fragment
             }
             if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
                 mSearchMessageEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
-                mToolbar.getOverflowIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+
+                Drawable menuDrawable = popupMenuButton.getDrawable();
+                if(menuDrawable != null) {
+                    menuDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+                }
+
                 Drawable backButtonDrawable = backButton.getDrawable();
                 if(backButtonDrawable != null) {
                     backButtonDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
@@ -420,7 +428,7 @@ public class ChatFragment extends Fragment
                 mWelcomeScreen.setBackground(style.chatBackgroundColor);
 
         }
-        Drawable overflowDrawable = mToolbar.getOverflowIcon();
+        Drawable overflowDrawable = popupMenuButton.getDrawable();
         if (style != null) {
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                 mToolbar.setBackgroundColor(ContextCompat.getColor(activity, style.chatToolbarColorResId));
@@ -519,9 +527,37 @@ public class ChatFragment extends Fragment
         filesAndMedia.setTitle(s2);
     }
 
+    private void showPopup() {
+        PopupMenu popup = new PopupMenu(getActivity(), popupMenuButton);
+        popup.setOnMenuItemClickListener(this);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_main, popup.getMenu());
+        popup.show();
+    }
+
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
+    public boolean onMenuItemClick(MenuItem item) {
+        Activity activity = getActivity();
+
+        if (item.getItemId() == R.id.files_and_media) {
+            if (isInMessageSearchMode) onActivityBackPressed();
+            startActivity(FilesActivity.getStartIntetent(activity));
+            return true;
+        }
+
+        if (item.getItemId() == R.id.search && isInMessageSearchMode) {
+            return true;
+
+        } else if (item.getItemId() == R.id.search) {
+            if (mWelcomeScreen != null) {
+                mWelcomeScreen.setVisibility(View.GONE);
+                ((ViewGroup) rootView.findViewById(android.R.id.content)).removeView(mWelcomeScreen);
+                mWelcomeScreen = null;
+            }
+            AnalyticsTracker.getInstance(activity, PrefUtils.getGaTrackerId(activity)).setTextSearchWasOpened();
+            search(false);
+        }
+        return false;
     }
 
     @Override
@@ -534,8 +570,11 @@ public class ChatFragment extends Fragment
         if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID) {
             Drawable d = getResources().getDrawable(R.drawable.ic_arrow_back_blue_24dp);
             d.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
-            mToolbar.setNavigationIcon(d);
-            mToolbar.getOverflowIcon().setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+            backButton.setImageDrawable(d);
+            Drawable overflowDrawable = popupMenuButton.getDrawable();
+            if(overflowDrawable != null) {
+                overflowDrawable.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+            }
         } else mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
         if (style != null && style.chatMessageInputColor != ChatStyle.INVALID) {
             mToolbar.setBackgroundColor(getColorInt(style.chatMessageInputColor));
@@ -967,10 +1006,13 @@ public class ChatFragment extends Fragment
         if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
             Drawable d = getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp);
             d.setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-            mToolbar.setNavigationIcon(d);
-            mToolbar.getOverflowIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            backButton.setImageDrawable(d);
+            Drawable overflowDrawable = popupMenuButton.getDrawable();
+            if(overflowDrawable != null) {
+                overflowDrawable.setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
         } else {
-            mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+            backButton.setImageResource(R.drawable.ic_arrow_back_white_24dp);
         }
         if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
             mToolbar.setBackgroundColor(getColorInt(style.chatToolbarColorResId));
@@ -1099,7 +1141,7 @@ public class ChatFragment extends Fragment
     }
 
     public void setStateSearchingConsult() {
-        mToolbar.hideOverflowMenu();
+        hideOverflowMenu();
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1152,11 +1194,9 @@ public class ChatFragment extends Fragment
     @Override
     public void setMenuVisibility(boolean isVisible) {
         if (isVisible) {
-            mToolbar.getMenu().findItem(R.id.search).setVisible(true);
-            mToolbar.getMenu().findItem(R.id.files_and_media).setVisible(true);
+            showOverflowMenu();
         } else {
-            mToolbar.getMenu().findItem(R.id.search).setVisible(false);
-            mToolbar.getMenu().findItem(R.id.files_and_media).setVisible(false);
+            hideOverflowMenu();
         }
     }
 
@@ -1167,31 +1207,6 @@ public class ChatFragment extends Fragment
 
     public ChatStyle getStyle() {
         return style;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Activity activity = getActivity();
-
-        if (item.getItemId() == R.id.files_and_media) {
-            if (isInMessageSearchMode) onActivityBackPressed();
-            startActivity(FilesActivity.getStartIntetent(activity));
-            return true;
-        }
-
-        if (item.getItemId() == R.id.search && isInMessageSearchMode) {
-            return true;
-
-        } else if (item.getItemId() == R.id.search) {
-            if (mWelcomeScreen != null) {
-                mWelcomeScreen.setVisibility(View.GONE);
-                ((ViewGroup) rootView.findViewById(android.R.id.content)).removeView(mWelcomeScreen);
-                mWelcomeScreen = null;
-            }
-            AnalyticsTracker.getInstance(activity, PrefUtils.getGaTrackerId(activity)).setTextSearchWasOpened();
-            search(false);
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -1297,7 +1312,7 @@ public class ChatFragment extends Fragment
 
     private void initToolbar() {
         mToolbar.setTitle("");
-        mToolbar.showOverflowMenu();
+
         backButton = (ImageButton) rootView.findViewById(R.id.chat_back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1305,6 +1320,23 @@ public class ChatFragment extends Fragment
                 onActivityBackPressed();
             }
         });
+
+        popupMenuButton = (ImageButton) rootView.findViewById(R.id.popup_menu_button);
+        popupMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopup();
+            }
+        });
+        showOverflowMenu();
+    }
+
+    private void showOverflowMenu() {
+        popupMenuButton.setVisibility(View.VISIBLE);
+    }
+
+    private void hideOverflowMenu() {
+        popupMenuButton.setVisibility(View.GONE);
     }
 
     private void onActivityBackPressed() {
@@ -1406,7 +1438,7 @@ public class ChatFragment extends Fragment
         setBottomStateDefault();
         setTitleStateSearchingMessage();
         mSearchMessageEditText.requestFocus();
-        mToolbar.hideOverflowMenu();
+        hideOverflowMenu();
         setMenuVisibility(false);
         h.postDelayed(new Runnable() {
             @Override
