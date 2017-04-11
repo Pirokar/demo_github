@@ -166,9 +166,6 @@ public class ChatFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         getIncomingSettings(getArguments());
-
-        rootView = inflater.inflate(R.layout.fragment_chat_fragment, container, false);
-
         Activity activity = getActivity();
         if (style.chatStatusBarColorResId != ChatStyle.INVALID && Build.VERSION.SDK_INT > 20) {
             Window window = activity.getWindow();
@@ -176,18 +173,20 @@ public class ChatFragment extends Fragment
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
         }
+        rootView = inflater.inflate(R.layout.fragment_chat_fragment, container, false);
         initViews();
         initToolbar();
         setHasOptionsMenu(true);
         initController();
-        setFragmentStyle(PrefUtils.getIncomingStyle(getActivity()));
+        setFragmentStyle(PrefUtils.getIncomingStyle(activity));
 
         return rootView;
     }
 
     private void initController() {
         Activity activity = getActivity();
-        mChatController = ChatController.getInstance(activity, getArguments().getString("clientId"));
+        Bundle bundle = getArguments();
+        mChatController = ChatController.getInstance(activity, bundle == null ? null : bundle.getString("clientId"));
         mChatController.bindFragment(this);
         if (mChatController.isNeedToShowWelcome()) mWelcomeScreen.setVisibility(View.VISIBLE);
         mChatReceiver = new ChatReceiver();
@@ -1097,15 +1096,17 @@ public class ChatFragment extends Fragment
 
     private void getIncomingSettings(Bundle bundle) {
         Activity activity = getActivity();
-        if (bundle.getString("clientId") == null && PrefUtils.getClientID(activity).equals(""))
-            throw new IllegalStateException("you must provide valid client id," +
-                    "\r\n it is now null or it'ts length < 5");
-        if (bundle.getBoolean("style", false)) {
-            ChatStyle style = ChatStyle.styleFromBundle(bundle);
-            PrefUtils.setIncomingStyle(activity, style);
+        if(bundle != null) {
+            if (bundle.getString("clientId") == null && PrefUtils.getClientID(activity).equals(""))
+                throw new IllegalStateException("you must provide valid client id," +
+                        "\r\n it is now null or it'ts length < 5");
+            if (bundle.getBoolean("style", false)) {
+                ChatStyle style = ChatStyle.styleFromBundle(bundle);
+                PrefUtils.setIncomingStyle(activity, style);
+            }
+            if (bundle.getString("userName") != null)
+                PrefUtils.setUserName(activity, bundle.getString("userName"));
         }
-        if (bundle.getString("userName") != null)
-            PrefUtils.setUserName(activity, bundle.getString("userName"));
         style = PrefUtils.getIncomingStyle(activity);
     }
 
@@ -1367,7 +1368,7 @@ public class ChatFragment extends Fragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mChatController.unbindActivity();
+        mChatController.unbindFragment();
         getActivity().unregisterReceiver(mChatReceiver);
     }
 
