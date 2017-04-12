@@ -65,6 +65,7 @@ import java.util.List;
 import im.threads.AnalyticsTracker;
 import im.threads.R;
 import im.threads.activities.CameraActivity;
+import im.threads.activities.ChatActivity;
 import im.threads.activities.FilesActivity;
 import im.threads.activities.GalleryActivity;
 import im.threads.activities.ImagesActivity;
@@ -176,11 +177,14 @@ public class ChatFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         getIncomingSettings(getArguments());
         Activity activity = getActivity();
-        if (style.chatStatusBarColorResId != ChatStyle.INVALID && Build.VERSION.SDK_INT > 20) {
-            Window window = activity.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+        // Статус бар подкрашивается только при использовании чата в стандартном Activity.
+        if(activity instanceof ChatActivity) {
+            if (style.chatStatusBarColorResId != ChatStyle.INVALID && Build.VERSION.SDK_INT > 20) {
+                Window window = activity.getWindow();
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+            }
         }
         rootView = inflater.inflate(R.layout.fragment_chat_fragment, container, false);
         initViews();
@@ -512,10 +516,13 @@ public class ChatFragment extends Fragment
         mChatController.checkAndResendPhrase(userPhrase);
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
+    private void showPopup() {
+        PopupMenu popup = new PopupMenu(getActivity(), popupMenuButton);
+        popup.setOnMenuItemClickListener(this);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_main, popup.getMenu());
 
+        Menu menu = popup.getMenu();
         MenuItem searchMenuItem = menu.getItem(0);
         SpannableString s = new SpannableString(searchMenuItem.getTitle());
         s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s.length(), 0);
@@ -525,13 +532,7 @@ public class ChatFragment extends Fragment
         SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
         s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s2.length(), 0);
         filesAndMedia.setTitle(s2);
-    }
 
-    private void showPopup() {
-        PopupMenu popup = new PopupMenu(getActivity(), popupMenuButton);
-        popup.setOnMenuItemClickListener(this);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.menu_main, popup.getMenu());
         popup.show();
     }
 
@@ -547,11 +548,10 @@ public class ChatFragment extends Fragment
 
         if (item.getItemId() == R.id.search && isInMessageSearchMode) {
             return true;
-
         } else if (item.getItemId() == R.id.search) {
             if (mWelcomeScreen != null) {
                 mWelcomeScreen.setVisibility(View.GONE);
-                ((ViewGroup) rootView.findViewById(android.R.id.content)).removeView(mWelcomeScreen);
+                ((ViewGroup) rootView).removeView(mWelcomeScreen);
                 mWelcomeScreen = null;
             }
             AnalyticsTracker.getInstance(activity, PrefUtils.getGaTrackerId(activity)).setTextSearchWasOpened();
@@ -1425,8 +1425,8 @@ public class ChatFragment extends Fragment
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         mChatController.unbindFragment();
         getActivity().unregisterReceiver(mChatReceiver);
     }

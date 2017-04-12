@@ -405,7 +405,7 @@ public class ChatStyle implements Serializable {
         }
 
 
-        public Bundle build() {
+        public Bundle buildBundle() {
             Bundle b = builder.b;
             if (b.getBundle("setWelcomeScreenStyle") == null)
                 Log.e(TAG, "you must provide welcome screen  attributes. now using default");
@@ -422,9 +422,9 @@ public class ChatStyle implements Serializable {
             return b;
         }
 
-        public Intent buildIntent() {
+        public Intent build() {
             Intent i = new Intent(ctx, ChatActivity.class);
-            i.putExtra(CHAT_FRAGMENT_BUNDLE, build());
+            i.putExtra(CHAT_FRAGMENT_BUNDLE, buildBundle());
             return i;
         }
     }
