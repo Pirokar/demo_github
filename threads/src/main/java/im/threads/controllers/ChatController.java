@@ -2,6 +2,7 @@ package im.threads.controllers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,6 +35,7 @@ import java.util.concurrent.Executors;
 
 import im.threads.AnalyticsTracker;
 import im.threads.BuildConfig;
+import im.threads.activities.ChatActivity;
 import im.threads.activities.ConsultActivity;
 import im.threads.activities.ImagesActivity;
 import im.threads.database.DatabaseHolder;
@@ -110,6 +112,10 @@ public class ChatController {
     private boolean isAllMessagesDownloaded = false;
     private boolean isDownloadingMessages;
 
+    // Используется для создания PendingIntent при открытии чата из пуш уведомления.
+    // По умолчанию открывается ChatActivity.
+    private static PendingIntentCreator pendingIntentCreator;
+
     public static ChatController getInstance(final Context ctx,
                                              String clientId) {
         if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
@@ -156,6 +162,28 @@ public class ChatController {
             });
         }
         return instance;
+    }
+
+    public static PendingIntentCreator getPendingIntentCreator() {
+        if(pendingIntentCreator == null) {
+             pendingIntentCreator = new PendingIntentCreator() {
+                @Override
+                public PendingIntent createPendingIntent(Context context) {
+                    Intent i = new Intent(context, ChatActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+                }
+            };
+        }
+        return pendingIntentCreator;
+    }
+
+    public static void setPendingIntentCreator(PendingIntentCreator pendingIntentCreator) {
+        ChatController.pendingIntentCreator = pendingIntentCreator;
+    }
+
+    public static void resetPendingIntentCreator() {
+        ChatController.pendingIntentCreator = null;
     }
 
     public int getStateOfConsult() {
@@ -899,5 +927,9 @@ public class ChatController {
                 onSettingClientId(context);
             }
         }
+    }
+
+    public interface PendingIntentCreator {
+        PendingIntent createPendingIntent(Context context);
     }
 }

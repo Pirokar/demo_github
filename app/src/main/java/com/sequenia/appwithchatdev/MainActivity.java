@@ -20,6 +20,7 @@ import com.pushserver.android.PushController;
 
 import java.util.ArrayList;
 
+import im.threads.controllers.ChatController;
 import im.threads.model.ChatStyle;
 import im.threads.utils.PermissionChecker;
 import io.fabric.sdk.android.Fabric;
@@ -78,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
         openChat(true);
     }
 
+    /**
+     * @param useFragment true, если нужно открыть пример использования чата
+     *                    в виде фрагмента.
+     *                    false, чтобы отобразить фрагмент в отдельном Activity
+     */
     public void openChat(boolean useFragment) {
         if (!PermissionChecker.isCoarseLocationPermissionGranted(this)
                 || !PermissionChecker.isReadSmsPermissionGranted(this)
@@ -88,9 +94,16 @@ public class MainActivity extends AppCompatActivity {
             String userName = nameTextView.getText().toString();
 
             if(useFragment) {
+                // При использовании чата в виде фрагмента нужно настроить логику открытия приложения
+                // из пуш уведомления, так как по умолчанию открывается ChatActivity.
+                // BottomNavigationActivity.chatWithFragmentPendingIntentCreator() возвращает
+                // экземпляр ChatController.PendingIntentCreator, в котором реализована логика
+                // открытия другого Activity при нажатии на пуш уведомление.
+                ChatController.setPendingIntentCreator(BottomNavigationActivity.chatWithFragmentPendingIntentCreator());
                 Intent i = BottomNavigationActivity.createIntent(this, clientId, userName);
                 startActivity(i);
             } else {
+                ChatController.resetPendingIntentCreator();
                 Intent i = getBundleBuilder(this, clientId, userName).build();
                 startActivity(i);
             }

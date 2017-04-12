@@ -3,6 +3,8 @@ package com.sequenia.appwithchatdev;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
 
 /**
@@ -35,12 +38,18 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
     public static final String ARG_CLIENT_ID = "clientId";
     public static final String ARG_USER_NAME = "userName";
+    public static final String ARG_NEEDS_SHOW_CHAT = "needsShowChat";
 
     private String clientId;
     private String userName;
+    private boolean needsShowChat;
 
     private BottomNavigationView navigation;
 
+    /**
+     * @return intent для открытия BottomNavigationActivity
+     * с передачей clientId и userName.
+     */
     public static Intent createIntent(Activity activity, String clientId, String userName) {
         Intent intent = new Intent(activity, BottomNavigationActivity.class);
         intent.putExtra(ARG_CLIENT_ID, clientId);
@@ -65,6 +74,9 @@ public class BottomNavigationActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Показывает Fragment главного экрана с отображением Toolbar
+     */
     private void showHomeFragment() {
         ActionBar actionBar = getSupportActionBar();
         Fragment fragment = BottomNavigationHomeFragment.newInstance();
@@ -74,9 +86,18 @@ public class BottomNavigationActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Показывает фрагмент Чата, скрывая основной Toolbar.
+     * Внутри чата реализован свой Toolbar.
+     */
     private void showChatFragment() {
         ActionBar actionBar = getSupportActionBar();
-        Bundle bundle = MainActivity.getBundleBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
+        Bundle bundle;
+        if(needsShowChat) {
+            bundle = null;
+        } else {
+            bundle = MainActivity.getBundleBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
+        }
         ChatFragment chatFragment = ChatFragment.newInstance(bundle);
         showFragment(chatFragment);
         if(actionBar != null) {
@@ -106,7 +127,15 @@ public class BottomNavigationActivity extends AppCompatActivity {
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        View view = navigation.findViewById(R.id.navigation_home);
+        // При открытии Активности из пуш уведомления нужно сразу открыть чат,
+        // а не главный экран
+        needsShowChat = intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false);
+        View view;
+        if(needsShowChat) {
+            view = navigation.findViewById(R.id.navigation_chat);
+        } else {
+            view = navigation.findViewById(R.id.navigation_home);
+        }
         view.performClick();
     }
 
@@ -114,6 +143,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public void onBackPressed() {
         Fragment fragment = getFragmentManager().findFragmentById(R.id.content);
         if(fragment instanceof ChatFragment) {
+            // Если чат нужно закрыть, возвращаем пользователя на предыдущий открытый экран
             boolean needsCloseChat = ((ChatFragment) fragment).onBackPressed();
             if (needsCloseChat) {
                 View view = navigation.findViewById(R.id.navigation_home);
@@ -122,5 +152,18 @@ public class BottomNavigationActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+
+    public static ChatController.PendingIntentCreator chatWithFragmentPendingIntentCreator() {
+        return new ChatController.PendingIntentCreator() {
+            @Override
+            public PendingIntent createPendingIntent(Context context) {
+                Intent i = new Intent(context, BottomNavigationActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.putExtra(ARG_NEEDS_SHOW_CHAT, true);
+                return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+            }
+        };
     }
 }

@@ -24,6 +24,7 @@ import android.widget.RemoteViews;
 import im.threads.R;
 import im.threads.activities.ChatActivity;
 import im.threads.activities.TranslucentActivity;
+import im.threads.controllers.ChatController;
 import im.threads.formatters.MarshmellowPushMessageFormatter;
 import im.threads.formatters.MessageFormatter;
 import im.threads.formatters.NugatMessageFormatter;
@@ -127,9 +128,7 @@ public class NotificationService extends Service {
             final NotificationCompat.Builder nc = new NotificationCompat.Builder(this);
             nc.setContentTitle(getString(R.string.message_were_unsent));
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            Intent i = new Intent(this, ChatActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent pend = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent pend = getChatIntent();
             if (style.defPushIconResid != ChatStyle.INVALID) {
                 final int iconResId = style.defPushIconResid;
                 nc.setSmallIcon(iconResId);
@@ -437,10 +436,7 @@ public class NotificationService extends Service {
 
 
     private PendingIntent getChatIntent() {
-        Intent i = new Intent(this, ChatActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pend = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-        return pend;
+        return ChatController.getPendingIntentCreator().createPendingIntent(this);
     }
 
 
