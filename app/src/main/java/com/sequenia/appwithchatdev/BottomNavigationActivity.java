@@ -42,7 +42,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
     private String clientId;
     private String userName;
-    private boolean needsShowChat;
 
     private BottomNavigationView navigation;
 
@@ -92,12 +91,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
      */
     private void showChatFragment() {
         ActionBar actionBar = getSupportActionBar();
-        Bundle bundle;
-        if(needsShowChat) {
-            bundle = null;
-        } else {
-            bundle = MainActivity.getBundleBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
-        }
+        Bundle bundle = MainActivity.getBundleBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
         ChatFragment chatFragment = ChatFragment.newInstance(bundle);
         showFragment(chatFragment);
         if(actionBar != null) {
@@ -129,7 +123,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
         // При открытии Активности из пуш уведомления нужно сразу открыть чат,
         // а не главный экран
-        needsShowChat = intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false);
+        boolean needsShowChat = intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false);
         View view;
         if(needsShowChat) {
             view = navigation.findViewById(R.id.navigation_chat);

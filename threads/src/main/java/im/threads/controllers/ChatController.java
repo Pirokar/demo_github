@@ -324,7 +324,7 @@ public class ChatController {
     }
 
     public void unbindFragment() {
-        if (fragment != null && fragment.isAdded()) {
+        if (fragment != null) {
             Activity activity = fragment.getActivity();
             if(activity != null) {
                 activity.unregisterReceiver(mProgressReceiver);

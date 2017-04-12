@@ -404,7 +404,6 @@ public class ChatStyle implements Serializable {
             return this;
         }
 
-
         public Bundle buildBundle() {
             Bundle b = builder.b;
             if (b.getBundle("setWelcomeScreenStyle") == null)
@@ -415,8 +414,6 @@ public class ChatStyle implements Serializable {
                 Log.e(TAG, "you must chat body style. now using default");
             if (b.getBundle("setChatTitleStyle") == null)
                 Log.e(TAG, "you must chat title style. now using default");
-            if (b.getString("clientId") == null)
-                throw new IllegalStateException("client id is obligatory");
             b.putBoolean("style", true);
             builder = null;
             return b;
@@ -424,7 +421,10 @@ public class ChatStyle implements Serializable {
 
         public Intent build() {
             Intent i = new Intent(ctx, ChatActivity.class);
-            i.putExtra(CHAT_FRAGMENT_BUNDLE, buildBundle());
+            Bundle b = buildBundle();
+            if (b.getString("clientId") == null)
+                throw new IllegalStateException("client id is obligatory");
+            i.putExtra(CHAT_FRAGMENT_BUNDLE, b);
             return i;
         }
     }
