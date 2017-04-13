@@ -116,6 +116,9 @@ public class ChatController {
     // По умолчанию открывается ChatActivity.
     private static PendingIntentCreator pendingIntentCreator;
 
+    // Для оповещения об изменении количества непрочитанных сообщений
+    private static UnreadMessagesCountListener unreadMessagesCountListener;
+
     public static ChatController getInstance(final Context ctx,
                                              String clientId) {
         if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
@@ -178,8 +181,40 @@ public class ChatController {
         return pendingIntentCreator;
     }
 
+    /**
+     * Оповещает об изменении количества непрочитанных сообщений.
+     * Срабатывает при показе пуш уведомления в Статус Баре и
+     * при прочтении сообщений.
+     * Все места, где срабатывает прочтение сообщений, можно найти по
+     * NotificationService.ACTION_ALL_MESSAGES_WERE_READ.
+     * Данный тип сообщения отправляется в Сервис пуш уведомлений при прочтении сообщений.
+     *
+     * Можно было бы поместить оповещение в точку прихода NotificationService.ACTION_ALL_MESSAGES_WERE_READ,
+     * но иногда в этот момент в сообщения еще не помечены, как прочитанные.
+     */
+    public static void notifyUnreadMessagesCountChanged(Context context) {
+        UnreadMessagesCountListener unreadMessagesCountListener = getUnreadMessagesCountListener();
+        if(unreadMessagesCountListener != null) {
+            ChatController controller = getInstance(context, PrefUtils.getClientID(context));
+            int unreadCount = controller.mDatabaseHolder.getUnreaMessagesId().size();
+            unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadCount);
+        }
+    }
+
+    public static UnreadMessagesCountListener getUnreadMessagesCountListener() {
+        return unreadMessagesCountListener;
+    }
+
     public static void setPendingIntentCreator(PendingIntentCreator pendingIntentCreator) {
         ChatController.pendingIntentCreator = pendingIntentCreator;
+    }
+
+    public static void setUnreadMessagesCountListener(UnreadMessagesCountListener unreadMessagesCountListener) {
+        ChatController.unreadMessagesCountListener = unreadMessagesCountListener;
+    }
+
+    public static void removeUnreadMessagesCountListener() {
+        ChatController.unreadMessagesCountListener = null;
     }
 
     public static void resetPendingIntentCreator() {
@@ -608,11 +643,13 @@ public class ChatController {
             PushController.getInstance(ctx).notifyMessageRead(((ConsultPhrase) cm).getId());
             mDatabaseHolder.setMessageWereRead(((ConsultPhrase) cm).getMessageId());
         }
+        final Context finalContext = ctx;
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (appContext != null && isActive) {
                     appContext.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+                    notifyUnreadMessagesCountChanged(finalContext);
                 }
             }
         }, 1500);
@@ -674,6 +711,7 @@ public class ChatController {
         h.removeCallbacksAndMessages(null);
         if (appContext != null) {
             appContext.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+            notifyUnreadMessagesCountChanged(appContext);
         }
     }
 
@@ -699,6 +737,7 @@ public class ChatController {
             public void run() {
                 if (appContext != null)
                     appContext.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+                notifyUnreadMessagesCountChanged(appContext);
             }
         }, 1500);
     }
@@ -880,11 +919,12 @@ public class ChatController {
             cxt = fragment.getActivity();
         }
         if (cxt == null) cxt = appContext;
+        final Context finalContext = cxt;
         cxt.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         DatabaseHolder.getInstance(cxt).setAllMessagesRead(new CompletionHandler<Void>() {
             @Override
             public void onComplete(Void data) {
-
+                notifyUnreadMessagesCountChanged(finalContext);
             }
 
             @Override
@@ -938,5 +978,9 @@ public class ChatController {
 
     public interface PendingIntentCreator {
         PendingIntent createPendingIntent(Context context);
+    }
+
+    public interface UnreadMessagesCountListener {
+        void onUnreadMessagesCountChanged(int count);
     }
 }

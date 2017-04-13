@@ -100,6 +100,7 @@ public class NotificationService extends Service {
                     @Override
                     public void run() {
                         nm.notify(UNREAD_MESSAGE_PUSH_ID, finalNotification);
+                        ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
                     }
                 };
                 unreadMessagesRunnables.add(r);
@@ -112,6 +113,7 @@ public class NotificationService extends Service {
                             @Override
                             public void run() {
                                 nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
+                                ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
                             }
                         };
                         unreadMessagesRunnables.add(r);
