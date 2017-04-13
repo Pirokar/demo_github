@@ -1,11 +1,16 @@
 package im.threads.formatters;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.advisa.client.api.InOutMessage;
 import com.pushserver.android.PushMessage;
+
+import im.threads.BuildConfig;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultInfo;
@@ -322,6 +327,55 @@ public class MessageFormatter {
         }
 
         return object.toString().replaceAll("\\\\", "");
+    }
+
+    public static String createEnvironmentMessage(Context context) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("platform", "Android");
+            object.put("osversion", getOsVersion());
+            object.put("device", getDeviceName());
+            object.put("app_bundle", getAppBundle());
+            object.put("app_version", getAppVersion());
+            object.put("app_name", getAppName(context));
+            object.put("type", "statistics");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return object.toString().replaceAll("\\\\", "");
+    }
+
+    private static String getAppName(Context context) {
+        ApplicationInfo applicationInfo = context.getApplicationInfo();
+        String appName;
+        if(applicationInfo != null) {
+            try {
+                appName = applicationInfo.loadLabel(context.getPackageManager()).toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+                appName = "Unknown";
+            }
+        } else {
+            appName = "Unknown";
+        }
+        return appName;
+    }
+
+    private static String getAppBundle() {
+        return BuildConfig.APPLICATION_ID;
+    }
+
+    private static String getOsVersion() {
+        return String.valueOf(Build.VERSION.SDK_INT);
+    }
+
+    private static String getDeviceName() {
+        return Build.MANUFACTURER + " " + Build.MODEL;
+    }
+
+    private static String getAppVersion() {
+        return BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")";
     }
 
     public static ArrayList<ChatItem> format(List<InOutMessage> messages) {

@@ -801,6 +801,13 @@ public class ChatController {
                     @Override
                     public void consultConnected(final String id, final String name, final String title) {
                         if (fragment != null) fragment.setStateConsultConnected(id, name, title);
+                        // Отправка данных об окружении оператору
+                        try {
+                            String message = MessageFormatter.createEnvironmentMessage(appContext);
+                            PushController.getInstance(appContext).sendMessage(message, true);
+                        } catch (PushServerErrorException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
