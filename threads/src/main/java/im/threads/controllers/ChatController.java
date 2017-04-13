@@ -196,7 +196,7 @@ public class ChatController {
         UnreadMessagesCountListener unreadMessagesCountListener = getUnreadMessagesCountListener();
         if(unreadMessagesCountListener != null) {
             ChatController controller = getInstance(context, PrefUtils.getClientID(context));
-            int unreadCount = controller.mDatabaseHolder.getUnreaMessagesId().size();
+            int unreadCount = controller.getUnreadMessagesCount();
             unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadCount);
         }
     }
@@ -215,6 +215,14 @@ public class ChatController {
 
     public static void removeUnreadMessagesCountListener() {
         ChatController.unreadMessagesCountListener = null;
+    }
+
+    public static int getUnreadMessagesCount(Context context) {
+        return getInstance(context, PrefUtils.getClientID(context)).getUnreadMessagesCount();
+    }
+
+    private int getUnreadMessagesCount() {
+        return mDatabaseHolder.getUnreaMessagesId().size();
     }
 
     public static void resetPendingIntentCreator() {
