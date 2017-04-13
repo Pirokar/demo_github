@@ -498,7 +498,7 @@ public class ChatController {
                 if (e.getCause() != null) {
                     error += "\ncause = " + e.getCause().toString();
                 }
-//                activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
+                //activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
 
             } //activity.showConnectionError();
         }
