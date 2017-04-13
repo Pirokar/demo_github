@@ -839,7 +839,7 @@ public class ChatController {
         }
     }
 
-    public synchronized void onConsultMessage(PushMessage pushMessage, Context ctx) throws JSONException {
+    public synchronized void onConsultMessage(PushMessage pushMessage, final Context ctx) throws JSONException {
         if (BuildConfig.DEBUG) Log.i(TAG, "onConsultMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
         ConsultMessageReaction consultReactor = new ConsultMessageReaction(
@@ -850,7 +850,9 @@ public class ChatController {
                         if (fragment != null) fragment.setStateConsultConnected(id, name, title);
                         // Отправка данных об окружении оператору
                         try {
-                            String message = MessageFormatter.createEnvironmentMessage(appContext);
+                            String userName = PrefUtils.getUserName(ctx);
+                            String clientId = PrefUtils.getClientID(ctx);
+                            String message = MessageFormatter.createEnvironmentMessage(userName, clientId);
                             PushController.getInstance(appContext).sendMessage(message, true);
                         } catch (PushServerErrorException e) {
                             e.printStackTrace();

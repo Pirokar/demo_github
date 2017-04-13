@@ -329,16 +329,16 @@ public class MessageFormatter {
         return object.toString().replaceAll("\\\\", "");
     }
 
-    public static String createEnvironmentMessage(Context context) {
+    public static String createEnvironmentMessage(String clientName, String clientId) {
         JSONObject object = new JSONObject();
         try {
+            object.put("name", clientName);
+            object.put("clientId", clientId);
             object.put("platform", "Android");
-            object.put("osversion", getOsVersion());
+            object.put("osVersion", getOsVersion());
             object.put("device", getDeviceName());
-            object.put("app_bundle", getAppBundle());
-            object.put("app_version", getAppVersion());
-            object.put("app_name", getAppName(context));
-            object.put("type", "statistics");
+            object.put("appVersion", getAppVersion());
+            object.put("type", "CLIENT_INFO");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -375,7 +375,7 @@ public class MessageFormatter {
     }
 
     private static String getAppVersion() {
-        return BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")";
+        return BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")";
     }
 
     public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
