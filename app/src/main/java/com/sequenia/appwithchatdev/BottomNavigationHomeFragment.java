@@ -18,6 +18,7 @@ import im.threads.controllers.ChatController;
 public class BottomNavigationHomeFragment extends Fragment {
 
     private TextView unreadMessagesCount;
+    private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
 
     public static BottomNavigationHomeFragment newInstance() {
         return new BottomNavigationHomeFragment();
@@ -32,12 +33,13 @@ public class BottomNavigationHomeFragment extends Fragment {
         showUnreadMessagesCount(ChatController.getUnreadMessagesCount(getActivity().getApplicationContext()));
 
         // Обработка изменения количества непрочитанных в чате сообщений
-        ChatController.setUnreadMessagesCountListener(new ChatController.UnreadMessagesCountListener() {
+        unreadMessagesCountListener = new ChatController.UnreadMessagesCountListener() {
             @Override
             public void onUnreadMessagesCountChanged(int count) {
                 showUnreadMessagesCount(count);
             }
-        });
+        };
+        ChatController.setUnreadMessagesCountListener(unreadMessagesCountListener);
 
         return view;
     }
@@ -46,6 +48,7 @@ public class BottomNavigationHomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ChatController.removeUnreadMessagesCountListener();
+        unreadMessagesCountListener = null;
     }
 
     public void showUnreadMessagesCount(int count) {

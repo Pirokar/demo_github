@@ -26,6 +26,7 @@ import com.pushserver.android.exception.PushServerErrorException;
 import org.json.JSONException;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -117,7 +118,7 @@ public class ChatController {
     private static PendingIntentCreator pendingIntentCreator;
 
     // Для оповещения об изменении количества непрочитанных сообщений
-    private static UnreadMessagesCountListener unreadMessagesCountListener;
+    private static WeakReference<UnreadMessagesCountListener> unreadMessagesCountListener;
 
     public static ChatController getInstance(final Context ctx,
                                              String clientId) {
@@ -202,7 +203,7 @@ public class ChatController {
     }
 
     public static UnreadMessagesCountListener getUnreadMessagesCountListener() {
-        return unreadMessagesCountListener;
+        return unreadMessagesCountListener == null ? null : unreadMessagesCountListener.get();
     }
 
     public static void setPendingIntentCreator(PendingIntentCreator pendingIntentCreator) {
@@ -210,7 +211,7 @@ public class ChatController {
     }
 
     public static void setUnreadMessagesCountListener(UnreadMessagesCountListener unreadMessagesCountListener) {
-        ChatController.unreadMessagesCountListener = unreadMessagesCountListener;
+        ChatController.unreadMessagesCountListener = new WeakReference<>(unreadMessagesCountListener);
     }
 
     public static void removeUnreadMessagesCountListener() {
