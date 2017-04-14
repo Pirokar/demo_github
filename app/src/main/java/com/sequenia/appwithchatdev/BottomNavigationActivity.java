@@ -148,7 +148,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
      */
     private void showChatFragment() {
         ActionBar actionBar = getSupportActionBar();
-        Bundle bundle = ChatBundleHelper.getBundleBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
+        Bundle bundle = ChatIntentHelper.getIntentBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
         ChatFragment chatFragment = ChatFragment.newInstance(bundle);
         showFragment(chatFragment);
         if(actionBar != null) {

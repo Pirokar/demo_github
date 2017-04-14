@@ -8,10 +8,10 @@ import im.threads.model.ChatStyle;
  * Created by chybakut2004 on 14.04.17.
  */
 
-public class ChatBundleHelper {
+public class ChatIntentHelper {
 
-    public static ChatStyle.BundleBuilder getBundleBuilder(Activity activity, String clientId, String userName) {
-        return ChatStyle.BundleBuilder
+    public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
+        return ChatStyle.IntentBuilder
                 .getBuilder(activity, clientId, userName)
                 .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
                         R.color.toolbar_background,//ToolBar background chatTitleBackgroundColorResId

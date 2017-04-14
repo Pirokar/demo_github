@@ -298,18 +298,18 @@ public class ChatStyle implements Serializable {
                 '}';
     }
 
-    public static class BundleBuilder {
+    public static class IntentBuilder {
         private static final String TAG = "BundleBuilder ";
         private Bundle b;
-        static BundleBuilder builder;
+        static IntentBuilder builder;
         private Context ctx;
 
-        private BundleBuilder() {
+        private IntentBuilder() {
         }
 
-        public static BundleBuilder getBuilder(Context ctx, String clientId, String userName) {
+        public static IntentBuilder getBuilder(Context ctx, String clientId, String userName) {
 
-            builder = new BundleBuilder();
+            builder = new IntentBuilder();
             builder.b = new Bundle();
             builder.b.putString("clientId", clientId);
             builder.ctx = ctx;
@@ -317,7 +317,7 @@ public class ChatStyle implements Serializable {
             return builder;
         }
 
-        public BundleBuilder setChatTitleStyle(
+        public IntentBuilder setChatTitleStyle(
                 @StringRes int chatTitleTextResId,
                 @ColorRes int chatTitleBackgroundColorResId,
                 @ColorRes int chatTitleWidgetsColorResId,
@@ -335,7 +335,7 @@ public class ChatStyle implements Serializable {
             return builder;
         }
 
-        public BundleBuilder setChatBodyStyle(
+        public IntentBuilder setChatBodyStyle(
                 @ColorRes int chatBackgroundColor,
                 @ColorRes int chatHighlightingColor,
                 @ColorRes int chatMessageHintInputTextColor,
@@ -368,7 +368,7 @@ public class ChatStyle implements Serializable {
         }
 
 
-        public BundleBuilder setPushNotificationStyle(@DrawableRes int defIconResid,
+        public IntentBuilder setPushNotificationStyle(@DrawableRes int defIconResid,
                                                       @StringRes int defTitleResId,
                                                       @ColorRes int pushBackgroundColorResId,
                                                       @ColorRes int nugatPushAccentColorResId) {
@@ -381,12 +381,12 @@ public class ChatStyle implements Serializable {
             return builder;
         }
 
-        public BundleBuilder setGoogleAnalyticsEnabled(boolean isEnabled) {
+        public IntentBuilder setGoogleAnalyticsEnabled(boolean isEnabled) {
             builder.b.putBoolean(TAG_GAENABLED, isEnabled);
             return builder;
         }
 
-        public BundleBuilder setWelcomeScreenStyle(
+        public IntentBuilder setWelcomeScreenStyle(
                 @DrawableRes int welcomeScreenLogoResId
                 , @StringRes int welcomeScreenTitleTextResId
                 , @StringRes int welcomeScreenSubtitleTextResId
