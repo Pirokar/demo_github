@@ -147,7 +147,9 @@ public class ChatController {
                     }
                     try {
                         instance.cleanAll();
-                        instance.fragment.removeSearching();
+                        if(instance.fragment != null) {
+                            instance.fragment.removeSearching();
+                        }
                         instance.mConsultWriter.setCurrentConsultLeft();
                         PushController.getInstance(ctx).setClientId(finalClientId);
                         PrefUtils.setClientId(ctx, finalClientId);
@@ -157,7 +159,9 @@ public class ChatController {
                         List<InOutMessage> messages = PushController.getInstance(instance.appContext).getMessageHistory(20);
                         instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
                         ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
-                        instance.fragment.addChatItems(phrases);
+                        if(instance.fragment != null) {
+                            instance.fragment.addChatItems(phrases);
+                        }
                         PrefUtils.setClientIdWasSet(true, ctx);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -219,7 +223,12 @@ public class ChatController {
     }
 
     public static int getUnreadMessagesCount(Context context) {
-        return getInstance(context, PrefUtils.getClientID(context)).getUnreadMessagesCount();
+        String clientId = PrefUtils.getClientID(context);
+        if(clientId.equals("")) {
+           return 0;
+        } else {
+            return getInstance(context, clientId).getUnreadMessagesCount();
+        }
     }
 
     private int getUnreadMessagesCount() {

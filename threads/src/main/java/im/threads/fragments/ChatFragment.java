@@ -164,8 +164,6 @@ public class ChatFragment extends Fragment
     private ImageButton searchUp;
     private ImageButton searchDown;
 
-    private ChatBackButtonListener chatBackButtonListener;
-
     public static ChatFragment newInstance(Bundle bundle) {
         ChatFragment chatFragment = new ChatFragment();
         chatFragment.setArguments(bundle);
@@ -358,16 +356,6 @@ public class ChatFragment extends Fragment
                 doFancySearch(s.toString(), true);
             }
         });
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        Activity activity = getActivity();
-        if(activity instanceof ChatBackButtonListener) {
-            chatBackButtonListener = (ChatBackButtonListener) activity;
-        }
     }
 
     protected void setFragmentStyle(ChatStyle style) {
@@ -1534,9 +1522,5 @@ public class ChatFragment extends Fragment
                 search(false);
             }
         }
-    }
-
-    public interface ChatBackButtonListener {
-        void onChatBackPressed();
     }
 }

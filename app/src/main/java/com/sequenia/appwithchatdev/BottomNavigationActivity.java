@@ -15,6 +15,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.pushserver.android.PushController;
+
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
 
@@ -73,6 +75,36 @@ public class BottomNavigationActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bottom_navigation);
+
+        // Перед работой с чатом нужно инициализировать библиотеку пушей.
+        PushController.getInstance(this).init();
+
+        Intent intent = getIntent();
+        clientId = intent.getStringExtra(ARG_CLIENT_ID);
+        userName = intent.getStringExtra(ARG_USER_NAME);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        // При открытии Активности из пуш уведомления нужно сразу открыть чат,
+        // а не главный экран
+        boolean needsShowChat = intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false);
+        View view;
+        if(needsShowChat) {
+            view = navigation.findViewById(R.id.navigation_chat);
+        } else {
+            view = navigation.findViewById(R.id.navigation_home);
+        }
+        view.performClick();
+    }
+
     /**
      * Показывает Fragment главного экрана с отображением Toolbar
      */
@@ -104,33 +136,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
         fragmentManager.beginTransaction()
                 .replace(R.id.content, fragment)
                 .commit();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bottom_navigation);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        Intent intent = getIntent();
-        clientId = intent.getStringExtra(ARG_CLIENT_ID);
-        userName = intent.getStringExtra(ARG_USER_NAME);
-
-        navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        // При открытии Активности из пуш уведомления нужно сразу открыть чат,
-        // а не главный экран
-        boolean needsShowChat = intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false);
-        View view;
-        if(needsShowChat) {
-            view = navigation.findViewById(R.id.navigation_chat);
-        } else {
-            view = navigation.findViewById(R.id.navigation_home);
-        }
-        view.performClick();
     }
 
     @Override
