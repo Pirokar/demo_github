@@ -14,11 +14,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.pushserver.android.PushController;
 
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
+import im.threads.utils.PermissionChecker;
 
 /**
  * Пример активности с нижней навигацией,
@@ -41,6 +43,8 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public static final String ARG_CLIENT_ID = "clientId";
     public static final String ARG_USER_NAME = "userName";
     public static final String ARG_NEEDS_SHOW_CHAT = "needsShowChat";
+
+    private static final int PERM_REQUEST_CODE_CLICK = 1;
 
     private String clientId;
     private String userName;
@@ -68,8 +72,14 @@ public class BottomNavigationActivity extends AppCompatActivity {
                     showHomeFragment();
                     return true;
                 case R.id.navigation_chat:
-                    showChatFragment();
-                    return true;
+                    // При попытке открыть чат нужно спросить разрешения.
+                    if (!PermissionChecker.checkPermissions(BottomNavigationActivity.this)) {
+                        PermissionChecker.requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK, BottomNavigationActivity.this);
+                        return false;
+                    } else {
+                        showChatFragment();
+                        return true;
+                    }
             }
             return false;
         }
@@ -82,6 +92,10 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
         // Перед работой с чатом нужно инициализировать библиотеку пушей.
         PushController.getInstance(this).init();
+
+        // При использовании чата в виде фрагмента нужно настроить логику открытия приложения
+        // из пуш уведомления, так как по умолчанию открывается ChatActivity.
+        ChatController.setPendingIntentCreator(chatWithFragmentPendingIntentCreator());
 
         Intent intent = getIntent();
         clientId = intent.getStringExtra(ARG_CLIENT_ID);
@@ -105,6 +119,17 @@ public class BottomNavigationActivity extends AppCompatActivity {
         view.performClick();
     }
 
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if(intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
+            View view = navigation.findViewById(R.id.navigation_chat);
+            view.performClick();
+        }
+    }
+
     /**
      * Показывает Fragment главного экрана с отображением Toolbar
      */
@@ -123,7 +148,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
      */
     private void showChatFragment() {
         ActionBar actionBar = getSupportActionBar();
-        Bundle bundle = MainActivity.getBundleBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
+        Bundle bundle = ChatBundleHelper.getBundleBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
         ChatFragment chatFragment = ChatFragment.newInstance(bundle);
         showFragment(chatFragment);
         if(actionBar != null) {
@@ -138,6 +163,10 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 .commit();
     }
 
+    /**
+     * Здесь необходимо обработать навигацию при нажатии кнопки назад,
+     * если в данный момент показан фрагмент чата
+     */
     @Override
     public void onBackPressed() {
         Fragment fragment = getFragmentManager().findFragmentById(R.id.content);
@@ -153,8 +182,20 @@ public class BottomNavigationActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERM_REQUEST_CODE_CLICK) {
+            if(PermissionChecker.checkGrantResult(grantResults)) {
+                View view = navigation.findViewById(R.id.navigation_chat);
+                view.performClick();
+            } else {
+                Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
-    public static ChatController.PendingIntentCreator chatWithFragmentPendingIntentCreator() {
+    public ChatController.PendingIntentCreator chatWithFragmentPendingIntentCreator() {
         return new ChatController.PendingIntentCreator() {
             @Override
             public PendingIntent createPendingIntent(Context context) {
