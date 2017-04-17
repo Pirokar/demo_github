@@ -52,6 +52,7 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.services.DownloadService;
@@ -343,6 +344,17 @@ public class ChatController {
                 }
             });
         }
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PushController.getInstance(appContext)
+                            .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext), ""), true);
+                } catch (PushServerErrorException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         if (mConsultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName(), mConsultWriter.getCurrentConsultTitle());
         } else if (mConsultWriter.istSearchingConsult()) {
@@ -798,6 +810,9 @@ public class ChatController {
                     if (mDatabaseHolder != null)
                         mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
                 }
+                break;
+            case MessageMatcher.TYPE_SCHEDULE:
+                addMessage(new ScheduleInfo(System.currentTimeMillis()), ctx);
                 break;
         }
     }

@@ -29,6 +29,7 @@ import im.threads.holders.ConsultPhraseHolder;
 import im.threads.holders.DateViewHolder;
 import im.threads.holders.ImageFromConsultViewHolder;
 import im.threads.holders.ImageFromUserViewHolder;
+import im.threads.holders.ScheduleInfoViewHolder;
 import im.threads.holders.SearchingConsultViewHolder;
 import im.threads.holders.SpaceViewHolder;
 import im.threads.holders.UnreadMessageViewHolder;
@@ -44,6 +45,7 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.DateRow;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.ScheduleInfo;
 import im.threads.model.SearchingConsult;
 import im.threads.model.Space;
 import im.threads.model.UnreadMessages;
@@ -73,6 +75,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_FILE_FROM_USER = 10;
     private static final int TYPE_FILE_FROM_CONSULT = 11;
     private static final int TYPE_UNREAD_MESSAGES = 12;
+    private static final int TYPE_SCHEDULE = 13;
     private boolean isRemovingTyping = false;
 
 
@@ -114,6 +117,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_FILE_FROM_CONSULT) return new ConsultFileViewHolder(parent);
         if (viewType == TYPE_FILE_FROM_USER) return new UserFileViewHolder(parent);
         if (viewType == TYPE_UNREAD_MESSAGES) return new UnreadMessageViewHolder(parent);
+        if (viewType == TYPE_SCHEDULE) return new ScheduleInfoViewHolder(parent);
         return null;
     }
 
@@ -225,59 +229,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             DateRow dr = (DateRow) list.get(position);
             ((DateViewHolder) holder).onBind(dr.getDate());
         }
-
-//        if (holder instanceof ConsultIsTypingViewHolder) {
-//            ChatStyle style = PrefUtils.getIncomingStyle(ctx);
-//            int defaultImageResId;
-//            if (style != null && style.imagePlaceholder != ChatStyle.INVALID) {
-//                defaultImageResId = style.imagePlaceholder;
-//            } else {
-//                defaultImageResId = R.drawable.blank_avatar_round;
-//            }
-//            ConsultTyping ct = (ConsultTyping) list.get(holder.getAdapterPosition());
-//            ((ConsultIsTypingViewHolder) holder).onBind(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (null != mAdapterInterface) {
-//                        ConsultTyping ct = (ConsultTyping) list.get(holder.getAdapterPosition());
-//                        mAdapterInterface.onConsultAvatarClick(ct.getConsultId());
-//                    }
-//                }
-//            });
-//            if (!isEmpty(ct.getAvatarPath())) {
-//                final int finalDefaultImageRes = defaultImageResId;
-//                picasso
-//                        .load(ct.getAvatarPath())
-//                        .fit()
-//                        .noPlaceholder()
-//                        .centerCrop()
-//                        .transform(new CircleTransform())
-//                        .into(((ConsultIsTypingViewHolder) holder).mConsultImageView, new Callback() {
-//                            @Override
-//                            public void onSuccess() {
-//
-//                            }
-//
-//                            @Override
-//                            public void onError() {
-//                                picasso
-//                                        .load(finalDefaultImageRes)
-//                                        .fit()
-//                                        .noPlaceholder()
-//                                        .centerCrop()
-//                                        .transform(new CircleTransform())
-//                                        .into(((ConsultIsTypingViewHolder) holder).mConsultImageView);
-//                            }
-//                        });
-//            } else {
-//                picasso
-//                        .load(defaultImageResId)
-//                        .fit()
-//                        .noPlaceholder()
-//                        .transform(new CircleTransform())
-//                        .into(((ConsultIsTypingViewHolder) holder).mConsultImageView);
-//            }
-//        }
         if (holder instanceof ConsultIsTypingViewHolderNew) {
             ChatStyle style = PrefUtils.getIncomingStyle(ctx);
             int defaultImageResId;
@@ -472,6 +423,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof UnreadMessageViewHolder) {
             ((UnreadMessageViewHolder) holder).onBind((UnreadMessages) list.get(holder.getAdapterPosition()));
         }
+        if (holder instanceof ScheduleInfoViewHolder) {
+            ((ScheduleInfoViewHolder) holder).bind();
+        }
     }
 
 
@@ -632,6 +586,20 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (!isInSearchMode) notifyDataSetChanged();
     }
 
+    public boolean hasSchedule() {
+        if(list == null) {
+            return false;
+        }
+
+        for(int i = 0; i < list.size(); i++) {
+            if(list.get(i) instanceof ScheduleInfo) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
@@ -702,6 +670,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         if (o instanceof Space) return TYPE_FREE_SPACE;
         if (o instanceof UnreadMessages) return TYPE_UNREAD_MESSAGES;
+        if (o instanceof ScheduleInfo) return TYPE_SCHEDULE;
         return super.getItemViewType(position);
     }
 

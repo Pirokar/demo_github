@@ -61,6 +61,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import im.threads.AnalyticsTracker;
 import im.threads.R;
@@ -81,6 +82,7 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
+import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.picasso_url_connection_only.Picasso;
@@ -882,7 +884,9 @@ public class ChatFragment extends Fragment
                 ((ConsultPhrase) item).setRead(false);
             }
         }
-        mChatAdapter.addItems(Arrays.asList(item));
+        if (needsAddMessage(item)) {
+            mChatAdapter.addItems(Arrays.asList(item));
+        }
         if (item instanceof ConsultPhrase) {
             mChatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
         }
@@ -896,6 +900,14 @@ public class ChatFragment extends Fragment
                 }
             }
         }, 100);
+    }
+
+    private boolean needsAddMessage(ChatItem item) {
+        if(item instanceof ScheduleInfo) {
+            return !mChatAdapter.hasSchedule();
+        } else {
+            return true;
+        }
     }
 
     public void addChatItems(final List<ChatItem> list) {

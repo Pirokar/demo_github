@@ -18,9 +18,11 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
+        int messageType = MessageMatcher.getType(bundle);
         Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
-        if (MessageMatcher.getType(bundle) == MessageMatcher.TYPE_OPERATOR_TYPING
-                || MessageMatcher.getType(bundle) == MessageMatcher.TYPE_MESSAGES_READ)
+        if (messageType == MessageMatcher.TYPE_OPERATOR_TYPING
+                || messageType == MessageMatcher.TYPE_MESSAGES_READ
+                || messageType == MessageMatcher.TYPE_SCHEDULE)
             ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
     }
 
