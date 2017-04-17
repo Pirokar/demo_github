@@ -306,7 +306,9 @@ public class ChatController {
                         h.post(new Runnable() {
                             @Override
                             public void run() {
-                                fragment.addChatItems(items);
+                                if(fragment != null) {
+                                    fragment.addChatItems(items);
+                                }
                             }
                         });
                     }

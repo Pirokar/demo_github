@@ -1118,7 +1118,9 @@ public class ChatFragment extends Fragment
         mConsultNameView.setVisibility(View.VISIBLE);
         mSearchLo.setVisibility(View.GONE);
         mSearchMessageEditText.setText("");
-        mConsultNameView.setText(getResources().getString(R.string.searching_operator));
+        if(isAdded()) {
+            mConsultNameView.setText(getResources().getString(R.string.searching_operator));
+        }
     }
 
     public void setTitleStateSearchingMessage() {
