@@ -23,8 +23,8 @@ android {
         applicationId "com.sequenia.appwithchatdev"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 13
-        versionName "2.98_test"
+        versionCode 14
+        versionName "2.99_test"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName);
         vectorDrawables.useSupportLibrary = true
     }

@@ -903,12 +903,11 @@ public class ChatFragment extends Fragment
     }
 
     private boolean needsAddMessage(ChatItem item) {
-        /*if(item instanceof ScheduleInfo) {
+        if(item instanceof ScheduleInfo) {
             return !mChatAdapter.hasSchedule();
         } else {
             return true;
-        }*/
-        return !(item instanceof ScheduleInfo);
+        }
     }
 
     public void addChatItems(final List<ChatItem> list) {
