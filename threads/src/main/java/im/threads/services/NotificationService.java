@@ -28,6 +28,7 @@ import im.threads.controllers.ChatController;
 import im.threads.formatters.MarshmellowPushMessageFormatter;
 import im.threads.formatters.MessageFormatter;
 import im.threads.formatters.NugatMessageFormatter;
+import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
@@ -53,17 +54,21 @@ import static android.text.TextUtils.isEmpty;
  * Created by yuri on 17.08.2016.
  */
 public class NotificationService extends Service {
+
     private static final String TAG = "NotificationService ";
+
     public static final String ACTION_ALL_MESSAGES_WERE_READ = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_MESSAGES_WERE_READ";
     public static final String ACTION_ADD_UNREAD_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE";
     public static final String ACTION_ADD_UNSENT_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNSENT_MESSAGE";
+
     private static final int UNREAD_MESSAGE_PUSH_ID = 0;
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
-    private myBroadcastReceiver mBroadcastReceiver;
+
     private ArrayList<ChatItem> unreadMessages = new ArrayList<>();
-    private ArrayList<Runnable> unreadMessagesRunnables = new ArrayList<>();
+    private myBroadcastReceiver mBroadcastReceiver;
     Handler h = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
+
     private ChatStyle style;
 
     public NotificationService() {
@@ -79,45 +84,41 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand");
-        if (style == null) style = PrefUtils.getIncomingStyle(this);
+
+        if (style == null) {
+            style = PrefUtils.getIncomingStyle(this);
+        }
+
         if (mBroadcastReceiver == null) {
             mBroadcastReceiver = new myBroadcastReceiver();
             getApplicationContext().registerReceiver(mBroadcastReceiver, new IntentFilter(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         }
-        if (intent == null) return START_STICKY;
+
+        if (intent == null) {
+            return START_STICKY;
+        }
+
         ArrayList<com.pushserver.android.PushMessage> il = intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
+
         if (il != null) {
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            final NotificationCompat.Builder notificationBuilder =
-                    new NotificationCompat
-                            .Builder(this);
+            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
             List<ChatItem> items = MessageFormatter.formatMessages(il);
-            Notification notification = null;
+
             if (Build.VERSION.SDK_INT < 24) {
-                notification = getMstyleNotif(notificationBuilder, items);
-                final Notification finalNotification = notification;
-                Runnable r = new Runnable() {
-                    @Override
-                    public void run() {
-                        nm.notify(UNREAD_MESSAGE_PUSH_ID, finalNotification);
-                        ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
-                    }
-                };
-                unreadMessagesRunnables.add(r);
-                h.postDelayed(r, 3000);
+                Notification notification = getMstyleNotif(notificationBuilder, items);
+                if(needsShowNotification()) {
+                    nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
+                    ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
+                }
             } else {
                 getNstyleNotif(notificationBuilder, items, new CompletionHandler<Notification>() {
                     @Override
                     public void onComplete(final Notification data) {
-                        Runnable r = new Runnable() {
-                            @Override
-                            public void run() {
-                                nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
-                                ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
-                            }
-                        };
-                        unreadMessagesRunnables.add(r);
-                        h.postDelayed(r, 3000);
+                        if(needsShowNotification()) {
+                            nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
+                            ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
+                        }
                     }
 
                     @Override
@@ -151,6 +152,9 @@ public class NotificationService extends Service {
         return START_STICKY;
     }
 
+    private boolean needsShowNotification() {
+        return !ChatFragment.isShown();
+    }
 
     @Override
     public void onDestroy() {
@@ -162,21 +166,16 @@ public class NotificationService extends Service {
     private void dismissUnreadMessagesNotification() {
         unreadMessages.clear();
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(UNREAD_MESSAGE_PUSH_ID);
-        for (Runnable r : unreadMessagesRunnables) {
-            h.removeCallbacks(r);
-        }
-        unreadMessagesRunnables.clear();
+        nm.cancel(UNREAD_MESSAGE_PUSH_ID);;
     }
 
     Notification getMstyleNotif(
-            android.support.v7.app.NotificationCompat.Builder builder
-            , List<ChatItem> items) {
+            android.support.v7.app.NotificationCompat.Builder builder, List<ChatItem> items) {
+
         Tuple<Boolean, MarshmellowPushMessageFormatter.PushContents> pushText = new
-                MarshmellowPushMessageFormatter(this
-                , unreadMessages
-                , items)
+                MarshmellowPushMessageFormatter(this, unreadMessages, items)
                 .getFormattedMessageAsPushContents();
+
         final RemoteViews pushSmall = new RemoteViews(getPackageName(), R.layout.remote_push_small);
         final RemoteViews pushBig = new RemoteViews(getPackageName(), R.layout.remote_push_expanded);
 
@@ -189,6 +188,7 @@ public class NotificationService extends Service {
                 }
             }
         }
+
         if (!isEmpty(avatarPath)) {
             Picasso
                     .with(this)

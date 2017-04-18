@@ -28,7 +28,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -61,7 +60,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import im.threads.AnalyticsTracker;
 import im.threads.R;
@@ -128,6 +126,8 @@ public class ChatFragment extends Fragment
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
 
+    private static boolean chatIsShown = false;
+
     private View rootView;
 
     private Handler mSearchHandler = new Handler(Looper.getMainLooper());
@@ -192,6 +192,8 @@ public class ChatFragment extends Fragment
         setHasOptionsMenu(true);
         initController();
         setFragmentStyle(PrefUtils.getIncomingStyle(activity));
+
+        chatIsShown = true;
 
         return rootView;
     }
@@ -1431,6 +1433,11 @@ public class ChatFragment extends Fragment
         super.onDestroyView();
         mChatController.unbindFragment();
         getActivity().unregisterReceiver(mChatReceiver);
+        chatIsShown = false;
+    }
+
+    public static boolean isShown() {
+        return chatIsShown;
     }
 
     private void search(final boolean searchInFiles) {
