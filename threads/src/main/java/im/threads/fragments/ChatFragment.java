@@ -115,7 +115,6 @@ public class ChatFragment extends Fragment
             , PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "ChatFragment ";
-    public static final String TAG_GAENABLED = "TAG_GAENABLED";
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
