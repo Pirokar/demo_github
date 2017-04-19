@@ -1,6 +1,7 @@
 package im.threads.utils;
 
 /**
+ * Пара объектов
  * Created by yuri on 02.09.2016.
  */
 
@@ -23,7 +24,6 @@ public class Tuple<F, S> {
 
         if (first != null ? !first.equals(pair.first) : pair.first != null) return false;
         return second != null ? second.equals(pair.second) : pair.second == null;
-
     }
 
 

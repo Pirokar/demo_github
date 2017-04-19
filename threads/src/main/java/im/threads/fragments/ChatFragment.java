@@ -107,20 +107,22 @@ import static android.text.TextUtils.isEmpty;
  * Created by chybakut2004 on 10.04.17.
  */
 
-public class ChatFragment extends Fragment
-        implements
-            BottomSheetView.ButtonsListener
-            , ChatAdapter.AdapterInterface
-            , FilePickerFragment.SelectedListener
-            , PopupMenu.OnMenuItemClickListener {
+public class ChatFragment extends Fragment implements
+        BottomSheetView.ButtonsListener,
+        ChatAdapter.AdapterInterface,
+        FilePickerFragment.SelectedListener,
+        PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "ChatFragment ";
+
+    private static AnalyticsTracker tracker;
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
     public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 102;
     public static final int REQUEST_PERMISSION_CAMERA = 103;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
+
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
@@ -191,6 +193,13 @@ public class ChatFragment extends Fragment
         setHasOptionsMenu(true);
         initController();
         setFragmentStyle(PrefUtils.getIncomingStyle(activity));
+
+        Context context = activity.getApplicationContext();
+        if (tracker == null) {
+            tracker = AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context));
+        }
+        tracker.chatWasOpened(PrefUtils.getClientID(context));
+        tracker.setUserEnteredChat();
 
         chatIsShown = true;
 
@@ -1431,7 +1440,13 @@ public class ChatFragment extends Fragment
     public void onDestroyView() {
         super.onDestroyView();
         mChatController.unbindFragment();
-        getActivity().unregisterReceiver(mChatReceiver);
+        Activity activity = getActivity();
+        Context context = activity.getApplicationContext();
+        activity.unregisterReceiver(mChatReceiver);
+        if (tracker == null) {
+            tracker = AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context));
+        }
+        tracker.setUserLeftChat();
         chatIsShown = false;
     }
 
