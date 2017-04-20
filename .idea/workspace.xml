@@ -10,11 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/views/BottomSheetView.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/views/BottomSheetView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/views/WelcomeScreen.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/views/WelcomeScreen.java" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -49,58 +46,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="102" column="43" selection-start-line="102" selection-start-column="43" selection-end-line="102" selection-end-column="43" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="101" column="67" selection-start-line="101" selection-start-column="67" selection-end-line="101" selection-end-column="67" />
+            <state relative-caret-position="-931">
+              <caret line="913" column="26" selection-start-line="913" selection-start-column="26" selection-end-line="913" selection-end-column="26" />
               <folding>
-                <element signature="e#13595#13822#0" expanded="true" />
-                <element signature="e#13821#13822#0" expanded="true" />
-                <element signature="e#14877#15049#0" expanded="true" />
-                <element signature="e#15048#15049#0" expanded="true" />
-                <element signature="e#15578#15925#0" expanded="true" />
-                <element signature="e#15924#15925#0" expanded="true" />
-                <element signature="e#26261#26420#0" expanded="true" />
-                <element signature="e#26419#26420#0" expanded="true" />
-                <element signature="e#26457#26617#0" expanded="true" />
-                <element signature="e#26616#26617#0" expanded="true" />
-                <element signature="e#27537#27558#0" expanded="true" />
-                <element signature="e#27951#27978#0" expanded="true" />
-                <element signature="e#28353#28378#0" expanded="true" />
-                <element signature="e#30616#30820#0" expanded="true" />
-                <element signature="e#30819#30820#0" expanded="true" />
-                <element signature="e#31203#31224#0" expanded="true" />
-                <element signature="e#31750#31771#0" expanded="true" />
-                <element signature="e#33147#33285#0" expanded="true" />
-                <element signature="e#33284#33285#0" expanded="true" />
-                <element signature="e#33464#34205#0" expanded="true" />
-                <element signature="e#33609#33791#0" expanded="true" />
-                <element signature="e#33790#33791#0" expanded="true" />
-                <element signature="e#33824#34175#0" expanded="true" />
-                <element signature="e#34174#34175#0" expanded="true" />
-                <element signature="e#34204#34205#0" expanded="true" />
-                <element signature="e#36472#36668#0" expanded="true" />
-                <element signature="e#36667#36668#0" expanded="true" />
-                <element signature="e#37653#38163#0" expanded="true" />
-                <element signature="e#38162#38163#0" expanded="true" />
-                <element signature="e#38370#38563#0" expanded="true" />
-                <element signature="e#38562#38563#0" expanded="true" />
-                <element signature="e#41658#42036#0" expanded="true" />
-                <element signature="e#42035#42036#0" expanded="true" />
-                <element signature="e#42191#42414#0" expanded="true" />
-                <element signature="e#42413#42414#0" expanded="true" />
-                <element signature="e#44129#44163#0" expanded="true" />
+                <element signature="e#29126#30817#0" expanded="true" />
+                <element signature="e#30816#30817#0" expanded="true" />
+                <element signature="e#40785#40986#0" expanded="true" />
+                <element signature="e#40985#40986#0" expanded="true" />
+                <element signature="e#41294#41495#0" expanded="true" />
+                <element signature="e#41494#41495#0" expanded="true" />
+                <element signature="e#44400#45954#0" expanded="true" />
+                <element signature="e#45953#45954#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -2975,7 +2934,6 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/broadcastReceivers/MainPBReceiver.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ScheduleInfo.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
         <option value="$PROJECT_DIR$/threads/src/main/res/layout/item_schedule_info.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/ScheduleInfoViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" />
@@ -2991,6 +2949,7 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/ColorsHelper.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
       </list>
     </option>
   </component>
@@ -3782,14 +3741,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java</url>
-          <line>814</line>
-          <properties />
-          <option name="timeStamp" value="81" />
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="85" />
     </breakpoint-manager>
     <watches-manager />
@@ -3956,6 +3907,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="62">
           <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -4096,14 +4048,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="102" column="43" selection-start-line="102" selection-start-column="43" selection-end-line="102" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Android/Sdk/sources/android-25/android/widget/TextView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -4193,45 +4137,62 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="101" column="67" selection-start-line="101" selection-start-column="67" selection-end-line="101" selection-end-column="67" />
+        <state relative-caret-position="-13633">
+          <caret line="100" column="67" selection-start-line="100" selection-start-column="67" selection-end-line="100" selection-end-column="67" />
           <folding>
-            <element signature="e#13595#13822#0" expanded="true" />
-            <element signature="e#13821#13822#0" expanded="true" />
-            <element signature="e#14877#15049#0" expanded="true" />
-            <element signature="e#15048#15049#0" expanded="true" />
-            <element signature="e#15578#15925#0" expanded="true" />
-            <element signature="e#15924#15925#0" expanded="true" />
-            <element signature="e#26261#26420#0" expanded="true" />
-            <element signature="e#26419#26420#0" expanded="true" />
-            <element signature="e#26457#26617#0" expanded="true" />
-            <element signature="e#26616#26617#0" expanded="true" />
-            <element signature="e#27537#27558#0" expanded="true" />
-            <element signature="e#27951#27978#0" expanded="true" />
-            <element signature="e#28353#28378#0" expanded="true" />
-            <element signature="e#30616#30820#0" expanded="true" />
-            <element signature="e#30819#30820#0" expanded="true" />
-            <element signature="e#31203#31224#0" expanded="true" />
-            <element signature="e#31750#31771#0" expanded="true" />
-            <element signature="e#33147#33285#0" expanded="true" />
-            <element signature="e#33284#33285#0" expanded="true" />
-            <element signature="e#33464#34205#0" expanded="true" />
-            <element signature="e#33609#33791#0" expanded="true" />
-            <element signature="e#33790#33791#0" expanded="true" />
-            <element signature="e#33824#34175#0" expanded="true" />
-            <element signature="e#34174#34175#0" expanded="true" />
-            <element signature="e#34204#34205#0" expanded="true" />
-            <element signature="e#36472#36668#0" expanded="true" />
-            <element signature="e#36667#36668#0" expanded="true" />
-            <element signature="e#37653#38163#0" expanded="true" />
-            <element signature="e#38162#38163#0" expanded="true" />
-            <element signature="e#38370#38563#0" expanded="true" />
-            <element signature="e#38562#38563#0" expanded="true" />
-            <element signature="e#41658#42036#0" expanded="true" />
-            <element signature="e#42035#42036#0" expanded="true" />
-            <element signature="e#42191#42414#0" expanded="true" />
-            <element signature="e#42413#42414#0" expanded="true" />
-            <element signature="e#44129#44163#0" expanded="true" />
+            <element signature="e#13559#13786#0" expanded="true" />
+            <element signature="e#13785#13786#0" expanded="true" />
+            <element signature="e#14841#15013#0" expanded="true" />
+            <element signature="e#15012#15013#0" expanded="true" />
+            <element signature="e#15542#15889#0" expanded="true" />
+            <element signature="e#15888#15889#0" expanded="true" />
+            <element signature="e#26225#26384#0" expanded="true" />
+            <element signature="e#26383#26384#0" expanded="true" />
+            <element signature="e#26421#26581#0" expanded="true" />
+            <element signature="e#26580#26581#0" expanded="true" />
+            <element signature="e#27501#27522#0" expanded="true" />
+            <element signature="e#27915#27942#0" expanded="true" />
+            <element signature="e#28317#28342#0" expanded="true" />
+            <element signature="e#30580#30784#0" expanded="true" />
+            <element signature="e#30783#30784#0" expanded="true" />
+            <element signature="e#31167#31188#0" expanded="true" />
+            <element signature="e#31714#31735#0" expanded="true" />
+            <element signature="e#33111#33249#0" expanded="true" />
+            <element signature="e#33248#33249#0" expanded="true" />
+            <element signature="e#33428#34169#0" expanded="true" />
+            <element signature="e#33573#33755#0" expanded="true" />
+            <element signature="e#33754#33755#0" expanded="true" />
+            <element signature="e#33788#34139#0" expanded="true" />
+            <element signature="e#34138#34139#0" expanded="true" />
+            <element signature="e#34168#34169#0" expanded="true" />
+            <element signature="e#36436#36632#0" expanded="true" />
+            <element signature="e#36631#36632#0" expanded="true" />
+            <element signature="e#37617#38127#0" expanded="true" />
+            <element signature="e#38126#38127#0" expanded="true" />
+            <element signature="e#38334#38527#0" expanded="true" />
+            <element signature="e#38526#38527#0" expanded="true" />
+            <element signature="e#41622#42000#0" expanded="true" />
+            <element signature="e#41999#42000#0" expanded="true" />
+            <element signature="e#42155#42378#0" expanded="true" />
+            <element signature="e#42377#42378#0" expanded="true" />
+            <element signature="e#44093#44127#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-931">
+          <caret line="913" column="26" selection-start-line="913" selection-start-column="26" selection-end-line="913" selection-end-column="26" />
+          <folding>
+            <element signature="e#29126#30817#0" expanded="true" />
+            <element signature="e#30816#30817#0" expanded="true" />
+            <element signature="e#40785#40986#0" expanded="true" />
+            <element signature="e#40985#40986#0" expanded="true" />
+            <element signature="e#41294#41495#0" expanded="true" />
+            <element signature="e#41494#41495#0" expanded="true" />
+            <element signature="e#44400#45954#0" expanded="true" />
+            <element signature="e#45953#45954#0" expanded="true" />
           </folding>
         </state>
       </provider>

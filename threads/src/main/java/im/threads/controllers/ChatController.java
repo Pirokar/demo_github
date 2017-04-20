@@ -97,11 +97,11 @@ public class ChatController {
 
     // Для приема сообщений из сервиса по скачиванию файлов
     private ProgressReceiver mProgressReceiver;
-    boolean isSearchingConsult;
+    private boolean isSearchingConsult;
     private DatabaseHolder mDatabaseHolder;
     private Context appContext;
     private static ChatController instance;
-    int currentOffset = 0;
+    private int currentOffset = 0;
     private int searchOffset = 0;
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
