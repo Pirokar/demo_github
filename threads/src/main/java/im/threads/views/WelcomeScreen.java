@@ -89,8 +89,10 @@ public class WelcomeScreen extends LinearLayout {
     }
 
     public WelcomeScreen setTextColor(int color) {
-        title.setTextColor(getContext().getResources().getColor(color));
-        subTitle.setTextColor(getContext().getResources().getColor(color));
+        if(color != ChatStyle.INVALID){
+            title.setTextColor(getContext().getResources().getColor(color));
+            subTitle.setTextColor(getContext().getResources().getColor(color));
+        }
         return this;
     }
 
@@ -111,7 +113,9 @@ public class WelcomeScreen extends LinearLayout {
     }
 
     public WelcomeScreen setLogo(int resId) {
-        logoView.setImageResource(resId);
+        if(resId != ChatStyle.INVALID) {
+            logoView.setImageResource(resId);
+        }
         return this;
     }
 }

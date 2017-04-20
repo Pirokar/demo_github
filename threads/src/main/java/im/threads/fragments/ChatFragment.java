@@ -12,16 +12,13 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -44,8 +41,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -86,6 +81,7 @@ import im.threads.model.UserPhrase;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.Callback;
 import im.threads.utils.CallbackNoError;
+import im.threads.utils.ColorsHelper;
 import im.threads.utils.FileUtils;
 import im.threads.utils.LateTextWatcher;
 import im.threads.utils.MyFileFilter;
@@ -127,6 +123,9 @@ public class ChatFragment extends Fragment implements
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
 
+    private static final float DISABLED_ALPHA = 0.5f;
+    private static final float ENABLED_ALPHA = 1.0f;
+
     private static boolean chatIsShown = false;
 
     private View rootView;
@@ -156,11 +155,12 @@ public class ChatFragment extends Fragment implements
     private View mSearchLo;
     private ImageButton backButton;
     private ImageButton popupMenuButton;
+    private ImageButton SendButton;
+    private ImageButton AddAttachmentButton;
     private String connectedConsultId;
     private ChatReceiver mChatReceiver;
 
     private boolean isInMessageSearchMode;
-    private boolean searchInFiles;
     private boolean isResumed;
     private ChatStyle style;
 
@@ -176,34 +176,37 @@ public class ChatFragment extends Fragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        getIncomingSettings(getArguments());
         Activity activity = getActivity();
+        Context context = activity.getApplicationContext();
+
+        style = ChatStyle.getStyleFromBundleWithThrow(activity, getArguments());
+
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
         if(activity instanceof ChatActivity) {
-            if (style.chatStatusBarColorResId != ChatStyle.INVALID && Build.VERSION.SDK_INT > 20) {
-                Window window = activity.getWindow();
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
-            }
+            ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
         }
+
         rootView = inflater.inflate(R.layout.fragment_chat_fragment, container, false);
+
         initViews();
+        bindViews();
         initToolbar();
         setHasOptionsMenu(true);
         initController();
         setFragmentStyle(PrefUtils.getIncomingStyle(activity));
+        sendOpenChatAnalyticsEvent(context);
 
-        Context context = activity.getApplicationContext();
+        chatIsShown = true;
+
+        return rootView;
+    }
+
+    private void sendOpenChatAnalyticsEvent(Context context) {
         if (tracker == null) {
             tracker = AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context));
         }
         tracker.chatWasOpened(PrefUtils.getClientID(context));
         tracker.setUserEnteredChat();
-
-        chatIsShown = true;
-
-        return rootView;
     }
 
     private void initController() {
@@ -211,7 +214,9 @@ public class ChatFragment extends Fragment implements
         Bundle bundle = getArguments();
         mChatController = ChatController.getInstance(activity, bundle == null ? null : bundle.getString("clientId"));
         mChatController.bindFragment(this);
-        if (mChatController.isNeedToShowWelcome()) mWelcomeScreen.setVisibility(View.VISIBLE);
+        if (mChatController.isNeedToShowWelcome()) {
+            mWelcomeScreen.setVisibility(View.VISIBLE);
+        }
         mChatReceiver = new ChatReceiver();
         IntentFilter intentFilter = new IntentFilter(ACTION_SEARCH_CHAT_FILES);
         intentFilter.addAction(ACTION_SEARCH);
@@ -221,6 +226,7 @@ public class ChatFragment extends Fragment implements
 
     private void initViews() {
         Activity activity = getActivity();
+
         mQuoteLayoutHolder = new QuoteLayoutHolder();
         mBottomSheetView = (BottomSheetView) rootView.findViewById(R.id.file_input_sheet);
         mBottomSheetView.setButtonsListener(this);
@@ -228,95 +234,65 @@ public class ChatFragment extends Fragment implements
         mSearchMessageEditText = (AppCompatEditText) rootView.findViewById(R.id.search);
         mBottomGallery = (BottomGallery) rootView.findViewById(R.id.bottom_gallery);
         mSwipeRefreshLayout = (MySwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh);
-        mSwipeRefreshLayout.setmSwipeListener(new MySwipeRefreshLayout.SwipeListener() {
-            @Override
-            public void onSwipe() {
-                //finish();
-            }
-        });
         mInputEditText = (EditText) rootView.findViewById(R.id.input);
-        ImageButton SendButton = (ImageButton) rootView.findViewById(R.id.send_message);
-        ImageButton AddAttachmentButton = (ImageButton) rootView.findViewById(R.id.add_attachment);
+        SendButton = (ImageButton) rootView.findViewById(R.id.send_message);
+        AddAttachmentButton = (ImageButton) rootView.findViewById(R.id.add_attachment);
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), activity, this);
         mRecyclerView.getItemAnimator().setChangeDuration(0);
         mRecyclerView.setAdapter(mChatAdapter);
+
+        mSearchLo = rootView.findViewById(R.id.search_lo);
+        searchUp = (ImageButton) rootView.findViewById(R.id.search_up_ib);
+        searchDown = (ImageButton) rootView.findViewById(R.id.search_down_ib);
+
+        mWelcomeScreen = (WelcomeScreen) rootView.findViewById(R.id.welcome);
+        mSearchMoreButton = (Button) rootView.findViewById(R.id.search_more);
+        mConsultNameView = (TextView) rootView.findViewById(R.id.consult_name);
+        mConsultTitle = (TextView) rootView.findViewById(R.id.subtitle);
+        mCopyControls = rootView.findViewById(R.id.copy_controls);
+
+        searchDown.setAlpha(DISABLED_ALPHA);
+        searchUp.setAlpha(DISABLED_ALPHA);
+        ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
+        mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
+        mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
+        mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
+    }
+
+    private void bindViews() {
+        mSwipeRefreshLayout.setmSwipeListener(new MySwipeRefreshLayout.SwipeListener() {
+            @Override
+            public void onSwipe() {
+                //finish();
+            }
+        });
+
         AddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openBottomSheetAndGallery();
             }
         });
-        mSearchLo = rootView.findViewById(R.id.search_lo);
-        searchUp = (ImageButton) rootView.findViewById(R.id.search_up_ib);
-        searchDown = (ImageButton) rootView.findViewById(R.id.search_down_ib);
-        if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-            searchUp.getDrawable().setColorFilter(ContextCompat.getColor(activity, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-            searchUp.setAlpha(0.5f);
-            searchDown.getDrawable().setColorFilter(ContextCompat.getColor(activity, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-            searchDown.setAlpha(0.5f);
-        }
-        mWelcomeScreen = (WelcomeScreen) rootView.findViewById(R.id.welcome);
-        mSearchMoreButton = (Button) rootView.findViewById(R.id.search_more);
-        mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
-        mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
-        mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
-        mConsultNameView = (TextView) rootView.findViewById(R.id.consult_name);
-        mConsultTitle = (TextView) rootView.findViewById(R.id.subtitle);
-        mCopyControls = rootView.findViewById(R.id.copy_controls);
+
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mChatController.requestItems(new Callback<List<ChatItem>, Throwable>() {
-                    @Override
-                    public void onSuccess(final List<ChatItem> result) {
-                        final Handler h = new Handler(Looper.getMainLooper());
-                        h.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                int itemsBefore = mChatAdapter.getItemCount();
-                                mChatAdapter.addItems(result);
-                                int itemsAfter = mChatAdapter.getItemCount();
-                                mRecyclerView.scrollToPosition(itemsAfter - itemsBefore);
-                                for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
-                                    h.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mSwipeRefreshLayout.setRefreshing(false);
-                                            mSwipeRefreshLayout.clearAnimation();
-                                            mSwipeRefreshLayout.destroyDrawingCache();
-                                            mSwipeRefreshLayout.invalidate();
-                                        }
-                                    }, i * 500);
-                                }
-                            }
-                        }, 500);
-                    }
-
-                    @Override
-                    public void onFail(Throwable error) {
-                    }
-                });
+                ChatFragment.this.onRefresh();
             }
         });
+
         SendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mInputEditText.getText().length() == 0 && ((mQuote == null) && (mFileDescription == null)))
-                    return;
-                if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
-                    mWelcomeScreen.setVisibility(View.GONE);
-                    mWelcomeScreen = null;
-                }
-                List<UpcomingUserMessage> input = Arrays.asList(new UpcomingUserMessage[]{new UpcomingUserMessage(
-                        mFileDescription
-                        , mQuote
-                        , mInputEditText.getText().toString().trim(), isCopy(mInputEditText.getText().toString()))});
-                sendMessage(input, true);
+                onSendButtonClick();
             }
         });
+
         mConsultNameView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -324,6 +300,7 @@ public class ChatFragment extends Fragment implements
                     onConsultAvatarClick(connectedConsultId);
             }
         });
+
         mConsultTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -331,6 +308,7 @@ public class ChatFragment extends Fragment implements
                     onConsultAvatarClick(connectedConsultId);
             }
         });
+
         mInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -340,12 +318,14 @@ public class ChatFragment extends Fragment implements
                 }
             }
         });
+
         mInputEditText.addTextChangedListener(new LateTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 mChatController.onUserTyping();
             }
         });
+
         searchUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -353,6 +333,7 @@ public class ChatFragment extends Fragment implements
                 doFancySearch(mSearchMessageEditText.getText().toString(), true);
             }
         });
+
         searchDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -360,95 +341,136 @@ public class ChatFragment extends Fragment implements
                 doFancySearch(mSearchMessageEditText.getText().toString(), false);
             }
         });
+
         mSearchMessageEditText.addTextChangedListener(new LateTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                String request = "";
                 if (!isInMessageSearchMode) return;
                 doFancySearch(s.toString(), true);
             }
         });
     }
 
+    private void onSendButtonClick() {
+        if (mInputEditText.getText().length() == 0 && ((mQuote == null) && (mFileDescription == null))) {
+            return;
+        }
+
+        if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
+            mWelcomeScreen.setVisibility(View.GONE);
+            mWelcomeScreen = null;
+        }
+
+        List<UpcomingUserMessage> input = new ArrayList<>();
+        UpcomingUserMessage message = new UpcomingUserMessage(
+                mFileDescription,
+                mQuote,
+                mInputEditText.getText().toString().trim(),
+                isCopy(mInputEditText.getText().toString())
+        );
+        input.add(message);
+        sendMessage(input, true);
+    }
+
+    private void onRefresh() {
+        mChatController.requestItems(new Callback<List<ChatItem>, Throwable>() {
+            @Override
+            public void onSuccess(final List<ChatItem> result) {
+                final Handler h = new Handler(Looper.getMainLooper());
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        afterRefresh(result);
+                    }
+                }, 500);
+            }
+
+            @Override
+            public void onFail(Throwable error) {
+            }
+        });
+    }
+
+    private void afterRefresh(List<ChatItem> result) {
+        int itemsBefore = mChatAdapter.getItemCount();
+        mChatAdapter.addItems(result);
+        int itemsAfter = mChatAdapter.getItemCount();
+        mRecyclerView.scrollToPosition(itemsAfter - itemsBefore);
+        for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    mSwipeRefreshLayout.clearAnimation();
+                    mSwipeRefreshLayout.destroyDrawingCache();
+                    mSwipeRefreshLayout.invalidate();
+                }
+            }, i * 500);
+        }
+    }
+
     protected void setFragmentStyle(ChatStyle style) {
         Activity activity = getActivity();
+
         if (style != null) {
-            if (style.chatBackgroundColor != ChatStyle.INVALID)
-                rootView.findViewById(R.id.chat_root).setBackgroundColor(getColorInt(style.chatBackgroundColor));
-            if (style.chatMessageInputColor != ChatStyle.INVALID) {
-                rootView.findViewById(R.id.input_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
-                rootView.findViewById(R.id.input).setBackgroundColor(getColorInt(style.chatMessageInputColor));
-                mBottomSheetView.setBackgroundColor(getColorInt(style.chatMessageInputColor));
-                mCopyControls.setBackgroundColor(getColorInt(style.chatMessageInputColor));
-                mBottomGallery.setBackgroundColor(getColorInt(style.chatMessageInputColor));
-                rootView.findViewById(R.id.bottom_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
-            }
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-                mSearchMessageEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
+            ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.chat_root), style.chatBackgroundColor);
 
-                Drawable menuDrawable = popupMenuButton.getDrawable();
-                if(menuDrawable != null) {
-                    menuDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
-                }
+            ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.input_layout), style.chatMessageInputColor);
+            ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.input), style.chatMessageInputColor);
+            ColorsHelper.setBackgroundColor(activity, mBottomSheetView, style.chatMessageInputColor);
+            ColorsHelper.setBackgroundColor(activity, mCopyControls, style.chatMessageInputColor);
+            ColorsHelper.setBackgroundColor(activity, mBottomGallery, style.chatMessageInputColor);
+            ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.bottom_layout), style.chatMessageInputColor);
 
-                Drawable backButtonDrawable = backButton.getDrawable();
-                if(backButtonDrawable != null) {
-                    backButtonDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
-                }
-            }
-            if (style.chatMessageInputHintTextColor != ChatStyle.INVALID) {
-                mInputEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
-                mSearchMessageEditText.setHintTextColor(getColorInt(style.chatToolbarHintTextColor));
+            ColorsHelper.setTextColor(activity, mSearchMessageEditText, style.chatToolbarTextColorResId);
+            ColorsHelper.setDrawableColor(activity, popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
+            ColorsHelper.setDrawableColor(activity, backButton.getDrawable(), style.chatToolbarTextColorResId);
 
-            }
-            if (style.incomingMessageTextColor != ChatStyle.INVALID) {
-                mInputEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
-            }
+            ColorsHelper.setHintTextColor(activity, mInputEditText, style.chatMessageInputHintTextColor);
+            ColorsHelper.setHintTextColor(activity, mSearchMessageEditText, style.chatToolbarHintTextColor);
+
+            ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
+
+            ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.content_copy), style.chatBodyIconsTint);
+            ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.reply), style.chatBodyIconsTint);
+            ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.send_message), style.chatBodyIconsTint);
+            ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.add_attachment), style.chatBodyIconsTint);
+            ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.quote_clear), style.chatBodyIconsTint);
+            ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.quote_clear), style.chatBodyIconsTint);
+
             if (style.chatBodyIconsTint != ChatStyle.INVALID) {
-                @IdRes int views[] = {
-                        R.id.content_copy
-                        , R.id.reply
-                        , R.id.send_message
-                        , R.id.add_attachment
-                        , R.id.quote_clear
-                        , R.id.quote_clear,};
-                for (@IdRes int i : views) {
-                    ImageView iv = (ImageView) rootView.findViewById(i);
-                    setTint(iv, style.chatBodyIconsTint);
-                }
                 mBottomSheetView.setButtonsTint(style.chatBodyIconsTint);
             }
-            if (style.welcomeScreenLogoResId != ChatStyle.INVALID)
+            if (style.welcomeScreenLogoResId != ChatStyle.INVALID) {
                 mWelcomeScreen.setLogo(style.welcomeScreenLogoResId);
-            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID)
+            }
+            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
                 mWelcomeScreen.setTextColor(style.welcomeScreenTextColorResId);
-            if (style.welcomeScreenTitleTextResId != ChatStyle.INVALID)
+            }
+            if (style.welcomeScreenTitleTextResId != ChatStyle.INVALID) {
                 mWelcomeScreen.setText(getString(style.welcomeScreenTitleTextResId), getString(style.welcomeScreenSubtitleTextResId));
-            if (style.titleSizeInSp != ChatStyle.INVALID)
+            }
+            if (style.titleSizeInSp != ChatStyle.INVALID) {
                 mWelcomeScreen.setTitletextSize(style.titleSizeInSp);
-            if (style.subtitleSizeInSp != ChatStyle.INVALID)
+            }
+            if (style.subtitleSizeInSp != ChatStyle.INVALID) {
                 mWelcomeScreen.setSubtitleSize(style.subtitleSizeInSp);
-            if (style.chatBackgroundColor != ChatStyle.INVALID)
+            }
+            if (style.chatBackgroundColor != ChatStyle.INVALID) {
                 mWelcomeScreen.setBackground(style.chatBackgroundColor);
-
-        }
-        Drawable overflowDrawable = popupMenuButton.getDrawable();
-        if (style != null) {
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                mToolbar.setBackgroundColor(ContextCompat.getColor(activity, style.chatToolbarColorResId));
-            }
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-                mConsultTitle.setTextColor(ContextCompat.getColor(activity, style.chatToolbarTextColorResId));
-                mConsultNameView.setTextColor(ContextCompat.getColor(activity, style.chatToolbarTextColorResId));
             }
 
+            ColorsHelper.setBackgroundColor(activity, mToolbar, style.chatToolbarColorResId);
+            ColorsHelper.setTextColor(activity, mConsultTitle, style.chatToolbarTextColorResId);
+            ColorsHelper.setTextColor(activity, mConsultNameView, style.chatToolbarTextColorResId);
         }
 
         try {
+            Drawable overflowDrawable = popupMenuButton.getDrawable();
             if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-                overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+                ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
             } else {
-                overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
+                ColorsHelper.setDrawableColor(activity, overflowDrawable, android.R.color.white);
             }
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
@@ -502,7 +524,7 @@ public class ChatFragment extends Fragment implements
             }
         } else if (chatPhrase instanceof ConsultPhrase) {
             AnalyticsTracker.getInstance(activity, PrefUtils.getGaTrackerId(activity)).setAttachmentWasOpened();
-            startActivity(ImagesActivity.getStartIntent(activity, ((ChatPhrase) chatPhrase).getFileDescription()));
+            startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));
         }
     }
 
@@ -562,91 +584,105 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onPhraseLongClick(final ChatPhrase cp, final int position) {
+        final Activity activity = getActivity();
+        final Context ctx = activity.getApplicationContext();
+
+        unChooseItem(cp);
+
         if (cp == mChosenPhrase) {
-            unChooseItem(cp);
             return;
         }
-        unChooseItem(cp);
+
         if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID) {
-            Drawable d = getResources().getDrawable(R.drawable.ic_arrow_back_blue_24dp);
-            d.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+            ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), style.chatBodyIconsTint);
+            Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
+            ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
             backButton.setImageDrawable(d);
-            Drawable overflowDrawable = popupMenuButton.getDrawable();
-            if(overflowDrawable != null) {
-                overflowDrawable.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
-            }
-        } else mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
+        } else {
+            mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
+        }
+
         if (style != null && style.chatMessageInputColor != ChatStyle.INVALID) {
             mToolbar.setBackgroundColor(getColorInt(style.chatMessageInputColor));
         } else {
-            mToolbar.setBackgroundColor(getResources().getColor(android.R.color.white));
+            mToolbar.setBackgroundColor(ContextCompat.getColor(ctx, android.R.color.white));
         }
+
         mCopyControls.setVisibility(View.VISIBLE);
         mConsultNameView.setVisibility(View.GONE);
         mConsultTitle.setVisibility(View.GONE);
+
         ImageButton reply = (ImageButton) mCopyControls.findViewById(R.id.reply);
         ImageButton copy = (ImageButton) mCopyControls.findViewById(R.id.content_copy);
-        final Activity activity = getActivity();
-        final Context ctx = activity;
         copy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClipboardManager cm = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
-                cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
-                hideCopyControls();
-                PrefUtils.setLastCopyText(ctx, cp.getPhraseText());
-                if (null != mChosenPhrase) unChooseItem(mChosenPhrase);
+                onCopyClick(activity, cp);
             }
         });
+
         reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String headerText = "";
-                String text = cp.getPhraseText();
-                hideCopyControls();
-                mRecyclerView.scrollToPosition(position);
-                FileDescription quoteFileDescription = cp.getFileDescription();
-                if (quoteFileDescription == null && cp.getQuote() != null) {
-                    quoteFileDescription = cp.getQuote().getFileDescription();
-                }
-                mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
-                mFileDescription = null;
-                if (isEmpty(cp.getPhraseText())) {
-                    mQuote = new Quote(headerText, cp.getPhraseText(), quoteFileDescription, System.currentTimeMillis());
-                }
-                if (cp instanceof UserPhrase) {
-                    headerText = getString(R.string.I);
-                    mQuote.setFromConsult(false);
-                    mQuote.setPhraseOwnerTitle(headerText);
-                } else if (cp instanceof ConsultPhrase) {
-                    headerText = ((ConsultPhrase) cp).getConsultName();
-                    mQuote.setFromConsult(true);
-                    mQuote.setQuotedPhraseId(((ConsultPhrase) cp).getConsultId());
-                    if (headerText == null) {
-                        headerText = getString(R.string.consult);
-                    }
-                    mQuote.setPhraseOwnerTitle(headerText);
-                }
-                if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
-                        || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
-                    mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? getString(R.string.image) : text, cp.getFileDescription().getFilePath());
-                } else if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PDF) {
-                    String fileName = "";
-                    try {
-                        fileName = cp.getFileDescription().getIncomingName() == null ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath())) : cp.getFileDescription().getIncomingName();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText,
-                            fileName,
-                            null);
-                } else {
-                    mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
-                }
+                onReplyClick(cp, position);
             }
         });
+
         mChosenPhrase = cp;
         mChatAdapter.setItemChosen(true, cp);
+    }
+
+    private void onReplyClick(ChatPhrase cp, int position) {
+        String headerText = "";
+        String text = cp.getPhraseText();
+        hideCopyControls();
+        mRecyclerView.scrollToPosition(position);
+        FileDescription quoteFileDescription = cp.getFileDescription();
+        if (quoteFileDescription == null && cp.getQuote() != null) {
+            quoteFileDescription = cp.getQuote().getFileDescription();
+        }
+        mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
+        mFileDescription = null;
+        if (isEmpty(cp.getPhraseText())) {
+            mQuote = new Quote(headerText, cp.getPhraseText(), quoteFileDescription, System.currentTimeMillis());
+        }
+        if (cp instanceof UserPhrase) {
+            headerText = getString(R.string.I);
+            mQuote.setFromConsult(false);
+            mQuote.setPhraseOwnerTitle(headerText);
+        } else if (cp instanceof ConsultPhrase) {
+            headerText = ((ConsultPhrase) cp).getConsultName();
+            mQuote.setFromConsult(true);
+            mQuote.setQuotedPhraseId(((ConsultPhrase) cp).getConsultId());
+            if (headerText == null) {
+                headerText = getString(R.string.consult);
+            }
+            mQuote.setPhraseOwnerTitle(headerText);
+        }
+        if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
+                || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
+            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? getString(R.string.image) : text, cp.getFileDescription().getFilePath());
+        } else if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PDF) {
+            String fileName = "";
+            try {
+                fileName = cp.getFileDescription().getIncomingName() == null ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath())) : cp.getFileDescription().getIncomingName();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText,
+                    fileName,
+                    null);
+        } else {
+            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
+        }
+    }
+
+    private void onCopyClick(Activity activity, ChatPhrase cp) {
+        ClipboardManager cm = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
+        cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
+        hideCopyControls();
+        PrefUtils.setLastCopyText(activity.getApplicationContext(), cp.getPhraseText());
+        if (null != mChosenPhrase) unChooseItem(mChosenPhrase);
     }
 
     @Override
@@ -687,23 +723,27 @@ public class ChatFragment extends Fragment implements
         if (mAttachedImages == null || mAttachedImages.size() == 0) {
             mBottomGallery.setVisibility(View.GONE);
         } else {
-
             List<UpcomingUserMessage> messages = new ArrayList<>();
             messages.add(new UpcomingUserMessage(
                     new FileDescription(
-                            getString(R.string.I)
-                            , mAttachedImages.get(0)
-                            , new File(mAttachedImages.get(0).replaceAll("file://", "")).length()
-                            , System.currentTimeMillis())
-                    , mQuote
-                    , mInputEditText.getText().toString().trim()
-                    , isCopy(mInputEditText.getText().toString())));
+                            getString(R.string.I),
+                            mAttachedImages.get(0),
+                            new File(mAttachedImages.get(0).replaceAll("file://", "")).length(),
+                            System.currentTimeMillis()),
+                    mQuote,
+                    mInputEditText.getText().toString().trim(),
+                    isCopy(mInputEditText.getText().toString())));
+
             for (int i = 1; i < mAttachedImages.size(); i++) {
-                messages.add(new UpcomingUserMessage(
-                        new FileDescription(getString(R.string.I), mAttachedImages.get(i), new File(mAttachedImages.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
-                        , null
-                        , null
-                        , false));
+                FileDescription fileDescription = new FileDescription(
+                        getString(R.string.I),
+                        mAttachedImages.get(i),
+                        new File(mAttachedImages.get(i).replaceAll("file://", "")).length(),
+                        System.currentTimeMillis());
+
+                UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
+                        fileDescription, null, null, false);
+                messages.add(upcomingUserMessage);
             }
             sendMessage(messages, true);
         }
@@ -711,7 +751,6 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onFileSelected(File fileOrDirectory) {
-
         Log.i(TAG, "onFileSelected: " + fileOrDirectory);
 
         mFileDescription = new FileDescription(getString(R.string.I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
@@ -724,82 +763,90 @@ public class ChatFragment extends Fragment implements
         if (isEmpty(request)) {
             mChatAdapter.removeHighlight();
             mSearchHandler.removeCallbacksAndMessages(null);
-            searchUp.setAlpha(0.5f);
-            searchDown.setAlpha(0.5f);
+            searchUp.setAlpha(DISABLED_ALPHA);
+            searchDown.setAlpha(DISABLED_ALPHA);
             return;
         }
         mSearchHandler.removeCallbacksAndMessages(null);
         mSearchHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                final ChatPhrase[] highlighted = {null};
-                mChatController.fancySearch(request, forward, new CallbackNoError<List<ChatItem>>() {
-                    @Override
-                    public void onCall(final List<ChatItem> data) {
-                        h.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                int first = -1;
-                                int last = -1;
-
-                                //для поиска - ищем индекс первого совпадения
-                                for (int i = 0; i < data.size(); i++) {
-                                    if (data.get(i) instanceof ChatPhrase) {
-                                        if (((ChatPhrase) data.get(i)).isFound()) {
-                                            first = i;
-                                            break;
-                                        }
-                                    }
-                                }
-                                //для поиска - ищем индекс последнего совпадения
-                                for (int i = data.size() - 1; i >= 0; i--) {
-                                    if (data.get(i) instanceof ChatPhrase) {
-                                        if (((ChatPhrase) data.get(i)).isFound()) {
-                                            last = i;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                for (int i = 0; i < data.size(); i++) {
-                                    if (data.get(i) instanceof ChatPhrase) {
-                                        if (((ChatPhrase) data.get(i)).isHighlight()) {
-                                            highlighted[0] = (ChatPhrase) data.get(i);
-
-                                            //для поиска - если можно перемещаться, подсвечиваем
-                                            if (first != -1 && i > first) {
-                                                searchDown.setAlpha(1.0f);
-                                            } else {
-                                                searchDown.setAlpha(0.5f);
-                                            }
-                                            //для поиска - если можно перемещаться, подсвечиваем
-                                            if (last != -1 && i < last) {
-                                                searchUp.setAlpha(1.0f);
-                                            } else {
-                                                searchUp.setAlpha(0.5f);
-                                            }
-
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                mChatAdapter.addItems(data);
-                                mChatAdapter.removeHighlight();
-                            }
-                        });
-                        h.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (highlighted[0] == null) return;
-                                int index = mChatAdapter.setItemHighlighted(highlighted[0]);
-                                if (index != -1) mRecyclerView.scrollToPosition(index);
-                            }
-                        }, 60);
-                    }
-                });
+                onSearch(request, forward);
             }
         }, 400);
+    }
+
+    private void onSearch(String request, boolean forward) {
+        final ChatPhrase[] highlighted = {null};
+        mChatController.fancySearch(request, forward, new CallbackNoError<List<ChatItem>>() {
+            @Override
+            public void onCall(final List<ChatItem> data) {
+                h.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onSearchEnd(data, highlighted);
+                    }
+                });
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (highlighted[0] == null) return;
+                        int index = mChatAdapter.setItemHighlighted(highlighted[0]);
+                        if (index != -1) mRecyclerView.scrollToPosition(index);
+                    }
+                }, 60);
+            }
+        });
+    }
+
+    private void onSearchEnd(List<ChatItem> data, ChatPhrase[] highlighted) {
+        int first = -1;
+        int last = -1;
+
+        //для поиска - ищем индекс первого совпадения
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i) instanceof ChatPhrase) {
+                if (((ChatPhrase) data.get(i)).isFound()) {
+                    first = i;
+                    break;
+                }
+            }
+        }
+        //для поиска - ищем индекс последнего совпадения
+        for (int i = data.size() - 1; i >= 0; i--) {
+            if (data.get(i) instanceof ChatPhrase) {
+                if (((ChatPhrase) data.get(i)).isFound()) {
+                    last = i;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i) instanceof ChatPhrase) {
+                if (((ChatPhrase) data.get(i)).isHighlight()) {
+                    highlighted[0] = (ChatPhrase) data.get(i);
+
+                    //для поиска - если можно перемещаться, подсвечиваем
+                    if (first != -1 && i > first) {
+                        searchDown.setAlpha(ENABLED_ALPHA);
+                    } else {
+                        searchDown.setAlpha(DISABLED_ALPHA);
+                    }
+                    //для поиска - если можно перемещаться, подсвечиваем
+                    if (last != -1 && i < last) {
+                        searchUp.setAlpha(ENABLED_ALPHA);
+                    } else {
+                        searchUp.setAlpha(DISABLED_ALPHA);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        mChatAdapter.addItems(data);
+        mChatAdapter.removeHighlight();
     }
 
     private void openBottomSheetAndGallery() {
@@ -1012,22 +1059,21 @@ public class ChatFragment extends Fragment implements
     }
 
     private void hideCopyControls() {
+        Activity activity = getActivity();
+        Context context = activity.getApplicationContext();
         setTitleStateCurrentOperatorConnected();
         if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-            Drawable d = getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp);
-            d.setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
+            ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
             backButton.setImageDrawable(d);
-            Drawable overflowDrawable = popupMenuButton.getDrawable();
-            if(overflowDrawable != null) {
-                overflowDrawable.setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-            }
+            ColorsHelper.setDrawableColor(context, popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
         } else {
             backButton.setImageResource(R.drawable.ic_arrow_back_white_24dp);
         }
         if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-            mToolbar.setBackgroundColor(getColorInt(style.chatToolbarColorResId));
+            ColorsHelper.setBackgroundColor(context, mToolbar, style.chatToolbarColorResId);
         } else {
-            mToolbar.setBackgroundColor(getResources().getColor(R.color.green_light));
+            ColorsHelper.setBackgroundColor(context, mToolbar, R.color.green_light);
         }
 
 
@@ -1167,22 +1213,6 @@ public class ChatFragment extends Fragment implements
         if (null != mChatAdapter) mChatAdapter.removeConsultSearching();
     }
 
-    private void getIncomingSettings(Bundle bundle) {
-        Activity activity = getActivity();
-        if(bundle != null) {
-            if (bundle.getString("clientId") == null && PrefUtils.getClientID(activity).equals(""))
-                throw new IllegalStateException("you must provide valid client id," +
-                        "\r\n it is now null or it'ts length < 5");
-            if (bundle.getBoolean("style", false)) {
-                ChatStyle style = ChatStyle.styleFromBundle(bundle);
-                PrefUtils.setIncomingStyle(activity, style);
-            }
-            if (bundle.getString("userName") != null)
-                PrefUtils.setUserName(activity, bundle.getString("userName"));
-        }
-        style = PrefUtils.getIncomingStyle(activity);
-    }
-
     private void unChooseItem(ChatPhrase cp) {
         hideCopyControls();
         mChatAdapter.setItemChosen(false, mChosenPhrase);
@@ -1210,11 +1240,6 @@ public class ChatFragment extends Fragment implements
         } else {
             hideOverflowMenu();
         }
-    }
-
-    private void setTint(ImageView view, @ColorRes int colorRes) {
-        @ColorInt int color = ContextCompat.getColor(getActivity(), colorRes);
-        view.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
 
     public ChatStyle getStyle() {
@@ -1457,7 +1482,6 @@ public class ChatFragment extends Fragment implements
     private void search(final boolean searchInFiles) {
         Log.i(TAG, "searchInFiles: " + searchInFiles);
         isInMessageSearchMode = true;
-        this.searchInFiles = searchInFiles;
         setBottomStateDefault();
         setTitleStateSearchingMessage();
         mSearchMessageEditText.requestFocus();

@@ -12,6 +12,7 @@ import android.util.Log;
 import java.io.Serializable;
 
 import im.threads.activities.ChatActivity;
+import im.threads.utils.PrefUtils;
 
 /**
  * Стиль чата.
@@ -232,38 +233,39 @@ public class ChatStyle implements Serializable {
         if (this == o) return true;
         if (!(o instanceof ChatStyle)) return false;
 
-        ChatStyle style = (ChatStyle) o;
+        ChatStyle chatStyle = (ChatStyle) o;
 
-        return chatTitleTextResId == style.chatTitleTextResId &&
-            chatToolbarColorResId == style.chatToolbarColorResId &&
-            chatStatusBarColorResId == style.chatStatusBarColorResId &&
-            chatToolbarTextColorResId == style.chatToolbarTextColorResId &&
-            menuItemTextColorResId == style.menuItemTextColorResId &&
-            chatToolbarHintTextColor == style.chatToolbarHintTextColor &&
-            chatBackgroundColor == style.chatBackgroundColor &&
-            chatHighlightingColor == style.chatHighlightingColor &&
-            chatMessageInputColor == style.chatMessageInputColor &&
-            chatMessageInputHintTextColor == style.chatMessageInputHintTextColor &&
-            incomingMessageBubbleColor == style.incomingMessageBubbleColor &&
-            outgoingMessageBubbleColor == style.outgoingMessageBubbleColor &&
-            incomingMessageTextColor == style.incomingMessageTextColor &&
-            outgoingMessageTextColor == style.outgoingMessageTextColor &&
-            defaultIncomingMessageAvatar == style.defaultIncomingMessageAvatar &&
-            imagePlaceholder == style.imagePlaceholder &&
-            defPushIconResid == style.defPushIconResid &&
-            nugatPushAccentColorResId == style.nugatPushAccentColorResId &&
-            defTitleResId == style.defTitleResId &&
-            isGAEnabled == style.isGAEnabled &&
-            welcomeScreenLogoResId == style.welcomeScreenLogoResId &&
-            welcomeScreenTitleTextResId == style.welcomeScreenTitleTextResId &&
-            welcomeScreenSubtitleTextResId == style.welcomeScreenSubtitleTextResId &&
-            welcomeScreenTextColorResId == style.welcomeScreenTextColorResId &&
-            titleSizeInSp == style.titleSizeInSp &&
-            subtitleSizeInSp == style.subtitleSizeInSp &&
-            chatBodyIconsTint == style.chatBodyIconsTint &&
-            connectionMessageTextColor == style.connectionMessageTextColor &&
-            fileBrowserDialogStyleResId == style.fileBrowserDialogStyleResId &&
-            pushBackgroundColorResId == style.pushBackgroundColorResId;
+        if (chatTitleTextResId != chatStyle.chatTitleTextResId) return false;
+        if (chatToolbarColorResId != chatStyle.chatToolbarColorResId) return false;
+        if (chatStatusBarColorResId != chatStyle.chatStatusBarColorResId) return false;
+        if (menuItemTextColorResId != chatStyle.menuItemTextColorResId) return false;
+        if (chatToolbarTextColorResId != chatStyle.chatToolbarTextColorResId) return false;
+        if (chatToolbarHintTextColor != chatStyle.chatToolbarHintTextColor) return false;
+        if (chatBackgroundColor != chatStyle.chatBackgroundColor) return false;
+        if (chatHighlightingColor != chatStyle.chatHighlightingColor) return false;
+        if (chatMessageInputColor != chatStyle.chatMessageInputColor) return false;
+        if (chatMessageInputHintTextColor != chatStyle.chatMessageInputHintTextColor) return false;
+        if (incomingMessageBubbleColor != chatStyle.incomingMessageBubbleColor) return false;
+        if (outgoingMessageBubbleColor != chatStyle.outgoingMessageBubbleColor) return false;
+        if (incomingMessageTextColor != chatStyle.incomingMessageTextColor) return false;
+        if (outgoingMessageTextColor != chatStyle.outgoingMessageTextColor) return false;
+        if (defaultIncomingMessageAvatar != chatStyle.defaultIncomingMessageAvatar) return false;
+        if (imagePlaceholder != chatStyle.imagePlaceholder) return false;
+        if (defPushIconResid != chatStyle.defPushIconResid) return false;
+        if (nugatPushAccentColorResId != chatStyle.nugatPushAccentColorResId) return false;
+        if (defTitleResId != chatStyle.defTitleResId) return false;
+        if (isGAEnabled != chatStyle.isGAEnabled) return false;
+        if (welcomeScreenLogoResId != chatStyle.welcomeScreenLogoResId) return false;
+        if (welcomeScreenTitleTextResId != chatStyle.welcomeScreenTitleTextResId) return false;
+        if (welcomeScreenSubtitleTextResId != chatStyle.welcomeScreenSubtitleTextResId)
+            return false;
+        if (welcomeScreenTextColorResId != chatStyle.welcomeScreenTextColorResId) return false;
+        if (titleSizeInSp != chatStyle.titleSizeInSp) return false;
+        if (subtitleSizeInSp != chatStyle.subtitleSizeInSp) return false;
+        if (chatBodyIconsTint != chatStyle.chatBodyIconsTint) return false;
+        if (connectionMessageTextColor != chatStyle.connectionMessageTextColor) return false;
+        if (fileBrowserDialogStyleResId != chatStyle.fileBrowserDialogStyleResId) return false;
+        return pushBackgroundColorResId == chatStyle.pushBackgroundColorResId;
     }
 
     @Override
@@ -271,8 +273,8 @@ public class ChatStyle implements Serializable {
         int result = chatTitleTextResId;
         result = 31 * result + chatToolbarColorResId;
         result = 31 * result + chatStatusBarColorResId;
-        result = 31 * result + chatToolbarTextColorResId;
         result = 31 * result + menuItemTextColorResId;
+        result = 31 * result + chatToolbarTextColorResId;
         result = 31 * result + chatToolbarHintTextColor;
         result = 31 * result + chatBackgroundColor;
         result = 31 * result + chatHighlightingColor;
@@ -464,5 +466,20 @@ public class ChatStyle implements Serializable {
             i.putExtra(CHAT_FRAGMENT_BUNDLE, b);
             return i;
         }
+    }
+
+    public static ChatStyle getStyleFromBundleWithThrow(Context context, Bundle bundle) {
+        if(bundle != null) {
+            if (bundle.getString("clientId") == null && PrefUtils.getClientID(context).equals(""))
+                throw new IllegalStateException("you must provide valid client id," +
+                        "\r\n it is now null or it'ts length < 5");
+            if (bundle.getBoolean("style", false)) {
+                ChatStyle style = ChatStyle.styleFromBundle(bundle);
+                PrefUtils.setIncomingStyle(context, style);
+            }
+            if (bundle.getString("userName") != null)
+                PrefUtils.setUserName(context, bundle.getString("userName"));
+        }
+        return PrefUtils.getIncomingStyle(context);
     }
 }
