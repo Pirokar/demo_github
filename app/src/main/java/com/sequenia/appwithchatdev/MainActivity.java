@@ -1,17 +1,23 @@
 package com.sequenia.appwithchatdev;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
+import com.pushserver.android.PushMessage;
+import com.pushserver.android.PushServerIntentService;
 
+import im.threads.controllers.ChatController;
 import im.threads.utils.PermissionChecker;
 import io.fabric.sdk.android.Fabric;
 
@@ -41,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
         clientIdEditText = (EditText) findViewById(R.id.client_id);
         userNameEditText = (EditText) findViewById(R.id.user_name);
+
+        // Отслеживание Push-уведомлений, не распознанных чатом.
+        ChatController.setFullPushListener(new CustomFullPushListener());
+        ChatController.setShortPushListener(new CustomShortPushListener());
 
         Fabric.with(this, new Crashlytics());
     }
@@ -99,6 +109,28 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    public static class CustomShortPushListener implements ChatController.ShortPushListener {
+
+        public static final String TAG = "CustomShortPushListener";
+
+        @Override
+        public void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle) {
+            Log.i(TAG, "Short Push Accepted");
+            Log.i(TAG, bundle.toString());
+        }
+    }
+
+    public static class CustomFullPushListener implements ChatController.FullPushListener {
+
+        public static final String TAG = "CustomFullPushListener";
+
+        @Override
+        public void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage) {
+            Log.i(TAG, "Full Push Accepted");
+            Log.i(TAG, pushMessage.getFullMessage());
         }
     }
 }
