@@ -25,8 +25,6 @@ import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 
-import org.json.JSONException;
-
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -54,7 +52,6 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
-import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.services.DownloadService;
@@ -713,6 +710,13 @@ public class ChatController {
                 }
             }
         }, 1500);
+
+        // Если пришло сообщение от оператора, нужно удалить расписание из чата.
+        if(cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage) {
+            if(fragment != null && fragment.isAdded()) {
+                fragment.removeSchedule(false);
+            }
+        }
     }
 
 
@@ -838,9 +842,6 @@ public class ChatController {
                     if (mDatabaseHolder != null)
                         mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
                 }
-                break;
-            case MessageMatcher.TYPE_SCHEDULE:
-                addMessage(new ScheduleInfo(System.currentTimeMillis()), ctx);
                 break;
         }
     }

@@ -960,7 +960,10 @@ public class ChatFragment extends Fragment implements
 
     private boolean needsAddMessage(ChatItem item) {
         if(item instanceof ScheduleInfo) {
-            return !mChatAdapter.hasSchedule();
+            // Если сообщение о расписании уже показано, то снова отображать не нужно.
+            // Если в сообщении о расписании указано, что сейчас чат работет,
+            // то расписание отображать не нужно.
+            return !((ScheduleInfo) item).isChatWorking() && !mChatAdapter.hasSchedule();
         } else {
             return true;
         }
@@ -1216,6 +1219,10 @@ public class ChatFragment extends Fragment implements
         hideCopyControls();
         mChatAdapter.setItemChosen(false, mChosenPhrase);
         mChosenPhrase = null;
+    }
+
+    public void removeSchedule(boolean checkSchedule) {
+        mChatAdapter.removeSchedule(checkSchedule);
     }
 
     public void showFullError(String error) {

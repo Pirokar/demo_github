@@ -11,7 +11,7 @@ public class MessageMatcher {
     public static final String OPERATOR_JOINED = "OPERATOR_JOINED";
     public static final String OPERATOR_LEFT = "OPERATOR_LEFT";
     private static final String OPERATOR_TYPING = "TYPING";
-    private static final String SCHEDULE = "SCHEDULE";
+    public static final String SCHEDULE = "SCHEDULE";
     public static final int TYPE_OPERATOR_JOINED = 1;
     public static final int TYPE_OPERATOR_LEFT = 2;
     public static final int TYPE_OPERATOR_TYPING = 3;

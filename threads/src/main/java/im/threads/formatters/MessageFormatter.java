@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.advisa.client.api.InOutMessage;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.pushserver.android.PushMessage;
 
 import im.threads.BuildConfig;
@@ -18,6 +21,7 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
+import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.utils.MessageMatcher;
@@ -30,6 +34,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -223,9 +228,15 @@ public class MessageFormatter {
         String type = getType(fullMessage);
 
         // В пуше либо должен быть type известных чату типов,
-        if(type != null && (type.equalsIgnoreCase(MessageMatcher.OPERATOR_JOINED) || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LEFT))) {
-            return getConsultConnectionFromPush(pushMessage);
-        } else if(type == null) {
+        if(type != null) {
+            if(type.equalsIgnoreCase(MessageMatcher.OPERATOR_JOINED) || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LEFT)) {
+                return getConsultConnectionFromPush(pushMessage);
+            } if(type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
+                return getScheduleInfoFromPush(pushMessage, fullMessage);
+            } else {
+                return null;
+            }
+        } else {
             // Либо в fullMessage должны содержаться ключи из списка:
             // "attachments", "text", "quotes"
             String message = getMessage(fullMessage, pushMessage);
@@ -234,12 +245,26 @@ public class MessageFormatter {
             } else {
                 return null;
             }
-        } else {
-            return null;
         }
     }
 
-    public static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
+    private static ScheduleInfo getScheduleInfoFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+        ScheduleInfo scheduleInfo = null;
+
+        String text = getMessage(fullMessage, pushMessage);
+        if(text != null) {
+            try {
+                scheduleInfo = new Gson().fromJson(text, ScheduleInfo.class);
+                scheduleInfo.setDate(new Date().getTime());
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return scheduleInfo;
+    }
+
+    private static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
         ConsultConnectionMessage chatItem = null;
 
         try {

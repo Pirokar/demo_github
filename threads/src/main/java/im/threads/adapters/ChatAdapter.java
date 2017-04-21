@@ -424,7 +424,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((UnreadMessageViewHolder) holder).onBind((UnreadMessages) list.get(holder.getAdapterPosition()));
         }
         if (holder instanceof ScheduleInfoViewHolder) {
-            ((ScheduleInfoViewHolder) holder).bind();
+            ((ScheduleInfoViewHolder) holder).bind((ScheduleInfo) list.get(holder.getAdapterPosition()));
         }
     }
 
@@ -587,6 +587,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public boolean hasSchedule() {
+        List<ChatItem> list = getOriginalList();
+
         if(list == null) {
             return false;
         }
@@ -598,6 +600,28 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         return false;
+    }
+
+    public void removeSchedule(boolean checkSchedule) {
+        List<ChatItem> list = getOriginalList();
+        boolean scheduleRemoved = false;
+
+        if(list != null) {
+            for (Iterator<ChatItem> iter = list.iterator(); iter.hasNext(); ) {
+                ChatItem item = iter.next();
+                if (item instanceof ScheduleInfo) {
+                    ScheduleInfo scheduleInfo = (ScheduleInfo) item;
+                    if(!checkSchedule || scheduleInfo.isChatWorking()) {
+                        iter.remove();
+                        scheduleRemoved = true;
+                    }
+                }
+            }
+        }
+
+        if(scheduleRemoved && !isInSearchMode) {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
