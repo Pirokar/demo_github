@@ -17,26 +17,36 @@ import java.util.List;
  *
  */
 public class IncomingMessagesIntentService extends PushServerIntentService {
-    private static final String TAG = "MessagesIntentService ";
 
+    private static final String TAG = "MessagesIntentService ";
 
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
         Log.i(TAG, "saveMessages " + list);
         if (list == null) return false;
-        try {
-            for (int i = 0; i < list.size(); i++) {
-                ChatController.getInstance(getApplication(), PrefUtils.getClientID(getApplication())).onConsultMessage(list.get(i), getApplication());
+        // В контроллер чата уходят только распознанные по формату чата сообщения.
+        // Остальные уходят на обработку пользователям библиотеки.
+        List<PushMessage> detectedMessages = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            PushMessage pushMessage = list.get(i);
+            ChatController chatController = ChatController.getInstance(getApplication(), PrefUtils.getClientID(getApplication()));
+            boolean messageDetected = chatController.onConsultMessage(pushMessage, getApplication());
+
+            if(messageDetected) {
+                detectedMessages.add(pushMessage);
+            } else if(ChatController.getFullPushListener() != null) {
+                ChatController.getFullPushListener().onNewFullPushNotification(this, pushMessage);
             }
+        }
+
+        if(detectedMessages.size() > 0) {
             Intent intent = new Intent(getApplicationContext(), NotificationService.class);
-            ArrayList<PushMessage> al = new ArrayList<>(list);
+            ArrayList<PushMessage> al = new ArrayList<>(detectedMessages);
             intent.putParcelableArrayListExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE, al);
             intent.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE);
             startService(intent);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e(TAG, "error while parsing server answer");
         }
+
         return true;
     }
 

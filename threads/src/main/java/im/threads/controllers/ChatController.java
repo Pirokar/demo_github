@@ -18,8 +18,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.advisa.client.api.InOutMessage;
+import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
+import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 
@@ -117,6 +119,8 @@ public class ChatController {
     // Используется для создания PendingIntent при открытии чата из пуш уведомления.
     // По умолчанию открывается ChatActivity.
     private static PendingIntentCreator pendingIntentCreator;
+    private static ShortPushListener shortPushListener;
+    private static FullPushListener fullPushListener;
 
     // Для оповещения об изменении количества непрочитанных сообщений
     private static WeakReference<UnreadMessagesCountListener> unreadMessagesCountListener;
@@ -221,6 +225,30 @@ public class ChatController {
 
     public static void removeUnreadMessagesCountListener() {
         ChatController.unreadMessagesCountListener = null;
+    }
+
+    public static void setShortPushListener(ShortPushListener shortPushListener) {
+        ChatController.shortPushListener = shortPushListener;
+    }
+
+    public static void removeShortPushListener() {
+        ChatController.shortPushListener = null;
+    }
+
+    public static void setFullPushListener(FullPushListener fullPushListener) {
+        ChatController.fullPushListener = fullPushListener;
+    }
+
+    public static void removeFullPushListener() {
+        ChatController.fullPushListener = null;
+    }
+
+    public static ShortPushListener getShortPushListener() {
+        return shortPushListener;
+    }
+
+    public static FullPushListener getFullPushListener() {
+        return fullPushListener;
     }
 
     public static int getUnreadMessagesCount(Context context) {
@@ -866,35 +894,46 @@ public class ChatController {
         }
     }
 
-    public synchronized void onConsultMessage(PushMessage pushMessage, final Context ctx) throws JSONException {
+    /**
+     * @return true, если формат сообщения распознан и обработан чатом.
+     * false, если push уведомление не относится к чату и никак им не обработано.
+     */
+    public synchronized boolean onConsultMessage(PushMessage pushMessage, final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onConsultMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
-        ConsultMessageReaction consultReactor = new ConsultMessageReaction(
-                mConsultWriter,
-                new ConsultMessageReactions() {
-                    @Override
-                    public void consultConnected(final String id, final String name, final String title) {
-                        if (fragment != null) fragment.setStateConsultConnected(id, name, title);
-                        // Отправка данных об окружении оператору
-                        try {
-                            String userName = PrefUtils.getUserName(ctx);
-                            String clientId = PrefUtils.getClientID(ctx);
-                            String message = MessageFormatter.createEnvironmentMessage(userName, clientId);
-                            PushController.getInstance(appContext).sendMessage(message, true);
-                        } catch (PushServerErrorException e) {
-                            e.printStackTrace();
-                        }
-                    }
 
-                    @Override
-                    public void onConsultLeft() {
-                        if (null != fragment) fragment.setTitleStateDefault();
-                    }
-                });
-        consultReactor.onPushMessage(chatItem);
-        addMessage(chatItem, ctx);
-        if (chatItem instanceof ConsultPhrase) {
-            mAnalyticsTracker.setConsultMessageWasReceived();
+        if(chatItem != null) {
+            ConsultMessageReaction consultReactor = new ConsultMessageReaction(
+                    mConsultWriter,
+                    new ConsultMessageReactions() {
+                        @Override
+                        public void consultConnected(final String id, final String name, final String title) {
+                            if (fragment != null)
+                                fragment.setStateConsultConnected(id, name, title);
+                            // Отправка данных об окружении оператору
+                            try {
+                                String userName = PrefUtils.getUserName(ctx);
+                                String clientId = PrefUtils.getClientID(ctx);
+                                String message = MessageFormatter.createEnvironmentMessage(userName, clientId);
+                                PushController.getInstance(appContext).sendMessage(message, true);
+                            } catch (PushServerErrorException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onConsultLeft() {
+                            if (null != fragment) fragment.setTitleStateDefault();
+                        }
+                    });
+            consultReactor.onPushMessage(chatItem);
+            addMessage(chatItem, ctx);
+            if (chatItem instanceof ConsultPhrase) {
+                mAnalyticsTracker.setConsultMessageWasReceived();
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -1019,5 +1058,21 @@ public class ChatController {
 
     public interface UnreadMessagesCountListener {
         void onUnreadMessagesCountChanged(int count);
+    }
+
+    /**
+     * Оповещает о приходе короткого Push-уведомления.
+     * Не срабатывает при опознанных системных Push-уведомлениях
+     */
+    public interface ShortPushListener {
+        void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle);
+    }
+
+    /**
+     * Оповещает о приходе полного Push-уведомления.
+     * Не срабатывает, если удалось определить, что это уведомления для библиотеки чата.
+     */
+    public interface FullPushListener {
+        void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage);
     }
 }

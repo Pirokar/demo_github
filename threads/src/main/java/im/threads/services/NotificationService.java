@@ -51,6 +51,7 @@ import java.util.concurrent.Executors;
 import static android.text.TextUtils.isEmpty;
 
 /**
+ * Отображает пуш уведомление, о котором скачана полная информация.
  * Created by yuri on 17.08.2016.
  */
 public class NotificationService extends Service {

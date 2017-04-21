@@ -11,6 +11,10 @@ import im.threads.controllers.ChatController;
 import im.threads.utils.PrefUtils;
 
 /**
+ * Приемщик всех коротких пуш уведомлений,
+ * т.е. просто всех уведомлений на прямую от GCM.
+ * Полная информация о пуш уведомлениях скачивается отдельно
+ * и доступна в IncomingMessagesIntentService.
  * Created by yuri on 22.06.2016.
  */
 public class MainPBReceiver extends PushBroadcastReceiver {
@@ -18,12 +22,25 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
-        int messageType = MessageMatcher.getType(bundle);
         Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
-        if (messageType == MessageMatcher.TYPE_OPERATOR_TYPING
-                || messageType == MessageMatcher.TYPE_MESSAGES_READ
-                || messageType == MessageMatcher.TYPE_SCHEDULE)
+        if (isChatSystemPush(bundle)) {
             ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
+        } else {
+            if(!isChatPush(bundle) && ChatController.getShortPushListener() != null) {
+                ChatController.getShortPushListener().onNewShortPushNotification(this, context, s, bundle);
+            }
+        }
+    }
+
+    private boolean isChatSystemPush(Bundle bundle) {
+        int messageType = MessageMatcher.getType(bundle);
+        return messageType == MessageMatcher.TYPE_OPERATOR_TYPING
+                || messageType == MessageMatcher.TYPE_MESSAGES_READ
+                || messageType == MessageMatcher.TYPE_SCHEDULE;
+    }
+
+    private boolean isChatPush(Bundle bundle) {
+        return MessageMatcher.getType(bundle) != MessageMatcher.UNKNOWN;
     }
 
     @Override

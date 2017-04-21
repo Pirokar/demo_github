@@ -20,6 +20,7 @@ import im.threads.model.MessageState;
 import im.threads.model.Quote;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
+import im.threads.utils.MessageMatcher;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -124,71 +125,151 @@ public class MessageFormatter {
         return "";
     }
 
-    public static ChatItem format(PushMessage pushMessage) throws JSONException {
-        JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
-        if (fullMessage.has("type") && (fullMessage.getString("type").equalsIgnoreCase("OPERATOR_JOINED") || fullMessage.getString("type").equalsIgnoreCase("OPERATOR_LEFT"))) {
-            return getConsultConnectionFromPush(pushMessage);
+    private static JSONObject getFullMessage(PushMessage pushMessage) {
+        JSONObject fullMessage;
+
+        try {
+            fullMessage = new JSONObject(pushMessage.getFullMessage());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            fullMessage = null;
         }
-        String messageId = pushMessage.getMessageId();
-        long timeStamp = pushMessage.getSentAt();
-        String message = fullMessage.getString("text") == null ? pushMessage.getShortMessage() : fullMessage.getString("text");
-        JSONObject operatorInfo = fullMessage.getJSONObject("operator");
-        final String name = operatorInfo.getString("name");
-        String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
-        String status = operatorInfo.has("status") && !operatorInfo.isNull("status") ? operatorInfo.getString("status") : null;
-        JSONArray attachmentsArray = fullMessage.has("attachments") ? fullMessage.getJSONArray("attachments") : null;
-        FileDescription fileDescription = null;
-        if (null != attachmentsArray)
-            fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
-        if (fileDescription != null) {
-            fileDescription.setFrom(name);
-            fileDescription.setTimeStamp(timeStamp);
-        }
-        Quote quote = null;
-        if (fullMessage.has("quotes")) quote = quoteFromJson(fullMessage.getJSONArray("quotes"));
-        if (quote != null && quote.getFileDescription() != null) {
-            quote.getFileDescription().setTimeStamp(timeStamp);
-        }
-        boolean gender = operatorInfo.isNull("gender") ? false : operatorInfo.getString("gender").equalsIgnoreCase("male");
-        return new ConsultPhrase(
-                fileDescription
-                , quote
-                , name
-                , messageId
-                , message
-               /* , timeStamp*/
-                , System.currentTimeMillis()// FIXME: 06.09.2016 temporary
-                , String.valueOf(operatorInfo.getLong("id"))
-                , photoUrl
-                , false
-                , status
-                , gender
-        );
+
+        return fullMessage;
     }
 
-    public static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) throws JSONException {
-        JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
-        String messageId = pushMessage.getMessageId();
-        long timeStamp = pushMessage.getSentAt();
-        JSONObject operator = fullMessage.getJSONObject("operator");
-        long operatorId = operator.getLong("id");
-        String name = operator.isNull("name") ? null : operator.getString("name");
-        String status = operator.isNull("status") ? null : operator.getString("status");
-        String type = fullMessage.getString("type").equalsIgnoreCase("OPERATOR_JOINED") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-        boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
-        String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
-        String title = pushMessage.getShortMessage() == null ? null : pushMessage.getShortMessage().split(" ")[0];
-        return new ConsultConnectionMessage(
-                String.valueOf(operatorId)
-                , type
-                , name
-                , gender
+    private static String getType(JSONObject fullMessage) {
+        String type;
+
+        try {
+            if(fullMessage.has("type")) {
+                type = fullMessage.getString("type");
+            } else {
+                type = null;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            type = null;
+        }
+
+        return type;
+    }
+
+    private static String getMessage(JSONObject fullMessage, PushMessage pushMessage) {
+        String message = null;
+        try {
+            message = fullMessage.getString("text") == null ? pushMessage.getShortMessage() : fullMessage.getString("text");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return message;
+    }
+
+    private static ConsultPhrase getConsultPhraseFromPush(PushMessage pushMessage, JSONObject fullMessage, String message) {
+        try {
+            String messageId = pushMessage.getMessageId();
+            long timeStamp = pushMessage.getSentAt();
+            JSONObject operatorInfo = fullMessage.getJSONObject("operator");
+            final String name = operatorInfo.getString("name");
+            String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
+            String status = operatorInfo.has("status") && !operatorInfo.isNull("status") ? operatorInfo.getString("status") : null;
+            JSONArray attachmentsArray = fullMessage.has("attachments") ? fullMessage.getJSONArray("attachments") : null;
+            FileDescription fileDescription = null;
+            if (null != attachmentsArray)
+                fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray("attachments"));
+            if (fileDescription != null) {
+                fileDescription.setFrom(name);
+                fileDescription.setTimeStamp(timeStamp);
+            }
+            Quote quote = null;
+            if (fullMessage.has("quotes"))
+                quote = quoteFromJson(fullMessage.getJSONArray("quotes"));
+            if (quote != null && quote.getFileDescription() != null) {
+                quote.getFileDescription().setTimeStamp(timeStamp);
+            }
+            boolean gender = operatorInfo.isNull("gender") ? false : operatorInfo.getString("gender").equalsIgnoreCase("male");
+
+            return new ConsultPhrase(
+                    fileDescription,
+                    quote,
+                    name,
+                    messageId,
+                    message,
+                    System.currentTimeMillis(),
+                    String.valueOf(operatorInfo.getLong("id")),
+                    photoUrl,
+                    false,
+                    status,
+                    gender
+            );
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * @return null, если не удалось распознать формат сообщения.
+     */
+    public static ChatItem format(PushMessage pushMessage) {
+        JSONObject fullMessage = getFullMessage(pushMessage);
+
+        // В пуше для чата должен быть fullMessage, и он должен соответствовать формату JSON.
+        if(fullMessage == null) {
+            return null;
+        }
+
+        String type = getType(fullMessage);
+
+        // В пуше либо должен быть type известных чату типов,
+        if(type != null && (type.equalsIgnoreCase(MessageMatcher.OPERATOR_JOINED) || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LEFT))) {
+            return getConsultConnectionFromPush(pushMessage);
+        } else if(type == null) {
+            // Либо в fullMessage должны содержаться ключи из списка:
+            // "attachments", "text", "quotes"
+            String message = getMessage(fullMessage, pushMessage);
+            if(message != null || fullMessage.has("attachments") || fullMessage.has("quotes")) {
+                return getConsultPhraseFromPush(pushMessage, fullMessage, message);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
+        ConsultConnectionMessage chatItem = null;
+
+        try {
+            JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
+            String messageId = pushMessage.getMessageId();
+            long timeStamp = pushMessage.getSentAt();
+            JSONObject operator = fullMessage.getJSONObject("operator");
+            long operatorId = operator.getLong("id");
+            String name = operator.isNull("name") ? null : operator.getString("name");
+            String status = operator.isNull("status") ? null : operator.getString("status");
+            String type = fullMessage.getString("type").equalsIgnoreCase("OPERATOR_JOINED") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+            boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
+            String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
+            String title = pushMessage.getShortMessage() == null ? null : pushMessage.getShortMessage().split(" ")[0];
+            chatItem = new ConsultConnectionMessage(
+                    String.valueOf(operatorId)
+                    , type
+                    , name
+                    , gender
               /*  , timeStamp*/
-                , System.currentTimeMillis() // FIXME: 06.09.2016 temporary
-                , photourl
-                , status
-                , title
-                , pushMessage.getMessageId());
+                    , System.currentTimeMillis() // FIXME: 06.09.2016 temporary
+                    , photourl
+                    , status
+                    , title
+                    , pushMessage.getMessageId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return chatItem;
     }
 
     private static JSONArray attachmentsFromFileDescription(File file) throws JSONException {
@@ -305,12 +386,11 @@ public class MessageFormatter {
 
     public static List<ChatItem> formatMessages(List<PushMessage> messages) {
         List<ChatItem> list = new ArrayList<>();
-        try {
-            for (int i = 0; i < messages.size(); i++) {
-                list.add(format(messages.get(i)));
+        for (int i = 0; i < messages.size(); i++) {
+            ChatItem chatItem = format(messages.get(i));
+            if(chatItem != null) {
+                list.add(chatItem);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
         return list;
     }

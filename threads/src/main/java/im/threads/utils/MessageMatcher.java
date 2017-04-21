@@ -8,8 +8,8 @@ import com.pushserver.android.PushGcmIntentService;
  * Created by yuri on 14.07.2016.
  */
 public class MessageMatcher {
-    private static final String OPERATOR_JOINED = "OPERATOR_JOINED";
-    private static final String OPERATOR_LEFT = "OPERATOR_LEFT";
+    public static final String OPERATOR_JOINED = "OPERATOR_JOINED";
+    public static final String OPERATOR_LEFT = "OPERATOR_LEFT";
     private static final String OPERATOR_TYPING = "TYPING";
     private static final String SCHEDULE = "SCHEDULE";
     public static final int TYPE_OPERATOR_JOINED = 1;
