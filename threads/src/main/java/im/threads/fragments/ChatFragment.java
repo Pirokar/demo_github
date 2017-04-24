@@ -1374,32 +1374,7 @@ public class ChatFragment extends Fragment implements
         popupMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ScheduleInfo scheduleInfo = new ScheduleInfo();
-                scheduleInfo.setId(new Date().getTime());
-                scheduleInfo.setNotification("Мы будем доступны скоро");
-
-                ArrayList<Interval> intervals = new ArrayList<Interval>();
-                Interval interval = new Interval();
-                interval.setWeekDay(1);
-                interval.setStartTime(10);
-                interval.setEndTime(20);
-                intervals.add(interval);
-                scheduleInfo.setIntervals(intervals);
-
-                String scheduleInfoString = new Gson().toJson(scheduleInfo);
-                HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("type", "SCHEDULE");
-                hashMap.put("text", scheduleInfoString);
-                String schedulePushString = new Gson().toJson(hashMap);
-
-                PushMessage schedulePush = new PushMessage();
-                schedulePush.setFullMessage(schedulePushString);
-
-                ChatController.getInstance(getActivity(), PrefUtils.getClientID(getActivity())).onConsultMessage(
-                        schedulePush,
-                        getActivity()
-                );
-                //showPopup();
+                showPopup();
             }
         });
         showOverflowMenu();

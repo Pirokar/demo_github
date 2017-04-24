@@ -31,6 +31,7 @@ public class ChatStyle implements Serializable {
     private static final String ARG_SET_PUSH_NOTIFICATION_STYLE = "setPushNotificationStyle";
     private static final String ARG_SET_CHAT_BODY_STYLE = "setChatBodyStyle";
     private static final String ARG_SET_CHAT_TITLE_STYLE = "setChatTitleStyle";
+    private static final String ARG_SET_SCHEDULE_MESSAGE_STYLE = "setScheduleMessageStyle";
     private static final String ARG_STYLE = "style";
 
     private static final String ARG_WELCOME_SCREEN_LOGO_RES_ID = "welcomeScreenLogoResId";
@@ -62,6 +63,8 @@ public class ChatStyle implements Serializable {
     private static final String ARG_CHAT_STATUS_BAR_COLOR_RES_ID = "chatStatusBarColorResId";
     private static final String ARG_MENU_ITEM_TEXT_COLOR_RES_ID = "menuItemTextColorResId";
     private static final String ARG_CHAT_TOOLBAR_HINT_TEXT_COLOR = "chatToolbarHintTextColor";
+    private static final String ARG_SCHEDULE_MESSAGE_ICON_RES_ID = "scheduleMessageIconResId";
+    private static final String ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID = "scheduleMessageTextColorResId";
     private static final String ARG_IS_GA_ENABLED = "isGAEnabled";
 
     public static final int INVALID = -1;
@@ -122,6 +125,10 @@ public class ChatStyle implements Serializable {
     public final int fileBrowserDialogStyleResId;
     @ColorRes
     public final int pushBackgroundColorResId;
+    @ColorRes
+    public final int scheduleMessageTextColorResId;
+    @DrawableRes
+    public final int scheduleMessageIconResId;
 
     public ChatStyle(int chatBackgroundColor,
                      int chatHighlightingColor,
@@ -152,7 +159,9 @@ public class ChatStyle implements Serializable {
                      int welcomeScreenSubtitleTextResId,
                      int welcomeScreenTextColorResId,
                      int titleSizeInSp,
-                     int subtitleSizeInSp) {
+                     int subtitleSizeInSp,
+                     int scheduleMessageTextColorResId,
+                     int scheduleMessageIconResId) {
         this.chatTitleTextResId = chatTitleTextResId;
         this.chatToolbarColorResId = chatToolbarColorResId;
         this.chatToolbarTextColorResId = chatToolbarTextColorResId;
@@ -183,49 +192,8 @@ public class ChatStyle implements Serializable {
         this.menuItemTextColorResId = menuItemTextColorResId;
         this.chatToolbarHintTextColor = chatToolbarHintTextColor;
         this.chatHighlightingColor = chatHighlightingColor;
-    }
-
-    public static ChatStyle styleFromBundle(Bundle b) {
-        Bundle welcomScreenStyle = b.getBundle(ARG_SET_WELCOME_SCREEN_STYLE);
-        boolean isWeclomeExists = welcomScreenStyle != null;
-        Bundle pushNotificationStyle = b.getBundle(ARG_SET_PUSH_NOTIFICATION_STYLE);
-        boolean isPushNotificationStyleExists = pushNotificationStyle != null;
-        Bundle chatBodyStyle = b.getBundle(ARG_SET_CHAT_BODY_STYLE);
-        boolean isChatBodyStyleExists = chatBodyStyle != null;
-        Bundle chatTitleStyle = b.getBundle(ARG_SET_CHAT_TITLE_STYLE);
-        boolean isChatTitleStyleExists = chatTitleStyle != null;
-        boolean isGaEnabled = b.getBoolean(ARG_IS_GA_ENABLED, true);
-        return new ChatStyle(
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_BACKGROUND_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_HIGHLIGHTING_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_MESSAGE_INPUT_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_MESSAGE_INPUT_HINT_TEXT_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INCOMING_MESSAGE_BUBBLE_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OUTGOING_MESSAGE_BUBBLE_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_BODY_ICONS_TINT_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_IMAGE_PLACEHOLDER_RES_ID) : INVALID,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID) : INVALID,
-                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TITLE_TEXT_RES_ID) : INVALID,
-                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TOOLBAR_COLOR_RES_ID) : INVALID,
-                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TOOLBAR_TEXT_COLOR_RES_ID) : INVALID,
-                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_STATUS_BAR_COLOR_RES_ID) : INVALID,
-                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_MENU_ITEM_TEXT_COLOR_RES_ID) : INVALID,
-                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TOOLBAR_HINT_TEXT_COLOR) : INVALID,
-                isGaEnabled,
-                isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_DEF_PUSH_ICON_RES_ID) : INVALID,
-                isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_DEF_TITLE_RES_ID) : INVALID,
-                isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_PUSH_BACKGROUND_COLOR_RES_ID) : INVALID,
-                isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_NOUGAT_PUSH_ACCENT_COLOR_RES_ID) : INVALID,
-                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_LOGO_RES_ID) : INVALID,
-                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_TITLE_TEXT_RES_ID) : INVALID,
-                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_SUBTITLE_TEXT_RES_ID) : INVALID,
-                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_TEXT_COLOR_RES_ID) : INVALID,
-                isWeclomeExists ? welcomScreenStyle.getInt(ARG_TITLE_SIZE_IN_SP) : INVALID,
-                isWeclomeExists ? welcomScreenStyle.getInt(ARG_SUBTITLE_SIZE_IN_SP) : INVALID);
+        this.scheduleMessageTextColorResId = scheduleMessageTextColorResId;
+        this.scheduleMessageIconResId = scheduleMessageIconResId;
     }
 
     @Override
@@ -265,7 +233,10 @@ public class ChatStyle implements Serializable {
         if (chatBodyIconsTint != chatStyle.chatBodyIconsTint) return false;
         if (connectionMessageTextColor != chatStyle.connectionMessageTextColor) return false;
         if (fileBrowserDialogStyleResId != chatStyle.fileBrowserDialogStyleResId) return false;
-        return pushBackgroundColorResId == chatStyle.pushBackgroundColorResId;
+        if (pushBackgroundColorResId != chatStyle.pushBackgroundColorResId) return false;
+        if (scheduleMessageTextColorResId != chatStyle.scheduleMessageTextColorResId) return false;
+        return scheduleMessageIconResId == chatStyle.scheduleMessageIconResId;
+
     }
 
     @Override
@@ -300,8 +271,58 @@ public class ChatStyle implements Serializable {
         result = 31 * result + connectionMessageTextColor;
         result = 31 * result + fileBrowserDialogStyleResId;
         result = 31 * result + pushBackgroundColorResId;
+        result = 31 * result + scheduleMessageTextColorResId;
+        result = 31 * result + scheduleMessageIconResId;
         return result;
     }
+
+    public static ChatStyle styleFromBundle(Bundle b) {
+        Bundle welcomScreenStyle = b.getBundle(ARG_SET_WELCOME_SCREEN_STYLE);
+        boolean isWeclomeExists = welcomScreenStyle != null;
+        Bundle pushNotificationStyle = b.getBundle(ARG_SET_PUSH_NOTIFICATION_STYLE);
+        boolean isPushNotificationStyleExists = pushNotificationStyle != null;
+        Bundle chatBodyStyle = b.getBundle(ARG_SET_CHAT_BODY_STYLE);
+        boolean isChatBodyStyleExists = chatBodyStyle != null;
+        Bundle chatTitleStyle = b.getBundle(ARG_SET_CHAT_TITLE_STYLE);
+        boolean isChatTitleStyleExists = chatTitleStyle != null;
+        boolean isGaEnabled = b.getBoolean(ARG_IS_GA_ENABLED, true);
+        Bundle scheduleMessageStyle = b.getBundle(ARG_SET_SCHEDULE_MESSAGE_STYLE);
+        boolean isScheduleMessageStyleExists = scheduleMessageStyle != null;
+        return new ChatStyle(
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_BACKGROUND_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_HIGHLIGHTING_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_MESSAGE_INPUT_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_MESSAGE_INPUT_HINT_TEXT_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INCOMING_MESSAGE_BUBBLE_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OUTGOING_MESSAGE_BUBBLE_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_BODY_ICONS_TINT_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_IMAGE_PLACEHOLDER_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID) : INVALID,
+                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TITLE_TEXT_RES_ID) : INVALID,
+                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TOOLBAR_COLOR_RES_ID) : INVALID,
+                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TOOLBAR_TEXT_COLOR_RES_ID) : INVALID,
+                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_STATUS_BAR_COLOR_RES_ID) : INVALID,
+                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_MENU_ITEM_TEXT_COLOR_RES_ID) : INVALID,
+                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TOOLBAR_HINT_TEXT_COLOR) : INVALID,
+                isGaEnabled,
+                isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_DEF_PUSH_ICON_RES_ID) : INVALID,
+                isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_DEF_TITLE_RES_ID) : INVALID,
+                isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_PUSH_BACKGROUND_COLOR_RES_ID) : INVALID,
+                isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_NOUGAT_PUSH_ACCENT_COLOR_RES_ID) : INVALID,
+                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_LOGO_RES_ID) : INVALID,
+                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_TITLE_TEXT_RES_ID) : INVALID,
+                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_SUBTITLE_TEXT_RES_ID) : INVALID,
+                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_TEXT_COLOR_RES_ID) : INVALID,
+                isWeclomeExists ? welcomScreenStyle.getInt(ARG_TITLE_SIZE_IN_SP) : INVALID,
+                isWeclomeExists ? welcomScreenStyle.getInt(ARG_SUBTITLE_SIZE_IN_SP) : INVALID,
+                isScheduleMessageStyleExists ? scheduleMessageStyle.getInt(ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
+                isScheduleMessageStyleExists ? scheduleMessageStyle.getInt(ARG_SCHEDULE_MESSAGE_ICON_RES_ID) : INVALID);
+    }
+
 
     @Override
     public String toString() {
@@ -336,6 +357,8 @@ public class ChatStyle implements Serializable {
                 ", " + ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID + "=" + connectionMessageTextColor +
                 ", " + ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID + "=" + fileBrowserDialogStyleResId +
                 ", " + ARG_PUSH_BACKGROUND_COLOR_RES_ID + "=" + pushBackgroundColorResId +
+                ", " + ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID + "=" + scheduleMessageTextColorResId +
+                ", " + ARG_SCHEDULE_MESSAGE_ICON_RES_ID + "=" + scheduleMessageIconResId +
                 '}';
     }
 
@@ -421,6 +444,17 @@ public class ChatStyle implements Serializable {
             return this;
         }
 
+        public IntentBuilder setScheduleMessageStyle(
+                @DrawableRes int scheduleMessageIconResId,
+                @ColorRes int scheduleMessageTextColor
+        ) {
+            Bundle bundle = new Bundle();
+            b.putBundle(ARG_SET_SCHEDULE_MESSAGE_STYLE, bundle);
+            bundle.putInt(ARG_SCHEDULE_MESSAGE_ICON_RES_ID, scheduleMessageIconResId);
+            bundle.putInt(ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID, scheduleMessageTextColor);
+            return this;
+        }
+
         public IntentBuilder setGoogleAnalyticsEnabled(boolean isEnabled) {
             b.putBoolean(ARG_IS_GA_ENABLED, isEnabled);
             return this;
@@ -454,6 +488,8 @@ public class ChatStyle implements Serializable {
                 Log.e(TAG, "you must chat body style. now using default");
             if (b.getBundle(ARG_SET_CHAT_TITLE_STYLE) == null)
                 Log.e(TAG, "you must chat title style. now using default");
+            if (b.getBundle(ARG_SET_SCHEDULE_MESSAGE_STYLE) == null)
+                Log.e(TAG, "you must provide chat schedule message style. now using default");
             b.putBoolean(ARG_STYLE, true);
             return b;
         }

@@ -713,9 +713,14 @@ public class ChatController {
 
         // Если пришло сообщение от оператора, нужно удалить расписание из чата.
         if(cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage) {
-            if(fragment != null && fragment.isAdded()) {
-                fragment.removeSchedule(false);
-            }
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (fragment != null && fragment.isAdded()) {
+                        fragment.removeSchedule(false);
+                    }
+                }
+            });
         }
     }
 

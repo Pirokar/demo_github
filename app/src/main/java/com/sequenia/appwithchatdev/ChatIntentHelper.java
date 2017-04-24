@@ -44,7 +44,10 @@ public class ChatIntentHelper {
                         , R.string.subtitle_text//подзаголовок экрана приветствия welcomeScreenSubtitleTextResId
                         , R.color.welcome_screen_text//цвет текста на экране приветствия welcomeScreenTextColorResId
                         , 18//размер шрифта заголовка titleSizeInSp
-                        , 14);//размер шрифта подзаголовка subtitleSizeInSp
+                        , 14)//размер шрифта подзаголовка subtitleSizeInSp
+                .setScheduleMessageStyle(
+                        R.drawable.schedule_icon, // Иконка сообщения о расписании
+                        R.color.schedule_message_text_color); // Цвет текста в сообщении о расписании
     }
 
 }
