@@ -41,7 +41,7 @@ public class PushIniter {
                                 PushController
                                         .getInstance(context)
                                         .sendMessageAsync(MessageFormatter
-                                                .createClientAboutMessage(PrefUtils.getUserName(context), clientId, ""), true, new RequestCallback<String, PushServerErrorException>() {
+                                                .createEnvironmentMessage(PrefUtils.getUserName(context), clientId), true, new RequestCallback<String, PushServerErrorException>() {
                                             @Override
                                             public void onResult(String string) {
                                                 Log.e(TAG, "client id was set string =" + string);
@@ -76,9 +76,9 @@ public class PushIniter {
     public static void onAddressChanged(Context ctx) {
         PushController.getInstance(ctx)
                 .sendMessageAsync(MessageFormatter
-                        .createClientAboutMessage(PrefUtils.getUserName(ctx)
+                        .createEnvironmentMessage(PrefUtils.getUserName(ctx)
                                 , PrefUtils.getNewClientID(ctx)// TODO: 05.10.2016 implement new client name and email
-                                , ""), true, new RequestCallback<String, PushServerErrorException>() {
+                        ), true, new RequestCallback<String, PushServerErrorException>() {
                     @Override
                     public void onResult(String s) {
                         Log.i(TAG, "onResult: "+s);

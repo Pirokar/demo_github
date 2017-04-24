@@ -156,7 +156,7 @@ public class ChatController {
                         PushController.getInstance(ctx).setClientId(finalClientId);
                         PrefUtils.setClientId(ctx, finalClientId);
                         PushController.getInstance(ctx)
-                                .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils.getUserName(ctx), finalClientId, ""), true);
+                                .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId), true);
                         PushController.getInstance(ctx).resetCounterSync();
                         List<InOutMessage> messages = PushController.getInstance(instance.appContext).getMessageHistory(20);
                         instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
@@ -374,7 +374,7 @@ public class ChatController {
             public void run() {
                 try {
                     PushController.getInstance(appContext)
-                            .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext), ""), true);
+                            .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext)), true);
                 } catch (PushServerErrorException e) {
                     e.printStackTrace();
                 }
@@ -973,9 +973,9 @@ public class ChatController {
 
                         PushController
                                 .getInstance(ctx)
-                                .sendMessage(MessageFormatter.createClientAboutMessage(PrefUtils
+                                .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils
                                                 .getUserName(ctx),
-                                        PrefUtils.getNewClientID(ctx), ""), true);
+                                        PrefUtils.getNewClientID(ctx)), true);
 
                         List<InOutMessage> messages = PushController.getInstance(appContext).getMessageHistory(20);
                         mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
