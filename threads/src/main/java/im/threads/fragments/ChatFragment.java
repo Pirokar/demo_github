@@ -48,11 +48,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.pushserver.android.PushMessage;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import im.threads.AnalyticsTracker;
@@ -72,6 +77,7 @@ import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
+import im.threads.model.Interval;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
 import im.threads.model.ScheduleInfo;
@@ -1368,7 +1374,32 @@ public class ChatFragment extends Fragment implements
         popupMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopup();
+                ScheduleInfo scheduleInfo = new ScheduleInfo();
+                scheduleInfo.setId(new Date().getTime());
+                scheduleInfo.setNotification("Мы будем доступны скоро");
+
+                ArrayList<Interval> intervals = new ArrayList<Interval>();
+                Interval interval = new Interval();
+                interval.setWeekDay(1);
+                interval.setStartTime(10);
+                interval.setEndTime(20);
+                intervals.add(interval);
+                scheduleInfo.setIntervals(intervals);
+
+                String scheduleInfoString = new Gson().toJson(scheduleInfo);
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("type", "SCHEDULE");
+                hashMap.put("text", scheduleInfoString);
+                String schedulePushString = new Gson().toJson(hashMap);
+
+                PushMessage schedulePush = new PushMessage();
+                schedulePush.setFullMessage(schedulePushString);
+
+                ChatController.getInstance(getActivity(), PrefUtils.getClientID(getActivity())).onConsultMessage(
+                        schedulePush,
+                        getActivity()
+                );
+                //showPopup();
             }
         });
         showOverflowMenu();

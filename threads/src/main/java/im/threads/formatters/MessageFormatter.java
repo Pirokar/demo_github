@@ -120,7 +120,6 @@ public class MessageFormatter {
             if (fileDescription != null && mfmsFilePath != null) {
                 formattedMessage.put("attachments", attachmentsFromFileDescription(fileDescription, mfmsFilePath));
             }
-            //   return formattedMessage.toString().replaceAll("\\\\", "");
             return formattedMessage.toString();
         } catch (JSONException e) {
             Log.e(TAG, "error formatting json");
