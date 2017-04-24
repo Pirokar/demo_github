@@ -232,6 +232,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.clear();
         cv.put(COLUMN_QUOTE_MESSAGE_ID_EXT, newMessageId);
         getWritableDatabase().update(TABLE_QUOTE, cv, COLUMN_QUOTE_MESSAGE_ID_EXT + " = ?", new String[]{oldMessageId});
+        cv.clear();
+        cv.put(COLUMN_FD_MESSAGE_ID_EXT, newMessageId);
+        getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv, COLUMN_FD_MESSAGE_ID_EXT + " = ?", new String[]{oldMessageId});
     }
 
     void putConsultConnected(ConsultConnectionMessage consultConnectionMessage) {

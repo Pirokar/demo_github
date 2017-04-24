@@ -122,18 +122,19 @@ public class ChatController {
     // Для оповещения об изменении количества непрочитанных сообщений
     private static WeakReference<UnreadMessagesCountListener> unreadMessagesCountListener;
 
-    public static ChatController getInstance(final Context ctx,
-                                             String clientId) {
+    public static ChatController getInstance(final Context ctx, String clientId) {
         if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
         if (instance == null) {
             instance = new ChatController(ctx);
         }
-        if (clientId == null) clientId = PrefUtils.getClientID(ctx);
-        if (TextUtils.isEmpty(PrefUtils.getClientID(ctx))
-                || !clientId.equals(PrefUtils.getClientID(ctx))) {
+        if (clientId == null) {
+            clientId = PrefUtils.getClientID(ctx);
+        }
+        if (TextUtils.isEmpty(PrefUtils.getClientID(ctx)) || !clientId.equals(PrefUtils.getClientID(ctx))) {
             Log.i(TAG, "setting new client id");
             Log.i(TAG, "clientId = " + clientId);
             Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
+
             final String finalClientId = clientId;
             // Начальная инициализация чата.
             // Сдесь происходит первоначальная загрузка истории сообщений,
@@ -142,36 +143,40 @@ public class ChatController {
             instance.mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    PrefUtils.setNewClientId(ctx, finalClientId);
-                    if (PrefUtils.getDeviceAddress(ctx) == null) {
-                        if (BuildConfig.DEBUG) Log.e(TAG, "device address was not set, returning");
-                        return;
-                    }
-                    try {
-                        instance.cleanAll();
-                        if(instance.fragment != null) {
-                            instance.fragment.removeSearching();
-                        }
-                        instance.mConsultWriter.setCurrentConsultLeft();
-                        PushController.getInstance(ctx).setClientId(finalClientId);
-                        PrefUtils.setClientId(ctx, finalClientId);
-                        PushController.getInstance(ctx)
-                                .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId), true);
-                        PushController.getInstance(ctx).resetCounterSync();
-                        List<InOutMessage> messages = PushController.getInstance(instance.appContext).getMessageHistory(20);
-                        instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-                        ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
-                        if(instance.fragment != null) {
-                            instance.fragment.addChatItems(phrases);
-                        }
-                        PrefUtils.setClientIdWasSet(true, ctx);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    onClientIdChanged(ctx, finalClientId);
                 }
             });
         }
         return instance;
+    }
+
+    private static void onClientIdChanged(Context ctx, String finalClientId) {
+        PrefUtils.setNewClientId(ctx, finalClientId);
+        if (PrefUtils.getDeviceAddress(ctx) == null) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "device address was not set, returning");
+            return;
+        }
+        try {
+            instance.cleanAll();
+            if(instance.fragment != null) {
+                instance.fragment.removeSearching();
+            }
+            instance.mConsultWriter.setCurrentConsultLeft();
+            PushController.getInstance(ctx).setClientId(finalClientId);
+            PrefUtils.setClientId(ctx, finalClientId);
+            String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
+            PushController.getInstance(ctx).sendMessage(environmentMessage, true);
+            PushController.getInstance(ctx).resetCounterSync();
+            List<InOutMessage> messages = PushController.getInstance(instance.appContext).getMessageHistory(20);
+            instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
+            ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
+            if(instance.fragment != null) {
+                instance.fragment.addChatItems(phrases);
+            }
+            PrefUtils.setClientIdWasSet(true, ctx);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static PendingIntentCreator getPendingIntentCreator() {
@@ -206,46 +211,6 @@ public class ChatController {
             int unreadCount = controller.getUnreadMessagesCount();
             unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadCount);
         }
-    }
-
-    public static UnreadMessagesCountListener getUnreadMessagesCountListener() {
-        return unreadMessagesCountListener == null ? null : unreadMessagesCountListener.get();
-    }
-
-    public static void setPendingIntentCreator(PendingIntentCreator pendingIntentCreator) {
-        ChatController.pendingIntentCreator = pendingIntentCreator;
-    }
-
-    public static void setUnreadMessagesCountListener(UnreadMessagesCountListener unreadMessagesCountListener) {
-        ChatController.unreadMessagesCountListener = new WeakReference<>(unreadMessagesCountListener);
-    }
-
-    public static void removeUnreadMessagesCountListener() {
-        ChatController.unreadMessagesCountListener = null;
-    }
-
-    public static void setShortPushListener(ShortPushListener shortPushListener) {
-        ChatController.shortPushListener = shortPushListener;
-    }
-
-    public static void removeShortPushListener() {
-        ChatController.shortPushListener = null;
-    }
-
-    public static void setFullPushListener(FullPushListener fullPushListener) {
-        ChatController.fullPushListener = fullPushListener;
-    }
-
-    public static void removeFullPushListener() {
-        ChatController.fullPushListener = null;
-    }
-
-    public static ShortPushListener getShortPushListener() {
-        return shortPushListener;
-    }
-
-    public static FullPushListener getFullPushListener() {
-        return fullPushListener;
     }
 
     public static int getUnreadMessagesCount(Context context) {
@@ -287,7 +252,8 @@ public class ChatController {
         if ((currentTime - lastUserTypingSend) >= 3000) {
             lastUserTypingSend = currentTime;
             try {
-                PushController.getInstance(appContext).sendMessageAsync(MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
+                PushController.getInstance(appContext).sendMessageAsync(
+                        MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
                     @Override
                     public void onResult(String aVoid) {
 
@@ -324,57 +290,14 @@ public class ChatController {
             mDatabaseHolder = DatabaseHolder.getInstance(appContext);
         }
         if (mDatabaseHolder.getMessagesCount() > 0) {
-            mExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-                    if (null != fragment) {
-                        h.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(fragment != null) {
-                                    fragment.addChatItems(items);
-                                }
-                            }
-                        });
-                    }
-                    currentOffset = items.size();
-                    mExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (fragment != null) {
-                                try {
-                                    PushController.getInstance(appContext).resetCounterSync();
-                                    List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
-                                    List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
-                                    if (dbItems.size() != serverItems.size()
-                                            || !dbItems.containsAll(serverItems)) {
-                                        Log.i(TAG, "not same!");
-                                        mDatabaseHolder.putMessagesSync(serverItems);
-                                        h.post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-                                                if (null != fragment) fragment.addChatItems(items);
-                                            }
-                                        });
-                                    }
-                                } catch (PushServerErrorException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }
-                    });
-                }
-            });
+            updateChatItemsOnBindAsync();
         }
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    PushController.getInstance(appContext)
-                            .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext)), true);
+                    String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext));
+                    PushController.getInstance(appContext).sendMessage(environmentMessage, true);
                 } catch (PushServerErrorException e) {
                     e.printStackTrace();
                 }
@@ -396,6 +319,59 @@ public class ChatController {
         activity.registerReceiver(mProgressReceiver, intentFilter);
     }
 
+    private void updateChatItemsOnBindAsync() {
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                updateChatItemsOnBind();
+            }
+        });
+    }
+
+    private void updateChatItemsOnBind() {
+        final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+        if (null != fragment) {
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(fragment != null) {
+                        fragment.addChatItems(items);
+                    }
+                }
+            });
+        }
+        currentOffset = items.size();
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                updateChatHistoryOnBind();
+            }
+        });
+    }
+
+    private void updateChatHistoryOnBind() {
+        if (fragment != null) {
+            try {
+                PushController.getInstance(appContext).resetCounterSync();
+                List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
+                List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
+                if (dbItems.size() != serverItems.size()
+                        || !dbItems.containsAll(serverItems)) {
+                    Log.i(TAG, "not same!");
+                    mDatabaseHolder.putMessagesSync(serverItems);
+                    h.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+                            if (null != fragment) fragment.addChatItems(items);
+                        }
+                    });
+                }
+            } catch (PushServerErrorException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public boolean isConsultFound() {
         return mConsultWriter.isConsultConnected();
@@ -446,154 +422,24 @@ public class ChatController {
 
     private void sendMessage(final UserPhrase userPhrase) {
         ConsultInfo consultInfo = null;
+
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
             String id = userPhrase.getQuote().getQuotedPhraseId();
             consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
         }
-        if (BuildConfig.DEBUG) Log.i(TAG, "sendMessage: " + userPhrase);
-        if (BuildConfig.DEBUG) Log.i(TAG, "sendMessage: " + mAnalyticsTracker);
-        if (userPhrase.isWithPhrase())
-            if (null != mAnalyticsTracker) mAnalyticsTracker.setTextWasSent();
-        if (userPhrase.isWithFile())
-            if (null != mAnalyticsTracker) mAnalyticsTracker.setFileWasSent();
-        if (userPhrase.isWithQuote())
-            if (null != mAnalyticsTracker) mAnalyticsTracker.setQuoteWasSent();
-        if (userPhrase.isCopy()) if (null != mAnalyticsTracker) mAnalyticsTracker.setCopyWasSent();
+
+        reportAbountSendMessage(userPhrase);
+
         try {
             if (!userPhrase.hasFile()) {
-                PushController
-                        .getInstance(appContext)
-                        .sendMessageAsync(MessageFormatter.format(
-                                userPhrase
-                                , consultInfo
-                                , null
-                                , null), false, new RequestCallback<String, PushServerErrorException>() {
-                            @Override
-                            public void onResult(String string) {
-                                if (BuildConfig.DEBUG)
-                                    Log.d(TAG, "server answer on pharse sent with id " + string);
-                                setMessageState(userPhrase, MessageState.STATE_SENT);
-                                mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
-                                if (fragment != null)
-                                    fragment.setUserPhraseMessageId(userPhrase.getId(), string);
-                            }
-
-                            @Override
-                            public void onError(PushServerErrorException e) {
-                                setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-                                if (fragment != null && isActive) fragment.showConnectionError();
-                                if (appContext != null) {
-                                    Intent i = new Intent(appContext, NotificationService.class);
-                                    i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
-                                    if (!isActive) appContext.startService(i);
-                                }
-                            }
-                        });
-
+                sendTextMessage(userPhrase, consultInfo);
             } else {
-                final ConsultInfo finalConsultInfo = consultInfo;
-                new DualFilePoster(
-                        userPhrase.getFileDescription() != null ? userPhrase.getFileDescription() : null
-                        , userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() != null ? userPhrase.getQuote().getFileDescription() : null : null
-                        , appContext) {
-                    @Override
-                    public void onResult(String mfmsFilePath, String mfmsQuoteFilePath) {
-                        if (BuildConfig.DEBUG)
-                            Log.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
-                        PushController.getInstance(appContext).sendMessageAsync(MessageFormatter.format(
-                                userPhrase
-                                , finalConsultInfo
-                                , mfmsQuoteFilePath, mfmsFilePath)
-                                , false
-                                , new RequestCallback<String, PushServerErrorException>() {
-                                    @Override
-                                    public void onResult(String string) {
-                                        if (BuildConfig.DEBUG)
-                                            Log.i(TAG, "sending with files string = " + string);
-                                        setMessageState(userPhrase, MessageState.STATE_SENT);
-                                        if(fragment != null) {
-                                            fragment.setUserPhraseMessageId(userPhrase.getId(), string);
-                                        }
-                                        mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), string);
-                                    }
-
-                                    @Override
-                                    public void onError(PushServerErrorException e) {
-                                        Log.e(TAG, "error while sending message to server");
-                                        e.printStackTrace();
-                                        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-                                        if (appContext != null) {
-                                            Intent i = new Intent(appContext, NotificationService.class);
-                                            i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
-                                            if (!isActive) appContext.startService(i);
-                                        }
-                                        if (fragment != null && isActive) {//// TODO: 15.12.2016  for test
-                                            String error =
-                                                    "error 382  sending message to server" +
-                                                            "\ncode = " + e.getErrorCode()
-                                                            + "\n" + e.getMessage()
-                                                            + "\n" + e.toString()
-                                                            + "\nfilepath = " + userPhrase.getFileDescription().getFilePath()
-                                                            + "\nisExist = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists();
-                                            if (e.getCause() != null)
-                                                error += "\ncause = " + e.getCause().toString();
-                                            if (new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists()) {
-                                                error += "\nsize = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).length();
-                                            }
-//                                            activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
-                                            // activity.showConnectionError();
-                                        }
-
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, "error while sending files to server");
-                        e.printStackTrace();
-                        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-                        if (appContext != null) {
-                            Intent i = new Intent(appContext, NotificationService.class);
-                            i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
-                            if (!isActive) appContext.startService(i);
-                        }
-                        if (fragment != null && isActive) {
-                            String error = " error 405  sending files to server"
-                                    + "\n" + e.getMessage()
-                                    + "\n" + e.toString()
-                                    + "\nfilepath = " + userPhrase.getFileDescription().getFilePath()
-                                    + "\nisExist = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists();
-                            if (new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists()) {
-                                error += "\nsize = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).length();
-                            }
-                            if (e.getCause() != null)
-                                error += "\ncause = " + e.getCause().toString();
-//                            activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
-                        }
-                        // activity.showConnectionError();
-                    }
-                };
+                sendFileMessage(userPhrase, consultInfo);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-            if (e instanceof PushServerErrorException) {
-                PushController.getInstance(appContext).init();
-            } else if (e instanceof IllegalStateException) {
-                PushController.getInstance(appContext).init();
-            }
-            if (fragment != null && isActive) {
-                String error = "Generic error 423"
-                        + "\n" + e.getMessage()
-                        + "\n" + e.toString();
-                if (e.getCause() != null) {
-                    error += "\ncause = " + e.getCause().toString();
-                }
-                //activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
-
-            } //activity.showConnectionError();
+            onSentMessageException(userPhrase, e);
         }
+
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -610,6 +456,165 @@ public class ChatController {
                 }).start();
             }
         }, 60000);
+    }
+
+    private void sendTextMessage(final UserPhrase userPhrase, ConsultInfo consultInfo) {
+        String message = MessageFormatter.format(userPhrase, consultInfo, null, null);
+        PushController.getInstance(appContext).sendMessageAsync(message, false, new RequestCallback<String, PushServerErrorException>() {
+            @Override
+            public void onResult(String string) {
+                onMessageSent(userPhrase, string);
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+                onMessageSentError(userPhrase);
+            }
+        });
+    }
+
+    private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
+        FileDescription fileDescription = userPhrase.getFileDescription();
+        FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
+
+        new DualFilePoster(fileDescription, quoteFileDescription, appContext) {
+            @Override
+            public void onResult(String mfmsFilePath, String mfmsQuoteFilePath) {
+                onFileSent(userPhrase, consultInfo, mfmsFilePath, mfmsQuoteFilePath);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                onFileSentError(userPhrase, e);
+            }
+        };
+    }
+
+    private void onFileSent(final UserPhrase userPhrase, ConsultInfo consultInfo, String mfmsFilePath, String mfmsQuoteFilePath) {
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
+        }
+
+        String message = MessageFormatter.format(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath);
+
+        PushController.getInstance(appContext).sendMessageAsync(message, false, new RequestCallback<String, PushServerErrorException>() {
+            @Override
+            public void onResult(String string) {
+                onMessageSent(userPhrase, string);
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+                onFileMessageSentError(userPhrase, e);
+            }
+        });
+    }
+
+    private void onMessageSent(UserPhrase userPhrase, String newId) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "server answer on pharse sent with id " + newId);
+        }
+        setMessageState(userPhrase, MessageState.STATE_SENT);
+        mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), newId);
+        if (fragment != null) {
+            fragment.setUserPhraseMessageId(userPhrase.getId(), newId);
+        }
+    }
+
+    private void onMessageSentError(UserPhrase userPhrase) {
+        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+        if (fragment != null && isActive) {
+            fragment.showConnectionError();
+        }
+        if (appContext != null) {
+            Intent i = new Intent(appContext, NotificationService.class);
+            i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
+            if (!isActive) appContext.startService(i);
+        }
+    }
+
+    private void onFileMessageSentError(UserPhrase userPhrase, PushServerErrorException e) {
+        Log.e(TAG, "error while sending message to server");
+        e.printStackTrace();
+        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+        if (appContext != null) {
+            Intent i = new Intent(appContext, NotificationService.class);
+            i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
+            if (!isActive) appContext.startService(i);
+        }
+        if (fragment != null && isActive) {//// TODO: 15.12.2016  for test
+            String error =
+                    "error 382  sending message to server" +
+                            "\ncode = " + e.getErrorCode()
+                            + "\n" + e.getMessage()
+                            + "\n" + e.toString()
+                            + "\nfilepath = " + userPhrase.getFileDescription().getFilePath()
+                            + "\nisExist = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists();
+            if (e.getCause() != null)
+                error += "\ncause = " + e.getCause().toString();
+            if (new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists()) {
+                error += "\nsize = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).length();
+            }
+            // activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
+            // activity.showConnectionError();
+        }
+    }
+
+    private void onFileSentError(UserPhrase userPhrase, Throwable e) {
+        Log.e(TAG, "error while sending files to server");
+        e.printStackTrace();
+        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+        if (appContext != null) {
+            Intent i = new Intent(appContext, NotificationService.class);
+            i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
+            if (!isActive) appContext.startService(i);
+        }
+        if (fragment != null && isActive) {
+            String error = " error 405  sending files to server"
+                    + "\n" + e.getMessage()
+                    + "\n" + e.toString()
+                    + "\nfilepath = " + userPhrase.getFileDescription().getFilePath()
+                    + "\nisExist = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists();
+            if (new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists()) {
+                error += "\nsize = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).length();
+            }
+            if (e.getCause() != null)
+                error += "\ncause = " + e.getCause().toString();
+                // activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
+        }
+        // activity.showConnectionError();
+    }
+
+    private void onSentMessageException(UserPhrase userPhrase, Exception e) {
+        e.printStackTrace();
+        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+        if (e instanceof PushServerErrorException) {
+            PushController.getInstance(appContext).init();
+        } else if (e instanceof IllegalStateException) {
+            PushController.getInstance(appContext).init();
+        }
+        if (fragment != null && isActive) {
+            String error = "Generic error 423"
+                    + "\n" + e.getMessage()
+                    + "\n" + e.toString();
+            if (e.getCause() != null) {
+                error += "\ncause = " + e.getCause().toString();
+            }
+            //activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
+
+        } //activity.showConnectionError();
+    }
+
+    private void reportAbountSendMessage(UserPhrase userPhrase) {
+        if (BuildConfig.DEBUG) Log.i(TAG, "sendMessage: " + userPhrase);
+        if (BuildConfig.DEBUG) Log.i(TAG, "sendMessage: " + mAnalyticsTracker);
+        if (userPhrase.isWithPhrase())
+            if (null != mAnalyticsTracker) mAnalyticsTracker.setTextWasSent();
+        if (userPhrase.isWithFile())
+            if (null != mAnalyticsTracker) mAnalyticsTracker.setFileWasSent();
+        if (userPhrase.isWithQuote())
+            if (null != mAnalyticsTracker) mAnalyticsTracker.setQuoteWasSent();
+        if (userPhrase.isCopy()) if (null != mAnalyticsTracker) mAnalyticsTracker.setCopyWasSent();
     }
 
     public void fancySearch(final String query,
@@ -979,8 +984,9 @@ public class ChatController {
 
                         List<InOutMessage> messages = PushController.getInstance(appContext).getMessageHistory(20);
                         mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-                        if (fragment != null)
+                        if (fragment != null) {
                             fragment.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
+                        }
                         currentOffset = messages.size();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1056,6 +1062,46 @@ public class ChatController {
                 onSettingClientId(context);
             }
         }
+    }
+
+    public static UnreadMessagesCountListener getUnreadMessagesCountListener() {
+        return unreadMessagesCountListener == null ? null : unreadMessagesCountListener.get();
+    }
+
+    public static void setPendingIntentCreator(PendingIntentCreator pendingIntentCreator) {
+        ChatController.pendingIntentCreator = pendingIntentCreator;
+    }
+
+    public static void setUnreadMessagesCountListener(UnreadMessagesCountListener unreadMessagesCountListener) {
+        ChatController.unreadMessagesCountListener = new WeakReference<>(unreadMessagesCountListener);
+    }
+
+    public static void removeUnreadMessagesCountListener() {
+        ChatController.unreadMessagesCountListener = null;
+    }
+
+    public static void setShortPushListener(ShortPushListener shortPushListener) {
+        ChatController.shortPushListener = shortPushListener;
+    }
+
+    public static void removeShortPushListener() {
+        ChatController.shortPushListener = null;
+    }
+
+    public static void setFullPushListener(FullPushListener fullPushListener) {
+        ChatController.fullPushListener = fullPushListener;
+    }
+
+    public static void removeFullPushListener() {
+        ChatController.fullPushListener = null;
+    }
+
+    public static ShortPushListener getShortPushListener() {
+        return shortPushListener;
+    }
+
+    public static FullPushListener getFullPushListener() {
+        return fullPushListener;
     }
 
     public interface PendingIntentCreator {
