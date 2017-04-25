@@ -52,6 +52,8 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.PushMessageCheckResult;
+import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.services.DownloadService;
@@ -909,9 +911,11 @@ public class ChatController {
      * @return true, если формат сообщения распознан и обработан чатом.
      * false, если push уведомление не относится к чату и никак им не обработано.
      */
-    public synchronized boolean onConsultMessage(PushMessage pushMessage, final Context ctx) {
+    public synchronized PushMessageCheckResult onConsultMessage(PushMessage pushMessage, final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onConsultMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
+
+        PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
 
         if(chatItem != null) {
             ConsultMessageReaction consultReactor = new ConsultMessageReaction(
@@ -942,10 +946,15 @@ public class ChatController {
             if (chatItem instanceof ConsultPhrase) {
                 mAnalyticsTracker.setConsultMessageWasReceived();
             }
-            return true;
+
+            pushMessageCheckResult.setDetected(true);
+            pushMessageCheckResult.setNeedsShowIsStatusBar(!(chatItem instanceof ScheduleInfo));
         } else {
-            return false;
+            pushMessageCheckResult.setDetected(false);
+            pushMessageCheckResult.setNeedsShowIsStatusBar(false);
         }
+
+        return pushMessageCheckResult;
     }
 
     public void onConsultChoose(Activity activity, String consultId) {

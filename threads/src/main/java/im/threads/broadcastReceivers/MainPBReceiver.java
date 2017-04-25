@@ -35,8 +35,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
     private boolean isChatSystemPush(Bundle bundle) {
         int messageType = MessageMatcher.getType(bundle);
         return messageType == MessageMatcher.TYPE_OPERATOR_TYPING
-                || messageType == MessageMatcher.TYPE_MESSAGES_READ
-                || messageType == MessageMatcher.TYPE_SCHEDULE;
+                || messageType == MessageMatcher.TYPE_MESSAGES_READ;
     }
 
     private boolean isChatPush(Bundle bundle) {

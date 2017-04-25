@@ -2,6 +2,7 @@ package im.threads.model;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Информация о расписании
@@ -60,12 +61,13 @@ public class ScheduleInfo implements ChatItem {
             return false;
         }
 
-        Calendar now = Calendar.getInstance();
+        TimeZone timeZone = TimeZone.getTimeZone("UTC");
+        Calendar now = Calendar.getInstance(timeZone);
 
         // Поиск интервала для текущего дня недели
         for(int i = 0; i < intervals.size(); i++) {
             Interval dayInterval = intervals.get(i);
-            Integer dayOfWeek = dayInterval.getWeekDay();
+            Integer dayOfWeek = dayInterval.getAndroidWeekDay();
 
             if(dayOfWeek != null) {
                 int nowDayOfWeek = now.get(Calendar.DAY_OF_WEEK);
@@ -78,9 +80,9 @@ public class ScheduleInfo implements ChatItem {
                     // Расписание корректно, указаны обе границы промежутка.
                     if (start != null && end != null) {
                         // Начало промежутка в текущем найденном дне
-                        Calendar startDate = Calendar.getInstance();
+                        Calendar startDate = Calendar.getInstance(timeZone);
                         // Конец промежутка в текущем найденном дне
-                        Calendar endDate = Calendar.getInstance();
+                        Calendar endDate = Calendar.getInstance(timeZone);
 
                         startDate.set(Calendar.HOUR_OF_DAY, 0);
                         startDate.set(Calendar.MINUTE, 0);
