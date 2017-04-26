@@ -74,4 +74,6 @@
     <string name="check_connection">problems with internet connection</string>
     <string name="contact_center">Контакт центр</string>
     <string name="typing">печатает…</string>
+    <string name="ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
+    <string name="thanks_for_rate">Спасибо за вашу оценку</string>
 </resources>
