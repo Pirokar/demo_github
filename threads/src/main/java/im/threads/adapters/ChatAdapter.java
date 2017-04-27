@@ -29,6 +29,7 @@ import im.threads.holders.ConsultPhraseHolder;
 import im.threads.holders.DateViewHolder;
 import im.threads.holders.ImageFromConsultViewHolder;
 import im.threads.holders.ImageFromUserViewHolder;
+import im.threads.holders.RatingThumbsViewHolder;
 import im.threads.holders.ScheduleInfoViewHolder;
 import im.threads.holders.SearchingConsultViewHolder;
 import im.threads.holders.SpaceViewHolder;
@@ -45,6 +46,7 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.DateRow;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.SearchingConsult;
 import im.threads.model.Space;
@@ -76,6 +78,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_FILE_FROM_CONSULT = 11;
     private static final int TYPE_UNREAD_MESSAGES = 12;
     private static final int TYPE_SCHEDULE = 13;
+    private static final int TYPE_RATING_THUMBS = 14;
     private boolean isRemovingTyping = false;
 
 
@@ -118,6 +121,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_FILE_FROM_USER) return new UserFileViewHolder(parent);
         if (viewType == TYPE_UNREAD_MESSAGES) return new UnreadMessageViewHolder(parent);
         if (viewType == TYPE_SCHEDULE) return new ScheduleInfoViewHolder(parent);
+        if (viewType == TYPE_RATING_THUMBS) return new RatingThumbsViewHolder(parent);
         return null;
     }
 
@@ -426,6 +430,19 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof ScheduleInfoViewHolder) {
             ((ScheduleInfoViewHolder) holder).bind((ScheduleInfo) list.get(holder.getAdapterPosition()));
         }
+
+        if (holder instanceof RatingThumbsViewHolder) {
+            final RatingThumbs ratingThumbs = (RatingThumbs) list.get(holder.getAdapterPosition());
+
+            ((RatingThumbsViewHolder) holder).bind(
+                    ratingThumbs,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mAdapterInterface.onRatingThumbsClick(ratingThumbs);
+                        }
+                    });
+        }
     }
 
 
@@ -695,6 +712,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (o instanceof Space) return TYPE_FREE_SPACE;
         if (o instanceof UnreadMessages) return TYPE_UNREAD_MESSAGES;
         if (o instanceof ScheduleInfo) return TYPE_SCHEDULE;
+        if (o instanceof RatingThumbs) return TYPE_RATING_THUMBS;
         return super.getItemViewType(position);
     }
 
@@ -839,6 +857,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onImageDownloadRequest(FileDescription fileDescription);
 
         void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
+
+        void onRatingThumbsClick(RatingThumbs ratingThumbs);
     }
 
     private class MyBroadcastReceiver extends BroadcastReceiver {

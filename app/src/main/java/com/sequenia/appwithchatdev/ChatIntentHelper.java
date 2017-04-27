@@ -32,7 +32,8 @@ public class ChatIntentHelper {
                         R.color.connection_message_text_color,//цвет текста сообщения о соединениии connectionMessageTextColor
                         R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
                         R.drawable.blank_avatar_round_main,//заглушка картинки тайпинга imagePlaceholder
-                        R.style.FileDialogStyle)//стиль диалога выбора файла fileBrowserDialogStyleResId
+                        R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
+                        5) // количество звезд для оценки
                 //.setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.push_icon_def,
                         R.string.default_title,

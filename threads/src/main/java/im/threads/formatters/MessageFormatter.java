@@ -21,6 +21,7 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
+import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
@@ -230,9 +231,14 @@ public class MessageFormatter {
         if(type != null) {
             if(type.equalsIgnoreCase(MessageMatcher.OPERATOR_JOINED) || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LEFT)) {
                 return getConsultConnectionFromPush(pushMessage);
-            } if(type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
+            }
+            if(type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
                 return getScheduleInfoFromPush(pushMessage, fullMessage);
-            } else {
+            }
+            if(type.equalsIgnoreCase(MessageMatcher.RATING_THUMBS)) {
+                return getRatingThumbsInfoFromPush(pushMessage, fullMessage);
+            }
+            else {
                 return null;
             }
         } else {
@@ -249,7 +255,6 @@ public class MessageFormatter {
 
     private static ScheduleInfo getScheduleInfoFromPush(PushMessage pushMessage, JSONObject fullMessage) {
         ScheduleInfo scheduleInfo = null;
-
         String text = getMessage(fullMessage, pushMessage);
         if(text != null) {
             try {
@@ -259,8 +264,21 @@ public class MessageFormatter {
                 e.printStackTrace();
             }
         }
-
         return scheduleInfo;
+    }
+
+    private static RatingThumbs getRatingThumbsInfoFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+        RatingThumbs ratingThumbs = null;
+        String text = getMessage(fullMessage, pushMessage);
+        if(text != null) {
+            try {
+                ratingThumbs = new Gson().fromJson(text, RatingThumbs.class);
+                ratingThumbs.setDate(new Date().getTime());
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return ratingThumbs;
     }
 
     private static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
@@ -443,6 +461,21 @@ public class MessageFormatter {
             object.put("device", getDeviceName());
             object.put("appVersion", getAppVersion());
             object.put("type", "CLIENT_INFO");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return object.toString().replaceAll("\\\\", "");
+    }
+
+    public static String createRatingThumbsMessage(boolean rating) {
+        JSONObject object = new JSONObject();
+        try {
+            if (rating) {
+                object.put("rating", "good");
+            } else {
+                object.put("rating", "not_good");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

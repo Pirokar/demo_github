@@ -53,6 +53,7 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.PushMessageCheckResult;
+import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
@@ -177,6 +178,18 @@ public class ChatController {
             }
             PrefUtils.setClientIdWasSet(true, ctx);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onRatingThumbsClick(Context context, RatingThumbs ratingThumbs) {
+        String ratingThumbsMessage = MessageFormatter.createRatingThumbsMessage(ratingThumbs.getRating());
+        try {
+            PushController.getInstance(context).sendMessage(ratingThumbsMessage, false);
+            if(instance.fragment != null) {
+                instance.fragment.updateUi();
+            }
+        } catch (PushServerErrorException e) {
             e.printStackTrace();
         }
     }

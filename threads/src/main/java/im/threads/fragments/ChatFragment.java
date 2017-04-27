@@ -80,6 +80,7 @@ import im.threads.model.FileDescription;
 import im.threads.model.Interval;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
+import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
@@ -517,6 +518,13 @@ public class ChatFragment extends Fragment implements
     }
 
     @Override
+    public void onRatingThumbsClick(RatingThumbs ratingThumbs) {
+        if (getActivity() != null) {
+            mChatController.onRatingThumbsClick(getActivity(), ratingThumbs);
+        }
+    }
+
+    @Override
     public void onImageClick(ChatPhrase chatPhrase) {
         Activity activity = getActivity();
         if (chatPhrase.getFileDescription().getFilePath() == null) return;
@@ -543,6 +551,10 @@ public class ChatFragment extends Fragment implements
         mChatController.checkAndResendPhrase(userPhrase);
     }
 
+    public void updateUi() {
+        mChatAdapter.notifyDataSetChanged();
+    }
+
     private void showPopup() {
         PopupMenu popup = new PopupMenu(getActivity(), popupMenuButton);
         popup.setOnMenuItemClickListener(this);
@@ -562,6 +574,8 @@ public class ChatFragment extends Fragment implements
 
         popup.show();
     }
+
+
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
