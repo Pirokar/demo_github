@@ -29,6 +29,7 @@ import im.threads.holders.ConsultPhraseHolder;
 import im.threads.holders.DateViewHolder;
 import im.threads.holders.ImageFromConsultViewHolder;
 import im.threads.holders.ImageFromUserViewHolder;
+import im.threads.holders.RatingStarsViewHolder;
 import im.threads.holders.RatingThumbsViewHolder;
 import im.threads.holders.ScheduleInfoViewHolder;
 import im.threads.holders.SearchingConsultViewHolder;
@@ -46,6 +47,7 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.DateRow;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.RatingStars;
 import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.SearchingConsult;
@@ -57,6 +59,7 @@ import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
+import im.threads.widget.Rating;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -434,12 +437,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof RatingThumbsViewHolder) {
             final RatingThumbs ratingThumbs = (RatingThumbs) list.get(holder.getAdapterPosition());
 
-            ((RatingThumbsViewHolder) holder).bind(
-                    ratingThumbs,
-                    new View.OnClickListener() {
+            ((RatingThumbsViewHolder) holder).bind(ratingThumbs, mAdapterInterface);
+        }
+
+        if (holder instanceof RatingStarsViewHolder) {
+            final RatingStars ratingStars = (RatingStars) list.get(holder.getAdapterPosition());
+
+            ((RatingStarsViewHolder) holder).bind(
+                    ratingStars,
+                    new Rating.CallBackListener() {
                         @Override
-                        public void onClick(View view) {
-                            mAdapterInterface.onRatingThumbsClick(ratingThumbs);
+                        public void onStarClick(int ratingCount) {
+                            mAdapterInterface.onRatingStarsClick(ratingStars, ratingCount);
                         }
                     });
         }
@@ -858,7 +867,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
 
-        void onRatingThumbsClick(RatingThumbs ratingThumbs);
+        void onRatingThumbsClick(RatingThumbs ratingThumbs, boolean rating);
+
+        void onRatingStarsClick(RatingStars ratingStars, int rating);
     }
 
     private class MyBroadcastReceiver extends BroadcastReceiver {

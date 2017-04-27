@@ -13,6 +13,7 @@ public class MessageMatcher {
     private static final String OPERATOR_TYPING = "TYPING";
     public static final String SCHEDULE = "SCHEDULE";
     public static final String RATING_THUMBS = "RATING_THUMBS";
+    public static final String RATING_STARS = "RATING_STARS";
     public static final int TYPE_OPERATOR_JOINED = 1;
     public static final int TYPE_OPERATOR_LEFT = 2;
     public static final int TYPE_OPERATOR_TYPING = 3;
@@ -20,6 +21,7 @@ public class MessageMatcher {
     public static final int TYPE_MESSAGES_READ = 5;
     public static final int TYPE_SCHEDULE = 6;
     public static final int TYPE_RATING_THUMBS = 7;
+    public static final int TYPE_RATING_STARS = 8;
     public static final int UNKNOWN = -1;
 
     private MessageMatcher() {
@@ -47,6 +49,9 @@ public class MessageMatcher {
         }
         if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && RATING_THUMBS.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
             return TYPE_RATING_THUMBS;
+        }
+        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && RATING_STARS.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+            return TYPE_RATING_STARS;
         }
         if (bundle.getString(PushGcmIntentService.EXTRA_ALERT) != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null && bundle.getString(PushGcmIntentService.EXTRA_TYPE) == null) {
             return TYPE_MESSAGE;

@@ -80,6 +80,7 @@ import im.threads.model.FileDescription;
 import im.threads.model.Interval;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
+import im.threads.model.RatingStars;
 import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
@@ -518,9 +519,18 @@ public class ChatFragment extends Fragment implements
     }
 
     @Override
-    public void onRatingThumbsClick(RatingThumbs ratingThumbs) {
+    public void onRatingThumbsClick(RatingThumbs ratingThumbs, boolean rating) {
         if (getActivity() != null) {
+            ratingThumbs.setRating(rating);
             mChatController.onRatingThumbsClick(getActivity(), ratingThumbs);
+        }
+    }
+
+    @Override
+    public void onRatingStarsClick(RatingStars ratingStars, int rating) {
+        if (getActivity() != null) {
+            ratingStars.setRating(rating);
+            mChatController.onRatingStarsClick(getActivity(), ratingStars);
         }
     }
 

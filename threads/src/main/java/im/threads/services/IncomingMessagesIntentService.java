@@ -31,7 +31,7 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
         for (int i = 0; i < list.size(); i++) {
             PushMessage pushMessage = list.get(i);
             ChatController chatController = ChatController.getInstance(getApplication(), PrefUtils.getClientID(getApplication()));
-            PushMessageCheckResult result = chatController.onConsultMessage(pushMessage, getApplication());
+            PushMessageCheckResult result = chatController.onFullMessage(pushMessage, getApplication());
 
             if(result.isDetected()) {
                 if(result.isNeedsShowIsStatusBar()) {

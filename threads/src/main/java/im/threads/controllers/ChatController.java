@@ -53,6 +53,7 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.PushMessageCheckResult;
+import im.threads.model.RatingStars;
 import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
@@ -184,6 +185,18 @@ public class ChatController {
 
     public void onRatingThumbsClick(Context context, RatingThumbs ratingThumbs) {
         String ratingThumbsMessage = MessageFormatter.createRatingThumbsMessage(ratingThumbs.getRating());
+        try {
+            PushController.getInstance(context).sendMessage(ratingThumbsMessage, false);
+            if(instance.fragment != null) {
+                instance.fragment.updateUi();
+            }
+        } catch (PushServerErrorException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onRatingStarsClick(Context context, RatingStars ratingStars) {
+        String ratingThumbsMessage = MessageFormatter.createRatingStarsMessage(ratingStars.getRating());
         try {
             PushController.getInstance(context).sendMessage(ratingThumbsMessage, false);
             if(instance.fragment != null) {
@@ -924,8 +937,8 @@ public class ChatController {
      * @return true, если формат сообщения распознан и обработан чатом.
      * false, если push уведомление не относится к чату и никак им не обработано.
      */
-    public synchronized PushMessageCheckResult onConsultMessage(PushMessage pushMessage, final Context ctx) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "onConsultMessage: " + pushMessage);
+    public synchronized PushMessageCheckResult onFullMessage(PushMessage pushMessage, final Context ctx) {
+        if (BuildConfig.DEBUG) Log.i(TAG, "onFullMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
 
         PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();

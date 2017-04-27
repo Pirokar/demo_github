@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import im.threads.R;
+import im.threads.adapters.ChatAdapter;
 import im.threads.model.ChatStyle;
 import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
@@ -60,7 +61,7 @@ public class RatingThumbsViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void bind(RatingThumbs ratingThumbs, View.OnClickListener clickListener) {
+    public void bind(final RatingThumbs ratingThumbs, final ChatAdapter.AdapterInterface adapterInterface) {
         if (ratingThumbs.getRating() != null) {
             if (ratingThumbs.getRating()) {
                 if (style.chatToolbarColorResId != ChatStyle.INVALID) {
@@ -72,6 +73,7 @@ public class RatingThumbsViewHolder extends RecyclerView.ViewHolder {
                     thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId), PorterDuff.Mode.SRC_ATOP);
                 }
                 thanksForRate.setVisibility(View.VISIBLE);
+                bottomSeparator.setVisibility(View.VISIBLE);
             } else {
                 if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                     thumbDown.setImageResource(R.drawable.ic_dislike_full_36dp);
@@ -82,13 +84,25 @@ public class RatingThumbsViewHolder extends RecyclerView.ViewHolder {
                     thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId), PorterDuff.Mode.SRC_ATOP);
                 }
                 thanksForRate.setVisibility(View.VISIBLE);
+                bottomSeparator.setVisibility(View.VISIBLE);
             }
         } else {
-            thanksForRate.setVisibility(View.INVISIBLE);
+            thanksForRate.setVisibility(View.GONE);
+            bottomSeparator.setVisibility(View.GONE);
         }
 
-        thumbUp.setOnClickListener(clickListener);
-        thumbDown.setOnClickListener(clickListener);
+        thumbUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adapterInterface.onRatingThumbsClick(ratingThumbs, true);
+            }
+        });
+        thumbDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adapterInterface.onRatingThumbsClick(ratingThumbs, false);
+            }
+        });
 
     }
 }

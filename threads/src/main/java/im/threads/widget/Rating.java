@@ -27,7 +27,7 @@ public class Rating extends LinearLayout {
     private Integer ratingCount;
     private Integer countStars;
     private Context context;
-    Boolean listener = false;
+    Boolean hasListener = false;
     private ArrayList<View> viewsStar;
 
     public Rating(Context context) {
@@ -52,7 +52,7 @@ public class Rating extends LinearLayout {
         LayoutInflater inflater = LayoutInflater.from(context);
 
         removeAllViews();                   // Чтобы при повторном ините не было в 2 раза больше звезд
-        viewsStar = new ArrayList<View>();
+        viewsStar = new ArrayList<>();
 
         for (int i = 0; i < countStars; i++) {
             View view = inflater.inflate(R.layout.rating_star, this, false);
@@ -69,7 +69,7 @@ public class Rating extends LinearLayout {
      * звездочек и реакцию
      */
     public void setListenerClick(Boolean listener, CallBackListener callBackListener) {
-        this.listener = listener;
+        this.hasListener = listener;
         if (listener) {
             clickStarts(callBackListener);
         } else {
@@ -92,7 +92,7 @@ public class Rating extends LinearLayout {
                         }
 
                         ratingCount = index;
-                        callBackListener.onListener();
+                        callBackListener.onStarClick(ratingCount);
                     }
                 }
             });
@@ -122,27 +122,40 @@ public class Rating extends LinearLayout {
                 star.setImageDrawable(icon);
             } else {
                 Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, android.R.color.holo_green_light), PorterDuff.Mode.SRC_ATOP);
+                icon.setColorFilter(ContextCompat.getColor(context, android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
                 star.setImageDrawable(icon);
             }
-        } else {
+        } else if (ratingCount == 0) {
             if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
                 Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
                 icon.setColorFilter(ContextCompat.getColor(context, style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
                 star.setImageDrawable(icon);
             } else {
                 Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, android.R.color.holo_green_light), PorterDuff.Mode.SRC_ATOP);
+                icon.setColorFilter(ContextCompat.getColor(context, android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
+                star.setImageDrawable(icon);
+            }
+        } else {
+            if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
+                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
+                star.setImageDrawable(icon);
+            } else {
+                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
                 star.setImageDrawable(icon);
             }
         }
+
     }
 
     public int getRating() {
         return ratingCount;
     }
 
-    public abstract static class CallBackListener {
-        public abstract void onListener();
+    public interface CallBackListener {
+        void onStarClick(int ratingCount);
+    }
+
+    public Boolean getHasListener() {
+        return hasListener;
     }
 }

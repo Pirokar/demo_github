@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -21,6 +20,7 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
+import im.threads.model.RatingStars;
 import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.UpcomingUserMessage;
@@ -231,12 +231,12 @@ public class MessageFormatter {
         if(type != null) {
             if(type.equalsIgnoreCase(MessageMatcher.OPERATOR_JOINED) || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LEFT)) {
                 return getConsultConnectionFromPush(pushMessage);
-            }
-            if(type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
+            } else if(type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
                 return getScheduleInfoFromPush(pushMessage, fullMessage);
-            }
-            if(type.equalsIgnoreCase(MessageMatcher.RATING_THUMBS)) {
-                return getRatingThumbsInfoFromPush(pushMessage, fullMessage);
+            } else if(type.equalsIgnoreCase(MessageMatcher.RATING_THUMBS)) {
+                return getRatingThumbsFromPush(pushMessage, fullMessage);
+            } else if(type.equalsIgnoreCase(MessageMatcher.RATING_STARS)) {
+                return getRatingStarsFromPush(pushMessage, fullMessage);
             }
             else {
                 return null;
@@ -267,7 +267,7 @@ public class MessageFormatter {
         return scheduleInfo;
     }
 
-    private static RatingThumbs getRatingThumbsInfoFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+    private static RatingThumbs getRatingThumbsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
         RatingThumbs ratingThumbs = null;
         String text = getMessage(fullMessage, pushMessage);
         if(text != null) {
@@ -279,6 +279,20 @@ public class MessageFormatter {
             }
         }
         return ratingThumbs;
+    }
+
+    private static RatingStars getRatingStarsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+        RatingStars ratingStars = null;
+        String text = getMessage(fullMessage, pushMessage);
+        if(text != null) {
+            try {
+                ratingStars = new Gson().fromJson(text, RatingStars.class);
+                ratingStars.setDate(new Date().getTime());
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return ratingStars;
     }
 
     private static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
@@ -479,7 +493,16 @@ public class MessageFormatter {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return object.toString().replaceAll("\\\\", "");
+    }
 
+    public static String createRatingStarsMessage(int rating) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("rating", String.valueOf(rating));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return object.toString().replaceAll("\\\\", "");
     }
 
