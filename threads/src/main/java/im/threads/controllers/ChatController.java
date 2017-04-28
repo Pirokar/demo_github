@@ -162,7 +162,7 @@ public class ChatController {
         }
         try {
             instance.cleanAll();
-            if(instance.fragment != null) {
+            if (instance.fragment != null) {
                 instance.fragment.removeSearching();
             }
             instance.mConsultWriter.setCurrentConsultLeft();
@@ -174,7 +174,7 @@ public class ChatController {
             List<InOutMessage> messages = PushController.getInstance(instance.appContext).getMessageHistory(20);
             instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
             ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
-            if(instance.fragment != null) {
+            if (instance.fragment != null) {
                 instance.fragment.addChatItems(phrases);
             }
             PrefUtils.setClientIdWasSet(true, ctx);
@@ -183,33 +183,54 @@ public class ChatController {
         }
     }
 
-    public void onRatingThumbsClick(Context context, RatingThumbs ratingThumbs) {
-        String ratingThumbsMessage = MessageFormatter.createRatingThumbsMessage(ratingThumbs.getRating());
-        try {
-            PushController.getInstance(context).sendMessage(ratingThumbsMessage, false);
-            if(instance.fragment != null) {
-                instance.fragment.updateUi();
-            }
-        } catch (PushServerErrorException e) {
-            e.printStackTrace();
+    public void onRatingThumbsClick(Context context, final RatingThumbs ratingThumbs) {
+        ChatItem chatItem = convertRatingItem(ratingThumbs);
+        if (chatItem != null) {
+            addMessage(chatItem, appContext);
         }
+        String ratingThumbsMessage = MessageFormatter.createRatingThumbsMessage(ratingThumbs.getRating(), ratingThumbs.getMessageId());
+        PushController.getInstance(context).sendMessageAsync(ratingThumbsMessage, false, new RequestCallback<String, PushServerErrorException>() {
+            @Override
+            public void onResult(String s) {
+                ratingThumbs.setMessageId(s);
+                if (instance.fragment != null) {
+                    instance.fragment.updateUi();
+                }
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+
+            }
+        });
+
     }
 
-    public void onRatingStarsClick(Context context, RatingStars ratingStars) {
-        String ratingThumbsMessage = MessageFormatter.createRatingStarsMessage(ratingStars.getRating());
-        try {
-            PushController.getInstance(context).sendMessage(ratingThumbsMessage, false);
-            if(instance.fragment != null) {
-                instance.fragment.updateUi();
-            }
-        } catch (PushServerErrorException e) {
-            e.printStackTrace();
+    public void onRatingStarsClick(Context context, final RatingStars ratingStars) {
+        ChatItem chatItem = convertRatingItem(ratingStars);
+        if (chatItem != null) {
+            addMessage(chatItem, appContext);
         }
+        String ratingThumbsMessage = MessageFormatter.createRatingStarsMessage(ratingStars.getRating(), ratingStars.getMessageId());
+        PushController.getInstance(context).sendMessageAsync(ratingThumbsMessage, false, new RequestCallback<String, PushServerErrorException>() {
+            @Override
+            public void onResult(String s) {
+                ratingStars.setMessageId(s);
+                if (instance.fragment != null) {
+                    instance.fragment.updateUi();
+                }
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+
+            }
+        });
     }
 
     public static PendingIntentCreator getPendingIntentCreator() {
-        if(pendingIntentCreator == null) {
-             pendingIntentCreator = new PendingIntentCreator() {
+        if (pendingIntentCreator == null) {
+            pendingIntentCreator = new PendingIntentCreator() {
                 @Override
                 public PendingIntent createPendingIntent(Context context) {
                     Intent i = new Intent(context, ChatActivity.class);
@@ -228,13 +249,13 @@ public class ChatController {
      * Все места, где срабатывает прочтение сообщений, можно найти по
      * NotificationService.ACTION_ALL_MESSAGES_WERE_READ.
      * Данный тип сообщения отправляется в Сервис пуш уведомлений при прочтении сообщений.
-     *
+     * <p>
      * Можно было бы поместить оповещение в точку прихода NotificationService.ACTION_ALL_MESSAGES_WERE_READ,
      * но иногда в этот момент в сообщения еще не помечены, как прочитанные.
      */
     public static void notifyUnreadMessagesCountChanged(Context context) {
         UnreadMessagesCountListener unreadMessagesCountListener = getUnreadMessagesCountListener();
-        if(unreadMessagesCountListener != null) {
+        if (unreadMessagesCountListener != null) {
             ChatController controller = getInstance(context, PrefUtils.getClientID(context));
             int unreadCount = controller.getUnreadMessagesCount();
             unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadCount);
@@ -243,8 +264,8 @@ public class ChatController {
 
     public static int getUnreadMessagesCount(Context context) {
         String clientId = PrefUtils.getClientID(context);
-        if(clientId.equals("")) {
-           return 0;
+        if (clientId.equals("")) {
+            return 0;
         } else {
             return getInstance(context, clientId).getUnreadMessagesCount();
         }
@@ -282,16 +303,16 @@ public class ChatController {
             try {
                 PushController.getInstance(appContext).sendMessageAsync(
                         MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
-                    @Override
-                    public void onResult(String aVoid) {
+                            @Override
+                            public void onResult(String aVoid) {
 
-                    }
+                            }
 
-                    @Override
-                    public void onError(PushServerErrorException e) {
+                            @Override
+                            public void onError(PushServerErrorException e) {
 
-                    }
-                });
+                            }
+                        });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -362,7 +383,7 @@ public class ChatController {
             h.post(new Runnable() {
                 @Override
                 public void run() {
-                    if(fragment != null) {
+                    if (fragment != null) {
                         fragment.addChatItems(items);
                     }
                 }
@@ -422,7 +443,7 @@ public class ChatController {
     public void unbindFragment() {
         if (fragment != null) {
             Activity activity = fragment.getActivity();
-            if(activity != null) {
+            if (activity != null) {
                 activity.unregisterReceiver(mProgressReceiver);
             }
         }
@@ -608,7 +629,7 @@ public class ChatController {
             }
             if (e.getCause() != null)
                 error += "\ncause = " + e.getCause().toString();
-                // activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
+            // activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
         }
         // activity.showConnectionError();
     }
@@ -745,7 +766,7 @@ public class ChatController {
         }, 1500);
 
         // Если пришло сообщение от оператора, нужно удалить расписание из чата.
-        if(cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage) {
+        if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage) {
             h.post(new Runnable() {
                 @Override
                 public void run() {
@@ -766,7 +787,7 @@ public class ChatController {
         if (BuildConfig.DEBUG) Log.i(TAG, "onFileClick " + fileDescription);
         if (fragment != null && fragment.isAdded()) {
             Activity activity = fragment.getActivity();
-            if(activity != null) {
+            if (activity != null) {
                 if (fileDescription.getFilePath() == null) {
                     Intent i = new Intent(activity, DownloadService.class);
                     i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
@@ -821,7 +842,7 @@ public class ChatController {
         this.isActive = isForeground;
         if (isForeground && fragment != null && fragment.isAdded()) {
             Activity activity = fragment.getActivity();
-            if(activity != null) {
+            if (activity != null) {
                 ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
                 if (cm != null
                         && cm.getActiveNetworkInfo() != null
@@ -861,6 +882,20 @@ public class ChatController {
         UserPhrase up = new UserPhrase("local" + UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription());
         up.setCopy(message.isCopyied());
         return up;
+    }
+
+    private ChatItem convertRatingItem(ChatItem chatItem) {
+        if (chatItem instanceof RatingThumbs) {
+            RatingThumbs ratingThumbs = (RatingThumbs) chatItem;
+            ratingThumbs.setMessageId("local" + UUID.randomUUID().toString());
+            return ratingThumbs;
+        }
+        if (chatItem instanceof RatingStars) {
+            RatingStars ratingStars = (RatingStars) chatItem;
+            ratingStars.setMessageId("local" + UUID.randomUUID().toString());
+            return ratingStars;
+        }
+        return null;
     }
 
     public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
@@ -922,9 +957,9 @@ public class ChatController {
     }
 
     public void onImageDownloadRequest(FileDescription fileDescription) {
-        if(fragment != null && fragment.isAdded()) {
+        if (fragment != null && fragment.isAdded()) {
             Activity activity = fragment.getActivity();
-            if(activity != null) {
+            if (activity != null) {
                 Intent i = new Intent(activity, DownloadService.class);
                 i.setAction(DownloadService.START_DOWNLOAD_WITH_NO_STOP);
                 i.putExtra(DownloadService.FD_TAG, fileDescription);
@@ -943,7 +978,7 @@ public class ChatController {
 
         PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
 
-        if(chatItem != null) {
+        if (chatItem != null) {
             ConsultMessageReaction consultReactor = new ConsultMessageReaction(
                     mConsultWriter,
                     new ConsultMessageReactions() {
@@ -1038,7 +1073,7 @@ public class ChatController {
     void setAllMessagesWereRead() {
         if (fragment == null && appContext == null) return;
         Context cxt = null;
-        if(fragment != null && fragment.isAdded()) {
+        if (fragment != null && fragment.isAdded()) {
             cxt = fragment.getActivity();
         }
         if (cxt == null) cxt = appContext;

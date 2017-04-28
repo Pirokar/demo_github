@@ -481,13 +481,15 @@ public class MessageFormatter {
         return object.toString().replaceAll("\\\\", "");
     }
 
-    public static String createRatingThumbsMessage(boolean rating) {
+    public static String createRatingThumbsMessage(boolean rating, String messageId) {
         JSONObject object = new JSONObject();
         try {
             if (rating) {
                 object.put("rating", "good");
+                object.put("message_id", messageId);
             } else {
                 object.put("rating", "not_good");
+                object.put("message_id", messageId);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -495,10 +497,11 @@ public class MessageFormatter {
         return object.toString().replaceAll("\\\\", "");
     }
 
-    public static String createRatingStarsMessage(int rating) {
+    public static String createRatingStarsMessage(int rating, String messageId) {
         JSONObject object = new JSONObject();
         try {
             object.put("rating", String.valueOf(rating));
+            object.put("message_id", messageId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
