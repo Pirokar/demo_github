@@ -76,4 +76,6 @@
     <string name="typing">печатает…</string>
     <string name="ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
     <string name="thanks_for_rate">Спасибо за вашу оценку</string>
+    <string name="item_user_rate_header">Оценка решения вопроса</string>
+    <string name="item_user_rate_text">из</string>
 </resources>

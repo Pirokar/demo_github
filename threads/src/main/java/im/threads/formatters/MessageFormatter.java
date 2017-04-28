@@ -237,8 +237,7 @@ public class MessageFormatter {
                 return getRatingThumbsFromPush(pushMessage, fullMessage);
             } else if(type.equalsIgnoreCase(MessageMatcher.RATING_STARS)) {
                 return getRatingStarsFromPush(pushMessage, fullMessage);
-            }
-            else {
+            } else {
                 return null;
             }
         } else {
@@ -273,7 +272,7 @@ public class MessageFormatter {
         if(text != null) {
             try {
                 ratingThumbs = new Gson().fromJson(text, RatingThumbs.class);
-                ratingThumbs.setDate(new Date().getTime());
+                ratingThumbs.setPhraseTimeStamp(new Date().getTime());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
             }
@@ -287,7 +286,7 @@ public class MessageFormatter {
         if(text != null) {
             try {
                 ratingStars = new Gson().fromJson(text, RatingStars.class);
-                ratingStars.setDate(new Date().getTime());
+                ratingStars.setPhraseTimeStamp(new Date().getTime());
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
             }

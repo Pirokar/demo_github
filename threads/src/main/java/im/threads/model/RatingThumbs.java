@@ -5,24 +5,29 @@ package im.threads.model;
  */
 
 public class RatingThumbs implements ChatItem {
-    private Long id;
-    private long date;
+    private String messageId;
+    private MessageState sentState;
+    private long phraseTimeStamp;
     private Boolean rating;
 
-    public Long getId() {
-        return id;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
-    public long getDate() {
-        return date;
+    public MessageState getSentState() {
+        return sentState;
     }
 
-    public void setDate(long date) {
-        this.date = date;
+    public void setSentState(MessageState sentState) {
+        this.sentState = sentState;
+    }
+
+    public void setPhraseTimeStamp(long phraseTimeStamp) {
+        this.phraseTimeStamp = phraseTimeStamp;
     }
 
     public Boolean getRating() {
@@ -35,6 +40,6 @@ public class RatingThumbs implements ChatItem {
 
     @Override
     public long getTimeStamp() {
-        return date;
+        return phraseTimeStamp;
     }
 }

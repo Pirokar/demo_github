@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/bubble_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/bubble"
+        android:layout_alignLeft="@+id/bubble"
+        android:layout_alignRight="@+id/bubble"
+        android:layout_alignTop="@+id/bubble"
+        android:scaleType="fitXY"
+        android:src="@drawable/a_user_bubble" />
+
+    <RelativeLayout
+
+        android:id="@+id/bubble"
+        style="@style/userBuble"
+        android:paddingRight="17dp">
+
+
+        <ImageView
+            android:id="@+id/thumb"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/margin_half" />
+
+        <im.threads.widget.CustomFontTextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_toRightOf="@+id/thumb"
+            android:text="@string/item_user_rate_header"
+            android:textColor="@android:color/white" />
+
+        <im.threads.widget.CustomFontTextView
+            android:id="@+id/timestamp"
+            style="@style/timestamp"
+            android:layout_alignParentRight="true"
+            android:layout_alignRight="@+id/header"
+            android:layout_below="@+id/header"
+            android:layout_marginTop="@dimen/margin_quarter"
+            android:text="10:19" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

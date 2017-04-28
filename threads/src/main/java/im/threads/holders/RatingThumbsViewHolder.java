@@ -21,7 +21,7 @@ import im.threads.utils.PrefUtils;
  * Created by chybakut2004 on 17.04.17.
  */
 
-public class RatingThumbsViewHolder extends RecyclerView.ViewHolder {
+public class RatingThumbsViewHolder extends BaseHolder {
 
     private View topSeparator;
     private View bottomSeparator;
