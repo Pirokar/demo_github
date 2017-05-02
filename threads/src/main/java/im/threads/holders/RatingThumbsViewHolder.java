@@ -44,9 +44,11 @@ public class RatingThumbsViewHolder extends BaseHolder {
         askForRate = (TextView) itemView.findViewById(R.id.ask_for_rate);
         thanksForRate = (TextView) itemView.findViewById(R.id.thanks_for_rate);
 
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
+        if (style == null){
+            style = PrefUtils.getIncomingStyle(itemView.getContext());
+        }
 
+        if (style != null) {
             if(style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
                 askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
@@ -97,6 +99,7 @@ public class RatingThumbsViewHolder extends BaseHolder {
                 adapterInterface.onRatingThumbsClick(ratingThumbs, true);
             }
         });
+
         thumbDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

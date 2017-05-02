@@ -9,10 +9,11 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
+    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/res/values/dimens.xml" afterPath="$PROJECT_DIR$/threads/src/main/res/values/dimens.xml" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,17 +49,27 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="217" column="44" selection-start-line="217" selection-start-column="44" selection-end-line="217" selection-end-column="44" />
+            <state relative-caret-position="17">
+              <caret line="976" column="51" selection-start-line="976" selection-start-column="51" selection-end-line="976" selection-end-column="51" />
               <folding>
-                <element signature="e#20169#20742#0" expanded="true" />
-                <element signature="e#20267#20708#0" expanded="true" />
-                <element signature="e#20707#20708#0" expanded="true" />
-                <element signature="e#20741#20742#0" expanded="true" />
+                <element signature="e#31643#32191#0" expanded="true" />
+                <element signature="e#32190#32191#0" expanded="true" />
+                <element signature="e#32548#32891#0" expanded="true" />
+                <element signature="e#32890#32891#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ScheduleInfo.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ScheduleInfo.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -66,8 +77,8 @@
       <file leaf-file-name="MessageFormatter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="499" column="25" selection-start-line="499" selection-start-column="25" selection-end-line="499" selection-end-column="25" />
+            <state relative-caret-position="7624">
+              <caret line="681" column="46" selection-start-line="681" selection-start-column="46" selection-end-line="681" selection-end-column="46" />
               <folding />
             </state>
           </provider>
@@ -76,12 +87,9 @@
       <file leaf-file-name="RatingStars.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingStars.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="31">
+            <state relative-caret-position="39">
               <caret line="6" column="23" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
-              <folding>
-                <element signature="e#530#531#0" expanded="true" />
-                <element signature="e#572#573#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -89,28 +97,23 @@
       <file leaf-file-name="ChatAdapter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="158">
+            <state relative-caret-position="17">
               <caret line="446" column="48" selection-start-line="446" selection-start-column="48" selection-end-line="446" selection-end-column="48" />
-              <folding>
-                <element signature="e#17138#17561#0" expanded="true" />
-                <element signature="e#17560#17561#0" expanded="true" />
-                <element signature="e#22663#22935#0" expanded="true" />
-                <element signature="e#22934#22935#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RatingThumbsViewHolder.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="RatingThumbsViewHolder.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="97" column="8" selection-start-line="97" selection-start-column="8" selection-end-line="97" selection-end-column="8" />
+            <state relative-caret-position="348">
+              <caret line="101" column="8" selection-start-line="101" selection-start-column="8" selection-end-line="101" selection-end-column="8" />
               <folding>
-                <element signature="e#4525#4718#0" expanded="true" />
-                <element signature="e#4717#4718#0" expanded="true" />
-                <element signature="e#4758#4952#0" expanded="true" />
-                <element signature="e#4951#4952#0" expanded="true" />
+                <element signature="e#4548#4741#0" expanded="true" />
+                <element signature="e#4740#4741#0" expanded="true" />
+                <element signature="e#4790#4984#0" expanded="true" />
+                <element signature="e#4983#4984#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -119,13 +122,52 @@
       <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="65">
+            <state relative-caret-position="13770">
               <caret line="936" column="36" selection-start-line="936" selection-start-column="36" selection-end-line="936" selection-end-column="36" />
               <folding>
-                <element signature="e#11745#11898#0" expanded="true" />
-                <element signature="e#11897#11898#0" expanded="true" />
-                <element signature="e#23771#23772#0" expanded="true" />
-                <element signature="e#23822#23823#0" expanded="true" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#11405#11406#0" expanded="false" />
+                <element signature="e#11464#11465#0" expanded="false" />
+                <element signature="e#11631#11632#0" expanded="false" />
+                <element signature="e#11692#11693#0" expanded="false" />
+                <element signature="e#11836#11837#0" expanded="false" />
+                <element signature="e#11887#11888#0" expanded="false" />
+                <element signature="e#13032#13033#0" expanded="false" />
+                <element signature="e#13094#13095#0" expanded="false" />
+                <element signature="e#15157#15158#0" expanded="false" />
+                <element signature="e#15225#15226#0" expanded="false" />
+                <element signature="e#27162#27163#0" expanded="false" />
+                <element signature="e#27219#27220#0" expanded="false" />
+                <element signature="e#27358#27359#0" expanded="false" />
+                <element signature="e#27416#27417#0" expanded="false" />
+                <element signature="e#34026#34027#0" expanded="false" />
+                <element signature="e#34084#34085#0" expanded="false" />
+                <element signature="e#34504#34505#0" expanded="false" />
+                <element signature="e#34582#34583#0" expanded="false" />
+                <element signature="e#37367#37368#0" expanded="false" />
+                <element signature="e#37459#37460#0" expanded="false" />
+                <element signature="e#39265#39266#0" expanded="false" />
+                <element signature="e#39354#39355#0" expanded="false" />
+                <element signature="e#49769#49770#0" expanded="false" />
+                <element signature="e#49826#49827#0" expanded="false" />
+                <element signature="e#53186#53187#0" expanded="false" />
+                <element signature="e#53214#53215#0" expanded="false" />
+                <element signature="e#58068#58069#0" expanded="false" />
+                <element signature="e#58123#58124#0" expanded="false" />
+                <element signature="e#58359#58360#0" expanded="false" />
+                <element signature="e#58402#58403#0" expanded="false" />
+                <element signature="e#58487#58488#0" expanded="false" />
+                <element signature="e#58546#58547#0" expanded="false" />
+                <element signature="e#58585#58586#0" expanded="false" />
+                <element signature="e#58641#58642#0" expanded="false" />
+                <element signature="e#62696#62697#0" expanded="false" />
+                <element signature="e#62730#62731#0" expanded="false" />
+                <element signature="e#63558#63559#0" expanded="false" />
+                <element signature="e#63625#63626#0" expanded="false" />
+                <element signature="e#64759#64760#0" expanded="false" />
+                <element signature="e#64826#64827#0" expanded="false" />
+                <element signature="e#65417#65418#0" expanded="false" />
+                <element signature="e#65477#65478#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -134,23 +176,10 @@
       <file leaf-file-name="RatingThumbsSentViewHolder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="347">
+            <state relative-caret-position="731">
               <caret line="63" column="16" selection-start-line="63" selection-start-column="16" selection-end-line="63" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="item_rate_stars_sent.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/item_rate_stars_sent.xml">
-          <provider editor-type-id="android-designer2">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="167">
-              <caret line="37" column="16" selection-start-line="70" selection-start-column="37" selection-end-line="70" selection-end-column="54" />
               <folding>
-                <element signature="e#2205#2228#0" expanded="true" />
+                <element signature="imports" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -159,11 +188,23 @@
       <file leaf-file-name="RatingThumbs.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingThumbs.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
+            <state relative-caret-position="204">
               <caret line="12" column="18" selection-start-line="12" selection-start-column="18" selection-end-line="12" selection-end-column="18" />
               <folding>
-                <element signature="e#281#282#0" expanded="true" />
-                <element signature="e#313#314#0" expanded="true" />
+                <element signature="e#363#364#0" expanded="false" />
+                <element signature="e#405#406#0" expanded="false" />
+                <element signature="e#447#448#0" expanded="false" />
+                <element signature="e#479#480#0" expanded="false" />
+                <element signature="e#535#536#0" expanded="false" />
+                <element signature="e#577#578#0" expanded="false" />
+                <element signature="e#637#638#0" expanded="false" />
+                <element signature="e#691#692#0" expanded="false" />
+                <element signature="e#725#726#0" expanded="false" />
+                <element signature="e#754#755#0" expanded="false" />
+                <element signature="e#799#800#0" expanded="false" />
+                <element signature="e#835#836#0" expanded="false" />
+                <element signature="e#883#884#0" expanded="false" />
+                <element signature="e#921#922#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -2697,7 +2738,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="7463341392256" />
+        <entry key="$PROJECT_DIR$" value="7455091799897" />
         <entry key="C:\Users\Admin\AndroidStudioProjects\Threads-Android" value="7455091799897" />
       </map>
     </option>
@@ -3014,7 +3055,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatBundleHelper.java" />
         <option value="$PROJECT_DIR$/threads/build/intermediates/exploded-aar/Threads-Android/push-api-release-1.0-41-2016-10-18-17-22/unspecified/jars/classes.jar!/com/pushserver/android/PushServerIntentService.class" />
         <option value="$PROJECT_DIR$/threads/build/intermediates/exploded-aar/Threads-Android/push-api-release-1.0-41-2016-10-18-17-22/unspecified/jars/classes.jar!/com/pushserver/android/PushGcmIntentService.class" />
@@ -3056,7 +3096,6 @@
         <option value="$PROJECT_DIR$/threads/src/main/res/layout/item_user_rate_thumb.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/res/layout/item_user_rate_star.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/res/layout/item_rate_thumbs_sent.xml" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/UserPhraseViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/res/layout/item_rate_stars_sent.xml" />
@@ -3065,6 +3104,8 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/res/values/dimens.xml" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" />
       </list>
     </option>
   </component>
@@ -3099,11 +3140,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
-      <pane id="AndroidView">
-        <subPane />
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -3275,40 +3311,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="widget" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Threads-Android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Threads-Android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="threads" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="threads" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -3551,6 +3553,11 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView">
+        <subPane />
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -3938,7 +3945,14 @@
       <option name="project" value="LOCAL" />
       <updated>1493369385637</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)">
+      <created>1493373064723</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1493373064723</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -3946,7 +3960,7 @@
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935154" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -3960,8 +3974,7 @@
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2753404" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935154" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.493266" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290469" sideWeight="0.493266" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.506734" order="3" side_tool="true" content_ui="tabs" />
@@ -3975,6 +3988,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935154" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -4042,7 +4056,8 @@
     <MESSAGE value="Заглушка рейтинга с like/dislike" />
     <MESSAGE value="Заглушка рейтинга с звездами" />
     <MESSAGE value="Добавил баблы с рейтингом (в процессе)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавил баблы с рейтингом (в процессе)" />
+    <MESSAGE value="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -4051,14 +4066,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/GalleryItemHolder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="22" column="82" selection-start-line="22" selection-start-column="82" selection-end-line="22" selection-end-column="82" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/item_schedule_info.xml">
       <provider editor-type-id="android-designer2">
         <state />
@@ -4094,17 +4101,6 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/rating_star.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="35" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/BottomNavigationActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2550">
@@ -4136,7 +4132,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
           <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4144,7 +4139,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
           <caret line="35" column="57" selection-start-line="35" selection-start-column="57" selection-end-line="35" selection-end-column="57" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4152,7 +4146,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="76" column="24" selection-start-line="76" selection-start-column="24" selection-end-line="76" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4173,7 +4166,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="186">
           <caret line="246" column="18" selection-start-line="246" selection-start-column="18" selection-end-line="246" selection-end-column="18" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4189,20 +4181,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="203">
           <caret line="136" column="43" selection-start-line="136" selection-start-column="43" selection-end-line="136" selection-end-column="43" />
-          <folding>
-            <element signature="e#3740#3741#0" expanded="true" />
-            <element signature="e#3791#3792#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ScheduleInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="20" selection-start-line="11" selection-start-column="20" selection-end-line="11" selection-end-column="20" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -4232,7 +4210,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-374">
           <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4267,15 +4244,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
           <caret line="133" column="54" selection-start-line="133" selection-start-column="54" selection-end-line="133" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/res/values/dimens.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4291,7 +4259,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4299,7 +4266,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="116">
           <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4342,7 +4308,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4354,7 +4319,7 @@
         <state relative-caret-position="184">
           <caret line="32" column="32" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
           <folding>
-            <element signature="e#1295#1315#0" expanded="true" />
+            <element signature="e#1295#1315#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -4363,7 +4328,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="6" column="11" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4371,7 +4335,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="260">
           <caret line="119" column="98" selection-start-line="119" selection-start-column="78" selection-end-line="119" selection-end-column="98" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4380,11 +4343,9 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
+        <state relative-caret-position="629">
           <caret line="37" column="16" selection-start-line="70" selection-start-column="37" selection-end-line="70" selection-end-column="54" />
-          <folding>
-            <element signature="e#2205#2228#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -4406,9 +4367,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
+        <state relative-caret-position="731">
           <caret line="63" column="16" selection-start-line="63" selection-start-column="16" selection-end-line="63" selection-end-column="16" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -4416,32 +4379,57 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
-          <caret line="446" column="48" selection-start-line="446" selection-start-column="48" selection-end-line="446" selection-end-column="48" />
-          <folding>
-            <element signature="e#17138#17561#0" expanded="true" />
-            <element signature="e#17560#17561#0" expanded="true" />
-            <element signature="e#22663#22935#0" expanded="true" />
-            <element signature="e#22934#22935#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="65">
+        <state relative-caret-position="13770">
           <caret line="936" column="36" selection-start-line="936" selection-start-column="36" selection-end-line="936" selection-end-column="36" />
           <folding>
-            <element signature="e#11745#11898#0" expanded="true" />
-            <element signature="e#11897#11898#0" expanded="true" />
-            <element signature="e#23771#23772#0" expanded="true" />
-            <element signature="e#23822#23823#0" expanded="true" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#11405#11406#0" expanded="false" />
+            <element signature="e#11464#11465#0" expanded="false" />
+            <element signature="e#11631#11632#0" expanded="false" />
+            <element signature="e#11692#11693#0" expanded="false" />
+            <element signature="e#11836#11837#0" expanded="false" />
+            <element signature="e#11887#11888#0" expanded="false" />
+            <element signature="e#13032#13033#0" expanded="false" />
+            <element signature="e#13094#13095#0" expanded="false" />
+            <element signature="e#15157#15158#0" expanded="false" />
+            <element signature="e#15225#15226#0" expanded="false" />
+            <element signature="e#27162#27163#0" expanded="false" />
+            <element signature="e#27219#27220#0" expanded="false" />
+            <element signature="e#27358#27359#0" expanded="false" />
+            <element signature="e#27416#27417#0" expanded="false" />
+            <element signature="e#34026#34027#0" expanded="false" />
+            <element signature="e#34084#34085#0" expanded="false" />
+            <element signature="e#34504#34505#0" expanded="false" />
+            <element signature="e#34582#34583#0" expanded="false" />
+            <element signature="e#37367#37368#0" expanded="false" />
+            <element signature="e#37459#37460#0" expanded="false" />
+            <element signature="e#39265#39266#0" expanded="false" />
+            <element signature="e#39354#39355#0" expanded="false" />
+            <element signature="e#49769#49770#0" expanded="false" />
+            <element signature="e#49826#49827#0" expanded="false" />
+            <element signature="e#53186#53187#0" expanded="false" />
+            <element signature="e#53214#53215#0" expanded="false" />
+            <element signature="e#58068#58069#0" expanded="false" />
+            <element signature="e#58123#58124#0" expanded="false" />
+            <element signature="e#58359#58360#0" expanded="false" />
+            <element signature="e#58402#58403#0" expanded="false" />
+            <element signature="e#58487#58488#0" expanded="false" />
+            <element signature="e#58546#58547#0" expanded="false" />
+            <element signature="e#58585#58586#0" expanded="false" />
+            <element signature="e#58641#58642#0" expanded="false" />
+            <element signature="e#62696#62697#0" expanded="false" />
+            <element signature="e#62730#62731#0" expanded="false" />
+            <element signature="e#63558#63559#0" expanded="false" />
+            <element signature="e#63625#63626#0" expanded="false" />
+            <element signature="e#64759#64760#0" expanded="false" />
+            <element signature="e#64826#64827#0" expanded="false" />
+            <element signature="e#65417#65418#0" expanded="false" />
+            <element signature="e#65477#65478#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -4450,28 +4438,28 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingStars.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="31">
-          <caret line="6" column="23" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
-          <folding>
-            <element signature="e#530#531#0" expanded="true" />
-            <element signature="e#572#573#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingThumbs.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
+        <state relative-caret-position="204">
           <caret line="12" column="18" selection-start-line="12" selection-start-column="18" selection-end-line="12" selection-end-column="18" />
           <folding>
-            <element signature="e#281#282#0" expanded="true" />
-            <element signature="e#313#314#0" expanded="true" />
+            <element signature="e#363#364#0" expanded="false" />
+            <element signature="e#405#406#0" expanded="false" />
+            <element signature="e#447#448#0" expanded="false" />
+            <element signature="e#479#480#0" expanded="false" />
+            <element signature="e#535#536#0" expanded="false" />
+            <element signature="e#577#578#0" expanded="false" />
+            <element signature="e#637#638#0" expanded="false" />
+            <element signature="e#691#692#0" expanded="false" />
+            <element signature="e#725#726#0" expanded="false" />
+            <element signature="e#754#755#0" expanded="false" />
+            <element signature="e#799#800#0" expanded="false" />
+            <element signature="e#835#836#0" expanded="false" />
+            <element signature="e#883#884#0" expanded="false" />
+            <element signature="e#921#922#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -4484,36 +4472,110 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java">
+    <entry file="file://$PROJECT_DIR$/threads/src/main/res/values/dimens.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="97" column="8" selection-start-line="97" selection-start-column="8" selection-end-line="97" selection-end-column="8" />
-          <folding>
-            <element signature="e#4525#4718#0" expanded="true" />
-            <element signature="e#4717#4718#0" expanded="true" />
-            <element signature="e#4758#4952#0" expanded="true" />
-            <element signature="e#4951#4952#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="374">
+          <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
+    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/rating_star.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="499" column="25" selection-start-line="499" selection-start-column="25" selection-end-line="499" selection-end-column="25" />
+        <state relative-caret-position="136">
+          <caret line="8" column="42" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="217" column="44" selection-start-line="217" selection-start-column="44" selection-end-line="217" selection-end-column="44" />
+        <state relative-caret-position="17">
+          <caret line="976" column="51" selection-start-line="976" selection-start-column="51" selection-end-line="976" selection-end-column="51" />
           <folding>
-            <element signature="e#20169#20742#0" expanded="true" />
-            <element signature="e#20267#20708#0" expanded="true" />
-            <element signature="e#20707#20708#0" expanded="true" />
-            <element signature="e#20741#20742#0" expanded="true" />
+            <element signature="e#31643#32191#0" expanded="true" />
+            <element signature="e#32190#32191#0" expanded="true" />
+            <element signature="e#32548#32891#0" expanded="true" />
+            <element signature="e#32890#32891#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/NotificationService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-238">
+          <caret line="414" column="25" selection-start-line="414" selection-start-column="25" selection-end-line="414" selection-end-column="25" />
+          <folding>
+            <element signature="e#2925#2926#0" expanded="true" />
+            <element signature="e#2952#2953#0" expanded="true" />
+            <element signature="e#5193#5232#0" expanded="true" />
+            <element signature="e#5747#5924#0" expanded="true" />
+            <element signature="e#5923#5924#0" expanded="true" />
+            <element signature="e#6024#6025#0" expanded="true" />
+            <element signature="e#6070#6071#0" expanded="true" />
+            <element signature="e#11274#11307#0" expanded="true" />
+            <element signature="e#11360#11393#0" expanded="true" />
+            <element signature="e#11444#11477#0" expanded="true" />
+            <element signature="e#13830#13855#0" expanded="true" />
+            <element signature="e#15457#15671#0" expanded="true" />
+            <element signature="e#15670#15671#0" expanded="true" />
+            <element signature="e#16460#16857#0" expanded="true" />
+            <element signature="e#16684#16710#0" expanded="true" />
+            <element signature="e#16856#16857#0" expanded="true" />
+            <element signature="e#17206#18268#0" expanded="true" />
+            <element signature="e#17975#18001#0" expanded="true" />
+            <element signature="e#18267#18268#0" expanded="true" />
+            <element signature="e#18693#19053#0" expanded="true" />
+            <element signature="e#18897#18923#0" expanded="true" />
+            <element signature="e#19052#19053#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="446" column="48" selection-start-line="446" selection-start-column="48" selection-end-line="446" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingStars.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="39">
+          <caret line="6" column="23" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7624">
+          <caret line="681" column="46" selection-start-line="681" selection-start-column="46" selection-end-line="681" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ScheduleInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="348">
+          <caret line="101" column="8" selection-start-line="101" selection-start-column="8" selection-end-line="101" selection-end-column="8" />
+          <folding>
+            <element signature="e#4548#4741#0" expanded="true" />
+            <element signature="e#4740#4741#0" expanded="true" />
+            <element signature="e#4790#4984#0" expanded="true" />
+            <element signature="e#4983#4984#0" expanded="true" />
           </folding>
         </state>
       </provider>
