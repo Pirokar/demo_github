@@ -9,11 +9,9 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="Мелкий рефакторинг">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/res/values/dimens.xml" afterPath="$PROJECT_DIR$/threads/src/main/res/values/dimens.xml" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -107,79 +105,13 @@
       <file leaf-file-name="RatingThumbsViewHolder.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="348">
-              <caret line="101" column="8" selection-start-line="101" selection-start-column="8" selection-end-line="101" selection-end-column="8" />
+            <state relative-caret-position="450">
+              <caret line="107" column="11" selection-start-line="107" selection-start-column="11" selection-end-line="107" selection-end-column="11" />
               <folding>
                 <element signature="e#4548#4741#0" expanded="true" />
                 <element signature="e#4740#4741#0" expanded="true" />
-                <element signature="e#4790#4984#0" expanded="true" />
-                <element signature="e#4983#4984#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="13770">
-              <caret line="936" column="36" selection-start-line="936" selection-start-column="36" selection-end-line="936" selection-end-column="36" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#11405#11406#0" expanded="false" />
-                <element signature="e#11464#11465#0" expanded="false" />
-                <element signature="e#11631#11632#0" expanded="false" />
-                <element signature="e#11692#11693#0" expanded="false" />
-                <element signature="e#11836#11837#0" expanded="false" />
-                <element signature="e#11887#11888#0" expanded="false" />
-                <element signature="e#13032#13033#0" expanded="false" />
-                <element signature="e#13094#13095#0" expanded="false" />
-                <element signature="e#15157#15158#0" expanded="false" />
-                <element signature="e#15225#15226#0" expanded="false" />
-                <element signature="e#27162#27163#0" expanded="false" />
-                <element signature="e#27219#27220#0" expanded="false" />
-                <element signature="e#27358#27359#0" expanded="false" />
-                <element signature="e#27416#27417#0" expanded="false" />
-                <element signature="e#34026#34027#0" expanded="false" />
-                <element signature="e#34084#34085#0" expanded="false" />
-                <element signature="e#34504#34505#0" expanded="false" />
-                <element signature="e#34582#34583#0" expanded="false" />
-                <element signature="e#37367#37368#0" expanded="false" />
-                <element signature="e#37459#37460#0" expanded="false" />
-                <element signature="e#39265#39266#0" expanded="false" />
-                <element signature="e#39354#39355#0" expanded="false" />
-                <element signature="e#49769#49770#0" expanded="false" />
-                <element signature="e#49826#49827#0" expanded="false" />
-                <element signature="e#53186#53187#0" expanded="false" />
-                <element signature="e#53214#53215#0" expanded="false" />
-                <element signature="e#58068#58069#0" expanded="false" />
-                <element signature="e#58123#58124#0" expanded="false" />
-                <element signature="e#58359#58360#0" expanded="false" />
-                <element signature="e#58402#58403#0" expanded="false" />
-                <element signature="e#58487#58488#0" expanded="false" />
-                <element signature="e#58546#58547#0" expanded="false" />
-                <element signature="e#58585#58586#0" expanded="false" />
-                <element signature="e#58641#58642#0" expanded="false" />
-                <element signature="e#62696#62697#0" expanded="false" />
-                <element signature="e#62730#62731#0" expanded="false" />
-                <element signature="e#63558#63559#0" expanded="false" />
-                <element signature="e#63625#63626#0" expanded="false" />
-                <element signature="e#64759#64760#0" expanded="false" />
-                <element signature="e#64826#64827#0" expanded="false" />
-                <element signature="e#65417#65418#0" expanded="false" />
-                <element signature="e#65477#65478#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RatingThumbsSentViewHolder.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="63" column="16" selection-start-line="63" selection-start-column="16" selection-end-line="63" selection-end-column="16" />
-              <folding>
-                <element signature="imports" expanded="false" />
+                <element signature="e#4782#4976#0" expanded="true" />
+                <element signature="e#4975#4976#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -3055,9 +2987,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatBundleHelper.java" />
-        <option value="$PROJECT_DIR$/threads/build/intermediates/exploded-aar/Threads-Android/push-api-release-1.0-41-2016-10-18-17-22/unspecified/jars/classes.jar!/com/pushserver/android/PushServerIntentService.class" />
-        <option value="$PROJECT_DIR$/threads/build/intermediates/exploded-aar/Threads-Android/push-api-release-1.0-41-2016-10-18-17-22/unspecified/jars/classes.jar!/com/pushserver/android/PushGcmIntentService.class" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/threads/build.gradle" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/AnalyticsTracker.java" />
@@ -3106,6 +3035,9 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
         <option value="$PROJECT_DIR$/threads/src/main/res/values/dimens.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/app/.gitignore" />
+        <option value="$PROJECT_DIR$/threads/.gitignore" />
       </list>
     </option>
   </component>
@@ -3550,6 +3482,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Threads-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Threads-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value=".idea" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
@@ -3952,7 +3898,14 @@
       <option name="project" value="LOCAL" />
       <updated>1493373064723</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Мелкий рефакторинг">
+      <created>1493695022737</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1493695022737</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -4057,7 +4010,8 @@
     <MESSAGE value="Заглушка рейтинга с звездами" />
     <MESSAGE value="Добавил баблы с рейтингом (в процессе)" />
     <MESSAGE value="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)" />
+    <MESSAGE value="Мелкий рефакторинг" />
+    <option name="LAST_COMMIT_MESSAGE" value="Мелкий рефакторинг" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -4066,36 +4020,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/item_schedule_info.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="40" selection-start-line="2" selection-start-column="4" selection-end-line="3" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/item_free_space.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="26" selection-start-line="3" selection-start-column="26" selection-end-line="3" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/SpaceViewHolder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="19" column="84" selection-start-line="19" selection-start-column="84" selection-end-line="19" selection-end-column="84" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/res/drawable-hdpi/ic_star_outline_grey600_24dp.png">
       <provider selected="true" editor-type-id="images">
         <state />
@@ -4567,15 +4491,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="6" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="6" selection-start-line="0" selection-start-column="6" selection-end-line="0" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="27" selection-start-line="8" selection-start-column="27" selection-end-line="8" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="348">
-          <caret line="101" column="8" selection-start-line="101" selection-start-column="8" selection-end-line="101" selection-end-column="8" />
+        <state relative-caret-position="450">
+          <caret line="107" column="11" selection-start-line="107" selection-start-column="11" selection-end-line="107" selection-end-column="11" />
           <folding>
             <element signature="e#4548#4741#0" expanded="true" />
             <element signature="e#4740#4741#0" expanded="true" />
-            <element signature="e#4790#4984#0" expanded="true" />
-            <element signature="e#4983#4984#0" expanded="true" />
+            <element signature="e#4782#4976#0" expanded="true" />
+            <element signature="e#4975#4976#0" expanded="true" />
           </folding>
         </state>
       </provider>
