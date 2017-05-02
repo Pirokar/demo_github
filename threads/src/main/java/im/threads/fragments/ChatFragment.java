@@ -1042,6 +1042,7 @@ public class ChatFragment extends Fragment implements
                 }
                 f.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
+                showOverflowMenu();
             }
         }, 50);
     }
@@ -1242,7 +1243,11 @@ public class ChatFragment extends Fragment implements
     }
 
     public void removeSearching() {
-        if (null != mChatAdapter) mChatAdapter.removeConsultSearching();
+        if (null != mChatAdapter){
+            mChatAdapter.removeConsultSearching();
+            showOverflowMenu();
+        }
+
     }
 
     private void unChooseItem(ChatPhrase cp) {
