@@ -11,7 +11,13 @@
   <component name="ChangeListManager">
     <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/QuestionDTO.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/QuestionDTO.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -50,11 +56,30 @@
       <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="201">
-              <caret line="974" column="56" selection-start-line="974" selection-start-column="56" selection-end-line="974" selection-end-column="56" />
+            <state relative-caret-position="147">
+              <caret line="984" column="54" selection-start-line="984" selection-start-column="54" selection-end-line="984" selection-end-column="54" />
               <folding>
-                <element signature="e#43106#43107#0" expanded="true" />
-                <element signature="e#43168#43169#0" expanded="true" />
+                <element signature="e#21297#21298#0" expanded="true" />
+                <element signature="e#21362#21363#0" expanded="true" />
+                <element signature="e#43548#43549#0" expanded="true" />
+                <element signature="e#43610#43611#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Survey.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="13" column="22" selection-start-line="13" selection-start-column="22" selection-end-line="13" selection-end-column="22" />
+              <folding>
+                <element signature="e#1112#1113#0" expanded="true" />
+                <element signature="e#1144#1145#0" expanded="true" />
+                <element signature="e#1278#1279#0" expanded="true" />
+                <element signature="e#1310#1311#0" expanded="true" />
+                <element signature="e#1366#1367#0" expanded="true" />
+                <element signature="e#1408#1409#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -63,11 +88,13 @@
       <file leaf-file-name="ChatAdapter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5593">
-              <caret line="446" column="46" selection-start-line="446" selection-start-column="46" selection-end-line="446" selection-end-column="46" />
+            <state relative-caret-position="215">
+              <caret line="768" column="78" selection-start-line="768" selection-start-column="78" selection-end-line="768" selection-end-column="78" />
               <folding>
                 <element signature="e#22589#22851#0" expanded="true" />
                 <element signature="e#22850#22851#0" expanded="true" />
+                <element signature="e#49032#49274#0" expanded="true" />
+                <element signature="e#49273#49274#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -76,8 +103,8 @@
       <file leaf-file-name="IncomingMessagesIntentService.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="33" column="61" selection-start-line="33" selection-start-column="61" selection-end-line="33" selection-end-column="61" />
+            <state relative-caret-position="204">
+              <caret line="33" column="66" selection-start-line="33" selection-start-column="66" selection-end-line="33" selection-end-column="66" />
               <folding />
             </state>
           </provider>
@@ -86,9 +113,21 @@
       <file leaf-file-name="MessageFormatter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="245">
-              <caret line="331" column="9" selection-start-line="331" selection-start-column="9" selection-end-line="331" selection-end-column="9" />
+            <state relative-caret-position="79">
+              <caret line="325" column="65" selection-start-line="325" selection-start-column="65" selection-end-line="325" selection-end-column="65" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RatingStarsSentViewHolder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="637">
+              <caret line="103" column="17" selection-start-line="103" selection-start-column="17" selection-end-line="103" selection-end-column="17" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -96,8 +135,8 @@
       <file leaf-file-name="RatingThumbsSentViewHolder.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-103">
-              <caret line="70" column="20" selection-start-line="70" selection-start-column="20" selection-end-line="70" selection-end-column="20" />
+            <state relative-caret-position="-63">
+              <caret line="82" column="22" selection-start-line="82" selection-start-column="22" selection-end-line="82" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -2988,17 +3027,17 @@
         <option value="$PROJECT_DIR$/threads/src/main/res/layout/fragment_chat_fragment.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingStars.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingThumbs.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/QuestionDTO.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsViewHolder.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/QuestionDTO.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java" />
       </list>
     </option>
   </component>
@@ -3751,7 +3790,14 @@
       <option name="project" value="LOCAL" />
       <updated>1493792450263</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Небольшой рефакторинг">
+      <created>1493799024249</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1493799024249</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -3877,14 +3923,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatPhrase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/item_rate_thumbs_sent.xml">
       <provider editor-type-id="android-designer2">
         <state />
@@ -3928,14 +3966,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/UserPhrase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="13" column="16" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="16" />
           <folding />
         </state>
       </provider>
@@ -4227,16 +4257,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="637">
-          <caret line="73" column="16" selection-start-line="73" selection-start-column="16" selection-end-line="73" selection-end-column="16" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/widget/Rating.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1666">
@@ -4250,21 +4270,6 @@
         <state relative-caret-position="221">
           <caret line="13" column="27" selection-start-line="0" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/QuestionDTO.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="782">
-          <caret line="72" column="5" selection-start-line="72" selection-start-column="5" selection-end-line="72" selection-end-column="5" />
-          <folding>
-            <element signature="e#425#426#0" expanded="true" />
-            <element signature="e#453#454#0" expanded="true" />
-            <element signature="e#1376#1377#0" expanded="true" />
-            <element signature="e#1430#1431#0" expanded="true" />
-            <element signature="e#1478#1479#0" expanded="true" />
-            <element signature="e#1516#1517#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -4284,29 +4289,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5593">
-          <caret line="446" column="46" selection-start-line="446" selection-start-column="46" selection-end-line="446" selection-end-column="46" />
-          <folding>
-            <element signature="e#22589#22851#0" expanded="true" />
-            <element signature="e#22850#22851#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="867">
           <caret line="63" column="17" selection-start-line="63" selection-start-column="17" selection-end-line="63" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="507">
-          <caret line="517" column="28" selection-start-line="517" selection-start-column="28" selection-end-line="517" selection-end-column="28" />
           <folding />
         </state>
       </provider>
@@ -4319,47 +4305,112 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatPhrase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/UserPhrase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="13" column="38" selection-start-line="13" selection-start-column="38" selection-end-line="13" selection-end-column="38" />
+          <folding>
+            <element signature="e#3946#3947#0" expanded="true" />
+            <element signature="e#3978#3979#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="1163" column="16" selection-start-line="1163" selection-start-column="16" selection-end-line="1163" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/QuestionDTO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="595">
-          <caret line="53" column="34" selection-start-line="53" selection-start-column="34" selection-end-line="53" selection-end-column="34" />
+        <state relative-caret-position="221">
+          <caret line="13" column="22" selection-start-line="13" selection-start-column="22" selection-end-line="13" selection-end-column="22" />
           <folding>
-            <element signature="e#1108#1109#0" expanded="true" />
+            <element signature="e#1112#1113#0" expanded="true" />
+            <element signature="e#1144#1145#0" expanded="true" />
+            <element signature="e#1278#1279#0" expanded="true" />
+            <element signature="e#1310#1311#0" expanded="true" />
+            <element signature="e#1366#1367#0" expanded="true" />
+            <element signature="e#1408#1409#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="215">
+          <caret line="768" column="78" selection-start-line="768" selection-start-column="78" selection-end-line="768" selection-end-column="78" />
+          <folding>
+            <element signature="e#22589#22851#0" expanded="true" />
+            <element signature="e#22850#22851#0" expanded="true" />
+            <element signature="e#49032#49274#0" expanded="true" />
+            <element signature="e#49273#49274#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="33" column="61" selection-start-line="33" selection-start-column="61" selection-end-line="33" selection-end-column="61" />
+        <state relative-caret-position="204">
+          <caret line="33" column="66" selection-start-line="33" selection-start-column="66" selection-end-line="33" selection-end-column="66" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201">
-          <caret line="974" column="56" selection-start-line="974" selection-start-column="56" selection-end-line="974" selection-end-column="56" />
+        <state relative-caret-position="147">
+          <caret line="984" column="54" selection-start-line="984" selection-start-column="54" selection-end-line="984" selection-end-column="54" />
           <folding>
-            <element signature="e#43106#43107#0" expanded="true" />
-            <element signature="e#43168#43169#0" expanded="true" />
+            <element signature="e#21297#21298#0" expanded="true" />
+            <element signature="e#21362#21363#0" expanded="true" />
+            <element signature="e#43548#43549#0" expanded="true" />
+            <element signature="e#43610#43611#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="331" column="9" selection-start-line="331" selection-start-column="9" selection-end-line="331" selection-end-column="9" />
+        <state relative-caret-position="79">
+          <caret line="325" column="65" selection-start-line="325" selection-start-column="65" selection-end-line="325" selection-end-column="65" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="637">
+          <caret line="103" column="17" selection-start-line="103" selection-start-column="17" selection-end-line="103" selection-end-column="17" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-103">
-          <caret line="70" column="20" selection-start-line="70" selection-start-column="20" selection-end-line="70" selection-end-column="20" />
+        <state relative-caret-position="-63">
+          <caret line="82" column="22" selection-start-line="82" selection-start-column="22" selection-end-line="82" selection-end-column="22" />
           <folding />
         </state>
       </provider>

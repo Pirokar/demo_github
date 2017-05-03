@@ -53,6 +53,7 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.PushMessageCheckResult;
+import im.threads.model.QuestionDTO;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
@@ -196,6 +197,7 @@ public class ChatController {
             @Override
             public void onResult(String s) {
                 survey.setMessageId(s);
+                setSurveyState(survey, MessageState.STATE_SENT);
                 if (instance.fragment != null) {
                     instance.fragment.updateUi();
                 }
@@ -874,6 +876,14 @@ public class ChatController {
             fragment.setPhraseSentStatus(up.getId(), up.getSentState());
         }
         mDatabaseHolder.setStateOfUserPhrase(up.getId(), up.getSentState());
+    }
+
+    void setSurveyState(Survey survey, MessageState messageState) {
+        survey.setSentState(messageState);
+        if (fragment != null) {
+            fragment.setPhraseSentStatus(survey.getMessageId(), survey.getSentState());
+        }
+        mDatabaseHolder.setStateOfUserPhrase(survey.getMessageId(), survey.getSentState());
     }
 
     private UserPhrase convert(UpcomingUserMessage message) {

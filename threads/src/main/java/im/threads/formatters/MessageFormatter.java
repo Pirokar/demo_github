@@ -323,6 +323,7 @@ public class MessageFormatter {
                 survey = new Gson().fromJson(text, Survey.class);
                 long time = new Date().getTime();
                 survey.setPhraseTimeStamp(time);
+                survey.setSentState(MessageState.STATE_NOT_SENT);
                 for (QuestionDTO questionDTO : survey.getQuestions()) {
                     questionDTO.setPhraseTimeStamp(time);
                 }

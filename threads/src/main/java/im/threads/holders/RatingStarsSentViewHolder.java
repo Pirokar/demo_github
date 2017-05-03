@@ -79,7 +79,7 @@ public class RatingStarsSentViewHolder extends BaseHolder {
         }
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
-        switch (survey.getQuestions().get(0).getSentState()) {
+        switch (survey.getSentState()) {
             case STATE_WAS_READ:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_done_all_white_18dp);
                 if (messageColor != ChatStyle.INVALID) {

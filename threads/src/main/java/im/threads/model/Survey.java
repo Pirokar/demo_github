@@ -14,6 +14,7 @@ public class Survey implements ChatItem {
     private List<QuestionDTO> questions;
     private Long hideAfter;
     private long phraseTimeStamp;
+    private MessageState sentState;
 
     public long getId() {
         return id;
@@ -57,6 +58,14 @@ public class Survey implements ChatItem {
 
     public void setMessageId(String messageId) {
         this.messageId = messageId;
+    }
+
+    public MessageState getSentState() {
+        return sentState;
+    }
+
+    public void setSentState(MessageState sentState) {
+        this.sentState = sentState;
     }
 
     @Override

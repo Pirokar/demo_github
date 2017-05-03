@@ -12,7 +12,6 @@ public class QuestionDTO implements ChatItem {
     private int scale;
     private boolean simple;
     private Integer rate;
-    private MessageState sentState;
     private long phraseTimeStamp;
 
 
@@ -62,14 +61,6 @@ public class QuestionDTO implements ChatItem {
 
     public void setRate(Integer rate) {
         this.rate = rate;
-    }
-
-    public MessageState getSentState() {
-        return sentState;
-    }
-
-    public void setSentState(MessageState sentState) {
-        this.sentState = sentState;
     }
 
     public void setPhraseTimeStamp(long phraseTimeStamp) {

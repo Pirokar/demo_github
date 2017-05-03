@@ -760,13 +760,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             QuestionDTO questionDTO = survey.getQuestions().get(0);
 
             if (questionDTO.isSimple()) {
-                if (questionDTO.getSentState() == MessageState.STATE_SENT || questionDTO.getSentState() == MessageState.STATE_WAS_READ) {
+                if (survey.getSentState() == MessageState.STATE_SENT || survey.getSentState() == MessageState.STATE_WAS_READ) {
                     return TYPE_RATING_THUMBS_SENT;
                 } else {
                     return TYPE_RATING_THUMBS;
                 }
             } else {
-                if (questionDTO.getSentState() == MessageState.STATE_SENT || questionDTO.getSentState() == MessageState.STATE_WAS_READ) {
+                if (survey.getSentState() == MessageState.STATE_SENT || survey.getSentState() == MessageState.STATE_WAS_READ) {
                     return TYPE_RATING_STARS_SENT;
                 } else {
                     return TYPE_RATING_STARS;
