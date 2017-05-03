@@ -10,10 +10,7 @@ import android.util.Log;
 import com.advisa.client.api.InOutMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -163,22 +160,22 @@ public class MessageFormatter {
         return type;
     }
 
-    private static Boolean getTypeOfSurvey(JSONObject fullMessage) {
-        Boolean simple;
-
-        try {
-            if (fullMessage.has("simple")) {
-                simple = fullMessage.getBoolean("simple");
-            } else {
-                simple = true;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            simple = true;
-        }
-
-        return simple;
-    }
+//    private static Boolean getTypeOfSurvey(JSONObject fullMessage) {
+//        Boolean simple;
+//
+//        try {
+//            if (fullMessage.has("simple")) {
+//                simple = fullMessage.getBoolean("simple");
+//            } else {
+//                simple = true;
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            simple = true;
+//        }
+//
+//        return simple;
+//    }
 
     private static String getMessage(JSONObject fullMessage, PushMessage pushMessage) {
         String message = null;

@@ -9,21 +9,9 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="Добавил появление кнопки с выпадающим списком после нахождения оператора">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/QuestionDTO.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java" />
+    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsViewHolder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingStars.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingStars.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingThumbs.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingThumbs.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -59,11 +47,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="146">
-              <caret line="976" column="41" selection-start-line="976" selection-start-column="41" selection-end-line="976" selection-end-column="41" />
+            <state relative-caret-position="201">
+              <caret line="974" column="56" selection-start-line="974" selection-start-column="56" selection-end-line="974" selection-end-column="56" />
               <folding>
                 <element signature="e#43106#43107#0" expanded="true" />
                 <element signature="e#43168#43169#0" expanded="true" />
@@ -89,7 +77,7 @@
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="177">
-              <caret line="33" column="68" selection-start-line="33" selection-start-column="68" selection-end-line="33" selection-end-column="68" />
+              <caret line="33" column="61" selection-start-line="33" selection-start-column="61" selection-end-line="33" selection-end-column="61" />
               <folding />
             </state>
           </provider>
@@ -98,8 +86,18 @@
       <file leaf-file-name="MessageFormatter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="196">
-              <caret line="565" column="25" selection-start-line="565" selection-start-column="25" selection-end-line="565" selection-end-column="25" />
+            <state relative-caret-position="245">
+              <caret line="331" column="9" selection-start-line="331" selection-start-column="9" selection-end-line="331" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RatingThumbsSentViewHolder.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-103">
+              <caret line="70" column="20" selection-start-line="70" selection-start-column="20" selection-end-line="70" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -2991,7 +2989,6 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingStars.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/RatingThumbs.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/QuestionDTO.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java" />
@@ -2999,8 +2996,9 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsViewHolder.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
       </list>
     </option>
   </component>
@@ -3206,6 +3204,40 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="services" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Threads-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Threads-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="threads" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="threads" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="model" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -3705,7 +3737,21 @@
       <option name="project" value="LOCAL" />
       <updated>1493718957080</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Изменены объекты и соответствующий код для оценки">
+      <created>1493792178053</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1493792178053</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Небольшой рефакторинг">
+      <created>1493792450263</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1493792450263</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -3812,7 +3858,9 @@
     <MESSAGE value="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)" />
     <MESSAGE value="Мелкий рефакторинг" />
     <MESSAGE value="Добавил появление кнопки с выпадающим списком после нахождения оператора" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавил появление кнопки с выпадающим списком после нахождения оператора" />
+    <MESSAGE value="Изменены объекты и соответствующий код для оценки" />
+    <MESSAGE value="Небольшой рефакторинг" />
+    <option name="LAST_COMMIT_MESSAGE" value="Небольшой рефакторинг" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -4179,14 +4227,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="552">
-          <caret line="84" column="9" selection-start-line="84" selection-start-column="9" selection-end-line="84" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="637">
@@ -4236,20 +4276,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="629">
-          <caret line="53" column="34" selection-start-line="53" selection-start-column="34" selection-end-line="53" selection-end-column="34" />
-          <folding>
-            <element signature="e#986#987#0" expanded="true" />
-            <element signature="e#1040#1041#0" expanded="true" />
-            <element signature="e#1108#1109#0" expanded="true" />
-            <element signature="e#1158#1159#0" expanded="true" />
-            <element signature="e#1200#1201#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsViewHolder.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -4285,14 +4311,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="33" column="68" selection-start-line="33" selection-start-column="68" selection-end-line="33" selection-end-column="68" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.android/build-cache/d63994232ad907aff118919bd5c6a8e00c365f94/output/jars/classes.jar!/com/pushserver/android/PushController.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="186">
@@ -4301,22 +4319,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="565" column="25" selection-start-line="565" selection-start-column="25" selection-end-line="565" selection-end-column="25" />
+        <state relative-caret-position="595">
+          <caret line="53" column="34" selection-start-line="53" selection-start-column="34" selection-end-line="53" selection-end-column="34" />
+          <folding>
+            <element signature="e#1108#1109#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="33" column="61" selection-start-line="33" selection-start-column="61" selection-end-line="33" selection-end-column="61" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="146">
-          <caret line="976" column="41" selection-start-line="976" selection-start-column="41" selection-end-line="976" selection-end-column="41" />
+        <state relative-caret-position="201">
+          <caret line="974" column="56" selection-start-line="974" selection-start-column="56" selection-end-line="974" selection-end-column="56" />
           <folding>
             <element signature="e#43106#43107#0" expanded="true" />
             <element signature="e#43168#43169#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="331" column="9" selection-start-line="331" selection-start-column="9" selection-end-line="331" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingThumbsSentViewHolder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-103">
+          <caret line="70" column="20" selection-start-line="70" selection-start-column="20" selection-end-line="70" selection-end-column="20" />
+          <folding />
         </state>
       </provider>
     </entry>
