@@ -1,18 +1,14 @@
 package im.threads.holders;
 
-import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.model.RatingStars;
-import im.threads.model.RatingThumbs;
+import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 import im.threads.widget.Rating;
 
@@ -45,7 +41,7 @@ public class RatingStarsViewHolder extends BaseHolder {
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
 
-            if(style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
+            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
                 askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
@@ -55,12 +51,14 @@ public class RatingStarsViewHolder extends BaseHolder {
         }
     }
 
-    public void bind(RatingStars ratingStars, Rating.CallBackListener callBackListener) {
-        rating.initRating(itemView.getContext(), ratingStars.getRating());
+    public void bind(Survey survey, Rating.CallBackListener callBackListener) {
+        int rate = survey.getQuestions().get(0).getRate();
+        rating.initRating(itemView.getContext(), rate);
+        askForRate.setText(survey.getQuestions().get(0).getText());
         if (!rating.getHasListener()) {
             rating.setListenerClick(true, callBackListener);
         }
-        if (ratingStars.getRating() != 0) {
+        if (rate != 0) {
             thanksForRate.setVisibility(View.VISIBLE);
             bottomSeparator.setVisibility(View.VISIBLE);
         } else {

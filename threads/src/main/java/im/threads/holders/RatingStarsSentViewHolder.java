@@ -15,9 +15,7 @@ import java.util.Locale;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.model.MessageState;
-import im.threads.model.RatingStars;
-import im.threads.model.RatingThumbs;
+import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
 /**
@@ -73,15 +71,15 @@ public class RatingStarsSentViewHolder extends BaseHolder {
 
     }
 
-    public void bind(
-            RatingStars ratingStars) {
-        rateStarsCount.setText(String.valueOf(ratingStars.getRating()));
+    public void bind(Survey survey) {
+        int rate = survey.getQuestions().get(0).getRate();
+        rateStarsCount.setText(String.valueOf(rate));
         if (style != null && style.ratingStarsCount != ChatStyle.INVALID) {
             totalStarsCount.setText(style.ratingStarsCount);
         }
-        mTimeStampTextView.setText(sdf.format(new Date(ratingStars.getTimeStamp())));
+        mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
-        switch (ratingStars.getSentState()) {
+        switch (survey.getQuestions().get(0).getSentState()) {
             case STATE_WAS_READ:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_done_all_white_18dp);
                 if (messageColor != ChatStyle.INVALID) {

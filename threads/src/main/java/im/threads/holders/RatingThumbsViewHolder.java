@@ -2,7 +2,6 @@ package im.threads.holders;
 
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,7 @@ import android.widget.TextView;
 import im.threads.R;
 import im.threads.adapters.ChatAdapter;
 import im.threads.model.ChatStyle;
-import im.threads.model.RatingThumbs;
-import im.threads.model.ScheduleInfo;
+import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
 /**
@@ -44,28 +42,30 @@ public class RatingThumbsViewHolder extends BaseHolder {
         askForRate = (TextView) itemView.findViewById(R.id.ask_for_rate);
         thanksForRate = (TextView) itemView.findViewById(R.id.thanks_for_rate);
 
-        if (style == null){
+        if (style == null) {
             style = PrefUtils.getIncomingStyle(itemView.getContext());
         }
 
         if (style != null) {
-            if(style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
+            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
                 askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
             }
 
-            if(style.chatToolbarColorResId != ChatStyle.INVALID) {
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                 thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
                 thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
             }
         }
     }
 
-    public void bind(final RatingThumbs ratingThumbs, final ChatAdapter.AdapterInterface adapterInterface) {
-        if (ratingThumbs.getRating() != null) {
-            if (ratingThumbs.getRating()) {
+    public void bind(final Survey survey, final ChatAdapter.AdapterInterface adapterInterface) {
+        Integer rate = survey.getQuestions().get(0).getRate();
+        askForRate.setText(survey.getQuestions().get(0).getText());
+        if (rate != null) {
+            if (rate == 1) {
                 if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                     thumbUp.setImageResource(R.drawable.ic_like_full_36dp);
                     thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
@@ -96,14 +96,14 @@ public class RatingThumbsViewHolder extends BaseHolder {
         thumbUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                adapterInterface.onRatingThumbsClick(ratingThumbs, true);
+                adapterInterface.onRatingClick(survey, 1);
             }
         });
 
         thumbDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                adapterInterface.onRatingThumbsClick(ratingThumbs, false);
+                adapterInterface.onRatingClick(survey, 0);
             }
         });
 

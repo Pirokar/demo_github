@@ -10,22 +10,10 @@ import android.util.Log;
 import com.advisa.client.api.InOutMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
-
-import im.threads.BuildConfig;
-import im.threads.model.ChatItem;
-import im.threads.model.ConsultConnectionMessage;
-import im.threads.model.ConsultInfo;
-import im.threads.model.ConsultPhrase;
-import im.threads.model.FileDescription;
-import im.threads.model.MessageState;
-import im.threads.model.Quote;
-import im.threads.model.RatingStars;
-import im.threads.model.RatingThumbs;
-import im.threads.model.ScheduleInfo;
-import im.threads.model.UpcomingUserMessage;
-import im.threads.model.UserPhrase;
-import im.threads.utils.MessageMatcher;
+import com.pushserver.android.RequestCallback;
+import com.pushserver.android.exception.PushServerErrorException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +26,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import im.threads.BuildConfig;
+import im.threads.model.ChatItem;
+import im.threads.model.ConsultConnectionMessage;
+import im.threads.model.ConsultInfo;
+import im.threads.model.ConsultPhrase;
+import im.threads.model.FileDescription;
+import im.threads.model.MessageState;
+import im.threads.model.QuestionDTO;
+import im.threads.model.Quote;
+import im.threads.model.ScheduleInfo;
+import im.threads.model.Survey;
+import im.threads.model.UpcomingUserMessage;
+import im.threads.model.UserPhrase;
+import im.threads.utils.MessageMatcher;
 
 /**
  * Created by yuri on 26.07.2016.
@@ -147,7 +150,7 @@ public class MessageFormatter {
         String type;
 
         try {
-            if(fullMessage.has("type")) {
+            if (fullMessage.has("type")) {
                 type = fullMessage.getString("type");
             } else {
                 type = null;
@@ -158,6 +161,23 @@ public class MessageFormatter {
         }
 
         return type;
+    }
+
+    private static Boolean getTypeOfSurvey(JSONObject fullMessage) {
+        Boolean simple;
+
+        try {
+            if (fullMessage.has("simple")) {
+                simple = fullMessage.getBoolean("simple");
+            } else {
+                simple = true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            simple = true;
+        }
+
+        return simple;
     }
 
     private static String getMessage(JSONObject fullMessage, PushMessage pushMessage) {
@@ -221,22 +241,26 @@ public class MessageFormatter {
         JSONObject fullMessage = getFullMessage(pushMessage);
 
         // В пуше для чата должен быть fullMessage, и он должен соответствовать формату JSON.
-        if(fullMessage == null) {
+        if (fullMessage == null) {
             return null;
         }
 
         String type = getType(fullMessage);
 
         // В пуше либо должен быть type известных чату типов,
-        if(type != null) {
-            if(type.equalsIgnoreCase(MessageMatcher.OPERATOR_JOINED) || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LEFT)) {
+        if (type != null) {
+            if (type.equalsIgnoreCase(MessageMatcher.OPERATOR_JOINED) || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LEFT)) {
                 return getConsultConnectionFromPush(pushMessage);
-            } else if(type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
+            } else if (type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
                 return getScheduleInfoFromPush(pushMessage, fullMessage);
-            } else if(type.equalsIgnoreCase(MessageMatcher.RATING_THUMBS)) {
-                return getRatingThumbsFromPush(pushMessage, fullMessage);
-            } else if(type.equalsIgnoreCase(MessageMatcher.RATING_STARS)) {
-                return getRatingStarsFromPush(pushMessage, fullMessage);
+            } else if (type.equalsIgnoreCase(MessageMatcher.SURVEY)) {
+//                Boolean simple = getTypeOfSurvey(fullMessage);
+//                if (simple) {
+//                    return getRatingThumbsFromPush(pushMessage, fullMessage);
+//                } else {
+//                    return getRatingStarsFromPush(pushMessage, fullMessage);
+//                }
+                return getRatingFromPush(pushMessage, fullMessage);
             } else {
                 return null;
             }
@@ -244,7 +268,7 @@ public class MessageFormatter {
             // Либо в fullMessage должны содержаться ключи из списка:
             // "attachments", "text", "quotes"
             String message = getMessage(fullMessage, pushMessage);
-            if(message != null || fullMessage.has("attachments") || fullMessage.has("quotes")) {
+            if (message != null || fullMessage.has("attachments") || fullMessage.has("quotes")) {
                 return getConsultPhraseFromPush(pushMessage, fullMessage, message);
             } else {
                 return null;
@@ -255,7 +279,7 @@ public class MessageFormatter {
     private static ScheduleInfo getScheduleInfoFromPush(PushMessage pushMessage, JSONObject fullMessage) {
         ScheduleInfo scheduleInfo = null;
         String text = getMessage(fullMessage, pushMessage);
-        if(text != null) {
+        if (text != null) {
             try {
                 scheduleInfo = new Gson().fromJson(text, ScheduleInfo.class);
                 scheduleInfo.setDate(new Date().getTime());
@@ -266,32 +290,50 @@ public class MessageFormatter {
         return scheduleInfo;
     }
 
-    private static RatingThumbs getRatingThumbsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
-        RatingThumbs ratingThumbs = null;
-        String text = getMessage(fullMessage, pushMessage);
-        if(text != null) {
-            try {
-                ratingThumbs = new Gson().fromJson(text, RatingThumbs.class);
-                ratingThumbs.setPhraseTimeStamp(new Date().getTime());
-            } catch (JsonSyntaxException e) {
-                e.printStackTrace();
-            }
-        }
-        return ratingThumbs;
-    }
+//    private static RatingThumbs getRatingThumbsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+//        RatingThumbs ratingThumbs = null;
+//        String text = getMessage(fullMessage, pushMessage);
+//        if(text != null) {
+//            try {
+//                ratingThumbs = new Gson().fromJson(text, RatingThumbs.class);
+//                ratingThumbs.setPhraseTimeStamp(new Date().getTime());
+//            } catch (JsonSyntaxException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return ratingThumbs;
+//    }
+//
+//    private static RatingStars getRatingStarsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+//        RatingStars ratingStars = null;
+//        String text = getMessage(fullMessage, pushMessage);
+//        if(text != null) {
+//            try {
+//                ratingStars = new Gson().fromJson(text, RatingStars.class);
+//                ratingStars.setPhraseTimeStamp(new Date().getTime());
+//            } catch (JsonSyntaxException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return ratingStars;
+//    }
 
-    private static RatingStars getRatingStarsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
-        RatingStars ratingStars = null;
+    private static Survey getRatingFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+        Survey survey = null;
         String text = getMessage(fullMessage, pushMessage);
-        if(text != null) {
+        if (text != null) {
             try {
-                ratingStars = new Gson().fromJson(text, RatingStars.class);
-                ratingStars.setPhraseTimeStamp(new Date().getTime());
+                survey = new Gson().fromJson(text, Survey.class);
+                long time = new Date().getTime();
+                survey.setPhraseTimeStamp(time);
+                for (QuestionDTO questionDTO : survey.getQuestions()) {
+                    questionDTO.setPhraseTimeStamp(time);
+                }
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
             }
         }
-        return ratingStars;
+        return survey;
     }
 
     private static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
@@ -443,7 +485,7 @@ public class MessageFormatter {
         List<ChatItem> list = new ArrayList<>();
         for (int i = 0; i < messages.size(); i++) {
             ChatItem chatItem = format(messages.get(i));
-            if(chatItem != null) {
+            if (chatItem != null) {
                 list.add(chatItem);
             }
         }
@@ -481,27 +523,51 @@ public class MessageFormatter {
         return object.toString().replaceAll("\\\\", "");
     }
 
-    public static String createRatingThumbsMessage(boolean rating, String messageId) {
+//    public static String createRatingThumbsMessage(boolean rating, String messageId) {
+//        JSONObject object = new JSONObject();
+//        try {
+//            if (rating) {
+//                object.put("rating", "good");
+//                object.put("message_id", messageId);
+//            } else {
+//                object.put("rating", "not_good");
+//                object.put("message_id", messageId);
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return object.toString().replaceAll("\\\\", "");
+//    }
+//
+//    public static String createRatingStarsMessage(int rating, String messageId) {
+//        JSONObject object = new JSONObject();
+//        try {
+//            object.put("rating", String.valueOf(rating));
+//            object.put("message_id", messageId);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return object.toString().replaceAll("\\\\", "");
+//    }
+
+    public static String createRatingDoneMessage(long sendingId, long questionId, int rate) {
         JSONObject object = new JSONObject();
         try {
-            if (rating) {
-                object.put("rating", "good");
-                object.put("message_id", messageId);
-            } else {
-                object.put("rating", "not_good");
-                object.put("message_id", messageId);
-            }
+            object.put("type", "SURVEY_QUESTION_ANSWER");
+            object.put("sendingId", sendingId);
+            object.put("questionId", questionId);
+            object.put("rate", rate);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return object.toString().replaceAll("\\\\", "");
     }
 
-    public static String createRatingStarsMessage(int rating, String messageId) {
+    public static String createRatingRecievedMessage(long sendingId) {
         JSONObject object = new JSONObject();
         try {
-            object.put("rating", String.valueOf(rating));
-            object.put("message_id", messageId);
+            object.put("type", "SURVEY_PASSED");
+            object.put("sendingId", sendingId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -511,7 +577,7 @@ public class MessageFormatter {
     private static String getAppName(Context context) {
         ApplicationInfo applicationInfo = context.getApplicationInfo();
         String appName;
-        if(applicationInfo != null) {
+        if (applicationInfo != null) {
             try {
                 appName = applicationInfo.loadLabel(context.getPackageManager()).toString();
             } catch (Exception e) {
@@ -611,16 +677,16 @@ public class MessageFormatter {
                     e.printStackTrace();
                     if (e.getMessage() != null && e.getMessage().contains("annot be converted to")) {
                         String cont = message.content;
-                        String type = cont.contains("присоедини")?ConsultConnectionMessage.TYPE_JOINED:ConsultConnectionMessage.TYPE_LEFT;
-                        String title =null;
+                        String type = cont.contains("присоедини") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+                        String title = null;
                         String name = null;
                         try {
-                            name =  cont.split(" ")[1];
-                            title =    cont.split(" ")[0];
+                            name = cont.split(" ")[1];
+                            title = cont.split(" ")[0];
                         } catch (Exception e1) {
                             e1.printStackTrace();
                         }
-                        ConsultConnectionMessage ccm = new ConsultConnectionMessage(name,type,name,cont.contains("лся")?true:false,message.sentAt.millis,null,null,title,String.valueOf(message.messageId));
+                        ConsultConnectionMessage ccm = new ConsultConnectionMessage(name, type, name, cont.contains("лся") ? true : false, message.sentAt.millis, null, null, title, String.valueOf(message.messageId));
                         out.add(ccm);
                     }
                     Log.e(TAG, "error parsing message" + message);
@@ -667,7 +733,7 @@ public class MessageFormatter {
     public static List<String> getReadIds(Bundle b) {
         ArrayList<String> ids = new ArrayList<>();
         try {
-            if (b==null)return new ArrayList<>();
+            if (b == null) return new ArrayList<>();
             Object o = b.get("readInMessageIds");
 
             if (o instanceof ArrayList) {

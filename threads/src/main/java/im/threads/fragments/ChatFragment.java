@@ -48,16 +48,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.pushserver.android.PushMessage;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import im.threads.AnalyticsTracker;
@@ -77,12 +72,10 @@ import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
-import im.threads.model.Interval;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
-import im.threads.model.RatingStars;
-import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
+import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.picasso_url_connection_only.Picasso;
@@ -189,7 +182,7 @@ public class ChatFragment extends Fragment implements
         style = ChatStyle.getStyleFromBundleWithThrow(activity, getArguments());
 
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
-        if(activity instanceof ChatActivity) {
+        if (activity instanceof ChatActivity) {
             ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
         }
 
@@ -519,20 +512,20 @@ public class ChatFragment extends Fragment implements
     }
 
     @Override
-    public void onRatingThumbsClick(RatingThumbs ratingThumbs, boolean rating) {
+    public void onRatingClick(Survey survey, int rating) {
         if (getActivity() != null) {
-            ratingThumbs.setRating(rating);
-            mChatController.onRatingThumbsClick(getActivity(), ratingThumbs);
+            survey.getQuestions().get(0).setRate(rating);
+            mChatController.onRatingClick(getActivity(), survey);
         }
     }
 
-    @Override
-    public void onRatingStarsClick(RatingStars ratingStars, int rating) {
-        if (getActivity() != null) {
-            ratingStars.setRating(rating);
-            mChatController.onRatingStarsClick(getActivity(), ratingStars);
-        }
-    }
+//    @Override
+//    public void onRatingStarsClick(Survey survey, int rating) {
+//        if (getActivity() != null) {
+//            survey.getQuestions().get(0).setRate(rating);
+//            mChatController.onRatingClick(getActivity(), survey);
+//        }
+//    }
 
     @Override
     public void onImageClick(ChatPhrase chatPhrase) {
@@ -584,7 +577,6 @@ public class ChatFragment extends Fragment implements
 
         popup.show();
     }
-
 
 
     @Override
@@ -989,7 +981,7 @@ public class ChatFragment extends Fragment implements
     }
 
     private boolean needsAddMessage(ChatItem item) {
-        if(item instanceof ScheduleInfo) {
+        if (item instanceof ScheduleInfo) {
             // Если сообщение о расписании уже показано, то снова отображать не нужно.
             // Если в сообщении о расписании указано, что сейчас чат работет,
             // то расписание отображать не нужно.
@@ -1145,7 +1137,7 @@ public class ChatFragment extends Fragment implements
     public void cleanChat() {
         final ChatFragment fragment = this;
         final Activity activity = getActivity();
-        if(isAdded() && activity != null) {
+        if (isAdded() && activity != null) {
             h.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1164,7 +1156,8 @@ public class ChatFragment extends Fragment implements
     }
 
     private void showHelloScreen() {
-        if (mWelcomeScreen == null) mWelcomeScreen = (WelcomeScreen) rootView.findViewById(R.id.welcome);
+        if (mWelcomeScreen == null)
+            mWelcomeScreen = (WelcomeScreen) rootView.findViewById(R.id.welcome);
         mWelcomeScreen.setVisibility(View.VISIBLE);
     }
 
@@ -1188,9 +1181,9 @@ public class ChatFragment extends Fragment implements
 
 
     public void onDownloadError(FileDescription fileDescription, Throwable t) {
-        if(isAdded()) {
+        if (isAdded()) {
             Activity activity = getActivity();
-            if(activity != null) {
+            if (activity != null) {
                 updateProgress(fileDescription);
                 if (t instanceof FileNotFoundException) {
                     Toast.makeText(activity, R.string.error_no_file, Toast.LENGTH_SHORT).show();
@@ -1219,7 +1212,7 @@ public class ChatFragment extends Fragment implements
         mConsultNameView.setVisibility(View.VISIBLE);
         mSearchLo.setVisibility(View.GONE);
         mSearchMessageEditText.setText("");
-        if(isAdded()) {
+        if (isAdded()) {
             mConsultNameView.setText(getResources().getString(R.string.searching_operator));
         }
     }
@@ -1243,7 +1236,7 @@ public class ChatFragment extends Fragment implements
     }
 
     public void removeSearching() {
-        if (null != mChatAdapter){
+        if (null != mChatAdapter) {
             mChatAdapter.removeConsultSearching();
             showOverflowMenu();
         }
@@ -1261,9 +1254,9 @@ public class ChatFragment extends Fragment implements
     }
 
     public void showFullError(String error) {
-        if(isAdded()) {
+        if (isAdded()) {
             Activity activity = getActivity();
-            if(activity != null) {
+            if (activity != null) {
                 AlertDialog d = new AlertDialog
                         .Builder(getActivity())
                         .setMessage(error)
@@ -1418,9 +1411,9 @@ public class ChatFragment extends Fragment implements
     }
 
     private void onActivityBackPressed() {
-        if(isAdded()) {
+        if (isAdded()) {
             Activity activity = getActivity();
-            if(activity != null) {
+            if (activity != null) {
                 activity.onBackPressed();
             }
         }

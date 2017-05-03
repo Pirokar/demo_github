@@ -53,9 +53,8 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.PushMessageCheckResult;
-import im.threads.model.RatingStars;
-import im.threads.model.RatingThumbs;
 import im.threads.model.ScheduleInfo;
+import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.services.DownloadService;
@@ -183,16 +182,20 @@ public class ChatController {
         }
     }
 
-    public void onRatingThumbsClick(Context context, final RatingThumbs ratingThumbs) {
-        ChatItem chatItem = convertRatingItem(ratingThumbs);
+    public void onRatingClick(Context context, final Survey survey) {
+        ChatItem chatItem = convertRatingItem(survey);
         if (chatItem != null) {
             addMessage(chatItem, appContext);
         }
-        String ratingThumbsMessage = MessageFormatter.createRatingThumbsMessage(ratingThumbs.getRating(), ratingThumbs.getMessageId());
-        PushController.getInstance(context).sendMessageAsync(ratingThumbsMessage, false, new RequestCallback<String, PushServerErrorException>() {
+        String ratingDoneMessage = MessageFormatter.createRatingDoneMessage(
+                survey.getSendingId(),
+                survey.getQuestions().get(0).getId(),
+                survey.getQuestions().get(0).getRate()
+        );
+        PushController.getInstance(context).sendMessageAsync(ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
             @Override
             public void onResult(String s) {
-                ratingThumbs.setMessageId(s);
+                survey.setMessageId(s);
                 if (instance.fragment != null) {
                     instance.fragment.updateUi();
                 }
@@ -206,27 +209,27 @@ public class ChatController {
 
     }
 
-    public void onRatingStarsClick(Context context, final RatingStars ratingStars) {
-        ChatItem chatItem = convertRatingItem(ratingStars);
-        if (chatItem != null) {
-            addMessage(chatItem, appContext);
-        }
-        String ratingThumbsMessage = MessageFormatter.createRatingStarsMessage(ratingStars.getRating(), ratingStars.getMessageId());
-        PushController.getInstance(context).sendMessageAsync(ratingThumbsMessage, false, new RequestCallback<String, PushServerErrorException>() {
-            @Override
-            public void onResult(String s) {
-                ratingStars.setMessageId(s);
-                if (instance.fragment != null) {
-                    instance.fragment.updateUi();
-                }
-            }
-
-            @Override
-            public void onError(PushServerErrorException e) {
-
-            }
-        });
-    }
+//    public void onRatingStarsClick(Context context, final Survey survey) {
+//        ChatItem chatItem = convertRatingItem(survey);
+//        if (chatItem != null) {
+//            addMessage(chatItem, appContext);
+//        }
+//        String ratingThumbsMessage = MessageFormatter.createRatingStarsMessage(ratingStars.getRating(), ratingStars.getMessageId());
+//        PushController.getInstance(context).sendMessageAsync(ratingThumbsMessage, false, new RequestCallback<String, PushServerErrorException>() {
+//            @Override
+//            public void onResult(String s) {
+//                ratingStars.setMessageId(s);
+//                if (instance.fragment != null) {
+//                    instance.fragment.updateUi();
+//                }
+//            }
+//
+//            @Override
+//            public void onError(PushServerErrorException e) {
+//
+//            }
+//        });
+//    }
 
     public static PendingIntentCreator getPendingIntentCreator() {
         if (pendingIntentCreator == null) {
@@ -885,15 +888,10 @@ public class ChatController {
     }
 
     private ChatItem convertRatingItem(ChatItem chatItem) {
-        if (chatItem instanceof RatingThumbs) {
-            RatingThumbs ratingThumbs = (RatingThumbs) chatItem;
-            ratingThumbs.setMessageId("local" + UUID.randomUUID().toString());
-            return ratingThumbs;
-        }
-        if (chatItem instanceof RatingStars) {
-            RatingStars ratingStars = (RatingStars) chatItem;
-            ratingStars.setMessageId("local" + UUID.randomUUID().toString());
-            return ratingStars;
+        if (chatItem instanceof Survey) {
+            Survey survey = (Survey) chatItem;
+            survey.setMessageId("local" + UUID.randomUUID().toString());
+            return survey;
         }
         return null;
     }
@@ -975,6 +973,26 @@ public class ChatController {
     public synchronized PushMessageCheckResult onFullMessage(PushMessage pushMessage, final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onFullMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
+
+        if (chatItem instanceof Survey) {
+            final Survey survey = (Survey) chatItem;
+            String ratingDoneMessage = MessageFormatter.createRatingRecievedMessage(
+                    survey.getSendingId()
+            );
+
+            PushController.getInstance(ctx).sendMessageAsync(ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
+                @Override
+                public void onResult(String s) {
+                    survey.setMessageId(s);
+                }
+
+                @Override
+                public void onError(PushServerErrorException e) {
+
+                }
+            });
+        }
+
 
         PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
 

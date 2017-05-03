@@ -20,6 +20,7 @@ import im.threads.adapters.ChatAdapter;
 import im.threads.model.ChatStyle;
 import im.threads.model.MessageState;
 import im.threads.model.RatingThumbs;
+import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
 /**
@@ -61,10 +62,10 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
 
     }
 
-    public void bind(
-            RatingThumbs ratingThumbs) {
-        if (ratingThumbs.getRating() != null) {
-            if (ratingThumbs.getRating()) {
+    public void bind(Survey survey) {
+        Integer rate = survey.getQuestions().get(0).getRate();
+        if (rate != null) {
+            if (rate == 1) {
                 if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
                     thumb.setImageResource(R.drawable.ic_like_full_36dp);
                     thumb.setColorFilter(
@@ -82,9 +83,9 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
                 }
             }
         }
-        mTimeStampTextView.setText(sdf.format(new Date(ratingThumbs.getTimeStamp())));
+        mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
-        switch (ratingThumbs.getSentState()) {
+        switch (survey.getQuestions().get(0).getSentState()) {
             case STATE_WAS_READ:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_done_all_white_18dp);
                 if (messageColor != ChatStyle.INVALID) {
