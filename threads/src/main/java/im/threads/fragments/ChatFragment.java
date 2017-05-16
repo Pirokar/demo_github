@@ -1361,6 +1361,7 @@ public class ChatFragment extends Fragment implements
         super.onResume();
         mChatController.setActivityIsForeground(true);
         isResumed = true;
+        chatIsShown = true;
     }
 
     @Override
@@ -1368,6 +1369,7 @@ public class ChatFragment extends Fragment implements
         super.onStop();
         mChatController.setActivityIsForeground(false);
         isResumed = false;
+        chatIsShown = false;
     }
 
     @Override
