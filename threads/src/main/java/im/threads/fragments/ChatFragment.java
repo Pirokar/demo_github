@@ -76,6 +76,7 @@ import im.threads.model.MessageState;
 import im.threads.model.Quote;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
+import im.threads.model.UnreadMessages;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.picasso_url_connection_only.Picasso;
@@ -167,6 +168,8 @@ public class ChatFragment extends Fragment implements
     private ImageButton searchUp;
     private ImageButton searchDown;
 
+    private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
+
     public static ChatFragment newInstance(Bundle bundle) {
         ChatFragment chatFragment = new ChatFragment();
         chatFragment.setArguments(bundle);
@@ -187,6 +190,20 @@ public class ChatFragment extends Fragment implements
         }
 
         rootView = inflater.inflate(R.layout.fragment_chat_fragment, container, false);
+
+//        unreadMessagesCountListener = new ChatController.UnreadMessagesCountListener() {
+//            @Override
+//            public void onUnreadMessagesCountChanged(final int count) {
+//                h.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (!isInMessageSearchMode) {
+//                            mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - count - 1);
+//                        }
+//                    }
+//                });
+//            }
+//        };
 
         initViews();
         bindViews();
@@ -968,6 +985,28 @@ public class ChatFragment extends Fragment implements
         if (item instanceof ConsultPhrase) {
             mChatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
         }
+
+//        if (item instanceof UnreadMessages) {
+//            final UnreadMessages unreadMessages = (UnreadMessages) item;
+//            h.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (!isInMessageSearchMode) {
+//                        mRecyclerView.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - unreadMessages.getCount() - 1);
+//                            }
+//                        });
+//                    }
+//                }
+//            }, 100);
+//            return;
+//        }
+
+//        if (item instanceof ConsultTyping)
+//            return;//don't scroll if it is just typing item
+
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1006,6 +1045,26 @@ public class ChatFragment extends Fragment implements
         });
         if (list.size() == 1 && list.get(0) instanceof ConsultTyping)
             return;//don't scroll if it is just typing item
+
+//        for (ChatItem chatItem : mChatAdapter.getList()) {
+//            if (chatItem instanceof UnreadMessages) {
+//                final UnreadMessages unreadMessages = (UnreadMessages) chatItem;
+//                h.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (!isInMessageSearchMode) {
+//                            mRecyclerView.post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - unreadMessages.getCount() - 1);
+//                                }
+//                            });
+//                        }
+//                    }
+//                }, 600);
+//                return;
+//            }
+//        }
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1359,6 +1418,7 @@ public class ChatFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
+//        mChatController.scrollToFirstUnreadMessage(mChatAdapter.getItemCount());
         mChatController.setActivityIsForeground(true);
         isResumed = true;
         chatIsShown = true;
@@ -1538,6 +1598,16 @@ public class ChatFragment extends Fragment implements
     int getColorInt(@ColorRes int color) {
         return ContextCompat.getColor(getActivity(), color);
     }
+
+//    public void scrollToFirstUnreadMessage(final int firstUnreadMessagePosition) {
+//        h.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (!isInMessageSearchMode)
+//                    mRecyclerView.scrollToPosition(firstUnreadMessagePosition - 1);
+//            }
+//        }, 600);
+//    }
 
     private class QuoteLayoutHolder {
         private View view;

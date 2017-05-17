@@ -1196,4 +1196,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             insertSpacing(listToInsertTo);
         }
     }
+
+    public ArrayList<ChatItem> getList() {
+        return list;
+    }
 }

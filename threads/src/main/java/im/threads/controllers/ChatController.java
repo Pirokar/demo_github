@@ -870,6 +870,15 @@ public class ChatController {
         }, 1500);
     }
 
+//    public void scrollToFirstUnreadMessage(int totalItemsCount) {
+//        if (fragment != null && fragment.isAdded()) {
+//            int unreadMessagesCount = getUnreadMessagesCount();
+//            if (unreadMessagesCount > 0) {
+//                fragment.scrollToFirstUnreadMessage(totalItemsCount - unreadMessagesCount);
+//            }
+//        }
+//    }
+
     void setMessageState(UserPhrase up, MessageState messageState) {
         up.setSentState(messageState);
         if (fragment != null) {
