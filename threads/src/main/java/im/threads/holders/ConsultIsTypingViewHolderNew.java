@@ -11,7 +11,6 @@ import android.widget.TextView;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.utils.PrefUtils;
-import im.threads.views.ViewTypingInProgress;
 
 /**
  * Created by yuri on 09.06.2016.

@@ -33,7 +33,8 @@ public class ChatIntentHelper {
                         R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
                         R.drawable.blank_avatar_round_main,//заглушка картинки тайпинга imagePlaceholder
                         R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
-                        5) // количество звезд для оценки
+                        5, //количество звезд для оценки
+                        true) //показывать загрузку при поиске консультанта
                 //.setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.push_icon_def,
                         R.string.default_title,

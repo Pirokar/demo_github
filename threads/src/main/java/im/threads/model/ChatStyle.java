@@ -67,6 +67,7 @@ public class ChatStyle implements Serializable {
     private static final String ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID = "scheduleMessageTextColorResId";
     private static final String ARG_IS_GA_ENABLED = "isGAEnabled";
     private static final String ARG_RATING_STARS_COUNT = "ratingStarsCount";
+    private static final String ARG_SHOW_CONSULT_SEARCHING = "showConsultSearching";
 
     public static final int INVALID = -1;
     @StringRes
@@ -131,6 +132,7 @@ public class ChatStyle implements Serializable {
     @DrawableRes
     public final int scheduleMessageIconResId;
     public final int ratingStarsCount;
+    public final boolean showConsultSearching;
 
     public ChatStyle(int chatBackgroundColor,
                      int chatHighlightingColor,
@@ -152,6 +154,7 @@ public class ChatStyle implements Serializable {
                      int menuItemTextColorResId,
                      int chatToolbarHintTextColor,
                      int ratingStarsCount,
+                     boolean showConsultSearching,
                      boolean isGAEnabled,
                      int defPushIconResid,
                      int defTitleResId,
@@ -198,6 +201,7 @@ public class ChatStyle implements Serializable {
         this.scheduleMessageTextColorResId = scheduleMessageTextColorResId;
         this.scheduleMessageIconResId = scheduleMessageIconResId;
         this.ratingStarsCount = ratingStarsCount;
+        this.showConsultSearching = showConsultSearching;
     }
 
     @Override
@@ -240,6 +244,7 @@ public class ChatStyle implements Serializable {
         if (pushBackgroundColorResId != chatStyle.pushBackgroundColorResId) return false;
         if (scheduleMessageTextColorResId != chatStyle.scheduleMessageTextColorResId) return false;
         if (ratingStarsCount != chatStyle.ratingStarsCount) return false;
+        if (showConsultSearching != chatStyle.showConsultSearching) return false;
         return scheduleMessageIconResId == chatStyle.scheduleMessageIconResId;
     }
 
@@ -278,6 +283,7 @@ public class ChatStyle implements Serializable {
         result = 31 * result + scheduleMessageTextColorResId;
         result = 31 * result + scheduleMessageIconResId;
         result = 31 * result + ratingStarsCount;
+        result = 31 * result + (showConsultSearching ? 1 : 0);
         return result;
     }
 
@@ -313,7 +319,8 @@ public class ChatStyle implements Serializable {
                 isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_STATUS_BAR_COLOR_RES_ID) : INVALID,
                 isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_MENU_ITEM_TEXT_COLOR_RES_ID) : INVALID,
                 isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TOOLBAR_HINT_TEXT_COLOR) : INVALID,
-                isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_RATING_STARS_COUNT) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_RATING_STARS_COUNT) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getBoolean(ARG_SHOW_CONSULT_SEARCHING) : true,
                 isGaEnabled,
                 isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_DEF_PUSH_ICON_RES_ID) : INVALID,
                 isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_DEF_TITLE_RES_ID) : INVALID,
@@ -339,6 +346,7 @@ public class ChatStyle implements Serializable {
                 ", " + ARG_MENU_ITEM_TEXT_COLOR_RES_ID + "=" + menuItemTextColorResId +
                 ", " + ARG_CHAT_TOOLBAR_HINT_TEXT_COLOR + "=" + chatToolbarHintTextColor +
                 ", " + ARG_RATING_STARS_COUNT + "=" + ratingStarsCount +
+                ", " + ARG_SHOW_CONSULT_SEARCHING + "=" + showConsultSearching +
                 ", " + ARG_CHAT_TOOLBAR_TEXT_COLOR_RES_ID + "=" + chatToolbarTextColorResId +
                 ", " + ARG_CHAT_BACKGROUND_COLOR_RES_ID + "=" + chatBackgroundColor +
                 ", " + ARG_CHAT_HIGHLIGHTING_COLOR_RES_ID + "=" + chatHighlightingColor +
@@ -419,7 +427,8 @@ public class ChatStyle implements Serializable {
                 @DrawableRes int defaultIncomingMessageAvatar,
                 @DrawableRes int imagePlaceholder,
                 @StyleRes int fileBrowserDialogStyleResId,
-                int ratingStarsCount) {
+                int ratingStarsCount,
+                boolean showConsultSearching) {
             Bundle bundle = new Bundle();
             b.putBundle(ARG_SET_CHAT_BODY_STYLE, bundle);
             bundle.putInt(ARG_CHAT_BACKGROUND_COLOR_RES_ID, chatBackgroundColor);
@@ -436,6 +445,7 @@ public class ChatStyle implements Serializable {
             bundle.putInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID, connectionMessageTextColor);
             bundle.putInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID, fileBrowserDialogStyleResId);
             bundle.putInt(ARG_RATING_STARS_COUNT, ratingStarsCount);
+            bundle.putBoolean(ARG_SHOW_CONSULT_SEARCHING, showConsultSearching);
             return this;
         }
 
