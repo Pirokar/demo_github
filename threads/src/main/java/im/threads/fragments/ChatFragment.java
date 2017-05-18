@@ -1016,6 +1016,13 @@ public class ChatFragment extends Fragment implements
                     mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
         }, 600);
+
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scrollToFirstUnreadMessage(mChatAdapter.getList());
+            }
+        }, 700);
     }
 
     public void setStateConsultConnected(final String connectedConsultId, final String ConsultName, final String consultTitle) {
@@ -1363,13 +1370,12 @@ public class ChatFragment extends Fragment implements
     public void onResume() {
         super.onResume();
         mChatController.setActivityIsForeground(true);
-        scrollToFirstUnreadMessage();
+        scrollToFirstUnreadMessage(mChatAdapter.getList());
         isResumed = true;
         chatIsShown = true;
     }
 
-    private void scrollToFirstUnreadMessage() {
-        ArrayList<ChatItem> list = mChatAdapter.getList();
+    private void scrollToFirstUnreadMessage(List<ChatItem> list) {
         String firstUnreadMessageId = mChatController.getFirstUnreadMessageId();
         if (list != null && !list.isEmpty() && firstUnreadMessageId != null) {
             for (int i = 1; i < list.size(); i++) {

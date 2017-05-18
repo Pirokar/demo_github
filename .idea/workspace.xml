@@ -9,10 +9,8 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="Добавлена возможность кастомизации появления прогресса при поиске оператора">
+    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="Доделка скролла к первому непрочитанному сообщению">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
     </list>
     <ignored path="Threads-Android.iws" />
@@ -49,11 +47,71 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="354">
+              <caret line="1024" column="16" selection-start-line="1024" selection-start-column="16" selection-end-line="1024" selection-end-column="16" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#10953#11105#0" expanded="true" />
+                <element signature="e#11104#11105#0" expanded="true" />
+                <element signature="e#11156#11317#0" expanded="true" />
+                <element signature="e#11316#11317#0" expanded="true" />
+                <element signature="e#11788#12020#0" expanded="true" />
+                <element signature="e#12019#12020#0" expanded="true" />
+                <element signature="e#14914#15086#0" expanded="true" />
+                <element signature="e#15085#15086#0" expanded="true" />
+                <element signature="e#15615#15962#0" expanded="true" />
+                <element signature="e#15961#15962#0" expanded="true" />
+                <element signature="e#34249#34431#0" expanded="true" />
+                <element signature="e#34430#34431#0" expanded="true" />
+                <element signature="e#34464#34815#0" expanded="true" />
+                <element signature="e#34814#34815#0" expanded="true" />
+                <element signature="e#37112#37308#0" expanded="true" />
+                <element signature="e#37307#37308#0" expanded="true" />
+                <element signature="e#38293#38803#0" expanded="true" />
+                <element signature="e#38802#38803#0" expanded="true" />
+                <element signature="e#39010#39203#0" expanded="true" />
+                <element signature="e#39202#39203#0" expanded="true" />
+                <element signature="e#41550#41970#0" expanded="true" />
+                <element signature="e#41969#41970#0" expanded="true" />
+                <element signature="e#42557#42935#0" expanded="true" />
+                <element signature="e#42934#42935#0" expanded="true" />
+                <element signature="e#43091#43314#0" expanded="true" />
+                <element signature="e#43313#43314#0" expanded="true" />
+                <element signature="e#43345#43507#0" expanded="true" />
+                <element signature="e#43506#43507#0" expanded="true" />
+                <element signature="e#43710#44582#0" expanded="true" />
+                <element signature="e#44581#44582#0" expanded="true" />
+                <element signature="e#44659#45415#0" expanded="true" />
+                <element signature="e#45414#45415#0" expanded="true" />
+                <element signature="e#48793#49428#0" expanded="true" />
+                <element signature="e#49427#49428#0" expanded="true" />
+                <element signature="e#51036#51231#0" expanded="true" />
+                <element signature="e#51230#51231#0" expanded="true" />
+                <element signature="e#52002#52197#0" expanded="true" />
+                <element signature="e#52196#52197#0" expanded="true" />
+                <element signature="e#58088#58749#0" expanded="true" />
+                <element signature="e#58308#58657#0" expanded="true" />
+                <element signature="e#58656#58657#0" expanded="true" />
+                <element signature="e#58748#58749#0" expanded="true" />
+                <element signature="e#64285#64286#0" expanded="true" />
+                <element signature="e#64319#64320#0" expanded="true" />
+                <element signature="e#64675#64978#0" expanded="true" />
+                <element signature="e#64977#64978#0" expanded="true" />
+                <element signature="e#65907#66299#0" expanded="true" />
+                <element signature="e#66298#66299#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="876">
-              <caret line="126" column="58" selection-start-line="126" selection-start-column="52" selection-end-line="126" selection-end-column="58" />
+            <state relative-caret-position="296">
+              <caret line="392" column="38" selection-start-line="392" selection-start-column="38" selection-end-line="392" selection-end-column="38" />
               <folding>
                 <element signature="e#9978#10414#0" expanded="true" />
                 <element signature="e#10413#10414#0" expanded="true" />
@@ -88,35 +146,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DatabaseHolder.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/DatabaseHolder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="194">
-              <caret line="218" column="33" selection-start-line="218" selection-start-column="33" selection-end-line="218" selection-end-column="33" />
-              <folding>
-                <element signature="e#7401#7607#0" expanded="true" />
-                <element signature="e#7606#7607#0" expanded="true" />
-                <element signature="e#7662#7663#0" expanded="true" />
-                <element signature="e#7720#7721#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MyOpenHelper.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="245">
-              <caret line="545" column="94" selection-start-line="545" selection-start-column="94" selection-end-line="545" selection-end-column="94" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ChatAdapter.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ChatAdapter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1505">
+            <state relative-caret-position="1845">
               <caret line="1154" column="85" selection-start-line="1154" selection-start-column="85" selection-end-line="1154" selection-end-column="85" />
               <folding>
                 <element signature="e#12698#13086#0" expanded="true" />
@@ -134,68 +167,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
+      <file leaf-file-name="BottomNavigationActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/BottomNavigationActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6457">
-              <caret line="910" column="44" selection-start-line="910" selection-start-column="36" selection-end-line="910" selection-end-column="44" />
-              <folding>
-                <element signature="e#10953#11105#0" expanded="true" />
-                <element signature="e#11104#11105#0" expanded="true" />
-                <element signature="e#11156#11317#0" expanded="true" />
-                <element signature="e#11316#11317#0" expanded="true" />
-                <element signature="e#11788#12020#0" expanded="true" />
-                <element signature="e#12019#12020#0" expanded="true" />
-                <element signature="e#14914#15086#0" expanded="true" />
-                <element signature="e#15085#15086#0" expanded="true" />
-                <element signature="e#15615#15962#0" expanded="true" />
-                <element signature="e#15961#15962#0" expanded="true" />
-                <element signature="e#34249#34431#0" expanded="true" />
-                <element signature="e#34430#34431#0" expanded="true" />
-                <element signature="e#34464#34815#0" expanded="true" />
-                <element signature="e#34814#34815#0" expanded="true" />
-                <element signature="e#37112#37308#0" expanded="true" />
-                <element signature="e#37307#37308#0" expanded="true" />
-                <element signature="e#38293#38803#0" expanded="true" />
-                <element signature="e#38802#38803#0" expanded="true" />
-                <element signature="e#39010#39203#0" expanded="true" />
-                <element signature="e#39202#39203#0" expanded="true" />
-                <element signature="e#41550#41970#0" expanded="true" />
-                <element signature="e#41969#41970#0" expanded="true" />
-                <element signature="e#42557#42935#0" expanded="true" />
-                <element signature="e#42934#42935#0" expanded="true" />
-                <element signature="e#43091#43314#0" expanded="true" />
-                <element signature="e#43313#43314#0" expanded="true" />
-                <element signature="e#43517#44389#0" expanded="true" />
-                <element signature="e#44388#44389#0" expanded="true" />
-                <element signature="e#44466#45222#0" expanded="true" />
-                <element signature="e#45221#45222#0" expanded="true" />
-                <element signature="e#48600#49235#0" expanded="true" />
-                <element signature="e#49234#49235#0" expanded="true" />
-                <element signature="e#50843#51038#0" expanded="true" />
-                <element signature="e#51037#51038#0" expanded="true" />
-                <element signature="e#51809#52004#0" expanded="true" />
-                <element signature="e#52003#52004#0" expanded="true" />
-                <element signature="e#57913#58574#0" expanded="true" />
-                <element signature="e#58133#58482#0" expanded="true" />
-                <element signature="e#58481#58482#0" expanded="true" />
-                <element signature="e#58573#58574#0" expanded="true" />
-                <element signature="e#64110#64111#0" expanded="true" />
-                <element signature="e#64144#64145#0" expanded="true" />
-                <element signature="e#64500#64803#0" expanded="true" />
-                <element signature="e#64802#64803#0" expanded="true" />
-                <element signature="e#65732#66124#0" expanded="true" />
-                <element signature="e#66123#66124#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConsultPhrase.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+            <state relative-caret-position="-918">
+              <caret line="90" column="52" selection-start-line="90" selection-start-column="52" selection-end-line="90" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -3095,8 +3071,8 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
       </list>
     </option>
   </component>
@@ -3991,7 +3967,14 @@
       <option name="project" value="LOCAL" />
       <updated>1494998287917</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Добавлена возможность кастомизации появления прогресса при поиске оператора">
+      <created>1495098733990</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1495098733991</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -4005,7 +3988,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935154" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.609215" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28668684" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2730711" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.49317408" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -4019,7 +4002,7 @@
       <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980332" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.506734" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3771331" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4317406" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Code Iris" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -4104,22 +4087,24 @@
     <MESSAGE value="Подправлено: при сворачивании (а не закрытии чата) не приходили пуши о непрочитанных сообщениях" />
     <MESSAGE value="Задача со скролом в начало непрочитанных сообщений" />
     <MESSAGE value="Добавлена возможность кастомизации появления прогресса при поиске оператора" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавлена возможность кастомизации появления прогресса при поиске оператора" />
+    <MESSAGE value="Доделка скролла к первому непрочитанному сообщению" />
+    <option name="LAST_COMMIT_MESSAGE" value="Доделка скролла к первому непрочитанному сообщению" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="185" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java</url>
+          <line>856</line>
+          <properties />
+          <option name="timeStamp" value="186" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="187" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1477">
-          <caret line="103" column="17" selection-start-line="103" selection-start-column="17" selection-end-line="103" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4896">
@@ -4329,17 +4314,6 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/BottomNavigationActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="203" column="24" selection-start-line="203" selection-start-column="24" selection-end-line="203" selection-end-column="24" />
-          <folding>
-            <element signature="e#7475#7965#0" expanded="false" />
-            <element signature="e#7964#7965#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -4519,10 +4493,10 @@
         <state relative-caret-position="194">
           <caret line="218" column="33" selection-start-line="218" selection-start-column="33" selection-end-line="218" selection-end-column="33" />
           <folding>
-            <element signature="e#7401#7607#0" expanded="true" />
-            <element signature="e#7606#7607#0" expanded="true" />
-            <element signature="e#7662#7663#0" expanded="true" />
-            <element signature="e#7720#7721#0" expanded="true" />
+            <element signature="e#7401#7607#0" expanded="false" />
+            <element signature="e#7606#7607#0" expanded="false" />
+            <element signature="e#7662#7663#0" expanded="false" />
+            <element signature="e#7720#7721#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -4543,10 +4517,48 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_bottom_navigation.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="17" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1845">
+          <caret line="1154" column="85" selection-start-line="1154" selection-start-column="85" selection-end-line="1154" selection-end-column="85" />
+          <folding>
+            <element signature="e#12698#13086#0" expanded="true" />
+            <element signature="e#13085#13086#0" expanded="true" />
+            <element signature="e#28417#28572#0" expanded="true" />
+            <element signature="e#28571#28572#0" expanded="true" />
+            <element signature="e#30539#30540#0" expanded="true" />
+            <element signature="e#30573#30574#0" expanded="true" />
+            <element signature="e#52873#53115#0" expanded="true" />
+            <element signature="e#53114#53115#0" expanded="true" />
+            <element signature="e#54744#54745#0" expanded="true" />
+            <element signature="e#54771#54772#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/BottomNavigationActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-918">
+          <caret line="90" column="52" selection-start-line="90" selection-start-column="52" selection-end-line="90" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="876">
-          <caret line="126" column="58" selection-start-line="126" selection-start-column="52" selection-end-line="126" selection-end-column="58" />
+        <state relative-caret-position="296">
+          <caret line="392" column="38" selection-start-line="392" selection-start-column="38" selection-end-line="392" selection-end-column="38" />
           <folding>
             <element signature="e#9978#10414#0" expanded="true" />
             <element signature="e#10413#10414#0" expanded="true" />
@@ -4582,9 +4594,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6457">
-          <caret line="910" column="44" selection-start-line="910" selection-start-column="36" selection-end-line="910" selection-end-column="44" />
+        <state relative-caret-position="354">
+          <caret line="1024" column="16" selection-start-line="1024" selection-start-column="16" selection-end-line="1024" selection-end-column="16" />
           <folding>
+            <element signature="imports" expanded="true" />
             <element signature="e#10953#11105#0" expanded="true" />
             <element signature="e#11104#11105#0" expanded="true" />
             <element signature="e#11156#11317#0" expanded="true" />
@@ -4611,45 +4624,28 @@
             <element signature="e#42934#42935#0" expanded="true" />
             <element signature="e#43091#43314#0" expanded="true" />
             <element signature="e#43313#43314#0" expanded="true" />
-            <element signature="e#43517#44389#0" expanded="true" />
-            <element signature="e#44388#44389#0" expanded="true" />
-            <element signature="e#44466#45222#0" expanded="true" />
-            <element signature="e#45221#45222#0" expanded="true" />
-            <element signature="e#48600#49235#0" expanded="true" />
-            <element signature="e#49234#49235#0" expanded="true" />
-            <element signature="e#50843#51038#0" expanded="true" />
-            <element signature="e#51037#51038#0" expanded="true" />
-            <element signature="e#51809#52004#0" expanded="true" />
-            <element signature="e#52003#52004#0" expanded="true" />
-            <element signature="e#57913#58574#0" expanded="true" />
-            <element signature="e#58133#58482#0" expanded="true" />
-            <element signature="e#58481#58482#0" expanded="true" />
-            <element signature="e#58573#58574#0" expanded="true" />
-            <element signature="e#64110#64111#0" expanded="true" />
-            <element signature="e#64144#64145#0" expanded="true" />
-            <element signature="e#64500#64803#0" expanded="true" />
-            <element signature="e#64802#64803#0" expanded="true" />
-            <element signature="e#65732#66124#0" expanded="true" />
-            <element signature="e#66123#66124#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/ChatAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1505">
-          <caret line="1154" column="85" selection-start-line="1154" selection-start-column="85" selection-end-line="1154" selection-end-column="85" />
-          <folding>
-            <element signature="e#12698#13086#0" expanded="true" />
-            <element signature="e#13085#13086#0" expanded="true" />
-            <element signature="e#28417#28572#0" expanded="true" />
-            <element signature="e#28571#28572#0" expanded="true" />
-            <element signature="e#30539#30540#0" expanded="true" />
-            <element signature="e#30573#30574#0" expanded="true" />
-            <element signature="e#52873#53115#0" expanded="true" />
-            <element signature="e#53114#53115#0" expanded="true" />
-            <element signature="e#54744#54745#0" expanded="true" />
-            <element signature="e#54771#54772#0" expanded="true" />
+            <element signature="e#43345#43507#0" expanded="true" />
+            <element signature="e#43506#43507#0" expanded="true" />
+            <element signature="e#43710#44582#0" expanded="true" />
+            <element signature="e#44581#44582#0" expanded="true" />
+            <element signature="e#44659#45415#0" expanded="true" />
+            <element signature="e#45414#45415#0" expanded="true" />
+            <element signature="e#48793#49428#0" expanded="true" />
+            <element signature="e#49427#49428#0" expanded="true" />
+            <element signature="e#51036#51231#0" expanded="true" />
+            <element signature="e#51230#51231#0" expanded="true" />
+            <element signature="e#52002#52197#0" expanded="true" />
+            <element signature="e#52196#52197#0" expanded="true" />
+            <element signature="e#58088#58749#0" expanded="true" />
+            <element signature="e#58308#58657#0" expanded="true" />
+            <element signature="e#58656#58657#0" expanded="true" />
+            <element signature="e#58748#58749#0" expanded="true" />
+            <element signature="e#64285#64286#0" expanded="true" />
+            <element signature="e#64319#64320#0" expanded="true" />
+            <element signature="e#64675#64978#0" expanded="true" />
+            <element signature="e#64977#64978#0" expanded="true" />
+            <element signature="e#65907#66299#0" expanded="true" />
+            <element signature="e#66298#66299#0" expanded="true" />
           </folding>
         </state>
       </provider>
