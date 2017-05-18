@@ -544,7 +544,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID +
                 " from " + TABLE_MESSAGES
                 + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_PHRASE.type
-                + " and " + COLUMN_IS_READ + " = 0", null);
+                + " and " + COLUMN_IS_READ + " = 0"
+                + " order by " + COLUMN_TIMESTAMP + " asc", null);
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             ids.add(c.getString(0));
         }

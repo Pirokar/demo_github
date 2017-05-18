@@ -125,6 +125,7 @@ public class ChatController {
 
     // Для оповещения об изменении количества непрочитанных сообщений
     private static WeakReference<UnreadMessagesCountListener> unreadMessagesCountListener;
+    private String firstUnreadMessageId;
 
     public static ChatController getInstance(final Context ctx, String clientId) {
         if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
@@ -853,6 +854,11 @@ public class ChatController {
                         && cm.getActiveNetworkInfo() != null
                         && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
                     List<String> unread = mDatabaseHolder.getUnreaMessagesId();
+                    if (unread != null && !unread.isEmpty()) {
+                        firstUnreadMessageId = unread.get(0); // для скролла к первому непрочитанному сообщению
+                    } else {
+                        firstUnreadMessageId = null;
+                    }
                     for (String id : unread) {
                         PushController.getInstance(appContext).notifyMessageRead(id);
                         mDatabaseHolder.setMessageWereRead(id);
@@ -870,14 +876,9 @@ public class ChatController {
         }, 1500);
     }
 
-//    public void scrollToFirstUnreadMessage(int totalItemsCount) {
-//        if (fragment != null && fragment.isAdded()) {
-//            int unreadMessagesCount = getUnreadMessagesCount();
-//            if (unreadMessagesCount > 0) {
-//                fragment.scrollToFirstUnreadMessage(totalItemsCount - unreadMessagesCount);
-//            }
-//        }
-//    }
+    public String getFirstUnreadMessageId() {
+        return firstUnreadMessageId;
+    }
 
     void setMessageState(UserPhrase up, MessageState messageState) {
         up.setSentState(messageState);
