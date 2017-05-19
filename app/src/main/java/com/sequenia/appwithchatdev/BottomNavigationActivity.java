@@ -1,14 +1,14 @@
 package com.sequenia.appwithchatdev;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -157,7 +157,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     }
 
     private void showFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content, fragment)
                 .commit();
@@ -169,7 +169,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.content);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content);
         if(fragment instanceof ChatFragment) {
             // Если чат нужно закрыть, возвращаем пользователя на предыдущий открытый экран
             boolean needsCloseChat = ((ChatFragment) fragment).onBackPressed();

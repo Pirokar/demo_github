@@ -1,13 +1,10 @@
 package im.threads.activities;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.support.v4.app.FragmentManager;
 
 import im.threads.R;
-import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatStyle;
 
@@ -25,7 +22,7 @@ public class ChatActivity extends BaseActivity {
 
         setContentView(R.layout.activity_chat_activity);
         chatFragment = ChatFragment.newInstance(getIntent().getBundleExtra(ChatStyle.CHAT_FRAGMENT_BUNDLE));
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .add(R.id.chat_frame_layout, chatFragment, "chatFragment")
                 .commit();
