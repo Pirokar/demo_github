@@ -20,4 +20,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="icon_small_size">24dp</dimen>
+    <dimen name="title_size">18</dimen>
+    <dimen name="subtitle_size">14</dimen>
+
 </resources>

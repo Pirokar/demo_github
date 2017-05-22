@@ -78,4 +78,6 @@
     <string name="thanks_for_rate">Спасибо за вашу оценку</string>
     <string name="item_user_rate_header">Оценка решения вопроса</string>
     <string name="item_user_rate_text">из</string>
+    <string name="title_text">Добро пожаловать</string>
+    <string name="subtitle_text">Отправьте ваш вопрос</string>
 </resources>
