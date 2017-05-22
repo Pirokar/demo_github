@@ -1518,6 +1518,7 @@ public class ChatFragment extends Fragment implements
         public QuoteLayoutHolder() {
             view = rootView.findViewById(R.id.quote_layout);
             mHeader = (TextView) view.findViewById(R.id.quote_header);
+
             mHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
             mText = (TextView) view.findViewById(R.id.quote_text);
             mQuoteImage = (ImageView) rootView.findViewById(R.id.quote_image);
