@@ -59,14 +59,14 @@ public class WelcomeScreen extends LinearLayout {
         if (style != null && style.titleSizeInSp != ChatStyle.INVALID) {
             titleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_title, style.titleSizeInSp);
         } else {
-            titleSize = R.dimen.title_size;
+            titleSize = getResources().getInteger(R.integer.title_size);
         }
 
         float subtitleSize;
         if (style != null && style.subtitleSizeInSp != ChatStyle.INVALID) {
             subtitleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_subtitle, style.subtitleSizeInSp);
         } else {
-            subtitleSize = R.dimen.subtitle_size;
+            subtitleSize = getResources().getInteger(R.integer.subtitle_size);
         }
 
 
