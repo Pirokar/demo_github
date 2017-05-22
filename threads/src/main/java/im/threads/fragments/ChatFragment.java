@@ -1519,7 +1519,12 @@ public class ChatFragment extends Fragment implements
             view = rootView.findViewById(R.id.quote_layout);
             mHeader = (TextView) view.findViewById(R.id.quote_header);
 
-            mHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
+            if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
+                mHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
+            } else {
+                mHeader.setTextColor(ContextCompat.getColor(getActivity(), android.R.color.black));
+            }
+
             mText = (TextView) view.findViewById(R.id.quote_text);
             mQuoteImage = (ImageView) rootView.findViewById(R.id.quote_image);
             View clear = view.findViewById(R.id.quote_clear);
