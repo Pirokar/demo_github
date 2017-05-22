@@ -74,4 +74,6 @@
     <string name="check_connection">problems with internet connection</string>
     <string name="contact_center">Контакт центр</string>
     <string name="typing">печатает…</string>
+    <string name="title_text">Добро пожаловать</string>
+    <string name="subtitle_text">Отправьте запрос</string>
 </resources>
