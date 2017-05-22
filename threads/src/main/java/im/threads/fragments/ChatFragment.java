@@ -1009,6 +1009,33 @@ public class ChatFragment extends Fragment implements
         if (list.size() == 1 && list.get(0) instanceof ConsultTyping)
             return;//don't scroll if it is just typing item
 
+        String firstUnreadMessageId = mChatController.getFirstUnreadMessageId();
+        ArrayList<ChatItem> newList = mChatAdapter.getList();
+        if (newList != null && !newList.isEmpty() && firstUnreadMessageId != null) {
+            for (int i = 1; i < newList.size(); i++) {
+                if (newList.get(i) instanceof ConsultPhrase) {
+                    ConsultPhrase cp = (ConsultPhrase) newList.get(i);
+                    if (cp.getMessageId().equalsIgnoreCase(firstUnreadMessageId)) {
+                        final int index = i;
+                        h.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!isInMessageSearchMode) {
+                                    mRecyclerView.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ((LinearLayoutManager) mRecyclerView.getLayoutManager()).scrollToPositionWithOffset(index - 1, 0);
+                                        }
+                                    });
+                                }
+                            }
+                        }, 600);
+                        return;
+                    }
+                }
+            }
+        }
+
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1017,12 +1044,6 @@ public class ChatFragment extends Fragment implements
             }
         }, 600);
 
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                scrollToFirstUnreadMessage(mChatAdapter.getList());
-            }
-        }, 700);
     }
 
     public void setStateConsultConnected(final String connectedConsultId, final String ConsultName, final String consultTitle) {
