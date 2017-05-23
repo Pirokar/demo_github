@@ -36,11 +36,13 @@ public class TranslucentActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ChatStyle style = PrefUtils.getIncomingStyle(this);
-        if (style!=null && style.chatStatusBarColorResId != ChatStyle.INVALID && Build.VERSION.SDK_INT > 20) {
+        if (Build.VERSION.SDK_INT > 20) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+            if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
+                window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+            }
         }
         mQuickAnswerReceiver = new QuickAnswerReceiver();
         controller = QuickAnswerController.getInstance();

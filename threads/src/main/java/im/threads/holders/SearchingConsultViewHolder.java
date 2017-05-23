@@ -25,7 +25,7 @@ public class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_searching_consult, parent, false));
         ProgressBar progressBar = (ProgressBar) itemView.findViewById(R.id.progress);
 
-        style = PrefUtils.getIncomingStyle(itemView.getContext());
+        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                 progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
