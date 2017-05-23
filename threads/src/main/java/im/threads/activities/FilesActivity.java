@@ -49,11 +49,15 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
         final Context ctx = this;
         super.onCreate(savedInstanceState);
         ChatStyle style = PrefUtils.getIncomingStyle(this);
-        if (style!=null && style.chatStatusBarColorResId != ChatStyle.INVALID && Build.VERSION.SDK_INT > 20) {
+        if (Build.VERSION.SDK_INT > 20) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+            if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
+                window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+            } else {
+                window.setStatusBarColor(getResources().getColor(android.R.color.holo_green_dark));
+            }
         }
         setContentView(R.layout.activity_files_and_media);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -127,21 +131,35 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
     @Override
     protected void setActivityStyle(ChatStyle style) {
         if (null != style) {
-            if (style.chatBackgroundColor != ChatStyle.INVALID)
+            if (style.chatBackgroundColor != ChatStyle.INVALID) {
                 findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+            } else {
+                findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
+            }
 
-            findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, R.color.white));
-
-            if (style.chatToolbarColorResId != ChatStyle.INVALID)
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                 mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarColorResId != ChatStyle.INVALID)  mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) mSearchEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
-            if (style.chatMessageInputHintTextColor != ChatStyle.INVALID) mSearchEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
+                mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+            } else {
+                mToolbar.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_light));
+                mToolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.holo_green_light));
+            }
 
-            mSearchEditText.setHintTextColor(getColorInt(style.chatToolbarHintTextColor));
+            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+                ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+                mSearchEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
+                mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            } else {
+                ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+                mSearchEditText.setTextColor(getColorInt(android.R.color.white));
+                mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+            }
 
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID)   mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            if (style.chatToolbarHintTextColor != ChatStyle.INVALID) {
+                mSearchEditText.setHintTextColor(getColorInt(style.chatToolbarHintTextColor));
+            } else {
+                mSearchEditText.setHintTextColor(getColorInt(android.R.color.darker_gray));
+            }
         }
     }
 
