@@ -1480,6 +1480,16 @@ public class ChatFragment extends Fragment implements
         mToolbar.setTitle("");
 
         backButton = (ImageButton) rootView.findViewById(R.id.chat_back_button);
+        Activity activity = getActivity();
+        if (activity instanceof ChatActivity) {
+            backButton.setVisibility(View.VISIBLE);
+        } else {
+            if (style != null && style.showBackButton) {
+                backButton.setVisibility(View.VISIBLE);
+            } else {
+                backButton.setVisibility(View.GONE);
+            }
+        }
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

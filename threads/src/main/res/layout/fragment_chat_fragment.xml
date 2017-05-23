@@ -197,7 +197,8 @@
                 android:src="@drawable/ic_arrow_back_white_24dp"
                 android:paddingRight="16dp"
                 android:paddingLeft="16dp"
-                android:background="?android:attr/selectableItemBackground"/>
+                android:background="?android:attr/selectableItemBackground"
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:id="@+id/copy_controls"

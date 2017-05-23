@@ -18,7 +18,8 @@ public class ChatIntentHelper {
                         R.color.toolbar_widget,//Toolbar widget chatTitleWidgetsColorResId
                         R.color.status_bar,//status bar chatStatusBarColorResId
                         R.color.menu_item_text,//menu item text menuItemTextColorResId
-                        R.color.toolbar_edit_text_hint)//Toolbar EditText hint color chatToolbarHintTextColor
+                        R.color.toolbar_edit_text_hint,//Toolbar EditText hint color chatToolbarHintTextColor
+                        true)// показывать кнопку назад showBackButton
                 .setChatBodyStyle(
                         R.color.chat_background,//фон чата chatBackgroundColor
                         R.color.toolbar_background_transparent,//подсветка выделения элементов chatHighlightingColor
