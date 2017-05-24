@@ -2,7 +2,9 @@ package im.threads.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -129,6 +131,10 @@ public class CircularProgressButton extends FrameLayout {
 
     public void setOnClickListener(View.OnClickListener ocl) {
         ViewUtils.setClickListener((ViewGroup) findViewById(R.id.frame), ocl);
+    }
+
+    public void setBackgroundColor(@ColorRes int colorResourceIntId) {
+        progressBackgroundDrawable.setColorFilter(ContextCompat.getColor(this.getContext(), colorResourceIntId), PorterDuff.Mode.SRC_ATOP);
     }
 }
 

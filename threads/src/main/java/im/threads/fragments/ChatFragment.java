@@ -76,7 +76,6 @@ import im.threads.model.MessageState;
 import im.threads.model.Quote;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
-import im.threads.model.UnreadMessages;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.picasso_url_connection_only.Picasso;
@@ -481,12 +480,12 @@ public class ChatFragment extends Fragment implements
                 mWelcomeScreen.setText(getString(style.welcomeScreenTitleTextResId), getString(style.welcomeScreenSubtitleTextResId));
             }
 
-            if (style.titleSizeInSp != ChatStyle.INVALID) {
-                mWelcomeScreen.setTitletextSize(style.titleSizeInSp);
+            if (style.welcomeScreenTitleSizeInSp != ChatStyle.INVALID) {
+                mWelcomeScreen.setTitletextSize(style.welcomeScreenTitleSizeInSp);
             }
 
-            if (style.subtitleSizeInSp != ChatStyle.INVALID) {
-                mWelcomeScreen.setSubtitleSize(style.subtitleSizeInSp);
+            if (style.welcomeScreenSubtitleSizeInSp != ChatStyle.INVALID) {
+                mWelcomeScreen.setSubtitleSize(style.welcomeScreenSubtitleSizeInSp);
             }
 
             if (style.chatBackgroundColor != ChatStyle.INVALID) {

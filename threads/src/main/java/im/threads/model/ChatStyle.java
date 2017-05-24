@@ -38,8 +38,8 @@ public class ChatStyle implements Serializable {
     private static final String ARG_WELCOME_SCREEN_TEXT_COLOR_RES_ID = "welcomeScreenTextColorResId";
     private static final String ARG_WELCOME_SCREEN_TITLE_TEXT_RES_ID = "welcomeScreenTitleTextResId";
     private static final String ARG_WELCOME_SCREEN_SUBTITLE_TEXT_RES_ID = "welcomeScreenSubtitleTextResId";
-    private static final String ARG_TITLE_SIZE_IN_SP = "titleSizeInSp";
-    private static final String ARG_SUBTITLE_SIZE_IN_SP = "subtitleSizeInSp";
+    private static final String ARG_WELCOME_SCREEN_TITLE_SIZE_IN_SP = "welcomeScreenTitleSizeInSp";
+    private static final String ARG_WELCOME_SCREEN_SUBTITLE_SIZE_IN_SP = "welcomeScreenSubtitleSizeInSp";
     private static final String ARG_DEF_PUSH_ICON_RES_ID = "defPushIconResId";
     private static final String ARG_DEF_TITLE_RES_ID = "defTitleResId";
     private static final String ARG_PUSH_BACKGROUND_COLOR_RES_ID = "pushBackgroundColorResId";
@@ -118,8 +118,8 @@ public class ChatStyle implements Serializable {
     public final int welcomeScreenSubtitleTextResId;
     @ColorRes
     public final int welcomeScreenTextColorResId;
-    public final int titleSizeInSp;
-    public final int subtitleSizeInSp;
+    public final int welcomeScreenTitleSizeInSp;
+    public final int welcomeScreenSubtitleSizeInSp;
     @ColorRes
     public final int chatBodyIconsTint;
     @ColorRes
@@ -167,8 +167,8 @@ public class ChatStyle implements Serializable {
                      int welcomeScreenTitleTextResId,
                      int welcomeScreenSubtitleTextResId,
                      int welcomeScreenTextColorResId,
-                     int titleSizeInSp,
-                     int subtitleSizeInSp,
+                     int welcomeScreenTitleSizeInSp,
+                     int welcomeScreenSubtitleSizeInSp,
                      int scheduleMessageTextColorResId,
                      int scheduleMessageIconResId) {
         this.chatTitleTextResId = chatTitleTextResId;
@@ -189,8 +189,8 @@ public class ChatStyle implements Serializable {
         this.welcomeScreenTitleTextResId = welcomeScreenTitleTextResId;
         this.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
         this.welcomeScreenTextColorResId = welcomeScreenTextColorResId;
-        this.titleSizeInSp = titleSizeInSp;
-        this.subtitleSizeInSp = subtitleSizeInSp;
+        this.welcomeScreenTitleSizeInSp = welcomeScreenTitleSizeInSp;
+        this.welcomeScreenSubtitleSizeInSp = welcomeScreenSubtitleSizeInSp;
         this.chatBodyIconsTint = chatBodyIconsTint;
         this.connectionMessageTextColor = connectionMessageTextColor;
         this.pushBackgroundColorResId = pushBackgroundColorResId;
@@ -240,8 +240,8 @@ public class ChatStyle implements Serializable {
         if (welcomeScreenSubtitleTextResId != chatStyle.welcomeScreenSubtitleTextResId)
             return false;
         if (welcomeScreenTextColorResId != chatStyle.welcomeScreenTextColorResId) return false;
-        if (titleSizeInSp != chatStyle.titleSizeInSp) return false;
-        if (subtitleSizeInSp != chatStyle.subtitleSizeInSp) return false;
+        if (welcomeScreenTitleSizeInSp != chatStyle.welcomeScreenTitleSizeInSp) return false;
+        if (welcomeScreenSubtitleSizeInSp != chatStyle.welcomeScreenSubtitleSizeInSp) return false;
         if (chatBodyIconsTint != chatStyle.chatBodyIconsTint) return false;
         if (connectionMessageTextColor != chatStyle.connectionMessageTextColor) return false;
         if (fileBrowserDialogStyleResId != chatStyle.fileBrowserDialogStyleResId) return false;
@@ -279,8 +279,8 @@ public class ChatStyle implements Serializable {
         result = 31 * result + welcomeScreenTitleTextResId;
         result = 31 * result + welcomeScreenSubtitleTextResId;
         result = 31 * result + welcomeScreenTextColorResId;
-        result = 31 * result + titleSizeInSp;
-        result = 31 * result + subtitleSizeInSp;
+        result = 31 * result + welcomeScreenTitleSizeInSp;
+        result = 31 * result + welcomeScreenSubtitleSizeInSp;
         result = 31 * result + chatBodyIconsTint;
         result = 31 * result + connectionMessageTextColor;
         result = 31 * result + fileBrowserDialogStyleResId;
@@ -337,8 +337,8 @@ public class ChatStyle implements Serializable {
                 isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_TITLE_TEXT_RES_ID) : INVALID,
                 isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_SUBTITLE_TEXT_RES_ID) : INVALID,
                 isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_TEXT_COLOR_RES_ID) : INVALID,
-                isWeclomeExists ? welcomScreenStyle.getInt(ARG_TITLE_SIZE_IN_SP) : INVALID,
-                isWeclomeExists ? welcomScreenStyle.getInt(ARG_SUBTITLE_SIZE_IN_SP) : INVALID,
+                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_TITLE_SIZE_IN_SP) : INVALID,
+                isWeclomeExists ? welcomScreenStyle.getInt(ARG_WELCOME_SCREEN_SUBTITLE_SIZE_IN_SP) : INVALID,
                 isScheduleMessageStyleExists ? scheduleMessageStyle.getInt(ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
                 isScheduleMessageStyleExists ? scheduleMessageStyle.getInt(ARG_SCHEDULE_MESSAGE_ICON_RES_ID) : INVALID);
     }
@@ -373,8 +373,8 @@ public class ChatStyle implements Serializable {
                 ", " + ARG_WELCOME_SCREEN_TITLE_TEXT_RES_ID + "=" + welcomeScreenTitleTextResId +
                 ", " + ARG_WELCOME_SCREEN_SUBTITLE_TEXT_RES_ID + "=" + welcomeScreenSubtitleTextResId +
                 ", " + ARG_WELCOME_SCREEN_TEXT_COLOR_RES_ID + "=" + welcomeScreenTextColorResId +
-                ", " + ARG_TITLE_SIZE_IN_SP + "=" + titleSizeInSp +
-                ", " + ARG_SUBTITLE_SIZE_IN_SP + "=" + subtitleSizeInSp +
+                ", " + ARG_WELCOME_SCREEN_TITLE_SIZE_IN_SP + "=" + welcomeScreenTitleSizeInSp +
+                ", " + ARG_WELCOME_SCREEN_SUBTITLE_SIZE_IN_SP + "=" + welcomeScreenSubtitleSizeInSp +
                 ", " + ARG_CHAT_BODY_ICONS_TINT_RES_ID + "=" + chatBodyIconsTint +
                 ", " + ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID + "=" + connectionMessageTextColor +
                 ", " + ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID + "=" + fileBrowserDialogStyleResId +
@@ -405,8 +405,8 @@ public class ChatStyle implements Serializable {
 
         public IntentBuilder setChatTitleStyle(
                 @StringRes int chatTitleTextResId,
-                @ColorRes int chatTitleBackgroundColorResId,
-                @ColorRes int chatTitleWidgetsColorResId,
+                @ColorRes int chatToolbarColorResId,
+                @ColorRes int chatToolbarTextColorResId,
                 @ColorRes int chatStatusBarColorResId,
                 @ColorRes int menuItemTextColorResId,
                 @ColorRes int chatToolbarHintTextColor,
@@ -414,8 +414,8 @@ public class ChatStyle implements Serializable {
             Bundle bundle = new Bundle();
             b.putBundle(ARG_SET_CHAT_TITLE_STYLE, bundle);
             bundle.putInt(ARG_CHAT_TITLE_TEXT_RES_ID, chatTitleTextResId);
-            bundle.putInt(ARG_CHAT_TOOLBAR_COLOR_RES_ID, chatTitleBackgroundColorResId);
-            bundle.putInt(ARG_CHAT_TOOLBAR_TEXT_COLOR_RES_ID, chatTitleWidgetsColorResId);
+            bundle.putInt(ARG_CHAT_TOOLBAR_COLOR_RES_ID, chatToolbarColorResId);
+            bundle.putInt(ARG_CHAT_TOOLBAR_TEXT_COLOR_RES_ID, chatToolbarTextColorResId);
             bundle.putInt(ARG_CHAT_STATUS_BAR_COLOR_RES_ID, chatStatusBarColorResId);
             bundle.putInt(ARG_MENU_ITEM_TEXT_COLOR_RES_ID, menuItemTextColorResId);
             bundle.putInt(ARG_CHAT_TOOLBAR_HINT_TEXT_COLOR, chatToolbarHintTextColor);
@@ -426,8 +426,8 @@ public class ChatStyle implements Serializable {
         public IntentBuilder setChatBodyStyle(
                 @ColorRes int chatBackgroundColor,
                 @ColorRes int chatHighlightingColor,
-                @ColorRes int chatMessageHintInputTextColor,
-                @ColorRes int chatMessageInputBackgroundColor,
+                @ColorRes int chatMessageInputHintTextColor,
+                @ColorRes int chatMessageInputColor,
                 @ColorRes int incomingMessageBubbleColor,
                 @ColorRes int outgoingMessageBubbleColor,
                 @ColorRes int incomingMessageTextColor,
@@ -443,8 +443,8 @@ public class ChatStyle implements Serializable {
             b.putBundle(ARG_SET_CHAT_BODY_STYLE, bundle);
             bundle.putInt(ARG_CHAT_BACKGROUND_COLOR_RES_ID, chatBackgroundColor);
             bundle.putInt(ARG_CHAT_HIGHLIGHTING_COLOR_RES_ID, chatHighlightingColor);
-            bundle.putInt(ARG_CHAT_MESSAGE_INPUT_COLOR_RES_ID, chatMessageInputBackgroundColor);
-            bundle.putInt(ARG_CHAT_MESSAGE_INPUT_HINT_TEXT_COLOR_RES_ID, chatMessageHintInputTextColor);
+            bundle.putInt(ARG_CHAT_MESSAGE_INPUT_COLOR_RES_ID, chatMessageInputColor);
+            bundle.putInt(ARG_CHAT_MESSAGE_INPUT_HINT_TEXT_COLOR_RES_ID, chatMessageInputHintTextColor);
             bundle.putInt(ARG_INCOMING_MESSAGE_BUBBLE_COLOR_RES_ID, incomingMessageBubbleColor);
             bundle.putInt(ARG_OUTGOING_MESSAGE_BUBBLE_COLOR_RES_ID, outgoingMessageBubbleColor);
             bundle.putInt(ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID, incomingMessageTextColor);
@@ -494,16 +494,16 @@ public class ChatStyle implements Serializable {
                 , @StringRes int welcomeScreenTitleTextResId
                 , @StringRes int welcomeScreenSubtitleTextResId
                 , @ColorRes int welcomeScreenTextColorResId
-                , int titleSizeInSp
-                , int subtitleSizeInSp) {
+                , int welcomeScreenTitleSizeInSp
+                , int welcomeScreenSubtitleSizeInSp) {
             Bundle bundle = new Bundle();
             b.putBundle(ARG_SET_WELCOME_SCREEN_STYLE, bundle);
             bundle.putInt(ARG_WELCOME_SCREEN_LOGO_RES_ID, welcomeScreenLogoResId);
             bundle.putInt(ARG_WELCOME_SCREEN_TEXT_COLOR_RES_ID, welcomeScreenTextColorResId);
             bundle.putInt(ARG_WELCOME_SCREEN_TITLE_TEXT_RES_ID, welcomeScreenTitleTextResId);
             bundle.putInt(ARG_WELCOME_SCREEN_SUBTITLE_TEXT_RES_ID, welcomeScreenSubtitleTextResId);
-            bundle.putInt(ARG_TITLE_SIZE_IN_SP, titleSizeInSp);
-            bundle.putInt(ARG_SUBTITLE_SIZE_IN_SP, subtitleSizeInSp);
+            bundle.putInt(ARG_WELCOME_SCREEN_TITLE_SIZE_IN_SP, welcomeScreenTitleSizeInSp);
+            bundle.putInt(ARG_WELCOME_SCREEN_SUBTITLE_SIZE_IN_SP, welcomeScreenSubtitleSizeInSp);
             return this;
         }
 

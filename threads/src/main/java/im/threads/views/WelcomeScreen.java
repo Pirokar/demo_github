@@ -56,15 +56,15 @@ public class WelcomeScreen extends LinearLayout {
         logoView.setImageResource(drawableResourse);
 
         float titleSize;
-        if (style != null && style.titleSizeInSp != ChatStyle.INVALID) {
-            titleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_title, style.titleSizeInSp);
+        if (style != null && style.welcomeScreenTitleSizeInSp != ChatStyle.INVALID) {
+            titleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_title, style.welcomeScreenTitleSizeInSp);
         } else {
             titleSize = getResources().getInteger(R.integer.title_size);
         }
 
         float subtitleSize;
-        if (style != null && style.subtitleSizeInSp != ChatStyle.INVALID) {
-            subtitleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_subtitle, style.subtitleSizeInSp);
+        if (style != null && style.welcomeScreenSubtitleSizeInSp != ChatStyle.INVALID) {
+            subtitleSize = typedArray.getDimension(R.styleable.WelcomeScreen_text_size_subtitle, style.welcomeScreenSubtitleSizeInSp);
         } else {
             subtitleSize = getResources().getInteger(R.integer.subtitle_size);
         }

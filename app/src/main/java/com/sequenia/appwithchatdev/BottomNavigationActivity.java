@@ -51,6 +51,8 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
     private BottomNavigationView navigation;
 
+    private boolean flag;
+
     /**
      * @return intent для открытия BottomNavigationActivity
      * с передачей clientId и userName.
@@ -187,8 +189,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERM_REQUEST_CODE_CLICK) {
             if(PermissionChecker.checkGrantResult(grantResults)) {
-                View view = navigation.findViewById(R.id.navigation_chat);
-                view.performClick();
+                flag = true;
             } else {
                 Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
             }
@@ -205,5 +206,15 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
             }
         };
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (flag) {
+            View view = navigation.findViewById(R.id.navigation_chat);
+            view.performClick();
+            flag = false;
+        }
     }
 }

@@ -14,8 +14,8 @@ public class ChatIntentHelper {
         return ChatStyle.IntentBuilder
                 .getBuilder(activity, clientId, userName)
                 .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
-                        R.color.toolbar_background,//ToolBar background chatTitleBackgroundColorResId
-                        R.color.toolbar_widget,//Toolbar widget chatTitleWidgetsColorResId
+                        R.color.toolbar_background,//ToolBar background chatToolbarColorResId
+                        R.color.toolbar_widget,//Toolbar widget chatToolbarTextColorResId
                         R.color.status_bar,//status bar chatStatusBarColorResId
                         R.color.menu_item_text,//menu item text menuItemTextColorResId
                         R.color.toolbar_edit_text_hint,//Toolbar EditText hint color chatToolbarHintTextColor
@@ -23,8 +23,8 @@ public class ChatIntentHelper {
                 .setChatBodyStyle(
                         R.color.chat_background,//фон чата chatBackgroundColor
                         R.color.toolbar_background_transparent,//подсветка выделения элементов chatHighlightingColor
-                        R.color.chat_message_hint_input_text,//подсказка в EditText chatMessageHintInputTextColor
-                        R.color.chat_message_input_background,//заливка EditText chatMessageInputBackgroundColor
+                        R.color.chat_message_hint_input_text,//подсказка в EditText chatMessageInputHintTextColor
+                        R.color.chat_message_input_background,//заливка EditText, галереи и припересылки в тулбаре chatMessageInputColor
                         R.color.incoming_message_bubble_background,//заливка бабла входящего сообщения incomingMessageBubbleColor
                         R.color.outgoing_message_bubble_background,//заливка бабла исходящего сообщения outgoingMessageBubbleColor
                         R.color.incoming_message_text,//цвет текста входящего сообщения incomingMessageTextColor
@@ -32,10 +32,10 @@ public class ChatIntentHelper {
                         R.color.chatbody_icons_tint,//цвет иконок в поле сообщения chatBodyIconsTint
                         R.color.connection_message_text_color,//цвет текста сообщения о соединениии connectionMessageTextColor
                         R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
-                        R.drawable.blank_avatar_round_main,//заглушка картинки тайпинга imagePlaceholder
+                        R.drawable.no_image,//заглушка вместо картинки imagePlaceholder
                         R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
-                        5, //количество звезд для оценки
-                        true) //показывать загрузку при поиске консультанта
+                        5, //количество звезд для оценки ratingStarsCount
+                        true) //показывать загрузку при поиске консультанта showConsultSearching
                 //.setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.push_icon_def,
                         R.string.default_title,
@@ -46,8 +46,8 @@ public class ChatIntentHelper {
                         , R.string.welcome//заголовок экрана приветствия welcomeScreenTitleTextResId
                         , R.string.subtitle_text//подзаголовок экрана приветствия welcomeScreenSubtitleTextResId
                         , R.color.welcome_screen_text//цвет текста на экране приветствия welcomeScreenTextColorResId
-                        , 18//размер шрифта заголовка titleSizeInSp
-                        , 14)//размер шрифта подзаголовка subtitleSizeInSp
+                        , 18//размер шрифта заголовка welcomeScreenTitleSizeInSp
+                        , 14)//размер шрифта подзаголовка welcomeScreenSubtitleSizeInSp
                 .setScheduleMessageStyle(
                         R.drawable.schedule_icon, // Иконка сообщения о расписании
                         R.color.schedule_message_text_color); // Цвет текста в сообщении о расписании

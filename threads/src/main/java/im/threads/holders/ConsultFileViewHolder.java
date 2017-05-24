@@ -64,6 +64,9 @@ public class ConsultFileViewHolder extends BaseHolder {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
                 mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
             }
+            if (style.chatBackgroundColor != ChatStyle.INVALID) {
+                mCircularProgressButton.setBackgroundColor(style.chatBackgroundColor);
+            }
         }
     }
 
