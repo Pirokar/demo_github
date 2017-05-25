@@ -85,6 +85,11 @@
         <meta-data
             android:name="com.pushserver.android.uploadServerUrl"
             android:value="https://pushserver.mfms.ru/brooma/file/upload" />
+
+        <meta-data
+            android:name="im.threads.getServerUrl"
+            android:value="https://datastore.threads.im" />
+
     </application>
 
 </manifest>

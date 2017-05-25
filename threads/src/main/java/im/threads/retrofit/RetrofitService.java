@@ -1,6 +1,9 @@
 package im.threads.retrofit;
 
+import java.util.List;
+
 import im.threads.model.FileUploadResponse;
+import im.threads.model.MessgeFromHistory;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -18,13 +21,14 @@ public interface RetrofitService {
     @Multipart
     @PUT("files")
     Call<FileUploadResponse> upload(
-            @Part MultipartBody.Part file, @Header("X-Client-Token") String token
+            @Part MultipartBody.Part file,
+            @Header("X-Client-Token") String token
     );
 
     @GET("history")
-    Call<FileUploadResponse> history(
+    Call<List<MessgeFromHistory>> history(
             @Header("X-Client-Token") String token,
-            @Query("start") String start,
-            @Query("count") String count
+            @Query("start") Long start,
+            @Query("count") Long count
     );
 }

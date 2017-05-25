@@ -26,6 +26,7 @@ import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,12 +53,14 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.MessgeFromHistory;
 import im.threads.model.PushMessageCheckResult;
-import im.threads.model.QuestionDTO;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
+import im.threads.retrofit.RetrofitService;
+import im.threads.retrofit.ServiceGenerator;
 import im.threads.services.DownloadService;
 import im.threads.services.NotificationService;
 import im.threads.utils.Callback;
@@ -68,6 +71,7 @@ import im.threads.utils.FileUtils;
 import im.threads.utils.MessageMatcher;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.Seeker;
+import retrofit2.Call;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -404,25 +408,58 @@ public class ChatController {
         });
     }
 
+//    private void updateChatHistoryOnBind() {
+//        if (fragment != null) {
+//            try {
+//                PushController.getInstance(appContext).resetCounterSync();
+//                List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
+//                List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
+//                if (dbItems.size() != serverItems.size()
+//                        || !dbItems.containsAll(serverItems)) {
+//                    Log.i(TAG, "not same!");
+//                    mDatabaseHolder.putMessagesSync(serverItems);
+//                    h.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+//                            if (null != fragment) fragment.addChatItems(items);
+//                        }
+//                    });
+//                }
+//            } catch (PushServerErrorException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
     private void updateChatHistoryOnBind() {
         if (fragment != null) {
             try {
-                PushController.getInstance(appContext).resetCounterSync();
+//                PushController.getInstance(appContext).resetCounterSync();
                 List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
-                List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
-                if (dbItems.size() != serverItems.size()
-                        || !dbItems.containsAll(serverItems)) {
-                    Log.i(TAG, "not same!");
-                    mDatabaseHolder.putMessagesSync(serverItems);
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-                            if (null != fragment) fragment.addChatItems(items);
-                        }
-                    });
+//                List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
+
+                String token = PrefUtils.getDeviceAddress(appContext) + ":" + PrefUtils.getClientID(appContext);
+                String url = PrefUtils.getServerUrlMetaInfo(appContext);
+                if (url != null) {
+                    ServiceGenerator.changeUrl(url);
+                    RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
+                    Call<List<MessgeFromHistory>> call = retrofitService.history(token, 0L, 20L);
+                    List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
+                    if (dbItems.size() != serverItems.size()
+                            || !dbItems.containsAll(serverItems)) {
+                        Log.i(TAG, "not same!");
+                        mDatabaseHolder.putMessagesSync(serverItems);
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+                                if (null != fragment) fragment.addChatItems(items);
+                            }
+                        });
+                    }
                 }
-            } catch (PushServerErrorException e) {
+            } catch (PushServerErrorException | IOException e) {
                 e.printStackTrace();
             }
         }

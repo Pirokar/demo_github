@@ -43,4 +43,8 @@ public class ServiceGenerator {
         Retrofit retrofit = builder.build();
         return retrofit.create(RetrofitService.class);
     }
+
+    public static void changeUrl(String newApiBaseUrl) {
+        apiBaseUrl = newApiBaseUrl;
+    }
 }
