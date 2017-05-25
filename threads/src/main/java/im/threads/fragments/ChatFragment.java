@@ -225,6 +225,10 @@ public class ChatFragment extends Fragment implements
         intentFilter.addAction(ACTION_SEARCH);
         intentFilter.addAction(ACTION_SEND_QUICK_MESSAGE);
         activity.registerReceiver(mChatReceiver, intentFilter);
+
+
+        String token = PrefUtils.getDeviceAddress(getActivity()) + ":" + PrefUtils.getClientID(getActivity());
+        Log.i("TOKEN", token);
     }
 
     private void initViews() {

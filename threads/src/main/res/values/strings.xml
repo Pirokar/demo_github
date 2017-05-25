@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Threads</string>
     <string name="search_hint">Message search</string>
-    <string name="searching_operator">Searching operator...</string>
+    <string name="searching_operator">Searching client...</string>
     <string name="your_message">Your message...</string>
     <string name="no_connection">No internet connection</string>
     <string name="no_connection_details">Turn on mobile data or use WI-FI to resend message</string>

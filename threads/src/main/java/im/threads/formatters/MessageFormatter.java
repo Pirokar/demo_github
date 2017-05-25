@@ -31,6 +31,7 @@ import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.MessgeFromHistory;
 import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
 import im.threads.model.ScheduleInfo;
@@ -698,6 +699,101 @@ public class MessageFormatter {
         }
         return out;
     }
+
+//    public static ArrayList<ChatItem> format(List<MessgeFromHistory> messages) {
+//        ArrayList<ChatItem> out = new ArrayList<>();
+//        try {
+//            for (MessgeFromHistory message : messages) {
+//                if (message == null)
+//                    continue;
+//                try {
+////                    JSONObject body = new JSONObject(message.content);
+//                    String messageId = String.valueOf(message.messageId);
+//                    long timeStamp = message.sentAt.millis;
+//                    JSONObject operatorInfo = body.has("operator") ? body.getJSONObject("operator") : null;
+//                    String name = null;
+//                    if (operatorInfo != null && operatorInfo.has("name") && !operatorInfo.isNull("name")) {
+//                        name = operatorInfo.getString("name");
+//                    }
+//                    String photoUrl = null;
+//                    if (operatorInfo != null && operatorInfo.has("photoUrl") && !operatorInfo.isNull("photoUrl")) {
+//                        photoUrl = operatorInfo.getString("photoUrl");
+//                    }
+//                    String operatorId = null;
+//                    if (operatorInfo != null && operatorInfo.has("id") && !operatorInfo.isNull("id")) {
+//                        operatorId = operatorInfo.getString("id");
+//                    }
+//                    String status = null;
+//                    if (operatorInfo != null && operatorInfo.has("status") && !operatorInfo.isNull("status")) {
+//                        status = operatorInfo.getString("status");
+//                    }
+//                    boolean gender = false;
+//                    if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
+//                        gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
+//                    }
+//                    if (body.has("type") && !body.isNull("type") && (body.getString("type").equalsIgnoreCase("OPERATOR_JOINED") || body.getString("type").equalsIgnoreCase("OPERATOR_LEFT"))) {
+//                        String type = body.getString("type").equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+//                        out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null, messageId));
+//                    } else {
+//                        String phraseText = body.has("text") ? body.getString("text") : null;
+//                        FileDescription fileDescription = body.has("attachments") ? fileDescriptionFromJson(body.getJSONArray("attachments")) : null;
+//                        if (fileDescription != null) {
+//                            fileDescription.setFrom(name);
+//                            fileDescription.setTimeStamp(timeStamp);
+//                        }
+//                        Quote quote = body.has("quotes") ? quoteFromJson(body.getJSONArray("quotes")) : null;
+//                        if (quote != null && quote.getFileDescription() != null)
+//                            quote.getFileDescription().setTimeStamp(timeStamp);
+//                        if (!message.incoming) {
+//                            out.add(new ConsultPhrase(fileDescription
+//                                    , quote
+//                                    , name
+//                                    , messageId
+//                                    , phraseText
+//                                    , timeStamp
+//                                    , operatorId
+//                                    , photoUrl
+//                                    , true
+//                                    , status
+//                                    , gender));
+//                        } else {
+//                            if (fileDescription != null) {
+//                                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+//                                    fileDescription.setFrom("Я");
+//                                } else {
+//                                    fileDescription.setFrom("I");
+//                                }
+//                            }
+//                            out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
+//                        }
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                    if (e.getMessage() != null && e.getMessage().contains("annot be converted to")) {
+//                        String cont = message.content;
+//                        String type = cont.contains("присоедини") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+//                        String title = null;
+//                        String name = null;
+//                        try {
+//                            name = cont.split(" ")[1];
+//                            title = cont.split(" ")[0];
+//                        } catch (Exception e1) {
+//                            e1.printStackTrace();
+//                        }
+//                        ConsultConnectionMessage ccm = new ConsultConnectionMessage(name, type, name, cont.contains("лся") ? true : false, message.sentAt.millis, null, null, title, String.valueOf(message.messageId));
+//                        out.add(ccm);
+//                    }
+//                    Log.e(TAG, "error parsing message" + message);
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Log.e(TAG, "error while formatting");
+//            Log.e(TAG, "" + messages);
+//            e.printStackTrace();
+//        }
+//        return out;
+//    }
 
     private static ConsultConnectionMessage getConsultConnectionMessageFromInout(InOutMessage message) throws JSONException {
         JSONObject body = new JSONObject(message.content);

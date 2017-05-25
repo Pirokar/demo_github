@@ -5,4 +5,5 @@ package im.threads.model;
  */
 
 public class Attachment {
+
 }

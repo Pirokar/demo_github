@@ -1,7 +1,6 @@
 package im.threads.utils;
 
 import android.content.Context;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -20,6 +19,7 @@ import retrofit2.Call;
  * Created by yuri on 03.08.2016.
  */
 public class FilePoster {
+    public static final String UPLOAD_FILE_URL = "https://datastore.threads.im/";
     private FileDescription fileDescription;
     private Context context;
 
@@ -74,6 +74,7 @@ public class FilePoster {
             }
 
             if (file != null && file.exists() && file.isFile() && file.canRead()) {
+                ServiceGenerator.setUrl(UPLOAD_FILE_URL);
                 RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
                 String path = file.getPath();
                 String mimeType = null;

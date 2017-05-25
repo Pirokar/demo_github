@@ -13,7 +13,35 @@ import java.util.TimeZone;
 
 public class MessgeFromHistory implements ChatItem {
 
+
+    {
+        "id": 15,
+            "providerId": "140446819000",
+            "threadId": 2,
+
+        "receivedDate": "2017-05-25T08:03:43Z",
+
+        "read": false,
+            "text": "",
+            "attachments": [
+        {
+            "result": "https://datastore.threads.im/files/79a28402-5cf4-4c59-8bce-aa7dd84b0951",
+                "optional": {
+            "type": "image/jpg",
+                    "name": "gurman1492760778487.jpg",
+                    "size": 1769998
+        }
+        }
+    ],
+        "quotes": []
+    }
+
+
+
+
+
     private Long id;
+    private String providerId;
     private Long threadId;
     private Operator operator;
     private String receivedDate;
@@ -40,12 +68,12 @@ public class MessgeFromHistory implements ChatItem {
         this.threadId = threadId;
     }
 
-    public Operator getOperator() {
+    public Client getOperator() {
         return operator;
     }
 
-    public void setOperator(Operator operator) {
-        this.operator = operator;
+    public void setOperator(Client client) {
+        this.operator = client;
     }
 
     public String getReceivedDate() {
