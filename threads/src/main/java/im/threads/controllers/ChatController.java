@@ -110,6 +110,7 @@ public class ChatController {
     private static ChatController instance;
     private int currentOffset = 0;
     private int searchOffset = 0;
+    private Long lastMessageId;
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
     private ConsultWriter mConsultWriter;
@@ -159,6 +160,35 @@ public class ChatController {
         return instance;
     }
 
+//    private static void onClientIdChanged(Context ctx, String finalClientId) {
+//        PrefUtils.setNewClientId(ctx, finalClientId);
+//        if (PrefUtils.getDeviceAddress(ctx) == null) {
+//            if (BuildConfig.DEBUG) Log.e(TAG, "device address was not set, returning");
+//            return;
+//        }
+//        try {
+//            instance.cleanAll();
+//            if (instance.fragment != null) {
+//                instance.fragment.removeSearching();
+//            }
+//            instance.mConsultWriter.setCurrentConsultLeft();
+//            PushController.getInstance(ctx).setClientId(finalClientId);
+//            PrefUtils.setClientId(ctx, finalClientId);
+//            String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
+//            PushController.getInstance(ctx).sendMessage(environmentMessage, true);
+//            PushController.getInstance(ctx).resetCounterSync();
+//            List<InOutMessage> messages = PushController.getInstance(instance.appContext).getMessageHistory(20);
+//            instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
+//            ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
+//            if (instance.fragment != null) {
+//                instance.fragment.addChatItems(phrases);
+//            }
+//            PrefUtils.setClientIdWasSet(true, ctx);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     private static void onClientIdChanged(Context ctx, String finalClientId) {
         PrefUtils.setNewClientId(ctx, finalClientId);
         if (PrefUtils.getDeviceAddress(ctx) == null) {
@@ -176,13 +206,21 @@ public class ChatController {
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
             PushController.getInstance(ctx).sendMessage(environmentMessage, true);
             PushController.getInstance(ctx).resetCounterSync();
-            List<InOutMessage> messages = PushController.getInstance(instance.appContext).getMessageHistory(20);
-            instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-            ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
-            if (instance.fragment != null) {
-                instance.fragment.addChatItems(phrases);
+
+            String token = PrefUtils.getToken(instance.fragment.getActivity());
+            String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
+            if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
+                ServiceGenerator.setUrl(url);
+                RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
+                Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L);
+                List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
+                instance.mDatabaseHolder.putMessagesSync(serverItems);
+                ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
+                if (instance.fragment != null) {
+                    instance.fragment.addChatItems(phrases);
+                }
+                PrefUtils.setClientIdWasSet(true, ctx);
             }
-            PrefUtils.setClientIdWasSet(true, ctx);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -408,62 +446,59 @@ public class ChatController {
         });
     }
 
-    private void updateChatHistoryOnBind() {
-        if (fragment != null) {
-            try {
-                PushController.getInstance(appContext).resetCounterSync();
-                List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
-                List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
-                if (dbItems.size() != serverItems.size()
-                        || !dbItems.containsAll(serverItems)) {
-                    Log.i(TAG, "not same!");
-                    mDatabaseHolder.putMessagesSync(serverItems);
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-                            if (null != fragment) fragment.addChatItems(items);
-                        }
-                    });
-                }
-            } catch (PushServerErrorException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 //    private void updateChatHistoryOnBind() {
 //        if (fragment != null) {
 //            try {
-////                PushController.getInstance(appContext).resetCounterSync();
+//                PushController.getInstance(appContext).resetCounterSync();
 //                List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
-////                List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
-//
-//                String token = PrefUtils.getDeviceAddress(appContext) + ":" + PrefUtils.getClientID(appContext);
-//                String url = PrefUtils.getServerUrlMetaInfo(appContext);
-//                if (url != null) {
-//                    ServiceGenerator.setUrl(url);
-//                    RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-//                    Call<List<MessgeFromHistory>> call = retrofitService.history(token, 0L, 20L);
-//                    List<ChatItem> serverItems = MessageFormatter.format(call.execute().body());
-//                    if (dbItems.size() != serverItems.size()
-//                            || !dbItems.containsAll(serverItems)) {
-//                        Log.i(TAG, "not same!");
-//                        mDatabaseHolder.putMessagesSync(serverItems);
-//                        h.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-//                                if (null != fragment) fragment.addChatItems(items);
-//                            }
-//                        });
-//                    }
+//                List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
+//                if (dbItems.size() != serverItems.size()
+//                        || !dbItems.containsAll(serverItems)) {
+//                    Log.i(TAG, "not same!");
+//                    mDatabaseHolder.putMessagesSync(serverItems);
+//                    h.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+//                            if (null != fragment) fragment.addChatItems(items);
+//                        }
+//                    });
 //                }
-//            } catch (PushServerErrorException | IOException e) {
+//            } catch (PushServerErrorException e) {
 //                e.printStackTrace();
 //            }
 //        }
 //    }
+
+    private void updateChatHistoryOnBind() {
+        if (fragment != null) {
+            try {
+                String token = PrefUtils.getToken(instance.fragment.getActivity());
+                String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
+                if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
+                    List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
+                    ServiceGenerator.setUrl(url);
+                    RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
+                    Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L);
+                    List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
+                    if (dbItems.size() != serverItems.size()
+                            || !dbItems.containsAll(serverItems)) {
+                        Log.i(TAG, "not same!");
+                        mDatabaseHolder.putMessagesSync(serverItems);
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+                                if (null != fragment) fragment.addChatItems(items);
+                            }
+                        });
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public boolean isConsultFound() {
         return mConsultWriter.isConsultConnected();
@@ -749,6 +784,34 @@ public class ChatController {
 
     }
 
+//    private void downloadMessagesTillEnd() {
+//        if (isDownloadingMessages) return;
+//        Log.e(TAG, "downloadMessagesTillEnd"); // TODO: 18.12.2016
+//        if (isAllMessagesDownloaded) return;
+//        if (appContext == null) return;
+//        mMessagesExecutor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    final int chunk = 100;
+//                    isDownloadingMessages = true;
+//                    List<InOutMessage> items = PushController.getInstance(appContext).getNextMessageHistory(chunk);
+//                    if (items == null || items.size() == 0) return;
+//                    currentOffset += items.size();
+//                    isAllMessagesDownloaded = items.size() != chunk;
+//                    List<ChatItem> chatItems = MessageFormatter.format(items);
+//                    mDatabaseHolder.putMessagesSync(chatItems);
+//                    isDownloadingMessages = false;
+//                    if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
+//                } catch (PushServerErrorException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//
+//    }
+
+
     private void downloadMessagesTillEnd() {
         if (isDownloadingMessages) return;
         Log.e(TAG, "downloadMessagesTillEnd"); // TODO: 18.12.2016
@@ -758,23 +821,33 @@ public class ChatController {
             @Override
             public void run() {
                 try {
-                    final int chunk = 100;
-                    isDownloadingMessages = true;
-                    List<InOutMessage> items = PushController.getInstance(appContext).getNextMessageHistory(chunk);
-                    if (items == null || items.size() == 0) return;
-                    currentOffset += items.size();
-                    isAllMessagesDownloaded = items.size() != chunk;
-                    List<ChatItem> chatItems = MessageFormatter.format(items);
-                    mDatabaseHolder.putMessagesSync(chatItems);
-                    isDownloadingMessages = false;
-                    if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
-                } catch (PushServerErrorException e) {
+                    String token = PrefUtils.getToken(instance.fragment.getActivity());
+                    String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
+                    if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
+                        isDownloadingMessages = true;
+                        final Long chunk = 100L;
+                        Long start = lastMessageId == null ? null : lastMessageId;
+                        ServiceGenerator.setUrl(url);
+                        RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
+                        Call<List<MessgeFromHistory>> call = retrofitService.history(token, start, chunk);
+                        List<MessgeFromHistory> items = call.execute().body();
+                        if (items == null || items.size() == 0) return;
+                        lastMessageId = items.get(items.size() - 1).getId();
+                        currentOffset += items.size();
+                        isAllMessagesDownloaded = items.size() != chunk;
+                        List<ChatItem> chatItems = MessageFormatter.formatNew(items);
+                        mDatabaseHolder.putMessagesSync(chatItems);
+                        isDownloadingMessages = false;
+                        if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
+                    }
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
 
     }
+
 
     void addMessage(final ChatItem cm, Context ctx) {
         mDatabaseHolder.putChatItem(cm);
@@ -974,6 +1047,43 @@ public class ChatController {
         }
     }
 
+//    public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
+//        if (BuildConfig.DEBUG) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(appContext));
+//        if (!PrefUtils.isClientIdNotEmpty(appContext)) {
+//            callback.onSuccess(new ArrayList<ChatItem>());
+//            return;
+//        }
+//        mExecutor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                final int[] currentOffset = {fragment.getCurrentItemsCount()};
+//                try {
+//                    List<InOutMessage> messages = PushController.getInstance(appContext).getMessageHistory(currentOffset[0] + 20);
+//                    mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
+//                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+//                    currentOffset[0] += chatItems.size();
+//                    h.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            callback.onSuccess(chatItems);
+//                        }
+//                    });
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+//                    currentOffset[0] += chatItems.size();
+//                    h.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            callback.onSuccess(chatItems);
+//                        }
+//                    });
+//                }
+//            }
+//        });
+//    }
+
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
         if (BuildConfig.DEBUG) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(appContext));
         if (!PrefUtils.isClientIdNotEmpty(appContext)) {
@@ -985,17 +1095,23 @@ public class ChatController {
             public void run() {
                 final int[] currentOffset = {fragment.getCurrentItemsCount()};
                 try {
-                    List<InOutMessage> messages = PushController.getInstance(appContext).getMessageHistory(currentOffset[0] + 20);
-                    mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
-                    currentOffset[0] += chatItems.size();
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(chatItems);
-                        }
-                    });
-
+                    String token = PrefUtils.getToken(instance.fragment.getActivity());
+                    String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
+                    if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
+                        ServiceGenerator.setUrl(url);
+                        RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
+                        Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, currentOffset[0] + 20L);
+                        List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
+                        mDatabaseHolder.putMessagesSync(serverItems);
+                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                        currentOffset[0] += chatItems.size();
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(chatItems);
+                            }
+                        });
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
@@ -1104,6 +1220,44 @@ public class ChatController {
         mDatabaseHolder.getLastUnreadPhrase(handler);
     }
 
+//    private void onSettingClientId(final Context ctx) {
+//        if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");
+//        mExecutor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (fragment != null) {
+//                    if (PrefUtils.getNewClientID(ctx) == null) return;
+//                    try {
+//                        cleanAll();
+//                        PushController
+//                                .getInstance(ctx)
+//                                .setClientId(PrefUtils.getNewClientID(ctx));
+//                        PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
+//                        PrefUtils.setClientIdWasSet(true, ctx);
+//
+//                        PushController.getInstance(ctx).resetCounterSync();
+//
+//                        PushController
+//                                .getInstance(ctx)
+//                                .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils
+//                                                .getUserName(ctx),
+//                                        PrefUtils.getNewClientID(ctx)), true);
+//
+//                        List<InOutMessage> messages = PushController.getInstance(appContext).getMessageHistory(20);
+//                        mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
+//                        if (fragment != null) {
+//                            fragment.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
+//                        }
+//                        currentOffset = messages.size();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
+//    }
+
+
     private void onSettingClientId(final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");
         mExecutor.execute(new Runnable() {
@@ -1127,12 +1281,20 @@ public class ChatController {
                                                 .getUserName(ctx),
                                         PrefUtils.getNewClientID(ctx)), true);
 
-                        List<InOutMessage> messages = PushController.getInstance(appContext).getMessageHistory(20);
-                        mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-                        if (fragment != null) {
-                            fragment.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
+                        String token = PrefUtils.getToken(instance.fragment.getActivity());
+                        String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
+                        if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
+                            ServiceGenerator.setUrl(url);
+                            RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
+                            Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L);
+                            List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
+                            mDatabaseHolder.putMessagesSync(serverItems);
+                            if (fragment != null) {
+                                fragment.addChatItems((List<ChatItem>) setLastAvatars(serverItems));
+                            }
+                            currentOffset = serverItems.size();
                         }
-                        currentOffset = messages.size();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

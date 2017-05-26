@@ -20,11 +20,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import im.threads.BuildConfig;
+import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultInfo;
@@ -32,6 +35,7 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.MessgeFromHistory;
+import im.threads.model.Operator;
 import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
 import im.threads.model.ScheduleInfo;
@@ -461,6 +465,37 @@ public class MessageFormatter {
         return quote;
     }
 
+    public static Quote quoteFromList(List<MessgeFromHistory> quotes) {
+        Quote quote = null;
+        FileDescription quoteFileDescription = null;
+        String quoteString = null;
+        String consultName = "";
+        if (quotes.size() > 0 && quotes.get(0) != null && (quotes.get(0).getText() != null)) {
+            quoteString = quotes.get(0).getText();
+        }
+        if (quotes.size() > 0//// TODO: 29.07.2016 need real timestamp of quote
+                && quotes.get(0) != null
+                && (quotes.get(0).getAttachments() != null)
+                && (quotes.get(0).getAttachments().size() > 0
+                && (quotes.get(0).getAttachments().get(0).getResult() != null))) {
+            String header = null;
+            if (quotes.get(0).getAttachments().get(0).getOptional() != null) {
+                header = quotes.get(0).getAttachments().get(0).getOptional().getName();
+            }
+            quoteFileDescription = fileDescriptionFromList(quotes.get(0).getAttachments());
+        }
+        if (quotes.size() > 0 && quotes.get(0) != null && quotes.get(0).getOperator() != null) {
+            consultName = quotes.get(0).getOperator().getName();
+        }
+        if (quoteString != null || quoteFileDescription != null) {
+            quote = new Quote(consultName, quoteString, quoteFileDescription, System.currentTimeMillis());
+        }
+        if (quoteFileDescription != null) {
+            quoteFileDescription.setFrom(consultName);
+        }
+        return quote;
+    }
+
     public static FileDescription fileDescriptionFromJson(JSONArray jsonArray) throws JSONException {
         FileDescription fileDescription = null;
         if (jsonArray.length() > 0
@@ -475,6 +510,24 @@ public class MessageFormatter {
                     , jsonArray.getJSONObject(0).getJSONObject("optional").getLong("size")
                     , 0);// TODO: 18.08.2016 set incoming time
             fileDescription.setDownloadPath(jsonArray.getJSONObject(0).getString("result"));
+            fileDescription.setIncomingName(header);
+        }
+        return fileDescription;
+    }
+
+    public static FileDescription fileDescriptionFromList(List<Attachment> attachments) {
+        FileDescription fileDescription = null;
+        if (attachments.size() > 0 && attachments.get(0) != null) {
+            String header = null;
+            if (attachments.get(0).getOptional() != null) {
+                header = attachments.get(0).getOptional().getName();
+            }
+            fileDescription = new FileDescription(
+                    null
+                    , null
+                    , attachments.get(0).getOptional().getSize()
+                    , 0);// TODO: 18.08.2016 set incoming time
+            fileDescription.setDownloadPath(attachments.get(0).getResult());
             fileDescription.setIncomingName(header);
         }
         return fileDescription;
@@ -700,100 +753,86 @@ public class MessageFormatter {
         return out;
     }
 
-//    public static ArrayList<ChatItem> format(List<MessgeFromHistory> messages) {
-//        ArrayList<ChatItem> out = new ArrayList<>();
-//        try {
-//            for (MessgeFromHistory message : messages) {
-//                if (message == null)
-//                    continue;
-//                try {
-////                    JSONObject body = new JSONObject(message.content);
-//                    String messageId = String.valueOf(message.messageId);
-//                    long timeStamp = message.sentAt.millis;
-//                    JSONObject operatorInfo = body.has("operator") ? body.getJSONObject("operator") : null;
-//                    String name = null;
-//                    if (operatorInfo != null && operatorInfo.has("name") && !operatorInfo.isNull("name")) {
-//                        name = operatorInfo.getString("name");
-//                    }
-//                    String photoUrl = null;
-//                    if (operatorInfo != null && operatorInfo.has("photoUrl") && !operatorInfo.isNull("photoUrl")) {
-//                        photoUrl = operatorInfo.getString("photoUrl");
-//                    }
-//                    String operatorId = null;
-//                    if (operatorInfo != null && operatorInfo.has("id") && !operatorInfo.isNull("id")) {
-//                        operatorId = operatorInfo.getString("id");
-//                    }
+    public static ArrayList<ChatItem> formatNew(List<MessgeFromHistory> messages) {
+        ArrayList<ChatItem> out = new ArrayList<>();
+        try {
+            for (MessgeFromHistory message : messages) {
+                if (message == null)
+                    continue;
+                String messageId = message.getProviderId();
+                long timeStamp = message.getTimeStamp();
+                Operator operator = message.getOperator();
+                String name = null;
+                if (operator != null && operator.getName() != null && !operator.getName().isEmpty()) {
+                    name = operator.getName();
+                }
+                String photoUrl = null;
+                if (operator != null && operator.getPhotoUrl() != null && !operator.getPhotoUrl().isEmpty()) {
+                    photoUrl = operator.getPhotoUrl();
+                }
+                String operatorId = null;
+                if (operator != null && operator.getId() != null) {
+                    operatorId = String.valueOf(operator.getId());
+                }
 //                    String status = null;
-//                    if (operatorInfo != null && operatorInfo.has("status") && !operatorInfo.isNull("status")) {
+//                    if (operator != null && operatorInfo.has("status") && !operatorInfo.isNull("status")) {
 //                        status = operatorInfo.getString("status");
 //                    }
 //                    boolean gender = false;
 //                    if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
 //                        gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
 //                    }
-//                    if (body.has("type") && !body.isNull("type") && (body.getString("type").equalsIgnoreCase("OPERATOR_JOINED") || body.getString("type").equalsIgnoreCase("OPERATOR_LEFT"))) {
-//                        String type = body.getString("type").equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-//                        out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null, messageId));
-//                    } else {
-//                        String phraseText = body.has("text") ? body.getString("text") : null;
-//                        FileDescription fileDescription = body.has("attachments") ? fileDescriptionFromJson(body.getJSONArray("attachments")) : null;
-//                        if (fileDescription != null) {
-//                            fileDescription.setFrom(name);
-//                            fileDescription.setTimeStamp(timeStamp);
-//                        }
-//                        Quote quote = body.has("quotes") ? quoteFromJson(body.getJSONArray("quotes")) : null;
-//                        if (quote != null && quote.getFileDescription() != null)
-//                            quote.getFileDescription().setTimeStamp(timeStamp);
-//                        if (!message.incoming) {
-//                            out.add(new ConsultPhrase(fileDescription
-//                                    , quote
-//                                    , name
-//                                    , messageId
-//                                    , phraseText
-//                                    , timeStamp
-//                                    , operatorId
-//                                    , photoUrl
-//                                    , true
-//                                    , status
-//                                    , gender));
-//                        } else {
-//                            if (fileDescription != null) {
-//                                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
-//                                    fileDescription.setFrom("Я");
-//                                } else {
-//                                    fileDescription.setFrom("I");
-//                                }
-//                            }
-//                            out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
-//                        }
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    if (e.getMessage() != null && e.getMessage().contains("annot be converted to")) {
-//                        String cont = message.content;
-//                        String type = cont.contains("присоедини") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-//                        String title = null;
-//                        String name = null;
-//                        try {
-//                            name = cont.split(" ")[1];
-//                            title = cont.split(" ")[0];
-//                        } catch (Exception e1) {
-//                            e1.printStackTrace();
-//                        }
-//                        ConsultConnectionMessage ccm = new ConsultConnectionMessage(name, type, name, cont.contains("лся") ? true : false, message.sentAt.millis, null, null, title, String.valueOf(message.messageId));
-//                        out.add(ccm);
-//                    }
-//                    Log.e(TAG, "error parsing message" + message);
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Log.e(TAG, "error while formatting");
-//            Log.e(TAG, "" + messages);
-//            e.printStackTrace();
-//        }
-//        return out;
-//    }
+                if (message.getType() != null && !message.getType().isEmpty() && (message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) || message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT))) {
+                    String type = message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+                    out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId));
+                } else {
+                    String phraseText = message.getText();
+                    FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
+                    if (fileDescription != null) {
+                        fileDescription.setFrom(name);
+                        fileDescription.setTimeStamp(timeStamp);
+                    }
+                    Quote quote = message.getQuotes() != null ? quoteFromList(message.getQuotes()) : null;
+                    if (quote != null && quote.getFileDescription() != null)
+                        quote.getFileDescription().setTimeStamp(timeStamp);
+                    if (message.getOperator() != null) {
+                        out.add(new ConsultPhrase(fileDescription
+                                , quote
+                                , name
+                                , messageId
+                                , phraseText
+                                , timeStamp
+                                , operatorId
+                                , photoUrl
+                                , true
+                                , null
+                                , false));
+                    } else {
+                        if (fileDescription != null) {
+                            if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+                                fileDescription.setFrom("Я");
+                            } else {
+                                fileDescription.setFrom("I");
+                            }
+                        }
+                        out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
+                    }
+                }
+            }
+            Collections.sort(out, new Comparator<ChatItem>() {
+                @Override
+                public int compare(ChatItem ci1, ChatItem ci2) {
+                    return Long.valueOf(ci1.getTimeStamp()).compareTo(ci2.getTimeStamp());
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "error while formatting");
+            Log.e(TAG, "" + messages);
+            e.printStackTrace();
+        }
+        return out;
+    }
 
     private static ConsultConnectionMessage getConsultConnectionMessageFromInout(InOutMessage message) throws JSONException {
         JSONObject body = new JSONObject(message.content);

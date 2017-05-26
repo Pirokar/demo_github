@@ -88,7 +88,7 @@
 
         <meta-data
             android:name="im.threads.getServerUrl"
-            android:value="https://datastore.threads.im" />
+            android:value="https://datastore.threads.im/" />
 
     </application>
 

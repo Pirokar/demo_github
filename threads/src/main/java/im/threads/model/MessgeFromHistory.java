@@ -1,5 +1,7 @@
 package im.threads.model;
 
+import android.util.Log;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,43 +15,17 @@ import java.util.TimeZone;
 
 public class MessgeFromHistory implements ChatItem {
 
-
-    {
-        "id": 15,
-            "providerId": "140446819000",
-            "threadId": 2,
-
-        "receivedDate": "2017-05-25T08:03:43Z",
-
-        "read": false,
-            "text": "",
-            "attachments": [
-        {
-            "result": "https://datastore.threads.im/files/79a28402-5cf4-4c59-8bce-aa7dd84b0951",
-                "optional": {
-            "type": "image/jpg",
-                    "name": "gurman1492760778487.jpg",
-                    "size": 1769998
-        }
-        }
-    ],
-        "quotes": []
-    }
-
-
-
-
-
     private Long id;
     private String providerId;
     private Long threadId;
     private Operator operator;
+    private Client client;
     private String receivedDate;
     private Channel channel;
     private boolean read;
     private String text;
     private List<Attachment> attachments;
-    private List<Quote> quotes;
+    private List<MessgeFromHistory> quotes;
     private String type;
 
     public Long getId() {
@@ -60,6 +36,14 @@ public class MessgeFromHistory implements ChatItem {
         this.id = id;
     }
 
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
     public Long getThreadId() {
         return threadId;
     }
@@ -68,12 +52,20 @@ public class MessgeFromHistory implements ChatItem {
         this.threadId = threadId;
     }
 
-    public Client getOperator() {
+    public Operator getOperator() {
         return operator;
     }
 
-    public void setOperator(Client client) {
-        this.operator = client;
+    public void setOperator(Operator operator) {
+        this.operator = operator;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public String getReceivedDate() {
@@ -116,11 +108,11 @@ public class MessgeFromHistory implements ChatItem {
         this.attachments = attachments;
     }
 
-    public List<Quote> getQuotes() {
+    public List<MessgeFromHistory> getQuotes() {
         return quotes;
     }
 
-    public void setQuotes(List<Quote> quotes) {
+    public void setQuotes(List<MessgeFromHistory> quotes) {
         this.quotes = quotes;
     }
 
@@ -134,7 +126,7 @@ public class MessgeFromHistory implements ChatItem {
 
     @Override
     public long getTimeStamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = new Date();
         try {

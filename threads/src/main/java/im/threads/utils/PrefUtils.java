@@ -162,4 +162,8 @@ public class PrefUtils {
         }
         return null;
     }
+
+    public static String getToken(Context context) {
+        return getDeviceAddress(context) + ":" + getClientID(context);
+    }
 }
