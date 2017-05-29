@@ -480,18 +480,21 @@ public class ChatController {
                     ServiceGenerator.setUrl(url);
                     RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
                     Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L);
-                    List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
-                    if (dbItems.size() != serverItems.size()
-                            || !dbItems.containsAll(serverItems)) {
-                        Log.i(TAG, "not same!");
-                        mDatabaseHolder.putMessagesSync(serverItems);
-                        h.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-                                if (null != fragment) fragment.addChatItems(items);
-                            }
-                        });
+                    List<MessgeFromHistory> messgesFromHistory = call.execute().body();
+                    if (messgesFromHistory != null) {
+                        List<ChatItem> serverItems = MessageFormatter.formatNew(messgesFromHistory);
+                        if (dbItems.size() != serverItems.size()
+                                || !dbItems.containsAll(serverItems)) {
+                            Log.i(TAG, "not same!");
+                            mDatabaseHolder.putMessagesSync(serverItems);
+                            h.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+                                    if (null != fragment) fragment.addChatItems(items);
+                                }
+                            });
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -1008,11 +1011,11 @@ public class ChatController {
 
     private UserPhrase convert(UpcomingUserMessage message) {
         if (message == null)
-            return new UserPhrase("local" + UUID.randomUUID().toString(), "", null, System.currentTimeMillis(), null);
+            return new UserPhrase("local" + UUID.randomUUID().toString(), "", null, System.currentTimeMillis(), null, null);
         if (message.getFileDescription() != null && !message.getFileDescription().getFilePath().contains("file://")) {
             message.getFileDescription().setFilePath("file://" + message.getFileDescription().getFilePath());
         }
-        UserPhrase up = new UserPhrase("local" + UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription());
+        UserPhrase up = new UserPhrase("local" + UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription(), null);
         up.setCopy(message.isCopyied());
         return up;
     }

@@ -49,8 +49,8 @@ public class ChatIntentHelper {
                         , 18//размер шрифта заголовка welcomeScreenTitleSizeInSp
                         , 14)//размер шрифта подзаголовка welcomeScreenSubtitleSizeInSp
                 .setScheduleMessageStyle(
-                        R.drawable.schedule_icon, // Иконка сообщения о расписании
-                        R.color.schedule_message_text_color); // Цвет текста в сообщении о расписании
+                        R.drawable.schedule_icon, // Иконка сообщения о расписании scheduleMessageIconResId
+                        R.color.schedule_message_text_color); // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
     }
 
 }

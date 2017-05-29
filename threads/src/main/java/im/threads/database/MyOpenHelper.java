@@ -44,6 +44,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
     private static final String COLUMN_CONSULT_TITLE = "COLUMN_CONSULT_TITLE";
     private static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
     private static final String COLUMN_IS_READ = "COLUMN_IS_READ";
+    private static final String COLUMN_BACKEND_ID = "COLUMN_BACKEND_ID";
 
 
     private static final String TABLE_QUOTE = "TABLE_QUOTE";
@@ -85,10 +86,13 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s text," + //COLUMN_CONSULT_STATUS
                         "%s text," +//COLUMN_CONSULT_TITLE
                         "%s text," +//connection type
-                        "%s integer)", //isRead
+                        "%s integer," + //isRead
+                        "%s text)", //COLUMN_BACKEND_ID
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
-                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID, COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE, COLUMN_IS_READ));
+                COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID,
+                COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE,
+                COLUMN_IS_READ, COLUMN_BACKEND_ID));
         db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_QUOTE
                         " %s text, " +//header
                         " %s text, " +//body
@@ -120,6 +124,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
             final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
             final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
+            final int INDEX_BACKEND_ID = c.getColumnIndex(COLUMN_BACKEND_ID);
             final int INDEX_TYPE = c.getColumnIndex(COLUMN_MESSAGE_TYPE);
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
                 if (c.getInt(INDEX_TYPE) == MessageTypes.TYPE_USER_PHRASE.type) {
@@ -130,7 +135,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                             phrase1,
                             getQuote(c.getString(INDEX_MESSAGE_ID)),
                             c.getLong(INDEX_TIMESTAMP),
-                            fd != null && !fd.first ? fd.second : null);
+                            fd != null && !fd.first ? fd.second : null,
+                            c.getString(INDEX_BACKEND_ID));
                     int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
                     MessageState ms = MessageState.STATE_WAS_READ;
                     if (sentState == 0) {
@@ -159,6 +165,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().getType());
         cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.type);
+        cv.put(COLUMN_BACKEND_ID, userPhrase.getBackendId());
         getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
         if (userPhrase.getFileDescription() != null) {
             putFd(userPhrase.getFileDescription(), userPhrase.getMessageId(), false);
@@ -196,6 +203,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_CONSULT_STATUS, ((ConsultPhrase) phrase).getStatus());
             cv.put(COLUMN_NAME, ((ConsultPhrase) phrase).getConsultName());
             cv.put(COLUMN_SEX, ((ConsultPhrase) phrase).getSex());
+            cv.put(COLUMN_BACKEND_ID, consultPhrase.getBackendId());
             if (!isDup) {
                 getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             } else {
@@ -290,6 +298,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
             final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
             final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
+            final int INDEX_BACKEND_ID = c.getColumnIndex(COLUMN_BACKEND_ID);
             final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
             final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
             final int INDEX_SEX = c.getColumnIndex(COLUMN_SEX);
@@ -310,7 +319,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                     avatarPath
                     , isRead
                     , status
-                    , c.getInt(INDEX_SEX) == 1);
+                    , c.getInt(INDEX_SEX) == 1
+                    , c.getString(INDEX_BACKEND_ID)
+            );
             return cp;
         }
         return null;
@@ -329,6 +340,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
         final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
         final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
+        final int INDEX_BACKEND_ID = c.getColumnIndex(COLUMN_BACKEND_ID);
         final int INDEX_CONNECTION_TYPE = c.getColumnIndex(COLUMN_CONNECTION_TYPE);
         final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
         final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
@@ -365,7 +377,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         avatarPath
                         , isRead
                         , status
-                        , c.getInt(INDEX_SEX) == 1);
+                        , c.getInt(INDEX_SEX) == 1
+                        , c.getString(INDEX_BACKEND_ID)
+                );
                 items.add(cp);
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
@@ -375,7 +389,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         phrase,
                         getQuote(c.getString(INDEX_MESSAGE_ID)),
                         c.getLong(INDEX_TIMESTAMP),
-                        fd != null && !fd.first ? fd.second : null);
+                        fd != null && !fd.first ? fd.second : null,
+                        c.getString(INDEX_BACKEND_ID));
                 int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
                 MessageState ms = MessageState.STATE_WAS_READ;
                 if (sentState == 0) {
@@ -602,6 +617,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
             final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
             final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
+            final int INDEX_BACKEND_ID = c.getColumnIndex(COLUMN_BACKEND_ID);
             final int INDEX_CONNECTION_TYPE = c.getColumnIndex(COLUMN_CONNECTION_TYPE);
             final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
             final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
@@ -625,7 +641,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         avatarPath
                         , isRead
                         , status
-                        , c.getInt(INDEX_SEX) == 1);
+                        , c.getInt(INDEX_SEX) == 1
+                        , c.getString(INDEX_BACKEND_ID)
+                );
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
                 String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
                 Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
@@ -634,7 +652,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         phrase,
                         getQuote(c.getString(INDEX_MESSAGE_ID)),
                         c.getLong(INDEX_TIMESTAMP),
-                        fd != null && !fd.first ? fd.second : null);
+                        fd != null && !fd.first ? fd.second : null,
+                        c.getString(INDEX_BACKEND_ID)
+                );
                 int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
                 MessageState ms = MessageState.STATE_WAS_READ;
                 if (sentState == 0) {

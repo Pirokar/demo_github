@@ -708,10 +708,14 @@ public class ChatFragment extends Fragment implements
             mQuote = new Quote(headerText, cp.getPhraseText(), quoteFileDescription, System.currentTimeMillis());
         }
         if (cp instanceof UserPhrase) {
+            UserPhrase userPhrase = (UserPhrase) cp;
             headerText = getString(R.string.I);
             mQuote.setFromConsult(false);
             mQuote.setPhraseOwnerTitle(headerText);
+            mQuote.setMessageId(userPhrase.getMessageId());
+            mQuote.setBackendId(userPhrase.getBackendId());
         } else if (cp instanceof ConsultPhrase) {
+            ConsultPhrase consultPhrase = (ConsultPhrase) cp;
             headerText = ((ConsultPhrase) cp).getConsultName();
             mQuote.setFromConsult(true);
             mQuote.setQuotedPhraseId(((ConsultPhrase) cp).getConsultId());
@@ -719,6 +723,8 @@ public class ChatFragment extends Fragment implements
                 headerText = getString(R.string.consult);
             }
             mQuote.setPhraseOwnerTitle(headerText);
+            mQuote.setMessageId(consultPhrase.getMessageId());
+            mQuote.setBackendId(consultPhrase.getBackendId());
         }
         if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                 || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {

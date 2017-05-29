@@ -24,6 +24,8 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     //для поиска сообщений в чате
     private boolean found;
 
+    private String backendId;
+
     public ConsultPhrase(
             FileDescription fileDescription
             , Quote quote
@@ -35,7 +37,9 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
             , String avatarPath
             , boolean isRead
             , String status
-            , boolean sex) {
+            , boolean sex
+            , String backendId
+    ) {
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.consultName = consultName;
@@ -47,6 +51,7 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
         this.isRead = isRead;
         this.status = status;
         this.sex = sex;
+        this.backendId = backendId;
     }
 
     public String getStatus() {
@@ -215,5 +220,13 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
 
     public String getPhrase() {
         return phrase;
+    }
+
+    public String getBackendId() {
+        return backendId;
+    }
+
+    public void setBackendId(String backendId) {
+        this.backendId = backendId;
     }
 }

@@ -122,6 +122,12 @@ public class MessageFormatter {
                 if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                     quoteJson.put("attachments", attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
                 }
+                if (upcomingUserMessage.getQuote().getMessageId() != null) {
+                    quoteJson.put("providerId", upcomingUserMessage.getQuote().getMessageId());
+                }
+                if (upcomingUserMessage.getQuote().getBackendId() != null) {
+                    quoteJson.put("backendId", upcomingUserMessage.getQuote().getBackendId());
+                }
             }
             if (fileDescription != null && mfmsFilePath != null) {
                 formattedMessage.put("attachments", attachmentsFromFileDescription(fileDescription, mfmsFilePath));
@@ -196,6 +202,8 @@ public class MessageFormatter {
     private static ConsultPhrase getConsultPhraseFromPush(PushMessage pushMessage, JSONObject fullMessage, String message) {
         try {
             String messageId = pushMessage.getMessageId();
+//            Log.i("FULLMESSAGE", fullMessage.toString());
+            String backendId = String.valueOf(fullMessage.getInt("backendId"));
             long timeStamp = pushMessage.getSentAt();
             JSONObject operatorInfo = fullMessage.getJSONObject("operator");
             final String name = operatorInfo.getString("name");
@@ -228,7 +236,8 @@ public class MessageFormatter {
                     photoUrl,
                     false,
                     status,
-                    gender
+                    gender,
+                    backendId
             );
         } catch (JSONException e) {
             e.printStackTrace();
@@ -667,6 +676,8 @@ public class MessageFormatter {
                 try {
                     JSONObject body = new JSONObject(message.content);
                     String messageId = String.valueOf(message.messageId);
+//                    String messageId = body.getString("providerId");
+                    String backendId = String.valueOf(body.getLong("backendId"));
                     long timeStamp = message.sentAt.millis;
                     JSONObject operatorInfo = body.has("operator") ? body.getJSONObject("operator") : null;
                     String name = null;
@@ -713,7 +724,9 @@ public class MessageFormatter {
                                     , photoUrl
                                     , true
                                     , status
-                                    , gender));
+                                    , gender
+                                    , backendId
+                            ));
                         } else {
                             if (fileDescription != null) {
                                 if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
@@ -722,7 +735,7 @@ public class MessageFormatter {
                                     fileDescription.setFrom("I");
                                 }
                             }
-                            out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
+                            out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ, backendId));
                         }
                     }
                 } catch (JSONException e) {
@@ -760,6 +773,7 @@ public class MessageFormatter {
                 if (message == null)
                     continue;
                 String messageId = message.getProviderId();
+                String backendId = String.valueOf(message.getId());
                 long timeStamp = message.getTimeStamp();
                 Operator operator = message.getOperator();
                 String name = null;
@@ -806,7 +820,9 @@ public class MessageFormatter {
                                 , photoUrl
                                 , true
                                 , null
-                                , false));
+                                , false
+                                , backendId
+                        ));
                     } else {
                         if (fileDescription != null) {
                             if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
@@ -815,7 +831,7 @@ public class MessageFormatter {
                                 fileDescription.setFrom("I");
                             }
                         }
-                        out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
+                        out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ, backendId));
                     }
                 }
             }

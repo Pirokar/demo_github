@@ -25,8 +25,10 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     //для поиска сообщений в чате
     private boolean found;
 
+    private String backendId;
 
-    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
+
+    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, String backendId) {
         this.messageId = messageId == null ? "localID: " + UUID.randomUUID().toString() : messageId;
         this.phrase = phrase;
         this.withFile = fileDescription != null;
@@ -34,9 +36,10 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
         sentState = MessageState.STATE_SENDING;
+        this.backendId = backendId;
     }
 
-    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
+    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState, String backendId) {
         this.messageId = messageId == null ? "localID: " + UUID.randomUUID().toString() : messageId;
         this.phrase = phrase;
         this.withFile = fileDescription != null;
@@ -44,6 +47,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
         this.sentState = MessageState.STATE_WAS_READ;
+        this.backendId = backendId;
     }
 
     public boolean isWithPhrase() {
@@ -194,5 +198,13 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
                 "phrase='" + phrase + '\'' +
                 ", isChosen=" + isChosen +
                 '}' + "\n";
+    }
+
+    public String getBackendId() {
+        return backendId;
+    }
+
+    public void setBackendId(String backendId) {
+        this.backendId = backendId;
     }
 }
