@@ -13,6 +13,7 @@ public class MessageMatcher {
     private static final String OPERATOR_TYPING = "TYPING";
     public static final String SCHEDULE = "SCHEDULE";
     public static final String SURVEY = "SURVEY";
+    public static final String MESSAGE = "MESSAGE";
     public static final int TYPE_OPERATOR_JOINED = 1;
     public static final int TYPE_OPERATOR_LEFT = 2;
     public static final int TYPE_OPERATOR_TYPING = 3;

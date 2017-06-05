@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -272,18 +273,24 @@ public class MessageFormatter {
 //                    return getRatingStarsFromPush(pushMessage, fullMessage);
 //                }
                 return getRatingFromPush(pushMessage, fullMessage);
+            } else if (type.equalsIgnoreCase(MessageMatcher.MESSAGE)) {
+                // Либо в fullMessage должны содержаться ключи из списка:
+                // "attachments", "text", "quotes"
+                return checkMessageIsFull(pushMessage, fullMessage);
             } else {
-                return null;
+                return checkMessageIsFull(pushMessage, fullMessage);
             }
+        }
+        return null;
+    }
+
+    @Nullable
+    private static ChatItem checkMessageIsFull(PushMessage pushMessage, JSONObject fullMessage) {
+        String message = getMessage(fullMessage, pushMessage);
+        if (message != null || fullMessage.has("attachments") || fullMessage.has("quotes")) {
+            return getConsultPhraseFromPush(pushMessage, fullMessage, message);
         } else {
-            // Либо в fullMessage должны содержаться ключи из списка:
-            // "attachments", "text", "quotes"
-            String message = getMessage(fullMessage, pushMessage);
-            if (message != null || fullMessage.has("attachments") || fullMessage.has("quotes")) {
-                return getConsultPhraseFromPush(pushMessage, fullMessage, message);
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 
