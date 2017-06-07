@@ -528,7 +528,7 @@ public class ChatFragment extends Fragment implements
             if (!isCameraGranted) permissions.add(android.Manifest.permission.CAMERA);
             if (!isWriteGranted)
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            ActivityCompat.requestPermissions(activity, permissions.toArray(new String[]{}), REQUEST_PERMISSION_CAMERA);
+            requestPermissions(permissions.toArray(new String[]{}), REQUEST_PERMISSION_CAMERA);
         }
     }
 
@@ -767,7 +767,7 @@ public class ChatFragment extends Fragment implements
             frag.setOnDirSelectedListener(this);
             frag.show(getFragmentManager(), null);
         } else {
-            ActivityCompat.requestPermissions(activity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL);
+            requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL);
         }
 
     }
@@ -963,7 +963,7 @@ public class ChatFragment extends Fragment implements
                 });
             }
         } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY);
+            requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY);
         }
 
     }
