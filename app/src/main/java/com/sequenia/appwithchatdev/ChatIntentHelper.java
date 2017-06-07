@@ -31,7 +31,7 @@ public class ChatIntentHelper {
                         R.color.outgoing_message_text,//цвет текста исходящего сообщения outgoingMessageTextColor
                         R.color.chatbody_icons_tint,//цвет иконок в поле сообщения chatBodyIconsTint
                         R.color.connection_message_text_color,//цвет текста сообщения о соединениии connectionMessageTextColor
-                        R.color.files_and_media_screen_bg_color,//цвет фона экрана Медиа и файлы connectionMessagfilesAndMediaScreenBackgroundColoreTextColor
+                        R.color.files_and_media_screen_bg_color,//цвет фона экрана Медиа и файлы filesAndMediaScreenBackgroundColor
                         R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
                         R.drawable.no_image,//заглушка вместо картинки imagePlaceholder
                         R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
