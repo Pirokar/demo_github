@@ -56,6 +56,7 @@ public class ChatStyle implements Serializable {
     private static final String ARG_IMAGE_PLACEHOLDER_RES_ID = "imagePlaceholder";
     private static final String ARG_CHAT_BODY_ICONS_TINT_RES_ID = "chatBodyIconsTint";
     private static final String ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID = "connectionMessageTextColor";
+    private static final String ARG_FILES_AND_MEDIA_SCREEN_BACKGROUND_COLOR_RES_ID = "filesAndMediaScreenBackgroundColor";
     private static final String ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID = "fileBrowserDialogStyleResId";
     private static final String ARG_CHAT_TITLE_TEXT_RES_ID = "chatTitleTextResId";
     private static final String ARG_CHAT_TOOLBAR_COLOR_RES_ID = "chatToolbarColorResId";
@@ -124,6 +125,8 @@ public class ChatStyle implements Serializable {
     public final int chatBodyIconsTint;
     @ColorRes
     public final int connectionMessageTextColor;
+    @ColorRes
+    public final int filesAndMediaScreenBackgroundColor;
     @StyleRes
     public final int fileBrowserDialogStyleResId;
     @ColorRes
@@ -146,6 +149,7 @@ public class ChatStyle implements Serializable {
                      int outgoingMessageTextColor,
                      int chatBodyIconsTint,
                      int connectionMessageTextColor,
+                     int filesAndMediaScreenBackgroundColor,
                      int defaultIncomingMessageAvatar,
                      int imagePlaceholder,
                      int fileBrowserDialogStyleResId,
@@ -193,6 +197,7 @@ public class ChatStyle implements Serializable {
         this.welcomeScreenSubtitleSizeInSp = welcomeScreenSubtitleSizeInSp;
         this.chatBodyIconsTint = chatBodyIconsTint;
         this.connectionMessageTextColor = connectionMessageTextColor;
+        this.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
         this.pushBackgroundColorResId = pushBackgroundColorResId;
         this.nugatPushAccentColorResId = nugatPushAccentColorResId;
         this.chatStatusBarColorResId = chatStatusBarColorResId;
@@ -244,6 +249,7 @@ public class ChatStyle implements Serializable {
         if (welcomeScreenSubtitleSizeInSp != chatStyle.welcomeScreenSubtitleSizeInSp) return false;
         if (chatBodyIconsTint != chatStyle.chatBodyIconsTint) return false;
         if (connectionMessageTextColor != chatStyle.connectionMessageTextColor) return false;
+        if (filesAndMediaScreenBackgroundColor != chatStyle.filesAndMediaScreenBackgroundColor) return false;
         if (fileBrowserDialogStyleResId != chatStyle.fileBrowserDialogStyleResId) return false;
         if (pushBackgroundColorResId != chatStyle.pushBackgroundColorResId) return false;
         if (scheduleMessageTextColorResId != chatStyle.scheduleMessageTextColorResId) return false;
@@ -283,6 +289,7 @@ public class ChatStyle implements Serializable {
         result = 31 * result + welcomeScreenSubtitleSizeInSp;
         result = 31 * result + chatBodyIconsTint;
         result = 31 * result + connectionMessageTextColor;
+        result = 31 * result + filesAndMediaScreenBackgroundColor;
         result = 31 * result + fileBrowserDialogStyleResId;
         result = 31 * result + pushBackgroundColorResId;
         result = 31 * result + scheduleMessageTextColorResId;
@@ -316,6 +323,7 @@ public class ChatStyle implements Serializable {
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_BODY_ICONS_TINT_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_FILES_AND_MEDIA_SCREEN_BACKGROUND_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_IMAGE_PLACEHOLDER_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID) : INVALID,
@@ -377,6 +385,7 @@ public class ChatStyle implements Serializable {
                 ", " + ARG_WELCOME_SCREEN_SUBTITLE_SIZE_IN_SP + "=" + welcomeScreenSubtitleSizeInSp +
                 ", " + ARG_CHAT_BODY_ICONS_TINT_RES_ID + "=" + chatBodyIconsTint +
                 ", " + ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID + "=" + connectionMessageTextColor +
+                ", " + ARG_FILES_AND_MEDIA_SCREEN_BACKGROUND_COLOR_RES_ID + "=" + filesAndMediaScreenBackgroundColor +
                 ", " + ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID + "=" + fileBrowserDialogStyleResId +
                 ", " + ARG_PUSH_BACKGROUND_COLOR_RES_ID + "=" + pushBackgroundColorResId +
                 ", " + ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID + "=" + scheduleMessageTextColorResId +
@@ -434,6 +443,7 @@ public class ChatStyle implements Serializable {
                 @ColorRes int outgoingMessageTextColor,
                 @ColorRes int chatBodyIconsTint,
                 @ColorRes int connectionMessageTextColor,
+                @ColorRes int filesAndMediaScreenBackgroundColor,
                 @DrawableRes int defaultIncomingMessageAvatar,
                 @DrawableRes int imagePlaceholder,
                 @StyleRes int fileBrowserDialogStyleResId,
@@ -453,6 +463,7 @@ public class ChatStyle implements Serializable {
             bundle.putInt(ARG_IMAGE_PLACEHOLDER_RES_ID, imagePlaceholder);
             bundle.putInt(ARG_CHAT_BODY_ICONS_TINT_RES_ID, chatBodyIconsTint);
             bundle.putInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID, connectionMessageTextColor);
+            bundle.putInt(ARG_FILES_AND_MEDIA_SCREEN_BACKGROUND_COLOR_RES_ID, filesAndMediaScreenBackgroundColor);
             bundle.putInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID, fileBrowserDialogStyleResId);
             bundle.putInt(ARG_RATING_STARS_COUNT, ratingStarsCount);
             bundle.putBoolean(ARG_SHOW_CONSULT_SEARCHING, showConsultSearching);

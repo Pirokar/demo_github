@@ -21,6 +21,7 @@
     <color name="outgoing_message_text">#ffffff</color>
     <color name="chatbody_icons_tint">#83B144</color>
     <color name="connection_message_text_color">#333333</color>
+    <color name="files_and_media_screen_bg_color">#ffffff</color>
     <color name="schedule_message_text_color">#333333</color>
 
     <color name="file_browser_dialog_text">#83B144</color>
