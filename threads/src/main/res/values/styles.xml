@@ -22,6 +22,15 @@
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
+    <style name="Transparent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
     <!--<style name="FileDialogStyle" parent="Theme.AppCompat.Light.Dialog">-->
         <!--<item name="android:textColor">@color/file_browser_dialog_text</item>-->
         <!--<item name="android:windowBackground">@color/file_browser_window_background</item>-->

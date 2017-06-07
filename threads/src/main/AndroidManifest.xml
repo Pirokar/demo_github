@@ -54,6 +54,12 @@
             android:launchMode="singleInstance"
             android:theme="@style/Translucent">
         </activity>
+        <activity
+            android:name=".permissions.PermissionsActivity"
+            android:label="@string/permissions_help"
+            android:screenOrientation="portrait"
+            android:theme="@style/Transparent">
+        </activity>
 
         <service
             android:name="im.threads.services.IncomingMessagesIntentService"

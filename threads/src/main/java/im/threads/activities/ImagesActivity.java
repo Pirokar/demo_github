@@ -25,6 +25,7 @@ import im.threads.database.DatabaseHolder;
 import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
+import im.threads.permissions.PermissionsActivity;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 
@@ -123,7 +124,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
     private void downloadImage() {
         if (files.get(mViewPager.getCurrentItem()).getFilePath() == null) return;
         if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CODE_REQUQEST_DOWNLOAD);
+            PermissionsActivity.startActivityForResult(this, CODE_REQUQEST_DOWNLOAD, R.string.permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
         String path = files.get(mViewPager.getCurrentItem()).getFilePath().replaceAll("file://", "");
@@ -152,15 +153,18 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CODE_REQUQEST_DOWNLOAD && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+            downloadImage();
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CODE_REQUQEST_DOWNLOAD) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                downloadImage();
-            } else {
-                Toast.makeText(this, R.string.unable_to_save, Toast.LENGTH_SHORT).show();
-            }
-        }
+
     }
 
     @Override
