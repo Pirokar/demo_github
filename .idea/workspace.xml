@@ -9,8 +9,9 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="1. Добавлены действие на кнопку back и появление ее при копировании и поиске 2. Убран параметр ratingStarsCount">
+    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="В базовом дизайне исправлено отображение и работа кнопки Назад">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
     </list>
     <ignored path="Threads-Android.iws" />
@@ -57,26 +58,61 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="22304">
-              <caret line="1550" column="12" selection-start-line="1550" selection-start-column="12" selection-end-line="1550" selection-end-column="12" />
+            <state relative-caret-position="150">
+              <caret line="1171" column="0" selection-start-line="1171" selection-start-column="0" selection-end-line="1171" selection-end-column="0" />
               <folding>
                 <element signature="e#11689#11850#0" expanded="true" />
                 <element signature="e#11849#11850#0" expanded="true" />
-                <element signature="e#39232#39428#0" expanded="true" />
-                <element signature="e#39427#39428#0" expanded="true" />
-                <element signature="e#41130#41323#0" expanded="true" />
-                <element signature="e#41322#41323#0" expanded="true" />
-                <element signature="e#62283#62440#0" expanded="true" />
-                <element signature="e#62439#62440#0" expanded="true" />
-                <element signature="e#62574#62719#0" expanded="true" />
-                <element signature="e#62718#62719#0" expanded="true" />
-                <element signature="e#64169#64496#0" expanded="true" />
-                <element signature="e#64495#64496#0" expanded="true" />
-                <element signature="e#64976#65299#0" expanded="true" />
-                <element signature="e#65298#65299#0" expanded="true" />
+                <element signature="e#39547#39743#0" expanded="true" />
+                <element signature="e#39742#39743#0" expanded="true" />
+                <element signature="e#41445#41638#0" expanded="true" />
+                <element signature="e#41637#41638#0" expanded="true" />
+                <element signature="e#62926#63083#0" expanded="true" />
+                <element signature="e#63082#63083#0" expanded="true" />
+                <element signature="e#63217#63362#0" expanded="true" />
+                <element signature="e#63361#63362#0" expanded="true" />
+                <element signature="e#64812#65139#0" expanded="true" />
+                <element signature="e#65138#65139#0" expanded="true" />
+                <element signature="e#65619#65942#0" expanded="true" />
+                <element signature="e#65941#65942#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ic_arrow_back_blue_24dp.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/res/drawable-hdpi/ic_arrow_back_blue_24dp.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ic_arrow_back_white_24dp.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/res/drawable/ic_arrow_back_white_24dp.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ChatIntentHelper.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <folding>
+                <element signature="e#432#455#0" expanded="true" />
+                <element signature="e#2921#2943#0" expanded="true" />
+                <element signature="e#3203#3219#0" expanded="true" />
+                <element signature="e#3304#3326#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -2977,8 +3013,8 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/widget/Rating.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
       </list>
     </option>
   </component>
@@ -3209,7 +3245,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Domopult" />
-    <property name="device.picker.selection" value="CB5A20W7HU" />
+    <property name="device.picker.selection" value="93637166" />
     <property name="SearchEverywhereHistoryKey" value="GcmIntentService&#9;PSI&#9;JAVA://com.pushserver.android.PushGcmIntentService&#10;ChatSt&#9;FILE&#9;file:///home/chybakut2004/Workspace/AndroidStudio/Threads-Android/threads/src/main/java/im/threads/model/ChatStyle.java" />
     <property name="android.project.structure.last.selected" value="push-api-release-1.0-41-2016-10-18-17-22" />
     <property name="android.project.structure.proportion" value="0.15" />
@@ -3761,7 +3797,14 @@
       <option name="project" value="LOCAL" />
       <updated>1496828509248</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Мелкий рефакторинг">
+      <created>1496829417366</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1496829417366</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -3774,7 +3817,7 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935154" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.76094276" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.75938565" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.290469" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.443686" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -3782,7 +3825,7 @@
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23600605" sideWeight="0.49317408" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21558245" sideWeight="0.49317408" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32764506" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290469" sideWeight="0.493266" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -3835,7 +3878,6 @@
     <MESSAGE value="Заглушка рейтинга с звездами" />
     <MESSAGE value="Добавил баблы с рейтингом (в процессе)" />
     <MESSAGE value="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)" />
-    <MESSAGE value="Мелкий рефакторинг" />
     <MESSAGE value="Добавил появление кнопки с выпадающим списком после нахождения оператора" />
     <MESSAGE value="Изменены объекты и соответствующий код для оценки" />
     <MESSAGE value="Небольшой рефакторинг" />
@@ -3855,7 +3897,8 @@
     <MESSAGE value="Неважная правка" />
     <MESSAGE value="Добавлена PermissionActivity" />
     <MESSAGE value="1. Добавлены действие на кнопку back и появление ее при копировании и поиске 2. Убран параметр ratingStarsCount" />
-    <option name="LAST_COMMIT_MESSAGE" value="1. Добавлены действие на кнопку back и появление ее при копировании и поиске 2. Убран параметр ratingStarsCount" />
+    <MESSAGE value="Мелкий рефакторинг" />
+    <option name="LAST_COMMIT_MESSAGE" value="Мелкий рефакторинг" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -3880,7 +3923,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java</url>
-          <line>1404</line>
+          <line>1412</line>
           <properties />
           <option name="timeStamp" value="201" />
         </line-breakpoint>
@@ -3890,20 +3933,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/PhotoBucketsGalleryAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="296">
-          <caret line="40" column="49" selection-start-line="40" selection-start-column="49" selection-end-line="40" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/GalleryAdaper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="26" column="23" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/adapters/BottomGalleryAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
@@ -4161,14 +4190,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/colors.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="23" column="65" selection-start-line="23" selection-start-column="65" selection-end-line="23" selection-end-column="65" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/permissions/PermissionsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -4239,14 +4260,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="38" column="51" selection-start-line="38" selection-start-column="51" selection-end-line="38" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -4255,25 +4268,62 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/res/drawable-hdpi/ic_arrow_back_blue_24dp.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/colors.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/res/drawable/ic_arrow_back_white_24dp.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22304">
-          <caret line="1550" column="12" selection-start-line="1550" selection-start-column="12" selection-end-line="1550" selection-end-column="12" />
+        <state relative-caret-position="150">
+          <caret line="1171" column="0" selection-start-line="1171" selection-start-column="0" selection-end-line="1171" selection-end-column="0" />
           <folding>
             <element signature="e#11689#11850#0" expanded="true" />
             <element signature="e#11849#11850#0" expanded="true" />
-            <element signature="e#39232#39428#0" expanded="true" />
-            <element signature="e#39427#39428#0" expanded="true" />
-            <element signature="e#41130#41323#0" expanded="true" />
-            <element signature="e#41322#41323#0" expanded="true" />
-            <element signature="e#62283#62440#0" expanded="true" />
-            <element signature="e#62439#62440#0" expanded="true" />
-            <element signature="e#62574#62719#0" expanded="true" />
-            <element signature="e#62718#62719#0" expanded="true" />
-            <element signature="e#64169#64496#0" expanded="true" />
-            <element signature="e#64495#64496#0" expanded="true" />
-            <element signature="e#64976#65299#0" expanded="true" />
-            <element signature="e#65298#65299#0" expanded="true" />
+            <element signature="e#39547#39743#0" expanded="true" />
+            <element signature="e#39742#39743#0" expanded="true" />
+            <element signature="e#41445#41638#0" expanded="true" />
+            <element signature="e#41637#41638#0" expanded="true" />
+            <element signature="e#62926#63083#0" expanded="true" />
+            <element signature="e#63082#63083#0" expanded="true" />
+            <element signature="e#63217#63362#0" expanded="true" />
+            <element signature="e#63361#63362#0" expanded="true" />
+            <element signature="e#64812#65139#0" expanded="true" />
+            <element signature="e#65138#65139#0" expanded="true" />
+            <element signature="e#65619#65942#0" expanded="true" />
+            <element signature="e#65941#65942#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding>
+            <element signature="e#432#455#0" expanded="true" />
+            <element signature="e#2921#2943#0" expanded="true" />
+            <element signature="e#3203#3219#0" expanded="true" />
+            <element signature="e#3304#3326#0" expanded="true" />
           </folding>
         </state>
       </provider>

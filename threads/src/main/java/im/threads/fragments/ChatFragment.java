@@ -663,7 +663,11 @@ public class ChatFragment extends Fragment implements
             ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
             backButton.setImageDrawable(d);
         } else {
-            mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
+//            mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
+            ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), android.R.color.black);
+            Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
+            ColorsHelper.setDrawableColor(ctx, d, android.R.color.black);
+            backButton.setImageDrawable(d);
         }
 
         if (style != null && style.chatMessageInputColor != ChatStyle.INVALID) {
@@ -1176,7 +1180,11 @@ public class ChatFragment extends Fragment implements
             backButton.setImageDrawable(d);
             ColorsHelper.setDrawableColor(context, popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
         } else {
-            backButton.setImageResource(R.drawable.ic_arrow_back_white_24dp);
+//            backButton.setImageResource(R.drawable.ic_arrow_back_white_24dp);
+            Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
+            ColorsHelper.setDrawableColor(context, d, android.R.color.black);
+            backButton.setImageDrawable(d);
+            ColorsHelper.setDrawableColor(context, popupMenuButton.getDrawable(), android.R.color.black);
         }
         if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
             ColorsHelper.setBackgroundColor(context, mToolbar, style.chatToolbarColorResId);
