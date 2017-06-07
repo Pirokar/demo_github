@@ -16,33 +16,16 @@ import java.util.ArrayList;
 public class PermissionChecker {
 
     public static boolean checkPermissions(Context context) {
-        boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(context);
-        boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(context);
-        boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(context);
-        boolean isWriteExternalGranted
-                = android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
         boolean isAccessNetworkStateGranted
                 = android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE) == android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
-        return isCoarseLocGranted
-                && isSmsGranted
-                && isReadPhoneStateGranted
-                && isWriteExternalGranted
-                && isAccessNetworkStateGranted;
+
+        return isAccessNetworkStateGranted;
     }
 
     public static void requestPermissionsAndInit(int requestCode, Activity activity) {
-        boolean isCoarseLocGranted = PermissionChecker.isCoarseLocationPermissionGranted(activity);
-        boolean isSmsGranted = PermissionChecker.isReadSmsPermissionGranted(activity);
-        boolean isReadPhoneStateGranted = PermissionChecker.isReadPhoneStatePermissionGranted(activity);
-        boolean isWriteExternalGranted
-                = android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
         boolean isAccessNetworkStateGranted
-                = android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
+                = android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission(activity, android.Manifest.permission.ACCESS_NETWORK_STATE) == android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
         ArrayList<String> permissions = new ArrayList<>();
-        if (!isCoarseLocGranted) permissions.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        if (!isSmsGranted) permissions.add(android.Manifest.permission.READ_SMS);
-        if (!isReadPhoneStateGranted) permissions.add(android.Manifest.permission.READ_PHONE_STATE);
-        if (!isWriteExternalGranted) permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!isAccessNetworkStateGranted) permissions.add(Manifest.permission.ACCESS_NETWORK_STATE);
         ActivityCompat.requestPermissions(activity, permissions.toArray(new String[]{}), requestCode);
     }
