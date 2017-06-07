@@ -78,6 +78,7 @@ import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
+import im.threads.permissions.PermissionsActivity;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.Callback;
 import im.threads.utils.CallbackNoError;
@@ -528,7 +529,7 @@ public class ChatFragment extends Fragment implements
             if (!isCameraGranted) permissions.add(android.Manifest.permission.CAMERA);
             if (!isWriteGranted)
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            requestPermissions(permissions.toArray(new String[]{}), REQUEST_PERMISSION_CAMERA);
+            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_CAMERA, R.string.permissions_camera_and_write_external_storage_help_text, permissions.toArray(new String[]{}));
         }
     }
 
@@ -767,7 +768,7 @@ public class ChatFragment extends Fragment implements
             frag.setOnDirSelectedListener(this);
             frag.show(getFragmentManager(), null);
         } else {
-            requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_READ_EXTERNAL);
+            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_READ_EXTERNAL, R.string.permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 
     }
@@ -963,7 +964,7 @@ public class ChatFragment extends Fragment implements
                 });
             }
         } else {
-            requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY);
+            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY, R.string.permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 
     }
@@ -1356,6 +1357,7 @@ public class ChatFragment extends Fragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CODE_PHOTOS && resultCode == RESULT_OK) {
             ArrayList<String> photos = data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG);
             onHideClick();
@@ -1391,41 +1393,15 @@ public class ChatFragment extends Fragment implements
             mFileDescription = new FileDescription(getResources().getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
             UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
             sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openBottomSheetAndGallery();
-            } else {
-
-            }
-        }
-        if (requestCode == REQUEST_PERMISSION_CAMERA) {
-            int granted = 0;
-            for (int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    granted++;
-                }
-            }
-            if (granted == grantResults.length) {
-                onCameraClick();
-            } else {
-                Toast.makeText(getActivity(), getResources().getString(R.string.unavailible), Toast.LENGTH_SHORT).show();
-            }
-        }
-        if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                FilePickerFragment picker = FilePickerFragment.newInstance(null);
-                picker.setFileFilter(new MyFileFilter());
-                picker.setOnDirSelectedListener(this);
-                picker.show(getFragmentManager(), null);
-            } else {
-                Toast.makeText(getActivity(), getResources().getString(R.string.unavailible), Toast.LENGTH_SHORT).show();
-            }
+        } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+            openBottomSheetAndGallery();
+        } else if (requestCode == REQUEST_PERMISSION_CAMERA && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+            onCameraClick();
+        } else if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+            FilePickerFragment picker = FilePickerFragment.newInstance(null);
+            picker.setFileFilter(new MyFileFilter());
+            picker.setOnDirSelectedListener(this);
+            picker.show(getFragmentManager(), null);
         }
     }
 

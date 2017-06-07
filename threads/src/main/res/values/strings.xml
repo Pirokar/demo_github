@@ -80,4 +80,10 @@
     <string name="item_user_rate_text">из</string>
     <string name="title_text">Добро пожаловать</string>
     <string name="subtitle_text">Отправьте ваш вопрос</string>
+    <string name="permissions_help">Помощь</string>
+    <string name="permissions_string_help_text">Отсутствуют разрешения.\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="permissions_camera_and_write_external_storage_help_text">Отсутствуют разрешения на Камеру и Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="permissions_read_external_storage_help_text">Отсутствует разрешение на Память (Чтение с вешнего хранилища).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="permissions_quit">Закрыть</string>
+    <string name="permissions_settings">Настройки</string>
 </resources>
