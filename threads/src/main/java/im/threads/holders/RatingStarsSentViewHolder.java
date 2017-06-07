@@ -25,6 +25,8 @@ import im.threads.utils.PrefUtils;
 
 public class RatingStarsSentViewHolder extends BaseHolder {
 
+    private static final int DEFAULT_RATING_STARS_COUNT = 3;
+
     private ImageView star;
     private TextView mHeader;
     private TextView rateStarsCount;
@@ -74,9 +76,7 @@ public class RatingStarsSentViewHolder extends BaseHolder {
     public void bind(Survey survey) {
         int rate = survey.getQuestions().get(0).getRate();
         rateStarsCount.setText(String.valueOf(rate));
-        if (style != null && style.ratingStarsCount != ChatStyle.INVALID) {
-            totalStarsCount.setText(style.ratingStarsCount);
-        }
+        totalStarsCount.setText(String.valueOf(DEFAULT_RATING_STARS_COUNT)); //todo заглушка, брать из пуша
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
         switch (survey.getSentState()) {

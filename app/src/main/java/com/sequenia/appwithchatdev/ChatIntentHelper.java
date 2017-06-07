@@ -19,7 +19,7 @@ public class ChatIntentHelper {
                         R.color.status_bar,//status bar chatStatusBarColorResId
                         R.color.menu_item_text,//menu item text menuItemTextColorResId
                         R.color.toolbar_edit_text_hint,//Toolbar EditText hint color chatToolbarHintTextColor
-                        true)// показывать кнопку назад showBackButton
+                        false)// показывать кнопку назад showBackButton
                 .setChatBodyStyle(
                         R.color.chat_background,//фон чата chatBackgroundColor
                         R.color.toolbar_background_transparent,//подсветка выделения элементов chatHighlightingColor
@@ -35,7 +35,6 @@ public class ChatIntentHelper {
                         R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
                         R.drawable.no_image,//заглушка вместо картинки imagePlaceholder
                         R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
-                        5, //количество звезд для оценки ratingStarsCount
                         true) //показывать загрузку при поиске консультанта showConsultSearching
                 //.setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.push_icon_def,

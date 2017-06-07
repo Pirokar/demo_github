@@ -639,6 +639,9 @@ public class ChatFragment extends Fragment implements
             }
             AnalyticsTracker.getInstance(activity, PrefUtils.getGaTrackerId(activity)).setTextSearchWasOpened();
             search(false);
+            if (backButton.getVisibility() == View.GONE) {
+                backButton.setVisibility(View.VISIBLE);
+            }
         }
         return false;
     }
@@ -672,6 +675,10 @@ public class ChatFragment extends Fragment implements
         mCopyControls.setVisibility(View.VISIBLE);
         mConsultNameView.setVisibility(View.GONE);
         mConsultTitle.setVisibility(View.GONE);
+
+        if (backButton.getVisibility() == View.GONE) {
+            backButton.setVisibility(View.VISIBLE);
+        }
 
         ImageButton reply = (ImageButton) mCopyControls.findViewById(R.id.reply);
         ImageButton copy = (ImageButton) mCopyControls.findViewById(R.id.content_copy);
@@ -1525,8 +1532,27 @@ public class ChatFragment extends Fragment implements
             rootView.findViewById(R.id.input_layout).setVisibility(View.VISIBLE);
             return false;
         }
+
+//        if (mSearchMessageEditText.getVisibility() == View.VISIBLE) {
+//            mSearchMessageEditText.clearFocus();
+//            h.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(mSearchMessageEditText.getWindowToken(), 0);
+//                }
+//            }, 100);
+//
+//            if (! (getActivity() instanceof ChatActivity)) {
+//                if (style != null && !style.showBackButton) {
+//                    backButton.setVisibility(View.GONE);
+//                }
+//            }
+//            return false;
+//        }
+
         if (mCopyControls.getVisibility() == View.VISIBLE
-                && mSearchMessageEditText.getVisibility() == View.VISIBLE) {
+                && mSearchLo.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
             mSearchMessageEditText.requestFocus();
             h.postDelayed(new Runnable() {
@@ -1536,10 +1562,22 @@ public class ChatFragment extends Fragment implements
                     imm.showSoftInput(mSearchMessageEditText, InputMethodManager.SHOW_IMPLICIT);
                 }
             }, 100);
+//            Activity activity = getActivity();
+//            if (! (activity instanceof ChatActivity)) {
+//                if (style != null && !style.showBackButton) {
+//                    backButton.setVisibility(View.GONE);
+//                }
+//            }
             return false;
         }
         if (mCopyControls.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
+            Activity activity = getActivity();
+            if (! (activity instanceof ChatActivity)) {
+                if (style != null && !style.showBackButton) {
+                    backButton.setVisibility(View.GONE);
+                }
+            }
             isNeedToClose = false;
         }
         if (mSearchLo.getVisibility() == View.VISIBLE) {
@@ -1547,6 +1585,13 @@ public class ChatFragment extends Fragment implements
             setMenuVisibility(true);
             isInMessageSearchMode = false;
             mSearchMessageEditText.setText("");
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mSearchMessageEditText.getWindowToken(), 0);
+                }
+            }, 100);
             //  mChatAdapter.undoClear();
             mRecyclerView.scrollToPosition(mChatAdapter.getCurrentItemCount() - 1);
             mSearchMoreButton.setVisibility(View.GONE);
@@ -1567,6 +1612,13 @@ public class ChatFragment extends Fragment implements
             isNeedToClose = false;
             if (mRecyclerView != null && mChatAdapter != null) {
                 mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+            }
+
+            Activity activity = getActivity();
+            if (!(activity instanceof ChatActivity)) {
+                if (style != null && !style.showBackButton) {
+                    backButton.setVisibility(View.GONE);
+                }
             }
         }
         if (mBottomGallery.getVisibility() == View.VISIBLE) {

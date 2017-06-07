@@ -43,11 +43,7 @@ public class Rating extends LinearLayout {
         this.ratingCount = ratingCount;
         style = PrefUtils.getIncomingStyle(context);
 
-        if (style != null && style.ratingStarsCount != ChatStyle.INVALID) {
-            countStars = style.ratingStarsCount;
-        } else {
-            countStars = DEFAULT_RATING_STARS_COUNT;
-        }
+        countStars = DEFAULT_RATING_STARS_COUNT;// // TODO: 07.06.2017 заглушка, нужно брать из пуша
 
         LayoutInflater inflater = LayoutInflater.from(context);
 
