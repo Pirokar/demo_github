@@ -1533,24 +1533,6 @@ public class ChatFragment extends Fragment implements
             return false;
         }
 
-//        if (mSearchMessageEditText.getVisibility() == View.VISIBLE) {
-//            mSearchMessageEditText.clearFocus();
-//            h.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-//                    imm.hideSoftInputFromWindow(mSearchMessageEditText.getWindowToken(), 0);
-//                }
-//            }, 100);
-//
-//            if (! (getActivity() instanceof ChatActivity)) {
-//                if (style != null && !style.showBackButton) {
-//                    backButton.setVisibility(View.GONE);
-//                }
-//            }
-//            return false;
-//        }
-
         if (mCopyControls.getVisibility() == View.VISIBLE
                 && mSearchLo.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
@@ -1562,22 +1544,11 @@ public class ChatFragment extends Fragment implements
                     imm.showSoftInput(mSearchMessageEditText, InputMethodManager.SHOW_IMPLICIT);
                 }
             }, 100);
-//            Activity activity = getActivity();
-//            if (! (activity instanceof ChatActivity)) {
-//                if (style != null && !style.showBackButton) {
-//                    backButton.setVisibility(View.GONE);
-//                }
-//            }
             return false;
         }
         if (mCopyControls.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
-            Activity activity = getActivity();
-            if (! (activity instanceof ChatActivity)) {
-                if (style != null && !style.showBackButton) {
-                    backButton.setVisibility(View.GONE);
-                }
-            }
+            hideBackButton();
             isNeedToClose = false;
         }
         if (mSearchLo.getVisibility() == View.VISIBLE) {
@@ -1614,12 +1585,7 @@ public class ChatFragment extends Fragment implements
                 mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
 
-            Activity activity = getActivity();
-            if (!(activity instanceof ChatActivity)) {
-                if (style != null && !style.showBackButton) {
-                    backButton.setVisibility(View.GONE);
-                }
-            }
+            hideBackButton();
         }
         if (mBottomGallery.getVisibility() == View.VISIBLE) {
             onHideClick();
@@ -1634,6 +1600,15 @@ public class ChatFragment extends Fragment implements
             return false;
         }
         return isNeedToClose;
+    }
+
+    private void hideBackButton() {
+        Activity activity = getActivity();
+        if (! (activity instanceof ChatActivity)) {
+            if (style != null && !style.showBackButton) {
+                backButton.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
