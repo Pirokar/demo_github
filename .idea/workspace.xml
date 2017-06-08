@@ -9,12 +9,10 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="В базовом дизайне исправлено отображение и работа кнопки Назад">
+    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/ConsultPhraseHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/ConsultPhraseHolder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/UserPhraseViewHolder.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/UserPhraseViewHolder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/build.gradle" afterPath="$PROJECT_DIR$/app/build.gradle" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -50,7 +48,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ChatIntentHelper.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ChatIntentHelper.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="204">
@@ -61,6 +59,16 @@
                 <element signature="e#3204#3220#0" expanded="true" />
                 <element signature="e#3305#3327#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="5" selection-start-line="7" selection-start-column="5" selection-end-line="7" selection-end-column="5" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -2595,7 +2603,7 @@
     <option name="modificationStamps">
       <map>
         <entry key="$PROJECT_DIR$" value="7474536191724" />
-        <entry key="C:\Users\Admin\AndroidStudioProjects\Threads-Android" value="7458724222059" />
+        <entry key="C:\Users\Admin\AndroidStudioProjects\Threads-Android" value="7458809793793" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2953,7 +2961,6 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/PermissionChecker.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/activities/FilesActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/colors.xml" />
-        <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/widget/Rating.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/RatingStarsSentViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" />
@@ -2962,6 +2969,7 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/ConsultPhraseHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/UserPhraseViewHolder.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
+        <option value="$PROJECT_DIR$/app/build.gradle" />
       </list>
     </option>
   </component>
@@ -3724,7 +3732,14 @@
       <option name="project" value="LOCAL" />
       <updated>1496831242663</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="В базовом дизайне исправлено: 1. отображение цвета тулбара при возвращении с цитирования; 2. цвет текста в тулбаре всегда белый; 3. при нажатии на копирование или пересылку исчезает кнопка Назад (если не ChatActivity) 4. цвет хэдера при пересылке черный 5. цвет текста в сообщениях от юзера и консультанта белый и черный соответственно">
+      <created>1496896592903</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1496896592903</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -3793,7 +3808,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Заглушка рейтинга с like/dislike" />
     <MESSAGE value="Заглушка рейтинга с звездами" />
     <MESSAGE value="Добавил баблы с рейтингом (в процессе)" />
     <MESSAGE value="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)" />
@@ -3818,7 +3832,8 @@
     <MESSAGE value="1. Добавлены действие на кнопку back и появление ее при копировании и поиске 2. Убран параметр ratingStarsCount" />
     <MESSAGE value="Мелкий рефакторинг" />
     <MESSAGE value="В базовом дизайне исправлено отображение и работа кнопки Назад" />
-    <option name="LAST_COMMIT_MESSAGE" value="В базовом дизайне исправлено отображение и работа кнопки Назад" />
+    <MESSAGE value="В базовом дизайне исправлено: 1. отображение цвета тулбара при возвращении с цитирования; 2. цвет текста в тулбаре всегда белый; 3. при нажатии на копирование или пересылку исчезает кнопка Назад (если не ChatActivity) 4. цвет хэдера при пересылке черный 5. цвет текста в сообщениях от юзера и консультанта белый и черный соответственно" />
+    <option name="LAST_COMMIT_MESSAGE" value="В базовом дизайне исправлено: 1. отображение цвета тулбара при возвращении с цитирования; 2. цвет текста в тулбаре всегда белый; 3. при нажатии на копирование или пересылку исчезает кнопка Назад (если не ChatActivity) 4. цвет хэдера при пересылке черный 5. цвет текста в сообщениях от юзера и консультанта белый и черный соответственно" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -4079,14 +4094,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/res/drawable-hdpi/ic_arrow_back_blue_24dp.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -4268,6 +4275,14 @@
             <element signature="e#3204#3220#0" expanded="true" />
             <element signature="e#3305#3327#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="5" selection-start-line="7" selection-start-column="5" selection-end-line="7" selection-end-column="5" />
+          <folding />
         </state>
       </provider>
     </entry>
