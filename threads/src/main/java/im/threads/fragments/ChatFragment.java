@@ -451,6 +451,14 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setTextColor(activity, mConsultNameView, style.chatToolbarTextColorResId);
             }
 
+            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+                ColorsHelper.setTextColor(activity, mConsultTitle, style.chatToolbarTextColorResId);
+                ColorsHelper.setTextColor(activity, mConsultNameView, style.chatToolbarTextColorResId);
+            } else {
+                ColorsHelper.setTextColor(activity, mConsultTitle, android.R.color.white);
+                ColorsHelper.setTextColor(activity, mConsultNameView, android.R.color.white);
+            }
+
             if (style.chatMessageInputHintTextColor != ChatStyle.INVALID) {
                 ColorsHelper.setHintTextColor(activity, mInputEditText, style.chatMessageInputHintTextColor);
             }
@@ -498,6 +506,8 @@ public class ChatFragment extends Fragment implements
 
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                 ColorsHelper.setBackgroundColor(activity, mToolbar, style.chatToolbarColorResId);
+            } else {
+                ColorsHelper.setBackgroundColor(activity, mToolbar, android.R.color.holo_green_light);
             }
         }
 
@@ -690,6 +700,7 @@ public class ChatFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 onCopyClick(activity, cp);
+                hideBackButton();
             }
         });
 
@@ -697,6 +708,7 @@ public class ChatFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 onReplyClick(cp, position);
+                hideBackButton();
             }
         });
 
@@ -1182,12 +1194,14 @@ public class ChatFragment extends Fragment implements
         } else {
 //            backButton.setImageResource(R.drawable.ic_arrow_back_white_24dp);
             Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
-            ColorsHelper.setDrawableColor(context, d, android.R.color.black);
+            ColorsHelper.setDrawableColor(context, d, android.R.color.white);
             backButton.setImageDrawable(d);
-            ColorsHelper.setDrawableColor(context, popupMenuButton.getDrawable(), android.R.color.black);
+            ColorsHelper.setDrawableColor(context, popupMenuButton.getDrawable(), android.R.color.white);
         }
         if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
             ColorsHelper.setBackgroundColor(context, mToolbar, style.chatToolbarColorResId);
+        } else {
+            ColorsHelper.setBackgroundColor(activity, mToolbar, android.R.color.holo_green_light);
         }
 
         mCopyControls.setVisibility(View.GONE);
@@ -1673,6 +1687,8 @@ public class ChatFragment extends Fragment implements
 
             if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
                 mHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
+            } else {
+                mHeader.setTextColor(ContextCompat.getColor(getActivity(), android.R.color.black));
             }
 
             mText = (TextView) view.findViewById(R.id.quote_text);

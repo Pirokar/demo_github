@@ -24,7 +24,7 @@ public class ChatIntentHelper {
                         R.color.chat_background,//фон чата chatBackgroundColor
                         R.color.toolbar_background_transparent,//подсветка выделения элементов chatHighlightingColor
                         R.color.chat_message_hint_input_text,//подсказка в EditText chatMessageInputHintTextColor
-                        R.color.chat_message_input_background,//заливка EditText, галереи и припересылки в тулбаре chatMessageInputColor
+                        R.color.chat_message_input_background,//заливка EditText, галереи и при пересылке в тулбаре chatMessageInputColor
                         R.color.incoming_message_bubble_background,//заливка бабла входящего сообщения incomingMessageBubbleColor
                         R.color.outgoing_message_bubble_background,//заливка бабла исходящего сообщения outgoingMessageBubbleColor
                         R.color.incoming_message_text,//цвет текста входящего сообщения incomingMessageTextColor
