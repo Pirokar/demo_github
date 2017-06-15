@@ -7,9 +7,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +17,6 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -467,8 +466,19 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setHintTextColor(activity, mSearchMessageEditText, style.chatToolbarHintTextColor);
             }
 
-            if (style.incomingMessageTextColor != ChatStyle.INVALID) {
-                ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
+            if (style.inputTextColor != ChatStyle.INVALID) {
+                ColorsHelper.setTextColor(activity, this.mInputEditText, style.inputTextColor);
+            } else if (style.incomingMessageTextColor != ChatStyle.INVALID) {
+                ColorsHelper.setTextColor(activity, this.mInputEditText, style.incomingMessageTextColor);
+            }
+
+            if (style.inputTextFont != null) {
+                try {
+                    Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
+                    this.mInputEditText.setTypeface(custom_font);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             if (style.chatBodyIconsTint != ChatStyle.INVALID) {
@@ -1626,7 +1636,7 @@ public class ChatFragment extends Fragment implements
 
     private void hideBackButton() {
         Activity activity = getActivity();
-        if (! (activity instanceof ChatActivity)) {
+        if (!(activity instanceof ChatActivity)) {
             if (style != null && !style.showBackButton) {
                 backButton.setVisibility(View.GONE);
             }

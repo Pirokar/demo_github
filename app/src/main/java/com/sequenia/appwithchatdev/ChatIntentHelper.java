@@ -35,7 +35,9 @@ public class ChatIntentHelper {
                         R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
                         R.drawable.no_image,//заглушка вместо картинки imagePlaceholder
                         R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
-                        true) //показывать загрузку при поиске консультанта showConsultSearching
+                        true, //показывать загрузку при поиске консультанта showConsultSearching
+                        R.color.purple,
+                        "comic.ttf")
                 //.setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.push_icon_def,
                         R.string.default_title,
