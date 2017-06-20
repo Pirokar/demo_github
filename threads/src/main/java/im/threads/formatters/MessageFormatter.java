@@ -204,7 +204,12 @@ public class MessageFormatter {
         try {
             String messageId = pushMessage.getMessageId();
 //            Log.i("FULLMESSAGE", fullMessage.toString());
-            String backendId = String.valueOf(fullMessage.getInt("backendId"));
+            String backendId;
+            try {
+                backendId = String.valueOf(fullMessage.getInt("backendId"));
+            } catch (Exception e) {
+                backendId = "0";
+            }
             long timeStamp = pushMessage.getSentAt();
             JSONObject operatorInfo = fullMessage.getJSONObject("operator");
             final String name = operatorInfo.getString("name");
@@ -273,7 +278,8 @@ public class MessageFormatter {
 //                    return getRatingStarsFromPush(pushMessage, fullMessage);
 //                }
                 return getRatingFromPush(pushMessage, fullMessage);
-            } else if (type.equalsIgnoreCase(MessageMatcher.MESSAGE)) {
+            } else if (type.equalsIgnoreCase(MessageMatcher.MESSAGE)
+                    || type.equalsIgnoreCase(MessageMatcher.ON_HOLD)) {
                 // Либо в fullMessage должны содержаться ключи из списка:
                 // "attachments", "text", "quotes"
                 return checkMessageIsFull(pushMessage, fullMessage);

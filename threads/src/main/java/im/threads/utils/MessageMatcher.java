@@ -14,6 +14,7 @@ public class MessageMatcher {
     public static final String SCHEDULE = "SCHEDULE";
     public static final String SURVEY = "SURVEY";
     public static final String MESSAGE = "MESSAGE";
+    public static final String ON_HOLD = "ON_HOLD";
     public static final int TYPE_OPERATOR_JOINED = 1;
     public static final int TYPE_OPERATOR_LEFT = 2;
     public static final int TYPE_OPERATOR_TYPING = 3;
