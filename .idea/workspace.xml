@@ -9,8 +9,12 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="" />
+    <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="1. обработано отсутсвие deviceAddress&#10;2. добавлена передача версии библиотеки при запросе истории">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/retrofit/RetrofitService.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/retrofit/RetrofitService.java" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -45,12 +49,68 @@
     <favorites_list name="CodeIris Favorites" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="162">
+              <caret line="1493" column="38" selection-start-line="1493" selection-start-column="38" selection-end-line="1493" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="204">
               <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DatabaseHolder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/DatabaseHolder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="124">
+              <caret line="35" column="30" selection-start-line="35" selection-start-column="30" selection-end-line="35" selection-end-column="30" />
+              <folding>
+                <element signature="e#1001#1002#0" expanded="true" />
+                <element signature="e#1054#1055#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ConsultPhrase.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="115">
+              <caret line="189" column="8" selection-start-line="189" selection-start-column="8" selection-end-line="189" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MyOpenHelper.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="115">
+              <caret line="518" column="4" selection-start-line="518" selection-start-column="4" selection-end-line="518" selection-end-column="4" />
+              <folding>
+                <element signature="e#3461#3462#0" expanded="true" />
+                <element signature="e#3521#3522#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RetrofitService.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/retrofit/RetrofitService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="102">
+              <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -3023,7 +3083,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/BottomNavigationActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_bottom_navigation.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/retrofit/RetrofitHelper.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/retrofit/RetrofitService.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/FilePoster.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Client.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Channel.java" />
@@ -3036,13 +3095,10 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/MessgeFromHistory.java" />
         <option value="$PROJECT_DIR$/threads/src/main/res/layout/item_gallery_image.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/GalleryItemHolder.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/UserPhrase.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/Quote.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
         <option value="$PROJECT_DIR$/threads/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/PermissionChecker.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/activities/FilesActivity.java" />
@@ -3058,6 +3114,10 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/retrofit/RetrofitService.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
       </list>
     </option>
   </component>
@@ -3092,10 +3152,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView">
-        <subPane />
-      </pane>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -3116,8 +3173,11 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="AndroidView">
+        <subPane />
+      </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -3717,19 +3777,19 @@
     <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935154" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23600605" sideWeight="0.5068259" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935154" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.7567114" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.44127518" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.44127518" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25838926" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33661118" sideWeight="0.49317408" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33585477" sideWeight="0.49317408" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290469" sideWeight="0.493266" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980332" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -3778,7 +3838,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Добавил баблы с рейтингом (в процессе)" />
     <MESSAGE value="Добавил баблы с рейтингом (закончил со своей стороны; не готов формата отправки со стороны сервера)" />
     <MESSAGE value="Добавил появление кнопки с выпадающим списком после нахождения оператора" />
     <MESSAGE value="Изменены объекты и соответствующий код для оценки" />
@@ -3803,7 +3862,8 @@
     <MESSAGE value="В базовом дизайне исправлено отображение и работа кнопки Назад" />
     <MESSAGE value="В базовом дизайне исправлено: 1. отображение цвета тулбара при возвращении с цитирования; 2. цвет текста в тулбаре всегда белый; 3. при нажатии на копирование или пересылку исчезает кнопка Назад (если не ChatActivity) 4. цвет хэдера при пересылке черный 5. цвет текста в сообщениях от юзера и консультанта белый и черный соответственно" />
     <MESSAGE value="пробую убрать workspace.xml из истории" />
-    <option name="LAST_COMMIT_MESSAGE" value="пробую убрать workspace.xml из истории" />
+    <MESSAGE value="1. обработано отсутсвие deviceAddress&#10;2. добавлена передача версии библиотеки при запросе истории" />
+    <option name="LAST_COMMIT_MESSAGE" value="1. обработано отсутсвие deviceAddress&#10;2. добавлена передача версии библиотеки при запросе истории" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -3838,21 +3898,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="26" column="29" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/Quote.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1230">
-          <caret line="96" column="34" selection-start-line="96" selection-start-column="34" selection-end-line="96" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.android/build-cache/d63994232ad907aff118919bd5c6a8e00c365f94/output/jars/classes.jar!/com/pushserver/android/PushServerIntentService.class" />
     <entry file="jar://$USER_HOME$/.android/build-cache/d63994232ad907aff118919bd5c6a8e00c365f94/output/jars/classes.jar!/com/pushserver/android/PushMessage.class" />
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -3910,13 +3955,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="196">
           <caret line="52" column="0" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="37">
-          <caret line="168" column="0" selection-start-line="168" selection-start-column="0" selection-end-line="168" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -4065,14 +4103,6 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="360" column="0" selection-start-line="360" selection-start-column="0" selection-end-line="360" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/fragment_chat_fragment.xml">
       <provider editor-type-id="android-designer2">
         <state />
@@ -4143,7 +4173,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
           <caret line="26" column="26" selection-start-line="26" selection-start-column="26" selection-end-line="26" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4151,7 +4180,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
           <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4175,6 +4203,52 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="189" column="8" selection-start-line="189" selection-start-column="8" selection-end-line="189" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/retrofit/RetrofitService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/DatabaseHolder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="35" column="30" selection-start-line="35" selection-start-column="30" selection-end-line="35" selection-end-column="30" />
+          <folding>
+            <element signature="e#1001#1002#0" expanded="true" />
+            <element signature="e#1054#1055#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="518" column="4" selection-start-line="518" selection-start-column="4" selection-end-line="518" selection-end-column="4" />
+          <folding>
+            <element signature="e#3461#3462#0" expanded="true" />
+            <element signature="e#3521#3522#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="1493" column="38" selection-start-line="1493" selection-start-column="38" selection-end-line="1493" selection-end-column="38" />
           <folding />
         </state>
       </provider>

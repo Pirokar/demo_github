@@ -15,6 +15,7 @@ import retrofit2.http.Query;
 
 /**
  * Created by Admin on 28.03.2017.
+ * описание серверных методов
  */
 
 public interface RetrofitService {
@@ -29,6 +30,7 @@ public interface RetrofitService {
     Call<List<MessgeFromHistory>> history(
             @Header("X-Client-Token") String token,
             @Query("start") Long start,
-            @Query("count") Long count
+            @Query("count") Long count,
+            @Query("libVersion") String version
     );
 }

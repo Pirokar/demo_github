@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.FileProvider;
@@ -17,7 +18,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.advisa.client.api.InOutMessage;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
@@ -26,7 +26,10 @@ import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -201,18 +204,18 @@ public class ChatController {
                 instance.fragment.removeSearching();
             }
             instance.mConsultWriter.setCurrentConsultLeft();
-            PushController.getInstance(ctx).setClientId(finalClientId);
+            getPushControllerInstance(ctx).setClientId(finalClientId);
             PrefUtils.setClientId(ctx, finalClientId);
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
-            PushController.getInstance(ctx).sendMessage(environmentMessage, true);
-            PushController.getInstance(ctx).resetCounterSync();
+            getPushControllerInstance(ctx).sendMessage(environmentMessage, true);
+            getPushControllerInstance(ctx).resetCounterSync();
 
             String token = PrefUtils.getToken(instance.fragment.getActivity());
             String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
             if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
                 ServiceGenerator.setUrl(url);
                 RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L);
+                Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L, getLibraryVersion());
                 List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
                 instance.mDatabaseHolder.putMessagesSync(serverItems);
                 ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
@@ -236,21 +239,25 @@ public class ChatController {
                 survey.getQuestions().get(0).getId(),
                 survey.getQuestions().get(0).getRate()
         );
-        PushController.getInstance(context).sendMessageAsync(ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
-            @Override
-            public void onResult(String s) {
-                survey.setMessageId(s);
-                setSurveyState(survey, MessageState.STATE_SENT);
-                if (instance.fragment != null) {
-                    instance.fragment.updateUi();
+        try {
+            getPushControllerInstance(context).sendMessageAsync(ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
+                @Override
+                public void onResult(String s) {
+                    survey.setMessageId(s);
+                    setSurveyState(survey, MessageState.STATE_SENT);
+                    if (instance.fragment != null) {
+                        instance.fragment.updateUi();
+                    }
                 }
-            }
 
-            @Override
-            public void onError(PushServerErrorException e) {
+                @Override
+                public void onError(PushServerErrorException e) {
 
-            }
-        });
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -349,16 +356,14 @@ public class ChatController {
         if ((currentTime - lastUserTypingSend) >= 3000) {
             lastUserTypingSend = currentTime;
             try {
-                PushController.getInstance(appContext).sendMessageAsync(
+                getPushControllerInstance(appContext).sendMessageAsync(
                         MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
                             @Override
                             public void onResult(String aVoid) {
-
                             }
 
                             @Override
                             public void onError(PushServerErrorException e) {
-
                             }
                         });
             } catch (Exception e) {
@@ -394,7 +399,7 @@ public class ChatController {
             public void run() {
                 try {
                     String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext));
-                    PushController.getInstance(appContext).sendMessage(environmentMessage, true);
+                    getPushControllerInstance(appContext).sendMessage(environmentMessage, true);
                 } catch (PushServerErrorException e) {
                     e.printStackTrace();
                 }
@@ -479,7 +484,7 @@ public class ChatController {
                     List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
                     ServiceGenerator.setUrl(url);
                     RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                    Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L);
+                    Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L, getLibraryVersion());
                     List<MessgeFromHistory> messgesFromHistory = call.execute().body();
                     if (messgesFromHistory != null) {
                         List<ChatItem> serverItems = MessageFormatter.formatNew(messgesFromHistory);
@@ -578,7 +583,7 @@ public class ChatController {
                     public void run() {
                         if (fragment != null)
                             try {
-                                PushController.getInstance(appContext).notifyMessageUpdateNeeded();
+                                getPushControllerInstance(appContext).notifyMessageUpdateNeeded();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -590,17 +595,22 @@ public class ChatController {
 
     private void sendTextMessage(final UserPhrase userPhrase, ConsultInfo consultInfo) {
         String message = MessageFormatter.format(userPhrase, consultInfo, null, null);
-        PushController.getInstance(appContext).sendMessageAsync(message, false, new RequestCallback<String, PushServerErrorException>() {
-            @Override
-            public void onResult(String string) {
-                onMessageSent(userPhrase, string);
-            }
+        try {
+            getPushControllerInstance(appContext).sendMessageAsync(message, false, new RequestCallback<String, PushServerErrorException>() {
+                @Override
+                public void onResult(String string) {
+                    onMessageSent(userPhrase, string);
+                }
 
-            @Override
-            public void onError(PushServerErrorException e) {
-                onMessageSentError(userPhrase);
-            }
-        });
+                @Override
+                public void onError(PushServerErrorException e) {
+                    onMessageSentError(userPhrase);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            onMessageSentError(userPhrase);
+        }
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
@@ -627,17 +637,21 @@ public class ChatController {
 
         String message = MessageFormatter.format(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath);
 
-        PushController.getInstance(appContext).sendMessageAsync(message, false, new RequestCallback<String, PushServerErrorException>() {
-            @Override
-            public void onResult(String string) {
-                onMessageSent(userPhrase, string);
-            }
+        try {
+            getPushControllerInstance(appContext).sendMessageAsync(message, false, new RequestCallback<String, PushServerErrorException>() {
+                @Override
+                public void onResult(String string) {
+                    onMessageSent(userPhrase, string);
+                }
 
-            @Override
-            public void onError(PushServerErrorException e) {
-                onFileMessageSentError(userPhrase, e);
-            }
-        });
+                @Override
+                public void onError(PushServerErrorException e) {
+                    onFileMessageSentError(userPhrase, e);
+                }
+            });
+        } catch (PushServerErrorException e) {
+            onFileMessageSentError(userPhrase, e);
+        }
     }
 
     private void onMessageSent(UserPhrase userPhrase, String newId) {
@@ -832,7 +846,7 @@ public class ChatController {
                         Long start = lastMessageId == null ? null : lastMessageId;
                         ServiceGenerator.setUrl(url);
                         RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                        Call<List<MessgeFromHistory>> call = retrofitService.history(token, start, chunk);
+                        Call<List<MessgeFromHistory>> call = retrofitService.history(token, start, chunk, getLibraryVersion());
                         List<MessgeFromHistory> items = call.execute().body();
                         if (items == null || items.size() == 0) return;
                         lastMessageId = items.get(items.size() - 1).getId();
@@ -870,8 +884,12 @@ public class ChatController {
         if (cm instanceof ConsultPhrase
                 && ctx != null
                 && isActive) {
-            PushController.getInstance(ctx).notifyMessageRead(((ConsultPhrase) cm).getId());
-            mDatabaseHolder.setMessageWereRead(((ConsultPhrase) cm).getMessageId());
+            try {
+                getPushControllerInstance(ctx).notifyMessageRead(((ConsultPhrase) cm).getId());
+                mDatabaseHolder.setMessageWereRead(((ConsultPhrase) cm).getMessageId());
+            } catch (PushServerErrorException e) {
+                e.printStackTrace();
+            }
         }
         final Context finalContext = ctx;
         h.postDelayed(new Runnable() {
@@ -972,9 +990,15 @@ public class ChatController {
                     } else {
                         firstUnreadMessageId = null;
                     }
-                    for (String id : unread) {
-                        PushController.getInstance(appContext).notifyMessageRead(id);
-                        mDatabaseHolder.setMessageWereRead(id);
+                    if (unread != null) {
+                        for (String id : unread) {
+                            try {
+                                getPushControllerInstance(appContext).notifyMessageRead(id);
+                                mDatabaseHolder.setMessageWereRead(id);
+                            } catch (PushServerErrorException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
             }
@@ -1103,7 +1127,7 @@ public class ChatController {
                     if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
                         ServiceGenerator.setUrl(url);
                         RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                        Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, currentOffset[0] + 20L);
+                        Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, currentOffset[0] + 20L, getLibraryVersion());
                         List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
                         mDatabaseHolder.putMessagesSync(serverItems);
                         final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
@@ -1156,17 +1180,21 @@ public class ChatController {
                     survey.getSendingId()
             );
 
-            PushController.getInstance(ctx).sendMessageAsync(ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
-                @Override
-                public void onResult(String s) {
-                    survey.setMessageId(s);
-                }
+            try {
+                getPushControllerInstance(ctx).sendMessageAsync(ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
+                    @Override
+                    public void onResult(String s) {
+                        survey.setMessageId(s);
+                    }
 
-                @Override
-                public void onError(PushServerErrorException e) {
+                    @Override
+                    public void onError(PushServerErrorException e) {
 
-                }
-            });
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -1185,7 +1213,7 @@ public class ChatController {
                                 String userName = PrefUtils.getUserName(ctx);
                                 String clientId = PrefUtils.getClientID(ctx);
                                 String message = MessageFormatter.createEnvironmentMessage(userName, clientId);
-                                PushController.getInstance(appContext).sendMessage(message, true);
+                                getPushControllerInstance(appContext).sendMessage(message, true);
                             } catch (PushServerErrorException e) {
                                 e.printStackTrace();
                             }
@@ -1270,16 +1298,14 @@ public class ChatController {
                     if (PrefUtils.getNewClientID(ctx) == null) return;
                     try {
                         cleanAll();
-                        PushController
-                                .getInstance(ctx)
+                        getPushControllerInstance(ctx)
                                 .setClientId(PrefUtils.getNewClientID(ctx));
                         PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
                         PrefUtils.setClientIdWasSet(true, ctx);
 
-                        PushController.getInstance(ctx).resetCounterSync();
+                        getPushControllerInstance(ctx).resetCounterSync();
 
-                        PushController
-                                .getInstance(ctx)
+                        getPushControllerInstance(ctx)
                                 .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils
                                                 .getUserName(ctx),
                                         PrefUtils.getNewClientID(ctx)), true);
@@ -1289,7 +1315,7 @@ public class ChatController {
                         if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
                             ServiceGenerator.setUrl(url);
                             RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                            Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L);
+                            Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L, getLibraryVersion());
                             List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
                             mDatabaseHolder.putMessagesSync(serverItems);
                             if (fragment != null) {
@@ -1374,6 +1400,20 @@ public class ChatController {
         }
     }
 
+    /**
+     * обращение к пуш контроллеру, если нет DeviceAddress,
+     * то выкидывает PushServerErrorException
+     */
+    private static PushController getPushControllerInstance(Context ctx) throws PushServerErrorException {
+        PushController controller = PushController.getInstance(ctx);
+        String deviceAddress = controller.getDeviceAddress();
+        if (deviceAddress != null && !deviceAddress.isEmpty()) {
+            return PushController.getInstance(ctx);
+        } else {
+            throw new PushServerErrorException(PushServerErrorException.DEVICE_ADDRESS_INVALID);
+        }
+    }
+
     public static UnreadMessagesCountListener getUnreadMessagesCountListener() {
         return unreadMessagesCountListener == null ? null : unreadMessagesCountListener.get();
     }
@@ -1436,5 +1476,43 @@ public class ChatController {
      */
     public interface FullPushListener {
         void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage);
+    }
+
+    /**
+     * @return версию библиотеки
+     */
+    private static String getLibraryVersion() {
+        return BuildConfig.VERSION_NAME;
+    }
+
+    /**
+     * метод для экспорта базы данных в файл
+     * (для использования метода необходимы разрешения на чтение/запись
+     */
+    public static void exportDB(Context ctx) {
+        try {
+            final String inFileName = "/data/data/com.sequenia.appwithchatdev/databases/messages.db";
+            File dbFile = new File(inFileName);
+            FileInputStream fis = new FileInputStream(dbFile);
+
+            String outFileName = Environment.getExternalStorageDirectory() + "/db_copy.db";
+
+            // Open the empty db as the output stream
+            OutputStream output = new FileOutputStream(outFileName);
+
+            // Transfer bytes from the inputfile to the outputfile
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+
+            // Close the streams
+            output.flush();
+            output.close();
+            fis.close();
+        } catch (Exception e) {
+            Toast.makeText(ctx, "не удалось сделать дамп", Toast.LENGTH_SHORT).show();
+        }
     }
 }

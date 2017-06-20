@@ -6,6 +6,7 @@ import im.threads.utils.FileUtils;
 
 /**
  * Created by yuri on 10.06.2016.
+ * сообщение оператора
  */
 public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase {
     private String avatarPath;
@@ -156,7 +157,7 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
 
     @Override
     public void setFound(boolean found) {
-         this.found = found;
+        this.found = found;
     }
 
     @Override
@@ -175,6 +176,9 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
         if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
             return false;
         if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
+        /*if (!(messageId != null && that.messageId != null && messageId.equals(that.messageId))) {
+            return false;
+        }*/
         try {
             Long thisId = Long.parseLong(messageId);
             Long thatId = Long.parseLong(that.messageId);
@@ -182,7 +186,6 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-
         if (quote != null ? !quote.equals(that.quote) : that.quote != null) return false;
         if (fileDescription != null ? !fileDescription.equals(that.fileDescription) : that.fileDescription != null)
             return false;

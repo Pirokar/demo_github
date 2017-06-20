@@ -7,6 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Pair;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ConsultConnectionMessage;
@@ -18,13 +23,9 @@ import im.threads.model.Quote;
 import im.threads.model.UserPhrase;
 import im.threads.utils.FileUtils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Created by yuri on 23.06.2016.
+ * обертка для БД
  */
 class MyOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "MyOpenHelper ";
@@ -187,7 +188,12 @@ class MyOpenHelper extends SQLiteOpenHelper {
     void putChatPhrase(ChatPhrase phrase) {
         ContentValues cv = new ContentValues();
         boolean isDup = false;
-        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_MESSAGE_ID + " = ?", new String[]{phrase.getId()});
+        Cursor c;
+        if (phrase instanceof ConsultPhrase) {
+            c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_BACKEND_ID + " = ?", new String[]{((ConsultPhrase) phrase).getBackendId()});
+        } else {
+            c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_MESSAGE_ID + " = ?", new String[]{phrase.getId()});
+        }
         if (c.getCount() > 0) isDup = true;
         if (phrase instanceof UserPhrase) {
             putUserPhrase((UserPhrase) phrase);
@@ -322,6 +328,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                     , c.getInt(INDEX_SEX) == 1
                     , c.getString(INDEX_BACKEND_ID)
             );
+            c.close();
             return cp;
         }
         return null;
