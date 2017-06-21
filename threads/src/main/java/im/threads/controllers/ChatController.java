@@ -135,6 +135,22 @@ public class ChatController {
     private static WeakReference<UnreadMessagesCountListener> unreadMessagesCountListener;
     private String firstUnreadMessageId;
 
+    /**
+     * Оповещает о приходе короткого Push-уведомления.
+     * Не срабатывает при опознанных системных Push-уведомлениях
+     */
+    public interface ShortPushListener {
+        void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle);
+    }
+
+    /**
+     * Оповещает о приходе полного Push-уведомления.
+     * Не срабатывает, если удалось определить, что это уведомления для библиотеки чата.
+     */
+    public interface FullPushListener {
+        void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage);
+    }
+
     public static ChatController getInstance(final Context ctx, String clientId) {
         if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
         if (instance == null) {
@@ -147,13 +163,6 @@ public class ChatController {
             Log.i(TAG, "setting new client id");
             Log.i(TAG, "clientId = " + clientId);
             Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
-
-
-            // todo method
-            String oldClientId = PrefUtils.getClientID(ctx);
-            if (!TextUtils.isEmpty(oldClientId)) {
-                sendClientOffline(oldClientId, ctx);
-            }
 
             final String finalClientId = clientId;
             // Начальная инициализация чата.
@@ -170,35 +179,6 @@ public class ChatController {
         return instance;
     }
 
-//    private static void onClientIdChanged(Context ctx, String finalClientId) {
-//        PrefUtils.setNewClientId(ctx, finalClientId);
-//        if (PrefUtils.getDeviceAddress(ctx) == null) {
-//            if (BuildConfig.DEBUG) Log.e(TAG, "device address was not set, returning");
-//            return;
-//        }
-//        try {
-//            instance.cleanAll();
-//            if (instance.fragment != null) {
-//                instance.fragment.removeSearching();
-//            }
-//            instance.mConsultWriter.setCurrentConsultLeft();
-//            PushController.getInstance(ctx).setClientId(finalClientId);
-//            PrefUtils.setClientId(ctx, finalClientId);
-//            String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
-//            PushController.getInstance(ctx).sendMessage(environmentMessage, true);
-//            PushController.getInstance(ctx).resetCounterSync();
-//            List<InOutMessage> messages = PushController.getInstance(instance.appContext).getMessageHistory(20);
-//            instance.mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-//            ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(MessageFormatter.format(messages));
-//            if (instance.fragment != null) {
-//                instance.fragment.addChatItems(phrases);
-//            }
-//            PrefUtils.setClientIdWasSet(true, ctx);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     private static void onClientIdChanged(Context ctx, String finalClientId) {
         PrefUtils.setNewClientId(ctx, finalClientId);
         if (PrefUtils.getDeviceAddress(ctx) == null) {
@@ -211,6 +191,11 @@ public class ChatController {
                 instance.fragment.removeSearching();
             }
             instance.mConsultWriter.setCurrentConsultLeft();
+            String oldClientId = PrefUtils.getClientID(ctx);
+            if (!TextUtils.isEmpty(oldClientId)) {
+                sendClientOffline(oldClientId, ctx);
+                Log.i(TAG, "client_offline " + oldClientId);
+            }
             getPushControllerInstance(ctx).setClientId(finalClientId);
             PrefUtils.setClientId(ctx, finalClientId);
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
@@ -1258,44 +1243,6 @@ public class ChatController {
         mDatabaseHolder.getLastUnreadPhrase(handler);
     }
 
-//    private void onSettingClientId(final Context ctx) {
-//        if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");
-//        mExecutor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (fragment != null) {
-//                    if (PrefUtils.getNewClientID(ctx) == null) return;
-//                    try {
-//                        cleanAll();
-//                        PushController
-//                                .getInstance(ctx)
-//                                .setClientId(PrefUtils.getNewClientID(ctx));
-//                        PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
-//                        PrefUtils.setClientIdWasSet(true, ctx);
-//
-//                        PushController.getInstance(ctx).resetCounterSync();
-//
-//                        PushController
-//                                .getInstance(ctx)
-//                                .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils
-//                                                .getUserName(ctx),
-//                                        PrefUtils.getNewClientID(ctx)), true);
-//
-//                        List<InOutMessage> messages = PushController.getInstance(appContext).getMessageHistory(20);
-//                        mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-//                        if (fragment != null) {
-//                            fragment.addChatItems((List<ChatItem>) setLastAvatars(MessageFormatter.format(messages)));
-//                        }
-//                        currentOffset = messages.size();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
-//    }
-
-
     private void onSettingClientId(final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");
         mExecutor.execute(new Runnable() {
@@ -1470,22 +1417,6 @@ public class ChatController {
     }
 
     /**
-     * Оповещает о приходе короткого Push-уведомления.
-     * Не срабатывает при опознанных системных Push-уведомлениях
-     */
-    public interface ShortPushListener {
-        void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle);
-    }
-
-    /**
-     * Оповещает о приходе полного Push-уведомления.
-     * Не срабатывает, если удалось определить, что это уведомления для библиотеки чата.
-     */
-    public interface FullPushListener {
-        void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage);
-    }
-
-    /**
      * @return версию библиотеки
      */
     private static String getLibraryVersion() {
@@ -1496,7 +1427,7 @@ public class ChatController {
      * метод для экспорта базы данных в файл
      * (для использования метода необходимы разрешения на чтение/запись
      */
-    public static void exportDB(Context ctx) {
+    private static void exportDB(Context ctx) {
         try {
             final String inFileName = "/data/data/com.sequenia.appwithchatdev/databases/messages.db";
             File dbFile = new File(inFileName);
@@ -1528,9 +1459,8 @@ public class ChatController {
      *
      * @param clientId старый ид клиента
      */
-    public static void sendClientOffline(String clientId, Context ctx) {
-        sendMessageAsync(ctx, MessageFormatter.getMessageClientOffline(clientId), true,
-                null);
+    private static void sendClientOffline(String clientId, Context ctx) throws PushServerErrorException {
+        getPushControllerInstance(ctx).sendMessage(MessageFormatter.getMessageClientOffline(clientId), true);
     }
 
     /**
