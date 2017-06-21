@@ -148,6 +148,13 @@ public class ChatController {
             Log.i(TAG, "clientId = " + clientId);
             Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
 
+
+            // todo method
+            String oldClientId = PrefUtils.getClientID(ctx);
+            if (!TextUtils.isEmpty(oldClientId)) {
+                sendClientOffline(oldClientId, ctx);
+            }
+
             final String finalClientId = clientId;
             // Начальная инициализация чата.
             // Сдесь происходит первоначальная загрузка истории сообщений,
@@ -1513,6 +1520,49 @@ public class ChatController {
             fis.close();
         } catch (Exception e) {
             Toast.makeText(ctx, "не удалось сделать дамп", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * отправка сообщения CLIENT_OFFLINE
+     *
+     * @param clientId старый ид клиента
+     */
+    public static void sendClientOffline(String clientId, Context ctx) {
+        sendMessageAsync(ctx, MessageFormatter.getMessageClientOffline(clientId), true,
+                null);
+    }
+
+    /**
+     * метод обертка над методом mfms
+     *
+     * @param message  сообщение для отправки
+     * @param isSystem системное сообщение
+     * @param listener слушатель успешной/неуспешной отправки
+     */
+    private static void sendMessageAsync(Context ctx,
+                                         String message,
+                                         boolean isSystem,
+                                         final RequestCallback<String, PushServerErrorException> listener) {
+        try {
+            getPushControllerInstance(ctx).sendMessageAsync(
+                    message, isSystem, new RequestCallback<String, PushServerErrorException>() {
+                        @Override
+                        public void onResult(String aVoid) {
+                            if (listener != null) {
+                                listener.onResult(aVoid);
+                            }
+                        }
+
+                        @Override
+                        public void onError(PushServerErrorException e) {
+                            if (listener != null) {
+                                listener.onError(e);
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

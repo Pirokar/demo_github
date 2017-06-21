@@ -932,4 +932,16 @@ public class MessageFormatter {
 
         return jsonObject.toString().replace("\\\\", "");
     }
+
+    public static String getMessageClientOffline(String clientId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("clientId", clientId);
+            jsonObject.put("type", "CLIENT_OFFLINE");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject.toString().replace("\\\\", "");
+    }
 }
