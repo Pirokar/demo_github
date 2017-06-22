@@ -194,9 +194,9 @@ public class ChatController {
             String oldClientId = PrefUtils.getClientID(ctx);
             if (!TextUtils.isEmpty(oldClientId)) {
                 // send CLIENT_OFFLINE message
-                //sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
+                sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
             }
-            getPushControllerInstance(ctx).setClientId(finalClientId);
+//            getPushControllerInstance(ctx).setClientId(finalClientId);
             PrefUtils.setClientId(ctx, finalClientId);
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
             sendMessageMFMSSync(ctx, environmentMessage, true);
@@ -1160,6 +1160,14 @@ public class ChatController {
         if (BuildConfig.DEBUG) Log.i(TAG, "onFullMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
 
+        PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
+
+        if (chatItem != null && !MessageFormatter.checkId(pushMessage, PrefUtils.getClientID(ctx))) {
+            pushMessageCheckResult.setDetected(true);
+            pushMessageCheckResult.setNeedsShowIsStatusBar(false);
+            return pushMessageCheckResult;
+        }
+
         if (chatItem instanceof Survey) {
             final Survey survey = (Survey) chatItem;
             String ratingDoneMessage = MessageFormatter.createRatingRecievedMessage(
@@ -1181,7 +1189,7 @@ public class ChatController {
         }
 
 
-        PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
+
 
         if (chatItem != null) {
             ConsultMessageReaction consultReactor = new ConsultMessageReaction(
@@ -1243,8 +1251,7 @@ public class ChatController {
                     if (PrefUtils.getNewClientID(ctx) == null) return;
                     try {
                         cleanAll();
-                        getPushControllerInstance(ctx)
-                                .setClientId(PrefUtils.getNewClientID(ctx));
+//                        getPushControllerInstance(ctx).setClientId(PrefUtils.getNewClientID(ctx));
                         PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
                         PrefUtils.setClientIdWasSet(true, ctx);
 

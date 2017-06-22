@@ -278,8 +278,6 @@ public class MessageFormatter {
             return null;
         }
 
-        //TODO check ClientId
-
         String type = getType(fullMessage);
 
         // В пуше либо должен быть type известных чату типов,
@@ -964,5 +962,29 @@ public class MessageFormatter {
         }
 
         return jsonObject.toString().replace("\\\\", "");
+    }
+
+    /**
+     * метод проверяет наличие поля clientId во входящем сообщении
+     *
+     * @return true если нет поля clientId или оно совпадает с текущим clientId
+     */
+    public static boolean checkId(PushMessage pushMessage, String clientID) {
+        JSONObject fullMessage = getFullMessage(pushMessage);
+        if (fullMessage == null) {
+            return true;
+        }
+        if (clientID == null) {
+            return false;
+        }
+
+        try {
+            if (fullMessage.has(CLIENT_ID) && !clientID.equals(fullMessage.get(CLIENT_ID))) {
+                return false;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }
