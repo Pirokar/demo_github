@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.FileProvider;
@@ -26,10 +25,7 @@ import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,6 +147,10 @@ public class ChatController {
         void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage);
     }
 
+    private interface ExceptionListener {
+        void onException(Exception e);
+    }
+
     public static ChatController getInstance(final Context ctx, String clientId) {
         if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
         if (instance == null) {
@@ -193,13 +193,13 @@ public class ChatController {
             instance.mConsultWriter.setCurrentConsultLeft();
             String oldClientId = PrefUtils.getClientID(ctx);
             if (!TextUtils.isEmpty(oldClientId)) {
-                sendClientOffline(oldClientId, ctx);
-                Log.i(TAG, "client_offline " + oldClientId);
+                // send CLIENT_OFFLINE message
+                //sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
             }
             getPushControllerInstance(ctx).setClientId(finalClientId);
             PrefUtils.setClientId(ctx, finalClientId);
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
-            getPushControllerInstance(ctx).sendMessage(environmentMessage, true);
+            sendMessageMFMSSync(ctx, environmentMessage, true);
             getPushControllerInstance(ctx).resetCounterSync();
 
             String token = PrefUtils.getToken(instance.fragment.getActivity());
@@ -229,28 +229,26 @@ public class ChatController {
         String ratingDoneMessage = MessageFormatter.createRatingDoneMessage(
                 survey.getSendingId(),
                 survey.getQuestions().get(0).getId(),
-                survey.getQuestions().get(0).getRate()
+                survey.getQuestions().get(0).getRate(),
+                PrefUtils.getClientID(appContext)
         );
-        try {
-            getPushControllerInstance(context).sendMessageAsync(ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
-                @Override
-                public void onResult(String s) {
-                    survey.setMessageId(s);
-                    setSurveyState(survey, MessageState.STATE_SENT);
-                    if (instance.fragment != null) {
-                        instance.fragment.updateUi();
+
+        sendMessageMFMSAsync(context, ratingDoneMessage, false,
+                new RequestCallback<String, PushServerErrorException>() {
+                    @Override
+                    public void onResult(String s) {
+                        survey.setMessageId(s);
+                        setSurveyState(survey, MessageState.STATE_SENT);
+                        if (instance.fragment != null) {
+                            instance.fragment.updateUi();
+                        }
                     }
-                }
 
-                @Override
-                public void onError(PushServerErrorException e) {
+                    @Override
+                    public void onError(PushServerErrorException e) {
 
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+                    }
+                }, null);
     }
 
 //    public void onRatingStarsClick(Context context, final Survey survey) {
@@ -347,20 +345,17 @@ public class ChatController {
         long currentTime = System.currentTimeMillis();
         if ((currentTime - lastUserTypingSend) >= 3000) {
             lastUserTypingSend = currentTime;
-            try {
-                getPushControllerInstance(appContext).sendMessageAsync(
-                        MessageFormatter.getMessageTyping(), true, new RequestCallback<String, PushServerErrorException>() {
-                            @Override
-                            public void onResult(String aVoid) {
-                            }
+            sendMessageMFMSAsync(appContext,
+                    MessageFormatter.getMessageTyping(PrefUtils.getClientID(appContext)),
+                    true, new RequestCallback<String, PushServerErrorException>() {
+                        @Override
+                        public void onResult(String aVoid) {
+                        }
 
-                            @Override
-                            public void onError(PushServerErrorException e) {
-                            }
-                        });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                        @Override
+                        public void onError(PushServerErrorException e) {
+                        }
+                    }, null);
         }
     }
 
@@ -391,7 +386,7 @@ public class ChatController {
             public void run() {
                 try {
                     String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext));
-                    getPushControllerInstance(appContext).sendMessage(environmentMessage, true);
+                    sendMessageMFMSSync(appContext, environmentMessage, true);
                 } catch (PushServerErrorException e) {
                     e.printStackTrace();
                 }
@@ -586,23 +581,25 @@ public class ChatController {
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, ConsultInfo consultInfo) {
-        String message = MessageFormatter.format(userPhrase, consultInfo, null, null);
-        try {
-            getPushControllerInstance(appContext).sendMessageAsync(message, false, new RequestCallback<String, PushServerErrorException>() {
-                @Override
-                public void onResult(String string) {
-                    onMessageSent(userPhrase, string);
-                }
+        String message = MessageFormatter.format(userPhrase, consultInfo, null, null,
+                PrefUtils.getClientID(appContext));
 
-                @Override
-                public void onError(PushServerErrorException e) {
-                    onMessageSentError(userPhrase);
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            onMessageSentError(userPhrase);
-        }
+        sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
+            @Override
+            public void onResult(String string) {
+                onMessageSent(userPhrase, string);
+            }
+
+            @Override
+            public void onError(PushServerErrorException e) {
+                onMessageSentError(userPhrase);
+            }
+        }, new ExceptionListener() {
+            @Override
+            public void onException(Exception e) {
+                onMessageSentError(userPhrase);
+            }
+        });
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
@@ -627,23 +624,20 @@ public class ChatController {
             Log.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
         }
 
-        String message = MessageFormatter.format(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath);
+        String message = MessageFormatter.format(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath,
+                PrefUtils.getClientID(appContext));
 
-        try {
-            getPushControllerInstance(appContext).sendMessageAsync(message, false, new RequestCallback<String, PushServerErrorException>() {
-                @Override
-                public void onResult(String string) {
-                    onMessageSent(userPhrase, string);
-                }
+        sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
+            @Override
+            public void onResult(String string) {
+                onMessageSent(userPhrase, string);
+            }
 
-                @Override
-                public void onError(PushServerErrorException e) {
-                    onFileMessageSentError(userPhrase, e);
-                }
-            });
-        } catch (PushServerErrorException e) {
-            onFileMessageSentError(userPhrase, e);
-        }
+            @Override
+            public void onError(PushServerErrorException e) {
+                onFileMessageSentError(userPhrase, e);
+            }
+        }, null);
     }
 
     private void onMessageSent(UserPhrase userPhrase, String newId) {
@@ -1169,24 +1163,21 @@ public class ChatController {
         if (chatItem instanceof Survey) {
             final Survey survey = (Survey) chatItem;
             String ratingDoneMessage = MessageFormatter.createRatingRecievedMessage(
-                    survey.getSendingId()
+                    survey.getSendingId(),
+                    PrefUtils.getClientID(appContext)
             );
 
-            try {
-                getPushControllerInstance(ctx).sendMessageAsync(ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
-                    @Override
-                    public void onResult(String s) {
-                        survey.setMessageId(s);
-                    }
+            sendMessageMFMSAsync(ctx, ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
+                @Override
+                public void onResult(String s) {
+                    survey.setMessageId(s);
+                }
 
-                    @Override
-                    public void onError(PushServerErrorException e) {
+                @Override
+                public void onError(PushServerErrorException e) {
 
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                }
+            }, null);
         }
 
 
@@ -1205,7 +1196,7 @@ public class ChatController {
                                 String userName = PrefUtils.getUserName(ctx);
                                 String clientId = PrefUtils.getClientID(ctx);
                                 String message = MessageFormatter.createEnvironmentMessage(userName, clientId);
-                                getPushControllerInstance(appContext).sendMessage(message, true);
+                                sendMessageMFMSSync(appContext, message, true);
                             } catch (PushServerErrorException e) {
                                 e.printStackTrace();
                             }
@@ -1259,10 +1250,9 @@ public class ChatController {
 
                         getPushControllerInstance(ctx).resetCounterSync();
 
-                        getPushControllerInstance(ctx)
-                                .sendMessage(MessageFormatter.createEnvironmentMessage(PrefUtils
-                                                .getUserName(ctx),
-                                        PrefUtils.getNewClientID(ctx)), true);
+                        sendMessageMFMSSync(ctx, MessageFormatter.createEnvironmentMessage(PrefUtils
+                                        .getUserName(ctx),
+                                PrefUtils.getNewClientID(ctx)), true);
 
                         String token = PrefUtils.getToken(instance.fragment.getActivity());
                         String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
@@ -1423,57 +1413,27 @@ public class ChatController {
         return BuildConfig.VERSION_NAME;
     }
 
+
     /**
-     * метод для экспорта базы данных в файл
-     * (для использования метода необходимы разрешения на чтение/запись
+     * метод-обертка над методом mfms sendMessage
      */
-    private static void exportDB(Context ctx) {
-        try {
-            final String inFileName = "/data/data/com.sequenia.appwithchatdev/databases/messages.db";
-            File dbFile = new File(inFileName);
-            FileInputStream fis = new FileInputStream(dbFile);
-
-            String outFileName = Environment.getExternalStorageDirectory() + "/db_copy.db";
-
-            // Open the empty db as the output stream
-            OutputStream output = new FileOutputStream(outFileName);
-
-            // Transfer bytes from the inputfile to the outputfile
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fis.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
-            }
-
-            // Close the streams
-            output.flush();
-            output.close();
-            fis.close();
-        } catch (Exception e) {
-            Toast.makeText(ctx, "не удалось сделать дамп", Toast.LENGTH_SHORT).show();
-        }
+    private static void sendMessageMFMSSync(Context ctx, String message, boolean isSystem) throws PushServerErrorException {
+        getPushControllerInstance(ctx).sendMessage(message, isSystem);
     }
 
     /**
-     * отправка сообщения CLIENT_OFFLINE
+     * метод обертка над методом mfms sendMessageAsync
      *
-     * @param clientId старый ид клиента
+     * @param message           сообщение для отправки
+     * @param isSystem          системное сообщение
+     * @param listener          слушатель успешной/неуспешной отправки
+     * @param exceptionListener слушатель ошибки отсутствия DeviceAdress
      */
-    private static void sendClientOffline(String clientId, Context ctx) throws PushServerErrorException {
-        getPushControllerInstance(ctx).sendMessage(MessageFormatter.getMessageClientOffline(clientId), true);
-    }
-
-    /**
-     * метод обертка над методом mfms
-     *
-     * @param message  сообщение для отправки
-     * @param isSystem системное сообщение
-     * @param listener слушатель успешной/неуспешной отправки
-     */
-    private static void sendMessageAsync(Context ctx,
-                                         String message,
-                                         boolean isSystem,
-                                         final RequestCallback<String, PushServerErrorException> listener) {
+    private static void sendMessageMFMSAsync(Context ctx,
+                                             String message,
+                                             boolean isSystem,
+                                             final RequestCallback<String, PushServerErrorException> listener,
+                                             final ExceptionListener exceptionListener) {
         try {
             getPushControllerInstance(ctx).sendMessageAsync(
                     message, isSystem, new RequestCallback<String, PushServerErrorException>() {
@@ -1493,6 +1453,9 @@ public class ChatController {
                     });
         } catch (Exception e) {
             e.printStackTrace();
+            if (exceptionListener != null) {
+                exceptionListener.onException(e);
+            }
         }
     }
 }

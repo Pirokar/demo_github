@@ -12,7 +12,9 @@
   <component name="ChangeListManager">
     <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/build.gradle" afterPath="$PROJECT_DIR$/threads/build.gradle" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -51,31 +53,53 @@
       <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="295">
-              <caret line="1462" column="109" selection-start-line="1462" selection-start-column="109" selection-end-line="1462" selection-end-column="109" />
+            <state relative-caret-position="86">
+              <caret line="1441" column="0" selection-start-line="1441" selection-start-column="0" selection-end-line="1441" selection-end-column="0" />
               <folding>
-                <element signature="e#13633#13634#0" expanded="true" />
-                <element signature="e#13699#13700#0" expanded="true" />
-                <element signature="method#sendMessageAsync#0;class#ChatController#0" expanded="false" />
-                <marker date="1498035375515" expanded="false" signature="62196:62207" ph=" { " />
-                <marker date="1498035375515" expanded="false" signature="62247:62253" ph=" }" />
-                <marker date="1498035375515" expanded="false" signature="62449:62460" ph=" { " />
-                <marker date="1498035375515" expanded="false" signature="62499:62505" ph=" }" />
-                <marker date="1498035375515" expanded="false" signature="62601:62607" ph=" }" />
-                <marker date="1498035375515" expanded="false" signature="62665:62676" ph=" { " />
-                <marker date="1498035375515" expanded="false" signature="62700:62706" ph=" }" />
-                <marker date="1498035375515" expanded="false" signature="63025:63036" ph=" { " />
-                <marker date="1498035375515" expanded="false" signature="63068:63074" ph=" }" />
+                <element signature="e#24851#24852#0" expanded="true" />
+                <element signature="e#24916#24917#0" expanded="true" />
+                <element signature="e#25076#25246#0" expanded="true" />
+                <element signature="e#25245#25246#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PushController.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.android/build-cache/c14e384c43e3a316949fa765575ae4858e9100ec/output/jars/classes.jar!/com/pushserver/android/PushController.class">
+      <file leaf-file-name="PrefUtils.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/PrefUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="167" column="16" selection-start-line="167" selection-start-column="16" selection-end-line="167" selection-end-column="16" />
+            <state relative-caret-position="189">
+              <caret line="102" column="23" selection-start-line="102" selection-start-column="23" selection-end-line="102" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="211">
+              <caret line="17" column="27" selection-start-line="17" selection-start-column="27" selection-end-line="17" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Survey.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="136">
+              <caret line="8" column="15" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
               <folding />
             </state>
           </provider>
@@ -84,19 +108,30 @@
       <file leaf-file-name="MessageFormatter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="248">
-              <caret line="935" column="25" selection-start-line="935" selection-start-column="25" selection-end-line="935" selection-end-column="25" />
-              <folding />
+            <state relative-caret-position="2176">
+              <caret line="272" column="29" selection-start-line="272" selection-start-column="29" selection-end-line="272" selection-end-column="29" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="method#format#0;class#MessageFormatter#0" expanded="false" />
+                <element signature="method#format#1;class#MessageFormatter#0" expanded="false" />
+                <element signature="method#getFullMessage#0;class#MessageFormatter#0" expanded="false" />
+                <element signature="method#getType#0;class#MessageFormatter#0" expanded="false" />
+                <element signature="method#getConsultPhraseFromPush#0;class#MessageFormatter#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PrefUtils.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/PrefUtils.java">
+      <file leaf-file-name="IncomingMessagesIntentService.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="129">
-              <caret line="86" column="94" selection-start-line="86" selection-start-column="94" selection-end-line="86" selection-end-column="94" />
-              <folding />
+            <state relative-caret-position="374">
+              <caret line="33" column="64" selection-start-line="33" selection-start-column="64" selection-end-line="33" selection-end-column="64" />
+              <folding>
+                <element signature="imports" expanded="false" />
+                <element signature="e#2078#2079#0" expanded="false" />
+                <element signature="e#2132#2133#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -104,7 +139,7 @@
       <file leaf-file-name="ChatFragment.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
+            <state relative-caret-position="19278">
               <caret line="1248" column="16" selection-start-line="1248" selection-start-column="16" selection-end-line="1248" selection-end-column="16" />
               <folding />
             </state>
@@ -114,37 +149,11 @@
       <file leaf-file-name="DatabaseHolder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/DatabaseHolder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2873">
+            <state relative-caret-position="3315">
               <caret line="217" column="32" selection-start-line="217" selection-start-column="32" selection-end-line="217" selection-end-column="32" />
               <folding>
                 <element signature="e#7662#7663#0" expanded="true" />
                 <element signature="e#7720#7721#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConsultPhrase.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2533">
-              <caret line="189" column="8" selection-start-line="189" selection-start-column="8" selection-end-line="189" selection-end-column="8" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MyOpenHelper.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8449">
-              <caret line="518" column="4" selection-start-line="518" selection-start-column="4" selection-end-line="518" selection-end-column="4" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#28894#28895#0" expanded="false" />
-                <element signature="e#28970#28971#0" expanded="false" />
-                <element signature="e#29266#29267#0" expanded="false" />
-                <element signature="e#29306#29307#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -155,9 +164,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="102">
               <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
-              <folding>
-                <element signature="imports" expanded="false" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -2692,8 +2699,8 @@
     <option name="modificationStamps">
       <map>
         <entry key="C:\Users\Admin\AndroidStudioProjects\Threads-Android" value="7458809793793" />
-        <entry key="$PROJECT_DIR$" value="7474536191724" />
-        <entry key="D:\Android\Threads-Android" value="7487496232187" />
+        <entry key="$PROJECT_DIR$" value="7488091989754" />
+        <entry key="D:\Android\Threads-Android" value="7488091989754" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -3153,7 +3160,6 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/ConsultPhraseHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/UserPhraseViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" />
-        <option value="$PROJECT_DIR$/threads/build.gradle" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
@@ -3161,8 +3167,9 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/retrofit/RetrofitService.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
+        <option value="$PROJECT_DIR$/threads/build.gradle" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
       </list>
     </option>
@@ -3198,6 +3205,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView">
+        <subPane />
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -3230,66 +3240,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Threads-Android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Threads-Android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="threads" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Threads-Android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Threads-Android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="threads" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="threads" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="PackagesPane" />
-      <pane id="AndroidView">
-        <subPane />
-      </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -3895,7 +3850,14 @@
       <option name="project" value="LOCAL" />
       <updated>1497942246911</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="1. CLIENT_OFFLINE задача ТМ-172">
+      <created>1498035916002</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1498035916002</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -3931,7 +3893,7 @@
       <window_info id="Code Iris" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28214827" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32764506" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32718122" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -3964,7 +3926,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Добавил появление кнопки с выпадающим списком после нахождения оператора" />
     <MESSAGE value="Изменены объекты и соответствующий код для оценки" />
     <MESSAGE value="Небольшой рефакторинг" />
     <MESSAGE value="Исправления с статусом сообщения" />
@@ -3989,7 +3950,8 @@
     <MESSAGE value="пробую убрать workspace.xml из истории" />
     <MESSAGE value="1. обработано отсутсвие deviceAddress&#10;2. добавлена передача версии библиотеки при запросе истории" />
     <MESSAGE value="1. обработан тип сообщений ON_HOLD" />
-    <option name="LAST_COMMIT_MESSAGE" value="1. обработан тип сообщений ON_HOLD" />
+    <MESSAGE value="1. CLIENT_OFFLINE задача ТМ-172" />
+    <option name="LAST_COMMIT_MESSAGE" value="1. CLIENT_OFFLINE задача ТМ-172" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -4024,31 +3986,30 @@
           <properties />
           <option name="timeStamp" value="224" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java</url>
+          <line>1420</line>
+          <properties />
+          <option name="timeStamp" value="231" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java</url>
+          <line>583</line>
+          <properties />
+          <option name="timeStamp" value="233" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java</url>
+          <line>188</line>
+          <properties />
+          <option name="timeStamp" value="237" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="231" />
+      <option name="time" value="238" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$USER_HOME$/.android/build-cache/53e371a5f68ebedf0baa87d6f981397afe90804d/output/jars/classes.jar!/android/support/v4/app/ActivityCompat.class" />
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/PermissionChecker.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="22" column="5" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/support-fragment/26.0.0-alpha1/support-fragment-26.0.0-alpha1-sources.jar!/android/support/v4/app/Fragment.java" />
-    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/activity_files_and_media.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/activities/FilesActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1666">
@@ -4100,13 +4061,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/activity_chat_activity.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
+      </provider>
+      <provider editor-type-id="android-designer2">
+        <state />
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/platforms/android-25/data/res/values/colors_holo.xml" />
@@ -4143,13 +4104,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/fragment_chat_fragment.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="218">
           <caret line="231" column="52" selection-start-line="231" selection-start-column="52" selection-end-line="231" selection-end-column="52" />
         </state>
+      </provider>
+      <provider editor-type-id="android-designer2">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/holders/UserPhraseViewHolder.java">
@@ -4167,13 +4128,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/item_consultant_text_with_file.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
+      </provider>
+      <provider editor-type-id="android-designer2">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java">
@@ -4194,15 +4155,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
           <caret line="26" column="26" selection-start-line="26" selection-start-column="26" selection-end-line="26" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4233,10 +4185,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="11" column="19" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
-          <folding>
-            <element signature="e#220#221#0" expanded="false" />
-            <element signature="e#251#252#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -4258,10 +4206,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/MyOpenHelper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8449">
+        <state relative-caret-position="8415">
           <caret line="518" column="4" selection-start-line="518" selection-start-column="4" selection-end-line="518" selection-end-column="4" />
           <folding>
             <element signature="imports" expanded="false" />
+            <element signature="e#3461#3462#0" expanded="false" />
+            <element signature="e#3521#3522#0" expanded="false" />
             <element signature="e#28894#28895#0" expanded="false" />
             <element signature="e#28970#28971#0" expanded="false" />
             <element signature="e#29266#29267#0" expanded="false" />
@@ -4274,9 +4224,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -4284,10 +4232,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
           <caret line="95" column="26" selection-start-line="95" selection-start-column="26" selection-end-line="95" selection-end-column="26" />
-          <folding>
-            <element signature="e#2964#2965#0" expanded="true" />
-            <element signature="e#3015#3016#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -4319,10 +4263,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
           <caret line="696" column="16" selection-start-line="696" selection-start-column="16" selection-end-line="696" selection-end-column="16" />
-          <folding>
-            <element signature="e#19794#19795#0" expanded="true" />
-            <element signature="e#19845#19846#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -4330,7 +4270,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
           <caret line="12" column="42" selection-start-line="12" selection-start-column="42" selection-end-line="12" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4362,7 +4301,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/database/DatabaseHolder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2873">
+        <state relative-caret-position="3315">
           <caret line="217" column="32" selection-start-line="217" selection-start-column="32" selection-end-line="217" selection-end-column="32" />
           <folding>
             <element signature="e#7662#7663#0" expanded="true" />
@@ -4373,69 +4312,110 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
+        <state relative-caret-position="19278">
           <caret line="1248" column="16" selection-start-line="1248" selection-start-column="16" selection-end-line="1248" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/NotificationService.java">
+    <entry file="jar://$USER_HOME$/.android/build-cache/c14e384c43e3a316949fa765575ae4858e9100ec/output/jars/classes.jar!/com/pushserver/android/PushMessage.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
-          <caret line="60" column="45" selection-start-line="60" selection-start-column="45" selection-end-line="60" selection-end-column="45" />
-          <folding />
+          <caret line="75" column="18" selection-start-line="75" selection-start-column="18" selection-end-line="75" selection-end-column="18" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/PushIniter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="217">
-          <caret line="24" column="42" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/PrefUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="129">
-          <caret line="86" column="94" selection-start-line="86" selection-start-column="94" selection-end-line="86" selection-end-column="94" />
+        <state relative-caret-position="578">
+          <caret line="42" column="41" selection-start-line="42" selection-start-column="41" selection-end-line="42" selection-end-column="41" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://$USER_HOME$/.android/build-cache/c14e384c43e3a316949fa765575ae4858e9100ec/output/jars/classes.jar!/com/pushserver/android/PushController.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="167" column="16" selection-start-line="167" selection-start-column="16" selection-end-line="167" selection-end-column="16" />
+        <state relative-caret-position="189">
+          <caret line="246" column="23" selection-start-line="246" selection-start-column="23" selection-end-line="246" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/NotificationService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="359">
+          <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="935" column="25" selection-start-line="935" selection-start-column="25" selection-end-line="935" selection-end-column="25" />
+        <state relative-caret-position="2176">
+          <caret line="272" column="29" selection-start-line="272" selection-start-column="29" selection-end-line="272" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#format#0;class#MessageFormatter#0" expanded="false" />
+            <element signature="method#format#1;class#MessageFormatter#0" expanded="false" />
+            <element signature="method#getFullMessage#0;class#MessageFormatter#0" expanded="false" />
+            <element signature="method#getType#0;class#MessageFormatter#0" expanded="false" />
+            <element signature="method#getConsultPhraseFromPush#0;class#MessageFormatter#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="33" column="64" selection-start-line="33" selection-start-column="64" selection-end-line="33" selection-end-column="64" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#2078#2079#0" expanded="false" />
+            <element signature="e#2132#2133#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/Survey.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="15" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="17" column="27" selection-start-line="17" selection-start-column="27" selection-end-line="17" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/PrefUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="102" column="23" selection-start-line="102" selection-start-column="23" selection-end-line="102" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
-          <caret line="1462" column="109" selection-start-line="1462" selection-start-column="109" selection-end-line="1462" selection-end-column="109" />
+        <state relative-caret-position="86">
+          <caret line="1441" column="0" selection-start-line="1441" selection-start-column="0" selection-end-line="1441" selection-end-column="0" />
           <folding>
-            <element signature="e#13633#13634#0" expanded="true" />
-            <element signature="e#13699#13700#0" expanded="true" />
-            <element signature="method#sendMessageAsync#0;class#ChatController#0" expanded="false" />
-            <marker date="1498035375515" expanded="false" signature="62196:62207" ph=" { " />
-            <marker date="1498035375515" expanded="false" signature="62247:62253" ph=" }" />
-            <marker date="1498035375515" expanded="false" signature="62449:62460" ph=" { " />
-            <marker date="1498035375515" expanded="false" signature="62499:62505" ph=" }" />
-            <marker date="1498035375515" expanded="false" signature="62601:62607" ph=" }" />
-            <marker date="1498035375515" expanded="false" signature="62665:62676" ph=" { " />
-            <marker date="1498035375515" expanded="false" signature="62700:62706" ph=" }" />
-            <marker date="1498035375515" expanded="false" signature="63025:63036" ph=" { " />
-            <marker date="1498035375515" expanded="false" signature="63068:63074" ph=" }" />
+            <element signature="e#24851#24852#0" expanded="true" />
+            <element signature="e#24916#24917#0" expanded="true" />
+            <element signature="e#25076#25246#0" expanded="true" />
+            <element signature="e#25245#25246#0" expanded="true" />
           </folding>
         </state>
       </provider>
