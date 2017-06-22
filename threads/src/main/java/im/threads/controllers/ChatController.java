@@ -198,7 +198,7 @@ public class ChatController {
             }
 //            getPushControllerInstance(ctx).setClientId(finalClientId);
             PrefUtils.setClientId(ctx, finalClientId);
-            String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId);
+            String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId, ctx);
             sendMessageMFMSSync(ctx, environmentMessage, true);
             getPushControllerInstance(ctx).resetCounterSync();
 
@@ -385,7 +385,7 @@ public class ChatController {
             @Override
             public void run() {
                 try {
-                    String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext));
+                    String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext), appContext);
                     sendMessageMFMSSync(appContext, environmentMessage, true);
                 } catch (PushServerErrorException e) {
                     e.printStackTrace();
@@ -1203,7 +1203,7 @@ public class ChatController {
                             try {
                                 String userName = PrefUtils.getUserName(ctx);
                                 String clientId = PrefUtils.getClientID(ctx);
-                                String message = MessageFormatter.createEnvironmentMessage(userName, clientId);
+                                String message = MessageFormatter.createEnvironmentMessage(userName, clientId, appContext);
                                 sendMessageMFMSSync(appContext, message, true);
                             } catch (PushServerErrorException e) {
                                 e.printStackTrace();
@@ -1259,7 +1259,7 @@ public class ChatController {
 
                         sendMessageMFMSSync(ctx, MessageFormatter.createEnvironmentMessage(PrefUtils
                                         .getUserName(ctx),
-                                PrefUtils.getNewClientID(ctx)), true);
+                                PrefUtils.getNewClientID(ctx), ctx), true);
 
                         String token = PrefUtils.getToken(instance.fragment.getActivity());
                         String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());

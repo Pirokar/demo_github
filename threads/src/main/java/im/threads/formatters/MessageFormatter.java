@@ -2,6 +2,8 @@ package im.threads.formatters;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -596,7 +598,7 @@ public class MessageFormatter {
         return object.toString().replaceAll("\\\\", "");
     }
 
-    public static String createEnvironmentMessage(String clientName, String clientId) {
+    public static String createEnvironmentMessage(String clientName, String clientId, Context ctx) {
         JSONObject object = new JSONObject();
         try {
             object.put("name", clientName);
@@ -604,7 +606,9 @@ public class MessageFormatter {
             object.put("platform", "Android");
             object.put("osVersion", getOsVersion());
             object.put("device", getDeviceName());
-            object.put("appVersion", getAppVersion());
+            object.put("appVersion", getAppVersion(ctx));
+            object.put("libVersion", getLibVersion());
+            object.put("clientLocale", getLocale(ctx));
             object.put(TYPE, "CLIENT_INFO");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -694,8 +698,28 @@ public class MessageFormatter {
         return Build.MANUFACTURER + " " + Build.MODEL;
     }
 
-    private static String getAppVersion() {
+    private static String getAppVersion(Context ctx) {
+
+        PackageInfo pInfo = null;
+        try {
+            pInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return pInfo != null ? pInfo.versionName + " (" + pInfo.versionCode + ")" : "";
+    }
+
+    private static String getLibVersion() {
         return BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")";
+    }
+
+    private static String getLocale(Context ctx) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            return ctx.getResources().getConfiguration().getLocales().get(0).toLanguageTag();
+        } else{
+            //noinspection deprecation
+            return ctx.getResources().getConfiguration().locale.toLanguageTag();
+        }
     }
 
     public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
