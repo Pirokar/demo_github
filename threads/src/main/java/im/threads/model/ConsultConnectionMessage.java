@@ -15,6 +15,7 @@ public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
     public static final String TYPE_LEFT = "OPERATOR_LEFT";
     private String title;
     private final String messageId;
+    private boolean displayMessage;
 
     public String getName() {
         return name;
@@ -38,7 +39,8 @@ public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
             , String avatarPath
             , String status
             , String title
-            , String messageId) {
+            , String messageId
+            , boolean displayMessage) {
         this.consultId = consultId;
         this.type = type;
         this.name = name;
@@ -48,6 +50,7 @@ public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
         this.status = status;
         this.title = title;
         this.messageId = messageId;
+        this.displayMessage = displayMessage;
     }
 
     public void setAvatarPath(String avatarPath) {
@@ -84,6 +87,10 @@ public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
 
     public boolean isSex() {
         return sex;
+    }
+
+    public boolean isDisplayMessage() {
+        return displayMessage;
     }
 
     @Override

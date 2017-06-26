@@ -186,52 +186,54 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
 
     void putChatPhrase(ChatPhrase phrase) {
+        if (phrase instanceof ConsultPhrase) {
+            insertOrUpdateConsultPhrase((ConsultPhrase) phrase);
+        }
+
+        if (phrase instanceof UserPhrase) {
+            putUserPhrase((UserPhrase) phrase);
+        }
+    }
+
+    private void insertOrUpdateConsultPhrase(ConsultPhrase phrase) {
         ContentValues cv = new ContentValues();
         boolean isDup = false;
         Cursor c;
-        if (phrase instanceof ConsultPhrase) {
-            c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_BACKEND_ID + " = ?", new String[]{((ConsultPhrase) phrase).getBackendId()});
-        } else {
-            c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_MESSAGE_ID + " = ?", new String[]{phrase.getId()});
-        }
+        c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_BACKEND_ID + " = ?", new String[]{phrase.getBackendId()});
         if (c.getCount() > 0) isDup = true;
-        if (phrase instanceof UserPhrase) {
-            putUserPhrase((UserPhrase) phrase);
-        } else if (phrase instanceof ConsultPhrase) {
-            ConsultPhrase consultPhrase = (ConsultPhrase) phrase;
-            cv.put(COLUMN_MESSAGE_ID, consultPhrase.getMessageId());
-            cv.put(COLUMN_PHRASE, consultPhrase.getPhrase());
-            cv.put(COLUMN_TIMESTAMP, consultPhrase.getTimeStamp());
-            cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_PHRASE.type);
-            cv.put(COLUMN_AVATAR_PATH, ((ConsultPhrase) phrase).getAvatarPath());
-            cv.put(COLUMN_CONSULT_ID, ((ConsultPhrase) phrase).getConsultId());
-            cv.put(COLUMN_IS_READ, ((ConsultPhrase) phrase).isRead());
-            cv.put(COLUMN_CONSULT_STATUS, ((ConsultPhrase) phrase).getStatus());
-            cv.put(COLUMN_NAME, ((ConsultPhrase) phrase).getConsultName());
-            cv.put(COLUMN_SEX, ((ConsultPhrase) phrase).getSex());
-            cv.put(COLUMN_BACKEND_ID, consultPhrase.getBackendId());
-            if (!isDup) {
-                getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
-            } else {
-                getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ? ", new String[]{consultPhrase.getId()});
-            }
-            if (consultPhrase.getFileDescription() != null) {
-                putFd(consultPhrase.getFileDescription(), consultPhrase.getMessageId(), false);
-            }
-            if (consultPhrase.getQuote() != null) {
-                cv.clear();
-                cv.put(COLUMN_QUOTE_MESSAGE_ID_EXT, consultPhrase.getMessageId());
-                cv.put(COLUMN_QUOTE_HEADER, consultPhrase.getQuote().getPhraseOwnerTitle());
-                cv.put(COLUMN_QUOTE_BODY, consultPhrase.getQuote().getText());
-                cv.put(COLUMN_QUOTE_TIMESTAMP, consultPhrase.getQuote().getTimeStamp());
-                getWritableDatabase().insert(TABLE_QUOTE, null, cv);
-                if (consultPhrase.getQuote().getFileDescription() != null) {
-                    putFd(consultPhrase.getQuote().getFileDescription(), consultPhrase.getMessageId(), true);
-                }
+        cv.put(COLUMN_MESSAGE_ID, phrase.getMessageId());
+        cv.put(COLUMN_PHRASE, phrase.getPhrase());
+        cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
+        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_PHRASE.type);
+        cv.put(COLUMN_AVATAR_PATH, phrase.getAvatarPath());
+        cv.put(COLUMN_CONSULT_ID, phrase.getConsultId());
+        cv.put(COLUMN_IS_READ, phrase.isRead());
+        cv.put(COLUMN_CONSULT_STATUS, phrase.getStatus());
+        cv.put(COLUMN_NAME, phrase.getConsultName());
+        cv.put(COLUMN_SEX, phrase.getSex());
+        cv.put(COLUMN_BACKEND_ID, phrase.getBackendId());
+        if (!isDup) {
+            getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+        } else {
+            getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ? ", new String[]{phrase.getId()});
+        }
+        if (phrase.getFileDescription() != null) {
+            putFd(phrase.getFileDescription(), phrase.getMessageId(), false);
+        }
+        if (phrase.getQuote() != null) {
+            cv.clear();
+            cv.put(COLUMN_QUOTE_MESSAGE_ID_EXT, phrase.getMessageId());
+            cv.put(COLUMN_QUOTE_HEADER, phrase.getQuote().getPhraseOwnerTitle());
+            cv.put(COLUMN_QUOTE_BODY, phrase.getQuote().getText());
+            cv.put(COLUMN_QUOTE_TIMESTAMP, phrase.getQuote().getTimeStamp());
+            getWritableDatabase().insert(TABLE_QUOTE, null, cv);
+            if (phrase.getQuote().getFileDescription() != null) {
+                putFd(phrase.getQuote().getFileDescription(), phrase.getMessageId(), true);
             }
         }
         c.close();
     }
+
 
     void setUserPhraseState(String messageId, MessageState messageState) {
         ContentValues cv = new ContentValues();
@@ -364,7 +366,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 String status = c.isNull(indexStatus) ? null : c.getString(indexStatus);
                 String title = c.isNull(indextitle) ? null : c.getString(indextitle);
                 ConsultConnectionMessage cc =
-                        new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath, status, title, c.getString(INDEX_MESSAGE_ID));
+                        new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath, status, title, c.getString(INDEX_MESSAGE_ID), false);
                 items.add(cc);
             } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);

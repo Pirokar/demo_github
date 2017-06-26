@@ -1,9 +1,13 @@
 package im.threads.model;
 
-import android.util.Log;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +31,20 @@ public class MessgeFromHistory implements ChatItem {
     private List<Attachment> attachments;
     private List<MessgeFromHistory> quotes;
     private String type;
+
+    public static List<MessgeFromHistory> getListMessageFromServerResponse(String response) {
+        List<MessgeFromHistory> list = null;
+        try {
+            if (response != null) {
+                Type listType = new TypeToken<ArrayList<MessgeFromHistory>>() {
+                }.getType();
+                list = new Gson().fromJson(response, listType);
+            }
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
     public Long getId() {
         return id;

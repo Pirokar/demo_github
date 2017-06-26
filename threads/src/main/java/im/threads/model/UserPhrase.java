@@ -105,6 +105,10 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
         UserPhrase that = (UserPhrase) o;
 
+        if (backendId != null && that.backendId != null && backendId.equals(that.backendId)) {
+            return true;
+        }
+
         if (messageId != null ? !messageId.equals(that.messageId) : that.messageId != null)
             return false;
         return phrase != null ? phrase.equals(that.phrase) : that.phrase == null;

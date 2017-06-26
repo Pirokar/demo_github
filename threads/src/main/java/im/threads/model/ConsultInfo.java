@@ -11,6 +11,7 @@ public class ConsultInfo {
     private final String id;
     private final String status;
     private final String photoUrl;
+//todo gender??
 
     public ConsultInfo(String name, String id, String status, String photoUrl) {
         this.name = name;

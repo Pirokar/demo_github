@@ -394,6 +394,7 @@ public class MessageFormatter {
             boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
             String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
             String title = pushMessage.getShortMessage() == null ? null : pushMessage.getShortMessage().split(" ")[0];
+            boolean displayMessage = !fullMessage.has("displayMessage") || fullMessage.getBoolean("displayMessage");
             chatItem = new ConsultConnectionMessage(
                     String.valueOf(operatorId)
                     , type
@@ -404,7 +405,9 @@ public class MessageFormatter {
                     , photourl
                     , status
                     , title
-                    , pushMessage.getMessageId());
+                    , pushMessage.getMessageId()
+                    , displayMessage);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -714,9 +717,9 @@ public class MessageFormatter {
     }
 
     private static String getLocale(Context ctx) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return ctx.getResources().getConfiguration().getLocales().get(0).toLanguageTag();
-        } else{
+        } else {
             //noinspection deprecation
             return ctx.getResources().getConfiguration().locale.toLanguageTag();
         }
@@ -755,9 +758,10 @@ public class MessageFormatter {
                     if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
                         gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
                     }
+                    boolean displayMessage = !body.has("displayMessage") || body.getBoolean("displayMessage");
                     if (body.has(TYPE) && !body.isNull(TYPE) && (body.getString(TYPE).equalsIgnoreCase("OPERATOR_JOINED") || body.getString(TYPE).equalsIgnoreCase("OPERATOR_LEFT"))) {
                         String type = body.getString(TYPE).equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-                        out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null, messageId));
+                        out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null, messageId, displayMessage));
                     } else {
                         String phraseText = body.has(TEXT) ? body.getString(TEXT) : null;
                         FileDescription fileDescription = body.has(ATTACHMENTS) ? fileDescriptionFromJson(body.getJSONArray(ATTACHMENTS)) : null;
@@ -806,7 +810,7 @@ public class MessageFormatter {
                         } catch (Exception e1) {
                             e1.printStackTrace();
                         }
-                        ConsultConnectionMessage ccm = new ConsultConnectionMessage(name, type, name, cont.contains("лся") ? true : false, message.sentAt.millis, null, null, title, String.valueOf(message.messageId));
+                        ConsultConnectionMessage ccm = new ConsultConnectionMessage(name, type, name, cont.contains("лся") ? true : false, message.sentAt.millis, null, null, title, String.valueOf(message.messageId), true);
                         out.add(ccm);
                     }
                     Log.e(TAG, "error parsing message" + message);
@@ -851,9 +855,10 @@ public class MessageFormatter {
 //                    if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
 //                        gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
 //                    }
+
                 if (message.getType() != null && !message.getType().isEmpty() && (message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) || message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT))) {
                     String type = message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-                    out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId));
+                    out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId, false));
                 } else {
                     String phraseText = message.getText();
                     FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
@@ -915,6 +920,8 @@ public class MessageFormatter {
         boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
         String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
         String title = "";
+        boolean displayMessage = !body.has("displayMessage") || body.getBoolean("displayMessage");
+
         try {
             title = body.getString(TEXT).split(" ")[0];
         } catch (JSONException e) {
@@ -930,7 +937,8 @@ public class MessageFormatter {
                         , photourl
                         , status
                         , title
-                        , String.valueOf(message.messageId));
+                        , String.valueOf(message.messageId)
+                        , displayMessage);
         return c;
     }
 

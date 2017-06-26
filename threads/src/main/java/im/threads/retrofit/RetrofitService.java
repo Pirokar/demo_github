@@ -1,9 +1,8 @@
 package im.threads.retrofit;
 
-import java.util.List;
+import com.google.gson.JsonElement;
 
 import im.threads.model.FileUploadResponse;
-import im.threads.model.MessgeFromHistory;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -27,7 +26,7 @@ public interface RetrofitService {
     );
 
     @GET("history")
-    Call<List<MessgeFromHistory>> history(
+    Call<JsonElement> history(
             @Header("X-Client-Token") String token,
             @Query("start") Long start,
             @Query("count") Long count,

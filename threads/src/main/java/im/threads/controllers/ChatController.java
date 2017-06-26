@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
@@ -51,6 +52,7 @@ import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
+import im.threads.model.HistoryResponseV2;
 import im.threads.model.MessageState;
 import im.threads.model.MessgeFromHistory;
 import im.threads.model.PushMessageCheckResult;
@@ -202,20 +204,18 @@ public class ChatController {
             sendMessageMFMSSync(ctx, environmentMessage, true);
             getPushControllerInstance(ctx).resetCounterSync();
 
-            String token = PrefUtils.getToken(instance.fragment.getActivity());
-            String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
-            if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
-                ServiceGenerator.setUrl(url);
-                RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L, getLibraryVersion());
-                List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
-                instance.mDatabaseHolder.putMessagesSync(serverItems);
-                ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
-                if (instance.fragment != null) {
-                    instance.fragment.addChatItems(phrases);
+            JsonElement response = getHistorySync(ctx, null, 20L);
+            List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+            instance.mDatabaseHolder.putMessagesSync(serverItems);
+            ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
+            if (instance.fragment != null) {
+                instance.fragment.addChatItems(phrases);
+                ConsultInfo info = getConsultInfoFromHistoryResponse(response);
+                if (info != null) {
+                    instance.fragment.setStateConsultConnected(info.getId(), info.getName(), info.getStatus());
                 }
-                PrefUtils.setClientIdWasSet(true, ctx);
             }
+            PrefUtils.setClientIdWasSet(true, ctx);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -465,29 +465,26 @@ public class ChatController {
     private void updateChatHistoryOnBind() {
         if (fragment != null) {
             try {
-                String token = PrefUtils.getToken(instance.fragment.getActivity());
-                String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
-                if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
-                    List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
-                    ServiceGenerator.setUrl(url);
-                    RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                    Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L, getLibraryVersion());
-                    List<MessgeFromHistory> messgesFromHistory = call.execute().body();
-                    if (messgesFromHistory != null) {
-                        List<ChatItem> serverItems = MessageFormatter.formatNew(messgesFromHistory);
-                        if (dbItems.size() != serverItems.size()
-                                || !dbItems.containsAll(serverItems)) {
-                            Log.i(TAG, "not same!");
-                            mDatabaseHolder.putMessagesSync(serverItems);
-                            h.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-                                    if (null != fragment) fragment.addChatItems(items);
+                JsonElement response = getHistorySync(instance.fragment.getActivity(), null, 20L);
+                List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+                final ConsultInfo info = getConsultInfoFromHistoryResponse(response);
+                List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
+                if (dbItems.size() != serverItems.size()
+                        || !dbItems.containsAll(serverItems)) {
+                    Log.i(TAG, "not same!");
+                    mDatabaseHolder.putMessagesSync(serverItems);
+                    h.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+                            if (null != fragment) {
+                                fragment.addChatItems(items);
+                                if (info != null) {
+                                    fragment.setStateConsultConnected(info.getId(), info.getName(), info.getStatus());
                                 }
-                            });
+                            }
                         }
-                    }
+                    });
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -824,25 +821,19 @@ public class ChatController {
             @Override
             public void run() {
                 try {
-                    String token = PrefUtils.getToken(instance.fragment.getActivity());
-                    String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
-                    if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
-                        isDownloadingMessages = true;
-                        final Long chunk = 100L;
-                        Long start = lastMessageId == null ? null : lastMessageId;
-                        ServiceGenerator.setUrl(url);
-                        RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                        Call<List<MessgeFromHistory>> call = retrofitService.history(token, start, chunk, getLibraryVersion());
-                        List<MessgeFromHistory> items = call.execute().body();
-                        if (items == null || items.size() == 0) return;
-                        lastMessageId = items.get(items.size() - 1).getId();
-                        currentOffset += items.size();
-                        isAllMessagesDownloaded = items.size() != chunk;
-                        List<ChatItem> chatItems = MessageFormatter.formatNew(items);
-                        mDatabaseHolder.putMessagesSync(chatItems);
-                        isDownloadingMessages = false;
-                        if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
-                    }
+                    isDownloadingMessages = true;
+                    final Long chunk = 100L;
+                    Long start = lastMessageId == null ? null : lastMessageId;
+                    JsonElement response = getHistorySync(instance.fragment.getActivity(), start, chunk);
+                    List<MessgeFromHistory> items = getMessageFromHistoryResponse(response);
+                    if (items == null || items.size() == 0) return;
+                    lastMessageId = items.get(items.size() - 1).getId();
+                    currentOffset += items.size();
+                    isAllMessagesDownloaded = items.size() != chunk;
+                    List<ChatItem> chatItems = MessageFormatter.formatNew(items);
+                    mDatabaseHolder.putMessagesSync(chatItems);
+                    isDownloadingMessages = false;
+                    if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -859,7 +850,9 @@ public class ChatController {
             public void run() {
                 if (null != fragment) {
                     ChatItem ci = setLastAvatars(Arrays.asList(new ChatItem[]{cm})).get(0);
-                    fragment.addChatItem(ci);
+                    if (!(ci instanceof ConsultConnectionMessage)
+                            || ((ConsultConnectionMessage) ci).isDisplayMessage())
+                        fragment.addChatItem(ci);
                     if (ci instanceof ConsultChatPhrase) {
                         fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath()
                                 , ((ConsultChatPhrase) ci).getConsultId());
@@ -1108,23 +1101,18 @@ public class ChatController {
             public void run() {
                 final int[] currentOffset = {fragment.getCurrentItemsCount()};
                 try {
-                    String token = PrefUtils.getToken(instance.fragment.getActivity());
-                    String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
-                    if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
-                        ServiceGenerator.setUrl(url);
-                        RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                        Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, currentOffset[0] + 20L, getLibraryVersion());
-                        List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
-                        mDatabaseHolder.putMessagesSync(serverItems);
-                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
-                        currentOffset[0] += chatItems.size();
-                        h.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSuccess(chatItems);
-                            }
-                        });
-                    }
+                    JsonElement response = getHistorySync(instance.fragment.getActivity(), null, currentOffset[0] + 20L);
+                    List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+                    mDatabaseHolder.putMessagesSync(serverItems);
+                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                    currentOffset[0] += chatItems.size();
+                    ConsultInfo info = getConsultInfoFromHistoryResponse(response);
+                    h.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onSuccess(chatItems);
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                     final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
@@ -1187,9 +1175,6 @@ public class ChatController {
                 }
             }, null);
         }
-
-
-
 
         if (chatItem != null) {
             ConsultMessageReaction consultReactor = new ConsultMessageReaction(
@@ -1261,19 +1246,17 @@ public class ChatController {
                                         .getUserName(ctx),
                                 PrefUtils.getNewClientID(ctx), ctx), true);
 
-                        String token = PrefUtils.getToken(instance.fragment.getActivity());
-                        String url = PrefUtils.getServerUrlMetaInfo(instance.fragment.getActivity());
-                        if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
-                            ServiceGenerator.setUrl(url);
-                            RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-                            Call<List<MessgeFromHistory>> call = retrofitService.history(token, null, 20L, getLibraryVersion());
-                            List<ChatItem> serverItems = MessageFormatter.formatNew(call.execute().body());
-                            mDatabaseHolder.putMessagesSync(serverItems);
-                            if (fragment != null) {
-                                fragment.addChatItems((List<ChatItem>) setLastAvatars(serverItems));
+                        JsonElement response = getHistorySync(instance.fragment.getActivity(), null, 20L);
+                        List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+                        mDatabaseHolder.putMessagesSync(serverItems);
+                        if (fragment != null) {
+                            fragment.addChatItems((List<ChatItem>) setLastAvatars(serverItems));
+                            ConsultInfo info = getConsultInfoFromHistoryResponse(response);
+                            if (info != null) {
+                                fragment.setStateConsultConnected(info.getId(), info.getName(), info.getStatus());
                             }
-                            currentOffset = serverItems.size();
                         }
+                        currentOffset = serverItems.size();
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1464,5 +1447,60 @@ public class ChatController {
                 exceptionListener.onException(e);
             }
         }
+    }
+
+    /**
+     * метод обертка для запроса истории сообщений
+     * выполняется синхронно
+     *
+     * @param start ид сообщения от которого грузить, null если с начала
+     * @param count количество сообщений для загрузки
+     */
+    private static JsonElement getHistorySync(Context ctx, Long start, Long count) throws IOException {
+        String token = PrefUtils.getToken(ctx);
+        String url = PrefUtils.getServerUrlMetaInfo(ctx);
+        if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
+            ServiceGenerator.setUrl(url);
+            RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
+            Call<JsonElement> call = retrofitService.history(token, start, count, getLibraryVersion());
+            return call.execute().body();
+        } else {
+            throw new IOException();
+        }
+    }
+
+    private static List<ChatItem> getChatItemFromHistoryResponse(JsonElement response) {
+        List<ChatItem> list = new ArrayList<>();
+        List<MessgeFromHistory> responseList = getMessageFromHistoryResponse(response);
+        if (responseList != null) {
+            list = MessageFormatter.formatNew(responseList);
+        }
+        return list;
+    }
+
+    private static List<MessgeFromHistory> getMessageFromHistoryResponse(JsonElement response) {
+        List<MessgeFromHistory> responseList = null;
+        if (response != null) {
+            if (response.isJsonArray()) {
+                responseList = MessgeFromHistory.getListMessageFromServerResponse(response.toString());
+            } else {
+                HistoryResponseV2 historyResponseV2 = HistoryResponseV2.getHistoryFromServerResponse(response.toString());
+                if (historyResponseV2 != null) {
+                    responseList = historyResponseV2.getMessages();
+                }
+            }
+        }
+        return responseList;
+    }
+
+    private static ConsultInfo getConsultInfoFromHistoryResponse(JsonElement response) {
+        if (response != null && response.isJsonObject()) {
+            HistoryResponseV2 historyResponseV2 =
+                    HistoryResponseV2.getHistoryFromServerResponse(response.toString());
+            if (historyResponseV2 != null) {
+                return historyResponseV2.getConsultInfo();
+            }
+        }
+        return null;
     }
 }
