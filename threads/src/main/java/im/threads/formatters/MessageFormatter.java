@@ -269,6 +269,47 @@ public class MessageFormatter {
         }
     }
 
+    private static UserPhrase getUserPhraseFromPush(PushMessage pushMessage,
+                                                    JSONObject fullMessage,
+                                                    String message) {
+        try {
+            String messageId = pushMessage.getMessageId();
+            String backendId;
+            try {
+                backendId = String.valueOf(fullMessage.getInt(BACKEND_ID));
+            } catch (Exception e) {
+                backendId = "0";
+            }
+            long phraseTimeStamp = pushMessage.getSentAt();
+            JSONArray attachmentsArray = fullMessage.has(ATTACHMENTS) ? fullMessage.getJSONArray(ATTACHMENTS) : null;
+            FileDescription fileDescription = null;
+            if (null != attachmentsArray)
+                fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray(ATTACHMENTS));
+            if (fileDescription != null) {
+                fileDescription.setTimeStamp(phraseTimeStamp);
+            }
+            Quote mQuote = null;
+            if (fullMessage.has(QUOTES))
+                mQuote = quoteFromJson(fullMessage.getJSONArray(QUOTES));
+            if (mQuote != null && mQuote.getFileDescription() != null) {
+                mQuote.getFileDescription().setTimeStamp(phraseTimeStamp);
+            }
+
+            return new UserPhrase(
+                    messageId,
+                    message,
+                    mQuote,
+                    phraseTimeStamp,
+                    fileDescription,
+                    null,
+                    backendId
+            );
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * @return null, если не удалось распознать формат сообщения.
      */
@@ -312,7 +353,8 @@ public class MessageFormatter {
     private static ChatItem checkMessageIsFull(PushMessage pushMessage, JSONObject fullMessage) {
         String message = getMessage(fullMessage, pushMessage);
         if (message != null || fullMessage.has(ATTACHMENTS) || fullMessage.has(QUOTES)) {
-            return getConsultPhraseFromPush(pushMessage, fullMessage, message);
+            ChatItem item = getConsultPhraseFromPush(pushMessage, fullMessage, message);
+            return item != null ? item : getUserPhraseFromPush(pushMessage, fullMessage, message);
         } else {
             return null;
         }

@@ -1207,7 +1207,8 @@ public class ChatController {
             }
 
             pushMessageCheckResult.setDetected(true);
-            pushMessageCheckResult.setNeedsShowIsStatusBar(!(chatItem instanceof ScheduleInfo));
+            pushMessageCheckResult.setNeedsShowIsStatusBar(!(chatItem instanceof ScheduleInfo
+                    || chatItem instanceof UserPhrase));
         } else {
             pushMessageCheckResult.setDetected(false);
             pushMessageCheckResult.setNeedsShowIsStatusBar(false);
