@@ -161,7 +161,8 @@ public class ChatController {
         if (clientId == null) {
             clientId = PrefUtils.getClientID(ctx);
         }
-        if (TextUtils.isEmpty(PrefUtils.getClientID(ctx)) || !clientId.equals(PrefUtils.getClientID(ctx))) {
+        if ((TextUtils.isEmpty(PrefUtils.getClientID(ctx)) && !TextUtils.isEmpty(clientId))
+                || !clientId.equals(PrefUtils.getClientID(ctx))) {
             Log.i(TAG, "setting new client id");
             Log.i(TAG, "clientId = " + clientId);
             Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
@@ -198,7 +199,7 @@ public class ChatController {
                 // send CLIENT_OFFLINE message
                 sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
             }
-//            getPushControllerInstance(ctx).setClientId(finalClientId);
+            // getPushControllerInstance(ctx).setClientId(finalClientId);
             PrefUtils.setClientId(ctx, finalClientId);
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId, ctx);
             sendMessageMFMSSync(ctx, environmentMessage, true);
