@@ -1,11 +1,8 @@
 package im.threads.retrofit;
 
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -21,7 +18,7 @@ public class ServiceGenerator {
     private static RetrofitService retrofitService;
 
     public static RetrofitService getRetrofitService() {
-        if(retrofitService == null) {
+        if (retrofitService == null) {
             retrofitService = createService();
         }
         return retrofitService;
@@ -39,6 +36,7 @@ public class ServiceGenerator {
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
+        httpClient.connectTimeout(60, TimeUnit.SECONDS);
         builder.client(httpClient.build());
         Retrofit retrofit = builder.build();
         return retrofit.create(RetrofitService.class);

@@ -6,6 +6,7 @@ import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import im.threads.formatters.MessageFormatter;
 import im.threads.model.FileDescription;
 import im.threads.model.FileUploadResponse;
 import im.threads.retrofit.RetrofitService;
@@ -91,7 +92,8 @@ public class FilePoster {
                 RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
                 MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
-                Call<FileUploadResponse> call = retrofitService.upload(body, token);
+                Call<FileUploadResponse> call = retrofitService.upload(MessageFormatter.getUserAgent(context),
+                        body, token);
 
                 call.enqueue(new retrofit2.Callback<FileUploadResponse>() {
                     @Override

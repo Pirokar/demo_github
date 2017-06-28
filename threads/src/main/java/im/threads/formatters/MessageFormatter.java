@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 
 import im.threads.BuildConfig;
+import im.threads.R;
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
@@ -1059,5 +1060,10 @@ public class MessageFormatter {
             e.printStackTrace();
         }
         return true;
+    }
+
+    public static String getUserAgent(Context ctx) {
+        return String.format(ctx.getResources().getString(R.string.user_agent), getOsVersion(),
+                getAppVersion(ctx), getLibVersion(), getDeviceName());
     }
 }

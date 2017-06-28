@@ -21,6 +21,7 @@ public interface RetrofitService {
     @Multipart
     @PUT("files")
     Call<FileUploadResponse> upload(
+            @Header("User-Agent") String userAgent,
             @Part MultipartBody.Part file,
             @Header("X-Client-Token") String token
     );
@@ -28,6 +29,7 @@ public interface RetrofitService {
     @GET("history")
     Call<JsonElement> history(
             @Header("X-Client-Token") String token,
+            @Header("User-Agent") String userAgent,
             @Query("start") Long start,
             @Query("count") Long count,
             @Query("libVersion") String version

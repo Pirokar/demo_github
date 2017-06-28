@@ -1465,6 +1465,7 @@ public class ChatController {
      */
     private static JsonElement getHistorySync(Context ctx, Long start, Long count) throws IOException {
         String token = PrefUtils.getToken(ctx);
+        String userAgent = MessageFormatter.getUserAgent(ctx);
         String url = PrefUtils.getServerUrlMetaInfo(ctx);
         if (count == null) {
             count = getHistoryLoadingCount(ctx);
@@ -1472,7 +1473,7 @@ public class ChatController {
         if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
             RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-            Call<JsonElement> call = retrofitService.history(token, start, count, getLibraryVersion());
+            Call<JsonElement> call = retrofitService.history(token, userAgent, start, count, getLibraryVersion());
             return call.execute().body();
         } else {
             throw new IOException();

@@ -87,4 +87,5 @@
     <string name="permissions_read_external_storage_help_text">Отсутствует разрешение на Память (Чтение с вешнего хранилища).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
     <string name="permissions_quit">Закрыть</string>
     <string name="permissions_settings">Настройки</string>
+    <string name="user_agent"  formatted="false">Android, osVersion=%s, appVersion=%s, libVersion=%s, device=%s</string>
 </resources>
