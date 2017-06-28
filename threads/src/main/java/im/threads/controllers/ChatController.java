@@ -45,6 +45,7 @@ import im.threads.formatters.MessageFormatter;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
+import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.ConsultChatPhrase;
 import im.threads.model.ConsultConnectionMessage;
@@ -122,6 +123,8 @@ public class ChatController {
     private String lastSearchQuery = "";
     private boolean isAllMessagesDownloaded = false;
     private boolean isDownloadingMessages;
+
+    private static Long lastLoadId;
 
     // Используется для создания PendingIntent при открытии чата из пуш уведомления.
     // По умолчанию открывается ChatActivity.
@@ -205,7 +208,7 @@ public class ChatController {
             sendMessageMFMSSync(ctx, environmentMessage, true);
             getPushControllerInstance(ctx).resetCounterSync();
 
-            JsonElement response = getHistorySync(ctx, null, 20L);
+            JsonElement response = getHistorySync(ctx, null, null);
             List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
             instance.mDatabaseHolder.putMessagesSync(serverItems);
             ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
@@ -466,10 +469,11 @@ public class ChatController {
     private void updateChatHistoryOnBind() {
         if (fragment != null) {
             try {
-                JsonElement response = getHistorySync(instance.fragment.getActivity(), null, 20L);
+                JsonElement response = getHistorySync(instance.fragment.getActivity(), null, null);
                 List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
                 final ConsultInfo info = getConsultInfoFromHistoryResponse(response);
-                List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
+                final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
+                List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, count);
                 if (dbItems.size() != serverItems.size()
                         || !dbItems.containsAll(serverItems)) {
                     Log.i(TAG, "not same!");
@@ -477,7 +481,7 @@ public class ChatController {
                     h.post(new Runnable() {
                         @Override
                         public void run() {
-                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, count));
                             if (null != fragment) {
                                 fragment.addChatItems(items);
                                 if (info != null) {
@@ -1101,11 +1105,12 @@ public class ChatController {
             @Override
             public void run() {
                 final int[] currentOffset = {fragment.getCurrentItemsCount()};
+                final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
                 try {
-                    JsonElement response = getHistorySync(instance.fragment.getActivity(), null, currentOffset[0] + 20L);
+                    JsonElement response = getHistorySync(instance.fragment.getActivity(), lastLoadId, null);
                     List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
                     mDatabaseHolder.putMessagesSync(serverItems);
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                     currentOffset[0] += chatItems.size();
                     ConsultInfo info = getConsultInfoFromHistoryResponse(response);
                     h.post(new Runnable() {
@@ -1116,7 +1121,7 @@ public class ChatController {
                     });
                 } catch (Exception e) {
                     e.printStackTrace();
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
+                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                     currentOffset[0] += chatItems.size();
                     h.post(new Runnable() {
                         @Override
@@ -1248,7 +1253,7 @@ public class ChatController {
                                         .getUserName(ctx),
                                 PrefUtils.getNewClientID(ctx), ctx), true);
 
-                        JsonElement response = getHistorySync(instance.fragment.getActivity(), null, 20L);
+                        JsonElement response = getHistorySync(instance.fragment.getActivity(), null, null);
                         List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
                         mDatabaseHolder.putMessagesSync(serverItems);
                         if (fragment != null) {
@@ -1461,6 +1466,9 @@ public class ChatController {
     private static JsonElement getHistorySync(Context ctx, Long start, Long count) throws IOException {
         String token = PrefUtils.getToken(ctx);
         String url = PrefUtils.getServerUrlMetaInfo(ctx);
+        if (count == null) {
+            count = getHistoryLoadingCount(ctx);
+        }
         if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
             RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
@@ -1471,13 +1479,31 @@ public class ChatController {
         }
     }
 
+    private static long getHistoryLoadingCount(Context ctx) {
+        ChatStyle style = PrefUtils.getIncomingStyle(ctx);
+        return style != null ? (long) style.historyLoadingCount : ChatStyle.DEFAULT_HISTORY_LOADING_COUNT;
+    }
+
     private static List<ChatItem> getChatItemFromHistoryResponse(JsonElement response) {
         List<ChatItem> list = new ArrayList<>();
         List<MessgeFromHistory> responseList = getMessageFromHistoryResponse(response);
         if (responseList != null) {
             list = MessageFormatter.formatNew(responseList);
         }
+        setupLastItemIdFromHistory(responseList);
         return list;
+    }
+
+    private static void setupLastItemIdFromHistory(List<MessgeFromHistory> list) {
+        if (list != null) {
+            for (MessgeFromHistory item : list) {
+                if (lastLoadId == null) {
+                    lastLoadId = item.getId();
+                } else if (lastLoadId > item.getId()) {
+                    lastLoadId = item.getId();
+                }
+            }
+        }
     }
 
     private static List<MessgeFromHistory> getMessageFromHistoryResponse(JsonElement response) {

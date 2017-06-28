@@ -71,8 +71,14 @@ public class ChatStyle implements Serializable {
     private static final String ARG_SHOW_BACK_BUTTON = "showBackButton";
     private static final String ARG_INPUT_TEXT_COLOR_RES_ID = "inputTextColor";
     private static final String ARG_INPUT_TEXT_FONT_PATH = "inputTextFont";
+    private static final String SETTING_HISTORY_LOADING_COUNT = "setting@historyLoadingCount";
+    private static final String SETTING_CAN_SHOW_SPECIALIST_INFO = "setting@canShowSpecialistInfo";
 
     public static final int INVALID = -1;
+
+    public static final int DEFAULT_HISTORY_LOADING_COUNT = 50;
+    public static final boolean DEFAULT_CAN_SHOW_SPECIALIST_INFO = true;
+
     @StringRes
     public final int chatTitleTextResId;
     @ColorRes
@@ -141,6 +147,8 @@ public class ChatStyle implements Serializable {
     public final String inputTextFont;
     @ColorRes
     public final int inputTextColor;
+    public int historyLoadingCount;
+    public boolean canShowSpecialistInfo;
 
     public ChatStyle(int chatBackgroundColor,
                      int chatHighlightingColor,
@@ -178,7 +186,9 @@ public class ChatStyle implements Serializable {
                      int scheduleMessageTextColorResId,
                      int scheduleMessageIconResId,
                      String inputTextFont,
-                     int inputTextColor) {
+                     int inputTextColor,
+                     int historyLoadingCount,
+                     boolean canShowSpecialistInfo) {
         this.chatTitleTextResId = chatTitleTextResId;
         this.chatToolbarColorResId = chatToolbarColorResId;
         this.chatToolbarTextColorResId = chatToolbarTextColorResId;
@@ -216,97 +226,8 @@ public class ChatStyle implements Serializable {
         this.showBackButton = showBackButton;
         this.inputTextFont = inputTextFont;
         this.inputTextColor = inputTextColor;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ChatStyle chatStyle = (ChatStyle) o;
-
-        if (chatTitleTextResId != chatStyle.chatTitleTextResId) return false;
-        if (chatToolbarColorResId != chatStyle.chatToolbarColorResId) return false;
-        if (chatStatusBarColorResId != chatStyle.chatStatusBarColorResId) return false;
-        if (menuItemTextColorResId != chatStyle.menuItemTextColorResId) return false;
-        if (chatToolbarTextColorResId != chatStyle.chatToolbarTextColorResId) return false;
-        if (chatToolbarHintTextColor != chatStyle.chatToolbarHintTextColor) return false;
-        if (chatBackgroundColor != chatStyle.chatBackgroundColor) return false;
-        if (chatHighlightingColor != chatStyle.chatHighlightingColor) return false;
-        if (chatMessageInputColor != chatStyle.chatMessageInputColor) return false;
-        if (chatMessageInputHintTextColor != chatStyle.chatMessageInputHintTextColor) return false;
-        if (incomingMessageBubbleColor != chatStyle.incomingMessageBubbleColor) return false;
-        if (outgoingMessageBubbleColor != chatStyle.outgoingMessageBubbleColor) return false;
-        if (incomingMessageTextColor != chatStyle.incomingMessageTextColor) return false;
-        if (outgoingMessageTextColor != chatStyle.outgoingMessageTextColor) return false;
-        if (defaultIncomingMessageAvatar != chatStyle.defaultIncomingMessageAvatar) return false;
-        if (imagePlaceholder != chatStyle.imagePlaceholder) return false;
-        if (defPushIconResid != chatStyle.defPushIconResid) return false;
-        if (nugatPushAccentColorResId != chatStyle.nugatPushAccentColorResId) return false;
-        if (defTitleResId != chatStyle.defTitleResId) return false;
-        if (isGAEnabled != chatStyle.isGAEnabled) return false;
-        if (welcomeScreenLogoResId != chatStyle.welcomeScreenLogoResId) return false;
-        if (welcomeScreenTitleTextResId != chatStyle.welcomeScreenTitleTextResId) return false;
-        if (welcomeScreenSubtitleTextResId != chatStyle.welcomeScreenSubtitleTextResId)
-            return false;
-        if (welcomeScreenTextColorResId != chatStyle.welcomeScreenTextColorResId) return false;
-        if (welcomeScreenTitleSizeInSp != chatStyle.welcomeScreenTitleSizeInSp) return false;
-        if (welcomeScreenSubtitleSizeInSp != chatStyle.welcomeScreenSubtitleSizeInSp) return false;
-        if (chatBodyIconsTint != chatStyle.chatBodyIconsTint) return false;
-        if (connectionMessageTextColor != chatStyle.connectionMessageTextColor) return false;
-        if (filesAndMediaScreenBackgroundColor != chatStyle.filesAndMediaScreenBackgroundColor)
-            return false;
-        if (fileBrowserDialogStyleResId != chatStyle.fileBrowserDialogStyleResId) return false;
-        if (pushBackgroundColorResId != chatStyle.pushBackgroundColorResId) return false;
-        if (scheduleMessageTextColorResId != chatStyle.scheduleMessageTextColorResId) return false;
-        if (scheduleMessageIconResId != chatStyle.scheduleMessageIconResId) return false;
-        if (showConsultSearching != chatStyle.showConsultSearching) return false;
-        if (showBackButton != chatStyle.showBackButton) return false;
-        if (inputTextColor != chatStyle.inputTextColor) return false;
-        return inputTextFont.equals(chatStyle.inputTextFont);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = chatTitleTextResId;
-        result = 31 * result + chatToolbarColorResId;
-        result = 31 * result + chatStatusBarColorResId;
-        result = 31 * result + menuItemTextColorResId;
-        result = 31 * result + chatToolbarTextColorResId;
-        result = 31 * result + chatToolbarHintTextColor;
-        result = 31 * result + chatBackgroundColor;
-        result = 31 * result + chatHighlightingColor;
-        result = 31 * result + chatMessageInputColor;
-        result = 31 * result + chatMessageInputHintTextColor;
-        result = 31 * result + incomingMessageBubbleColor;
-        result = 31 * result + outgoingMessageBubbleColor;
-        result = 31 * result + incomingMessageTextColor;
-        result = 31 * result + outgoingMessageTextColor;
-        result = 31 * result + defaultIncomingMessageAvatar;
-        result = 31 * result + imagePlaceholder;
-        result = 31 * result + defPushIconResid;
-        result = 31 * result + nugatPushAccentColorResId;
-        result = 31 * result + defTitleResId;
-        result = 31 * result + (isGAEnabled ? 1 : 0);
-        result = 31 * result + welcomeScreenLogoResId;
-        result = 31 * result + welcomeScreenTitleTextResId;
-        result = 31 * result + welcomeScreenSubtitleTextResId;
-        result = 31 * result + welcomeScreenTextColorResId;
-        result = 31 * result + welcomeScreenTitleSizeInSp;
-        result = 31 * result + welcomeScreenSubtitleSizeInSp;
-        result = 31 * result + chatBodyIconsTint;
-        result = 31 * result + connectionMessageTextColor;
-        result = 31 * result + filesAndMediaScreenBackgroundColor;
-        result = 31 * result + fileBrowserDialogStyleResId;
-        result = 31 * result + pushBackgroundColorResId;
-        result = 31 * result + scheduleMessageTextColorResId;
-        result = 31 * result + scheduleMessageIconResId;
-        result = 31 * result + (showConsultSearching ? 1 : 0);
-        result = 31 * result + (showBackButton ? 1 : 0);
-        result = 31 * result + inputTextFont.hashCode();
-        result = 31 * result + inputTextColor;
-        return result;
+        this.historyLoadingCount = historyLoadingCount;
+        this.canShowSpecialistInfo = canShowSpecialistInfo;
     }
 
     public static ChatStyle styleFromBundle(Bundle b) {
@@ -358,7 +279,10 @@ public class ChatStyle implements Serializable {
                 isScheduleMessageStyleExists ? scheduleMessageStyle.getInt(ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
                 isScheduleMessageStyleExists ? scheduleMessageStyle.getInt(ARG_SCHEDULE_MESSAGE_ICON_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getString(ARG_INPUT_TEXT_FONT_PATH) : null,
-                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INPUT_TEXT_COLOR_RES_ID) : INVALID);
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INPUT_TEXT_COLOR_RES_ID) : INVALID,
+                b.getInt(SETTING_HISTORY_LOADING_COUNT, DEFAULT_HISTORY_LOADING_COUNT),
+                b.getBoolean(SETTING_CAN_SHOW_SPECIALIST_INFO, DEFAULT_CAN_SHOW_SPECIALIST_INFO)
+        );
     }
 
     @Override
@@ -401,7 +325,104 @@ public class ChatStyle implements Serializable {
                 ", showBackButton=" + showBackButton +
                 ", inputTextFont='" + inputTextFont + '\'' +
                 ", inputTextColor=" + inputTextColor +
+                ", historyLoadingCount=" + historyLoadingCount +
+                ", canShowSpecialistInfo=" + canShowSpecialistInfo +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ChatStyle chatStyle = (ChatStyle) o;
+
+        if (chatTitleTextResId != chatStyle.chatTitleTextResId) return false;
+        if (chatToolbarColorResId != chatStyle.chatToolbarColorResId) return false;
+        if (chatStatusBarColorResId != chatStyle.chatStatusBarColorResId) return false;
+        if (menuItemTextColorResId != chatStyle.menuItemTextColorResId) return false;
+        if (chatToolbarTextColorResId != chatStyle.chatToolbarTextColorResId) return false;
+        if (chatToolbarHintTextColor != chatStyle.chatToolbarHintTextColor) return false;
+        if (chatBackgroundColor != chatStyle.chatBackgroundColor) return false;
+        if (chatHighlightingColor != chatStyle.chatHighlightingColor) return false;
+        if (chatMessageInputColor != chatStyle.chatMessageInputColor) return false;
+        if (chatMessageInputHintTextColor != chatStyle.chatMessageInputHintTextColor) return false;
+        if (incomingMessageBubbleColor != chatStyle.incomingMessageBubbleColor) return false;
+        if (outgoingMessageBubbleColor != chatStyle.outgoingMessageBubbleColor) return false;
+        if (incomingMessageTextColor != chatStyle.incomingMessageTextColor) return false;
+        if (outgoingMessageTextColor != chatStyle.outgoingMessageTextColor) return false;
+        if (defaultIncomingMessageAvatar != chatStyle.defaultIncomingMessageAvatar) return false;
+        if (imagePlaceholder != chatStyle.imagePlaceholder) return false;
+        if (defPushIconResid != chatStyle.defPushIconResid) return false;
+        if (nugatPushAccentColorResId != chatStyle.nugatPushAccentColorResId) return false;
+        if (defTitleResId != chatStyle.defTitleResId) return false;
+        if (isGAEnabled != chatStyle.isGAEnabled) return false;
+        if (welcomeScreenLogoResId != chatStyle.welcomeScreenLogoResId) return false;
+        if (welcomeScreenTitleTextResId != chatStyle.welcomeScreenTitleTextResId) return false;
+        if (welcomeScreenSubtitleTextResId != chatStyle.welcomeScreenSubtitleTextResId)
+            return false;
+        if (welcomeScreenTextColorResId != chatStyle.welcomeScreenTextColorResId) return false;
+        if (welcomeScreenTitleSizeInSp != chatStyle.welcomeScreenTitleSizeInSp) return false;
+        if (welcomeScreenSubtitleSizeInSp != chatStyle.welcomeScreenSubtitleSizeInSp) return false;
+        if (chatBodyIconsTint != chatStyle.chatBodyIconsTint) return false;
+        if (connectionMessageTextColor != chatStyle.connectionMessageTextColor) return false;
+        if (filesAndMediaScreenBackgroundColor != chatStyle.filesAndMediaScreenBackgroundColor)
+            return false;
+        if (fileBrowserDialogStyleResId != chatStyle.fileBrowserDialogStyleResId) return false;
+        if (pushBackgroundColorResId != chatStyle.pushBackgroundColorResId) return false;
+        if (scheduleMessageTextColorResId != chatStyle.scheduleMessageTextColorResId) return false;
+        if (scheduleMessageIconResId != chatStyle.scheduleMessageIconResId) return false;
+        if (showConsultSearching != chatStyle.showConsultSearching) return false;
+        if (showBackButton != chatStyle.showBackButton) return false;
+        if (inputTextColor != chatStyle.inputTextColor) return false;
+        if (historyLoadingCount != chatStyle.historyLoadingCount) return false;
+        if (canShowSpecialistInfo != chatStyle.canShowSpecialistInfo) return false;
+        return inputTextFont.equals(chatStyle.inputTextFont);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = chatTitleTextResId;
+        result = 31 * result + chatToolbarColorResId;
+        result = 31 * result + chatStatusBarColorResId;
+        result = 31 * result + menuItemTextColorResId;
+        result = 31 * result + chatToolbarTextColorResId;
+        result = 31 * result + chatToolbarHintTextColor;
+        result = 31 * result + chatBackgroundColor;
+        result = 31 * result + chatHighlightingColor;
+        result = 31 * result + chatMessageInputColor;
+        result = 31 * result + chatMessageInputHintTextColor;
+        result = 31 * result + incomingMessageBubbleColor;
+        result = 31 * result + outgoingMessageBubbleColor;
+        result = 31 * result + incomingMessageTextColor;
+        result = 31 * result + outgoingMessageTextColor;
+        result = 31 * result + defaultIncomingMessageAvatar;
+        result = 31 * result + imagePlaceholder;
+        result = 31 * result + defPushIconResid;
+        result = 31 * result + nugatPushAccentColorResId;
+        result = 31 * result + defTitleResId;
+        result = 31 * result + (isGAEnabled ? 1 : 0);
+        result = 31 * result + welcomeScreenLogoResId;
+        result = 31 * result + welcomeScreenTitleTextResId;
+        result = 31 * result + welcomeScreenSubtitleTextResId;
+        result = 31 * result + welcomeScreenTextColorResId;
+        result = 31 * result + welcomeScreenTitleSizeInSp;
+        result = 31 * result + welcomeScreenSubtitleSizeInSp;
+        result = 31 * result + chatBodyIconsTint;
+        result = 31 * result + connectionMessageTextColor;
+        result = 31 * result + filesAndMediaScreenBackgroundColor;
+        result = 31 * result + fileBrowserDialogStyleResId;
+        result = 31 * result + pushBackgroundColorResId;
+        result = 31 * result + scheduleMessageTextColorResId;
+        result = 31 * result + scheduleMessageIconResId;
+        result = 31 * result + (showConsultSearching ? 1 : 0);
+        result = 31 * result + (showBackButton ? 1 : 0);
+        result = 31 * result + inputTextFont.hashCode();
+        result = 31 * result + inputTextColor;
+        result = 31 * result + historyLoadingCount;
+        result = 31 * result + (canShowSpecialistInfo ? 1 : 0);
+        return result;
     }
 
     public static class IntentBuilder {
@@ -583,6 +604,18 @@ public class ChatStyle implements Serializable {
                 Log.e(TAG, "you must provide chat schedule message style. now using default");
             b.putBoolean(ARG_STYLE, true);
             return b;
+        }
+
+        public IntentBuilder setHistoryLoadingCount(Integer count) {
+            if (count != null && count > 0) {
+                b.putInt(SETTING_HISTORY_LOADING_COUNT, count);
+            }
+            return this;
+        }
+
+        public IntentBuilder setCanShowSpecialistInfo(boolean show) {
+            b.putBoolean(SETTING_CAN_SHOW_SPECIALIST_INFO, show);
+            return this;
         }
 
         public Intent build() {

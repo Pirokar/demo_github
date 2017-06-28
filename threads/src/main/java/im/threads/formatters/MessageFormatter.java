@@ -301,7 +301,6 @@ public class MessageFormatter {
                     mQuote,
                     phraseTimeStamp,
                     fileDescription,
-                    null,
                     backendId
             );
         } catch (JSONException e) {

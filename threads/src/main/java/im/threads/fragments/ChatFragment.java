@@ -564,7 +564,9 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
-        mChatController.onConsultChoose(getActivity(), consultConnectionMessage.getConsultId());
+        if (canShowSpecialistInfo(getActivity())) {
+            mChatController.onConsultChoose(getActivity(), consultConnectionMessage.getConsultId());
+        }
     }
 
     @Override
@@ -787,7 +789,9 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onConsultAvatarClick(String consultId) {
-        mChatController.onConsultChoose(getActivity(), consultId);
+        if (canShowSpecialistInfo(getActivity())) {
+            mChatController.onConsultChoose(getActivity(), consultId);
+        }
     }
 
     @Override
@@ -1769,5 +1773,10 @@ public class ChatFragment extends Fragment implements
                 search(false);
             }
         }
+    }
+
+    private boolean canShowSpecialistInfo(Context ctx) {
+        ChatStyle style = PrefUtils.getIncomingStyle(ctx);
+        return style != null ? style.canShowSpecialistInfo : ChatStyle.DEFAULT_CAN_SHOW_SPECIALIST_INFO;
     }
 }
