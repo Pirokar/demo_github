@@ -763,7 +763,12 @@ public class MessageFormatter {
             return ctx.getResources().getConfiguration().getLocales().get(0).toLanguageTag();
         } else {
             //noinspection deprecation
-            return ctx.getResources().getConfiguration().locale.toLanguageTag();
+            try {
+                return ctx.getResources().getConfiguration().locale.toLanguageTag();
+            } catch (NoSuchMethodError e) {
+                return ctx.getResources().getConfiguration().locale.getLanguage()
+                        + "-" + ctx.getResources().getConfiguration().locale.getCountry();
+            }
         }
     }
 
