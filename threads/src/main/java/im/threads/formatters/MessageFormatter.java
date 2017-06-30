@@ -296,7 +296,7 @@ public class MessageFormatter {
                 mQuote.getFileDescription().setTimeStamp(phraseTimeStamp);
             }
 
-            return new UserPhrase(
+            UserPhrase userPhrase =  new UserPhrase(
                     messageId,
                     message,
                     mQuote,
@@ -304,6 +304,8 @@ public class MessageFormatter {
                     fileDescription,
                     backendId
             );
+            userPhrase.setSentState(MessageState.STATE_SENT);
+            return userPhrase;
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
