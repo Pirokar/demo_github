@@ -23,8 +23,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8fe964b8-a02e-41a3-a693-13a066d93282" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" afterPath="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/threads/src/main/res/values/colors.xml" afterPath="$PROJECT_DIR$/threads/src/main/res/values/colors.xml" />
     </list>
     <ignored path="Threads-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -60,74 +63,39 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="MessageFormatter.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
+      <file leaf-file-name="colors.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/res/values/colors.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="768" column="81" selection-start-line="768" selection-start-column="81" selection-end-line="768" selection-end-column="81" />
+            <state relative-caret-position="323">
+              <caret line="19" column="28" selection-start-line="19" selection-start-column="17" selection-end-line="19" selection-end-column="28" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Locale.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/../sdk/platforms/android-25/android.jar!/java/util/Locale.class">
+      <file leaf-file-name="ChatStyle.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="89">
-              <caret line="117" column="22" selection-start-line="117" selection-start-column="22" selection-end-line="117" selection-end-column="22" />
+            <state relative-caret-position="251">
+              <caret line="225" column="57" selection-start-line="225" selection-start-column="57" selection-end-line="225" selection-end-column="57" />
               <folding>
-                <element signature="e#3493#3494#0" expanded="true" />
-                <element signature="e#3544#3545#0" expanded="true" />
+                <element signature="method#toString#0;class#ChatStyle#0" expanded="false" />
+                <element signature="method#equals#0;class#ChatStyle#0" expanded="false" />
+                <element signature="method#hashCode#0;class#ChatStyle#0" expanded="false" />
+                <element signature="method#setChatBodyStyle#0;class#IntentBuilder#0;class#ChatStyle#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="IncomingMessagesIntentService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="23" column="28" selection-start-line="23" selection-start-column="28" selection-end-line="23" selection-end-column="28" />
-              <folding />
-            </state>
+      <file leaf-file-name="AndroidManifest.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/threads/src/main/AndroidManifest.xml">
+          <provider editor-type-id="android-manifest">
+            <state />
           </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MyOtherPBReceiver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/broadcastReceivers/MyOtherPBReceiver.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-70">
-              <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ChatController.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="392">
-              <caret line="1533" column="5" selection-start-line="1533" selection-start-column="5" selection-end-line="1533" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainPBReceiver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/broadcastReceivers/MainPBReceiver.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
-              <caret line="41" column="34" selection-start-line="41" selection-start-column="34" selection-end-line="41" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MessageMatcher.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="29" column="22" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="22" />
+            <state relative-caret-position="-949">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -2663,8 +2631,8 @@
     <option name="modificationStamps">
       <map>
         <entry key="C:\Users\Admin\AndroidStudioProjects\Threads-Android" value="7458809793793" />
-        <entry key="$PROJECT_DIR$" value="7488091989754" />
-        <entry key="D:\Android\Threads-Android" value="7488529538279" />
+        <entry key="$PROJECT_DIR$" value="7488784865604" />
+        <entry key="D:\Android\Threads-Android" value="7488784865604" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -3084,7 +3052,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/ConsultFileViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/UserFileViewHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/holders/FilesDateStampHolder.java" />
         <option value="$PROJECT_DIR$/threads/src/main/res/layout/view_bottom_attachment_sheet.xml" />
@@ -3112,7 +3079,6 @@
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultPhrase.java" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/PushIniter.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/HistoryResponceV2.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/HistoryResponыeV2.java" />
@@ -3124,9 +3090,7 @@
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultConnectionMessage.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java" />
         <option value="$PROJECT_DIR$/threads/build.gradle" />
-        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
         <option value="$PROJECT_DIR$/threads/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/FilePoster.java" />
@@ -3135,13 +3099,17 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java" />
+        <option value="$PROJECT_DIR$/threads/src/main/res/values/colors.xml" />
+        <option value="$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1382" />
+    <option name="width" value="1370" />
     <option name="height" value="754" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -3169,7 +3137,11 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="AndroidView">
+        <subPane />
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -3246,11 +3218,37 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Threads-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Threads-Android" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="threads" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="values" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -3281,10 +3279,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="threads" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -3396,16 +3390,12 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="AndroidView">
-        <subPane />
-      </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Domopult" />
-    <property name="device.picker.selection" value="CC5AVYR08791" />
+    <property name="device.picker.selection" value="CB5A20W7HU" />
     <property name="SearchEverywhereHistoryKey" value="GcmIntentService&#9;PSI&#9;JAVA://com.pushserver.android.PushGcmIntentService&#10;ChatSt&#9;FILE&#9;file:///home/chybakut2004/Workspace/AndroidStudio/Threads-Android/threads/src/main/java/im/threads/model/ChatStyle.java" />
     <property name="android.project.structure.last.selected" value="push-api-release-1.0-41-2016-10-18-17-22" />
     <property name="android.project.structure.proportion" value="0.15" />
@@ -4068,7 +4058,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
+    <frame x="-8" y="-8" width="1370" height="754" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -4078,14 +4068,15 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.61577183" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28214827" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.50503355" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25838926" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28744328" sideWeight="0.49317408" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290469" sideWeight="0.493266" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2870229" sideWeight="0.49317408" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900763" sideWeight="0.493266" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980332" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.506734" order="3" side_tool="true" content_ui="tabs" />
@@ -4099,7 +4090,6 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Code Iris" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28214827" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32718122" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -4241,57 +4231,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ScheduleInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/fragment_chat_fragment.xml">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="255" column="0" selection-start-line="255" selection-start-column="0" selection-end-line="255" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer2">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
-          <caret line="40" column="22" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/ConsultWriter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultConnectionMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="64" selection-start-line="5" selection-start-column="64" selection-end-line="5" selection-end-column="64" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ConsultChatPhrase.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
@@ -4374,19 +4313,6 @@
         <state relative-caret-position="180">
           <caret line="132" column="23" selection-start-line="132" selection-start-column="23" selection-end-line="132" selection-end-column="23" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="79" column="10" selection-start-line="79" selection-start-column="10" selection-end-line="79" selection-end-column="10" />
-          <folding>
-            <element signature="method#toString#0;class#ChatStyle#0" expanded="false" />
-            <element signature="method#equals#0;class#ChatStyle#0" expanded="false" />
-            <element signature="method#hashCode#0;class#ChatStyle#0" expanded="false" />
-            <element signature="method#setChatBodyStyle#0;class#IntentBuilder#0;class#ChatStyle#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -4488,14 +4414,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="14" column="57" selection-start-line="14" selection-start-column="57" selection-end-line="14" selection-end-column="57" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/UserPhrase.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
@@ -4524,7 +4442,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="219">
           <caret line="23" column="51" selection-start-line="23" selection-start-column="51" selection-end-line="23" selection-end-column="51" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4574,15 +4491,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="27" column="58" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="40" column="8" selection-start-line="40" selection-start-column="8" selection-end-line="40" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4597,56 +4505,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
-          <caret line="1178" column="23" selection-start-line="1178" selection-start-column="23" selection-end-line="1178" selection-end-column="23" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#11729#11730#0" expanded="false" />
-            <element signature="e#11788#11789#0" expanded="false" />
-            <element signature="e#11955#11956#0" expanded="false" />
-            <element signature="e#12016#12017#0" expanded="false" />
-            <element signature="e#12160#12161#0" expanded="false" />
-            <element signature="e#12211#12212#0" expanded="false" />
-            <element signature="e#13356#13357#0" expanded="false" />
-            <element signature="e#13418#13419#0" expanded="false" />
-            <element signature="e#15481#15482#0" expanded="false" />
-            <element signature="e#15549#15550#0" expanded="false" />
-            <element signature="e#26049#26050#0" expanded="false" />
-            <element signature="e#26100#26101#0" expanded="false" />
-            <element signature="e#37597#37598#0" expanded="false" />
-            <element signature="e#37655#37656#0" expanded="false" />
-            <element signature="e#38075#38076#0" expanded="false" />
-            <element signature="e#38153#38154#0" expanded="false" />
-            <element signature="e#40938#40939#0" expanded="false" />
-            <element signature="e#41030#41031#0" expanded="false" />
-            <element signature="e#42836#42837#0" expanded="false" />
-            <element signature="e#42925#42926#0" expanded="false" />
-            <element signature="e#55124#55125#0" expanded="false" />
-            <element signature="e#55181#55182#0" expanded="false" />
-            <element signature="e#58603#58604#0" expanded="false" />
-            <element signature="e#58631#58632#0" expanded="false" />
-            <element signature="e#64439#64440#0" expanded="false" />
-            <element signature="e#64494#64495#0" expanded="false" />
-            <element signature="e#64730#64731#0" expanded="false" />
-            <element signature="e#64773#64774#0" expanded="false" />
-            <element signature="e#64858#64859#0" expanded="false" />
-            <element signature="e#64917#64918#0" expanded="false" />
-            <element signature="e#64956#64957#0" expanded="false" />
-            <element signature="e#65012#65013#0" expanded="false" />
-            <element signature="e#69747#69748#0" expanded="false" />
-            <element signature="e#69781#69782#0" expanded="false" />
-            <element signature="e#70609#70610#0" expanded="false" />
-            <element signature="e#70676#70677#0" expanded="false" />
-            <element signature="e#72039#72040#0" expanded="false" />
-            <element signature="e#72106#72107#0" expanded="false" />
-            <element signature="e#72697#72698#0" expanded="false" />
-            <element signature="e#72757#72758#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/services/IncomingMessagesIntentService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -4655,9 +4513,102 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$PROJECT_DIR$/../sdk/platforms/android-25/android.jar!/java/util/Locale.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1360">
+          <caret line="117" column="22" selection-start-line="117" selection-start-column="22" selection-end-line="117" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="40" column="8" selection-start-line="40" selection-start-column="8" selection-end-line="40" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/dialog_fast_answer.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-694">
+          <caret line="22" column="24" selection-start-line="22" selection-start-column="24" selection-end-line="22" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="87">
+          <caret line="991" column="31" selection-start-line="991" selection-start-column="31" selection-end-line="991" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/sequenia/appwithchatdev/ChatIntentHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-291">
+          <caret line="15" column="18" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="18" />
+          <folding>
+            <marker date="1498793285803" expanded="false" signature="3001:3023" ph="&quot;ThreadsApp&quot;" />
+            <marker date="1498793285803" expanded="false" signature="3283:3299" ph="&quot;Добро пожаловать в контактный центр&quot;" />
+            <marker date="1498793285803" expanded="false" signature="3384:3406" ph="&quot;Отправьте ваш вопрос, первый освободившийся оператор на...&quot;" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/broadcastReceivers/MyOtherPBReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="83">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/view_welcome.xml">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer2">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/views/WelcomeScreen.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="47" column="55" selection-start-line="47" selection-start-column="55" selection-end-line="47" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/res/layout/fragment_chat_fragment.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="41" column="34" selection-start-line="41" selection-start-column="34" selection-end-line="41" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/fragments/ChatFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="257" column="72" selection-start-line="257" selection-start-column="72" selection-end-line="257" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/utils/MessageMatcher.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
+        <state relative-caret-position="189">
           <caret line="29" column="22" selection-start-line="29" selection-start-column="22" selection-end-line="29" selection-end-column="22" />
           <folding />
         </state>
@@ -4665,44 +4616,49 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/broadcastReceivers/MainPBReceiver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="41" column="34" selection-start-line="41" selection-start-column="34" selection-end-line="41" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/broadcastReceivers/MyOtherPBReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-70">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        <state relative-caret-position="279">
+          <caret line="26" column="92" selection-start-line="26" selection-start-column="92" selection-end-line="26" selection-end-column="92" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/controllers/ChatController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="392">
-          <caret line="1533" column="5" selection-start-line="1533" selection-start-column="5" selection-end-line="1533" selection-end-column="5" />
+        <state relative-caret-position="308">
+          <caret line="1046" column="59" selection-start-line="1046" selection-start-column="59" selection-end-line="1046" selection-end-column="59" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/../sdk/platforms/android-25/android.jar!/java/util/Locale.class">
+    <entry file="file://$PROJECT_DIR$/threads/src/main/AndroidManifest.xml">
+      <provider editor-type-id="android-manifest">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="89">
-          <caret line="117" column="22" selection-start-line="117" selection-start-column="22" selection-end-line="117" selection-end-column="22" />
+        <state relative-caret-position="-949">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/res/values/colors.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="28" selection-start-line="19" selection-start-column="17" selection-end-line="19" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/model/ChatStyle.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="251">
+          <caret line="225" column="57" selection-start-line="225" selection-start-column="57" selection-end-line="225" selection-end-column="57" />
           <folding>
-            <element signature="e#3493#3494#0" expanded="true" />
-            <element signature="e#3544#3545#0" expanded="true" />
+            <element signature="method#toString#0;class#ChatStyle#0" expanded="false" />
+            <element signature="method#equals#0;class#ChatStyle#0" expanded="false" />
+            <element signature="method#hashCode#0;class#ChatStyle#0" expanded="false" />
+            <element signature="method#setChatBodyStyle#0;class#IntentBuilder#0;class#ChatStyle#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/src/main/java/im/threads/formatters/MessageFormatter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="768" column="81" selection-start-line="768" selection-start-column="81" selection-end-line="768" selection-end-column="81" />
-          <folding />
         </state>
       </provider>
     </entry>

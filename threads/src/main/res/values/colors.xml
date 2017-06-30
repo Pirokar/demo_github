@@ -14,7 +14,21 @@
     <color name="toolbar_gray">#333333</color>
     <color name="white">#ffffff</color>
 
+    <!-- значения по умолчанию в ChatStyle-->
 
+    <color name="teal_009688">#009688</color>
+    <color name="teal_004D40">#004D40</color>
+    <color name="blue_eff3f8">#eff3f8</color>
+    <color name="grey_aaa">#AAAAAA</color>
+    <color name="grey_555">#555555</color>
+    <color name="blue_0F87FF">#0F87FF</color>
+    <color name="blue_transparent_700F87FF">#700F87FF</color>
+    <color name="blue_3598dc">#3598DC</color>
+    <color name="blue_grey_607d8b">#607d8b</color>
+    <color name="orange_ff9800">#ff9800</color>
+    <color name="cian_b2dfdb">#b2dfdb</color>
+    <color name="blue_e6e6ec">#e6e6ec</color>
+    <color name="red_f44336">#f44336</color>
 
 
     <!--<color name="toolbar_background">#83B144</color>-->

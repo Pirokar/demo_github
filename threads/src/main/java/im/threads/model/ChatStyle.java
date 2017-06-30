@@ -11,6 +11,7 @@ import android.util.Log;
 
 import java.io.Serializable;
 
+import im.threads.R;
 import im.threads.activities.ChatActivity;
 import im.threads.utils.PrefUtils;
 
@@ -189,15 +190,15 @@ public class ChatStyle implements Serializable {
                      int inputTextColor,
                      int historyLoadingCount,
                      boolean canShowSpecialistInfo) {
+        this.chatToolbarColorResId = chatToolbarColorResId == INVALID ? R.color.teal_009688 : chatToolbarColorResId;
         this.chatTitleTextResId = chatTitleTextResId;
-        this.chatToolbarColorResId = chatToolbarColorResId;
-        this.chatToolbarTextColorResId = chatToolbarTextColorResId;
-        this.chatBackgroundColor = chatBackgroundColor;
+        this.chatToolbarTextColorResId = chatToolbarTextColorResId == INVALID ? R.color.white : chatToolbarTextColorResId;
+        this.chatBackgroundColor = chatBackgroundColor == INVALID ? R.color.blue_eff3f8 : chatBackgroundColor;
         this.chatMessageInputColor = chatMessageInputColor;
-        this.incomingMessageBubbleColor = incomingMessageBubbleColor;
-        this.outgoingMessageBubbleColor = outgoingMessageBubbleColor;
-        this.incomingMessageTextColor = incomingMessageTextColor;
-        this.outgoingMessageTextColor = outgoingMessageTextColor;
+        this.incomingMessageBubbleColor = incomingMessageBubbleColor == INVALID ? R.color.white : incomingMessageBubbleColor;
+        this.outgoingMessageBubbleColor = outgoingMessageBubbleColor == INVALID ? R.color.blue_3598dc : outgoingMessageBubbleColor;
+        this.incomingMessageTextColor = incomingMessageTextColor == INVALID ? R.color.black : incomingMessageTextColor;
+        this.outgoingMessageTextColor = outgoingMessageTextColor == INVALID ? R.color.white : outgoingMessageTextColor;
         this.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
         this.imagePlaceholder = imagePlaceholder;
         this.defPushIconResid = defPushIconResid;
@@ -206,20 +207,20 @@ public class ChatStyle implements Serializable {
         this.welcomeScreenLogoResId = welcomeScreenLogoResId;
         this.welcomeScreenTitleTextResId = welcomeScreenTitleTextResId;
         this.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
-        this.welcomeScreenTextColorResId = welcomeScreenTextColorResId;
+        this.welcomeScreenTextColorResId = welcomeScreenTextColorResId == INVALID ? R.color.black : welcomeScreenTextColorResId ;
         this.welcomeScreenTitleSizeInSp = welcomeScreenTitleSizeInSp;
         this.welcomeScreenSubtitleSizeInSp = welcomeScreenSubtitleSizeInSp;
-        this.chatBodyIconsTint = chatBodyIconsTint;
-        this.connectionMessageTextColor = connectionMessageTextColor;
+        this.chatBodyIconsTint = chatBodyIconsTint == INVALID ? R.color.blue_0F87FF : chatBodyIconsTint;
+        this.connectionMessageTextColor = connectionMessageTextColor == INVALID ? R.color.blue_grey_607d8b : connectionMessageTextColor;
         this.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
         this.pushBackgroundColorResId = pushBackgroundColorResId;
         this.nugatPushAccentColorResId = nugatPushAccentColorResId;
-        this.chatStatusBarColorResId = chatStatusBarColorResId;
+        this.chatStatusBarColorResId = chatStatusBarColorResId == INVALID ? R.color.teal_004D40 : chatStatusBarColorResId;
         this.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
         this.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
         this.menuItemTextColorResId = menuItemTextColorResId;
         this.chatToolbarHintTextColor = chatToolbarHintTextColor;
-        this.chatHighlightingColor = chatHighlightingColor;
+        this.chatHighlightingColor = chatHighlightingColor == INVALID ? R.color.blue_transparent_700F87FF : chatHighlightingColor;
         this.scheduleMessageTextColorResId = scheduleMessageTextColorResId;
         this.scheduleMessageIconResId = scheduleMessageIconResId;
         this.showConsultSearching = showConsultSearching;
