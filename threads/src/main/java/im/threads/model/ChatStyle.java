@@ -74,6 +74,9 @@ public class ChatStyle implements Serializable {
     private static final String ARG_INPUT_TEXT_FONT_PATH = "inputTextFont";
     private static final String SETTING_HISTORY_LOADING_COUNT = "setting@historyLoadingCount";
     private static final String SETTING_CAN_SHOW_SPECIALIST_INFO = "setting@canShowSpecialistInfo";
+    private static final String SETTING_DEFAULT_FONT_BOLD = "setting@defaultFontBold";
+    private static final String SETTING_DEFAULT_FONT_LIGHT = "setting@defaultFontLight";
+    private static final String SETTING_DEFAULT_FONT_REGULAR = "setting@defaultFonRegular";
 
     public static final int INVALID = -1;
 
@@ -150,6 +153,9 @@ public class ChatStyle implements Serializable {
     public final int inputTextColor;
     public int historyLoadingCount;
     public boolean canShowSpecialistInfo;
+    public final String defaultFontBold;
+    public final String defaultFontLight;
+    public final String defaultFontRegular;
 
     public ChatStyle(int chatBackgroundColor,
                      int chatHighlightingColor,
@@ -189,7 +195,10 @@ public class ChatStyle implements Serializable {
                      String inputTextFont,
                      int inputTextColor,
                      int historyLoadingCount,
-                     boolean canShowSpecialistInfo) {
+                     boolean canShowSpecialistInfo,
+                     String defaultFontBold,
+                     String defaultFontLight,
+                     String defaultFontRegular) {
         this.chatToolbarColorResId = chatToolbarColorResId == INVALID ? R.color.teal_009688 : chatToolbarColorResId;
         this.chatTitleTextResId = chatTitleTextResId;
         this.chatToolbarTextColorResId = chatToolbarTextColorResId == INVALID ? R.color.white : chatToolbarTextColorResId;
@@ -207,7 +216,7 @@ public class ChatStyle implements Serializable {
         this.welcomeScreenLogoResId = welcomeScreenLogoResId;
         this.welcomeScreenTitleTextResId = welcomeScreenTitleTextResId;
         this.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
-        this.welcomeScreenTextColorResId = welcomeScreenTextColorResId == INVALID ? R.color.black : welcomeScreenTextColorResId ;
+        this.welcomeScreenTextColorResId = welcomeScreenTextColorResId == INVALID ? R.color.black : welcomeScreenTextColorResId;
         this.welcomeScreenTitleSizeInSp = welcomeScreenTitleSizeInSp;
         this.welcomeScreenSubtitleSizeInSp = welcomeScreenSubtitleSizeInSp;
         this.chatBodyIconsTint = chatBodyIconsTint == INVALID ? R.color.blue_0F87FF : chatBodyIconsTint;
@@ -229,6 +238,9 @@ public class ChatStyle implements Serializable {
         this.inputTextColor = inputTextColor;
         this.historyLoadingCount = historyLoadingCount;
         this.canShowSpecialistInfo = canShowSpecialistInfo;
+        this.defaultFontBold = defaultFontBold;
+        this.defaultFontLight = defaultFontLight;
+        this.defaultFontRegular = defaultFontRegular;
     }
 
     public static ChatStyle styleFromBundle(Bundle b) {
@@ -282,7 +294,10 @@ public class ChatStyle implements Serializable {
                 isChatBodyStyleExists ? chatBodyStyle.getString(ARG_INPUT_TEXT_FONT_PATH) : null,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INPUT_TEXT_COLOR_RES_ID) : INVALID,
                 b.getInt(SETTING_HISTORY_LOADING_COUNT, DEFAULT_HISTORY_LOADING_COUNT),
-                b.getBoolean(SETTING_CAN_SHOW_SPECIALIST_INFO, DEFAULT_CAN_SHOW_SPECIALIST_INFO)
+                b.getBoolean(SETTING_CAN_SHOW_SPECIALIST_INFO, DEFAULT_CAN_SHOW_SPECIALIST_INFO),
+                b.getString(SETTING_DEFAULT_FONT_BOLD, null),
+                b.getString(SETTING_DEFAULT_FONT_LIGHT, null),
+                b.getString(SETTING_DEFAULT_FONT_REGULAR, null)
         );
     }
 
@@ -616,6 +631,21 @@ public class ChatStyle implements Serializable {
 
         public IntentBuilder setCanShowSpecialistInfo(boolean show) {
             b.putBoolean(SETTING_CAN_SHOW_SPECIALIST_INFO, show);
+            return this;
+        }
+
+        public IntentBuilder setDefaultFontBold(String path) {
+            b.putString(SETTING_DEFAULT_FONT_BOLD, path);
+            return this;
+        }
+
+        public IntentBuilder setDefaultFontLight(String path) {
+            b.putString(SETTING_DEFAULT_FONT_LIGHT, path);
+            return this;
+        }
+
+        public IntentBuilder setDefaultFontRegular(String path) {
+            b.putString(SETTING_DEFAULT_FONT_REGULAR, path);
             return this;
         }
 

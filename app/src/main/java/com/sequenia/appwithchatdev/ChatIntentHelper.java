@@ -13,7 +13,10 @@ public class ChatIntentHelper {
     public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
         return ChatStyle.IntentBuilder
                 .getBuilder(activity, clientId, userName)
-                /*.setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
+                /*.setDefaultFontBold("comic.ttf")
+                .setDefaultFontLight("comic.ttf")
+                .setDefaultFontRegular("comic.ttf")
+                .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
                         R.color.toolbar_background,//ToolBar background chatToolbarColorResId
                         R.color.toolbar_widget,//Toolbar widget chatToolbarTextColorResId
                         R.color.status_bar,//status bar chatStatusBarColorResId
@@ -52,7 +55,8 @@ public class ChatIntentHelper {
                         , 14)//размер шрифта подзаголовка welcomeScreenSubtitleSizeInSp
                 .setScheduleMessageStyle(
                         R.drawable.schedule_icon, // Иконка сообщения о расписании scheduleMessageIconResId
-                        R.color.schedule_message_text_color)*/; // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
+                        R.color.schedule_message_text_color)*/
+                ; // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
     }
 
 }
