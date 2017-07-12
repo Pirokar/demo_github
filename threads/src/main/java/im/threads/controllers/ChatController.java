@@ -187,7 +187,9 @@ public class ChatController {
 
     private static void onClientIdChanged(Context ctx, String finalClientId) {
         PrefUtils.setNewClientId(ctx, finalClientId);
-        if (PrefUtils.getDeviceAddress(ctx) == null) {
+        try {
+            getPushControllerInstance(ctx);
+        } catch (PushServerErrorException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "device address was not set, returning");
             return;
         }
@@ -202,7 +204,6 @@ public class ChatController {
                 // send CLIENT_OFFLINE message
                 sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
             }
-            // getPushControllerInstance(ctx).setClientId(finalClientId);
             PrefUtils.setClientId(ctx, finalClientId);
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId, ctx);
             sendMessageMFMSSync(ctx, environmentMessage, true);
@@ -491,7 +492,7 @@ public class ChatController {
                         }
                     });
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -674,7 +675,7 @@ public class ChatController {
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
             if (!isActive) appContext.startService(i);
         }
-        if (fragment != null && isActive) {//// TODO: 15.12.2016  for test
+        if (fragment != null && isActive) {// TODO: 15.12.2016  for test
             String error =
                     "error 382  sending message to server" +
                             "\ncode = " + e.getErrorCode()
@@ -839,7 +840,7 @@ public class ChatController {
                     mDatabaseHolder.putMessagesSync(chatItems);
                     isDownloadingMessages = false;
                     if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -1463,8 +1464,9 @@ public class ChatController {
      * @param start ид сообщения от которого грузить, null если с начала
      * @param count количество сообщений для загрузки
      */
-    private static JsonElement getHistorySync(Context ctx, Long start, Long count) throws IOException {
-        String token = PrefUtils.getToken(ctx);
+    private static JsonElement getHistorySync(Context ctx, Long start, Long count) throws Exception {
+        // todo при необходимости можно вынести строку снизу как метод получени токена
+        String token = getPushControllerInstance(ctx).getDeviceAddress() + PrefUtils.getClientID(ctx);
         String userAgent = MessageFormatter.getUserAgent(ctx);
         String url = PrefUtils.getServerUrlMetaInfo(ctx);
         if (count == null) {

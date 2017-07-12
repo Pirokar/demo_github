@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.pushserver.android.PushBroadcastReceiver;
-import im.threads.utils.MessageMatcher;
+
 import im.threads.controllers.ChatController;
+import im.threads.utils.MessageMatcher;
 import im.threads.utils.PrefUtils;
 
 /**
@@ -26,7 +27,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
         if (isChatSystemPush(bundle)) {
             ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
         } else {
-            if(!isChatPush(bundle) && ChatController.getShortPushListener() != null) {
+            if (!isChatPush(bundle) && ChatController.getShortPushListener() != null) {
                 ChatController.getShortPushListener().onNewShortPushNotification(this, context, s, bundle);
             }
         }
@@ -53,7 +54,6 @@ public class MainPBReceiver extends PushBroadcastReceiver {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (s != null) PrefUtils.setDeviceAddress(context, s);
                 context.sendBroadcast(new Intent(ChatController.DEVICE_ID_IS_SET_BROADCAST));
             }
         }).start();

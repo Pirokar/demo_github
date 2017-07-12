@@ -5,13 +5,13 @@ import org.json.JSONObject;
 
 /**
  * Created by yuri on 09.09.2016.
+ *
  */
 public class ConsultInfo {
     private final String name;
     private final String id;
     private final String status;
     private final String photoUrl;
-//todo gender??
 
     public ConsultInfo(String name, String id, String status, String photoUrl) {
         this.name = name;

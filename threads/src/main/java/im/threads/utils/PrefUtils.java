@@ -7,17 +7,16 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
-
-import im.threads.model.ChatStyle;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import im.threads.model.ChatStyle;
 
 /**
  * Created by yuri on 08.08.2016.
@@ -46,14 +45,6 @@ public class PrefUtils {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(PrefUtils.class + IS_UUID_SET, false);
     }
 
-    public static String getDeviceAddress(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + DEVICE_ADDRESS, null);
-    }
-
-    public static void setDeviceAddress(Context ctx, String deviceAddress) {
-        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + DEVICE_ADDRESS, deviceAddress).commit();
-    }
-
     public static String getGaTrackerId(Context ctx) {
         //  return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + GA_TRACKER_ID, null);
         return "UA-48198875-10";
@@ -79,8 +70,6 @@ public class PrefUtils {
     public static String getUserName(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + CLIENT_NAME, "");
     }
-
-
 
     public static void setNewClientId(Context ctx, String clientId) {
         if (clientId == null) throw new IllegalStateException("clientId is null");
@@ -144,7 +133,7 @@ public class PrefUtils {
                 e.printStackTrace();
             }
         }
-       return style;
+        return style;
     }
 
     public static String getServerUrlMetaInfo(Context context) {
@@ -161,9 +150,5 @@ public class PrefUtils {
             }
         }
         return null;
-    }
-
-    public static String getToken(Context context) {
-        return getDeviceAddress(context) + ":" + getClientID(context);
     }
 }
