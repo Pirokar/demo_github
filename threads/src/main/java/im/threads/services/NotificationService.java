@@ -108,6 +108,8 @@ public class NotificationService extends Service {
 
             if (Build.VERSION.SDK_INT < 24) {
                 Notification notification = getMstyleNotif(notificationBuilder, items);
+                notification.defaults |= Notification.DEFAULT_SOUND;
+                notification.defaults |= Notification.DEFAULT_VIBRATE;
                 if(needsShowNotification()) {
                     nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
                     ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
@@ -117,6 +119,8 @@ public class NotificationService extends Service {
                     @Override
                     public void onComplete(final Notification data) {
                         if(needsShowNotification()) {
+                            data.defaults |= Notification.DEFAULT_SOUND;
+                            data.defaults |= Notification.DEFAULT_VIBRATE;
                             nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
                             ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
                         }
@@ -167,7 +171,7 @@ public class NotificationService extends Service {
     private void dismissUnreadMessagesNotification() {
         unreadMessages.clear();
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancel(UNREAD_MESSAGE_PUSH_ID);;
+        nm.cancel(UNREAD_MESSAGE_PUSH_ID);
     }
 
     Notification getMstyleNotif(
