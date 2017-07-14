@@ -15,6 +15,15 @@ public class MessageMatcher {
     public static final String SURVEY = "SURVEY";
     public static final String MESSAGE = "MESSAGE";
     public static final String ON_HOLD = "ON_HOLD";
+    public static final String NONE = "NONE";
+    public static final String MESSAGES_READ = "MESSAGES_READ";
+    public static final String OPERATOR_LOOKUP_STARTED = "OPERATOR_LOOKUP_STARTED";
+    public static final String CLIENT_BLOCKED = "CLIENT_BLOCKED";
+    public static final String THREAD_OPENED = "THREAD_OPENED";
+    public static final String THREAD_CLOSED = "THREAD_CLOSED";
+    public static final String SCENARIO = "SCENARIO";
+
+
     public static final int TYPE_OPERATOR_JOINED = 1;
     public static final int TYPE_OPERATOR_LEFT = 2;
     public static final int TYPE_OPERATOR_TYPING = 3;

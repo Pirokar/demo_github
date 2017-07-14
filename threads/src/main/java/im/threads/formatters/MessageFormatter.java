@@ -36,6 +36,7 @@ import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
+import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.MessgeFromHistory;
@@ -189,6 +190,23 @@ public class MessageFormatter {
         return type;
     }
 
+    private static boolean isChatPush(JSONObject fullMessage) {
+        String type;
+
+        try {
+            if (fullMessage.has("origin")) {
+                type = fullMessage.getString("origin");
+            } else {
+                type = null;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            type = null;
+        }
+
+        return type != null && type.equalsIgnoreCase("threads");
+    }
+
 //    private static Boolean getTypeOfSurvey(JSONObject fullMessage) {
 //        Boolean simple;
 //
@@ -296,7 +314,7 @@ public class MessageFormatter {
                 mQuote.getFileDescription().setTimeStamp(phraseTimeStamp);
             }
 
-            UserPhrase userPhrase =  new UserPhrase(
+            UserPhrase userPhrase = new UserPhrase(
                     messageId,
                     message,
                     mQuote,
@@ -344,6 +362,15 @@ public class MessageFormatter {
                 // Либо в fullMessage должны содержаться ключи из списка:
                 // "attachments", "text", "quotes"
                 return checkMessageIsFull(pushMessage, fullMessage);
+            } else if (type.equalsIgnoreCase(MessageMatcher.NONE)
+                    || type.equalsIgnoreCase(MessageMatcher.MESSAGES_READ)
+                    || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LOOKUP_STARTED)
+                    || type.equalsIgnoreCase(MessageMatcher.CLIENT_BLOCKED)
+                    || type.equalsIgnoreCase(MessageMatcher.THREAD_OPENED)
+                    || type.equalsIgnoreCase(MessageMatcher.THREAD_CLOSED)
+                    || type.equalsIgnoreCase(MessageMatcher.SCENARIO)
+                    || isChatPush(fullMessage)) {
+                return new EmptyChatItem();
             } else {
                 return checkMessageIsFull(pushMessage, fullMessage);
             }

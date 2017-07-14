@@ -52,6 +52,7 @@ import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
+import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
 import im.threads.model.HistoryResponseV2;
 import im.threads.model.MessageState;
@@ -1157,7 +1158,8 @@ public class ChatController {
 
         PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
 
-        if (chatItem != null && !MessageFormatter.checkId(pushMessage, PrefUtils.getClientID(ctx))) {
+        if (chatItem != null && (!MessageFormatter.checkId(pushMessage, PrefUtils.getClientID(ctx))
+                || chatItem instanceof EmptyChatItem)) {
             pushMessageCheckResult.setDetected(true);
             pushMessageCheckResult.setNeedsShowIsStatusBar(false);
             return pushMessageCheckResult;
