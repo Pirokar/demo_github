@@ -77,6 +77,22 @@ public class ChatStyle implements Serializable {
     private static final String SETTING_DEFAULT_FONT_BOLD = "setting@defaultFontBold";
     private static final String SETTING_DEFAULT_FONT_LIGHT = "setting@defaultFontLight";
     private static final String SETTING_DEFAULT_FONT_REGULAR = "setting@defaultFonRegular";
+    private static final String SETTING_TOOLBAR_TITLE_FONT = "setting@toolbarTitleFont";
+    private static final String SETTING_TOOLBAR_SUBTITLE_FONT = "setting@toolbarSubtitleFont";
+    private static final String SETTING_PLACEHOLDER_TITLE_FONT = "setting@placeholderTitleFont";
+    private static final String SETTING_PLACEHOLDER_SUBTITLE_FONT = "setting@placeholderSubtitleFont";
+    private static final String SETTING_INPUT_QUOTED_MESSAGE_AUTHOR_FONT = "setting@inputQuotedMessageAuthorFont";
+    private static final String SETTING_INPUT_QUOTED_MESSAGE_FONT = "setting@inputQuotedMessageFont";
+    private static final String SETTING_BUBBLE_MESSAGE_FONT = "setting@bubbleMessageFont";
+    private static final String SETTING_BUBBLE_TIME_FONT = "setting@bubbleTimeFont";
+    private static final String SETTING_QUOTE_AUTHOR_FONT = "setting@quoteAuthorFont";
+    private static final String SETTING_QUOTE_MESSAGE_FONT = "setting@quoteMessageFont";
+    private static final String SETTING_QUOTE_TIME_FONT = "setting@quoteTimeFont";
+    private static final String SETTING_MESSAGE_HEADER_FONT = "setting@messageHeaderFont";
+    private static final String SETTING_SPECIALIST_CONNECT_TITLE_FONT = "setting@specialistConnectTitleFont";
+    private static final String SETTING_SPECIALIST_CONNECT_SUBTITLE_FONT = "setting@specialistConnectSubtitleFont";
+    private static final String SETTING_TYPING_FONT = "setting@typingFont";
+    private static final String SETTING_SCHEDULE_ALERT_FONT = "setting@scheduleAlerFont";
 
     public static final int INVALID = -1;
 
@@ -156,6 +172,22 @@ public class ChatStyle implements Serializable {
     public final String defaultFontBold;
     public final String defaultFontLight;
     public final String defaultFontRegular;
+    public final String toolbarTitleFont;
+    public final String toolbarSubtitleFont;
+    public final String placeholderTitleFont;
+    public final String placeholderSubtitleFont;
+    public final String inputQuotedMessageAuthorFont;
+    public final String inputQuotedMessageFont;
+    public final String bubbleMessageFont;
+    public final String bubbleTimeFont;
+    public final String quoteAuthorFont;
+    public final String quoteMessageFont;
+    public final String quoteTimeFont;
+    public final String messageHeaderFont;
+    public final String specialistConnectTitleFont;
+    public final String specialistConnectSubtitleFont;
+    public final String typingFont;
+    public final String scheduleAlerFont;
 
     public ChatStyle(int chatBackgroundColor,
                      int chatHighlightingColor,
@@ -198,7 +230,24 @@ public class ChatStyle implements Serializable {
                      boolean canShowSpecialistInfo,
                      String defaultFontBold,
                      String defaultFontLight,
-                     String defaultFontRegular) {
+                     String defaultFontRegular,
+                     String toolbarTitleFont,
+                     String toolbarSubtitleFont,
+                     String placeholderTitleFont,
+                     String placeholderSubtitleFont,
+                     String inputQuotedMessageFont,
+                     String inputQuotedMessageAuthorFont,
+                     String bubbleMessageFont,
+                     String bubbleTimeFont,
+                     String quoteAuthorFont,
+                     String quoteMessageFont,
+                     String quoteTimeFont,
+                     String messageHeaderFont,
+                     String specialistConnectTitleFont,
+                     String specialistConnectSubtitleFont,
+                     String typingFont,
+                     String scheduleAlerFont
+    ) {
         this.chatToolbarColorResId = chatToolbarColorResId == INVALID ? R.color.teal_009688 : chatToolbarColorResId;
         this.chatTitleTextResId = chatTitleTextResId;
         this.chatToolbarTextColorResId = chatToolbarTextColorResId == INVALID ? R.color.white : chatToolbarTextColorResId;
@@ -241,6 +290,22 @@ public class ChatStyle implements Serializable {
         this.defaultFontBold = defaultFontBold;
         this.defaultFontLight = defaultFontLight;
         this.defaultFontRegular = defaultFontRegular;
+        this.toolbarTitleFont = toolbarTitleFont;
+        this.toolbarSubtitleFont = toolbarSubtitleFont;
+        this.placeholderTitleFont = placeholderTitleFont;
+        this.placeholderSubtitleFont = placeholderSubtitleFont;
+        this.inputQuotedMessageFont = inputQuotedMessageFont;
+        this.inputQuotedMessageAuthorFont = inputQuotedMessageAuthorFont;
+        this.bubbleMessageFont = bubbleMessageFont;
+        this.bubbleTimeFont = bubbleTimeFont;
+        this.quoteAuthorFont = quoteAuthorFont;
+        this.quoteMessageFont = quoteMessageFont;
+        this.quoteTimeFont = quoteTimeFont;
+        this.messageHeaderFont = messageHeaderFont;
+        this.specialistConnectTitleFont = specialistConnectTitleFont;
+        this.specialistConnectSubtitleFont = specialistConnectSubtitleFont;
+        this.typingFont = typingFont;
+        this.scheduleAlerFont = scheduleAlerFont;
     }
 
     public static ChatStyle styleFromBundle(Bundle b) {
@@ -297,7 +362,23 @@ public class ChatStyle implements Serializable {
                 b.getBoolean(SETTING_CAN_SHOW_SPECIALIST_INFO, DEFAULT_CAN_SHOW_SPECIALIST_INFO),
                 b.getString(SETTING_DEFAULT_FONT_BOLD, null),
                 b.getString(SETTING_DEFAULT_FONT_LIGHT, null),
-                b.getString(SETTING_DEFAULT_FONT_REGULAR, null)
+                b.getString(SETTING_DEFAULT_FONT_REGULAR, null),
+                b.getString(SETTING_TOOLBAR_TITLE_FONT, null),
+                b.getString(SETTING_TOOLBAR_SUBTITLE_FONT, null),
+                b.getString(SETTING_PLACEHOLDER_TITLE_FONT, null),
+                b.getString(SETTING_PLACEHOLDER_SUBTITLE_FONT, null),
+                b.getString(SETTING_INPUT_QUOTED_MESSAGE_FONT, null),
+                b.getString(SETTING_INPUT_QUOTED_MESSAGE_AUTHOR_FONT, null),
+                b.getString(SETTING_BUBBLE_MESSAGE_FONT, null),
+                b.getString(SETTING_BUBBLE_TIME_FONT, null),
+                b.getString(SETTING_QUOTE_AUTHOR_FONT, null),
+                b.getString(SETTING_QUOTE_MESSAGE_FONT, null),
+                b.getString(SETTING_QUOTE_TIME_FONT, null),
+                b.getString(SETTING_MESSAGE_HEADER_FONT, null),
+                b.getString(SETTING_SPECIALIST_CONNECT_TITLE_FONT, null),
+                b.getString(SETTING_SPECIALIST_CONNECT_SUBTITLE_FONT, null),
+                b.getString(SETTING_TYPING_FONT, null),
+                b.getString(SETTING_SCHEDULE_ALERT_FONT, null)
         );
     }
 
@@ -646,6 +727,86 @@ public class ChatStyle implements Serializable {
 
         public IntentBuilder setDefaultFontRegular(String path) {
             b.putString(SETTING_DEFAULT_FONT_REGULAR, path);
+            return this;
+        }
+
+        public IntentBuilder setToolbarTitleFont(String path) {
+            b.putString(SETTING_TOOLBAR_TITLE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setToolbarSubtitleFont(String path) {
+            b.putString(SETTING_TOOLBAR_SUBTITLE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setPlaceholderTitleFont(String path) {
+            b.putString(SETTING_PLACEHOLDER_TITLE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setPlaceholderSubtitleFont(String path) {
+            b.putString(SETTING_PLACEHOLDER_SUBTITLE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setInputQuotedMessageAuthorFont(String path) {
+            b.putString(SETTING_INPUT_QUOTED_MESSAGE_AUTHOR_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setInputQuotedMessageFont(String path) {
+            b.putString(SETTING_INPUT_QUOTED_MESSAGE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setBubbleMessageFont(String path) {
+            b.putString(SETTING_BUBBLE_MESSAGE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setBubbleTimeFont(String path) {
+            b.putString(SETTING_BUBBLE_TIME_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setQuoteAuthorFont(String path) {
+            b.putString(SETTING_QUOTE_AUTHOR_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setQuoteMessageFont(String path) {
+            b.putString(SETTING_QUOTE_MESSAGE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setQuoteTimeFont(String path) {
+            b.putString(SETTING_QUOTE_TIME_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setMessageHeaderFont(String path) {
+            b.putString(SETTING_MESSAGE_HEADER_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setSpecialistConnectTitleFont(String path) {
+            b.putString(SETTING_SPECIALIST_CONNECT_TITLE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setSpecialistConnectSubtitleFont(String path) {
+            b.putString(SETTING_SPECIALIST_CONNECT_SUBTITLE_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setTypingFont(String path) {
+            b.putString(SETTING_TYPING_FONT, path);
+            return this;
+        }
+
+        public IntentBuilder setScheduleAlerFont(String path) {
+            b.putString(SETTING_SCHEDULE_ALERT_FONT, path);
             return this;
         }
 

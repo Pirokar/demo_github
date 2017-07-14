@@ -4,16 +4,16 @@
     android:layout_height="wrap_content"
     android:minHeight="64dp"
     android:orientation="horizontal"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp">
 
     <ImageView
         android:id="@+id/image"
-        android:src="@drawable/schedule_icon"
         android:layout_width="100dp"
-        android:layout_height="64dp" />
+        android:layout_height="64dp"
+        android:src="@drawable/schedule_icon" />
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.widget.text_view.ScheduleAlertTextView
         android:id="@+id/schedule_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

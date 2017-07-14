@@ -10,12 +10,11 @@
         android:layout_height="300dp"
         android:layout_marginLeft="@dimen/consultant_margin_left"
         android:layout_marginRight="@dimen/consultant_margin_right"
-        android:minHeight="240dp"
         android:layout_marginTop="@dimen/margin_quarter"
-        android:scaleType="fitCenter"
-        />
+        android:minHeight="240dp"
+        android:scaleType="fitCenter" />
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.widget.text_view.BubbleTimeTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

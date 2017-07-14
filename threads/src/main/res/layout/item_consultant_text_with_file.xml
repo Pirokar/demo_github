@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/itemview_root"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/itemview_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <View
         android:id="@+id/filter"
@@ -11,14 +11,14 @@
         android:layout_height="match_parent"
         android:layout_alignBottom="@+id/phrase_content"
         android:layout_alignParentTop="true"
-        android:visibility="visible"/>
+        android:visibility="visible" />
 
     <View
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@+id/phrase_content"
-        android:visibility="visible"/>
+        android:visibility="visible" />
 
     <ImageView
         android:id="@+id/bubble"
@@ -33,7 +33,7 @@
         android:layout_marginTop="@dimen/margin_quarter"
         android:paddingBottom="2dp"
         android:scaleType="fitXY"
-        android:src="@drawable/bubble_white"/>
+        android:src="@drawable/bubble_white" />
 
     <LinearLayout
         android:id="@+id/phrase_content"
@@ -43,22 +43,22 @@
         android:paddingLeft="9dp">
 
         <LinearLayout
-            android:paddingLeft="@dimen/margin_quarter"
             style="@style/consultBubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="45dp"
             android:layout_marginRight="@dimen/consultant_margin_right"
             android:orientation="vertical"
+            android:paddingLeft="@dimen/margin_quarter"
             android:paddingTop="2dp">
 
             <LinearLayout
-                android:paddingTop="@dimen/margin_half"
                 android:id="@+id/right_text_row"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_quarter"
                 android:orientation="horizontal"
+                android:paddingTop="@dimen/margin_half"
                 android:visibility="visible">
 
                 <im.threads.views.CircularProgressButton
@@ -66,32 +66,32 @@
                     style="@style/CircularProgressButtonStyle"
                     app:completed_drawable="@drawable/file_image_consult"
                     app:in_progress_label="@drawable/ic_clear_blue_consult_36dp"
-                    app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp"/>
+                    app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp" />
 
                 <View
-                    android:layout_marginTop="@dimen/margin_half"
                     android:id="@+id/delimeter"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="@dimen/margin_half"
-                    android:background="@color/blue"/>
+                    android:layout_marginTop="@dimen/margin_half"
+                    android:background="@color/blue" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <im.threads.widget.BoldCustomFontTextView
+                    <im.threads.widget.text_view.QuoteAuthorTextView
                         android:id="@+id/to"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/margin_half"
                         android:layout_marginTop="2dp"
-                        android:textStyle="bold"
                         android:paddingRight="80dp"
-                        android:text="Иван Петров" />
+                        android:text="Иван Петров"
+                        android:textStyle="bold" />
 
-                    <im.threads.widget.LightCustomFontTextView
+                    <im.threads.widget.text_view.QuoteMessageTextView
                         android:id="@+id/file_specs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -99,27 +99,27 @@
                         android:layout_marginTop="2dp"
                         android:text="счет на оплату 1,2mb dfffffffffffffffffdddddddddddddddddddddddddddddddddddddddddddddddd" />
 
-                    <im.threads.widget.CustomFontTextView
+                    <im.threads.widget.text_view.QuoteTimeTextView
                         android:id="@+id/send_at"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/margin_half"
                         android:layout_marginTop="2dp"
                         android:text="отправлено 21 апр 2016"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
 
             <FrameLayout
+                android:id="@+id/phrase_frame"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/imageView"
-                android:paddingBottom="@dimen/margin_half"
-                android:id="@+id/phrase_frame"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/margin_half">
 
-                <im.threads.widget.CustomFontTextView
+                <im.threads.widget.text_view.BubbleTimeTextView
                     android:id="@+id/timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -128,7 +128,7 @@
                     android:paddingRight="4dp"
                     android:text="10:19" />
 
-                <im.threads.widget.CustomFontTextView
+                <im.threads.widget.text_view.BubbleMessageTextView
                     android:id="@+id/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -139,7 +139,7 @@
                     android:paddingRight="10dp"
                     android:paddingTop="5dp"
                     android:text="textetxtetex &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
-                    android:textSize="16dp"/>
+                    android:textSize="16dp" />
             </FrameLayout>
 
         </LinearLayout>
@@ -151,7 +151,7 @@
             android:layout_gravity="bottom|left"
             android:layout_marginLeft="0dp"
             android:layout_marginTop="-8dp"
-            android:visibility="visible"/>
+            android:visibility="visible" />
 
     </LinearLayout>
 

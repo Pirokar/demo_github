@@ -41,8 +41,8 @@
 
     <RelativeLayout
         android:id="@+id/bubble"
-        android:paddingLeft="15dp"
-        style="@style/consultBubble">
+        style="@style/consultBubble"
+        android:paddingLeft="15dp">
 
         <im.threads.views.CircularProgressButton
             android:id="@+id/circ_button"
@@ -57,7 +57,7 @@
             app:in_progress_label="@drawable/ic_clear_blue_consult_36dp"
             app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp" />
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.widget.text_view.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
             android:textColor="@color/gray_text" />
 
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.widget.text_view.BubbleMessageTextView
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
             android:text="1,2 mb"
             android:textColor="@color/gray_text" />
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
