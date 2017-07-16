@@ -1468,7 +1468,7 @@ public class ChatController {
      */
     private static JsonElement getHistorySync(Context ctx, Long start, Long count) throws Exception {
         // todo при необходимости можно вынести строку снизу как метод получени токена
-        String token = getPushControllerInstance(ctx).getDeviceAddress() + PrefUtils.getClientID(ctx);
+        String token = getPushControllerInstance(ctx).getDeviceAddress() + ":" + PrefUtils.getClientID(ctx);
         String userAgent = MessageFormatter.getUserAgent(ctx);
         String url = PrefUtils.getServerUrlMetaInfo(ctx);
         if (count == null) {
