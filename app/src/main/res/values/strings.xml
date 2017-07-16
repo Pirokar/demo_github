@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppWithChat</string>
+    <string name="app_name1">AppWithChat</string>
     <string name="default_title">ThreadsApp</string>
     <string name="welcome">Добро пожаловать в контактный центр</string>
     <string name="subtitle_text">Отправьте ваш вопрос, первый освободившийся оператор на него ответит</string>

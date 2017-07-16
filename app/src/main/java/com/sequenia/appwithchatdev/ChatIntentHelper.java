@@ -13,7 +13,7 @@ public class ChatIntentHelper {
     public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
         return ChatStyle.IntentBuilder
                 .getBuilder(activity, clientId, userName)
-                /*.setDefaultFontBold("comic.ttf")
+                .setDefaultFontBold("comic.ttf")
                 .setDefaultFontLight("comic.ttf")
                 .setDefaultFontRegular("comic.ttf")
                 .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
@@ -41,9 +41,9 @@ public class ChatIntentHelper {
                         true, //показывать загрузку при поиске консультанта showConsultSearching
                         R.color.purple,
                         "comic.ttf")
-                //.setGoogleAnalyticsEnabled(false)
-                .setPushNotificationStyle(R.drawable.push_icon_def,
-                        R.string.default_title,
+                .setGoogleAnalyticsEnabled(false)
+                .setPushNotificationStyle(R.drawable.logo_2,
+                        R.string.app_name1,
                         ChatStyle.INVALID,
                         ChatStyle.INVALID)
                 .setWelcomeScreenStyle(
@@ -55,7 +55,7 @@ public class ChatIntentHelper {
                         , 14)//размер шрифта подзаголовка welcomeScreenSubtitleSizeInSp
                 .setScheduleMessageStyle(
                         R.drawable.schedule_icon, // Иконка сообщения о расписании scheduleMessageIconResId
-                        R.color.schedule_message_text_color)*/
+                        R.color.schedule_message_text_color)
                 ; // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
     }
 
