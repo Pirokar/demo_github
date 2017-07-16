@@ -922,7 +922,7 @@ public class ChatController {
                     Intent target = new Intent(Intent.ACTION_VIEW);
                     File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
                     target.setDataAndType(FileProvider.getUriForFile(
-                            activity, BuildConfig.APPLICATION_ID + ".fileprovider", file), "application/pdf"
+                            activity, /*BuildConfig.APPLICATION_ID*/ activity.getPackageName() + ".fileprovider", file), "application/pdf"
                     );
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     try {
