@@ -424,7 +424,7 @@ public class ChatController {
     }
 
     private void updateChatItemsOnBind() {
-        final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
+        final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, (int) getHistoryLoadingCount(fragment.getActivity())));
         if (null != fragment) {
             h.post(new Runnable() {
                 @Override
