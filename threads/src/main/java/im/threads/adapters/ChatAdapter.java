@@ -778,9 +778,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void changeStateOfMessage(String id, MessageState state) {
         for (ChatItem cm : getOriginalList()) {
-            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(id))) {
-                Log.i(TAG, "changeStateOfMessage: changing read state");
-                ((UserPhrase) cm).setSentState(state);
+            if (cm instanceof UserPhrase) {
+                UserPhrase up = (UserPhrase) cm;
+                if (up.getMessageId().equals(id) || (up.getBackendId() != null && up.getBackendId().equals(id))) {
+                    Log.i(TAG, "changeStateOfMessage: changing read state");
+                    ((UserPhrase) cm).setSentState(state);
+                }
             }
         }
         notifyDataSetChanged();
