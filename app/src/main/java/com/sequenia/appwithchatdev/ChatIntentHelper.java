@@ -42,9 +42,9 @@ public class ChatIntentHelper {
                         R.color.purple,
                         "comic.ttf")
                 .setGoogleAnalyticsEnabled(false)
-                .setPushNotificationStyle(R.drawable.logo_2,
+                .setPushNotificationStyle(R.drawable.ic_push_notification,
                         R.string.app_name1,
-                        ChatStyle.INVALID,
+                        R.color.colorAccent,
                         ChatStyle.INVALID)
                 .setWelcomeScreenStyle(
                         R.drawable.welcom_screen_image//логотип экрана приветствия welcomeScreenLogoResId
