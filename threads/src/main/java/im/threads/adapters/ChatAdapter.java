@@ -65,9 +65,6 @@ import im.threads.widget.Rating;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
-
- */
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "ChatAdapter ";
     private static final int TYPE_CONSULT_TYPING = 1;
@@ -665,22 +662,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (scheduleRemoved && !isInSearchMode) {
             notifyDataSetChanged();
         }
-    }
-
-    @Override
-    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
-        super.onViewAttachedToWindow(holder);
-//        if (holder instanceof ConsultIsTypingViewHolder) {
-//            ((ConsultIsTypingViewHolder) holder).beginTyping();
-//        }
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-//        if (holder instanceof ConsultIsTypingViewHolder)
-//            ((ConsultIsTypingViewHolder) holder).stopTyping();
-
     }
 
     @Override

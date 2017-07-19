@@ -43,7 +43,7 @@ public class Rating extends LinearLayout {
         this.ratingCount = ratingCount;
         style = PrefUtils.getIncomingStyle(context);
 
-        countStars = DEFAULT_RATING_STARS_COUNT;// // TODO: 07.06.2017 заглушка, нужно брать из пуша
+        countStars = DEFAULT_RATING_STARS_COUNT; //TODO: 07.06.2017 заглушка, нужно брать из пуша
 
         LayoutInflater inflater = LayoutInflater.from(context);
 

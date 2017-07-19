@@ -5,7 +5,7 @@ import java.util.Locale;
 /**
  * Created by yuri on 14.09.2016.
  */
-public class FilesPlurals {//coz bugs in russian plurals
+public class FilesPlurals {
     private Locale locale;
 
     public FilesPlurals(Locale locale) {

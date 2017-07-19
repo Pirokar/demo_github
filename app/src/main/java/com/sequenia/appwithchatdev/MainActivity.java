@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         clientIdEditText = (EditText) findViewById(R.id.client_id);
         userNameEditText = (EditText) findViewById(R.id.user_name);
 
-        // Отслеживание Push-уведомлений, не распознанных чатом.
+        // Отслеживание Push-уведомлений, нераспознанных чатом.
         ChatController.setFullPushListener(new CustomFullPushListener());
         ChatController.setShortPushListener(new CustomShortPushListener());
 
