@@ -37,7 +37,6 @@ public class CustomFontEditText extends android.support.v7.widget.AppCompatEditT
         ChatStyle style = PrefUtils.getIncomingStyle(context);
         if (style != null && !TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));
-            //setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/lato-regular.ttf"));
         }
 
     }

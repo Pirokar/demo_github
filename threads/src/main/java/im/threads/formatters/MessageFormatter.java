@@ -471,8 +471,7 @@ public class MessageFormatter {
                     , type
                     , name
                     , gender
-              /*  , timeStamp*/
-                    , System.currentTimeMillis() // FIXME: 06.09.2016 temporary
+                    , System.currentTimeMillis()
                     , photourl
                     , status
                     , title
@@ -551,7 +550,7 @@ public class MessageFormatter {
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && (quotes.getJSONObject(0).has(TEXT))) {
             quoteString = quotes.getJSONObject(0).getString(TEXT);
         }
-        if (quotes.length() > 0//// TODO: 29.07.2016 need real timestamp of quote
+        if (quotes.length() > 0
                 && quotes.getJSONObject(0) != null
                 && (quotes.getJSONObject(0).has(ATTACHMENTS))
                 && (quotes.getJSONObject(0).getJSONArray(ATTACHMENTS).length() > 0
@@ -587,7 +586,7 @@ public class MessageFormatter {
         if (quotes.size() > 0 && quotes.get(0) != null && (quotes.get(0).getText() != null)) {
             quoteString = quotes.get(0).getText();
         }
-        if (quotes.size() > 0//// TODO: 29.07.2016 need real timestamp of quote
+        if (quotes.size() > 0
                 && quotes.get(0) != null
                 && (quotes.get(0).getAttachments() != null)
                 && (quotes.get(0).getAttachments().size() > 0
@@ -622,7 +621,7 @@ public class MessageFormatter {
                     null
                     , null
                     , jsonArray.getJSONObject(0).getJSONObject("optional").getLong("size")
-                    , 0);// TODO: 18.08.2016 set incoming time
+                    , 0);
             fileDescription.setDownloadPath(jsonArray.getJSONObject(0).getString("result"));
             fileDescription.setIncomingName(header);
         }
@@ -640,7 +639,7 @@ public class MessageFormatter {
                     null
                     , null
                     , attachments.get(0).getOptional().getSize()
-                    , 0);// TODO: 18.08.2016 set incoming time
+                    , 0);
             fileDescription.setDownloadPath(attachments.get(0).getResult());
             fileDescription.setIncomingName(header);
         }

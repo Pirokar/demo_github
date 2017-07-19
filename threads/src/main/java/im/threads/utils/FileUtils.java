@@ -13,6 +13,7 @@ public class FileUtils {
     public static final int PNG = 1;
     public static final int PDF = 2;
     public static final int OTHER_DOC_FORMATS = 3;
+    public static final int OTHER_UNKNOWNS_FORMAT = 4;
     public static final int UNKNOWN = -1;
 
     private FileUtils() {
@@ -30,7 +31,7 @@ public class FileUtils {
                 || extension.equalsIgnoreCase("xlsx")
                 || extension.equalsIgnoreCase("ppt")
                 || extension.equalsIgnoreCase("pptx")) return OTHER_DOC_FORMATS;
-        return UNKNOWN;
+        return OTHER_UNKNOWNS_FORMAT;
     }
 
     public static int getExtensionFromQuote(Quote quote) {

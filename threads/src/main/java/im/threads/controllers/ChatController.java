@@ -79,7 +79,7 @@ import retrofit2.Call;
 /**
  * Created by yuri on 08.06.2016.
  * controller for chat Fragment. all bells and whistles in fragment,
- * all work here, mvc, right?
+ * all work here
  * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
  */
 public class ChatController {
@@ -676,22 +676,6 @@ public class ChatController {
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
             if (!isActive) appContext.startService(i);
         }
-        if (fragment != null && isActive) {// TODO: 15.12.2016  for test
-            String error =
-                    "error 382  sending message to server" +
-                            "\ncode = " + e.getErrorCode()
-                            + "\n" + e.getMessage()
-                            + "\n" + e.toString()
-                            + "\nfilepath = " + userPhrase.getFileDescription().getFilePath()
-                            + "\nisExist = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists();
-            if (e.getCause() != null)
-                error += "\ncause = " + e.getCause().toString();
-            if (new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists()) {
-                error += "\nsize = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).length();
-            }
-            // activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
-            // activity.showConnectionError();
-        }
     }
 
     private void onFileSentError(UserPhrase userPhrase, Throwable e) {
@@ -703,20 +687,6 @@ public class ChatController {
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
             if (!isActive) appContext.startService(i);
         }
-        if (fragment != null && isActive) {
-            String error = " error 405  sending files to server"
-                    + "\n" + e.getMessage()
-                    + "\n" + e.toString()
-                    + "\nfilepath = " + userPhrase.getFileDescription().getFilePath()
-                    + "\nisExist = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists();
-            if (new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).exists()) {
-                error += "\nsize = " + new File(userPhrase.getFileDescription().getFilePath().replace("file://", "")).length();
-            }
-            if (e.getCause() != null)
-                error += "\ncause = " + e.getCause().toString();
-            // activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
-        }
-        // activity.showConnectionError();
     }
 
     private void onSentMessageException(UserPhrase userPhrase, Exception e) {
@@ -727,16 +697,6 @@ public class ChatController {
         } else if (e instanceof IllegalStateException) {
             PushController.getInstance(appContext).init();
         }
-        if (fragment != null && isActive) {
-            String error = "Generic error 423"
-                    + "\n" + e.getMessage()
-                    + "\n" + e.toString();
-            if (e.getCause() != null) {
-                error += "\ncause = " + e.getCause().toString();
-            }
-            //activity.showFullError(error); // TODO: 26.01.2017 возможно, придется убрать комментарий
-
-        } //activity.showConnectionError();
     }
 
     private void reportAbountSendMessage(UserPhrase userPhrase) {
@@ -791,37 +751,10 @@ public class ChatController {
 
     }
 
-//    private void downloadMessagesTillEnd() {
-//        if (isDownloadingMessages) return;
-//        Log.e(TAG, "downloadMessagesTillEnd"); // TODO: 18.12.2016
-//        if (isAllMessagesDownloaded) return;
-//        if (appContext == null) return;
-//        mMessagesExecutor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    final int chunk = 100;
-//                    isDownloadingMessages = true;
-//                    List<InOutMessage> items = PushController.getInstance(appContext).getNextMessageHistory(chunk);
-//                    if (items == null || items.size() == 0) return;
-//                    currentOffset += items.size();
-//                    isAllMessagesDownloaded = items.size() != chunk;
-//                    List<ChatItem> chatItems = MessageFormatter.format(items);
-//                    mDatabaseHolder.putMessagesSync(chatItems);
-//                    isDownloadingMessages = false;
-//                    if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
-//                } catch (PushServerErrorException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//    }
-
 
     private void downloadMessagesTillEnd() {
         if (isDownloadingMessages) return;
-        Log.e(TAG, "downloadMessagesTillEnd"); // TODO: 18.12.2016
+        Log.e(TAG, "downloadMessagesTillEnd");
         if (isAllMessagesDownloaded) return;
         if (appContext == null) return;
         mMessagesExecutor.execute(new Runnable() {

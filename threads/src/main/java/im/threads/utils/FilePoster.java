@@ -29,41 +29,6 @@ public class FilePoster {
         this.context = context;
     }
 
-//    public void post(final Callback<String, Exception> callback) {
-//        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath().replaceAll("file://", "")).exists()) {
-//            PushController
-//                    .getInstance(context)
-//                    .sendFileAsync(new File(fileDescription.getFilePath().replaceAll("file://", ""))
-//                            , ""
-//                            , TimeUnit.DAYS.toMillis(0)
-//                            , new RequestProgressCallback() {
-//                                @Override
-//                                public void onProgress(double v) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onResult(String s) {
-//                                    callback.onSuccess(s);
-//                                }
-//
-//                                @Override
-//                                public void onError(PushServerErrorException e) {
-//                                    callback.onFail(e);
-//                                }
-//                            });
-//        } else if (fileDescription.getFilePath() != null && !new File(fileDescription.getFilePath().replaceAll("file://", "")).exists()) {
-//            if (fileDescription.getDownloadPath() != null) {
-//                callback.onSuccess(fileDescription.getDownloadPath());
-//            } else {
-//                callback.onFail(new FileNotFoundException());
-//            }
-//        }else if (fileDescription.getFilePath() ==null && fileDescription.getDownloadPath() !=null){
-//            callback.onSuccess(fileDescription.getDownloadPath());
-//        }
-//    }
-
-
     public void post(final Callback<String, Throwable> callback) {
         String token = PrefUtils.getClientID(context);
         if (!token.isEmpty()) {
