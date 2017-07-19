@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="64dp"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:paddingBottom="8dp"
     android:paddingTop="8dp">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="100dp"
-        android:layout_height="64dp"
-        android:src="@drawable/schedule_icon" />
+    <FrameLayout
+        android:layout_width="@dimen/default_chat_row_height"
+        android:layout_height="@dimen/default_chat_row_height"
+        android:background="@drawable/circle_aqua_outline"
+        android:padding="14dp"
+        android:layout_marginLeft="@dimen/margin_material">
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/schedule_icon" />
+    </FrameLayout>
 
     <im.threads.widget.text_view.ScheduleAlertTextView
         android:id="@+id/schedule_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="94dp"
-        android:layout_marginRight="@dimen/margin_big"
-        android:layout_marginTop="10dp"
-        android:text="Будем доступны завтра с 10:00 до 18:00"
-        android:textColor="@color/gray_text"
-        android:textSize="18sp" />
+        android:layout_marginLeft="@dimen/margin_half"
+        android:layout_marginRight="@dimen/margin_material"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        tools:text="Сегодня чат не работает. Все операторы отдыхают. Будем доступны завтра с 10:00 до 18:00."/>
 
-</RelativeLayout>
+</LinearLayout>
