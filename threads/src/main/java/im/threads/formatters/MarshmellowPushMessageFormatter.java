@@ -23,6 +23,7 @@ import static android.text.TextUtils.isEmpty;
 import static im.threads.utils.FileUtils.JPEG;
 import static im.threads.utils.FileUtils.PDF;
 import static im.threads.utils.FileUtils.PNG;
+import static im.threads.utils.FileUtils.UNKNOWN;
 import static im.threads.utils.FileUtils.getExtensionFromFileDescription;
 
 /**
@@ -202,7 +203,7 @@ public class MarshmellowPushMessageFormatter {
                 if (getExtensionFromFileDescription(consultPhrase.getFileDescription()) == PNG
                         || getExtensionFromFileDescription(consultPhrase.getFileDescription()) == JPEG) {
                     imagesCount++;
-                } else if (getExtensionFromFileDescription(consultPhrase.getFileDescription()) == PDF) {
+                } else if (getExtensionFromFileDescription(consultPhrase.getFileDescription()) != UNKNOWN) {
                     plainFilesCount++;
                 }
                 if (consultPhrase.getQuote() != null) {

@@ -38,7 +38,6 @@ public class LightCustomFontTextView extends android.support.v7.widget.AppCompat
         ChatStyle style = PrefUtils.getIncomingStyle(context);
         if (style != null && !TextUtils.isEmpty(style.defaultFontLight)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontLight));
-            //setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/lato-light.ttf"));
         }
 
     }

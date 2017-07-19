@@ -38,7 +38,6 @@ public class BoldCustomFontTextView extends android.support.v7.widget.AppCompatT
         ChatStyle style = PrefUtils.getIncomingStyle(context);
         if (style != null && !TextUtils.isEmpty(style.defaultFontBold)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontBold));
-            //setTypeface(Typeface.createFromAsset(context.getAssets(), "fonts/lato-bold.ttf"));
         }
     }
 }

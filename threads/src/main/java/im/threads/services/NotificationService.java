@@ -21,8 +21,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import im.threads.R;
-import im.threads.activities.ChatActivity;
 import im.threads.activities.TranslucentActivity;
 import im.threads.controllers.ChatController;
 import im.threads.formatters.MarshmellowPushMessageFormatter;
@@ -39,14 +46,6 @@ import im.threads.utils.CircleTransform;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.TargetNoError;
 import im.threads.utils.Tuple;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -110,7 +109,7 @@ public class NotificationService extends Service {
                 Notification notification = getMstyleNotif(notificationBuilder, items);
                 notification.defaults |= Notification.DEFAULT_SOUND;
                 notification.defaults |= Notification.DEFAULT_VIBRATE;
-                if(needsShowNotification()) {
+                if (needsShowNotification()) {
                     nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
                     ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
                 }
@@ -118,7 +117,7 @@ public class NotificationService extends Service {
                 getNstyleNotif(notificationBuilder, items, new CompletionHandler<Notification>() {
                     @Override
                     public void onComplete(final Notification data) {
-                        if(needsShowNotification()) {
+                        if (needsShowNotification()) {
                             data.defaults |= Notification.DEFAULT_SOUND;
                             data.defaults |= Notification.DEFAULT_VIBRATE;
                             nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
@@ -143,7 +142,6 @@ public class NotificationService extends Service {
             } else {
                 nc.setSmallIcon(R.drawable.empty);
             }
-
             nc.setContentIntent(pend);
             nc.setAutoCancel(true);
             h.postDelayed(new Runnable() {
@@ -258,14 +256,14 @@ public class NotificationService extends Service {
                 Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResid);
                 pushSmall.setImageViewBitmap(R.id.icon_large, icon);
                 pushBig.setImageViewBitmap(R.id.icon_large, icon);
-                pushSmall.setImageViewBitmap(R.id.icon_small_corner,null);
-                pushBig.setImageViewBitmap(R.id.icon_small_corner,null);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
             } else {
                 Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_big_icon);
                 pushSmall.setImageViewBitmap(R.id.icon_large, icon);
                 pushBig.setImageViewBitmap(R.id.icon_large, icon);
-                pushSmall.setImageViewBitmap(R.id.icon_small_corner,null);
-                pushBig.setImageViewBitmap(R.id.icon_small_corner,null);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
             }
         }
         if (style != null && style.defTitleResId != ChatStyle.INVALID) {
@@ -277,18 +275,24 @@ public class NotificationService extends Service {
             pushSmall.setTextViewText(R.id.title, getString(R.string.title_default));
             pushBig.setTextViewText(R.id.title, getString(R.string.title_default));
         }
-        int color = style != null && style.pushBackgroundColorResId != ChatStyle.INVALID ? style.pushBackgroundColorResId : android.R.color.white;
-        if (style != null && style.pushBackgroundColorResId != ChatStyle.INVALID) {
-            pushSmall.setInt(R.id.root_small, "setBackgroundColor", getResources().getColor(color));
-            pushBig.setInt(R.id.root_big, "setBackgroundColor", getResources().getColor(color));
+        int color = style != null && style.pushBackgroundColorResId != ChatStyle.INVALID ? style.pushBackgroundColorResId : -1;
+        if (color > -1) {
+            pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
+            pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
+            pushSmall.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(color));
+            pushBig.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(color));
         }
         if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
             pushSmall.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
             pushBig.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
         }
-        builder
-                .setColor(getResources().getColor(color))
-                .setSmallIcon(R.drawable.empty);
+        builder.setColor(getResources().getColor(color));
+        if (style != null && style.defPushIconResid != ChatStyle.INVALID) {
+            final int iconResId = style.defPushIconResid;
+            builder.setSmallIcon(iconResId);
+        } else {
+            builder.setSmallIcon(R.drawable.empty);
+        }
         pushSmall.setTextViewText(R.id.consult_name, pushText.second.consultName + ":");
         pushSmall.setTextViewText(R.id.text, pushText.second.contentDescription.trim());
 

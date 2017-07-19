@@ -239,6 +239,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageState.getType());
         getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{messageId});
+        getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_BACKEND_ID + " = ?", new String[]{messageId});
     }
 
     void setUserPhraseMessageId(String oldMessageId, String newMessageId) {

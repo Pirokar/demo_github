@@ -65,9 +65,6 @@ import im.threads.widget.Rating;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
-
- */
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "ChatAdapter ";
     private static final int TYPE_CONSULT_TYPING = 1;
@@ -668,22 +665,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
-        super.onViewAttachedToWindow(holder);
-//        if (holder instanceof ConsultIsTypingViewHolder) {
-//            ((ConsultIsTypingViewHolder) holder).beginTyping();
-//        }
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-//        if (holder instanceof ConsultIsTypingViewHolder)
-//            ((ConsultIsTypingViewHolder) holder).stopTyping();
-
-    }
-
-    @Override
     public int getItemCount() {
         return list.size();
     }
@@ -778,9 +759,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void changeStateOfMessage(String id, MessageState state) {
         for (ChatItem cm : getOriginalList()) {
-            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(id))) {
-                Log.i(TAG, "changeStateOfMessage: changing read state");
-                ((UserPhrase) cm).setSentState(state);
+            if (cm instanceof UserPhrase) {
+                UserPhrase up = (UserPhrase) cm;
+                if (up.getMessageId().equals(id) || (up.getBackendId() != null && up.getBackendId().equals(id))) {
+                    Log.i(TAG, "changeStateOfMessage: changing read state");
+                    ((UserPhrase) cm).setSentState(state);
+                }
             }
         }
         notifyDataSetChanged();
