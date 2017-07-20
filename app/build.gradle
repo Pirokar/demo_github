@@ -65,6 +65,15 @@ android {
     dexOptions {
         javaMaxHeapSize "12g"
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def file = output.outputFile
+            def appName = "AppWithChat"
+            def fileName = appName + "_" + variant.flavorName + "-" + variant.buildType.name + ".apk"
+            output.outputFile = new File(file.parent, fileName)
+        }
+    }
 }
 
 dependencies {
