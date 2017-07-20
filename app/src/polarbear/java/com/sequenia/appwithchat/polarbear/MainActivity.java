@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
@@ -18,6 +19,7 @@ import com.pushserver.android.PushServerIntentService;
 
 import im.threads.controllers.ChatController;
 import im.threads.utils.PermissionChecker;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Активность с примерами открытия чата:
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         // Отслеживание Push-уведомлений, не распознанных чатом.
         ChatController.setFullPushListener(new CustomFullPushListener());
         ChatController.setShortPushListener(new CustomShortPushListener());
+
+        Fabric.with(this, new Crashlytics());
 
         Log.i("deviceId", PushController.getInstance(this).getDeviceUid());
     }
