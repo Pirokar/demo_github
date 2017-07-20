@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.sequenia.appwithchatdev">
+    package="com.sequenia.appwithchat.polarbear">
 
     <!-- Brooma
          If you need brooma:
@@ -20,16 +20,16 @@
     -->
 
     <permission
-        android:name="com.sequenia.appwithchatdev.permission.C2D_MESSAGE"
+        android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
     <permission
-        android:name="com.sequenia.appwithchatdev.permission.pushserver.RECEIVE"
+        android:name="${applicationId}.permission.pushserver.RECEIVE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.sequenia.appwithchatdev.permission.C2D_MESSAGE" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.c2dm.permission.SEND" />
-    <uses-permission android:name="com.sequenia.appwithchatdev.permission.pushserver.RECEIVE" />
+    <uses-permission android:name="${applicationId}.permission.pushserver.RECEIVE" />
 
     <application
         android:allowBackup="true"
@@ -41,7 +41,7 @@
         <receiver
             android:name="im.threads.broadcastReceivers.MainPBReceiver"
             android:exported="false"
-            android:permission="com.sequenia.appwithchatdev.permission.pushserver.RECEIVE">
+            android:permission="${applicationId}.permission.pushserver.RECEIVE">
             <intent-filter>
                 <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT" />
                 <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT" />
