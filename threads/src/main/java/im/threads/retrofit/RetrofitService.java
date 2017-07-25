@@ -2,7 +2,11 @@ package im.threads.retrofit;
 
 import com.google.gson.JsonElement;
 
+import java.util.List;
+
 import im.threads.model.FileUploadResponse;
+import im.threads.model.HistoryResponseV2;
+import im.threads.model.MessgeFromHistory;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -27,7 +31,16 @@ public interface RetrofitService {
     );
 
     @GET("history")
-    Call<JsonElement> history(
+    Call<List<MessgeFromHistory>> history(
+            @Header("X-Client-Token") String token,
+            @Header("User-Agent") String userAgent,
+            @Query("start") Long start,
+            @Query("count") Long count,
+            @Query("libVersion") String version
+    );
+
+    @GET("history/v2")
+    Call<HistoryResponseV2> historyV2(
             @Header("X-Client-Token") String token,
             @Header("User-Agent") String userAgent,
             @Query("start") Long start,

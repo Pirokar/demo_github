@@ -17,7 +17,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.JsonElement;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
@@ -75,6 +74,7 @@ import im.threads.utils.MessageMatcher;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.Seeker;
 import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -210,13 +210,13 @@ public class ChatController {
             sendMessageMFMSSync(ctx, environmentMessage, true);
             getPushControllerInstance(ctx).resetCounterSync();
 
-            JsonElement response = getHistorySync(ctx, null, null);
+            HistoryResponseV2 response = getHistorySync(ctx, null, null);
             List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
             instance.mDatabaseHolder.putMessagesSync(serverItems);
             ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
             if (instance.fragment != null) {
                 instance.fragment.addChatItems(phrases);
-                ConsultInfo info = getConsultInfoFromHistoryResponse(response);
+                ConsultInfo info = response != null ? response.getConsultInfo() : null;
                 if (info != null) {
                     instance.fragment.setStateConsultConnected(info.getId(), info.getName(), info.getStatus());
                 }
@@ -384,9 +384,7 @@ public class ChatController {
         if (mDatabaseHolder == null) {
             mDatabaseHolder = DatabaseHolder.getInstance(appContext);
         }
-        if (mDatabaseHolder.getMessagesCount() > 0) {
-            updateChatItemsOnBindAsync();
-        }
+        updateChatItemsOnBindAsync();
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -471,9 +469,9 @@ public class ChatController {
     private void updateChatHistoryOnBind() {
         if (fragment != null) {
             try {
-                JsonElement response = getHistorySync(instance.fragment.getActivity(), null, null);
+                HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), null, null);
                 List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
-                final ConsultInfo info = getConsultInfoFromHistoryResponse(response);
+                final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                 final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
                 List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, count);
                 if (dbItems.size() != serverItems.size()
@@ -764,8 +762,8 @@ public class ChatController {
                     isDownloadingMessages = true;
                     final Long chunk = 100L;
                     Long start = lastMessageId == null ? null : lastMessageId;
-                    JsonElement response = getHistorySync(instance.fragment.getActivity(), start, chunk);
-                    List<MessgeFromHistory> items = getMessageFromHistoryResponse(response);
+                    HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), start, chunk);
+                    List<MessgeFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
                     lastMessageId = items.get(items.size() - 1).getId();
                     currentOffset += items.size();
@@ -1042,12 +1040,12 @@ public class ChatController {
                 final int[] currentOffset = {fragment.getCurrentItemsCount()};
                 final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
                 try {
-                    JsonElement response = getHistorySync(instance.fragment.getActivity(), lastLoadId, null);
+                    HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), lastLoadId, null);
                     List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
                     mDatabaseHolder.putMessagesSync(serverItems);
                     final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                     currentOffset[0] += chatItems.size();
-                    ConsultInfo info = getConsultInfoFromHistoryResponse(response);
+                    ConsultInfo info = response != null ? response.getConsultInfo() : null;
                     h.post(new Runnable() {
                         @Override
                         public void run() {
@@ -1189,12 +1187,12 @@ public class ChatController {
                                         .getUserName(ctx),
                                 PrefUtils.getNewClientID(ctx), ctx), true);
 
-                        JsonElement response = getHistorySync(instance.fragment.getActivity(), null, null);
+                        HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), null, null);
                         List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
                         mDatabaseHolder.putMessagesSync(serverItems);
                         if (fragment != null) {
                             fragment.addChatItems((List<ChatItem>) setLastAvatars(serverItems));
-                            ConsultInfo info = getConsultInfoFromHistoryResponse(response);
+                            ConsultInfo info = response != null ? response.getConsultInfo() : null;
                             if (info != null) {
                                 fragment.setStateConsultConnected(info.getId(), info.getName(), info.getStatus());
                             }
@@ -1399,7 +1397,7 @@ public class ChatController {
      * @param start ид сообщения от которого грузить, null если с начала
      * @param count количество сообщений для загрузки
      */
-    private static JsonElement getHistorySync(Context ctx, Long start, Long count) throws Exception {
+    private static HistoryResponseV2 getHistorySync(Context ctx, Long start, Long count) throws Exception {
         // todo при необходимости можно вынести строку снизу как метод получени токена
         String token = getPushControllerInstance(ctx).getDeviceAddress() + ":" + PrefUtils.getClientID(ctx);
         String userAgent = MessageFormatter.getUserAgent(ctx);
@@ -1407,11 +1405,17 @@ public class ChatController {
         if (count == null) {
             count = getHistoryLoadingCount(ctx);
         }
-        if (url != null && !url.isEmpty() && token != null && !token.isEmpty()) {
+        if (url != null && !url.isEmpty() && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
             RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-            Call<JsonElement> call = retrofitService.history(token, userAgent, start, count, getLibraryVersion());
-            return call.execute().body();
+            Call<HistoryResponseV2> call = retrofitService.historyV2(token, userAgent, start, count, getLibraryVersion());
+            Response<HistoryResponseV2> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            } else {
+                Call<List<MessgeFromHistory>> call2 = retrofitService.history(token, userAgent, start, count, getLibraryVersion());
+                return new HistoryResponseV2(call2.execute().body());
+            }
         } else {
             throw new IOException();
         }
@@ -1422,13 +1426,15 @@ public class ChatController {
         return style != null ? (long) style.historyLoadingCount : ChatStyle.DEFAULT_HISTORY_LOADING_COUNT;
     }
 
-    private static List<ChatItem> getChatItemFromHistoryResponse(JsonElement response) {
+    private static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponseV2 response) {
         List<ChatItem> list = new ArrayList<>();
-        List<MessgeFromHistory> responseList = getMessageFromHistoryResponse(response);
-        if (responseList != null) {
-            list = MessageFormatter.formatNew(responseList);
+        if (response != null) {
+            List<MessgeFromHistory> responseList = response.getMessages();
+            if (responseList != null) {
+                list = MessageFormatter.formatNew(responseList);
+                setupLastItemIdFromHistory(responseList);
+            }
         }
-        setupLastItemIdFromHistory(responseList);
         return list;
     }
 
@@ -1442,31 +1448,5 @@ public class ChatController {
                 }
             }
         }
-    }
-
-    private static List<MessgeFromHistory> getMessageFromHistoryResponse(JsonElement response) {
-        List<MessgeFromHistory> responseList = null;
-        if (response != null) {
-            if (response.isJsonArray()) {
-                responseList = MessgeFromHistory.getListMessageFromServerResponse(response.toString());
-            } else {
-                HistoryResponseV2 historyResponseV2 = HistoryResponseV2.getHistoryFromServerResponse(response.toString());
-                if (historyResponseV2 != null) {
-                    responseList = historyResponseV2.getMessages();
-                }
-            }
-        }
-        return responseList;
-    }
-
-    private static ConsultInfo getConsultInfoFromHistoryResponse(JsonElement response) {
-        if (response != null && response.isJsonObject()) {
-            HistoryResponseV2 historyResponseV2 =
-                    HistoryResponseV2.getHistoryFromServerResponse(response.toString());
-            if (historyResponseV2 != null) {
-                return historyResponseV2.getConsultInfo();
-            }
-        }
-        return null;
     }
 }
