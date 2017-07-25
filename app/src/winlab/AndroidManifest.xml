@@ -28,7 +28,7 @@
 
         <meta-data
             android:name="im.threads.getServerUrl"
-            android:value="https://beta4.threads.im/" />
+            android:value="https://winlabstore.threads.im/" />
 
     </application>
 
