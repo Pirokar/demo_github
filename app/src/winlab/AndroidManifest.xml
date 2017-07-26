@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.sequenia.appwithchat.beta4">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:allowBackup="true"
@@ -9,7 +8,7 @@
         android:theme="@style/AppTheme"
         tools:replace="android:label">
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.sequenia.appwithchatdev.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,7 +17,7 @@
         </activity>
 
         <activity
-            android:name=".BottomNavigationActivity"
+            android:name="com.sequenia.appwithchatdev.BottomNavigationActivity"
             android:label="@string/title_activity_bottom_navigation"
             android:theme="@style/BottomNavigationTheme" />
 
