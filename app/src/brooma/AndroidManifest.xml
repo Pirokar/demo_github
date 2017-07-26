@@ -17,7 +17,7 @@
         </activity>
 
         <activity
-            android:name=".BottomNavigationActivity"
+            android:name="com.sequenia.appwithchatdev.BottomNavigationActivity"
             android:label="@string/title_activity_bottom_navigation"
             android:theme="@style/BottomNavigationTheme" />
 

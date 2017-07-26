@@ -8,7 +8,7 @@
         android:theme="@style/AppTheme"
         tools:replace="android:label">
 
-        <activity android:name="com.sequenia.appwithchatdev.MainActivity">
+        <activity android:name="com.sequenia.appwithchat.beta4.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,7 +17,7 @@
         </activity>
 
         <activity
-            android:name="com.sequenia.appwithchatdev.BottomNavigationActivity"
+            android:name="com.sequenia.appwithchat.beta4.BottomNavigationActivity"
             android:label="@string/title_activity_bottom_navigation"
             android:theme="@style/BottomNavigationTheme" />
 
