@@ -26,7 +26,7 @@ public interface RetrofitService {
             @Header("X-Client-Token") String token
     );
 
-    @GET("history")
+    @GET("history/v2")
     Call<JsonElement> history(
             @Header("X-Client-Token") String token,
             @Header("User-Agent") String userAgent,
