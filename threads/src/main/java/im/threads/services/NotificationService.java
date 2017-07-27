@@ -91,14 +91,16 @@ public class NotificationService extends Service {
 
         if (mBroadcastReceiver == null) {
             mBroadcastReceiver = new myBroadcastReceiver();
-            getApplicationContext().registerReceiver(mBroadcastReceiver, new IntentFilter(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
+            getApplicationContext().registerReceiver(mBroadcastReceiver,
+                    new IntentFilter(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         }
 
         if (intent == null) {
             return START_STICKY;
         }
 
-        ArrayList<com.pushserver.android.PushMessage> il = intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
+        ArrayList<com.pushserver.android.PushMessage> il =
+                intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
 
         if (il != null) {
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -275,8 +277,10 @@ public class NotificationService extends Service {
             pushSmall.setTextViewText(R.id.title, getString(R.string.title_default));
             pushBig.setTextViewText(R.id.title, getString(R.string.title_default));
         }
-        int color = style != null && style.pushBackgroundColorResId != ChatStyle.INVALID ? style.pushBackgroundColorResId : -1;
+        int color = style != null && style.pushBackgroundColorResId != ChatStyle.INVALID ?
+                style.pushBackgroundColorResId : -1;
         if (color > -1) {
+            builder.setColor(getResources().getColor(color));
             pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
             pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
             pushSmall.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(color));
@@ -286,7 +290,6 @@ public class NotificationService extends Service {
             pushSmall.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
             pushBig.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
         }
-        builder.setColor(getResources().getColor(color));
         if (style != null && style.defPushIconResid != ChatStyle.INVALID) {
             final int iconResId = style.defPushIconResid;
             builder.setSmallIcon(iconResId);
