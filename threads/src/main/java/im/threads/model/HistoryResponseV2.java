@@ -16,6 +16,10 @@ public class HistoryResponseV2 {
     private List<MessgeFromHistory> messages;
     private AgentInfo agentInfo;
 
+    public HistoryResponseV2(List<MessgeFromHistory> messages) {
+        this.messages = messages;
+    }
+
     public ConsultInfo getConsultInfo() {
         return agentInfo != null ? agentInfo.getAgent() : null;
     }

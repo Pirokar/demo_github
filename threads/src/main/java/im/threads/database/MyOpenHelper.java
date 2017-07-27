@@ -120,7 +120,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     private void putUserPhrase(UserPhrase userPhrase) {
         ArrayList<UserPhrase> phrasesInDb = new ArrayList<>();
-        if ((System.currentTimeMillis() - lastPhraseRequest) > 300) {
+        if (cashedPhrases == null || cashedPhrases.isEmpty()
+                || (System.currentTimeMillis() - lastPhraseRequest) > 300) {
             Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES, new String[]{});
             final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
             final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
