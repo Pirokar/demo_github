@@ -1019,9 +1019,10 @@ public class ChatController {
 
     public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onSystemMessageFromServer:");
+        long currentTimeMillis = System.currentTimeMillis();
         switch (MessageMatcher.getType(bundle)) {
             case MessageMatcher.TYPE_OPERATOR_TYPING:
-                addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), System.currentTimeMillis(), mConsultWriter.getCurrentAvatarPath()), ctx);
+                addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentAvatarPath()), ctx);
                 break;
             case MessageMatcher.TYPE_MESSAGES_READ:
                 List<String> list = MessageFormatter.getReadIds(bundle);
@@ -1036,10 +1037,22 @@ public class ChatController {
                 }
                 break;
             case MessageMatcher.TYPE_REQUEST_CLOSE_THREAD:
-                String messageId = "local-" + UUID.randomUUID();
                 Long hideAfter = MessageFormatter.getHideAfter(bundle);
-                isResolveRequestVisible = true;
-                addMessage(new RequestResolveThread(messageId, hideAfter, System.currentTimeMillis()), ctx);
+                if (hideAfter > 0) {
+                    isResolveRequestVisible = true;
+                    addMessage(new RequestResolveThread(hideAfter, currentTimeMillis), ctx);
+
+                    // if thread is closed by timeout
+                    // remove close request from the history
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isResolveRequestVisible) {
+                                removeResolveRequest();
+                            }
+                        }
+                    }, hideAfter * 1000);
+                }
                 break;
         }
     }

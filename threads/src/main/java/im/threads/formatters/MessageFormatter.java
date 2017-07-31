@@ -1072,7 +1072,7 @@ public class MessageFormatter {
     public static Long getHideAfter(Bundle b) {
         try {
             if (b != null) {
-                return b.getLong("hideAfter", 0L);
+                return Long.parseLong(b.getString("hideAfter"));
             }
         } catch (Exception e) {
             e.printStackTrace();
