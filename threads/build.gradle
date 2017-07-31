@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 
-
 android {
 
     compileSdkVersion 25
@@ -10,13 +9,13 @@ android {
         disable 'InvalidPackage'
     }
 
-
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 25
         versionCode 1
         versionName "1.47"
     }
+
     buildTypes {
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
