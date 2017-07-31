@@ -561,6 +561,28 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    /**
+     * Remove close request from the thread history
+     * @return true - if deletion occurred, false - if RequestResolveThread item wasn't found in the history
+     */
+    public boolean removeResolveRequest() {
+        boolean removed = false;
+        ArrayList<ChatItem> list = getOriginalList();
+        for (ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
+            ChatItem cm = iter.next();
+            if (cm instanceof RequestResolveThread) {
+                try {
+                    notifyItemRemoved(list.lastIndexOf(cm));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                iter.remove();
+                removed = true;
+            }
+        }
+        return removed;
+    }
+
     public void setSearchingConsult() {
         ArrayList<ChatItem> list = getOriginalList();
         boolean containsSearch = false;

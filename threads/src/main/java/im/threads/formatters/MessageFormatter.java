@@ -380,7 +380,7 @@ public class MessageFormatter {
                     || type.equalsIgnoreCase(MessageMatcher.THREAD_CLOSED)
                     || type.equalsIgnoreCase(MessageMatcher.SCENARIO)
                     || isChatPush(fullMessage)) {
-                return new EmptyChatItem();
+                return new EmptyChatItem(type);
             } else {
                 return checkMessageIsFull(pushMessage, fullMessage);
             }

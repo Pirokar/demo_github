@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.sequenia.appwithchat">
+    package="com.sequenia.appwithchat.polarbear">
 
     <permission
         android:name="${applicationId}.permission.C2D_MESSAGE"

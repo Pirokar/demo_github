@@ -1284,6 +1284,14 @@ public class ChatFragment extends Fragment implements
         mChatAdapter.changeStateOfMessage(id, messageState);
     }
 
+    /**
+     * Remove close request from the thread history
+     * @return true - if deletion occurred, false - if there was no resolve request in the history
+     */
+    public boolean removeResolveRequest() {
+        return mChatAdapter.removeResolveRequest();
+    }
+
     public int getCurrentItemsCount() {
         return mChatAdapter.getCurrentItemCount();
     }

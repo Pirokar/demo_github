@@ -109,6 +109,8 @@ public class ChatController {
     // Для приема сообщений из сервиса по скачиванию файлов
     private ProgressReceiver mProgressReceiver;
     private boolean isSearchingConsult;
+    // this flag is keeping the visibility state of the request to resolve thread
+    private boolean isResolveRequestVisible;
     private DatabaseHolder mDatabaseHolder;
     private Context appContext;
     private static ChatController instance;
@@ -271,10 +273,7 @@ public class ChatController {
                     new RequestCallback<String, PushServerErrorException>() {
                         @Override
                         public void onResult(String s) {
-                            deleteMsg("msgId");
-                            if (instance.fragment != null) {
-                                instance.fragment.updateUi();
-                            }
+                            removeResolveRequest();
                         }
 
                         @Override
@@ -284,12 +283,18 @@ public class ChatController {
                     }, null);
         }
         else {
-            deleteMsg("msgId");
+            removeResolveRequest();
         }
     }
 
-    private void deleteMsg(String msgId) {
-        // TODO delete request from thread history
+    private void removeResolveRequest() {
+        if (fragment != null) {
+            boolean removed = fragment.removeResolveRequest();
+            if (removed) {
+                fragment.updateUi();
+            }
+            isResolveRequestVisible = false;
+        }
     }
 
 //    public void onRatingStarsClick(Context context, final Survey survey) {
@@ -568,6 +573,13 @@ public class ChatController {
             return;
         }
         if (BuildConfig.DEBUG) Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
+
+        // If user has written any message while the request to resolve the thread is visible
+        // we should make invisible the resolve request
+        if (isResolveRequestVisible) {
+            removeResolveRequest();
+        }
+
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um, appContext);
         if (!mConsultWriter.isConsultConnected()) {
@@ -1026,6 +1038,7 @@ public class ChatController {
             case MessageMatcher.TYPE_REQUEST_CLOSE_THREAD:
                 String messageId = "local-" + UUID.randomUUID();
                 Long hideAfter = MessageFormatter.getHideAfter(bundle);
+                isResolveRequestVisible = true;
                 addMessage(new RequestResolveThread(messageId, hideAfter, System.currentTimeMillis()), ctx);
                 break;
         }
@@ -1126,12 +1139,30 @@ public class ChatController {
     public synchronized PushMessageCheckResult onFullMessage(PushMessage pushMessage, final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onFullMessage: " + pushMessage);
         final ChatItem chatItem = MessageFormatter.format(pushMessage);
-
         PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
 
-        if (chatItem != null && (!MessageFormatter.checkId(pushMessage, PrefUtils.getClientID(ctx))
-                || chatItem instanceof EmptyChatItem)) {
-            pushMessageCheckResult.setDetected(true);
+        if (chatItem == null) {
+            return pushMessageCheckResult;
+        }
+
+        pushMessageCheckResult.setDetected(true);
+
+        // if thread is closed by timeout
+        // remove close request from the history
+        if (chatItem instanceof EmptyChatItem) {
+            if (isResolveRequestVisible &&
+                    MessageMatcher.THREAD_CLOSED.equalsIgnoreCase(((EmptyChatItem) chatItem).getType())) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        removeResolveRequest();
+                    }
+                });
+            }
+        }
+
+        if (!MessageFormatter.checkId(pushMessage, PrefUtils.getClientID(ctx))
+                || chatItem instanceof EmptyChatItem) {
             pushMessageCheckResult.setNeedsShowIsStatusBar(false);
             return pushMessageCheckResult;
         }
@@ -1156,44 +1187,37 @@ public class ChatController {
             }, null);
         }
 
-        if (chatItem != null) {
-            ConsultMessageReaction consultReactor = new ConsultMessageReaction(
-                    mConsultWriter,
-                    new ConsultMessageReactions() {
-                        @Override
-                        public void consultConnected(final String id, final String name, final String title) {
-                            if (fragment != null)
-                                fragment.setStateConsultConnected(id, name, title);
-                            // Отправка данных об окружении оператору
-                            try {
-                                String userName = PrefUtils.getUserName(ctx);
-                                String clientId = PrefUtils.getClientID(ctx);
-                                String message = MessageFormatter.createEnvironmentMessage(userName, clientId, appContext);
-                                sendMessageMFMSSync(appContext, message, true);
-                            } catch (PushServerErrorException e) {
-                                e.printStackTrace();
-                            }
+        ConsultMessageReaction consultReactor = new ConsultMessageReaction(
+                mConsultWriter,
+                new ConsultMessageReactions() {
+                    @Override
+                    public void consultConnected(final String id, final String name, final String title) {
+                        if (fragment != null)
+                            fragment.setStateConsultConnected(id, name, title);
+                        // Отправка данных об окружении оператору
+                        try {
+                            String userName = PrefUtils.getUserName(ctx);
+                            String clientId = PrefUtils.getClientID(ctx);
+                            String message = MessageFormatter.createEnvironmentMessage(userName, clientId, appContext);
+                            sendMessageMFMSSync(appContext, message, true);
+                        } catch (PushServerErrorException e) {
+                            e.printStackTrace();
                         }
+                    }
 
-                        @Override
-                        public void onConsultLeft() {
-                            if (null != fragment) fragment.setTitleStateDefault();
-                        }
-                    });
-            consultReactor.onPushMessage(chatItem);
-            addMessage(chatItem, ctx);
-            if (chatItem instanceof ConsultPhrase) {
-                mAnalyticsTracker.setConsultMessageWasReceived();
-            }
-
-            pushMessageCheckResult.setDetected(true);
-            pushMessageCheckResult.setNeedsShowIsStatusBar(!(chatItem instanceof ScheduleInfo
-                    || chatItem instanceof UserPhrase));
-        } else {
-            pushMessageCheckResult.setDetected(false);
-            pushMessageCheckResult.setNeedsShowIsStatusBar(false);
+                    @Override
+                    public void onConsultLeft() {
+                        if (null != fragment) fragment.setTitleStateDefault();
+                    }
+                });
+        consultReactor.onPushMessage(chatItem);
+        addMessage(chatItem, ctx);
+        if (chatItem instanceof ConsultPhrase) {
+            mAnalyticsTracker.setConsultMessageWasReceived();
         }
 
+        pushMessageCheckResult.setNeedsShowIsStatusBar(!(chatItem instanceof ScheduleInfo
+                || chatItem instanceof UserPhrase));
         return pushMessageCheckResult;
     }
 
