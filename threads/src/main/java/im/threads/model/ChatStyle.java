@@ -32,6 +32,7 @@ public class ChatStyle implements Serializable {
     private static final String ARG_SET_PUSH_NOTIFICATION_STYLE = "setPushNotificationStyle";
     private static final String ARG_SET_CHAT_BODY_STYLE = "setChatBodyStyle";
     private static final String ARG_SET_CHAT_TITLE_STYLE = "setChatTitleStyle";
+    private static final String ARG_SET_REQUEST_RESOLVE_THREAD_STYLE = "setRequestResolveThreadStyle";
     private static final String ARG_SET_SCHEDULE_MESSAGE_STYLE = "setScheduleMessageStyle";
     private static final String ARG_STYLE = "style";
 
@@ -72,6 +73,9 @@ public class ChatStyle implements Serializable {
     private static final String ARG_SHOW_BACK_BUTTON = "showBackButton";
     private static final String ARG_INPUT_TEXT_COLOR_RES_ID = "inputTextColor";
     private static final String ARG_INPUT_TEXT_FONT_PATH = "inputTextFont";
+    private static final String ARG_REQ_RESOLVE_THREAD_TEXT_RES_ID = "reqResolveThreadTextResId";
+    private static final String ARG_REQ_RESOLVE_THREAD_APPROVE_TEXT_RES_ID = "approveReqResolveThreadTextResId";
+    private static final String ARG_REQ_RESOLVE_THREAD_DENY_TEXT_RES_ID = "denyReqResolveThreadTextResId";
     private static final String SETTING_HISTORY_LOADING_COUNT = "setting@historyLoadingCount";
     private static final String SETTING_CAN_SHOW_SPECIALIST_INFO = "setting@canShowSpecialistInfo";
     private static final String SETTING_DEFAULT_FONT_BOLD = "setting@defaultFontBold";
@@ -169,6 +173,12 @@ public class ChatStyle implements Serializable {
     public final int inputTextColor;
     public int historyLoadingCount;
     public boolean canShowSpecialistInfo;
+    @StringRes
+    public final int requestToResolveThreadTextResId;
+    @StringRes
+    public final int approveRequestToResolveThreadTextResId;
+    @StringRes
+    public final int denyRequestToResolveThreadTextResId;
     public final String defaultFontBold;
     public final String defaultFontLight;
     public final String defaultFontRegular;
@@ -228,6 +238,9 @@ public class ChatStyle implements Serializable {
                      int inputTextColor,
                      int historyLoadingCount,
                      boolean canShowSpecialistInfo,
+                     int requestToResolveThreadTextResId,
+                     int approveRequestToResolveThreadTextResId,
+                     int denyRequestToResolveThreadTextResId,
                      String defaultFontBold,
                      String defaultFontLight,
                      String defaultFontRegular,
@@ -287,6 +300,9 @@ public class ChatStyle implements Serializable {
         this.inputTextColor = inputTextColor;
         this.historyLoadingCount = historyLoadingCount;
         this.canShowSpecialistInfo = canShowSpecialistInfo;
+        this.requestToResolveThreadTextResId = requestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread : requestToResolveThreadTextResId;
+        this.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_approve : approveRequestToResolveThreadTextResId;
+        this.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_deny : denyRequestToResolveThreadTextResId;
         this.defaultFontBold = defaultFontBold;
         this.defaultFontLight = defaultFontLight;
         this.defaultFontRegular = defaultFontRegular;
@@ -320,6 +336,8 @@ public class ChatStyle implements Serializable {
         boolean isGaEnabled = b.getBoolean(ARG_IS_GA_ENABLED, true);
         Bundle scheduleMessageStyle = b.getBundle(ARG_SET_SCHEDULE_MESSAGE_STYLE);
         boolean isScheduleMessageStyleExists = scheduleMessageStyle != null;
+        Bundle resolveThreadStyle = b.getBundle(ARG_SET_REQUEST_RESOLVE_THREAD_STYLE);
+        boolean isResolveThreadStyleExists = resolveThreadStyle != null;
         return new ChatStyle(
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_BACKGROUND_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_HIGHLIGHTING_COLOR_RES_ID) : INVALID,
@@ -360,6 +378,9 @@ public class ChatStyle implements Serializable {
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INPUT_TEXT_COLOR_RES_ID) : INVALID,
                 b.getInt(SETTING_HISTORY_LOADING_COUNT, DEFAULT_HISTORY_LOADING_COUNT),
                 b.getBoolean(SETTING_CAN_SHOW_SPECIALIST_INFO, DEFAULT_CAN_SHOW_SPECIALIST_INFO),
+                isResolveThreadStyleExists ? resolveThreadStyle.getInt(ARG_REQ_RESOLVE_THREAD_TEXT_RES_ID) : INVALID,
+                isResolveThreadStyleExists ? resolveThreadStyle.getInt(ARG_REQ_RESOLVE_THREAD_APPROVE_TEXT_RES_ID) : INVALID,
+                isResolveThreadStyleExists ? resolveThreadStyle.getInt(ARG_REQ_RESOLVE_THREAD_DENY_TEXT_RES_ID) : INVALID,
                 b.getString(SETTING_DEFAULT_FONT_BOLD, null),
                 b.getString(SETTING_DEFAULT_FONT_LIGHT, null),
                 b.getString(SETTING_DEFAULT_FONT_REGULAR, null),
@@ -424,6 +445,9 @@ public class ChatStyle implements Serializable {
                 ", inputTextColor=" + inputTextColor +
                 ", historyLoadingCount=" + historyLoadingCount +
                 ", canShowSpecialistInfo=" + canShowSpecialistInfo +
+                ", requestToResolveThreadTextResId=" + requestToResolveThreadTextResId +
+                ", approveRequestToResolveThreadTextResId=" + approveRequestToResolveThreadTextResId +
+                ", denyRequestToResolveThreadTextResId=" + denyRequestToResolveThreadTextResId +
                 '}';
     }
 
@@ -474,6 +498,9 @@ public class ChatStyle implements Serializable {
         if (inputTextColor != chatStyle.inputTextColor) return false;
         if (historyLoadingCount != chatStyle.historyLoadingCount) return false;
         if (canShowSpecialistInfo != chatStyle.canShowSpecialistInfo) return false;
+        if (requestToResolveThreadTextResId != chatStyle.requestToResolveThreadTextResId) return false;
+        if (approveRequestToResolveThreadTextResId != chatStyle.approveRequestToResolveThreadTextResId) return false;
+        if (denyRequestToResolveThreadTextResId != chatStyle.denyRequestToResolveThreadTextResId) return false;
         return inputTextFont.equals(chatStyle.inputTextFont);
 
     }
@@ -519,6 +546,9 @@ public class ChatStyle implements Serializable {
         result = 31 * result + inputTextColor;
         result = 31 * result + historyLoadingCount;
         result = 31 * result + (canShowSpecialistInfo ? 1 : 0);
+        result = 31 * result + requestToResolveThreadTextResId;
+        result = 31 * result + approveRequestToResolveThreadTextResId;
+        result = 31 * result + denyRequestToResolveThreadTextResId;
         return result;
     }
 
@@ -643,13 +673,24 @@ public class ChatStyle implements Serializable {
         public IntentBuilder setPushNotificationStyle(@DrawableRes int defIconResid,
                                                       @StringRes int defTitleResId,
                                                       @ColorRes int pushBackgroundColorResId,
-                                                      @ColorRes int nugatPushAccentColorResId) {
+                                                      @ColorRes int nougatPushAccentColorResId) {
             Bundle bundle = new Bundle();
             b.putBundle(ARG_SET_PUSH_NOTIFICATION_STYLE, bundle);
             bundle.putInt(ARG_DEF_PUSH_ICON_RES_ID, defIconResid);
             bundle.putInt(ARG_DEF_TITLE_RES_ID, defTitleResId);
             bundle.putInt(ARG_PUSH_BACKGROUND_COLOR_RES_ID, pushBackgroundColorResId);
-            bundle.putInt(ARG_NOUGAT_PUSH_ACCENT_COLOR_RES_ID, nugatPushAccentColorResId);
+            bundle.putInt(ARG_NOUGAT_PUSH_ACCENT_COLOR_RES_ID, nougatPushAccentColorResId);
+            return this;
+        }
+
+        public IntentBuilder setRequestResolveThreadStyle(@StringRes int requestToResolveThreadTextResId,
+                                                          @StringRes int approveRequestToResolveThreadTextResId,
+                                                          @StringRes int denyRequestToResolveThreadTextResId) {
+            Bundle bundle = new Bundle();
+            b.putBundle(ARG_SET_REQUEST_RESOLVE_THREAD_STYLE, bundle);
+            bundle.putInt(ARG_REQ_RESOLVE_THREAD_TEXT_RES_ID, requestToResolveThreadTextResId);
+            bundle.putInt(ARG_REQ_RESOLVE_THREAD_APPROVE_TEXT_RES_ID, approveRequestToResolveThreadTextResId);
+            bundle.putInt(ARG_REQ_RESOLVE_THREAD_DENY_TEXT_RES_ID, denyRequestToResolveThreadTextResId);
             return this;
         }
 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <View
+        android:id="@+id/top_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:background="@android:color/darker_gray" />
+
+    <im.threads.widget.CustomFontTextView
+        android:id="@+id/request_to_resolve_thread"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_regular"
+        android:paddingLeft="@dimen/margin_material"
+        android:paddingRight="@dimen/margin_material"
+        android:text="@string/request_to_resolve_thread"
+        android:gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_material"
+        android:orientation="horizontal">
+
+        <im.threads.widget.CustomFontTextView
+            android:id="@+id/approve_request"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_big"
+            android:paddingLeft="@dimen/margin_material"
+            android:paddingRight="@dimen/margin_material"
+            android:text="@string/request_to_resolve_thread_approve"
+            android:textColor="@color/blue"
+            android:gravity="center"
+            android:lines="1"/>
+
+        <im.threads.widget.CustomFontTextView
+            android:id="@+id/deny_request"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_big"
+            android:paddingLeft="@dimen/margin_material"
+            android:paddingRight="@dimen/margin_material"
+            android:text="@string/request_to_resolve_thread_deny"
+            android:textColor="@color/blue"
+            android:gravity="center"
+            android:lines="1"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/bottom_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:background="@android:color/darker_gray"/>
+
+</LinearLayout>

@@ -88,4 +88,8 @@
     <string name="permissions_quit">Закрыть</string>
     <string name="permissions_settings">Настройки</string>
     <string name="user_agent"  formatted="false">Android, osVersion=%s, appVersion=%s, libVersion=%s, device=%s</string>
+
+    <string name="request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
+    <string name="request_to_resolve_thread_approve">Да</string>
+    <string name="request_to_resolve_thread_deny">Нет</string>
 </resources>

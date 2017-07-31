@@ -573,6 +573,13 @@ public class ChatFragment extends Fragment implements
         }
     }
 
+    @Override
+    public void onResolveThreadClick(boolean approveResolve) {
+        if (getActivity() != null) {
+            mChatController.onResolveThreadClick(getActivity(), approveResolve);
+        }
+    }
+
 //    @Override
 //    public void onRatingStarsClick(Survey survey, int rating) {
 //        if (getActivity() != null) {

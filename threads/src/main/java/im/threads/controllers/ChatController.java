@@ -57,6 +57,7 @@ import im.threads.model.HistoryResponseV2;
 import im.threads.model.MessageState;
 import im.threads.model.MessgeFromHistory;
 import im.threads.model.PushMessageCheckResult;
+import im.threads.model.RequestResolveThread;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
@@ -255,6 +256,40 @@ public class ChatController {
 
                     }
                 }, null);
+    }
+
+    public void onResolveThreadClick(Context context, boolean approveResolve) {
+        // if user approve to resolve the thread -
+        // first send CLOSE_THREAD push to the server
+        // and then delete the request from the chat history
+        if (approveResolve) {
+            String resolveThreadMessage = MessageFormatter.createResolveThreadMessage(
+                    PrefUtils.getClientID(appContext)
+            );
+
+            sendMessageMFMSAsync(context, resolveThreadMessage, true,
+                    new RequestCallback<String, PushServerErrorException>() {
+                        @Override
+                        public void onResult(String s) {
+                            deleteMsg("msgId");
+                            if (instance.fragment != null) {
+                                instance.fragment.updateUi();
+                            }
+                        }
+
+                        @Override
+                        public void onError(PushServerErrorException e) {
+
+                        }
+                    }, null);
+        }
+        else {
+            deleteMsg("msgId");
+        }
+    }
+
+    private void deleteMsg(String msgId) {
+        // TODO delete request from thread history
     }
 
 //    public void onRatingStarsClick(Context context, final Survey survey) {
@@ -987,6 +1022,11 @@ public class ChatController {
                     if (mDatabaseHolder != null)
                         mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
                 }
+                break;
+            case MessageMatcher.TYPE_REQUEST_CLOSE_THREAD:
+                String messageId = "local-" + UUID.randomUUID();
+                Long hideAfter = MessageFormatter.getHideAfter(bundle);
+                addMessage(new RequestResolveThread(messageId, hideAfter, System.currentTimeMillis()), ctx);
                 break;
         }
     }

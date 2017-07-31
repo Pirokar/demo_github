@@ -13,6 +13,7 @@ public class MessageMatcher {
     private static final String OPERATOR_TYPING = "TYPING";
     public static final String SCHEDULE = "SCHEDULE";
     public static final String SURVEY = "SURVEY";
+    public static final String REQUEST_CLOSE_THREAD = "REQUEST_CLOSE_THREAD";
     public static final String MESSAGE = "MESSAGE";
     public static final String ON_HOLD = "ON_HOLD";
     public static final String NONE = "NONE";
@@ -31,6 +32,7 @@ public class MessageMatcher {
     public static final int TYPE_MESSAGES_READ = 5;
     public static final int TYPE_SCHEDULE = 6;
     public static final int TYPE_SURVEY = 7;
+    public static final int TYPE_REQUEST_CLOSE_THREAD = 8;
     public static final int UNKNOWN = -1;
 
     private MessageMatcher() {
@@ -58,6 +60,9 @@ public class MessageMatcher {
         }
         if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && SURVEY.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
             return TYPE_SURVEY;
+        }
+        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && REQUEST_CLOSE_THREAD.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+            return TYPE_REQUEST_CLOSE_THREAD;
         }
         if (bundle.getString(PushGcmIntentService.EXTRA_ALERT) != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null && bundle.getString(PushGcmIntentService.EXTRA_TYPE) == null) {
             return TYPE_MESSAGE;

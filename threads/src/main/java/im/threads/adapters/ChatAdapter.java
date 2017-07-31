@@ -33,6 +33,7 @@ import im.threads.holders.RatingStarsSentViewHolder;
 import im.threads.holders.RatingStarsViewHolder;
 import im.threads.holders.RatingThumbsSentViewHolder;
 import im.threads.holders.RatingThumbsViewHolder;
+import im.threads.holders.RequestResolveThreadViewHolder;
 import im.threads.holders.ScheduleInfoViewHolder;
 import im.threads.holders.SearchingConsultViewHolder;
 import im.threads.holders.SpaceViewHolder;
@@ -50,6 +51,7 @@ import im.threads.model.DateRow;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.QuestionDTO;
+import im.threads.model.RequestResolveThread;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.SearchingConsult;
 import im.threads.model.Space;
@@ -84,6 +86,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_RATING_THUMBS_SENT = 15;
     private static final int TYPE_RATING_STARS = 16;
     private static final int TYPE_RATING_STARS_SENT = 17;
+    private static final int TYPE_REQ_RESOLVE_THREAD = 18;
+
     private boolean isRemovingTyping = false;
 
 
@@ -130,6 +134,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_RATING_THUMBS_SENT) return new RatingThumbsSentViewHolder(parent);
         if (viewType == TYPE_RATING_STARS) return new RatingStarsViewHolder(parent);
         if (viewType == TYPE_RATING_STARS_SENT) return new RatingStarsSentViewHolder(parent);
+        if (viewType == TYPE_REQ_RESOLVE_THREAD) return new RequestResolveThreadViewHolder(parent);
         return null;
     }
 
@@ -466,6 +471,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((RatingStarsSentViewHolder) holder).bind(survey);
         }
 
+        if (holder instanceof RequestResolveThreadViewHolder) {
+            ((RequestResolveThreadViewHolder) holder).bind(mAdapterInterface);
+        }
     }
 
 
@@ -754,6 +762,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         }
+
+        if (o instanceof RequestResolveThread) {
+            return TYPE_REQ_RESOLVE_THREAD;
+        }
         return super.getItemViewType(position);
     }
 
@@ -903,6 +915,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
 
         void onRatingClick(Survey survey, int rating);
+
+        void onResolveThreadClick(boolean approveResolve);
 
 //        void onRatingStarsClick(Survey survey, int rating);
     }

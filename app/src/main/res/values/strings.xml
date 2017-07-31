@@ -8,4 +8,8 @@
     <string name="title_chat">Чат</string>
     <string name="title_notifications">Notifications</string>
     <string name="unread_messages_count">Количество непрочитанных сообщений</string>
+
+    <string name="resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
+    <string name="resolve_thread_approve">Да</string>
+    <string name="resolve_thread_deny">Нет</string>
 </resources>
