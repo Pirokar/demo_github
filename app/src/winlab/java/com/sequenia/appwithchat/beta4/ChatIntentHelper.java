@@ -2,8 +2,6 @@ package com.sequenia.appwithchat.beta4;
 
 import android.app.Activity;
 
-import com.sequenia.appwithchat.R;
-
 import im.threads.model.ChatStyle;
 
 /**
