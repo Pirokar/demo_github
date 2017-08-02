@@ -17,6 +17,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -60,6 +61,8 @@ public class NotificationService extends Service {
     public static final String ACTION_ALL_MESSAGES_WERE_READ = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_MESSAGES_WERE_READ";
     public static final String ACTION_ADD_UNREAD_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE";
     public static final String ACTION_ADD_UNSENT_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNSENT_MESSAGE";
+    public static final String ACTION_REMOVE_NOTIFICATION = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_REMOVE_NOTIFICATION";
+    public static final String ACTION_ADD_UNREAD_MESSAGE_TEXT = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE_TEXT";
 
     private static final int UNREAD_MESSAGE_PUSH_ID = 0;
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
@@ -101,14 +104,44 @@ public class NotificationService extends Service {
 
         ArrayList<com.pushserver.android.PushMessage> il =
                 intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
+        if (intent.getAction() != null && intent.getAction().equals(ACTION_REMOVE_NOTIFICATION)) {
+            dismissUnreadMessagesNotification();
+        } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNREAD_MESSAGE_TEXT)) {
+            String message = intent.getStringExtra(ACTION_ADD_UNREAD_MESSAGE_TEXT);
+            final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+            if (Build.VERSION.SDK_INT < 24) {
+                Notification notification = getMstyleNotif(notificationBuilder, null, message);
+                notification.defaults |= Notification.DEFAULT_SOUND;
+                notification.defaults |= Notification.DEFAULT_VIBRATE;
+                if (needsShowNotification()) {
+                    nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
+                    ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
+                }
+            } else {
+                getNstyleNotif(notificationBuilder, null, new CompletionHandler<Notification>() {
+                    @Override
+                    public void onComplete(final Notification data) {
+                        if (needsShowNotification()) {
+                            data.defaults |= Notification.DEFAULT_SOUND;
+                            data.defaults |= Notification.DEFAULT_VIBRATE;
+                            nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
+                            ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
+                        }
+                    }
 
-        if (il != null) {
+                    @Override
+                    public void onError(Throwable e, String message, Notification data) {
+
+                    }
+                }, message);
+            }
+        } else if (il != null) {
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
             List<ChatItem> items = MessageFormatter.formatMessages(il);
-
             if (Build.VERSION.SDK_INT < 24) {
-                Notification notification = getMstyleNotif(notificationBuilder, items);
+                Notification notification = getMstyleNotif(notificationBuilder, items, null);
                 notification.defaults |= Notification.DEFAULT_SOUND;
                 notification.defaults |= Notification.DEFAULT_VIBRATE;
                 if (needsShowNotification()) {
@@ -131,7 +164,7 @@ public class NotificationService extends Service {
                     public void onError(Throwable e, String message, Notification data) {
 
                     }
-                });
+                }, null);
             }
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNSENT_MESSAGE)) {
             final NotificationCompat.Builder nc = new NotificationCompat.Builder(this);
@@ -157,6 +190,10 @@ public class NotificationService extends Service {
         return START_STICKY;
     }
 
+    private void showUnreadMessageNotification(String message) {
+
+    }
+
     private boolean needsShowNotification() {
         return !ChatFragment.isShown();
     }
@@ -175,99 +212,10 @@ public class NotificationService extends Service {
     }
 
     Notification getMstyleNotif(
-            android.support.v7.app.NotificationCompat.Builder builder, List<ChatItem> items) {
-
-        Tuple<Boolean, MarshmellowPushMessageFormatter.PushContents> pushText = new
-                MarshmellowPushMessageFormatter(this, unreadMessages, items)
-                .getFormattedMessageAsPushContents();
-
+            NotificationCompat.Builder builder, List<ChatItem> items, String message) {
         final RemoteViews pushSmall = new RemoteViews(getPackageName(), R.layout.remote_push_small);
         final RemoteViews pushBig = new RemoteViews(getPackageName(), R.layout.remote_push_expanded);
 
-        String avatarPath = null;
-        for (int i = unreadMessages.size() - 1; i >= 0; i--) {
-            if (isEmpty(avatarPath)) {
-                if (unreadMessages.get(i) instanceof ConsultChatPhrase) {
-                    avatarPath = ((ConsultChatPhrase) unreadMessages.get(i)).getAvatarPath();
-                    break;
-                }
-            }
-        }
-
-        if (!isEmpty(avatarPath)) {
-            Picasso
-                    .with(this)
-                    .load(avatarPath)
-                    .transform(new CircleTransform())
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            pushSmall.setImageViewBitmap(R.id.icon_large, bitmap);
-                            pushBig.setImageViewBitmap(R.id.icon_large, bitmap);
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-                            Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
-                            pushSmall.setImageViewBitmap(R.id.icon_large, big);
-                            pushBig.setImageViewBitmap(R.id.icon_large, big);
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                        }
-                    });
-
-            Target smallPicTarger = new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {//round icon in corner
-                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap);
-                    pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap);
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
-                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, big);
-                    pushBig.setImageViewBitmap(R.id.icon_small_corner, big);
-                }
-
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                }
-            };
-
-            if (style != null
-                    && style.defPushIconResid != ChatStyle.INVALID) {
-                Picasso
-                        .with(this)
-                        .load(style.defPushIconResid)
-                        .transform(new CircleTransform())
-                        .into(smallPicTarger);
-            } else {
-                Picasso
-                        .with(this)
-                        .load(R.drawable.defult_big_icon)
-                        .transform(new CircleTransform())
-                        .into(smallPicTarger);
-            }
-        } else {
-            if (style != null && style.defPushIconResid != ChatStyle.INVALID) {
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResid);
-                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
-                pushBig.setImageViewBitmap(R.id.icon_large, icon);
-                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
-                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
-            } else {
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_big_icon);
-                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
-                pushBig.setImageViewBitmap(R.id.icon_large, icon);
-                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
-                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
-            }
-        }
         if (style != null && style.defTitleResId != ChatStyle.INVALID) {
             builder.setContentTitle(getString(style.defTitleResId));
             pushSmall.setTextViewText(R.id.title, getString(style.defTitleResId));
@@ -296,27 +244,145 @@ public class NotificationService extends Service {
         } else {
             builder.setSmallIcon(R.drawable.empty);
         }
-        pushSmall.setTextViewText(R.id.consult_name, pushText.second.consultName + ":");
-        pushSmall.setTextViewText(R.id.text, pushText.second.contentDescription.trim());
 
-        pushBig.setTextViewText(R.id.consult_name, pushText.second.consultName + ":");
-        pushBig.setTextViewText(R.id.text, pushText.second.contentDescription.trim());
+        boolean unreadMessage = !TextUtils.isEmpty(message);
+        if (unreadMessage) {
+            if (style != null && style.defPushIconResid != ChatStyle.INVALID) {
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResid);
+                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
+            } else {
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_big_icon);
+                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
+            }
+            pushSmall.setViewVisibility(R.id.consult_name, View.GONE);
+            pushSmall.setTextViewText(R.id.text, message);
 
-        if (pushText.second.isOnlyImages) {
-            pushSmall.setViewVisibility(R.id.attach_image, View.VISIBLE);
-            pushBig.setViewVisibility(R.id.attach_image, View.VISIBLE);
-            Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.insert_photo_grey_48x48);
-            pushSmall.setImageViewBitmap(R.id.attach_image, b);
-            pushBig.setImageViewBitmap(R.id.attach_image, b);
-        } else if (pushText.second.isWithAttachments) {
-            pushSmall.setViewVisibility(R.id.attach_image, View.VISIBLE);
-            pushBig.setViewVisibility(R.id.attach_image, View.VISIBLE);
-            Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.attach_file_grey_48x48);
-            pushSmall.setImageViewBitmap(R.id.attach_image, b);
-            pushBig.setImageViewBitmap(R.id.attach_image, b);
-        } else if (!pushText.second.isWithAttachments) {
+            pushBig.setViewVisibility(R.id.consult_name, View.GONE);
+            pushBig.setTextViewText(R.id.text, message);
+
             pushSmall.setViewVisibility(R.id.attach_image, View.GONE);
             pushBig.setViewVisibility(R.id.attach_image, View.GONE);
+        } else {
+            Tuple<Boolean, MarshmellowPushMessageFormatter.PushContents> pushText = new
+                    MarshmellowPushMessageFormatter(this, unreadMessages, items)
+                    .getFormattedMessageAsPushContents();
+
+            String avatarPath = null;
+            for (int i = unreadMessages.size() - 1; i >= 0; i--) {
+                if (isEmpty(avatarPath)) {
+                    if (unreadMessages.get(i) instanceof ConsultChatPhrase) {
+                        avatarPath = ((ConsultChatPhrase) unreadMessages.get(i)).getAvatarPath();
+                        break;
+                    }
+                }
+            }
+            if (!isEmpty(avatarPath)) {
+                Picasso
+                        .with(this)
+                        .load(avatarPath)
+                        .transform(new CircleTransform())
+                        .into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                pushSmall.setImageViewBitmap(R.id.icon_large, bitmap);
+                                pushBig.setImageViewBitmap(R.id.icon_large, bitmap);
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+                                Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
+                                pushSmall.setImageViewBitmap(R.id.icon_large, big);
+                                pushBig.setImageViewBitmap(R.id.icon_large, big);
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                            }
+                        });
+
+                Target smallPicTarger = new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {//round icon in corner
+                        pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap);
+                        pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
+                        pushSmall.setImageViewBitmap(R.id.icon_small_corner, big);
+                        pushBig.setImageViewBitmap(R.id.icon_small_corner, big);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                };
+
+                if (style != null
+                        && style.defPushIconResid != ChatStyle.INVALID) {
+                    Picasso
+                            .with(this)
+                            .load(style.defPushIconResid)
+                            .transform(new CircleTransform())
+                            .into(smallPicTarger);
+                } else {
+                    Picasso
+                            .with(this)
+                            .load(R.drawable.defult_big_icon)
+                            .transform(new CircleTransform())
+                            .into(smallPicTarger);
+                }
+            } else {
+                if (style != null && style.defPushIconResid != ChatStyle.INVALID) {
+                    Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResid);
+                    pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                    pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                    pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
+                } else {
+                    Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_big_icon);
+                    pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                    pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                    pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
+                }
+            }
+            pushSmall.setTextViewText(R.id.consult_name, pushText.second.consultName + ":");
+            pushSmall.setTextViewText(R.id.text, pushText.second.contentDescription.trim());
+
+            pushBig.setTextViewText(R.id.consult_name, pushText.second.consultName + ":");
+            pushBig.setTextViewText(R.id.text, pushText.second.contentDescription.trim());
+
+            if (pushText.second.isOnlyImages) {
+                pushSmall.setViewVisibility(R.id.attach_image, View.VISIBLE);
+                pushBig.setViewVisibility(R.id.attach_image, View.VISIBLE);
+                Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.insert_photo_grey_48x48);
+                pushSmall.setImageViewBitmap(R.id.attach_image, b);
+                pushBig.setImageViewBitmap(R.id.attach_image, b);
+            } else if (pushText.second.isWithAttachments) {
+                pushSmall.setViewVisibility(R.id.attach_image, View.VISIBLE);
+                pushBig.setViewVisibility(R.id.attach_image, View.VISIBLE);
+                Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.attach_file_grey_48x48);
+                pushSmall.setImageViewBitmap(R.id.attach_image, b);
+                pushBig.setImageViewBitmap(R.id.attach_image, b);
+            } else if (!pushText.second.isWithAttachments) {
+                pushSmall.setViewVisibility(R.id.attach_image, View.GONE);
+                pushBig.setViewVisibility(R.id.attach_image, View.GONE);
+            }
+            if (pushText.first) {
+                builder.setCustomBigContentView(pushBig);
+                PendingIntent buttonPend = getFastAnswerIntent();
+                pushBig.setOnClickPendingIntent(R.id.reply, buttonPend);
+            }
         }
         pushBig.setTextViewText(R.id.reply, getString(R.string.reply));
         builder.setContent(pushSmall);
@@ -324,11 +390,7 @@ public class NotificationService extends Service {
         builder.setContentIntent(pend);
         builder.setAutoCancel(true);
         builder.setContentIntent(pend);
-        if (pushText.first) {
-            builder.setCustomBigContentView(pushBig);
-            PendingIntent buttonPend = getFastAnswerIntent();
-            pushBig.setOnClickPendingIntent(R.id.reply, buttonPend);
-        }
+
         Notification notification = builder.build();
         try {
             int smallIconViewId = getResources().getIdentifier("right_icon", "id", android.R.class.getPackage().getName());
@@ -340,36 +402,16 @@ public class NotificationService extends Service {
     }
 
     void getNstyleNotif(
-            final android.support.v7.app.NotificationCompat.Builder builder
-            , List<ChatItem> items, final CompletionHandler<Notification> completionHandler) {
+            final NotificationCompat.Builder builder
+            , List<ChatItem> items, final CompletionHandler<Notification> completionHandler, String message) {
         builder.setShowWhen(true);
         if (Build.VERSION.SDK_INT > 23) {
             if (style != null && style.nugatPushAccentColorResId != ChatStyle.INVALID)
                 builder.setColor(getColor(style.nugatPushAccentColorResId));
         }
-        final Tuple<Boolean, NugatMessageFormatter.PushContents> out
-                = new NugatMessageFormatter(this, unreadMessages, items).getFormattedMessageAsPushContents();
-        final NugatMessageFormatter.PushContents pushContents = out.second;
-        if (pushContents.hasAvatar) {
-            TargetNoError avatarTarget = new TargetNoError() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    builder.setLargeIcon(bitmap);
-                }
-            };
-            Picasso
-                    .with(this)
-                    .load(pushContents.avatarPath)
-                    .transform(new CircleTransform())
-                    .into(avatarTarget);
-        }
-        builder.setContentTitle(pushContents.titleText);
-
-        if (!pushContents.hasImage && !pushContents.hasPlainFiles && pushContents.phrasesCount > 1) {
-        } else {
-            builder.setContentText(pushContents.contentText);
-        }
-        if (!pushContents.hasImage && !pushContents.hasPlainFiles) {
+        boolean unreadMessage = !TextUtils.isEmpty(message);
+        if (unreadMessage) {
+            builder.setContentText(message);
             if (style != null && style.defPushIconResid != ChatStyle.INVALID) {
                 builder.setSmallIcon(style.defPushIconResid);
             } else {
@@ -379,61 +421,99 @@ public class NotificationService extends Service {
                 @Override
                 public void run() {
                     builder.setContentIntent(getChatIntent());
-                    if (out.first) {
-                        builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
-                    }
+                    builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
                     completionHandler.onComplete(builder.build());
 
                 }
             });
+        } else {
+            final Tuple<Boolean, NugatMessageFormatter.PushContents> out
+                    = new NugatMessageFormatter(this, unreadMessages, items).getFormattedMessageAsPushContents();
+            final NugatMessageFormatter.PushContents pushContents = out.second;
+            builder.setContentTitle(pushContents.titleText);
 
-            return;
-        }
-        if (pushContents.hasImage
-                && !pushContents.hasPlainFiles
-                && pushContents.imagesCount == 1) {
-            final NotificationCompat.BigPictureStyle pictureStyle
-                    = new android.support.v4.app.NotificationCompat.BigPictureStyle();
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        URLConnection url = new URL(pushContents.lastImagePath).openConnection();
-                        Bitmap b = BitmapFactory.decodeStream(url.getInputStream());
-                        pictureStyle.bigPicture(b);
-                        builder.setContentIntent(getChatIntent());
-                        builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
-                        builder.setStyle(pictureStyle);
-                        builder.setContentIntent(getChatIntent());
+            if (!pushContents.hasImage && !pushContents.hasPlainFiles && pushContents.phrasesCount > 1) {
+            } else {
+                builder.setContentText(pushContents.contentText);
+            }
+            if (pushContents.hasAvatar) {
+                TargetNoError avatarTarget = new TargetNoError() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        builder.setLargeIcon(bitmap);
+                    }
+                };
+                Picasso
+                        .with(this)
+                        .load(pushContents.avatarPath)
+                        .transform(new CircleTransform())
+                        .into(avatarTarget);
+            }
+            if (!pushContents.hasImage && !pushContents.hasPlainFiles) {
+                if (style != null && style.defPushIconResid != ChatStyle.INVALID) {
+                    builder.setSmallIcon(style.defPushIconResid);
+                } else {
+                    builder.setSmallIcon(R.drawable.done);
+                }
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
                         builder.setContentIntent(getChatIntent());
                         if (out.first) {
                             builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
                         }
                         completionHandler.onComplete(builder.build());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
                     }
+                });
+
+                return;
+            }
+            if (pushContents.hasImage
+                    && !pushContents.hasPlainFiles
+                    && pushContents.imagesCount == 1) {
+                final NotificationCompat.BigPictureStyle pictureStyle
+                        = new android.support.v4.app.NotificationCompat.BigPictureStyle();
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            URLConnection url = new URL(pushContents.lastImagePath).openConnection();
+                            Bitmap b = BitmapFactory.decodeStream(url.getInputStream());
+                            pictureStyle.bigPicture(b);
+                            builder.setContentIntent(getChatIntent());
+                            builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
+                            builder.setStyle(pictureStyle);
+                            builder.setContentIntent(getChatIntent());
+                            builder.setContentIntent(getChatIntent());
+                            if (out.first) {
+                                builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
+                            }
+                            completionHandler.onComplete(builder.build());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                return;
+            }
+            if ((pushContents.hasImage && pushContents.hasPlainFiles)
+                    || (pushContents.hasPlainFiles && !pushContents.hasImage)) {
+                builder.setSmallIcon(R.drawable.attach_file_grey_48x48);
+            } else if (pushContents.hasImage && !pushContents.hasPlainFiles) {
+                builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
+            }
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    builder.setContentIntent(getChatIntent());
+                    if (out.first) {
+                        builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
+                    }
+                    completionHandler.onComplete(builder.build());
                 }
             });
-            return;
         }
-        if ((pushContents.hasImage && pushContents.hasPlainFiles)
-                || (pushContents.hasPlainFiles && !pushContents.hasImage)) {
-            builder.setSmallIcon(R.drawable.attach_file_grey_48x48);
-        } else if (pushContents.hasImage && !pushContents.hasPlainFiles) {
-            builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
-        }
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                builder.setContentIntent(getChatIntent());
-                if (out.first) {
-                    builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
-                }
-                completionHandler.onComplete(builder.build());
-            }
-        });
-        return;
     }
 
     private PendingIntent getFastAnswerIntent() {
