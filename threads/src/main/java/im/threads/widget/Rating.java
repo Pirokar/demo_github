@@ -16,15 +16,13 @@ import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.utils.PrefUtils;
 
-
 /**
- * Блок для показа рейтинга и отмечания его
+ * Контрол для показа и изменения рейтинга
  */
 public class Rating extends LinearLayout {
 
-    private static final int DEFAULT_RATING_STARS_COUNT = 3;
     private ChatStyle style;
-    private Integer ratingCount;
+    private int ratingCount;
     private Integer countStars;
     private Context context;
     Boolean hasListener = false;
@@ -38,16 +36,17 @@ public class Rating extends LinearLayout {
         super(context, attrs);
     }
 
-    public void initRating(Context context, Integer ratingCount) {
+    public void initRating(Context context, int ratingCount, int starsCount) {
         this.context = context;
         this.ratingCount = ratingCount;
         style = PrefUtils.getIncomingStyle(context);
 
-        countStars = DEFAULT_RATING_STARS_COUNT; //TODO: 07.06.2017 заглушка, нужно брать из пуша
+        countStars = starsCount;
 
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        removeAllViews();                   // Чтобы при повторном ините не было в 2 раза больше звезд
+        // Чтобы при повторной инициализации не было в 2 раза больше звезд
+        removeAllViews();
         viewsStar = new ArrayList<>();
 
         for (int i = 0; i < countStars; i++) {

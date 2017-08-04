@@ -360,12 +360,6 @@ public class MessageFormatter {
             } else if (type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
                 return getScheduleInfoFromPush(pushMessage, fullMessage);
             } else if (type.equalsIgnoreCase(MessageMatcher.SURVEY)) {
-//                Boolean simple = getTypeOfSurvey(fullMessage);
-//                if (simple) {
-//                    return getRatingThumbsFromPush(pushMessage, fullMessage);
-//                } else {
-//                    return getRatingStarsFromPush(pushMessage, fullMessage);
-//                }
                 return getRatingFromPush(pushMessage, fullMessage);
             } else if (type.equalsIgnoreCase(MessageMatcher.MESSAGE)
                     || type.equalsIgnoreCase(MessageMatcher.ON_HOLD)) {
@@ -412,34 +406,6 @@ public class MessageFormatter {
         }
         return scheduleInfo;
     }
-
-//    private static RatingThumbs getRatingThumbsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
-//        RatingThumbs ratingThumbs = null;
-//        String text = getMessage(fullMessage, pushMessage);
-//        if(text != null) {
-//            try {
-//                ratingThumbs = new Gson().fromJson(text, RatingThumbs.class);
-//                ratingThumbs.setPhraseTimeStamp(new Date().getTime());
-//            } catch (JsonSyntaxException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return ratingThumbs;
-//    }
-//
-//    private static RatingStars getRatingStarsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
-//        RatingStars ratingStars = null;
-//        String text = getMessage(fullMessage, pushMessage);
-//        if(text != null) {
-//            try {
-//                ratingStars = new Gson().fromJson(text, RatingStars.class);
-//                ratingStars.setPhraseTimeStamp(new Date().getTime());
-//            } catch (JsonSyntaxException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return ratingStars;
-//    }
 
     private static Survey getRatingFromPush(PushMessage pushMessage, JSONObject fullMessage) {
         Survey survey = null;

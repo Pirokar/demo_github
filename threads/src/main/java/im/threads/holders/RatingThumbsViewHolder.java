@@ -15,7 +15,7 @@ import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
 /**
- * ViewHolder для расписания
+ * ViewHolder для бинарных опросов
  * Created by chybakut2004 on 17.04.17.
  */
 
@@ -62,36 +62,28 @@ public class RatingThumbsViewHolder extends BaseHolder {
     }
 
     public void bind(final Survey survey, final ChatAdapter.AdapterInterface adapterInterface) {
-        Integer rate = survey.getQuestions().get(0).getRate();
         askForRate.setText(survey.getQuestions().get(0).getText());
-        if (rate != null) {
-            if (rate == 1) {
-                if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                    thumbUp.setImageResource(R.drawable.ic_like_full_36dp);
-                    thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-                }
-                if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-                    thumbDown.setImageResource(R.drawable.ic_dislike_empty_36dp);
-                    thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId), PorterDuff.Mode.SRC_ATOP);
-                }
-                thanksForRate.setVisibility(View.VISIBLE);
-                bottomSeparator.setVisibility(View.VISIBLE);
-            } else {
-                if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                    thumbDown.setImageResource(R.drawable.ic_dislike_full_36dp);
-                    thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-                }
-                if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-                    thumbUp.setImageResource(R.drawable.ic_like_empty_36dp);
-                    thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId), PorterDuff.Mode.SRC_ATOP);
-                }
-                thanksForRate.setVisibility(View.VISIBLE);
-                bottomSeparator.setVisibility(View.VISIBLE);
+        if (survey.getQuestions().get(0).getRate() == 1) {
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
+                thumbUp.setImageResource(R.drawable.ic_like_full_36dp);
+                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
+                thumbDown.setImageResource(R.drawable.ic_dislike_empty_36dp);
+                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId), PorterDuff.Mode.SRC_ATOP);
             }
         } else {
-            thanksForRate.setVisibility(View.GONE);
-            bottomSeparator.setVisibility(View.GONE);
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
+                thumbDown.setImageResource(R.drawable.ic_dislike_full_36dp);
+                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
+                thumbUp.setImageResource(R.drawable.ic_like_empty_36dp);
+                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
         }
+
+        thanksForRate.setVisibility(survey.getQuestions().get(0).hasRate() ? View.VISIBLE : View.GONE);
 
         thumbUp.setOnClickListener(new View.OnClickListener() {
             @Override

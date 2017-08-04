@@ -13,7 +13,7 @@ import im.threads.utils.PrefUtils;
 import im.threads.widget.Rating;
 
 /**
- * ViewHolder для расписания
+ * ViewHolder для опросов с рейтингом
  * Created by chybakut2004 on 17.04.17.
  */
 
@@ -53,17 +53,13 @@ public class RatingStarsViewHolder extends BaseHolder {
 
     public void bind(Survey survey, Rating.CallBackListener callBackListener) {
         int rate = survey.getQuestions().get(0).getRate();
-        rating.initRating(itemView.getContext(), rate);
+        int scale = survey.getQuestions().get(0).getScale();
+        rating.initRating(itemView.getContext(), rate, scale);
         askForRate.setText(survey.getQuestions().get(0).getText());
         if (!rating.getHasListener()) {
             rating.setListenerClick(true, callBackListener);
         }
-        if (rate != 0) {
-            thanksForRate.setVisibility(View.VISIBLE);
-            bottomSeparator.setVisibility(View.VISIBLE);
-        } else {
-            thanksForRate.setVisibility(View.GONE);
-            bottomSeparator.setVisibility(View.GONE);
-        }
+
+        thanksForRate.setVisibility(survey.getQuestions().get(0).hasRate() ? View.VISIBLE : View.GONE);
     }
 }
