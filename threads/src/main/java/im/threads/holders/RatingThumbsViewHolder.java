@@ -11,6 +11,7 @@ import android.widget.TextView;
 import im.threads.R;
 import im.threads.adapters.ChatAdapter;
 import im.threads.model.ChatStyle;
+import im.threads.model.MessageState;
 import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
@@ -103,19 +104,21 @@ public class RatingThumbsViewHolder extends BaseHolder {
 
         thanksForRate.setVisibility(survey.getQuestions().get(0).hasRate() ? View.VISIBLE : View.GONE);
 
-        thumbUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adapterInterface.onRatingClick(survey, 1);
-            }
-        });
+        if (survey.getSentState() == MessageState.STATE_NOT_SENT) {
+            thumbUp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    adapterInterface.onRatingClick(survey, 1);
+                }
+            });
 
-        thumbDown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                adapterInterface.onRatingClick(survey, 0);
-            }
-        });
+            thumbDown.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    adapterInterface.onRatingClick(survey, 0);
+                }
+            });
+        }
 
     }
 }

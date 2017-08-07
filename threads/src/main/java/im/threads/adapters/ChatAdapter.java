@@ -602,6 +602,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 removed = true;
             }
         }
+
+
         return removed;
     }
 

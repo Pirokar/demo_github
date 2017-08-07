@@ -63,16 +63,16 @@ public class Rating extends LinearLayout {
      */
     public void setListenerClick(CallBackListener callBackListener) {
         if (callBackListener != null) {
-            clickStarts(callBackListener);
+            setClickListeners(callBackListener);
         } else {
-            noClickStats();
+            deleteClickListeners();
         }
     }
 
     /**
      * клик по звезде задает рейтинг
      */
-    public void clickStarts(final CallBackListener callBackListener) {
+    public void setClickListeners(final CallBackListener callBackListener) {
         for (int i = 0; i < countStars; i++) {
             final int index = i + 1;
             viewsStar.get(i).setOnClickListener(new View.OnClickListener() {
@@ -94,7 +94,7 @@ public class Rating extends LinearLayout {
     /**
      * убираем слушатель с рейтинга
      */
-    public void noClickStats() {
+    public void deleteClickListeners() {
         for (int i = 0; i < countStars; i++) {
             viewsStar.get(i).setOnClickListener(null);
         }

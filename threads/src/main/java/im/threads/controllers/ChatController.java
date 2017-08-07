@@ -239,8 +239,10 @@ public class ChatController {
     public void onRatingClick(Context context, final Survey survey) {
         ChatItem chatItem = convertRatingItem(survey);
         if (chatItem != null) {
+            setSurveyState(survey, MessageState.STATE_SENDING); //  change state to make a survey unclickable
             addMessage(chatItem, appContext);
         }
+
         String ratingDoneMessage = MessageFormatter.createRatingDoneMessage(
                 survey.getSendingId(),
                 survey.getQuestions().get(0).getId(),
@@ -1028,9 +1030,7 @@ public class ChatController {
 
     private ChatItem convertRatingItem(ChatItem chatItem) {
         if (chatItem instanceof Survey) {
-            Survey survey = (Survey) chatItem;
-            survey.setMessageId("local" + UUID.randomUUID().toString());
-            return survey;
+            return chatItem;
         }
         return null;
     }
@@ -1074,43 +1074,6 @@ public class ChatController {
                 break;
         }
     }
-
-//    public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
-//        if (BuildConfig.DEBUG) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(appContext));
-//        if (!PrefUtils.isClientIdNotEmpty(appContext)) {
-//            callback.onSuccess(new ArrayList<ChatItem>());
-//            return;
-//        }
-//        mExecutor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                final int[] currentOffset = {fragment.getCurrentItemsCount()};
-//                try {
-//                    List<InOutMessage> messages = PushController.getInstance(appContext).getMessageHistory(currentOffset[0] + 20);
-//                    mDatabaseHolder.putMessagesSync(MessageFormatter.format(messages));
-//                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
-//                    currentOffset[0] += chatItems.size();
-//                    h.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            callback.onSuccess(chatItems);
-//                        }
-//                    });
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], 20));
-//                    currentOffset[0] += chatItems.size();
-//                    h.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            callback.onSuccess(chatItems);
-//                        }
-//                    });
-//                }
-//            }
-//        });
-//    }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
         if (BuildConfig.DEBUG) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(appContext));
