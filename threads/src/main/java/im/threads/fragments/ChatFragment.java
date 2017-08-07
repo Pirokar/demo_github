@@ -127,6 +127,8 @@ public class ChatFragment extends Fragment implements
 
     private static boolean chatIsShown = false;
 
+    private Context appContext;
+
     private View rootView;
 
     private Handler mSearchHandler = new Handler(Looper.getMainLooper());
@@ -176,7 +178,7 @@ public class ChatFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
-        Context context = activity.getApplicationContext();
+        appContext = activity.getApplicationContext();
 
         style = ChatStyle.getStyleFromBundleWithThrow(activity, getArguments());
 
@@ -196,7 +198,7 @@ public class ChatFragment extends Fragment implements
         setHasOptionsMenu(true);
         initController();
         setFragmentStyle(PrefUtils.getIncomingStyle(activity));
-        sendOpenChatAnalyticsEvent(context);
+        sendOpenChatAnalyticsEvent(appContext);
 
         chatIsShown = true;
 
@@ -495,7 +497,7 @@ public class ChatFragment extends Fragment implements
             }
 
             if (style.welcomeScreenTitleTextResId != ChatStyle.INVALID && style.welcomeScreenSubtitleTextResId != ChatStyle.INVALID) {
-                mWelcomeScreen.setText(getString(style.welcomeScreenTitleTextResId), getString(style.welcomeScreenSubtitleTextResId));
+                mWelcomeScreen.setText(appContext.getString(style.welcomeScreenTitleTextResId), appContext.getString(style.welcomeScreenSubtitleTextResId));
             }
 
             if (style.welcomeScreenTitleSizeInSp != ChatStyle.INVALID) {
@@ -740,7 +742,7 @@ public class ChatFragment extends Fragment implements
         }
         if (cp instanceof UserPhrase) {
             UserPhrase userPhrase = (UserPhrase) cp;
-            headerText = getString(R.string.I);
+            headerText = appContext.getString(R.string.I);
             mQuote.setFromConsult(false);
             mQuote.setPhraseOwnerTitle(headerText);
             mQuote.setMessageId(userPhrase.getMessageId());
@@ -751,7 +753,7 @@ public class ChatFragment extends Fragment implements
             mQuote.setFromConsult(true);
             mQuote.setQuotedPhraseId(((ConsultPhrase) cp).getConsultId());
             if (headerText == null) {
-                headerText = getString(R.string.consult);
+                headerText = appContext.getString(R.string.consult);
             }
             mQuote.setPhraseOwnerTitle(headerText);
             mQuote.setMessageId(consultPhrase.getMessageId());
@@ -759,7 +761,7 @@ public class ChatFragment extends Fragment implements
         }
         if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                 || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
-            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? getString(R.string.image) : text, cp.getFileDescription().getFilePath());
+            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? appContext.getString(R.string.image) : text, cp.getFileDescription().getFilePath());
         } else if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PDF) {
             String fileName = "";
             try {
@@ -826,7 +828,7 @@ public class ChatFragment extends Fragment implements
             List<UpcomingUserMessage> messages = new ArrayList<>();
             messages.add(new UpcomingUserMessage(
                     new FileDescription(
-                            getString(R.string.I),
+                            appContext.getString(R.string.I),
                             mAttachedImages.get(0),
                             new File(mAttachedImages.get(0).replaceAll("file://", "")).length(),
                             System.currentTimeMillis()),
@@ -836,7 +838,7 @@ public class ChatFragment extends Fragment implements
 
             for (int i = 1; i < mAttachedImages.size(); i++) {
                 FileDescription fileDescription = new FileDescription(
-                        getString(R.string.I),
+                        appContext.getString(R.string.I),
                         mAttachedImages.get(i),
                         new File(mAttachedImages.get(i).replaceAll("file://", "")).length(),
                         System.currentTimeMillis());
@@ -853,8 +855,8 @@ public class ChatFragment extends Fragment implements
     public void onFileSelected(File fileOrDirectory) {
         Log.i(TAG, "onFileSelected: " + fileOrDirectory);
 
-        mFileDescription = new FileDescription(getString(R.string.I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(getString(R.string.I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
+        mFileDescription = new FileDescription(appContext.getString(R.string.I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(appContext.getString(R.string.I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
         mQuote = null;
     }
 
@@ -1136,7 +1138,7 @@ public class ChatFragment extends Fragment implements
                 if (!TextUtils.isEmpty(ConsultName) && !ConsultName.equals("null")) {
                     mConsultNameView.setText(ConsultName);
                 } else {
-                    mConsultNameView.setText(getString(R.string.unknown_operator));
+                    mConsultNameView.setText(appContext.getString(R.string.unknown_operator));
                 }
                 if (!TextUtils.isEmpty(consultTitle) && !consultTitle.equals("null")) {
                     mConsultTitle.setText(consultTitle);
@@ -1160,7 +1162,7 @@ public class ChatFragment extends Fragment implements
                     if (style != null && style.chatTitleTextResId != ChatStyle.INVALID) {
                         mConsultNameView.setText(style.chatTitleTextResId);
                     } else {
-                        mConsultNameView.setText(getString(R.string.contact_center));
+                        mConsultNameView.setText(appContext.getString(R.string.contact_center));
                     }
                 }
                 connectedConsultId = String.valueOf(-1);
@@ -1325,7 +1327,7 @@ public class ChatFragment extends Fragment implements
         mSearchLo.setVisibility(View.GONE);
         mSearchMessageEditText.setText("");
         if (isAdded()) {
-            mConsultNameView.setText(getResources().getString(R.string.searching_operator));
+            mConsultNameView.setText(appContext.getString(R.string.searching_operator));
         }
     }
 
@@ -1406,7 +1408,7 @@ public class ChatFragment extends Fragment implements
             if (photos.size() == 0) return;
             unChooseItem(mChosenPhrase);
             UpcomingUserMessage uum =
-                    new UpcomingUserMessage(new FileDescription(getString(R.string.I)
+                    new UpcomingUserMessage(new FileDescription(appContext.getString(R.string.I)
                             , photos.get(0)
                             , new File(photos.get(0).replaceAll("file://", "")).length()
                             , System.currentTimeMillis())
@@ -1421,14 +1423,14 @@ public class ChatFragment extends Fragment implements
             for (int i = 1; i < photos.size(); i++) {
                 uum =
                         new UpcomingUserMessage(
-                                new FileDescription(getString(R.string.I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
+                                new FileDescription(appContext.getString(R.string.I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
                                 , null
                                 , null
                                 , false);
                 mChatController.onUserInput(uum);
             }
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
-            mFileDescription = new FileDescription(getResources().getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
+            mFileDescription = new FileDescription(appContext.getString(R.string.image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
             UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
             sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
         } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
