@@ -60,22 +60,19 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
     public void bind(Survey survey) {
         int rate = survey.getQuestions().get(0).getRate();
         if (rate == 1) {
-            if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
-                thumb.setImageResource(R.drawable.ic_like_full_36dp);
-                thumb.setColorFilter(
-                        ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),
-                        PorterDuff.Mode.SRC_ATOP
-                );
+            if (style.binarySurveyLikeSelectedIconResId != ChatStyle.INVALID) {
+                thumb.setImageResource(style.binarySurveyLikeSelectedIconResId);
             }
         } else {
-            if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
-                thumb.setImageResource(R.drawable.ic_dislike_full_36dp);
-                thumb.setColorFilter(
-                        ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),
-                        PorterDuff.Mode.SRC_ATOP
-                );
+            if (style.binarySurveyDislikeSelectedIconResId != ChatStyle.INVALID) {
+                thumb.setImageResource(style.binarySurveyLikeUnselectedIconResId);
             }
         }
+
+        if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
+            thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
+        }
+
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
         switch (survey.getSentState()) {

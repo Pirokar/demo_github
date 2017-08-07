@@ -33,6 +33,7 @@ public class ChatStyle implements Serializable {
     private static final String ARG_SET_CHAT_BODY_STYLE = "setChatBodyStyle";
     private static final String ARG_SET_CHAT_TITLE_STYLE = "setChatTitleStyle";
     private static final String ARG_SET_REQUEST_RESOLVE_THREAD_STYLE = "setRequestResolveThreadStyle";
+    private static final String ARG_SET_SURVEY_STYLE = "setSurveyStyle";
     private static final String ARG_SET_SCHEDULE_MESSAGE_STYLE = "setScheduleMessageStyle";
     private static final String ARG_STYLE = "style";
 
@@ -76,6 +77,17 @@ public class ChatStyle implements Serializable {
     private static final String ARG_REQ_RESOLVE_THREAD_TEXT_RES_ID = "reqResolveThreadTextResId";
     private static final String ARG_REQ_RESOLVE_THREAD_APPROVE_TEXT_RES_ID = "approveReqResolveThreadTextResId";
     private static final String ARG_REQ_RESOLVE_THREAD_DENY_TEXT_RES_ID = "denyReqResolveThreadTextResId";
+
+    private static final String ARG_SURVEY_BINARY_LIKE_UNSELECTED_ICON_RES_ID = "binarySurveyLikeUnselectedIconResId";
+    private static final String ARG_SURVEY_BINARY_LIKE_SELECTED_ICON_RES_ID = "binarySurveyLikeSelectedIconResId";
+    private static final String ARG_SURVEY_BINARY_DISLIKE_UNSELECTED_ICON_RES_ID = "binarySurveyDislikeUnselectedIconResId";
+    private static final String ARG_SURVEY_BINARY_DISLIKE_SELECTED_ICON_RES_ID = "binarySurveyDislikeSelectedIconResId";
+    private static final String ARG_SURVEY_OPTION_UNSELECTED_ICON_RES_ID = "optionsSurveyUnselectedIconResId";
+    private static final String ARG_SURVEY_OPTION_SELECTED_ICON_RES_ID = "optionsSurveySelectedIconResId";
+    private static final String ARG_SURVEY_SELECTED_COLOR_RES_ID = "surveySelectedColorFilterResId";
+    private static final String ARG_SURVEY_UNSELECTED_COLOR_RES_ID = "surveyUnselectedColorFilterResId";
+    private static final String ARG_SURVEY_TEXT_COLOR_RES_ID = "surveyTextColorResId";
+
     private static final String SETTING_HISTORY_LOADING_COUNT = "setting@historyLoadingCount";
     private static final String SETTING_CAN_SHOW_SPECIALIST_INFO = "setting@canShowSpecialistInfo";
     private static final String SETTING_DEFAULT_FONT_BOLD = "setting@defaultFontBold";
@@ -173,12 +185,35 @@ public class ChatStyle implements Serializable {
     public final int inputTextColor;
     public int historyLoadingCount;
     public boolean canShowSpecialistInfo;
+
+    //resolve thread request styles
     @StringRes
     public final int requestToResolveThreadTextResId;
     @StringRes
     public final int approveRequestToResolveThreadTextResId;
     @StringRes
     public final int denyRequestToResolveThreadTextResId;
+
+    // Survey
+    @DrawableRes
+    public final int binarySurveyLikeUnselectedIconResId;
+    @DrawableRes
+    public final int binarySurveyLikeSelectedIconResId;
+    @DrawableRes
+    public final int binarySurveyDislikeUnselectedIconResId;
+    @DrawableRes
+    public final int binarySurveyDislikeSelectedIconResId;
+    @DrawableRes
+    public final int optionsSurveyUnselectedIconResId;
+    @DrawableRes
+    public final int optionsSurveySelectedIconResId;
+    @ColorRes
+    public final int surveySelectedColorFilterResId;
+    @ColorRes
+    public final int surveyUnselectedColorFilterResId;
+    @ColorRes
+    public final int surveyTextColorResId;
+
     public final String defaultFontBold;
     public final String defaultFontLight;
     public final String defaultFontRegular;
@@ -241,6 +276,15 @@ public class ChatStyle implements Serializable {
                      int requestToResolveThreadTextResId,
                      int approveRequestToResolveThreadTextResId,
                      int denyRequestToResolveThreadTextResId,
+                     @DrawableRes int binarySurveyLikeUnselectedIconResId,
+                     @DrawableRes int binarySurveyLikeSelectedIconResId,
+                     @DrawableRes int binarySurveyDislikeUnselectedIconResId,
+                     @DrawableRes int binarySurveyDislikeSelectedIconResId,
+                     @DrawableRes int optionsSurveyUnselectedIconResId,
+                     @DrawableRes int optionsSurveySelectedIconResId,
+                     @ColorRes int surveySelectedColorFilterResId,
+                     @ColorRes int surveyUnselectedColorFilterResId,
+                     @ColorRes int surveyTextColorResId,
                      String defaultFontBold,
                      String defaultFontLight,
                      String defaultFontRegular,
@@ -300,9 +344,21 @@ public class ChatStyle implements Serializable {
         this.inputTextColor = inputTextColor;
         this.historyLoadingCount = historyLoadingCount;
         this.canShowSpecialistInfo = canShowSpecialistInfo;
+
         this.requestToResolveThreadTextResId = requestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread : requestToResolveThreadTextResId;
         this.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_approve : approveRequestToResolveThreadTextResId;
         this.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_deny : denyRequestToResolveThreadTextResId;
+
+        this.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId == INVALID ? R.drawable.ic_like_empty_36dp : binarySurveyLikeUnselectedIconResId;
+        this.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId == INVALID ? R.drawable.ic_like_full_36dp : binarySurveyLikeSelectedIconResId;
+        this.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId == INVALID ? R.drawable.ic_dislike_empty_36dp : binarySurveyDislikeUnselectedIconResId;
+        this.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId == INVALID ? R.drawable.ic_dislike_full_36dp : binarySurveyDislikeSelectedIconResId;
+        this.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId == INVALID ? R.drawable.ic_star_outline_grey600_24dp : optionsSurveyUnselectedIconResId;
+        this.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId == INVALID ? R.drawable.ic_star_grey600_24dp : optionsSurveySelectedIconResId;
+        this.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
+        this.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
+        this.surveyTextColorResId = surveyTextColorResId == INVALID ? R.color.black : surveyTextColorResId;
+                
         this.defaultFontBold = defaultFontBold;
         this.defaultFontLight = defaultFontLight;
         this.defaultFontRegular = defaultFontRegular;
@@ -338,6 +394,8 @@ public class ChatStyle implements Serializable {
         boolean isScheduleMessageStyleExists = scheduleMessageStyle != null;
         Bundle resolveThreadStyle = b.getBundle(ARG_SET_REQUEST_RESOLVE_THREAD_STYLE);
         boolean isResolveThreadStyleExists = resolveThreadStyle != null;
+        Bundle surveyStyle = b.getBundle(ARG_SET_SURVEY_STYLE);
+        boolean isSurveyStyleExists = surveyStyle != null;
         return new ChatStyle(
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_BACKGROUND_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_HIGHLIGHTING_COLOR_RES_ID) : INVALID,
@@ -381,6 +439,15 @@ public class ChatStyle implements Serializable {
                 isResolveThreadStyleExists ? resolveThreadStyle.getInt(ARG_REQ_RESOLVE_THREAD_TEXT_RES_ID) : INVALID,
                 isResolveThreadStyleExists ? resolveThreadStyle.getInt(ARG_REQ_RESOLVE_THREAD_APPROVE_TEXT_RES_ID) : INVALID,
                 isResolveThreadStyleExists ? resolveThreadStyle.getInt(ARG_REQ_RESOLVE_THREAD_DENY_TEXT_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_BINARY_LIKE_UNSELECTED_ICON_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_BINARY_LIKE_SELECTED_ICON_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_BINARY_DISLIKE_UNSELECTED_ICON_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_BINARY_DISLIKE_SELECTED_ICON_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_OPTION_UNSELECTED_ICON_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_OPTION_SELECTED_ICON_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_SELECTED_COLOR_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_UNSELECTED_COLOR_RES_ID) : INVALID,
+                isSurveyStyleExists ? surveyStyle.getInt(ARG_SURVEY_TEXT_COLOR_RES_ID) : INVALID,
                 b.getString(SETTING_DEFAULT_FONT_BOLD, null),
                 b.getString(SETTING_DEFAULT_FONT_LIGHT, null),
                 b.getString(SETTING_DEFAULT_FONT_REGULAR, null),
@@ -448,8 +515,19 @@ public class ChatStyle implements Serializable {
                 ", requestToResolveThreadTextResId=" + requestToResolveThreadTextResId +
                 ", approveRequestToResolveThreadTextResId=" + approveRequestToResolveThreadTextResId +
                 ", denyRequestToResolveThreadTextResId=" + denyRequestToResolveThreadTextResId +
+                ", binarySurveyUnselectedIconResId=" + binarySurveyLikeUnselectedIconResId +
+                ", binarySurveySelectedIconResId=" + binarySurveyLikeSelectedIconResId +
+                ", binarySurveyUnselectedIconResId=" + binarySurveyDislikeUnselectedIconResId +
+                ", binarySurveySelectedIconResId=" + binarySurveyDislikeSelectedIconResId +
+                ", optionsSurveyUnselectedIconResId=" + optionsSurveyUnselectedIconResId +
+                ", optionsSurveySelectedIconResId=" + optionsSurveySelectedIconResId +
+                ", surveySelectedColorFilterResId=" + surveySelectedColorFilterResId +
+                ", surveyUnselectedColorFilterResId=" + surveyUnselectedColorFilterResId +
+                ", surveyTextColorResId=" + surveyTextColorResId +
                 '}';
     }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -501,8 +579,18 @@ public class ChatStyle implements Serializable {
         if (requestToResolveThreadTextResId != chatStyle.requestToResolveThreadTextResId) return false;
         if (approveRequestToResolveThreadTextResId != chatStyle.approveRequestToResolveThreadTextResId) return false;
         if (denyRequestToResolveThreadTextResId != chatStyle.denyRequestToResolveThreadTextResId) return false;
-        return inputTextFont.equals(chatStyle.inputTextFont);
 
+        if (binarySurveyLikeUnselectedIconResId != chatStyle.binarySurveyLikeUnselectedIconResId) return false;
+        if (binarySurveyLikeSelectedIconResId != chatStyle.binarySurveyLikeSelectedIconResId) return false;
+        if (binarySurveyDislikeUnselectedIconResId != chatStyle.binarySurveyDislikeUnselectedIconResId) return false;
+        if (binarySurveyDislikeSelectedIconResId != chatStyle.binarySurveyDislikeSelectedIconResId) return false;
+        if (optionsSurveyUnselectedIconResId != chatStyle.optionsSurveyUnselectedIconResId) return false;
+        if (optionsSurveySelectedIconResId != chatStyle.optionsSurveySelectedIconResId) return false;
+        if (surveySelectedColorFilterResId != chatStyle.surveySelectedColorFilterResId) return false;
+        if (surveyUnselectedColorFilterResId != chatStyle.surveyUnselectedColorFilterResId) return false;
+        if (surveyTextColorResId != chatStyle.surveyTextColorResId) return false;
+
+        return inputTextFont.equals(chatStyle.inputTextFont);
     }
 
     @Override
@@ -549,6 +637,16 @@ public class ChatStyle implements Serializable {
         result = 31 * result + requestToResolveThreadTextResId;
         result = 31 * result + approveRequestToResolveThreadTextResId;
         result = 31 * result + denyRequestToResolveThreadTextResId;
+
+        result = 31 * result + binarySurveyLikeUnselectedIconResId;
+        result = 31 * result + binarySurveyLikeSelectedIconResId;
+        result = 31 * result + binarySurveyDislikeSelectedIconResId;
+        result = 31 * result + binarySurveyDislikeUnselectedIconResId;
+        result = 31 * result + optionsSurveyUnselectedIconResId;
+        result = 31 * result + optionsSurveySelectedIconResId;
+        result = 31 * result + surveySelectedColorFilterResId;
+        result = 31 * result + surveyUnselectedColorFilterResId;
+        result = 31 * result + surveyTextColorResId;
         return result;
     }
 
@@ -691,6 +789,29 @@ public class ChatStyle implements Serializable {
             bundle.putInt(ARG_REQ_RESOLVE_THREAD_TEXT_RES_ID, requestToResolveThreadTextResId);
             bundle.putInt(ARG_REQ_RESOLVE_THREAD_APPROVE_TEXT_RES_ID, approveRequestToResolveThreadTextResId);
             bundle.putInt(ARG_REQ_RESOLVE_THREAD_DENY_TEXT_RES_ID, denyRequestToResolveThreadTextResId);
+            return this;
+        }
+
+        public IntentBuilder setSurveyStyle(@DrawableRes int binarySurveyLikeUnselectedIconResId,
+                                            @DrawableRes int binarySurveyLikeSelectedIconResId,
+                                            @DrawableRes int binarySurveyDislikeUnselectedIconResId,
+                                            @DrawableRes int binarySurveyDislikeSelectedIconResId,
+                                            @DrawableRes int optionsSurveyUnselectedIconResId,
+                                            @DrawableRes int optionsSurveySelectedIconResId,
+                                            @ColorRes int surveySelectedColorFilterResId,
+                                            @ColorRes int surveyUnselectedColorFilterResId,
+                                            @ColorRes int surveyTextColorResId) {
+            Bundle bundle = new Bundle();
+            b.putBundle(ARG_SET_SURVEY_STYLE, bundle);
+            bundle.putInt(ARG_SURVEY_BINARY_LIKE_UNSELECTED_ICON_RES_ID, binarySurveyLikeUnselectedIconResId);
+            bundle.putInt(ARG_SURVEY_BINARY_LIKE_SELECTED_ICON_RES_ID, binarySurveyLikeSelectedIconResId);
+            bundle.putInt(ARG_SURVEY_BINARY_DISLIKE_UNSELECTED_ICON_RES_ID, binarySurveyDislikeUnselectedIconResId);
+            bundle.putInt(ARG_SURVEY_BINARY_DISLIKE_SELECTED_ICON_RES_ID, binarySurveyDislikeSelectedIconResId);
+            bundle.putInt(ARG_SURVEY_OPTION_UNSELECTED_ICON_RES_ID, optionsSurveyUnselectedIconResId);
+            bundle.putInt(ARG_SURVEY_OPTION_SELECTED_ICON_RES_ID, optionsSurveySelectedIconResId);
+            bundle.putInt(ARG_SURVEY_SELECTED_COLOR_RES_ID, surveySelectedColorFilterResId);
+            bundle.putInt(ARG_SURVEY_UNSELECTED_COLOR_RES_ID, surveyUnselectedColorFilterResId);
+            bundle.putInt(ARG_SURVEY_TEXT_COLOR_RES_ID, surveyTextColorResId);
             return this;
         }
 
@@ -846,7 +967,7 @@ public class ChatStyle implements Serializable {
             return this;
         }
 
-        public IntentBuilder setScheduleAlerFont(String path) {
+        public IntentBuilder setScheduleAlertFont(String path) {
             b.putString(SETTING_SCHEDULE_ALERT_FONT, path);
             return this;
         }

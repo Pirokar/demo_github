@@ -67,6 +67,15 @@ public class ChatIntentHelper {
                 .setRequestResolveThreadStyle(R.string.resolve_thread,
                         R.string.resolve_thread_approve,
                         R.string.resolve_thread_deny)
+                .setSurveyStyle(ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        R.color.chatbody_icons_tint,
+                        R.color.chatbody_icons_tint,
+                        R.color.welcome_screen_text)
                 ;
     }
 

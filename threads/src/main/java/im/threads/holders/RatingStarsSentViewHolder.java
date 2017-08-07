@@ -61,14 +61,16 @@ public class RatingStarsSentViewHolder extends BaseHolder {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
 
-                star.setImageResource(R.drawable.ic_star_grey600_24dp);
                 star.setColorFilter(
                         ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),
                         PorterDuff.Mode.SRC_ATOP
                 );
             }
-        }
 
+            if (style.optionsSurveySelectedIconResId != ChatStyle.INVALID) {
+                star.setImageResource(style.optionsSurveySelectedIconResId);
+            }
+        }
     }
 
     public void bind(Survey survey) {

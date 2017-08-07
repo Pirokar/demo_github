@@ -24,6 +24,7 @@ public class ChatIntentHelper {
                 .setSpecialistConnectTitleFont("comic.ttf")
                 .setInputQuotedMessageFont("comic.ttf")
                 .setPlaceholderTitleFont("comic.ttf")
+                .setSurveyFont("comic.ttf")
                 .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
                         R.color.toolbar_background,//ToolBar background chatToolbarColorResId
                         R.color.toolbar_widget,//Toolbar widget chatToolbarTextColorResId

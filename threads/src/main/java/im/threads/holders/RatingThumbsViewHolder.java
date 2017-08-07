@@ -48,38 +48,56 @@ public class RatingThumbsViewHolder extends BaseHolder {
 
         if (style != null) {
             if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-                askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
-                thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
             }
 
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
+            if (style.surveyTextColorResId != ChatStyle.INVALID) {
+                askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
+                thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
+            }
+
+            if (style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
+                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
             }
         }
     }
 
     public void bind(final Survey survey, final ChatAdapter.AdapterInterface adapterInterface) {
         askForRate.setText(survey.getQuestions().get(0).getText());
+
         if (survey.getQuestions().get(0).getRate() == 1) {
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                thumbUp.setImageResource(R.drawable.ic_like_full_36dp);
-                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
+            if (style.binarySurveyLikeSelectedIconResId != ChatStyle.INVALID) {
+                thumbUp.setImageResource(style.binarySurveyLikeSelectedIconResId);
             }
-            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-                thumbDown.setImageResource(R.drawable.ic_dislike_empty_36dp);
-                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId), PorterDuff.Mode.SRC_ATOP);
+
+            if (style.binarySurveyDislikeUnselectedIconResId != ChatStyle.INVALID) {
+                thumbDown.setImageResource(style.binarySurveyDislikeUnselectedIconResId);
+            }
+
+            if (style.surveySelectedColorFilterResId != ChatStyle.INVALID) {
+                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+            }
+
+            if (style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
+                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
             }
         } else {
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                thumbDown.setImageResource(R.drawable.ic_dislike_full_36dp);
-                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
+            if (style.binarySurveyLikeUnselectedIconResId != ChatStyle.INVALID) {
+                thumbUp.setImageResource(style.binarySurveyLikeSelectedIconResId);
             }
-            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-                thumbUp.setImageResource(R.drawable.ic_like_empty_36dp);
-                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId), PorterDuff.Mode.SRC_ATOP);
+
+            if (style.binarySurveyDislikeSelectedIconResId != ChatStyle.INVALID) {
+                thumbDown.setImageResource(style.binarySurveyLikeUnselectedIconResId);
+            }
+
+            if (style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
+                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+            }
+
+            if (style.surveySelectedColorFilterResId != ChatStyle.INVALID) {
+                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
             }
         }
 

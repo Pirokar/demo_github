@@ -2,7 +2,6 @@ package im.threads.widget;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -62,8 +61,8 @@ public class Rating extends LinearLayout {
      * Вешаем слушатель на клики
      * звездочек и реакцию
      */
-    public void setListenerClick(Boolean listener, CallBackListener callBackListener) {
-        if (listener) {
+    public void setListenerClick(CallBackListener callBackListener) {
+        if (callBackListener != null) {
             clickStarts(callBackListener);
         } else {
             noClickStats();
@@ -102,42 +101,31 @@ public class Rating extends LinearLayout {
     }
 
     /**
-     * устанавливаем кратинку в соотвесвие с рейтингом
+     * устанавливаем картинку в соответствие с рейтингом
      */
     public void setImage(View view, Boolean ratingState) {
 
         ImageView star = (ImageView) view.findViewById(R.id.star);
 
-        if (ratingState) {
-            if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-                star.setImageDrawable(icon);
+        if (style != null) {
+            if (ratingState) {
+                if (style.optionsSurveySelectedIconResId != ChatStyle.INVALID) {
+                    star.setImageResource(style.optionsSurveySelectedIconResId);
+                }
+
+                if (style.surveySelectedColorFilterResId != ChatStyle.INVALID) {
+                    star.setColorFilter(ContextCompat.getColor(context, style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+                }
             } else {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
-                star.setImageDrawable(icon);
-            }
-        } else if (ratingCount == 0) {
-            if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-                star.setImageDrawable(icon);
-            } else {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
-                star.setImageDrawable(icon);
-            }
-        } else {
-            if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                star.setImageDrawable(icon);
-            } else {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                star.setImageDrawable(icon);
+                if (style.optionsSurveyUnselectedIconResId != ChatStyle.INVALID) {
+                    star.setImageResource(style.optionsSurveyUnselectedIconResId );
+                }
+
+                if (ratingCount == 0 && style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
+                    star.setColorFilter(ContextCompat.getColor(context, style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+                }
             }
         }
-
     }
 
     public int getRating() {
