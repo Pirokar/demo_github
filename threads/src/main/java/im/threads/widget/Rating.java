@@ -25,7 +25,6 @@ public class Rating extends LinearLayout {
     private int ratingCount;
     private Integer countStars;
     private Context context;
-    Boolean hasListener = false;
     private ArrayList<View> viewsStar;
 
     public Rating(Context context) {
@@ -64,7 +63,6 @@ public class Rating extends LinearLayout {
      * звездочек и реакцию
      */
     public void setListenerClick(Boolean listener, CallBackListener callBackListener) {
-        this.hasListener = listener;
         if (listener) {
             clickStarts(callBackListener);
         } else {
@@ -148,9 +146,5 @@ public class Rating extends LinearLayout {
 
     public interface CallBackListener {
         void onStarClick(int ratingCount);
-    }
-
-    public Boolean getHasListener() {
-        return hasListener;
     }
 }

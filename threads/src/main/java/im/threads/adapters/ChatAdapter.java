@@ -583,6 +583,28 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return removed;
     }
 
+    /**
+     * Remove survey from the thread history
+     * @return true - if deletion occurred, false - if Survey item wasn't found in the history
+     */
+    public boolean removeSurvey(String messageId) {
+        boolean removed = false;
+        ArrayList<ChatItem> list = getOriginalList();
+        for (ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
+            ChatItem cm = iter.next();
+            if (cm instanceof Survey && ((Survey) cm).getMessageId().equalsIgnoreCase(messageId)) {
+                try {
+                    notifyItemRemoved(list.lastIndexOf(cm));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                iter.remove();
+                removed = true;
+            }
+        }
+        return removed;
+    }
+
     public void setSearchingConsult() {
         ArrayList<ChatItem> list = getOriginalList();
         boolean containsSearch = false;
@@ -749,23 +771,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (o instanceof Space) return TYPE_FREE_SPACE;
         if (o instanceof UnreadMessages) return TYPE_UNREAD_MESSAGES;
         if (o instanceof ScheduleInfo) return TYPE_SCHEDULE;
-//        if (o instanceof RatingThumbs) {
-//            RatingThumbs ratingThumbs = (RatingThumbs) o;
-//            if (ratingThumbs.getSentState() == MessageState.STATE_SENT || ratingThumbs.getSentState() == MessageState.STATE_WAS_READ) {
-//                return TYPE_RATING_THUMBS_SENT;
-//            } else {
-//                return TYPE_RATING_THUMBS;
-//            }
-//        }
-//        if (o instanceof RatingStars) {
-//            RatingStars ratingStars = (RatingStars) o;
-//            if (ratingStars.getSentState() == MessageState.STATE_SENT || ratingStars.getSentState() == MessageState.STATE_WAS_READ) {
-//                return TYPE_RATING_STARS_SENT;
-//            } else {
-//                return TYPE_RATING_STARS;
-//            }
-//        }
-
         if (o instanceof Survey) {
             Survey survey = (Survey) o;
             QuestionDTO questionDTO = survey.getQuestions().get(0);

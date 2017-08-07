@@ -1292,6 +1292,14 @@ public class ChatFragment extends Fragment implements
         return mChatAdapter.removeResolveRequest();
     }
 
+    /**
+     * Remove survey from the thread history
+     * @return true - if deletion occurred, false - if there was no survey in the history
+     */
+    public boolean removeSurvey(String messageId) {
+        return mChatAdapter.removeSurvey(messageId);
+    }
+
     public int getCurrentItemsCount() {
         return mChatAdapter.getCurrentItemCount();
     }

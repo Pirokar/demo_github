@@ -47,7 +47,6 @@ public class RatingStarsViewHolder extends BaseHolder {
                 topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
             }
-
         }
     }
 
@@ -56,10 +55,7 @@ public class RatingStarsViewHolder extends BaseHolder {
         int scale = survey.getQuestions().get(0).getScale();
         rating.initRating(itemView.getContext(), rate, scale);
         askForRate.setText(survey.getQuestions().get(0).getText());
-        if (!rating.getHasListener()) {
-            rating.setListenerClick(true, callBackListener);
-        }
-
+        rating.setListenerClick(true, callBackListener);
         thanksForRate.setVisibility(survey.getQuestions().get(0).hasRate() ? View.VISIBLE : View.GONE);
     }
 }

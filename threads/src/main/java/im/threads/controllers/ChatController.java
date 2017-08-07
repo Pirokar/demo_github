@@ -101,6 +101,8 @@ public class ChatController {
     public static final int CONSULT_STATE_SEARCHING = 2;
     public static final int CONSULT_STATE_DEFAULT = 3;
 
+    public static final int SURVEY_CHANGE_STATE_TIMEOUT = 2;
+
     public static final String TAG = "ChatController ";
 
     // Ссылка на фрагмент, которым управляет контроллер
@@ -111,6 +113,10 @@ public class ChatController {
     private boolean isSearchingConsult;
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean isResolveRequestVisible;
+
+    // keep an active and visible for user survey id
+    private String activeSurveyId;
+
     private DatabaseHolder mDatabaseHolder;
     private Context appContext;
     private static ChatController instance;
@@ -247,10 +253,16 @@ public class ChatController {
                     @Override
                     public void onResult(String s) {
                         survey.setMessageId(s);
-                        setSurveyState(survey, MessageState.STATE_SENT);
-                        if (instance.fragment != null) {
-                            instance.fragment.updateUi();
-                        }
+
+                        // Change survey view after 2 seconds
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                setSurveyState(survey, MessageState.STATE_SENT);
+                                resetActiveSurvey();
+                                updateUi();
+                            }
+                        }, SURVEY_CHANGE_STATE_TIMEOUT * 1000);
                     }
 
                     @Override
@@ -291,33 +303,35 @@ public class ChatController {
         if (fragment != null) {
             boolean removed = fragment.removeResolveRequest();
             if (removed) {
-                fragment.updateUi();
+                updateUi();
             }
             isResolveRequestVisible = false;
         }
     }
 
-//    public void onRatingStarsClick(Context context, final Survey survey) {
-//        ChatItem chatItem = convertRatingItem(survey);
-//        if (chatItem != null) {
-//            addMessage(chatItem, appContext);
-//        }
-//        String ratingThumbsMessage = MessageFormatter.createRatingStarsMessage(ratingStars.getRating(), ratingStars.getMessageId());
-//        PushController.getInstance(context).sendMessageAsync(ratingThumbsMessage, false, new RequestCallback<String, PushServerErrorException>() {
-//            @Override
-//            public void onResult(String s) {
-//                ratingStars.setMessageId(s);
-//                if (instance.fragment != null) {
-//                    instance.fragment.updateUi();
-//                }
-//            }
-//
-//            @Override
-//            public void onError(PushServerErrorException e) {
-//
-//            }
-//        });
-//    }
+    private void removeActiveSurvey() {
+        if (TextUtils.isEmpty(activeSurveyId)) {
+            return;
+        }
+
+        if (fragment != null) {
+            boolean removed = fragment.removeSurvey(activeSurveyId);
+            if (removed) {
+                updateUi();
+            }
+            resetActiveSurvey();
+        }
+    }
+
+    private void resetActiveSurvey() {
+        activeSurveyId = "";
+    }
+
+    private void updateUi() {
+        if (fragment != null) {
+            fragment.updateUi();
+        }
+    }
 
     public static PendingIntentCreator getPendingIntentCreator() {
         if (pendingIntentCreator == null) {
@@ -574,11 +588,15 @@ public class ChatController {
         }
         if (BuildConfig.DEBUG) Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
 
-        // If user has written any message while the request to resolve the thread is visible
+        // If user has written a message while the request to resolve the thread is visible
         // we should make invisible the resolve request
         if (isResolveRequestVisible) {
             removeResolveRequest();
         }
+
+        // If user has written a message while the active survey is visible
+        // we should make invisible the survey
+        removeActiveSurvey();
 
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um, appContext);
@@ -1191,6 +1209,7 @@ public class ChatController {
                 @Override
                 public void onResult(String s) {
                     survey.setMessageId(s);
+                    setSurveyLifetime(survey);
                 }
 
                 @Override
@@ -1232,6 +1251,19 @@ public class ChatController {
         pushMessageCheckResult.setNeedsShowIsStatusBar(!(chatItem instanceof ScheduleInfo
                 || chatItem instanceof UserPhrase));
         return pushMessageCheckResult;
+    }
+
+    public void setSurveyLifetime(final Survey survey) {
+        // delete survey after timeout if user doesn't vote
+        activeSurveyId = survey.getMessageId();
+        Long hideAfter = survey.getHideAfter();
+        Handler closeActiveSurveyHandler = new Handler(Looper.getMainLooper());
+        closeActiveSurveyHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                removeActiveSurvey();
+            }
+        }, hideAfter * 1000);
     }
 
     public void onConsultChoose(Activity activity, String consultId) {
