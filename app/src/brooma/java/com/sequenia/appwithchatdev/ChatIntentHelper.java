@@ -57,6 +57,15 @@ public class ChatIntentHelper {
                 .setScheduleMessageStyle(
                         R.drawable.schedule_icon, // Иконка сообщения о расписании scheduleMessageIconResId
                         R.color.schedule_message_text_color)
+                .setSurveyStyle(ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        R.color.chatbody_icons_tint,
+                        R.color.chatbody_icons_tint,
+                        R.color.welcome_screen_text)
                 ; // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
     }
 
