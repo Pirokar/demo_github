@@ -14,6 +14,7 @@ public class ScheduleInfo implements ChatItem {
     private Long id;
     private String notification;
     private List<Interval> intervals;
+    private boolean sendDuringInactive;
     private long date;
 
     public Long getId() {
@@ -46,6 +47,10 @@ public class ScheduleInfo implements ChatItem {
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public boolean isSendDuringInactive() {
+        return sendDuringInactive;
     }
 
     @Override

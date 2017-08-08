@@ -134,6 +134,7 @@ public class ChatFragment extends Fragment implements
 
     private ChatController mChatController;
     private WelcomeScreen mWelcomeScreen;
+    private ViewGroup mInputLayout;
     private EditText mInputEditText;
     private BottomSheetView mBottomSheetView;
     private BottomGallery mBottomGallery;
@@ -154,8 +155,8 @@ public class ChatFragment extends Fragment implements
     private View mSearchLo;
     private ImageButton backButton;
     private ImageButton popupMenuButton;
-    private ImageButton SendButton;
-    private ImageButton AddAttachmentButton;
+    private ImageButton mSendButton;
+    private ImageButton mAddAttachmentButton;
     private String connectedConsultId;
     private ChatReceiver mChatReceiver;
 
@@ -237,8 +238,9 @@ public class ChatFragment extends Fragment implements
         mBottomGallery = (BottomGallery) rootView.findViewById(R.id.bottom_gallery);
         mSwipeRefreshLayout = (MySwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh);
         mInputEditText = (EditText) rootView.findViewById(R.id.input);
-        SendButton = (ImageButton) rootView.findViewById(R.id.send_message);
-        AddAttachmentButton = (ImageButton) rootView.findViewById(R.id.add_attachment);
+        mInputLayout = (ViewGroup) rootView.findViewById(R.id.input_layout);
+        mSendButton = (ImageButton) rootView.findViewById(R.id.send_message);
+        mAddAttachmentButton = (ImageButton) rootView.findViewById(R.id.add_attachment);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
@@ -284,7 +286,7 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        AddAttachmentButton.setOnClickListener(new View.OnClickListener() {
+        mAddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openBottomSheetAndGallery();
@@ -298,7 +300,7 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        SendButton.setOnClickListener(new View.OnClickListener() {
+        mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onSendButtonClick();
@@ -430,8 +432,8 @@ public class ChatFragment extends Fragment implements
             }
 
             if (style.chatMessageInputColor != ChatStyle.INVALID) {
-                ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.input_layout), style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.input), style.chatMessageInputColor);
+                ColorsHelper.setBackgroundColor(activity, mInputLayout, style.chatMessageInputColor);
+                ColorsHelper.setBackgroundColor(activity, mInputEditText, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, mBottomSheetView, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, mCopyControls, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, mBottomGallery, style.chatMessageInputColor);
@@ -463,9 +465,9 @@ public class ChatFragment extends Fragment implements
             }
 
             if (style.inputTextColor != ChatStyle.INVALID) {
-                ColorsHelper.setTextColor(activity, this.mInputEditText, style.inputTextColor);
+                ColorsHelper.setTextColor(activity, mInputEditText, style.inputTextColor);
             } else if (style.incomingMessageTextColor != ChatStyle.INVALID) {
-                ColorsHelper.setTextColor(activity, this.mInputEditText, style.incomingMessageTextColor);
+                ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
             }
 
             if (style.inputTextFont != null) {
@@ -814,13 +816,12 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onHideClick() {
-        final View input = rootView.findViewById(R.id.input_layout);
         mBottomGallery.setVisibility(View.GONE);
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
                 mBottomSheetView.setVisibility(View.GONE);
-                input.setVisibility(View.VISIBLE);
+                mInputLayout.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -959,7 +960,7 @@ public class ChatFragment extends Fragment implements
     private void openBottomSheetAndGallery() {
         if (PermissionChecker.isReadExternalPermissionGranted(getActivity())) {
             setTitleStateCurrentOperatorConnected();
-            final View inputLayout = rootView.findViewById(R.id.input_layout);
+
             if (mBottomSheetView.getVisibility() == View.GONE) {
                 mBottomSheetView.setVisibility(View.VISIBLE);
                 mBottomSheetView.setAlpha(0.0f);
@@ -969,7 +970,7 @@ public class ChatFragment extends Fragment implements
                         mBottomSheetView.setVisibility(View.VISIBLE);
                     }
                 });
-                inputLayout.setVisibility(View.GONE);
+                mInputLayout.setVisibility(View.GONE);
                 mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
                 String[] projection = new String[]{MediaStore.Images.Media.DATA};
                 Cursor c = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_TAKEN + " desc");
@@ -1229,12 +1230,11 @@ public class ChatFragment extends Fragment implements
     }
 
     private void setBottomStateDefault() {
-        final View input = rootView.findViewById(R.id.input_layout);
         mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
                 mBottomSheetView.setVisibility(View.GONE);
-                input.setVisibility(View.VISIBLE);
+                mInputLayout.setVisibility(View.VISIBLE);
             }
         });
         if (!isInMessageSearchMode) mSearchLo.setVisibility(View.GONE);
@@ -1415,6 +1415,17 @@ public class ChatFragment extends Fragment implements
         return style;
     }
 
+    public void updateInputEnable(boolean enabled) {
+        mInputEditText.setEnabled(enabled);
+        mAddAttachmentButton.setEnabled(enabled);
+        mSendButton.setEnabled(enabled);
+
+        if (style != null) {
+            ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? style.chatBodyIconsTint : R.color.disabled_text_color);
+            ColorsHelper.setTint(getActivity(), mSendButton, enabled ? style.chatBodyIconsTint : R.color.disabled_text_color);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1578,13 +1589,13 @@ public class ChatFragment extends Fragment implements
         boolean isNeedToClose = true;
         if (mBottomSheetView.getVisibility() == View.VISIBLE && mBottomGallery.getVisibility() == View.VISIBLE) {
             mBottomSheetView.setVisibility(View.GONE);
-            rootView.findViewById(R.id.input_layout).setVisibility(View.VISIBLE);
+            mInputLayout.setVisibility(View.VISIBLE);
             onHideClick();
             return false;
         }
         if (mBottomSheetView.getVisibility() == View.VISIBLE) {
             mBottomSheetView.setVisibility(View.GONE);
-            rootView.findViewById(R.id.input_layout).setVisibility(View.VISIBLE);
+            mInputLayout.setVisibility(View.VISIBLE);
             return false;
         }
 

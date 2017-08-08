@@ -1182,6 +1182,11 @@ public class ChatController {
             }, null);
         }
 
+        if (chatItem instanceof ScheduleInfo) {
+            final ScheduleInfo schedule = (ScheduleInfo) chatItem;
+            updateInputEnable(schedule.isSendDuringInactive());
+        }
+
         ConsultMessageReaction consultReactor = new ConsultMessageReaction(
                 mConsultWriter,
                 new ConsultMessageReactions() {
@@ -1281,6 +1286,17 @@ public class ChatController {
 
     public String getConsultNameById(String id) {
         return mConsultWriter.getName(id);
+    }
+
+    private void updateInputEnable(final boolean enabled) {
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                if (fragment != null) {
+                    fragment.updateInputEnable(enabled);
+                }
+            }
+        });
     }
 
     void setAllMessagesWereRead() {
