@@ -16,7 +16,6 @@ public class ChatIntentHelper {
                 .setDefaultFontBold("comic.ttf")
                 .setDefaultFontLight("comic.ttf")
                 .setDefaultFontRegular("comic.ttf")
-                .setSurveyFont("comic.ttf")
                 .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
                         R.color.toolbar_background,//ToolBar background chatToolbarColorResId
                         R.color.toolbar_widget,//Toolbar widget chatToolbarTextColorResId
