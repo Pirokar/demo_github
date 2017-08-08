@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.model.MessageState;
 import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 import im.threads.widget.Rating;
@@ -59,8 +58,10 @@ public class RatingStarsViewHolder extends BaseHolder {
         int scale = survey.getQuestions().get(0).getScale();
         rating.initRating(itemView.getContext(), rate, scale);
         askForRate.setText(survey.getQuestions().get(0).getText());
-        rating.setListenerClick(survey.getSentState() == MessageState.STATE_NOT_SENT ? callBackListener : null);
-        thanksForRate.setVisibility(survey.getQuestions().get(0).hasRate() ? View.VISIBLE : View.GONE);
+
+        boolean hasRate = survey.getQuestions().get(0).hasRate();
+        rating.setListenerClick(hasRate ? null : callBackListener);
+        thanksForRate.setVisibility(hasRate ? View.VISIBLE : View.GONE);
     }
 
 }

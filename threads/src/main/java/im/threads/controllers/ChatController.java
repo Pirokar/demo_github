@@ -239,10 +239,8 @@ public class ChatController {
     public void onRatingClick(Context context, final Survey survey) {
         ChatItem chatItem = convertRatingItem(survey);
         if (chatItem != null) {
-            setSurveyState(survey, MessageState.STATE_SENDING); //  change state to make a survey unclickable
             addMessage(chatItem, appContext);
         }
-
         String ratingDoneMessage = MessageFormatter.createRatingDoneMessage(
                 survey.getSendingId(),
                 survey.getQuestions().get(0).getId(),
@@ -1030,6 +1028,8 @@ public class ChatController {
 
     private ChatItem convertRatingItem(ChatItem chatItem) {
         if (chatItem instanceof Survey) {
+            Survey survey = (Survey) chatItem;
+            survey.setMessageId("local" + UUID.randomUUID().toString());
             return chatItem;
         }
         return null;
