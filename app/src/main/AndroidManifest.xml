@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.sequenia.appwithchat">
+    package="com.sequenia.appwithchat.polarbear">
+
+    <!-- Brooma
+         If you need brooma:
+         1. change flavor to brooma
+         2. change package above to "com.sequenia.appwithchatdev"
+    -->
+    <!-- Polarbear
+         If you need polarbear:
+         1. change flavor to polarbear
+         2. change package above to "com.sequenia.appwithchat.polarbear"
+    -->
+    <!-- Winlab
+         If you need winlab:
+         1. change flavor to winlab
+         2. change package above to "com.sequenia.appwithchat.beta4"
+    -->
 
     <permission
         android:name="${applicationId}.permission.C2D_MESSAGE"
