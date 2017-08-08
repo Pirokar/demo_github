@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.pushserver.android.PushBroadcastReceiver;
+import com.pushserver.android.PushGcmIntentService;
 
 import im.threads.controllers.ChatController;
 import im.threads.utils.MessageMatcher;
@@ -24,8 +25,9 @@ public class MainPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
+        Log.i(TAG, "onNewPushNotification " + bundle.getString(PushGcmIntentService.EXTRA_TYPE));
         if (isChatSystemPush(bundle)) {
-            ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle);
+            ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle, s);
         } else {
             if (!isChatPush(bundle) && ChatController.getShortPushListener() != null) {
                 ChatController.getShortPushListener().onNewShortPushNotification(this, context, s, bundle);
@@ -37,7 +39,9 @@ public class MainPBReceiver extends PushBroadcastReceiver {
         int messageType = MessageMatcher.getType(bundle);
         return messageType == MessageMatcher.TYPE_OPERATOR_TYPING
                 || messageType == MessageMatcher.TYPE_MESSAGES_READ
-                || messageType == MessageMatcher.TYPE_REQUEST_CLOSE_THREAD;
+                || messageType == MessageMatcher.TYPE_REQUEST_CLOSE_THREAD
+                || messageType == MessageMatcher.TYPE_REMOVE_PUSHES
+                || messageType == MessageMatcher.TYPE_UNREAD_MESSAGE_NOTIFICATION;
     }
 
     private boolean isChatPush(Bundle bundle) {

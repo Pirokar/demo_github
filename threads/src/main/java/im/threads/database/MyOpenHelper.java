@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -422,6 +423,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     private Quote getQuote(String messageId) {
+        if (TextUtils.isEmpty(messageId)) {
+            return null;
+        }
         String query = String.format(Locale.US, "select * from %s where %s = ?", TABLE_QUOTE, COLUMN_QUOTE_MESSAGE_ID_EXT);
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{messageId});
         if (!c.moveToFirst()) {
@@ -463,6 +467,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     private Pair<Boolean, FileDescription> getFd(String messageId) {
+        if (TextUtils.isEmpty(messageId)) {
+            return null;
+        }
         String query = String.format(Locale.US, "select * from %s where %s = ?", TABLE_FILE_DESCRIPTION, COLUMN_FD_MESSAGE_ID_EXT);
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{messageId});
         if (!c.moveToFirst()) {

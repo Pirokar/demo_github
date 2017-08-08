@@ -866,12 +866,8 @@ public class ChatController {
         if (cm instanceof ConsultPhrase
                 && ctx != null
                 && isActive) {
-            try {
-                getPushControllerInstance(ctx).notifyMessageRead(((ConsultPhrase) cm).getId());
-                mDatabaseHolder.setMessageWereRead(((ConsultPhrase) cm).getMessageId());
-            } catch (PushServerErrorException e) {
-                e.printStackTrace();
-            }
+            String messageId = ((ConsultPhrase) cm).getId();
+            setConsultMessageRead(ctx, messageId);
         }
         final Context finalContext = ctx;
         h.postDelayed(new Runnable() {
@@ -896,7 +892,6 @@ public class ChatController {
             });
         }
     }
-
 
     public String getCurrentConsultName() {
         return mConsultWriter.getCurrentConsultName() + "%%" + mConsultWriter.getCurrentConsultTitle();
@@ -974,12 +969,7 @@ public class ChatController {
                     }
                     if (unread != null) {
                         for (String id : unread) {
-                            try {
-                                getPushControllerInstance(appContext).notifyMessageRead(id);
-                                mDatabaseHolder.setMessageWereRead(id);
-                            } catch (PushServerErrorException e) {
-                                e.printStackTrace();
-                            }
+                            setConsultMessageRead(appContext, id);
                         }
                     }
                 }
@@ -1035,7 +1025,7 @@ public class ChatController {
         return null;
     }
 
-    public void onSystemMessageFromServer(Context ctx, Bundle bundle) {
+    public void onSystemMessageFromServer(Context ctx, Bundle bundle, String shortMessage) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onSystemMessageFromServer:");
         long currentTimeMillis = System.currentTimeMillis();
         switch (MessageMatcher.getType(bundle)) {
@@ -1071,6 +1061,16 @@ public class ChatController {
                         }
                     }, hideAfter * 1000);
                 }
+            case MessageMatcher.TYPE_REMOVE_PUSHES:
+                Intent intent = new Intent(ctx, NotificationService.class);
+                intent.setAction(NotificationService.ACTION_REMOVE_NOTIFICATION);
+                ctx.startService(intent);
+                break;
+            case MessageMatcher.TYPE_UNREAD_MESSAGE_NOTIFICATION:
+                Intent intent2 = new Intent(ctx, NotificationService.class);
+                intent2.putExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT, shortMessage);
+                intent2.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT);
+                ctx.startService(intent2);
                 break;
         }
     }
@@ -1216,8 +1216,14 @@ public class ChatController {
             mAnalyticsTracker.setConsultMessageWasReceived();
         }
 
-        pushMessageCheckResult.setNeedsShowIsStatusBar(!(chatItem instanceof ScheduleInfo
-                || chatItem instanceof UserPhrase));
+        if ((chatItem instanceof ScheduleInfo || chatItem instanceof UserPhrase)) {
+            // не показывать уведомление для расписания и сообщений пользователя
+            pushMessageCheckResult.setNeedsShowIsStatusBar(false);
+        } else {
+            // не показывать уведомление, если shortMessage пустой
+            pushMessageCheckResult.setNeedsShowIsStatusBar(!TextUtils.isEmpty(pushMessage.getShortMessage()));
+        }
+
         return pushMessageCheckResult;
     }
 
@@ -1534,6 +1540,15 @@ public class ChatController {
                     lastLoadId = item.getId();
                 }
             }
+        }
+    }
+
+    private void setConsultMessageRead(Context ctx, String messageId) {
+        try {
+            getPushControllerInstance(ctx).notifyMessageRead(messageId);
+            mDatabaseHolder.setMessageWereRead(messageId);
+        } catch (PushServerErrorException e) {
+            e.printStackTrace();
         }
     }
 }

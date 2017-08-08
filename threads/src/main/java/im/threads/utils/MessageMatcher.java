@@ -18,6 +18,8 @@ public class MessageMatcher {
     public static final String ON_HOLD = "ON_HOLD";
     public static final String NONE = "NONE";
     public static final String MESSAGES_READ = "MESSAGES_READ";
+    public static final String REMOVE_PUSHES = "REMOVE_PUSHES";
+    public static final String UNREAD_MESSAGE_NOTIFICATION = "UNREAD_MESSAGE_NOTIFICATION";
     public static final String OPERATOR_LOOKUP_STARTED = "OPERATOR_LOOKUP_STARTED";
     public static final String CLIENT_BLOCKED = "CLIENT_BLOCKED";
     public static final String THREAD_OPENED = "THREAD_OPENED";
@@ -32,7 +34,10 @@ public class MessageMatcher {
     public static final int TYPE_MESSAGES_READ = 5;
     public static final int TYPE_SCHEDULE = 6;
     public static final int TYPE_SURVEY = 7;
-    public static final int TYPE_REQUEST_CLOSE_THREAD = 8;
+    public static final int TYPE_REMOVE_PUSHES = 8;
+    public static final int TYPE_UNREAD_MESSAGE_NOTIFICATION = 9;
+    public static final int TYPE_CHAT_PUSH = 10;
+    public static final int TYPE_REQUEST_CLOSE_THREAD = 11;
     public static final int UNKNOWN = -1;
 
     private MessageMatcher() {
@@ -64,8 +69,17 @@ public class MessageMatcher {
         if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && REQUEST_CLOSE_THREAD.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
             return TYPE_REQUEST_CLOSE_THREAD;
         }
+        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && REMOVE_PUSHES.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+            return TYPE_REMOVE_PUSHES;
+        }
+        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && UNREAD_MESSAGE_NOTIFICATION.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+            return TYPE_UNREAD_MESSAGE_NOTIFICATION;
+        }
         if (bundle.getString(PushGcmIntentService.EXTRA_ALERT) != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null && bundle.getString(PushGcmIntentService.EXTRA_TYPE) == null) {
             return TYPE_MESSAGE;
+        }
+        if (bundle.getString("origin") != null && "threads".equalsIgnoreCase(bundle.getString("origin"))){
+            return TYPE_CHAT_PUSH;
         }
         return UNKNOWN;
     }
