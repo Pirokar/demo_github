@@ -47,6 +47,7 @@ public class ChatIntentHelper {
                         R.drawable.no_image,//заглушка вместо картинки imagePlaceholder
                         R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
                         true, //показывать загрузку при поиске консультанта showConsultSearching
+                        false, // всегда прокручивать чат к последнему сообщению, если пользователь начал ввод
                         R.color.purple,
                         "comic.ttf")
                 //.setGoogleAnalyticsEnabled(false)
