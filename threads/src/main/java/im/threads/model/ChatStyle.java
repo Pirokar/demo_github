@@ -70,6 +70,7 @@ public class ChatStyle implements Serializable {
     private static final String ARG_SCHEDULE_MESSAGE_ICON_RES_ID = "scheduleMessageIconResId";
     private static final String ARG_SCHEDULE_MESSAGE_TEXT_COLOR_RES_ID = "scheduleMessageTextColorResId";
     private static final String ARG_IS_GA_ENABLED = "isGAEnabled";
+    private static final String ARG_ALWAYS_SCROLL_TO_END = "alwaysScrollToEnd";
     private static final String ARG_SHOW_CONSULT_SEARCHING = "showConsultSearching";
     private static final String ARG_SHOW_BACK_BUTTON = "showBackButton";
     private static final String ARG_INPUT_TEXT_COLOR_RES_ID = "inputTextColor";
@@ -180,6 +181,7 @@ public class ChatStyle implements Serializable {
     public final int scheduleMessageIconResId;
     public final boolean showConsultSearching;
     public final boolean showBackButton;
+    public final boolean alwaysScrollToEnd;
     public final String inputTextFont;
     @ColorRes
     public final int inputTextColor;
@@ -256,6 +258,7 @@ public class ChatStyle implements Serializable {
                      int chatToolbarHintTextColor,
                      boolean showBackButton,
                      boolean showConsultSearching,
+                     boolean alwaysScrollToEnd,
                      boolean isGAEnabled,
                      int defPushIconResid,
                      int defTitleResId,
@@ -319,6 +322,7 @@ public class ChatStyle implements Serializable {
         this.defPushIconResid = defPushIconResid;
         this.defTitleResId = defTitleResId;
         this.isGAEnabled = isGAEnabled;
+        this.alwaysScrollToEnd = alwaysScrollToEnd;
         this.welcomeScreenLogoResId = welcomeScreenLogoResId;
         this.welcomeScreenTitleTextResId = welcomeScreenTitleTextResId;
         this.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
@@ -419,6 +423,7 @@ public class ChatStyle implements Serializable {
                 isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TOOLBAR_HINT_TEXT_COLOR) : INVALID,
                 isChatTitleStyleExists ? chatTitleStyle.getBoolean(ARG_SHOW_BACK_BUTTON) : false,
                 isChatBodyStyleExists ? chatBodyStyle.getBoolean(ARG_SHOW_CONSULT_SEARCHING) : true,
+                isChatBodyStyleExists ? chatBodyStyle.getBoolean(ARG_ALWAYS_SCROLL_TO_END) : false,
                 isGaEnabled,
                 isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_DEF_PUSH_ICON_RES_ID) : INVALID,
                 isPushNotificationStyleExists ? pushNotificationStyle.getInt(ARG_DEF_TITLE_RES_ID) : INVALID,
@@ -704,7 +709,8 @@ public class ChatStyle implements Serializable {
                 @DrawableRes int defaultIncomingMessageAvatar,
                 @DrawableRes int imagePlaceholder,
                 @StyleRes int fileBrowserDialogStyleResId,
-                boolean showConsultSearching) {
+                boolean showConsultSearching,
+                boolean alwaysScrollToEnd) {
             Bundle bundle = new Bundle();
             b.putBundle(ARG_SET_CHAT_BODY_STYLE, bundle);
             bundle.putInt(ARG_CHAT_BACKGROUND_COLOR_RES_ID, chatBackgroundColor);
@@ -722,6 +728,7 @@ public class ChatStyle implements Serializable {
             bundle.putInt(ARG_FILES_AND_MEDIA_SCREEN_BACKGROUND_COLOR_RES_ID, filesAndMediaScreenBackgroundColor);
             bundle.putInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID, fileBrowserDialogStyleResId);
             bundle.putBoolean(ARG_SHOW_CONSULT_SEARCHING, showConsultSearching);
+            bundle.putBoolean(ARG_ALWAYS_SCROLL_TO_END, alwaysScrollToEnd);
             bundle.putInt(ARG_INPUT_TEXT_COLOR_RES_ID, -1);
             bundle.putString(ARG_INPUT_TEXT_FONT_PATH, null);
             return this;
@@ -743,6 +750,7 @@ public class ChatStyle implements Serializable {
                 @DrawableRes int imagePlaceholder,
                 @StyleRes int fileBrowserDialogStyleResId,
                 boolean showConsultSearching,
+                boolean alwaysScrollToEnd,
                 @ColorRes int inputTextColor,
                 String inputTextFont) {
             Bundle bundle = new Bundle();
@@ -762,6 +770,7 @@ public class ChatStyle implements Serializable {
             bundle.putInt(ARG_FILES_AND_MEDIA_SCREEN_BACKGROUND_COLOR_RES_ID, filesAndMediaScreenBackgroundColor);
             bundle.putInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID, fileBrowserDialogStyleResId);
             bundle.putBoolean(ARG_SHOW_CONSULT_SEARCHING, showConsultSearching);
+            bundle.putBoolean(ARG_ALWAYS_SCROLL_TO_END, alwaysScrollToEnd);
             bundle.putInt(ARG_INPUT_TEXT_COLOR_RES_ID, inputTextColor);
             bundle.putString(ARG_INPUT_TEXT_FONT_PATH, inputTextFont);
             return this;

@@ -251,6 +251,27 @@ public class ChatFragment extends Fragment implements
         mRecyclerView.getItemAnimator().setChangeDuration(0);
         mRecyclerView.setAdapter(mChatAdapter);
 
+        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v,
+                                       int left, int top, int right, final int bottom,
+                                       int oldLeft, int oldTop, int oldRight, final int oldBottom) {
+                if (bottom < oldBottom) {
+                    mRecyclerView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (style != null && style.alwaysScrollToEnd) {
+                                mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                            }
+                            else {
+                                mRecyclerView.smoothScrollBy(0, oldBottom - bottom);
+                            }
+                        }
+                    }, 100);
+                }
+            }
+        });
+
         mSearchLo = rootView.findViewById(R.id.search_lo);
         searchUp = (ImageButton) rootView.findViewById(R.id.search_up_ib);
         searchDown = (ImageButton) rootView.findViewById(R.id.search_down_ib);
