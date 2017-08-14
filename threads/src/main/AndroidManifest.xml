@@ -23,9 +23,7 @@
             android:name="im.threads.activities.ChatActivity"
             android:launchMode="singleTop"
             android:theme="@style/ThreadsStyle"
-            android:windowSoftInputMode="stateHidden"
-
-            />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
         <activity
             android:name="im.threads.activities.ConsultActivity"
             android:theme="@style/ThreadsStyleConsultPage" />
