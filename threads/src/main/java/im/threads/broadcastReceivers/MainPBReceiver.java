@@ -39,7 +39,6 @@ public class MainPBReceiver extends PushBroadcastReceiver {
         int messageType = MessageMatcher.getType(bundle);
         return messageType == MessageMatcher.TYPE_OPERATOR_TYPING
                 || messageType == MessageMatcher.TYPE_MESSAGES_READ
-                || messageType == MessageMatcher.TYPE_REQUEST_CLOSE_THREAD
                 || messageType == MessageMatcher.TYPE_REMOVE_PUSHES
                 || messageType == MessageMatcher.TYPE_UNREAD_MESSAGE_NOTIFICATION;
     }

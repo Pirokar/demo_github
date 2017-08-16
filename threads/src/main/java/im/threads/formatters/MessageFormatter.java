@@ -43,6 +43,7 @@ import im.threads.model.MessgeFromHistory;
 import im.threads.model.Operator;
 import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
+import im.threads.model.RequestResolveThread;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
@@ -68,6 +69,7 @@ public class MessageFormatter {
     private static final String CLIENT_ID = "clientId";
     private static final String TYPE = "type";
     private static final String TEXT = "text";
+    private static final String HIDE_AFTER = "hideAfter";
     private static final String QUOTES = "quotes";
     private static final String ATTACHMENTS = "attachments";
     private static final String ERROR_FORMATTING_JSON = "error formatting json";
@@ -234,6 +236,15 @@ public class MessageFormatter {
 //        return simple;
 //    }
 
+    public static Long getHideAfter(JSONObject fullMessage) {
+        try {
+            return Long.parseLong(fullMessage.getString(HIDE_AFTER));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
+
     private static String getMessage(JSONObject fullMessage, PushMessage pushMessage) {
         String message = null;
         try {
@@ -366,6 +377,8 @@ public class MessageFormatter {
                 // Либо в fullMessage должны содержаться ключи из списка:
                 // "attachments", "text", "quotes"
                 return checkMessageIsFull(pushMessage, fullMessage);
+            } else if (type.equalsIgnoreCase(MessageMatcher.REQUEST_CLOSE_THREAD)) {
+                return getCloseRequestFromPush(fullMessage);
             } else if (type.equalsIgnoreCase(MessageMatcher.NONE)
                     || type.equalsIgnoreCase(MessageMatcher.MESSAGES_READ)
                     || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LOOKUP_STARTED)
@@ -426,6 +439,12 @@ public class MessageFormatter {
         return survey;
     }
 
+    // show close thread's request only if thread has time till close (hideAfter)
+    private static RequestResolveThread getCloseRequestFromPush(JSONObject fullMessage) {
+        Long hideAfter = getHideAfter(fullMessage);
+        return hideAfter > 0 ? new RequestResolveThread(hideAfter, System.currentTimeMillis()) : null;
+    }
+
     private static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
         ConsultConnectionMessage chatItem = null;
 
@@ -441,7 +460,7 @@ public class MessageFormatter {
             boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
             String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
             String title = pushMessage.getShortMessage() == null ? null : pushMessage.getShortMessage().split(" ")[0];
-            boolean displayMessage = !fullMessage.has("displayMessage") || fullMessage.getBoolean("displayMessage");
+            boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
             chatItem = new ConsultConnectionMessage(
                     String.valueOf(operatorId)
                     , type
@@ -821,7 +840,7 @@ public class MessageFormatter {
                     if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
                         gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
                     }
-                    boolean displayMessage = !body.has("displayMessage") || body.getBoolean("displayMessage");
+                    boolean displayMessage = !body.has("display") || body.getBoolean("display");
                     if (body.has(TYPE) && (TYPE_OPERATOR_JOINED.equalsIgnoreCase(body.getString(TYPE)) || TYPE_OPERATOR_LEFT.equalsIgnoreCase(body.getString(TYPE)))) {
                         String type = body.getString(TYPE).equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
                         out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null, messageId, displayMessage));
@@ -983,7 +1002,6 @@ public class MessageFormatter {
         boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
         String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
         String title = "";
-        boolean displayMessage = !body.has("displayMessage") || body.getBoolean("displayMessage");
 
         try {
             title = body.getString(TEXT).split(" ")[0];
@@ -1001,7 +1019,7 @@ public class MessageFormatter {
                         , status
                         , title
                         , String.valueOf(message.messageId)
-                        , displayMessage);
+                        , false);
         return c;
     }
 
@@ -1035,16 +1053,7 @@ public class MessageFormatter {
         return ids;
     }
 
-    public static Long getHideAfter(Bundle b) {
-        try {
-            if (b != null) {
-                return Long.parseLong(b.getString("hideAfter"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0L;
-    }
+
 
     public static String getMessageTyping(String clientId) {
         JSONObject jsonObject = new JSONObject();

@@ -1044,23 +1044,6 @@ public class ChatController {
                         mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
                 }
                 break;
-            case MessageMatcher.TYPE_REQUEST_CLOSE_THREAD:
-                Long hideAfter = MessageFormatter.getHideAfter(bundle);
-                if (hideAfter > 0) {
-                    isResolveRequestVisible = true;
-                    addMessage(new RequestResolveThread(hideAfter, currentTimeMillis), ctx);
-
-                    // if thread is closed by timeout
-                    // remove close request from the history
-                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isResolveRequestVisible) {
-                                removeResolveRequest();
-                            }
-                        }
-                    }, hideAfter * 1000);
-                }
             case MessageMatcher.TYPE_REMOVE_PUSHES:
                 Intent intent = new Intent(ctx, NotificationService.class);
                 intent.setAction(NotificationService.ACTION_REMOVE_NOTIFICATION);
@@ -1180,6 +1163,21 @@ public class ChatController {
 
                 }
             }, null);
+        }
+
+        if (chatItem instanceof RequestResolveThread) {
+            isResolveRequestVisible = true;
+            RequestResolveThread resolveThread = (RequestResolveThread) chatItem;
+            // if thread is closed by timeout
+            // remove close request from the history
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (isResolveRequestVisible) {
+                        removeResolveRequest();
+                    }
+                }
+            }, resolveThread.getHideAfter() * 1000);
         }
 
         if (chatItem instanceof ScheduleInfo) {
