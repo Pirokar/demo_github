@@ -16,6 +16,8 @@ import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushMessage;
 import com.pushserver.android.PushServerIntentService;
+import com.sequenia.appwithchat.BuildConfig;
+import com.sequenia.appwithchat.R;
 
 import im.threads.controllers.ChatController;
 import im.threads.utils.PermissionChecker;
@@ -120,9 +122,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle) {
-            Toast.makeText(context, bundle.toString(), Toast.LENGTH_SHORT).show();
+            /*Toast.makeText(context, bundle.toString(), Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Short Push Accepted");
-            Log.i(TAG, bundle.toString());
+            Log.i(TAG, bundle.toString());*/
         }
     }
 
@@ -132,9 +134,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage) {
-            Toast.makeText(pushServerIntentService, pushMessage.getFullMessage(), Toast.LENGTH_SHORT).show();
+            /*Toast.makeText(pushServerIntentService, pushMessage.fullMessage, Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Full Push Accepted");
-            Log.i(TAG, pushMessage.getFullMessage());
+            Log.i(TAG, pushMessage.fullMessage);*/
         }
     }
 }

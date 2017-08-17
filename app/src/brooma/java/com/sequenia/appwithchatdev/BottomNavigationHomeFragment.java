@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.sequenia.appwithchat.R;
+
 import im.threads.controllers.ChatController;
 
 /**
