@@ -2,6 +2,8 @@ package com.sequenia.appwithchat.polarbear;
 
 import android.app.Activity;
 
+import com.sequenia.appwithchat.R;
+
 import im.threads.model.ChatStyle;
 
 /**

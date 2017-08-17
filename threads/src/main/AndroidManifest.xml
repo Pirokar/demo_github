@@ -24,9 +24,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyle"
-            android:windowSoftInputMode="stateHidden"
-
-            />
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="im.threads.activities.ConsultActivity"
             android:screenOrientation="portrait"
@@ -49,18 +47,15 @@
             android:theme="@style/ThreadsGalleryStyle" />
         <activity
             android:name="im.threads.activities.TranslucentActivity"
-            android:screenOrientation="portrait"
             android:label=""
             android:launchMode="singleInstance"
-            android:theme="@style/Translucent">
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/Translucent"/>
         <activity
             android:name=".permissions.PermissionsActivity"
             android:label="@string/permissions_help"
             android:screenOrientation="portrait"
-            android:theme="@style/Transparent">
-        </activity>
-
+            android:theme="@style/Transparent"/>
         <service
             android:name="im.threads.services.IncomingMessagesIntentService"
             android:exported="false" />
@@ -70,7 +65,6 @@
         <service
             android:name="im.threads.services.NotificationService"
             android:exported="false" />
-
         <receiver
             android:name="im.threads.broadcastReceivers.MyOtherPBReceiver"
             android:exported="false"
@@ -87,7 +81,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <meta-data

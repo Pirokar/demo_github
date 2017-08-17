@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.pushserver.android.PushBroadcastReceiver;
-import com.pushserver.android.PushGcmIntentService;
 
 import im.threads.controllers.ChatController;
 import im.threads.utils.MessageMatcher;
@@ -25,7 +24,6 @@ public class MainPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
-        Log.i(TAG, "onNewPushNotification " + bundle.getString(PushGcmIntentService.EXTRA_TYPE));
         if (isChatSystemPush(bundle)) {
             ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle, s);
         } else {
