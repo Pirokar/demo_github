@@ -102,7 +102,7 @@ public class NotificationService extends Service {
             return START_STICKY;
         }
 
-        ArrayList<com.pushserver.android.PushMessage> il =
+        ArrayList<com.pushserver.android.model.PushMessage> il =
                 intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
         if (intent.getAction() != null && intent.getAction().equals(ACTION_REMOVE_NOTIFICATION)) {
             dismissUnreadMessagesNotification();
@@ -188,10 +188,6 @@ public class NotificationService extends Service {
         }
 
         return START_STICKY;
-    }
-
-    private void showUnreadMessageNotification(String message) {
-
     }
 
     private boolean needsShowNotification() {

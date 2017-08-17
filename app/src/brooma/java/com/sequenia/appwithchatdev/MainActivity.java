@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
-import com.pushserver.android.PushMessage;
+import com.pushserver.android.model.PushMessage;
 import com.pushserver.android.PushServerIntentService;
 import com.sequenia.appwithchat.R;
 

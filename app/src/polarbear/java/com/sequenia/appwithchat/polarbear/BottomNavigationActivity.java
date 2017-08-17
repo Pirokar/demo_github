@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.pushserver.android.PushController;
+import com.sequenia.appwithchat.R;
 
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
@@ -25,12 +26,12 @@ import im.threads.utils.PermissionChecker;
 /**
  * Пример активности с нижней навигацией,
  * где чат выступает в роли одного из пунктов меню.
- *
+ * <p>
  * Для использования чата в виде фрагмента
  * нужно создать его экземпляр, вызвав метод ChatFragment.newInstance(Bundle bundle),
  * передав в него Bundle с настройками.
  * Для подробностей смотрите метод showChatFragment.
- *
+ * <p>
  * Чтобы корректно обработать навигацию внутри чата,
  * переопределите у Активности метод onBackPressed()
  * и вызовите метод onBackPressed() у ChatFragment,
@@ -113,7 +114,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         // а не главный экран
         boolean needsShowChat = intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false);
         View view;
-        if(needsShowChat) {
+        if (needsShowChat) {
             view = navigation.findViewById(R.id.navigation_chat);
         } else {
             view = navigation.findViewById(R.id.navigation_home);
@@ -126,7 +127,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if(intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
+        if (intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
             View view = navigation.findViewById(R.id.navigation_chat);
             view.performClick();
         }
@@ -139,7 +140,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         Fragment fragment = BottomNavigationHomeFragment.newInstance();
         showFragment(fragment);
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.show();
         }
     }
@@ -153,7 +154,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         Bundle bundle = ChatIntentHelper.getIntentBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
         ChatFragment chatFragment = ChatFragment.newInstance(bundle);
         showFragment(chatFragment);
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.hide();
         }
     }
@@ -172,7 +173,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content);
-        if(fragment instanceof ChatFragment) {
+        if (fragment instanceof ChatFragment) {
             // Если чат нужно закрыть, возвращаем пользователя на предыдущий открытый экран
             boolean needsCloseChat = ((ChatFragment) fragment).onBackPressed();
             if (needsCloseChat) {
@@ -188,7 +189,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERM_REQUEST_CODE_CLICK) {
-            if(PermissionChecker.checkGrantResult(grantResults)) {
+            if (PermissionChecker.checkGrantResult(grantResults)) {
                 flag = true;
             } else {
                 Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
