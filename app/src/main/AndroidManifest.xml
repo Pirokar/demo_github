@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.sequenia.appwithchat.polarbear">
+    package="com.sequenia.appwithchatdev">
 
     <!-- Brooma
          If you need brooma:
@@ -74,6 +74,15 @@
         <meta-data
             android:name="com.pushserver.android.uploadServerUrl"
             android:value="https://pushserver.mfms.ru/brooma/file/upload" />
+        <meta-data
+            android:name="com.pushserver.android.serverIdList"
+            android:resource="@array/server_id_list" />
+        <meta-data
+            android:name="com.pushserver.android.serverUrlList"
+            android:resource="@array/server_url_list" />
+        <meta-data
+            android:name="com.pushserver.android.serverPrimaryId"
+            android:value="mfms" />
     </application>
 
 </manifest>

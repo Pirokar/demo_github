@@ -26,6 +26,7 @@ android {
         versionName "2.103_test"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName);
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled = true
     }
     buildTypes {
         release {
@@ -80,6 +81,8 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':threads')
 
+    compile 'com.google.firebase:firebase-messaging:10.2.0'
+
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
     compile 'com.android.support:support-vector-drawable:25.1.0'
@@ -87,3 +90,4 @@ dependencies {
         transitive = true;
     }
 }
+apply plugin: 'com.google.gms.google-services'

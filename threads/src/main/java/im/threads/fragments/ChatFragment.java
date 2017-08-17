@@ -1124,7 +1124,7 @@ public class ChatFragment extends Fragment implements
             for (int i = 1; i < newList.size(); i++) {
                 if (newList.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) newList.get(i);
-                    if (cp.getMessageId().equalsIgnoreCase(firstUnreadMessageId)) {
+                    if (firstUnreadMessageId.equalsIgnoreCase(cp.getMessageId())) {
                         final int index = i;
                         h.postDelayed(new Runnable() {
                             @Override
@@ -1515,7 +1515,7 @@ public class ChatFragment extends Fragment implements
             for (int i = 1; i < list.size(); i++) {
                 if (list.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) list.get(i);
-                    if (cp.getMessageId().equalsIgnoreCase(firstUnreadMessageId)) {
+                    if (firstUnreadMessageId.equalsIgnoreCase(cp.getMessageId())) {
                         final int index = i;
                         h.post(new Runnable() {
                             @Override

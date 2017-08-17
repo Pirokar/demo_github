@@ -2,8 +2,6 @@ package im.threads.utils;
 
 import android.os.Bundle;
 
-import com.pushserver.android.PushGcmIntentService;
-
 /**
  * Created by yuri on 14.07.2016.
  */
@@ -26,6 +24,12 @@ public class MessageMatcher {
     public static final String THREAD_CLOSED = "THREAD_CLOSED";
     public static final String SCENARIO = "SCENARIO";
 
+    // появилось после изменения версии библиотеки транспорта.
+    // Раньше ссылалось на com.pushserver.android.PushGcmIntentService.EXTRA_TYPE
+    // но в com.pushserver.android.PushFcmIntentService.EXTRA_TYPE поле стало private
+    private static final String EXTRA_TYPE = "type";
+    // по аналогии с EXTRA_TYPE
+    private static final String EXTRA_ALERT = "alert";
 
     public static final int TYPE_OPERATOR_JOINED = 1;
     public static final int TYPE_OPERATOR_LEFT = 2;
@@ -47,35 +51,35 @@ public class MessageMatcher {
         if (bundle == null) {
             return UNKNOWN;
         }
-        if (bundle.containsKey("readInMessageIds")){
+        if (bundle.containsKey("readInMessageIds")) {
             return TYPE_MESSAGES_READ;
         }
 
-        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && OPERATOR_JOINED.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+        if (bundle.getString(EXTRA_TYPE) != null && OPERATOR_JOINED.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_OPERATOR_JOINED;
         }
-        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && OPERATOR_LEFT.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+        if (bundle.getString(EXTRA_TYPE) != null && OPERATOR_LEFT.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_OPERATOR_LEFT;
         }
-        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && OPERATOR_TYPING.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+        if (bundle.getString(EXTRA_TYPE) != null && OPERATOR_TYPING.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_OPERATOR_TYPING;
         }
-        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && SCHEDULE.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+        if (bundle.getString(EXTRA_TYPE) != null && SCHEDULE.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_SCHEDULE;
         }
-        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && SURVEY.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+        if (bundle.getString(EXTRA_TYPE) != null && SURVEY.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_SURVEY;
         }
-        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && REQUEST_CLOSE_THREAD.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+        if (bundle.getString(EXTRA_TYPE) != null && REQUEST_CLOSE_THREAD.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_REQUEST_CLOSE_THREAD;
         }
-        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && REMOVE_PUSHES.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+        if (bundle.getString(EXTRA_TYPE) != null && REMOVE_PUSHES.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_REMOVE_PUSHES;
         }
-        if (bundle.getString(PushGcmIntentService.EXTRA_TYPE) != null && UNREAD_MESSAGE_NOTIFICATION.equals(bundle.getString(PushGcmIntentService.EXTRA_TYPE))) {
+        if (bundle.getString(EXTRA_TYPE) != null && UNREAD_MESSAGE_NOTIFICATION.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_UNREAD_MESSAGE_NOTIFICATION;
         }
-        if (bundle.getString(PushGcmIntentService.EXTRA_ALERT) != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null && bundle.getString(PushGcmIntentService.EXTRA_TYPE) == null) {
+        if (bundle.getString(EXTRA_ALERT) != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null && bundle.getString(EXTRA_TYPE) == null) {
             return TYPE_MESSAGE;
         }
         if (bundle.getString("origin") != null && "threads".equalsIgnoreCase(bundle.getString("origin"))){
