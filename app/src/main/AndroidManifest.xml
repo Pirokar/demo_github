@@ -55,7 +55,7 @@
             android:value="im.threads.services.IncomingMessagesIntentService" />
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="7dea244530b440655e927fed9654a59108f414bc" />
+            android:value="1e16d59476dc33c7506b19bf8b6ed04de67068cd" />
         <meta-data
             android:name="com.pushserver.android.senderId"
             android:value="!STRING!1079639835466" />
