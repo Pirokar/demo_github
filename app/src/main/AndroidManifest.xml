@@ -58,6 +58,15 @@
         <meta-data
             android:name="com.pushserver.android.uploadServerUrl"
             android:value="https://pushserver.mfms.ru/brooma/file/upload" />
+        <meta-data
+            android:name="com.pushserver.android.serverIdList"
+            android:resource="@array/server_id_list" />
+        <meta-data
+            android:name="com.pushserver.android.serverUrlList"
+            android:resource="@array/server_url_list" />
+        <meta-data
+            android:name="com.pushserver.android.serverPrimaryId"
+            android:value="mfms" />
     </application>
 
 </manifest>

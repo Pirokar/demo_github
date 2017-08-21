@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
-import com.pushserver.android.PushMessage;
+import com.pushserver.android.model.PushMessage;
 import com.pushserver.android.PushServerIntentService;
 import com.sequenia.appwithchat.R;
 
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage) {
             Log.i(TAG, "Full Push Accepted");
-            Log.i(TAG, pushMessage.getFullMessage());
+            Log.i(TAG, pushMessage.fullMessage);
         }
     }
 }

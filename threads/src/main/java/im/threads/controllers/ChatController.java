@@ -19,10 +19,10 @@ import android.widget.Toast;
 
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
-import com.pushserver.android.PushMessage;
 import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
+import com.pushserver.android.model.PushMessage;
 
 import java.io.File;
 import java.io.IOException;
@@ -1153,7 +1153,7 @@ public class ChatController {
                 pushMessageCheckResult.setNeedsShowIsStatusBar(false);
             } else {
                 // не показывать уведомление, если shortMessage пустой
-                pushMessageCheckResult.setNeedsShowIsStatusBar(!TextUtils.isEmpty(pushMessage.getShortMessage()));
+                pushMessageCheckResult.setNeedsShowIsStatusBar(!TextUtils.isEmpty(pushMessage.shortMessage));
             }
         } else {
             pushMessageCheckResult.setDetected(false);
@@ -1373,7 +1373,8 @@ public class ChatController {
                                              final ExceptionListener exceptionListener) {
         try {
             getPushControllerInstance(ctx).sendMessageAsync(
-                    message, isSystem, new RequestCallback<String, PushServerErrorException>() {
+                    message,
+                    isSystem, new RequestCallback<String, PushServerErrorException>() {
                         @Override
                         public void onResult(String aVoid) {
                             if (listener != null) {

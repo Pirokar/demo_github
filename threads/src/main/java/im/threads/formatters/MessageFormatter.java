@@ -10,10 +10,9 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.advisa.client.api.InOutMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.pushserver.android.PushMessage;
+import com.pushserver.android.model.PushMessage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -164,7 +163,7 @@ public class MessageFormatter {
         JSONObject fullMessage;
 
         try {
-            fullMessage = new JSONObject(pushMessage.getFullMessage());
+            fullMessage = new JSONObject(pushMessage.fullMessage);
         } catch (JSONException e) {
             e.printStackTrace();
             fullMessage = null;
@@ -228,7 +227,7 @@ public class MessageFormatter {
         String message = null;
         try {
             message = fullMessage.getString(TEXT) == null
-                    ? pushMessage.getShortMessage() : fullMessage.getString(TEXT);
+                    ? pushMessage.shortMessage : fullMessage.getString(TEXT);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -240,14 +239,14 @@ public class MessageFormatter {
                                                           JSONObject fullMessage,
                                                           String message) {
         try {
-            String messageId = pushMessage.getMessageId();
+            String messageId = pushMessage.messageId;
             String backendId;
             try {
                 backendId = String.valueOf(fullMessage.getInt(BACKEND_ID));
             } catch (Exception e) {
                 backendId = "0";
             }
-            long timeStamp = pushMessage.getSentAt();
+            long timeStamp = pushMessage.sentAt;
             JSONObject operatorInfo = fullMessage.getJSONObject("operator");
             final String name = operatorInfo.getString("name");
             String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
@@ -292,14 +291,14 @@ public class MessageFormatter {
                                                     JSONObject fullMessage,
                                                     String message) {
         try {
-            String messageId = pushMessage.getMessageId();
+            String messageId = pushMessage.messageId;
             String backendId;
             try {
                 backendId = String.valueOf(fullMessage.getInt(BACKEND_ID));
             } catch (Exception e) {
                 backendId = "0";
             }
-            long phraseTimeStamp = pushMessage.getSentAt();
+            long phraseTimeStamp = pushMessage.sentAt;
             JSONArray attachmentsArray = fullMessage.has(ATTACHMENTS) ? fullMessage.getJSONArray(ATTACHMENTS) : null;
             FileDescription fileDescription = null;
             if (null != attachmentsArray)
@@ -454,9 +453,9 @@ public class MessageFormatter {
         ConsultConnectionMessage chatItem = null;
 
         try {
-            JSONObject fullMessage = new JSONObject(pushMessage.getFullMessage());
-            String messageId = pushMessage.getMessageId();
-            long timeStamp = pushMessage.getSentAt();
+            JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
+            String messageId = pushMessage.messageId;
+            long timeStamp = pushMessage.sentAt;
             JSONObject operator = fullMessage.getJSONObject("operator");
             long operatorId = operator.getLong("id");
             String name = operator.isNull("name") ? null : operator.getString("name");
@@ -464,7 +463,7 @@ public class MessageFormatter {
             String type = fullMessage.getString(TYPE).equalsIgnoreCase("OPERATOR_JOINED") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
             boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
             String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
-            String title = pushMessage.getShortMessage() == null ? null : pushMessage.getShortMessage().split(" ")[0];
+            String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
             boolean displayMessage = !fullMessage.has("displayMessage") || fullMessage.getBoolean("displayMessage");
             chatItem = new ConsultConnectionMessage(
                     String.valueOf(operatorId)
@@ -475,7 +474,7 @@ public class MessageFormatter {
                     , photourl
                     , status
                     , title
-                    , pushMessage.getMessageId()
+                    , pushMessage.messageId
                     , displayMessage);
 
         } catch (JSONException e) {
@@ -800,7 +799,7 @@ public class MessageFormatter {
         }
     }
 
-    public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
+    /*public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
         ArrayList<ChatItem> out = new ArrayList<>();
         try {
             for (InOutMessage message : messages) {
@@ -899,7 +898,7 @@ public class MessageFormatter {
         }
         return out;
     }
-
+*/
     public static ArrayList<ChatItem> formatNew(List<MessgeFromHistory> messages) {
         ArrayList<ChatItem> out = new ArrayList<>();
         try {
@@ -985,7 +984,7 @@ public class MessageFormatter {
         return out;
     }
 
-    private static ConsultConnectionMessage getConsultConnectionMessageFromInout(InOutMessage message) throws JSONException {
+    /*private static ConsultConnectionMessage getConsultConnectionMessageFromInout(InOutMessage message) throws JSONException {
         JSONObject body = new JSONObject(message.content);
         String type = body.getString(TYPE).equalsIgnoreCase("OPERATOR_JOINED") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
         JSONObject operator = body.getJSONObject("operator");
@@ -1015,7 +1014,7 @@ public class MessageFormatter {
                         , String.valueOf(message.messageId)
                         , displayMessage);
         return c;
-    }
+    }*/
 
     public static List<String> getReadIds(Bundle b) {
         ArrayList<String> ids = new ArrayList<>();
