@@ -14,8 +14,8 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
-import com.pushserver.android.PushMessage;
 import com.pushserver.android.PushServerIntentService;
+import com.pushserver.android.model.PushMessage;
 
 import im.threads.controllers.ChatController;
 import im.threads.utils.PermissionChecker;
@@ -132,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage) {
-            Toast.makeText(pushServerIntentService, pushMessage.getFullMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(pushServerIntentService, pushMessage.fullMessage, Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Full Push Accepted");
-            Log.i(TAG, pushMessage.getFullMessage());
+            Log.i(TAG, pushMessage.fullMessage);
         }
     }
 }
