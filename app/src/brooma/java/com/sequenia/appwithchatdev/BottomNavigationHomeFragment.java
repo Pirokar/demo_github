@@ -1,6 +1,8 @@
 package com.sequenia.appwithchatdev;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,8 +37,13 @@ public class BottomNavigationHomeFragment extends Fragment {
         // Обработка изменения количества непрочитанных в чате сообщений
         unreadMessagesCountListener = new ChatController.UnreadMessagesCountListener() {
             @Override
-            public void onUnreadMessagesCountChanged(int count) {
-                showUnreadMessagesCount(count);
+            public void onUnreadMessagesCountChanged(final int count) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        showUnreadMessagesCount(count);
+                    }
+                });
             }
         };
         ChatController.setUnreadMessagesCountListener(unreadMessagesCountListener);
