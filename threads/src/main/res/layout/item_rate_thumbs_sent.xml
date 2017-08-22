@@ -15,10 +15,10 @@
         android:src="@drawable/a_user_bubble" />
 
     <RelativeLayout
-
         android:id="@+id/bubble"
         style="@style/userBuble"
-        android:paddingRight="17dp">
+        android:paddingRight="17dp"
+        android:layout_marginBottom="@dimen/margin_half">
 
 
         <ImageView
