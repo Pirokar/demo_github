@@ -1183,6 +1183,16 @@ public class ChatController {
         if (chatItem instanceof ScheduleInfo) {
             final ScheduleInfo schedule = (ScheduleInfo) chatItem;
             updateInputEnable(schedule.isSendDuringInactive());
+
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (null != fragment) {
+                        fragment.removeSearching();
+                        fragment.setTitleStateDefault();
+                    }
+                }
+            });
         }
 
         ConsultMessageReaction consultReactor = new ConsultMessageReaction(
