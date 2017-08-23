@@ -35,7 +35,7 @@
             android:textSize="@dimen/text_big"
             android:paddingLeft="@dimen/margin_material"
             android:paddingRight="@dimen/margin_material"
-            android:text="@string/request_to_resolve_thread_approve"
+            android:text="@string/request_to_resolve_thread_close"
             android:textColor="@color/blue"
             android:gravity="center"
             android:lines="1"/>
@@ -47,7 +47,7 @@
             android:textSize="@dimen/text_big"
             android:paddingLeft="@dimen/margin_material"
             android:paddingRight="@dimen/margin_material"
-            android:text="@string/request_to_resolve_thread_deny"
+            android:text="@string/request_to_resolve_thread_open"
             android:textColor="@color/blue"
             android:gravity="center"
             android:lines="1"/>

@@ -68,8 +68,8 @@ public class ChatIntentHelper {
                         R.drawable.schedule_icon, // Иконка сообщения о расписании scheduleMessageIconResId
                         R.color.schedule_message_text_color) // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
                 .setRequestResolveThreadStyle(R.string.resolve_thread,
-                        R.string.resolve_thread_approve,
-                        R.string.resolve_thread_deny)
+                        R.string.close_thread,
+                        R.string.reopen_thread)
                 .setSurveyStyle(ChatStyle.INVALID,
                         ChatStyle.INVALID,
                         ChatStyle.INVALID,

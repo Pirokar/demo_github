@@ -350,8 +350,8 @@ public class ChatStyle implements Serializable {
         this.canShowSpecialistInfo = canShowSpecialistInfo;
 
         this.requestToResolveThreadTextResId = requestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread : requestToResolveThreadTextResId;
-        this.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_approve : approveRequestToResolveThreadTextResId;
-        this.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_deny : denyRequestToResolveThreadTextResId;
+        this.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_close : approveRequestToResolveThreadTextResId;
+        this.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_open : denyRequestToResolveThreadTextResId;
 
         this.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId == INVALID ? R.drawable.ic_like_empty_36dp : binarySurveyLikeUnselectedIconResId;
         this.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId == INVALID ? R.drawable.ic_like_full_36dp : binarySurveyLikeSelectedIconResId;
