@@ -14,11 +14,11 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
-import com.pushserver.android.model.PushMessage;
-import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.model.PushMessage;
+import com.sequenia.appwithchat.R;
 
+import im.threads.BuildConfig;
 import im.threads.controllers.ChatController;
 import im.threads.utils.PermissionChecker;
 import io.fabric.sdk.android.Fabric;

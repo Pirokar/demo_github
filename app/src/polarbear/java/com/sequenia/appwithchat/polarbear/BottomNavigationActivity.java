@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.pushserver.android.PushController;
+import com.sequenia.appwithchat.R;
 
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
