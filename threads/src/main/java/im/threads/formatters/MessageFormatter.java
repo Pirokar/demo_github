@@ -80,6 +80,7 @@ public class MessageFormatter {
     private static final String TYPE_SURVEY_QUESTION_ANSWER = "SURVEY_QUESTION_ANSWER";
     private static final String TYPE_SURVEY_PASSED = "SURVEY_PASSED";
     private static final String TYPE_CLOSE_THREAD = "CLOSE_THREAD";
+    private static final String TYPE_REOPEN_THREAD = "REOPEN_THREAD";
     private static final String TYPE_OPERATOR_JOINED = "OPERATOR_JOINED";
     private static final String TYPE_OPERATOR_LEFT = "OPERATOR_LEFT";
     private static final String TYPE_CLIENT_OFFLINE = "CLIENT_OFFLINE";
@@ -749,6 +750,18 @@ public class MessageFormatter {
         return object.toString().replaceAll("\\\\", "");
     }
 
+    public static String createReopenThreadMessage(String clientId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put(CLIENT_ID, clientId);
+            object.put(TYPE, TYPE_REOPEN_THREAD);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return object.toString().replaceAll("\\\\", "");
+    }
+
     private static String getAppName(Context context) {
         ApplicationInfo applicationInfo = context.getApplicationInfo();
         String appName;
@@ -1051,8 +1064,6 @@ public class MessageFormatter {
         }
         return ids;
     }
-
-
 
     public static String getMessageTyping(String clientId) {
         JSONObject jsonObject = new JSONObject();

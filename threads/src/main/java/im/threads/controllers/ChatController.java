@@ -273,30 +273,26 @@ public class ChatController {
     }
 
     public void onResolveThreadClick(Context context, boolean approveResolve) {
-        // if user approve to resolve the thread -
-        // first send CLOSE_THREAD push to the server
+        // if user approve to resolve the thread - send CLOSE_THREAD push
+        // else if user doesn't approve to resolve the thread - send REOPEN_THREAD push
         // and then delete the request from the chat history
-        if (approveResolve) {
-            String resolveThreadMessage = MessageFormatter.createResolveThreadMessage(
-                    PrefUtils.getClientID(appContext)
-            );
+        String clientID = PrefUtils.getClientID(appContext);
+        String resolveThreadMessage = approveResolve ?
+                MessageFormatter.createResolveThreadMessage(clientID) :
+                MessageFormatter.createReopenThreadMessage(clientID);
 
-            sendMessageMFMSAsync(context, resolveThreadMessage, true,
-                    new RequestCallback<String, PushServerErrorException>() {
-                        @Override
-                        public void onResult(String s) {
-                            removeResolveRequest();
-                        }
+        sendMessageMFMSAsync(context, resolveThreadMessage, true,
+                new RequestCallback<String, PushServerErrorException>() {
+                    @Override
+                    public void onResult(String s) {
+                        removeResolveRequest();
+                    }
 
-                        @Override
-                        public void onError(PushServerErrorException e) {
+                    @Override
+                    public void onError(PushServerErrorException e) {
 
-                        }
-                    }, null);
-        }
-        else {
-            removeResolveRequest();
-        }
+                    }
+                }, null);
     }
 
     private void removeResolveRequest() {

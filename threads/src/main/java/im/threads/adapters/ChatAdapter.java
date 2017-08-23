@@ -947,7 +947,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void onResolveThreadClick(boolean approveResolve);
 
-//        void onRatingStarsClick(Survey survey, int rating);
     }
 
     private class MyBroadcastReceiver extends BroadcastReceiver {
