@@ -97,15 +97,14 @@ public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ConsultConnectionMessage)) return false;
-
+        if (messageId == null) return false;
         ConsultConnectionMessage that = (ConsultConnectionMessage) o;
         if (sex != that.sex) return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+
         try {
-            Long thisId = Long.parseLong(messageId);
-            Long thatId = Long.parseLong(that.messageId);
-            if (Math.abs(thisId - thatId) > 5) return false;
+            return messageId.equalsIgnoreCase(that.messageId);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }

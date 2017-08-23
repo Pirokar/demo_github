@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -14,7 +12,7 @@
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:background="@android:color/darker_gray" />
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.widget.text_view.BubbleMessageTextView
         android:id="@+id/ask_for_rate"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
@@ -31,7 +29,7 @@
         android:gravity="center_horizontal|center_vertical">
     </im.threads.widget.Rating>
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.widget.text_view.BubbleMessageTextView
         android:id="@+id/thanks_for_rate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,8 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@android:color/darker_gray"
-        android:visibility="gone"/>
+        android:background="@android:color/darker_gray"/>
 
 
 </LinearLayout>

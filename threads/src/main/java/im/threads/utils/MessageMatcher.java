@@ -2,8 +2,6 @@ package im.threads.utils;
 
 import android.os.Bundle;
 
-import com.pushserver.android.PushFcmIntentService;
-
 /**
  * Created by yuri on 14.07.2016.
  */
@@ -13,6 +11,7 @@ public class MessageMatcher {
     private static final String OPERATOR_TYPING = "TYPING";
     public static final String SCHEDULE = "SCHEDULE";
     public static final String SURVEY = "SURVEY";
+    public static final String REQUEST_CLOSE_THREAD = "REQUEST_CLOSE_THREAD";
     public static final String MESSAGE = "MESSAGE";
     public static final String ON_HOLD = "ON_HOLD";
     public static final String NONE = "NONE";
@@ -42,6 +41,7 @@ public class MessageMatcher {
     public static final int TYPE_REMOVE_PUSHES = 8;
     public static final int TYPE_UNREAD_MESSAGE_NOTIFICATION = 9;
     public static final int TYPE_CHAT_PUSH = 10;
+    public static final int TYPE_REQUEST_CLOSE_THREAD = 11;
     public static final int UNKNOWN = -1;
 
     private MessageMatcher() {
@@ -69,6 +69,9 @@ public class MessageMatcher {
         }
         if (bundle.getString(EXTRA_TYPE) != null && SURVEY.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_SURVEY;
+        }
+        if (bundle.getString(EXTRA_TYPE) != null && REQUEST_CLOSE_THREAD.equals(bundle.getString(EXTRA_TYPE))) {
+            return TYPE_REQUEST_CLOSE_THREAD;
         }
         if (bundle.getString(EXTRA_TYPE) != null && REMOVE_PUSHES.equals(bundle.getString(EXTRA_TYPE))) {
             return TYPE_REMOVE_PUSHES;

@@ -30,7 +30,6 @@ import im.threads.utils.PermissionChecker;
  * Для использования чата в виде фрагмента
  * нужно создать его экземпляр, вызвав метод ChatFragment.newInstance(Bundle bundle),
  * передав в него Bundle с настройками.
- * Для подробностей смотрите метод showChatFragment.
  *
  * Чтобы корректно обработать навигацию внутри чата,
  * переопределите у Активности метод onBackPressed()
@@ -50,9 +49,25 @@ public class BottomNavigationActivity extends AppCompatActivity {
     private String clientId;
     private String userName;
 
-    private BottomNavigationView navigation;
+    private BottomNavigationView bottomNavigationView;
+    private TabItem selectedTab;
 
-    private boolean flag;
+    private boolean showChatAfterGrantPermission;
+
+    private enum TabItem {
+        TAB_HOME(R.id.navigation_home),
+        TAB_CHAT(R.id.navigation_chat);
+
+        private int menuId;
+
+        TabItem(final int menuId) {
+            this.menuId = menuId;
+        }
+
+        public int getMenuId() {
+            return menuId;
+        }
+    }
 
     /**
      * @return intent для открытия BottomNavigationActivity
@@ -72,7 +87,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    showHomeFragment();
+                    selectTab(TabItem.TAB_HOME);
                     return true;
                 case R.id.navigation_chat:
                     // При попытке открыть чат нужно спросить разрешения.
@@ -80,7 +95,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                         PermissionChecker.requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK, BottomNavigationActivity.this);
                         return false;
                     } else {
-                        showChatFragment();
+                        selectTab(TabItem.TAB_CHAT);
                         return true;
                     }
             }
@@ -107,68 +122,106 @@ public class BottomNavigationActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        // При открытии Активности из пуш уведомления нужно сразу открыть чат,
-        // а не главный экран
-        boolean needsShowChat = intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false);
-        View view;
-        if(needsShowChat) {
-            view = navigation.findViewById(R.id.navigation_chat);
-        } else {
-            view = navigation.findViewById(R.id.navigation_home);
+        // При открытии экрана из пуш уведомления нужно сразу открыть чат,
+        // а не главную страницу
+        if (intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
+            updateNavigationBarState(TabItem.TAB_CHAT.getMenuId());
         }
-        view.performClick();
+        // после переворота экрана открываем последнюю выбранную вкладку
+        else if (savedInstanceState != null) {
+            TabItem savedTab = (TabItem) savedInstanceState.getSerializable("selectedTab");
+            if (savedTab == null) {
+                savedTab = TabItem.TAB_HOME;
+            }
+            updateNavigationBarState(savedTab.getMenuId());
+        }
+        // при первом входе в приложение открываем главную страницу
+        else {
+            updateNavigationBarState(TabItem.TAB_HOME.getMenuId());
+        }
     }
-
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
+            updateNavigationBarState(TabItem.TAB_CHAT.getMenuId());
+        }
+    }
 
-        if(intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
-            View view = navigation.findViewById(R.id.navigation_chat);
-            view.performClick();
+    private void selectTab(final TabItem newTabItem) {
+        if (newTabItem == null) {
+            return;
+        }
+
+        showActionBar(newTabItem);
+
+        final FragmentManager fm = getSupportFragmentManager();
+        final Fragment currentFragment = fm.findFragmentById(R.id.content);
+        if (currentFragment != null && selectedTab == newTabItem) {
+            // не показываем повторно текущую вкладку
+            return;
+        }
+
+        selectedTab = newTabItem;
+
+        Fragment fragment = null;
+
+        switch (newTabItem) {
+            case TAB_HOME:
+                fragment = BottomNavigationHomeFragment.newInstance();
+                break;
+            case TAB_CHAT:
+                // bundle содержит в себе настройки стилей чата
+                Bundle bundle = ChatIntentHelper.getIntentBuilder(this, clientId, userName).buildBundle();
+                // создаем фрагмент чата
+                fragment = ChatFragment.newInstance(bundle);
+                break;
+        }
+
+        // добавляем фрагмент в контейнер
+        if (fragment != null) {
+            fm.beginTransaction()
+                    .replace(R.id.content, fragment)
+                    .commit();
+            fm.executePendingTransactions();
         }
     }
 
     /**
-     * Показывает Fragment главного экрана с отображением Toolbar
+     * Активирует программно выбранную вкладку
+     * @param selectedMenuId id выбранной вкладки
      */
-    private void showHomeFragment() {
-        ActionBar actionBar = getSupportActionBar();
-        Fragment fragment = BottomNavigationHomeFragment.newInstance();
-        showFragment(fragment);
-        if(actionBar != null) {
-            actionBar.show();
-        }
+    private void updateNavigationBarState(int selectedMenuId){
+        View view = bottomNavigationView.findViewById(selectedMenuId);
+        view.performClick();
     }
 
     /**
-     * Показывает фрагмент Чата, скрывая основной Toolbar.
-     * Внутри чата реализован свой Toolbar.
+     * Меняет состояние ActionBar в зависимости от выбранной вкладки
+     * @param tabItem выбранная вкладка
      */
-    private void showChatFragment() {
-        ActionBar actionBar = getSupportActionBar();
-        Bundle bundle = ChatIntentHelper.getIntentBuilder(BottomNavigationActivity.this, clientId, userName).buildBundle();
-        ChatFragment chatFragment = ChatFragment.newInstance(bundle);
-        showFragment(chatFragment);
+    private void showActionBar(final TabItem tabItem) {
+        final ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
-            actionBar.hide();
+            switch (tabItem) {
+                case TAB_HOME:
+                    actionBar.show();
+                    break;
+                case TAB_CHAT:
+                    actionBar.hide(); // Скрываем ActionBar, т.к. внутри чата есть свой
+                    break;
+            }
         }
     }
 
-    private void showFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content, fragment)
-                .commit();
-    }
-
     /**
-     * Здесь необходимо обработать навигацию при нажатии кнопки назад,
-     * если в данный момент показан фрагмент чата
+     * Обработка нажатия кнопки Back.
+     * Если в данный момент показан фрагмент чата, то при нажатии на кнопку Back
+     * переходим на главный фрагмент.
      */
     @Override
     public void onBackPressed() {
@@ -177,8 +230,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
             // Если чат нужно закрыть, возвращаем пользователя на предыдущий открытый экран
             boolean needsCloseChat = ((ChatFragment) fragment).onBackPressed();
             if (needsCloseChat) {
-                View view = navigation.findViewById(R.id.navigation_home);
-                view.performClick();
+                updateNavigationBarState(TabItem.TAB_HOME.getMenuId());
             }
         } else {
             super.onBackPressed();
@@ -190,7 +242,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERM_REQUEST_CODE_CLICK) {
             if(PermissionChecker.checkGrantResult(grantResults)) {
-                flag = true;
+                showChatAfterGrantPermission = true;
             } else {
                 Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
             }
@@ -212,10 +264,15 @@ public class BottomNavigationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (flag) {
-            View view = navigation.findViewById(R.id.navigation_chat);
-            view.performClick();
-            flag = false;
+        if (showChatAfterGrantPermission) {
+            updateNavigationBarState(TabItem.TAB_CHAT.getMenuId());
+            showChatAfterGrantPermission = false;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putSerializable("selectedTab", selectedTab);
     }
 }

@@ -19,6 +19,7 @@
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/userBuble"
+        android:layout_marginBottom="@dimen/margin_half"
         android:paddingRight="17dp">
 
         <LinearLayout
@@ -42,7 +43,7 @@
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true"/>
 
-                <im.threads.widget.CustomFontTextView
+                <im.threads.widget.text_view.BubbleMessageTextView
                     android:id="@+id/rate_stars_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -59,7 +60,7 @@
                 android:layout_marginTop="@dimen/margin_quarter"
                 android:layout_gravity="center_horizontal">
 
-                <im.threads.widget.CustomFontTextView
+                <im.threads.widget.text_view.BubbleMessageTextView
                     android:id="@+id/from"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
@@ -67,7 +68,7 @@
                     android:layout_marginRight="4dp"
                     android:text="@string/item_user_rate_text"/>
 
-                <im.threads.widget.CustomFontTextView
+                <im.threads.widget.text_view.BubbleMessageTextView
                     android:id="@+id/total_stars_count"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
@@ -80,7 +81,7 @@
         </LinearLayout>
 
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.widget.text_view.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -90,7 +91,7 @@
             android:text="@string/item_user_rate_header"
             android:textColor="@android:color/white" />
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
             style="@style/timestamp"
             android:layout_alignParentRight="true"

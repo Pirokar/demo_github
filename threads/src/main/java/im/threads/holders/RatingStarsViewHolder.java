@@ -13,7 +13,7 @@ import im.threads.utils.PrefUtils;
 import im.threads.widget.Rating;
 
 /**
- * ViewHolder для расписания
+ * ViewHolder для опросов с рейтингом
  * Created by chybakut2004 on 17.04.17.
  */
 
@@ -42,28 +42,26 @@ public class RatingStarsViewHolder extends BaseHolder {
         if (style != null) {
 
             if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-                askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
-                thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
                 bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
             }
 
+            if (style.surveyTextColorResId != ChatStyle.INVALID) {
+                askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
+                thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
+            }
         }
     }
 
     public void bind(Survey survey, Rating.CallBackListener callBackListener) {
         int rate = survey.getQuestions().get(0).getRate();
-        rating.initRating(itemView.getContext(), rate);
+        int scale = survey.getQuestions().get(0).getScale();
+        rating.initRating(itemView.getContext(), rate, scale);
         askForRate.setText(survey.getQuestions().get(0).getText());
-        if (!rating.getHasListener()) {
-            rating.setListenerClick(true, callBackListener);
-        }
-        if (rate != 0) {
-            thanksForRate.setVisibility(View.VISIBLE);
-            bottomSeparator.setVisibility(View.VISIBLE);
-        } else {
-            thanksForRate.setVisibility(View.GONE);
-            bottomSeparator.setVisibility(View.GONE);
-        }
+
+        boolean hasRate = survey.getQuestions().get(0).hasRate();
+        rating.setListenerClick(hasRate ? null : callBackListener);
+        thanksForRate.setVisibility(hasRate ? View.VISIBLE : View.GONE);
     }
+
 }

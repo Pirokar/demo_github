@@ -19,13 +19,11 @@ import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
 /**
- * ViewHolder для расписания
+ * ViewHolder для результатов опроса с рейтингом
  * Created by chybakut2004 on 17.04.17.
  */
 
 public class RatingStarsSentViewHolder extends BaseHolder {
-
-    private static final int DEFAULT_RATING_STARS_COUNT = 3;
 
     private ImageView star;
     private TextView mHeader;
@@ -51,7 +49,7 @@ public class RatingStarsSentViewHolder extends BaseHolder {
         from = (TextView) itemView.findViewById(R.id.from);
         totalStarsCount = (TextView) itemView.findViewById(R.id.total_stars_count);
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
-        mBubble = (ImageView) itemView.findViewById(R.id.bubble);
+        mBubble = (ImageView) itemView.findViewById(R.id.bubble_1);
 
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
@@ -63,20 +61,23 @@ public class RatingStarsSentViewHolder extends BaseHolder {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
 
-                star.setImageResource(R.drawable.ic_star_grey600_24dp);
                 star.setColorFilter(
                         ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),
                         PorterDuff.Mode.SRC_ATOP
                 );
             }
-        }
 
+            if (style.optionsSurveySelectedIconResId != ChatStyle.INVALID) {
+                star.setImageResource(style.optionsSurveySelectedIconResId);
+            }
+        }
     }
 
     public void bind(Survey survey) {
         int rate = survey.getQuestions().get(0).getRate();
+        int scale = survey.getQuestions().get(0).getScale();
         rateStarsCount.setText(String.valueOf(rate));
-        totalStarsCount.setText(String.valueOf(DEFAULT_RATING_STARS_COUNT)); //todo заглушка, брать из пуша
+        totalStarsCount.setText(String.valueOf(scale));
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
         switch (survey.getSentState()) {

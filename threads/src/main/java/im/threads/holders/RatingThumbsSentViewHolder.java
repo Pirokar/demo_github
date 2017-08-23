@@ -19,7 +19,7 @@ import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
 /**
- * ViewHolder для расписания
+ * ViewHolder для результатов бинарного опроса
  * Created by chybakut2004 on 17.04.17.
  */
 
@@ -43,7 +43,7 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mHeader = (TextView) itemView.findViewById(R.id.header);
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
-        mBubble = (ImageView) itemView.findViewById(R.id.bubble);
+        mBubble = (ImageView) itemView.findViewById(R.id.bubble_1);
 
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
@@ -58,26 +58,21 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
     }
 
     public void bind(Survey survey) {
-        Integer rate = survey.getQuestions().get(0).getRate();
-        if (rate != null) {
-            if (rate == 1) {
-                if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
-                    thumb.setImageResource(R.drawable.ic_like_full_36dp);
-                    thumb.setColorFilter(
-                            ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),
-                            PorterDuff.Mode.SRC_ATOP
-                    );
-                }
-            } else {
-                if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
-                    thumb.setImageResource(R.drawable.ic_dislike_full_36dp);
-                    thumb.setColorFilter(
-                            ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),
-                            PorterDuff.Mode.SRC_ATOP
-                    );
-                }
+        int rate = survey.getQuestions().get(0).getRate();
+        if (rate == 1) {
+            if (style.binarySurveyLikeSelectedIconResId != ChatStyle.INVALID) {
+                thumb.setImageResource(style.binarySurveyLikeSelectedIconResId);
+            }
+        } else {
+            if (style.binarySurveyDislikeSelectedIconResId != ChatStyle.INVALID) {
+                thumb.setImageResource(style.binarySurveyLikeUnselectedIconResId);
             }
         }
+
+        if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
+            thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
+        }
+
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
         switch (survey.getSentState()) {

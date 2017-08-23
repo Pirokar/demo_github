@@ -47,6 +47,7 @@ public class ChatIntentHelper {
                         R.drawable.no_image,//заглушка вместо картинки imagePlaceholder
                         R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
                         true, //показывать загрузку при поиске консультанта showConsultSearching
+                        false, // всегда прокручивать чат к последнему сообщению, если пользователь начал ввод
                         R.color.purple,
                         "comic.ttf")
                 //.setGoogleAnalyticsEnabled(false)
@@ -64,6 +65,15 @@ public class ChatIntentHelper {
                 .setScheduleMessageStyle(
                         R.drawable.schedule_icon, // Иконка сообщения о расписании scheduleMessageIconResId
                         R.color.schedule_message_text_color) // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
+                .setSurveyStyle(ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        R.color.chatbody_icons_tint,
+                        R.color.chatbody_icons_tint,
+                        R.color.welcome_screen_text)
 
                 ;
     }

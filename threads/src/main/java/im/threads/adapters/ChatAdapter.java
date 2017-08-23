@@ -33,6 +33,7 @@ import im.threads.holders.RatingStarsSentViewHolder;
 import im.threads.holders.RatingStarsViewHolder;
 import im.threads.holders.RatingThumbsSentViewHolder;
 import im.threads.holders.RatingThumbsViewHolder;
+import im.threads.holders.RequestResolveThreadViewHolder;
 import im.threads.holders.ScheduleInfoViewHolder;
 import im.threads.holders.SearchingConsultViewHolder;
 import im.threads.holders.SpaceViewHolder;
@@ -50,6 +51,7 @@ import im.threads.model.DateRow;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.QuestionDTO;
+import im.threads.model.RequestResolveThread;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.SearchingConsult;
 import im.threads.model.Space;
@@ -84,6 +86,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_RATING_THUMBS_SENT = 15;
     private static final int TYPE_RATING_STARS = 16;
     private static final int TYPE_RATING_STARS_SENT = 17;
+    private static final int TYPE_REQ_RESOLVE_THREAD = 18;
+
     private boolean isRemovingTyping = false;
 
 
@@ -130,6 +134,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_RATING_THUMBS_SENT) return new RatingThumbsSentViewHolder(parent);
         if (viewType == TYPE_RATING_STARS) return new RatingStarsViewHolder(parent);
         if (viewType == TYPE_RATING_STARS_SENT) return new RatingStarsSentViewHolder(parent);
+        if (viewType == TYPE_REQ_RESOLVE_THREAD) return new RequestResolveThreadViewHolder(parent);
         return null;
     }
 
@@ -466,6 +471,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((RatingStarsSentViewHolder) holder).bind(survey);
         }
 
+        if (holder instanceof RequestResolveThreadViewHolder) {
+            ((RequestResolveThreadViewHolder) holder).bind(mAdapterInterface);
+        }
     }
 
 
@@ -551,6 +559,52 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             }
         }
+    }
+
+    /**
+     * Remove close request from the thread history
+     * @return true - if deletion occurred, false - if RequestResolveThread item wasn't found in the history
+     */
+    public boolean removeResolveRequest() {
+        boolean removed = false;
+        ArrayList<ChatItem> list = getOriginalList();
+        for (ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
+            ChatItem cm = iter.next();
+            if (cm instanceof RequestResolveThread) {
+                try {
+                    notifyItemRemoved(list.lastIndexOf(cm));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                iter.remove();
+                removed = true;
+            }
+        }
+        return removed;
+    }
+
+    /**
+     * Remove survey from the thread history
+     * @return true - if deletion occurred, false - if Survey item wasn't found in the history
+     */
+    public boolean removeSurvey(String messageId) {
+        boolean removed = false;
+        ArrayList<ChatItem> list = getOriginalList();
+        for (ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
+            ChatItem cm = iter.next();
+            if (cm instanceof Survey && ((Survey) cm).getMessageId().equalsIgnoreCase(messageId)) {
+                try {
+                    notifyItemRemoved(list.lastIndexOf(cm));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                iter.remove();
+                removed = true;
+            }
+        }
+
+
+        return removed;
     }
 
     public void setSearchingConsult() {
@@ -719,23 +773,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (o instanceof Space) return TYPE_FREE_SPACE;
         if (o instanceof UnreadMessages) return TYPE_UNREAD_MESSAGES;
         if (o instanceof ScheduleInfo) return TYPE_SCHEDULE;
-//        if (o instanceof RatingThumbs) {
-//            RatingThumbs ratingThumbs = (RatingThumbs) o;
-//            if (ratingThumbs.getSentState() == MessageState.STATE_SENT || ratingThumbs.getSentState() == MessageState.STATE_WAS_READ) {
-//                return TYPE_RATING_THUMBS_SENT;
-//            } else {
-//                return TYPE_RATING_THUMBS;
-//            }
-//        }
-//        if (o instanceof RatingStars) {
-//            RatingStars ratingStars = (RatingStars) o;
-//            if (ratingStars.getSentState() == MessageState.STATE_SENT || ratingStars.getSentState() == MessageState.STATE_WAS_READ) {
-//                return TYPE_RATING_STARS_SENT;
-//            } else {
-//                return TYPE_RATING_STARS;
-//            }
-//        }
-
         if (o instanceof Survey) {
             Survey survey = (Survey) o;
             QuestionDTO questionDTO = survey.getQuestions().get(0);
@@ -753,6 +790,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     return TYPE_RATING_STARS;
                 }
             }
+        }
+
+        if (o instanceof RequestResolveThread) {
+            return TYPE_REQ_RESOLVE_THREAD;
         }
         return super.getItemViewType(position);
     }
@@ -903,6 +944,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
 
         void onRatingClick(Survey survey, int rating);
+
+        void onResolveThreadClick(boolean approveResolve);
 
 //        void onRatingStarsClick(Survey survey, int rating);
     }

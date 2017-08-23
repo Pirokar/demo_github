@@ -42,6 +42,7 @@ import im.threads.model.MessgeFromHistory;
 import im.threads.model.Operator;
 import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
+import im.threads.model.RequestResolveThread;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
@@ -67,11 +68,22 @@ public class MessageFormatter {
     private static final String CLIENT_ID = "clientId";
     private static final String TYPE = "type";
     private static final String TEXT = "text";
+    private static final String HIDE_AFTER = "hideAfter";
     private static final String QUOTES = "quotes";
     private static final String ATTACHMENTS = "attachments";
     private static final String ERROR_FORMATTING_JSON = "error formatting json";
     private static final String PROVIDER_ID = "providerId";
     private static final String BACKEND_ID = "backendId";
+
+    // message types
+    private static final String TYPE_CLIENT_INFO = "CLIENT_INFO";
+    private static final String TYPE_SURVEY_QUESTION_ANSWER = "SURVEY_QUESTION_ANSWER";
+    private static final String TYPE_SURVEY_PASSED = "SURVEY_PASSED";
+    private static final String TYPE_CLOSE_THREAD = "CLOSE_THREAD";
+    private static final String TYPE_OPERATOR_JOINED = "OPERATOR_JOINED";
+    private static final String TYPE_OPERATOR_LEFT = "OPERATOR_LEFT";
+    private static final String TYPE_CLIENT_OFFLINE = "CLIENT_OFFLINE";
+    private static final String TYPE_TYPING = "TYPING";
 
     private MessageFormatter() {
     }
@@ -223,6 +235,15 @@ public class MessageFormatter {
 //        return simple;
 //    }
 
+    public static Long getHideAfter(JSONObject fullMessage) {
+        try {
+            return Long.parseLong(fullMessage.getString(HIDE_AFTER));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
+
     private static String getMessage(JSONObject fullMessage, PushMessage pushMessage) {
         String message = null;
         try {
@@ -349,18 +370,14 @@ public class MessageFormatter {
             } else if (type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
                 return getScheduleInfoFromPush(pushMessage, fullMessage);
             } else if (type.equalsIgnoreCase(MessageMatcher.SURVEY)) {
-//                Boolean simple = getTypeOfSurvey(fullMessage);
-//                if (simple) {
-//                    return getRatingThumbsFromPush(pushMessage, fullMessage);
-//                } else {
-//                    return getRatingStarsFromPush(pushMessage, fullMessage);
-//                }
                 return getRatingFromPush(pushMessage, fullMessage);
             } else if (type.equalsIgnoreCase(MessageMatcher.MESSAGE)
                     || type.equalsIgnoreCase(MessageMatcher.ON_HOLD)) {
                 // Либо в fullMessage должны содержаться ключи из списка:
                 // "attachments", "text", "quotes"
                 return checkMessageIsFull(pushMessage, fullMessage);
+            } else if (type.equalsIgnoreCase(MessageMatcher.REQUEST_CLOSE_THREAD)) {
+                return getCloseRequestFromPush(fullMessage);
             } else if (type.equalsIgnoreCase(MessageMatcher.NONE)
                     || type.equalsIgnoreCase(MessageMatcher.MESSAGES_READ)
                     || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LOOKUP_STARTED)
@@ -369,7 +386,7 @@ public class MessageFormatter {
                     || type.equalsIgnoreCase(MessageMatcher.THREAD_CLOSED)
                     || type.equalsIgnoreCase(MessageMatcher.SCENARIO)
                     || isChatPush(fullMessage)) {
-                return new EmptyChatItem();
+                return new EmptyChatItem(type);
             } else {
                 return checkMessageIsFull(pushMessage, fullMessage);
             }
@@ -402,34 +419,6 @@ public class MessageFormatter {
         return scheduleInfo;
     }
 
-//    private static RatingThumbs getRatingThumbsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
-//        RatingThumbs ratingThumbs = null;
-//        String text = getMessage(fullMessage, pushMessage);
-//        if(text != null) {
-//            try {
-//                ratingThumbs = new Gson().fromJson(text, RatingThumbs.class);
-//                ratingThumbs.setPhraseTimeStamp(new Date().getTime());
-//            } catch (JsonSyntaxException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return ratingThumbs;
-//    }
-//
-//    private static RatingStars getRatingStarsFromPush(PushMessage pushMessage, JSONObject fullMessage) {
-//        RatingStars ratingStars = null;
-//        String text = getMessage(fullMessage, pushMessage);
-//        if(text != null) {
-//            try {
-//                ratingStars = new Gson().fromJson(text, RatingStars.class);
-//                ratingStars.setPhraseTimeStamp(new Date().getTime());
-//            } catch (JsonSyntaxException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return ratingStars;
-//    }
-
     private static Survey getRatingFromPush(PushMessage pushMessage, JSONObject fullMessage) {
         Survey survey = null;
         String text = getMessage(fullMessage, pushMessage);
@@ -449,6 +438,12 @@ public class MessageFormatter {
         return survey;
     }
 
+    // show close thread's request only if thread has time till close (hideAfter)
+    private static RequestResolveThread getCloseRequestFromPush(JSONObject fullMessage) {
+        Long hideAfter = getHideAfter(fullMessage);
+        return hideAfter > 0 ? new RequestResolveThread(hideAfter, System.currentTimeMillis()) : null;
+    }
+
     private static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
         ConsultConnectionMessage chatItem = null;
 
@@ -460,11 +455,11 @@ public class MessageFormatter {
             long operatorId = operator.getLong("id");
             String name = operator.isNull("name") ? null : operator.getString("name");
             String status = operator.isNull("status") ? null : operator.getString("status");
-            String type = fullMessage.getString(TYPE).equalsIgnoreCase("OPERATOR_JOINED") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+            String type = fullMessage.getString(TYPE).equalsIgnoreCase(TYPE_OPERATOR_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
             boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
             String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
             String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
-            boolean displayMessage = !fullMessage.has("displayMessage") || fullMessage.getBoolean("displayMessage");
+            boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
             chatItem = new ConsultConnectionMessage(
                     String.valueOf(operatorId)
                     , type
@@ -662,7 +657,7 @@ public class MessageFormatter {
             object.put("name", clientName);
             object.put(CLIENT_ID, clientId);
             object.put("email", email);
-            object.put(TYPE, "CLIENT_INFO");
+            object.put(TYPE, TYPE_CLIENT_INFO);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -681,7 +676,7 @@ public class MessageFormatter {
             object.put("appVersion", getAppVersion(ctx));
             object.put("libVersion", getLibVersion());
             object.put("clientLocale", getLocale(ctx));
-            object.put(TYPE, "CLIENT_INFO");
+            object.put(TYPE, TYPE_CLIENT_INFO);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -720,7 +715,7 @@ public class MessageFormatter {
         JSONObject object = new JSONObject();
         try {
             object.put(CLIENT_ID, clientId);
-            object.put(TYPE, "SURVEY_QUESTION_ANSWER");
+            object.put(TYPE, TYPE_SURVEY_QUESTION_ANSWER);
             object.put("sendingId", sendingId);
             object.put("questionId", questionId);
             object.put("rate", rate);
@@ -734,11 +729,23 @@ public class MessageFormatter {
         JSONObject object = new JSONObject();
         try {
             object.put(CLIENT_ID, clientId);
-            object.put(TYPE, "SURVEY_PASSED");
+            object.put(TYPE, TYPE_SURVEY_PASSED);
             object.put("sendingId", sendingId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return object.toString().replaceAll("\\\\", "");
+    }
+
+    public static String createResolveThreadMessage(String clientId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put(CLIENT_ID, clientId);
+            object.put(TYPE, TYPE_CLOSE_THREAD);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         return object.toString().replaceAll("\\\\", "");
     }
 
@@ -832,8 +839,8 @@ public class MessageFormatter {
                     if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
                         gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
                     }
-                    boolean displayMessage = !body.has("displayMessage") || body.getBoolean("displayMessage");
-                    if (body.has(TYPE) && !body.isNull(TYPE) && (body.getString(TYPE).equalsIgnoreCase("OPERATOR_JOINED") || body.getString(TYPE).equalsIgnoreCase("OPERATOR_LEFT"))) {
+                    boolean displayMessage = !body.has("display") || body.getBoolean("display");
+                    if (body.has(TYPE) && (TYPE_OPERATOR_JOINED.equalsIgnoreCase(body.getString(TYPE)) || TYPE_OPERATOR_LEFT.equalsIgnoreCase(body.getString(TYPE)))) {
                         String type = body.getString(TYPE).equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
                         out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null, messageId, displayMessage));
                     } else {
@@ -986,7 +993,7 @@ public class MessageFormatter {
 
     /*private static ConsultConnectionMessage getConsultConnectionMessageFromInout(InOutMessage message) throws JSONException {
         JSONObject body = new JSONObject(message.content);
-        String type = body.getString(TYPE).equalsIgnoreCase("OPERATOR_JOINED") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+        String type = body.getString(TYPE).equalsIgnoreCase(TYPE_OPERATOR_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
         JSONObject operator = body.getJSONObject("operator");
         long operatorId = operator.getLong("id");
         String name = operator.isNull("name") ? null : operator.getString("name");
@@ -994,7 +1001,6 @@ public class MessageFormatter {
         boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
         String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
         String title = "";
-        boolean displayMessage = !body.has("displayMessage") || body.getBoolean("displayMessage");
 
         try {
             title = body.getString(TEXT).split(" ")[0];
@@ -1012,7 +1018,7 @@ public class MessageFormatter {
                         , status
                         , title
                         , String.valueOf(message.messageId)
-                        , displayMessage);
+                        , false);
         return c;
     }*/
 
@@ -1046,11 +1052,13 @@ public class MessageFormatter {
         return ids;
     }
 
+
+
     public static String getMessageTyping(String clientId) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(CLIENT_ID, clientId);
-            jsonObject.put(TYPE, "TYPING");
+            jsonObject.put(TYPE, TYPE_TYPING);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1062,7 +1070,7 @@ public class MessageFormatter {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(CLIENT_ID, clientId);
-            jsonObject.put(TYPE, "CLIENT_OFFLINE");
+            jsonObject.put(TYPE, TYPE_CLIENT_OFFLINE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
