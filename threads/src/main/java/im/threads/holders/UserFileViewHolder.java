@@ -8,8 +8,10 @@ import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
@@ -18,9 +20,6 @@ import im.threads.model.MessageState;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.views.CircularProgressButton;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  *
@@ -35,7 +34,7 @@ public class UserFileViewHolder extends BaseHolder {
     private View mFilterSecond;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     private static ChatStyle style;
-    private ImageView mBubble;
+    private View mBubble;
     private static
     @ColorInt
     int messageColor;
@@ -48,11 +47,11 @@ public class UserFileViewHolder extends BaseHolder {
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterSecond = itemView.findViewById(R.id.filter_second);
-        mBubble = (ImageView) itemView.findViewById(R.id.bubble_1);
+        mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
             if (style.outgoingMessageBubbleColor != ChatStyle.INVALID) {
-                mBubble.getDrawable().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+                mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             }
             if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);

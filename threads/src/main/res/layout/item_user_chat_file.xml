@@ -17,23 +17,11 @@
         android:layout_height="@dimen/margin_quarter"
         android:layout_below="@+id/filter" />
 
-    <ImageView
-        android:id="@+id/bubble_1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignLeft="@+id/bubble"
-        android:layout_alignRight="@+id/bubble"
-        android:layout_alignTop="@+id/bubble"
-        android:scaleType="fitXY"
-        android:src="@drawable/a_user_bubble" />
-
     <RelativeLayout
-
         android:id="@+id/bubble"
         style="@style/userBubble"
-        android:paddingRight="17dp">
-
+        android:paddingRight="17dp"
+        android:background="@drawable/a_user_bubble">
 
         <im.threads.views.CircularProgressButton
             android:id="@+id/button_download"

@@ -3,23 +3,12 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/bubble_1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignLeft="@+id/bubble"
-        android:layout_alignRight="@+id/bubble"
-        android:layout_alignTop="@+id/bubble"
-        android:scaleType="fitXY"
-        android:src="@drawable/a_user_bubble" />
-
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/userBubble"
         android:paddingRight="17dp"
-        android:layout_marginBottom="@dimen/margin_half">
-
+        android:layout_marginBottom="@dimen/margin_half"
+        android:background="@drawable/a_user_bubble">
 
         <ImageView
             android:id="@+id/thumb"
