@@ -18,7 +18,7 @@
 
     <RelativeLayout
         android:id="@+id/bubble"
-        style="@style/userBuble"
+        style="@style/userBubble"
         android:layout_marginBottom="@dimen/margin_half"
         android:paddingRight="17dp">
 

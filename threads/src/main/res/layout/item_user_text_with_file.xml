@@ -8,41 +8,27 @@
         android:id="@+id/filter"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
-        android:layout_alignBottom="@+id/phrase_content"
+        android:layout_alignBottom="@+id/bubble"
         android:layout_alignParentTop="true"
-        android:layout_below="@+id/phrase_content" />
+        android:layout_below="@+id/bubble" />
 
     <View
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
-        android:layout_below="@+id/phrase_content" />
-
-
-    <ImageView
-        android:id="@+id/bubble"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@+id/phrase_content"
-        android:layout_alignLeft="@+id/phrase_content"
-        android:layout_alignRight="@+id/phrase_content"
-        android:layout_alignTop="@+id/phrase_content"
-        android:paddingBottom="2dp"
-        android:paddingTop="2dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/a_user_bubble" />
+        android:layout_below="@+id/bubble" />
 
     <LinearLayout
-        android:id="@+id/phrase_content"
-        style="@style/userBuble"
+        android:id="@+id/bubble"
+        style="@style/userBubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="right"
         android:orientation="vertical"
         android:paddingBottom="@dimen/margin_quarter"
         android:paddingLeft="@dimen/margin_quarter"
         android:paddingRight="19dp"
-        android:paddingTop="@dimen/margin_quarter">
+        android:paddingTop="@dimen/margin_quarter"
+        android:background="@drawable/a_user_bubble">
 
         <TableRow
             android:id="@+id/right_text_row"
@@ -112,36 +98,29 @@
         <FrameLayout
             android:id="@+id/phrase_frame"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/imageView"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
+
+            <im.threads.widget.text_view.BubbleMessageTextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingBottom="@dimen/margin_half"
+                android:paddingLeft="4dp"
+                android:paddingTop="5dp"
+                android:text="user text"
+                android:layout_marginRight="74dp"
+                android:textSize="16sp" />
 
             <im.threads.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
-                android:layout_marginBottom="2dp"
                 android:drawablePadding="@dimen/margin_quarter"
                 android:padding="@dimen/margin_half"
                 android:text="10:19" />
 
-            <im.threads.widget.text_view.BubbleMessageTextView
-                android:id="@+id/text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|center_vertical"
-                android:layout_marginTop="0dp"
-                android:paddingBottom="@dimen/margin_half"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:paddingTop="5dp"
-                android:text="textetxtetex &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
-                android:textSize="16dp" />
         </FrameLayout>
-
     </LinearLayout>
-
-
 </RelativeLayout>

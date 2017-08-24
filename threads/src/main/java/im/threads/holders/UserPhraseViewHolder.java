@@ -5,15 +5,17 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
@@ -25,10 +27,6 @@ import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.ViewUtils;
 import im.threads.views.CircularProgressButton;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -49,7 +47,7 @@ public class UserPhraseViewHolder extends BaseHolder {
     private View mFilterView;
     private View mFilterViewSecond;
     private static ChatStyle style;
-    private ImageView mBubble;
+    private View mBubble;
     private static
     @ColorInt
     int messageColor;
@@ -72,11 +70,11 @@ public class UserPhraseViewHolder extends BaseHolder {
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mRightTextHeader = (TextView) itemView.findViewById(R.id.to);
         mRightTextTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
-        mBubble = (ImageView) itemView.findViewById(R.id.bubble);
+        mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
             if (style.outgoingMessageBubbleColor != ChatStyle.INVALID)
-                mBubble.getDrawable().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+                mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
@@ -110,8 +108,7 @@ public class UserPhraseViewHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(Html.fromHtml(phrase.trim().replaceAll("\n", "<br>") +
-                    " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
+            mPhraseTextView.setText(phrase);
         }
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
