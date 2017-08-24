@@ -4,7 +4,6 @@ import android.graphics.PorterDuff;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.text.format.Formatter;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -13,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
@@ -26,10 +29,6 @@ import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.ViewUtils;
 import im.threads.views.CircularProgressButton;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -52,8 +51,8 @@ public class ConsultPhraseHolder extends BaseHolder {
     private View mFilterView;
     private View mFilterViewSecond;
     private static ChatStyle style;
-    private ImageView mBubble;
-    private FrameLayout mPhraseFrame;
+    private View mBubble;
+    private View mPhraseFrame;
     @DrawableRes
     private int defIcon;
 
@@ -66,21 +65,21 @@ public class ConsultPhraseHolder extends BaseHolder {
         mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         rightTextFileStamp = (TextView) itemView.findViewById(R.id.send_at);
         mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
-        mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
+        mConsultAvatar = (ImageView) itemView.findViewById(R.id.consult_avatar);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
-        mPhraseFrame = (FrameLayout) itemView.findViewById(R.id.phrase_frame);
+        mPhraseFrame = itemView.findViewById(R.id.phrase_frame);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy");
         }
-        mBubble = (ImageView) itemView.findViewById(R.id.bubble);
+        mBubble =  itemView.findViewById(R.id.bubble);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
             if (style.incomingMessageBubbleColor != ChatStyle.INVALID)
-                mBubble.getDrawable().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+                mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             if (style.incomingMessageTextColor != ChatStyle.INVALID) {
                 setTextColorToViews(new TextView[]{mPhraseTextView,
                         mTimeStampTextView,
@@ -125,7 +124,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(Html.fromHtml(phrase.trim().replaceAll("\n", "<br>") + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
+            mPhraseTextView.setText(phrase);
         }
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
@@ -174,8 +173,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         if (fileDescription == null && quote == null) {
             fileRow.setVisibility(View.GONE);
         }
-        if (fileDescription != null
-                || quote != null) {
+        if (fileDescription != null || quote != null) {
             mPhraseFrame.getLayoutParams().width = FrameLayout.LayoutParams.MATCH_PARENT;
         } else {
             mPhraseFrame.getLayoutParams().width = FrameLayout.LayoutParams.WRAP_CONTENT;

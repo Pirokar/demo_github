@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
@@ -18,9 +21,6 @@ import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.views.CircularProgressButton;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static im.threads.model.ChatStyle.INVALID;
 
@@ -37,7 +37,7 @@ public class ConsultFileViewHolder extends BaseHolder {
     private View mFilterView;
     private View mFilterSecond;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-    private ImageView mBubble;
+    private View mBubble;
     private static ChatStyle style;
 
     public ConsultFileViewHolder(ViewGroup parent) {
@@ -49,11 +49,11 @@ public class ConsultFileViewHolder extends BaseHolder {
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterSecond = itemView.findViewById(R.id.filter_second);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.consult_avatar);
-        mBubble = (ImageView) itemView.findViewById(R.id.bubble_1);
+        mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
             if (style.incomingMessageBubbleColor != INVALID)
-                mBubble.getDrawable().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+                mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             if (style.incomingMessageTextColor != INVALID) {
                 setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.incomingMessageTextColor);
             }

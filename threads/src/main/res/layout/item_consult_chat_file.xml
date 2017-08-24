@@ -19,30 +19,16 @@
 
     <ImageView
         android:id="@+id/consult_avatar"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="@dimen/consultant_photo_size"
+        android:layout_height="@dimen/consultant_photo_size"
         android:layout_below="@+id/bubble"
-        android:layout_gravity="bottom|left"
         android:layout_marginLeft="@dimen/margin_half"
-        android:layout_marginTop="-12dp"
-        android:visibility="visible" />
-
-
-    <ImageView
-        android:id="@+id/bubble_1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignLeft="@+id/bubble"
-        android:layout_alignRight="@+id/bubble"
-        android:layout_alignTop="@+id/bubble"
-        android:scaleType="fitXY"
-        android:src="@drawable/bubble_white" />
+        android:layout_marginTop="@dimen/consultant_photo_offset_size"/>
 
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/consultBubble"
-        android:paddingLeft="15dp">
+        android:background="@drawable/bubble_white">
 
         <im.threads.views.CircularProgressButton
             android:id="@+id/circ_button"
@@ -67,7 +53,6 @@
             android:text="счет на оплатуrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.pdf"
             android:textColor="@color/gray_text" />
 
-
         <im.threads.widget.text_view.BubbleMessageTextView
             android:id="@+id/file_size"
             android:layout_width="wrap_content"
@@ -90,7 +75,6 @@
             android:layout_marginTop="@dimen/margin_quarter"
             android:text="10:19"
             android:textColor="@android:color/black" />
-
     </RelativeLayout>
 
 
