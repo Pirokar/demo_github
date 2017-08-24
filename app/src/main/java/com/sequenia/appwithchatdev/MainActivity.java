@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat.polarbear;
+package com.sequenia.appwithchatdev;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,6 @@ import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.model.PushMessage;
-import com.sequenia.appwithchat.R;
 
 import im.threads.BuildConfig;
 import im.threads.controllers.ChatController;
@@ -50,13 +49,11 @@ public class MainActivity extends AppCompatActivity {
         clientIdEditText = (EditText) findViewById(R.id.client_id);
         userNameEditText = (EditText) findViewById(R.id.user_name);
 
-        // Отслеживание Push-уведомлений, не распознанных чатом.
+        // Отслеживание Push-уведомлений, нераспознанных чатом.
         ChatController.setFullPushListener(new CustomFullPushListener());
         ChatController.setShortPushListener(new CustomShortPushListener());
 
         Fabric.with(this, new Crashlytics());
-
-        Log.i("deviceId", PushController.getInstance(this).getDeviceUid());
     }
 
     public void onChatButtonClick(View v) {
@@ -122,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle) {
-            Toast.makeText(context, bundle.toString(), Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Short Push Accepted");
             Log.i(TAG, bundle.toString());
         }
@@ -134,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage) {
-            Toast.makeText(pushServerIntentService, pushMessage.fullMessage, Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Full Push Accepted");
             Log.i(TAG, pushMessage.fullMessage);
         }

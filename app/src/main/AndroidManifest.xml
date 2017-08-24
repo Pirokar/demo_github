@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.sequenia.appwithchat">
+    package="com.sequenia.appwithchatdev">
 
     <permission
         android:name="${applicationId}.permission.C2D_MESSAGE"
@@ -22,6 +22,19 @@
         android:theme="@style/AppTheme"
         tools:replace="android:label">
 
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".BottomNavigationActivity"
+            android:label="@string/title_activity_bottom_navigation"
+            android:theme="@style/BottomNavigationTheme" />
+
         <receiver
             android:name="im.threads.broadcastReceivers.MainPBReceiver"
             android:exported="false"
@@ -33,6 +46,14 @@
                 <action android:name="com.pushserver.android.ERROR_EVENT" />
             </intent-filter>
         </receiver>
+
+        <meta-data
+            android:name="com.pushserver.android.providerUid"
+            android:value="@string/mfms_provider_uid" />
+
+        <meta-data
+            android:name="im.threads.getServerUrl"
+            android:value="@string/datastore_url" />
 
         <meta-data
             android:name="com.pushserver.android.service"

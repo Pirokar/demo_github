@@ -43,17 +43,11 @@ android {
             resValue "string", "app_name1", "AppWithChat"
         }
         // АРМ = polarbear.threads.im
-        // if you need polarbear:
-        // 1. change flavor to polarbear
-        // 2. change package in the main/AndroidManifest.xml to "com.sequenia.appwithchat.polarbear"
         polarbear {
             applicationId "com.sequenia.appwithchat.polarbear"
             resValue "string", "app_name1", "Polarbear"
         }
         // АРМ = winlab.threads.im
-        // if you need winlab:
-        // 1. change flavor to winlab
-        // 2. change package in the main/AndroidManifest.xml to "com.sequenia.appwithchat.beta4"
         winlab {
             applicationId "com.sequenia.appwithchat.beta4"
             resValue "string", "app_name1", "Winlab"

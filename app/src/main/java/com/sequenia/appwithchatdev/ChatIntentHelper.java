@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat.beta4;
+package com.sequenia.appwithchatdev;
 
 import android.app.Activity;
 
@@ -13,17 +13,9 @@ public class ChatIntentHelper {
     public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
         return ChatStyle.IntentBuilder
                 .getBuilder(activity, clientId, userName)
-                .setInputQuotedMessageAuthorFont("comic.ttf")
                 .setDefaultFontBold("comic.ttf")
-                .setPlaceholderTitleFont("comic.ttf")
-                .setPlaceholderSubtitleFont("comic.ttf")
-                .setBubbleMessageFont("comic.ttf")
-                .setBubbleTimeFont("comic.ttf")
-                .setTypingFont("comic.ttf")
-                .setMessageHeaderFont("comic.ttf")
-                .setSpecialistConnectTitleFont("comic.ttf")
-                .setInputQuotedMessageFont("comic.ttf")
-                .setPlaceholderTitleFont("comic.ttf")
+                .setDefaultFontLight("comic.ttf")
+                .setDefaultFontRegular("comic.ttf")
                 .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
                         R.color.toolbar_background,//ToolBar background chatToolbarColorResId
                         R.color.toolbar_widget,//Toolbar widget chatToolbarTextColorResId
@@ -50,9 +42,9 @@ public class ChatIntentHelper {
                         false, // всегда прокручивать чат к последнему сообщению, если пользователь начал ввод
                         R.color.purple,
                         "comic.ttf")
-                //.setGoogleAnalyticsEnabled(false)
-                .setPushNotificationStyle(R.drawable.logo_2,
-                        R.string.default_title,
+                .setGoogleAnalyticsEnabled(false)
+                .setPushNotificationStyle(R.drawable.ic_push_notification,
+                        R.string.app_name1,
                         R.color.colorAccent,
                         ChatStyle.INVALID)
                 .setWelcomeScreenStyle(
@@ -64,7 +56,7 @@ public class ChatIntentHelper {
                         , 14)//размер шрифта подзаголовка welcomeScreenSubtitleSizeInSp
                 .setScheduleMessageStyle(
                         R.drawable.schedule_icon, // Иконка сообщения о расписании scheduleMessageIconResId
-                        R.color.schedule_message_text_color) // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
+                        R.color.schedule_message_text_color)
                 .setSurveyStyle(ChatStyle.INVALID,
                         ChatStyle.INVALID,
                         ChatStyle.INVALID,
@@ -74,8 +66,7 @@ public class ChatIntentHelper {
                         R.color.chatbody_icons_tint,
                         R.color.chatbody_icons_tint,
                         R.color.welcome_screen_text)
-
-                ;
+                ; // Цвет текста в сообщении о расписании scheduleMessageTextColorResId
     }
 
 }

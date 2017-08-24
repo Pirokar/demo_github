@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat.beta4;
+package com.sequenia.appwithchatdev;
 
 import android.app.Activity;
 import android.app.PendingIntent;

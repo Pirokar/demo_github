@@ -1,4 +1,4 @@
-package com.sequenia.appwithchat.polarbear;
+package com.sequenia.appwithchatdev;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sequenia.appwithchat.R;
-
 import im.threads.controllers.ChatController;
 
 /**
@@ -20,6 +18,7 @@ import im.threads.controllers.ChatController;
  */
 
 public class BottomNavigationHomeFragment extends Fragment {
+
     private TextView unreadMessagesCount;
     private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
 
