@@ -18,6 +18,8 @@
         android:text="@string/search_more"
         android:visibility="gone" />
 
+
+
     <FrameLayout
         android:id="@+id/chat_content"
         android:layout_width="match_parent"
@@ -46,6 +48,30 @@
             android:visibility="visible" />
 
     </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/down_button_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/margin_half"
+        android:layout_marginBottom="@dimen/margin_half">
+
+        <ImageView
+            android:id="@+id/down_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/circle_green"
+            android:layout_marginTop="6dp"/>
+
+        <ImageView
+            android:id="@+id/unread_msg_sticker"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/circle_red"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/bottom_layout"
