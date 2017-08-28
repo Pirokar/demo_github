@@ -28,7 +28,7 @@ public class UnreadMessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(UnreadMessages unreadMessages) {
-        mTextView.setText(unreadMessages.getMessage());
+        mTextView.setText(unreadMessages.getMessage(mTextView.getContext()));
     }
 
 }
