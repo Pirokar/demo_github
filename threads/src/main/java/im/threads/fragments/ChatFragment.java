@@ -446,7 +446,7 @@ public class ChatFragment extends Fragment implements
                     scrollToNewMessages();
                 }
                 else {
-                    mRecyclerView.scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                    scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                 }
                 mChatAdapter.setAllMessagesRead();
                 mScrollDownContainer.setVisibility(View.GONE);
