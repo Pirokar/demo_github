@@ -49,13 +49,10 @@
     <string name="no_pdf_support">No application supports this type of file</string>
     <string name="retreiving_history">Retrieving history</string>
     <string name="search_more">Search more</string>
-    <string name="one_new_message">1 new message</string>
-    <string name="new_messages">new messages</string>
     <string name="title_default">Header</string>
     <string name="file_received">File received</string>
     <string name="with_file">(with file)</string>
     <string name="with_files">(with files)</string>
-    <string name="you_have_unread_messages">you have unread messages</string>
     <string name="message_were_unsent">Message not sent</string>
     <string name="unknown_operator">Unknown</string>
     <string name="saved_to">Saved to</string>
@@ -72,25 +69,10 @@
     <string name="new_">new</string>
     <string name="answer">ANSWER</string>
     <string name="check_connection">problems with internet connection</string>
-    <string name="contact_center">Контакт центр</string>
-    <string name="typing">печатает…</string>
-    <string name="ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
-    <string name="thanks_for_rate">Спасибо за вашу оценку</string>
-    <string name="item_user_rate_header">Оценка решения вопроса</string>
-    <string name="item_user_rate_text">из</string>
-    <string name="title_text">Добро пожаловать</string>
-    <string name="subtitle_text">Отправьте ваш вопрос</string>
-    <string name="permissions_help">Помощь</string>
-    <string name="permissions_string_help_text">Отсутствуют разрешения.\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
-    <string name="permissions_camera_and_write_external_storage_help_text">Отсутствуют разрешения на Камеру и Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
-    <string name="permissions_write_external_storage_help_text">Отсутствует разрешение на Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
-    <string name="permissions_read_external_storage_help_text">Отсутствует разрешение на Память (Чтение с вешнего хранилища).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
-    <string name="permissions_quit">Закрыть</string>
-    <string name="permissions_settings">Настройки</string>
     <string name="user_agent"  formatted="false">Android, osVersion=%s, appVersion=%s, libVersion=%s, device=%s</string>
 
-    <string name="request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
-    <string name="request_to_resolve_thread_close">Нет</string>
-    <string name="request_to_resolve_thread_open">Да</string>
-
+    <plurals  name="unread_messages">
+        <item quantity="one">%d unread message</item>
+        <item quantity="other">%d unread messages</item>
+    </plurals>
 </resources>
