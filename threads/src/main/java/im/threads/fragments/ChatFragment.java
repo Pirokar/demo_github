@@ -261,7 +261,7 @@ public class ChatFragment extends Fragment implements
                         @Override
                         public void run() {
                             if (style != null && style.alwaysScrollToEnd) {
-                                mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                                scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                             }
                             else {
                                 mRecyclerView.smoothScrollBy(0, oldBottom - bottom);
@@ -432,7 +432,7 @@ public class ChatFragment extends Fragment implements
         int itemsBefore = mChatAdapter.getItemCount();
         mChatAdapter.addItems(result);
         int itemsAfter = mChatAdapter.getItemCount();
-        mRecyclerView.scrollToPosition(itemsAfter - itemsBefore);
+        scrollToPosition(itemsAfter - itemsBefore);
         for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
             h.postDelayed(new Runnable() {
                 @Override
@@ -752,7 +752,8 @@ public class ChatFragment extends Fragment implements
         String headerText = "";
         String text = cp.getPhraseText();
         hideCopyControls();
-        mRecyclerView.scrollToPosition(position);
+
+        scrollToPosition(position);
         FileDescription quoteFileDescription = cp.getFileDescription();
         if (quoteFileDescription == null && cp.getQuote() != null) {
             quoteFileDescription = cp.getQuote().getFileDescription();
@@ -915,7 +916,7 @@ public class ChatFragment extends Fragment implements
                     public void run() {
                         if (highlighted[0] == null) return;
                         int index = mChatAdapter.setItemHighlighted(highlighted[0]);
-                        if (index != -1) mRecyclerView.scrollToPosition(index);
+                        if (index != -1) scrollToPosition(index);
                     }
                 }, 60);
             }
@@ -986,7 +987,7 @@ public class ChatFragment extends Fragment implements
                     }
                 });
                 mInputLayout.setVisibility(View.GONE);
-                mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                scrollToPosition(mChatAdapter.getItemCount() - 1);
                 String[] projection = new String[]{MediaStore.Images.Media.DATA};
                 Cursor c = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_TAKEN + " desc");
                 int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
@@ -1009,7 +1010,6 @@ public class ChatFragment extends Fragment implements
                         }
                     }
                 });
-                mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
             } else {
                 mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
                     @Override
@@ -1076,11 +1076,17 @@ public class ChatFragment extends Fragment implements
             public void run() {
                 if (!isInMessageSearchMode) {
                     if ((mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < 40) {
-                        mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                        scrollToPosition(mChatAdapter.getItemCount() - 1);
                     }
                 }
             }
         }, 100);
+    }
+
+    private void scrollToPosition(int itemCount) {
+        if (itemCount >= 0) {
+            mRecyclerView.scrollToPosition(itemCount);
+        }
     }
 
     private boolean needsAddMessage(ChatItem item) {
@@ -1141,7 +1147,7 @@ public class ChatFragment extends Fragment implements
             @Override
             public void run() {
                 if (!isInMessageSearchMode)
-                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                    scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
         }, 600);
 
@@ -1645,7 +1651,7 @@ public class ChatFragment extends Fragment implements
                 }
             }, 100);
             //  mChatAdapter.undoClear();
-            mRecyclerView.scrollToPosition(mChatAdapter.getCurrentItemCount() - 1);
+            scrollToPosition(mChatAdapter.getCurrentItemCount() - 1);
             mSearchMoreButton.setVisibility(View.GONE);
             mSwipeRefreshLayout.setEnabled(true);
             int state = mChatController.getStateOfConsult();
@@ -1663,7 +1669,7 @@ public class ChatFragment extends Fragment implements
             }
             isNeedToClose = false;
             if (mRecyclerView != null && mChatAdapter != null) {
-                mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
 
             hideBackButton();
