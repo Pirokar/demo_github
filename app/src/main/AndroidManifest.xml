@@ -10,6 +10,7 @@
         android:name="${applicationId}.permission.pushserver.RECEIVE"
         android:protectionLevel="signature" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.c2dm.permission.SEND" />
@@ -89,5 +90,4 @@
             android:name="com.pushserver.android.serverPrimaryId"
             android:value="mfms" />
     </application>
-
 </manifest>
