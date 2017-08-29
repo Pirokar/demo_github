@@ -13,9 +13,9 @@ public class ChatIntentHelper {
     public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
         return ChatStyle.IntentBuilder
                 .getBuilder(activity, clientId, userName)
-                .setDefaultFontBold("comic.ttf")
-                .setDefaultFontLight("comic.ttf")
-                .setDefaultFontRegular("comic.ttf")
+                .setDefaultFontBold("LatoRegular.ttf")
+                .setDefaultFontLight("LatoRegular.ttf")
+                .setDefaultFontRegular("LatoRegular.ttf")
                 .setChatTitleStyle(R.string.contact_center,//заголовок ToolBar chatTitleTextResId
                         R.color.toolbar_background,//ToolBar background chatToolbarColorResId
                         R.color.toolbar_widget,//Toolbar widget chatToolbarTextColorResId
@@ -41,7 +41,7 @@ public class ChatIntentHelper {
                         true, //показывать загрузку при поиске консультанта showConsultSearching
                         false, // всегда прокручивать чат к последнему сообщению, если пользователь начал ввод
                         R.color.purple,
-                        "comic.ttf")
+                        "LatoRegular.ttf")
                 .setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.ic_push_notification,
                         R.string.app_name1,
