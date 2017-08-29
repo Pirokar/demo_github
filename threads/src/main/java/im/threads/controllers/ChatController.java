@@ -1147,7 +1147,7 @@ public class ChatController {
                     PrefUtils.getClientID(appContext)
             );
 
-            sendMessageMFMSAsync(ctx, ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
+            sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
                 @Override
                 public void onResult(String s) {
                     survey.setMessageId(s);
