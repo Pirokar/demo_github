@@ -5,10 +5,20 @@
     android:orientation="vertical">
 
     <ImageView
+        android:id="@+id/consult_avatar"
+        android:layout_width="@dimen/consultant_photo_size"
+        android:layout_height="@dimen/consultant_photo_size"
+        android:layout_alignTop="@+id/timestamp"
+        android:layout_below="@+id/image"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="@dimen/margin_half"
+        android:layout_marginTop="@dimen/margin_big"/>
+
+    <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_marginLeft="@dimen/consultant_margin_left"
+        android:layout_toRightOf="@+id/consult_avatar"
         android:layout_marginRight="@dimen/consultant_margin_right"
         android:layout_marginTop="@dimen/margin_quarter"
         android:minHeight="240dp"
@@ -28,18 +38,6 @@
         android:paddingRight="2dp"
         android:text="10:19"
         android:textColor="@android:color/white" />
-
-
-    <ImageView
-        android:id="@+id/consult_avatar"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_alignTop="@+id/timestamp"
-        android:layout_below="@+id/image"
-        android:layout_gravity="bottom|left"
-        android:layout_marginLeft="@dimen/margin_half"
-        android:layout_marginTop="@dimen/margin_big"
-        android:visibility="visible" />
 
     <View
         android:id="@+id/filter"

@@ -5,15 +5,18 @@
     <dimen name="margin_three_fourth">12dp</dimen>
     <dimen name="margin_half">8dp</dimen>
     <dimen name="margin_quarter">4dp</dimen>
+
     <dimen name="text_very_small">10sp</dimen>
     <dimen name="text_small">12sp</dimen>
     <dimen name="text_regular">14sp</dimen>
     <dimen name="text_medium">16sp</dimen>
     <dimen name="text_big">20sp</dimen>
     <dimen name="text_header">34sp</dimen>
+
     <dimen name="consultant_margin_right">52dp</dimen>
     <dimen name="consultant_margin_left">55dp</dimen>
-    <dimen name="consultant_photo_size">36dp</dimen>
+    <dimen name="consultant_photo_size">40dp</dimen>
+    <dimen name="consultant_system_photo_size">40dp</dimen>
     <dimen name="consultant_photo_offset_size">-20dp</dimen>
     <dimen name="user_margin_left">72dp</dimen>
     <dimen name="user_margin_right">28dp</dimen>

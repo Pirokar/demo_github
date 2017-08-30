@@ -28,6 +28,7 @@
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/consultBubble"
+        android:layout_toRightOf="@+id/consult_avatar"
         android:background="@drawable/bubble_white">
 
         <im.threads.views.CircularProgressButton

@@ -272,7 +272,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         .noPlaceholder()
                         .centerCrop()
                         .transform(new CircleTransform())
-                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultImageView, new Callback() {
+                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar, new Callback() {
                             @Override
                             public void onSuccess() {
 
@@ -286,7 +286,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         .noPlaceholder()
                                         .centerCrop()
                                         .transform(new CircleTransform())
-                                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultImageView);
+                                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar);
                             }
                         });
             } else {
@@ -295,7 +295,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         .fit()
                         .noPlaceholder()
                         .transform(new CircleTransform())
-                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultImageView);
+                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar);
             }
         }
         if (holder instanceof SpaceViewHolder) {

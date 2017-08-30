@@ -30,6 +30,7 @@
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_width="wrap_content"
+        android:layout_toRightOf="@+id/consult_avatar"
         android:background="@drawable/bubble_white">
 
         <LinearLayout

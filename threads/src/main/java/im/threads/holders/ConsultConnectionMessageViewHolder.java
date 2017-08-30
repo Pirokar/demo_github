@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.ConsultConnectionMessage;
@@ -18,10 +21,8 @@ import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.PrefUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import static android.text.TextUtils.isEmpty;
+import static im.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 09.06.2016.
@@ -42,9 +43,16 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         headerTextView = (TextView) itemView.findViewById(R.id.quote_header);
         connectedMessage = (TextView) itemView.findViewById(R.id.text);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (null != style && style.connectionMessageTextColor != ChatStyle.INVALID) {
-            headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
-            connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
+        if (null != style) {
+            if (style.connectionMessageTextColor != ChatStyle.INVALID) {
+                headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
+                connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
+            }
+
+            if (style.operatorSystemAvatarSize != INVALID) {
+                mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
+                mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
+            }
         }
         defIcon =  style!=null && style.defaultIncomingMessageAvatar!= ChatStyle.INVALID?style.defaultIncomingMessageAvatar:R.drawable.blank_avatar_round;
     }

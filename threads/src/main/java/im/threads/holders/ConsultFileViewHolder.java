@@ -3,10 +3,12 @@ package im.threads.holders;
 import android.graphics.PorterDuff;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -60,12 +62,17 @@ public class ConsultFileViewHolder extends BaseHolder {
             if (style.outgoingMessageBubbleColor != INVALID) {
                 setTintToProgressButtonConsult(mCircularProgressButton, style.outgoingMessageBubbleColor);
             }
-            if (style.chatHighlightingColor != ChatStyle.INVALID) {
+            if (style.chatHighlightingColor != INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
                 mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
             }
-            if (style.chatBackgroundColor != ChatStyle.INVALID) {
+            if (style.chatBackgroundColor != INVALID) {
                 mCircularProgressButton.setBackgroundColor(style.chatBackgroundColor);
+            }
+
+            if (style.operatorAvatarSize != INVALID) {
+                mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+                mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
             }
         }
     }
@@ -99,6 +106,13 @@ public class ConsultFileViewHolder extends BaseHolder {
             mFilterSecond.setVisibility(View.INVISIBLE);
         }
         if (isAvatarVisible) {
+
+            float bubbleLeftMarginDp = itemView.getContext().getResources().getDimension(R.dimen.margin_quarter);
+            int bubbleLeftMarginPx = ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bubbleLeftMarginDp, itemView.getResources().getDisplayMetrics()));
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mBubble.getLayoutParams();
+            lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
+            mBubble.setLayoutParams(lp);
+
             mConsultAvatar.setVisibility(View.VISIBLE);
             @DrawableRes int resiD = R.drawable.blank_avatar_round;
             if (style!=null && style.defaultIncomingMessageAvatar!=INVALID)resiD = style.defaultIncomingMessageAvatar;
@@ -140,6 +154,14 @@ public class ConsultFileViewHolder extends BaseHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
             mFilterSecond.setVisibility(View.GONE);
+
+            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.consultant_photo_size;
+            int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
+            int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
+            int avatarLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mBubble.getLayoutParams();
+            lp.setMargins(avatarSizePx + bubbleLeftMarginPx + avatarLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
+            mBubble.setLayoutParams(lp);
         }
     }
 }
