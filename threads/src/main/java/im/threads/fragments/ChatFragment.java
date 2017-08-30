@@ -126,6 +126,8 @@ public class ChatFragment extends Fragment implements
     private static final float DISABLED_ALPHA = 0.5f;
     private static final float ENABLED_ALPHA = 1.0f;
 
+    private static final int INVISIBLE_MSGS_COUNT = 3;
+
     private static boolean chatIsShown = false;
 
     private Context appContext;
@@ -424,7 +426,7 @@ public class ChatFragment extends Fragment implements
 
                 int lastVisibleItemPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
                 int itemCount = mChatAdapter.getItemCount();
-                if ( itemCount - lastVisibleItemPosition > 3) {
+                if ( itemCount - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
                     if (mScrollDownContainer.getVisibility() != View.VISIBLE) {
                         mScrollDownContainer.setVisibility(View.VISIBLE);
 
@@ -1140,8 +1142,7 @@ public class ChatFragment extends Fragment implements
             mWelcomeScreen = null;
         }
 
-        // TODO fixed this logic
-        boolean isUserSeesMessage = (mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < 40;
+        boolean isUserSeesMessage = (mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT;
         if (item instanceof ConsultPhrase) {
             if (isUserSeesMessage && isResumed && !isInMessageSearchMode) {
                 ((ConsultPhrase) item).setRead(true);
@@ -1160,13 +1161,13 @@ public class ChatFragment extends Fragment implements
             mChatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
         }
 
-        // do not scroll when consult is ty[ing or write
+        // do not scroll when consult is typing or write
         if (!(item instanceof ConsultPhrase) && !(item instanceof ConsultTyping)) {
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if (!isInMessageSearchMode) {
-                        if ((mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < 40) {
+                        if ((mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT) {
                             scrollToPosition(mChatAdapter.getItemCount() - 1);
                         }
                     }
