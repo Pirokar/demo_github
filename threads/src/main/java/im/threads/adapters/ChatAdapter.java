@@ -592,14 +592,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ArrayList<ChatItem> list = getOriginalList();
         for (ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
             ChatItem cm = iter.next();
-            if (cm instanceof Survey && ((Survey) cm).getMessageId().equalsIgnoreCase(messageId)) {
-                try {
-                    notifyItemRemoved(list.lastIndexOf(cm));
-                } catch (Exception e) {
-                    e.printStackTrace();
+            if (cm instanceof Survey) {
+                Survey survey = (Survey) cm;
+                if (survey.getMessageId() != null && survey.getMessageId().equalsIgnoreCase(messageId)) {
+                    try {
+                        notifyItemRemoved(list.lastIndexOf(cm));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    iter.remove();
+                    removed = true;
                 }
-                iter.remove();
-                removed = true;
             }
         }
 
