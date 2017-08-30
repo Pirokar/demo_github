@@ -41,7 +41,10 @@ public class ChatIntentHelper {
                         true, //показывать загрузку при поиске консультанта showConsultSearching
                         false, // всегда прокручивать чат к последнему сообщению, если пользователь начал ввод
                         R.color.purple,
-                        "comic.ttf")
+                        "comic.ttf",
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID,
+                        ChatStyle.INVALID)
                 .setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.ic_push_notification,
                         R.string.app_name1,

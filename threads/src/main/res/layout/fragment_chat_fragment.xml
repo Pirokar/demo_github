@@ -66,12 +66,12 @@
             android:src="@drawable/ic_scroll_down_btn_back"
             android:layout_marginTop="14dp"/>
 
-        <ImageView
+        <View
             android:id="@+id/unread_msg_sticker"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/circle_red"/>
+            android:background="@drawable/circle_red"/>
 
         <im.threads.widget.CustomFontTextView
             android:id="@+id/unread_msg_count"

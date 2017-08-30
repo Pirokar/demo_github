@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -166,9 +167,9 @@ public class ChatFragment extends Fragment implements
     private ChatReceiver mChatReceiver;
 
     private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
-    private ViewGroup mScrollDownContainer;
+    private View mScrollDownContainer;
     private ImageView mScrollDownButton;
-    private ImageView mUnreadMsgSticker;
+    private View mUnreadMsgSticker;
     private TextView mUnreadMsgCount;
 
     private boolean isInMessageSearchMode;
@@ -285,31 +286,41 @@ public class ChatFragment extends Fragment implements
         mConsultTitle = (TextView) rootView.findViewById(R.id.subtitle);
         mCopyControls = rootView.findViewById(R.id.copy_controls);
 
-        mScrollDownContainer = (ViewGroup) rootView.findViewById(R.id.scroll_down_button_container);
+        mScrollDownContainer = rootView.findViewById(R.id.scroll_down_button_container);
         mScrollDownButton = (ImageView) rootView.findViewById(R.id.scroll_down_button);
-        mUnreadMsgSticker = (ImageView) rootView.findViewById(R.id.unread_msg_sticker);
+        mUnreadMsgSticker = rootView.findViewById(R.id.unread_msg_sticker);
         mUnreadMsgCount = (TextView) rootView.findViewById(R.id.unread_msg_count);
 
         searchDown.setAlpha(DISABLED_ALPHA);
         searchUp.setAlpha(DISABLED_ALPHA);
 
-        if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-            ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), style.chatToolbarTextColorResId);
-            ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
-        }
+        if (style != null) {
+            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+                ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), style.chatToolbarTextColorResId);
+                ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
+            }
 
-        if (style != null && style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-            mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
-            mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
-        }
+            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
+                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
+                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
+            }
 
-        if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-            mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
-        }
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
+                mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
+            }
 
-        // TODO style mScrollDownButton icon
-        // TODO style mUnreadMsgSticker color
-        // TODO style mUnreadMsgCount textColor
+            if (style.scrollDownButtonResId != ChatStyle.INVALID) {
+                mScrollDownButton.setImageResource(style.scrollDownButtonResId);
+            }
+
+            if (style.unreadMsgStickerColorResId != ChatStyle.INVALID) {
+                mUnreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+
+            if (style.unreadMsgCountTextColorResId != ChatStyle.INVALID) {
+                mUnreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
+            }
+        }
     }
 
     private void bindViews() {
