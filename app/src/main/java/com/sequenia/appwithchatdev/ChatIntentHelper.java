@@ -40,8 +40,11 @@ public class ChatIntentHelper {
                         R.style.FileDialogStyle,//стиль диалога выбора файла fileBrowserDialogStyleResId
                         true, //показывать загрузку при поиске консультанта showConsultSearching
                         false, // всегда прокручивать чат к последнему сообщению, если пользователь начал ввод
-                        R.color.purple,
-                        "comic.ttf")
+                        R.color.purple, // цвет шрифта поля ввода сообщения inputTextColor
+                        "comic.ttf", // шрифт поля ввода сообщения inputTextFont
+                        ChatStyle.INVALID, // иконка кнопки прокрутки чата к последнему сообщению scrollDownButtonResId
+                        ChatStyle.INVALID, // цвет индикатора о непрочитанных сообщениях unreadMsgStickerColorResId
+                        ChatStyle.INVALID) // цвет текста на индикаторе о непрочитанных сообщениях unreadMsgCountTextColorResId
                 .setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.ic_push_notification,
                         R.string.app_name1,

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -74,6 +75,7 @@ import im.threads.model.MessageState;
 import im.threads.model.Quote;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
+import im.threads.model.UnreadMessages;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.permissions.PermissionsActivity;
@@ -125,6 +127,8 @@ public class ChatFragment extends Fragment implements
     private static final float DISABLED_ALPHA = 0.5f;
     private static final float ENABLED_ALPHA = 1.0f;
 
+    private static final int INVISIBLE_MSGS_COUNT = 3;
+
     private static boolean chatIsShown = false;
 
     private Context appContext;
@@ -161,6 +165,12 @@ public class ChatFragment extends Fragment implements
     private ImageButton mAddAttachmentButton;
     private String connectedConsultId;
     private ChatReceiver mChatReceiver;
+
+    private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
+    private View mScrollDownContainer;
+    private ImageView mScrollDownButton;
+    private View mUnreadMsgSticker;
+    private TextView mUnreadMsgCount;
 
     private boolean isInMessageSearchMode;
     private boolean isResumed;
@@ -204,6 +214,21 @@ public class ChatFragment extends Fragment implements
         chatIsShown = true;
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mChatController.unbindFragment();
+        Activity activity = getActivity();
+        Context context = activity.getApplicationContext();
+        activity.unregisterReceiver(mChatReceiver);
+
+        if (tracker == null) {
+            tracker = AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context));
+        }
+        tracker.setUserLeftChat();
+        chatIsShown = false;
     }
 
     private void sendOpenChatAnalyticsEvent(Context context) {
@@ -251,27 +276,6 @@ public class ChatFragment extends Fragment implements
         mRecyclerView.getItemAnimator().setChangeDuration(0);
         mRecyclerView.setAdapter(mChatAdapter);
 
-        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v,
-                                       int left, int top, int right, final int bottom,
-                                       int oldLeft, int oldTop, int oldRight, final int oldBottom) {
-                if (bottom < oldBottom) {
-                    mRecyclerView.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (style != null && style.alwaysScrollToEnd) {
-                                scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
-                            }
-                            else {
-                                mRecyclerView.smoothScrollBy(0, oldBottom - bottom);
-                            }
-                        }
-                    }, 100);
-                }
-            }
-        });
-
         mSearchLo = rootView.findViewById(R.id.search_lo);
         searchUp = (ImageButton) rootView.findViewById(R.id.search_up_ib);
         searchDown = (ImageButton) rootView.findViewById(R.id.search_down_ib);
@@ -282,23 +286,41 @@ public class ChatFragment extends Fragment implements
         mConsultTitle = (TextView) rootView.findViewById(R.id.subtitle);
         mCopyControls = rootView.findViewById(R.id.copy_controls);
 
+        mScrollDownContainer = rootView.findViewById(R.id.scroll_down_button_container);
+        mScrollDownButton = (ImageView) rootView.findViewById(R.id.scroll_down_button);
+        mUnreadMsgSticker = rootView.findViewById(R.id.unread_msg_sticker);
+        mUnreadMsgCount = (TextView) rootView.findViewById(R.id.unread_msg_count);
+
         searchDown.setAlpha(DISABLED_ALPHA);
         searchUp.setAlpha(DISABLED_ALPHA);
 
-        if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-            ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), style.chatToolbarTextColorResId);
-            ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
-        }
+        if (style != null) {
+            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+                ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), style.chatToolbarTextColorResId);
+                ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
+            }
 
-        if (style != null && style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-            mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
-            mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
-        }
+            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
+                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
+                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.welcomeScreenTextColorResId));
+            }
 
-        if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-            mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
-        }
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
+                mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
+            }
 
+            if (style.scrollDownButtonResId != ChatStyle.INVALID) {
+                mScrollDownButton.setImageResource(style.scrollDownButtonResId);
+            }
+
+            if (style.unreadMsgStickerColorResId != ChatStyle.INVALID) {
+                mUnreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+
+            if (style.unreadMsgCountTextColorResId != ChatStyle.INVALID) {
+                mUnreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
+            }
+        }
     }
 
     private void bindViews() {
@@ -386,6 +408,76 @@ public class ChatFragment extends Fragment implements
                 doFancySearch(s.toString(), true);
             }
         });
+
+        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v,
+                                       int left, int top, int right, final int bottom,
+                                       int oldLeft, int oldTop, int oldRight, final int oldBottom) {
+                if (bottom < oldBottom) {
+                    mRecyclerView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (style != null && style.alwaysScrollToEnd) {
+                                scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                            }
+                            else {
+                                mRecyclerView.smoothScrollBy(0, oldBottom - bottom);
+                            }
+                        }
+                    }, 100);
+                }
+            }
+        });
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int lastVisibleItemPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                int itemCount = mChatAdapter.getItemCount();
+                if ( itemCount - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
+                    if (mScrollDownContainer.getVisibility() != View.VISIBLE) {
+                        mScrollDownContainer.setVisibility(View.VISIBLE);
+
+                        showUnreadMsgsCount(mChatAdapter.getUnreadCount());
+                    }
+                }
+                else {
+                    mScrollDownContainer.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        mScrollDownContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                showUnreadMsgsCount(0);
+                int unreadCount = mChatAdapter.getUnreadCount();
+                if (unreadCount > 0 ) {
+                    scrollToNewMessages();
+                }
+                else {
+                    scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                }
+                mChatAdapter.setAllMessagesRead();
+                mScrollDownContainer.setVisibility(View.GONE);
+
+                if (isInMessageSearchMode) {
+                    hideSearchMode();
+                }
+            }
+        });
+    }
+
+    private void showUnreadMsgsCount(int unreadCount) {
+        if (mScrollDownContainer.getVisibility() == View.VISIBLE) {
+            boolean hasUnreadCount = unreadCount > 0;
+            mUnreadMsgCount.setText(hasUnreadCount ? String.valueOf(unreadCount) : "");
+            mUnreadMsgCount.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
+            mUnreadMsgSticker.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void onSendButtonClick() {
@@ -989,12 +1081,16 @@ public class ChatFragment extends Fragment implements
                 mInputLayout.setVisibility(View.GONE);
                 scrollToPosition(mChatAdapter.getItemCount() - 1);
                 String[] projection = new String[]{MediaStore.Images.Media.DATA};
-                Cursor c = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_TAKEN + " desc");
-                int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
-                if (c.getCount() == 0) return;
+
                 ArrayList<String> allItems = new ArrayList<>();
-                for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                    allItems.add("file://" + c.getString(DATA));
+                Cursor c = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_TAKEN + " desc");
+                if (c != null) {
+                    int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
+                    if (c.getCount() == 0) return;
+
+                    for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+                        allItems.add("file://" + c.getString(DATA));
+                    }
                 }
                 mBottomGallery.setVisibility(View.VISIBLE);
                 mBottomGallery.setAlpha(0.0f);
@@ -1056,7 +1152,8 @@ public class ChatFragment extends Fragment implements
             mWelcomeScreen.setVisibility(View.GONE);
             mWelcomeScreen = null;
         }
-        boolean isUserSeesMessage = (mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < 40;
+
+        boolean isUserSeesMessage = (mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT;
         if (item instanceof ConsultPhrase) {
             if (isUserSeesMessage && isResumed && !isInMessageSearchMode) {
                 ((ConsultPhrase) item).setRead(true);
@@ -1066,21 +1163,28 @@ public class ChatFragment extends Fragment implements
         }
         if (needsAddMessage(item)) {
             mChatAdapter.addItems(Arrays.asList(item));
+
+            if (!isUserSeesMessage ) {
+                showUnreadMsgsCount(mChatAdapter.getUnreadCount());
+            }
         }
         if (item instanceof ConsultPhrase) {
             mChatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
         }
 
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isInMessageSearchMode) {
-                    if ((mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < 40) {
-                        scrollToPosition(mChatAdapter.getItemCount() - 1);
+        // do not scroll when consult is typing or write
+        if (!(item instanceof ConsultPhrase) && !(item instanceof ConsultTyping)) {
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isInMessageSearchMode) {
+                        if ((mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT) {
+                            scrollToPosition(mChatAdapter.getItemCount() - 1);
+                        }
                     }
                 }
-            }
-        }, 100);
+            }, 100);
+        }
     }
 
     private void scrollToPosition(int itemCount) {
@@ -1502,12 +1606,22 @@ public class ChatFragment extends Fragment implements
     public void onResume() {
         super.onResume();
         mChatController.setActivityIsForeground(true);
-        scrollToFirstUnreadMessage(mChatAdapter.getList());
+        scrollToFirstUnreadMessage();
         isResumed = true;
         chatIsShown = true;
     }
 
-    private void scrollToFirstUnreadMessage(List<ChatItem> list) {
+    private void scrollToNewMessages() {
+        List<ChatItem> list = mChatAdapter.getList();
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i) instanceof UnreadMessages) {
+                ((LinearLayoutManager) mRecyclerView.getLayoutManager()).scrollToPositionWithOffset(i - 1, 0);
+            }
+        }
+    }
+
+    private void scrollToFirstUnreadMessage() {
+        List<ChatItem> list = mChatAdapter.getList();
         String firstUnreadMessageId = mChatController.getFirstUnreadMessageId();
         if (list != null && !list.isEmpty() && firstUnreadMessageId != null) {
             for (int i = 1; i < list.size(); i++) {
@@ -1639,40 +1753,11 @@ public class ChatFragment extends Fragment implements
             isNeedToClose = false;
         }
         if (mSearchLo.getVisibility() == View.VISIBLE) {
-            mSearchLo.setVisibility(View.GONE);
-            setMenuVisibility(true);
-            isInMessageSearchMode = false;
-            mSearchMessageEditText.setText("");
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(mSearchMessageEditText.getWindowToken(), 0);
-                }
-            }, 100);
-            //  mChatAdapter.undoClear();
-            scrollToPosition(mChatAdapter.getCurrentItemCount() - 1);
-            mSearchMoreButton.setVisibility(View.GONE);
-            mSwipeRefreshLayout.setEnabled(true);
-            int state = mChatController.getStateOfConsult();
-            switch (state) {
-                case ChatController.CONSULT_STATE_DEFAULT:
-                    setTitleStateDefault();
-                    break;
-                case ChatController.CONSULT_STATE_FOUND:
-                    String nameTitle[] = mChatController.getCurrentConsultName().split("%%");
-                    setStateConsultConnected(connectedConsultId, nameTitle[0], nameTitle[1]);
-                    break;
-                case ChatController.CONSULT_STATE_SEARCHING:
-                    setTitleStateSearchingConsult();
-                    break;
-            }
             isNeedToClose = false;
+            hideSearchMode();
             if (mRecyclerView != null && mChatAdapter != null) {
                 scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
-
-            hideBackButton();
         }
         if (mBottomGallery.getVisibility() == View.VISIBLE) {
             onHideClick();
@@ -1689,6 +1774,38 @@ public class ChatFragment extends Fragment implements
         return isNeedToClose;
     }
 
+    private void hideSearchMode() {
+        mSearchLo.setVisibility(View.GONE);
+        setMenuVisibility(true);
+        isInMessageSearchMode = false;
+        mSearchMessageEditText.setText("");
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mSearchMessageEditText.getWindowToken(), 0);
+            }
+        }, 100);
+
+        mSearchMoreButton.setVisibility(View.GONE);
+        mSwipeRefreshLayout.setEnabled(true);
+        int state = mChatController.getStateOfConsult();
+        switch (state) {
+            case ChatController.CONSULT_STATE_DEFAULT:
+                setTitleStateDefault();
+                break;
+            case ChatController.CONSULT_STATE_FOUND:
+                String nameTitle[] = mChatController.getCurrentConsultName().split("%%");
+                setStateConsultConnected(connectedConsultId, nameTitle[0], nameTitle[1]);
+                break;
+            case ChatController.CONSULT_STATE_SEARCHING:
+                setTitleStateSearchingConsult();
+                break;
+        }
+
+        hideBackButton();
+    }
+
     private void hideBackButton() {
         Activity activity = getActivity();
         if (!(activity instanceof ChatActivity)) {
@@ -1696,20 +1813,6 @@ public class ChatFragment extends Fragment implements
                 backButton.setVisibility(View.GONE);
             }
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mChatController.unbindFragment();
-        Activity activity = getActivity();
-        Context context = activity.getApplicationContext();
-        activity.unregisterReceiver(mChatReceiver);
-        if (tracker == null) {
-            tracker = AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context));
-        }
-        tracker.setUserLeftChat();
-        chatIsShown = false;
     }
 
     public static boolean isShown() {

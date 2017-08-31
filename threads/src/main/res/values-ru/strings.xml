@@ -50,13 +50,10 @@
     <string name="no_pdf_support">Устройство не поддерживает данный формат файлов</string>
     <string name="retreiving_history">Загружаем историю</string>
     <string name="search_more">Искать дальше</string>
-    <string name="one_new_message">1 новое сообщение</string>
-    <string name="new_messages">новых сообщений</string>
     <string name="new_">новых</string>
     <string name="file_received">Получен файл</string>
     <string name="with_file">(с файлом)</string>
     <string name="download">Загрузить</string>
-    <string name="you_have_unread_messages">У вас есть непрочитанные сообщения</string>
     <string name="message_were_unsent">Сообщение не было отправлено</string>
     <string name="unknown_operator">Неизвестный</string>
     <string name="saved_to">Сохранено в</string>
@@ -74,4 +71,31 @@
     <string name="touch_to_download">Дотроньтесь чтобы скачать</string>
     <string name="answer">ОТВЕТИТЬ</string>
     <string name="check_connection">Проблемы с доступом в интрнет, проверьте соединение</string>
+
+    <string name="contact_center">Контакт центр</string>
+    <string name="typing">печатает…</string>
+    <string name="ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
+    <string name="thanks_for_rate">Спасибо за вашу оценку</string>
+    <string name="item_user_rate_header">Оценка решения вопроса</string>
+    <string name="item_user_rate_text">из</string>
+    <string name="title_text">Добро пожаловать</string>
+    <string name="subtitle_text">Отправьте ваш вопрос</string>
+    <string name="permissions_help">Помощь</string>
+    <string name="permissions_string_help_text">Отсутствуют разрешения.\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="permissions_camera_and_write_external_storage_help_text">Отсутствуют разрешения на Камеру и Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="permissions_write_external_storage_help_text">Отсутствует разрешение на Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="permissions_read_external_storage_help_text">Отсутствует разрешение на Память (Чтение с вешнего хранилища).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="permissions_quit">Закрыть</string>
+    <string name="permissions_settings">Настройки</string>
+
+    <string name="request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
+    <string name="request_to_resolve_thread_close">Нет</string>
+    <string name="request_to_resolve_thread_open">Да</string>
+
+    <plurals  name="unread_messages">
+        <item quantity="one">%d непрочитанное сообщение</item>
+        <item quantity="few">%d непрочитанных сообщения</item>
+        <item quantity="many">%d непрочитанных сообщений</item>
+        <item quantity="other">%d непрочитанных сообщений</item>
+    </plurals>
 </resources>

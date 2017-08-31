@@ -18,6 +18,8 @@
         android:text="@string/search_more"
         android:visibility="gone" />
 
+
+
     <FrameLayout
         android:id="@+id/chat_content"
         android:layout_width="match_parent"
@@ -46,6 +48,41 @@
             android:visibility="visible" />
 
     </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/scroll_down_button_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/margin_half"
+        android:layout_marginBottom="@dimen/margin_half"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/scroll_down_button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_scroll_down_btn_back"
+            android:layout_marginTop="14dp"/>
+
+        <View
+            android:id="@+id/unread_msg_sticker"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/circle_red"/>
+
+        <im.threads.widget.CustomFontTextView
+            android:id="@+id/unread_msg_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_small"
+            android:text="1"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/bottom_layout"
