@@ -23,7 +23,8 @@
         android:theme="@style/AppTheme"
         tools:replace="android:label">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

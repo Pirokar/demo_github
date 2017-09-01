@@ -12,4 +12,11 @@
     <string name="resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
     <string name="close_thread">Нет</string>
     <string name="reopen_thread">Да</string>
+    <string name="lib_version">lib v.%s</string>
+    <string name="client_id_hint">Client ID</string>
+    <string name="client_name_hint">Client name</string>
+    <string name="client_id_error">Минимальная длина 5 символов</string>
+
+    <string name="chat_activity_button_label">В чат (Activity)</string>
+    <string name="chat_fragmetn_button_label">В чат (Fragment)</string>
 </resources>
