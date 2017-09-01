@@ -27,6 +27,8 @@ public class ChatStyle implements Serializable {
     public static final String CHAT_FRAGMENT_BUNDLE = "chatFragmentBundle";
 
     private static final String ARG_CLIENT_ID = "clientId";
+    private static final String ARG_USER_NAME = "userName";
+    private static final String ARG_DATA = "data";
 
     private static final String ARG_SET_WELCOME_SCREEN_STYLE = "setWelcomeScreenStyle";
     private static final String ARG_SET_PUSH_NOTIFICATION_STYLE = "setPushNotificationStyle";
@@ -506,12 +508,16 @@ public class ChatStyle implements Serializable {
         }
 
         public static IntentBuilder getBuilder(Context ctx, String clientId, String userName) {
+            return getBuilder(ctx, clientId, userName, "");
+        }
 
+        public static IntentBuilder getBuilder(Context ctx, String clientId, String userName, String data) {
             IntentBuilder builder = new IntentBuilder();
             builder.b = new Bundle();
             builder.b.putString(ARG_CLIENT_ID, clientId);
+            builder.b.putString(ARG_USER_NAME, userName);
+            builder.b.putString(ARG_DATA, data);
             builder.ctx = ctx.getApplicationContext();
-            builder.b.putString("userName", userName);
             return builder;
         }
 
@@ -845,11 +851,15 @@ public class ChatStyle implements Serializable {
                 throw new IllegalStateException("you must provide valid client id," +
                         "\r\n it is now null or it'ts length < 5");
             if (bundle.getBoolean("style", false)) {
-                ChatStyle style = ChatStyle.styleFromBundle(bundle);
+                ChatStyle style = styleFromBundle(bundle);
                 PrefUtils.setIncomingStyle(context, style);
             }
-            if (bundle.getString("userName") != null)
-                PrefUtils.setUserName(context, bundle.getString("userName"));
+            if (bundle.getString(ARG_USER_NAME) != null) {
+                PrefUtils.setUserName(context, bundle.getString(ARG_USER_NAME));
+            }
+            if (bundle.getString(ARG_DATA) != null) {
+                PrefUtils.setData(context, bundle.getString(ARG_DATA));
+            }
         }
         return PrefUtils.getIncomingStyle(context);
     }

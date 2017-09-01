@@ -27,6 +27,7 @@ public class PrefUtils {
     public static final String TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID";
     public static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
     public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
+    public static final String EXTRA_DATA = "EXTRA_DATE";
     public static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
     public static final String GA_TRACKER_ID = "GA_TRACKER_ID";
     public static final String IS_UUID_SET = "IS_UUID_SET";
@@ -69,6 +70,14 @@ public class PrefUtils {
 
     public static String getUserName(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + CLIENT_NAME, "");
+    }
+
+    public static void setData(Context ctx, String data) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + EXTRA_DATA, data).commit();
+    }
+
+    public static String getData(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + EXTRA_DATA, "");
     }
 
     public static void setNewClientId(Context ctx, String clientId) {

@@ -216,7 +216,10 @@ public class ChatController {
                 sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
             }
             PrefUtils.setClientId(ctx, finalClientId);
-            String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx), finalClientId, ctx);
+            String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx),
+                                                                                    finalClientId,
+                                                                                    PrefUtils.getData(ctx),
+                                                                                    ctx);
             sendMessageMFMSSync(ctx, environmentMessage, true);
             getPushControllerInstance(ctx).resetCounterSync();
 
@@ -440,7 +443,10 @@ public class ChatController {
             @Override
             public void run() {
                 try {
-                    String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext), PrefUtils.getClientID(appContext), appContext);
+                    String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext),
+                                                                                        PrefUtils.getClientID(appContext),
+                                                                                        PrefUtils.getData(appContext),
+                                                                                        appContext);
                     sendMessageMFMSSync(appContext, environmentMessage, true);
                 } catch (PushServerErrorException e) {
                     e.printStackTrace();
@@ -1203,7 +1209,8 @@ public class ChatController {
                         try {
                             String userName = PrefUtils.getUserName(ctx);
                             String clientId = PrefUtils.getClientID(ctx);
-                            String message = MessageFormatter.createEnvironmentMessage(userName, clientId, appContext);
+                            String data = PrefUtils.getData(ctx);
+                            String message = MessageFormatter.createEnvironmentMessage(userName, clientId, data, appContext);
                             sendMessageMFMSSync(appContext, message, true);
                         } catch (PushServerErrorException e) {
                             e.printStackTrace();
@@ -1271,9 +1278,10 @@ public class ChatController {
 
                         getPushControllerInstance(ctx).resetCounterSync();
 
-                        sendMessageMFMSSync(ctx, MessageFormatter.createEnvironmentMessage(PrefUtils
-                                        .getUserName(ctx),
-                                PrefUtils.getNewClientID(ctx), ctx), true);
+                        sendMessageMFMSSync(ctx, MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx),
+                                                                                            PrefUtils.getNewClientID(ctx),
+                                                                                            PrefUtils.getData(ctx),
+                                                                                            ctx), true);
 
                         HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), null, null);
                         List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);

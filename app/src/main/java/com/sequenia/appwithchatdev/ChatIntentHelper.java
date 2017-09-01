@@ -12,7 +12,7 @@ public class ChatIntentHelper {
 
     public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
         return ChatStyle.IntentBuilder
-                .getBuilder(activity, clientId, userName)
+                .getBuilder(activity, clientId, userName, "") // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
                 .setDefaultFontBold("comic.ttf")
                 .setDefaultFontLight("comic.ttf")
                 .setDefaultFontRegular("comic.ttf")

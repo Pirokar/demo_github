@@ -6,6 +6,7 @@ import android.util.Log;
 import com.pushserver.android.PushController;
 import com.pushserver.android.RequestCallback;
 import com.pushserver.android.exception.PushServerErrorException;
+
 import im.threads.formatters.MessageFormatter;
 import im.threads.utils.Callback;
 import im.threads.utils.PrefUtils;
@@ -41,7 +42,10 @@ public class PushIniter {
                                 PushController
                                         .getInstance(context)
                                         .sendMessageAsync(MessageFormatter
-                                                .createEnvironmentMessage(PrefUtils.getUserName(context), clientId, context), true, new RequestCallback<String, PushServerErrorException>() {
+                                                .createEnvironmentMessage(PrefUtils.getUserName(context),
+                                                        clientId,
+                                                        PrefUtils.getData(context),
+                                                        context), true, new RequestCallback<String, PushServerErrorException>() {
                                             @Override
                                             public void onResult(String string) {
                                                 Log.e(TAG, "client id was set string =" + string);
@@ -76,9 +80,11 @@ public class PushIniter {
     public static void onAddressChanged(Context ctx) {
         PushController.getInstance(ctx)
                 .sendMessageAsync(MessageFormatter
-                        .createEnvironmentMessage(PrefUtils.getUserName(ctx)
-                                , PrefUtils.getNewClientID(ctx), ctx
-                        ), true, new RequestCallback<String, PushServerErrorException>() {
+                        .createEnvironmentMessage(PrefUtils.getUserName(ctx),
+                                                PrefUtils.getNewClientID(ctx),
+                                                PrefUtils.getData(ctx),
+                                                ctx),
+                        true, new RequestCallback<String, PushServerErrorException>() {
                     @Override
                     public void onResult(String s) {
                         Log.i(TAG, "onResult: "+s);

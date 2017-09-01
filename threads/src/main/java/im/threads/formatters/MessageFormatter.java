@@ -652,25 +652,12 @@ public class MessageFormatter {
         return list;
     }
 
-    public static String createClientAboutMessage(String clientName, String clientId, String email) {
+    public static String createEnvironmentMessage(String clientName, String clientId, String data, Context ctx) {
         JSONObject object = new JSONObject();
         try {
             object.put("name", clientName);
             object.put(CLIENT_ID, clientId);
-            object.put("email", email);
-            object.put(TYPE, TYPE_CLIENT_INFO);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return object.toString().replaceAll("\\\\", "");
-    }
-
-    public static String createEnvironmentMessage(String clientName, String clientId, Context ctx) {
-        JSONObject object = new JSONObject();
-        try {
-            object.put("name", clientName);
-            object.put(CLIENT_ID, clientId);
+            object.put("data", data);
             object.put("platform", "Android");
             object.put("osVersion", getOsVersion());
             object.put("device", getDeviceName());
