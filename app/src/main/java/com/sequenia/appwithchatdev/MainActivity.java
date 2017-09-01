@@ -4,10 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,11 +30,14 @@ import io.fabric.sdk.android.Fabric;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final int MIN_CLIENT_ID_LENGHT = 5;
     private static final int CHAT_PERMISSIONS_REQUEST_CODE = 1;
 
-    private EditText clientIdEditText;
-    private EditText userNameEditText;
+    private TextInputLayout clientIdLayout;
+    private TextInputLayout userNameLayout;
 
+    private Button chatActivityButton;
+    private Button chatFragmentButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,38 +47,45 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        TextView versionView = (TextView) findViewById(R.id.version);
-        versionView.setText(versionView.getText() + " " + BuildConfig.VERSION_NAME);
+        TextView versionView = (TextView) findViewById(R.id.version_name);
+        versionView.setText(getString(R.string.lib_version, BuildConfig.VERSION_NAME));
 
-        clientIdEditText = (EditText) findViewById(R.id.client_id);
-        userNameEditText = (EditText) findViewById(R.id.user_name);
+        clientIdLayout = (TextInputLayout) findViewById(R.id.client_id);
+        userNameLayout = (TextInputLayout) findViewById(R.id.user_name);
+
+        chatActivityButton = (Button) findViewById(R.id.chat_activity_button);
+        chatFragmentButton = (Button) findViewById(R.id.chat_fragment_button);
 
         // Отслеживание Push-уведомлений, нераспознанных чатом.
         ChatController.setFullPushListener(new CustomFullPushListener());
         ChatController.setShortPushListener(new CustomShortPushListener());
 
         Fabric.with(this, new Crashlytics());
-    }
 
-    public void onChatButtonClick(View v) {
-        showChatAsActivity();
-    }
-
-    public void onFragmentChatButtonClick(View v) {
-        showChatAsFragment();
+        chatActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                showChatAsActivity();
+            }
+        });
+        chatFragmentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                showChatAsFragment();
+            }
+        });
     }
 
     /**
      * Пример открытия чата в виде Активности
      */
     private void showChatAsActivity() {
-        String clientId = clientIdEditText.getText().toString();
-        String userName = userNameEditText.getText().toString();
-
-        if (clientId.length() < 5) {
-            Toast.makeText(this, "client id must have length more than 4 chars", Toast.LENGTH_SHORT).show();
+        if (!checkFieldValid()) {
             return;
         }
+
+        String clientId = clientIdLayout.getEditText().getText().toString();
+        String userName = userNameLayout.getEditText().getText().toString();
 
         // При открытии чата нужно проверить, выданы ли необходимые разрешения.
         if (!PermissionChecker.checkPermissions(this)) {
@@ -89,16 +100,23 @@ public class MainActivity extends AppCompatActivity {
      * Пример открытя чата в виде фрагмента
      */
     private void showChatAsFragment() {
-        String clientId = clientIdEditText.getText().toString();
-        String userName = userNameEditText.getText().toString();
-
-        if (clientId.length() < 5) {
-            Toast.makeText(this, "client id must have length more than 4 chars", Toast.LENGTH_SHORT).show();
+        if (!checkFieldValid()) {
             return;
         }
+        String clientId = clientIdLayout.getEditText().getText().toString();
+        String userName = userNameLayout.getEditText().getText().toString();
 
         Intent i = BottomNavigationActivity.createIntent(this, clientId, userName);
         startActivity(i);
+    }
+
+    private boolean checkFieldValid() {
+        if (clientIdLayout.getEditText() == null) {
+            return false;
+        }
+        boolean isClientIdValid = clientIdLayout.getEditText().getText().length() >= MIN_CLIENT_ID_LENGHT;
+        clientIdLayout.setError(isClientIdValid ? null : getString(R.string.client_id_error));
+        return isClientIdValid;
     }
 
     @Override
