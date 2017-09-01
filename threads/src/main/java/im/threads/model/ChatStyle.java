@@ -841,7 +841,7 @@ public class ChatStyle implements Serializable {
 
     public static ChatStyle getStyleFromBundleWithThrow(Context context, Bundle bundle) {
         if (bundle != null) {
-            if (bundle.getString("clientId") == null && PrefUtils.getClientID(context).equals(""))
+            if (bundle.getString(ARG_CLIENT_ID) == null && PrefUtils.getClientID(context).equals(""))
                 throw new IllegalStateException("you must provide valid client id," +
                         "\r\n it is now null or it'ts length < 5");
             if (bundle.getBoolean("style", false)) {

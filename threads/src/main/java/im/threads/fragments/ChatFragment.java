@@ -120,6 +120,8 @@ public class ChatFragment extends Fragment implements
     public static final int REQUEST_PERMISSION_CAMERA = 103;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
 
+    private static final String ARG_CLIENT_ID = "clientId";
+
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
@@ -242,7 +244,7 @@ public class ChatFragment extends Fragment implements
     private void initController() {
         Activity activity = getActivity();
         Bundle bundle = getArguments();
-        mChatController = ChatController.getInstance(activity, bundle == null ? null : bundle.getString("clientId"));
+        mChatController = ChatController.getInstance(activity, bundle == null ? null : bundle.getString(ARG_CLIENT_ID));
         mChatController.bindFragment(this);
         if (mChatController.isNeedToShowWelcome()) {
             mWelcomeScreen.setVisibility(View.VISIBLE);
