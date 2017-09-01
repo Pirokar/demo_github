@@ -110,7 +110,8 @@ public class ChatController {
 
     // Для приема сообщений из сервиса по скачиванию файлов
     private ProgressReceiver mProgressReceiver;
-    private boolean isSearchingConsult;
+    // Было получено сообщение, что чат не работает
+    private boolean isScheduleInfoReceived;
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean isResolveRequestVisible;
 
@@ -548,7 +549,7 @@ public class ChatController {
     }
 
     public boolean isConsultFound() {
-        return mConsultWriter.isConsultConnected();
+        return !isScheduleInfoReceived && mConsultWriter.isConsultConnected();
     }
 
     private List<? extends ChatItem> setLastAvatars(List<? extends ChatItem> list) {
@@ -596,7 +597,7 @@ public class ChatController {
 
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um, appContext);
-        if (!mConsultWriter.isConsultConnected()) {
+        if (!isScheduleInfoReceived && !mConsultWriter.isConsultConnected()) {
             if (fragment != null) {
                 fragment.setStateSearchingConsult();
             }
@@ -938,7 +939,6 @@ public class ChatController {
         if (fragment != null) fragment.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
         mConsultWriter.setSearchingConsult(false);
-        isSearchingConsult = false;
         searchOffset = 0;
         currentOffset = 0;
         h.removeCallbacksAndMessages(null);
@@ -1179,7 +1179,8 @@ public class ChatController {
         if (chatItem instanceof ScheduleInfo) {
             final ScheduleInfo schedule = (ScheduleInfo) chatItem;
             updateInputEnable(schedule.isSendDuringInactive());
-
+            isScheduleInfoReceived = true;
+            if(null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
             h.post(new Runnable() {
                 @Override
                 public void run() {
