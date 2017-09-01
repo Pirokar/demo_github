@@ -272,7 +272,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         .noPlaceholder()
                         .centerCrop()
                         .transform(new CircleTransform())
-                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultImageView, new Callback() {
+                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar, new Callback() {
                             @Override
                             public void onSuccess() {
 
@@ -286,7 +286,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                         .noPlaceholder()
                                         .centerCrop()
                                         .transform(new CircleTransform())
-                                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultImageView);
+                                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar);
                             }
                         });
             } else {
@@ -295,7 +295,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         .fit()
                         .noPlaceholder()
                         .transform(new CircleTransform())
-                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultImageView);
+                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar);
             }
         }
         if (holder instanceof SpaceViewHolder) {
@@ -592,14 +592,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ArrayList<ChatItem> list = getOriginalList();
         for (ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
             ChatItem cm = iter.next();
-            if (cm instanceof Survey && ((Survey) cm).getMessageId().equalsIgnoreCase(messageId)) {
-                try {
-                    notifyItemRemoved(list.lastIndexOf(cm));
-                } catch (Exception e) {
-                    e.printStackTrace();
+            if (cm instanceof Survey) {
+                Survey survey = (Survey) cm;
+                if (survey.getMessageId() != null && survey.getMessageId().equalsIgnoreCase(messageId)) {
+                    try {
+                        notifyItemRemoved(list.lastIndexOf(cm));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    iter.remove();
+                    removed = true;
                 }
-                iter.remove();
-                removed = true;
             }
         }
 

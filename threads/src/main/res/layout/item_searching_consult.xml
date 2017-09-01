@@ -2,8 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="64dp"
-             android:orientation="vertical"
-    >
+             android:orientation="vertical">
 
     <ProgressBar
         android:id="@+id/progress"
@@ -14,6 +13,5 @@
         android:background="@drawable/circle_aqua_outline"
         android:indeterminate="true"
         android:indeterminateDrawable="@drawable/circle_with_circle"
-        android:padding="14dp"
-        />
+        android:padding="14dp"/>
 </FrameLayout>

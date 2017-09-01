@@ -479,8 +479,8 @@ public class ChatController {
     }
 
     private void updateChatItemsOnBind() {
-        final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, (int) getHistoryLoadingCount(fragment.getActivity())));
         if (null != fragment) {
+            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, (int) getHistoryLoadingCount(fragment.getActivity())));
             h.post(new Runnable() {
                 @Override
                 public void run() {
@@ -489,8 +489,8 @@ public class ChatController {
                     }
                 }
             });
+            currentOffset = items.size();
         }
-        currentOffset = items.size();
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -1153,7 +1153,7 @@ public class ChatController {
                     PrefUtils.getClientID(appContext)
             );
 
-            sendMessageMFMSAsync(ctx, ratingDoneMessage, false, new RequestCallback<String, PushServerErrorException>() {
+            sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
                 @Override
                 public void onResult(String s) {
                     survey.setMessageId(s);

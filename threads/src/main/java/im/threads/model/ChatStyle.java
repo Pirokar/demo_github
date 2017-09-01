@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
@@ -58,6 +59,8 @@ public class ChatStyle implements Serializable {
     private static final String ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID = "incomingMessageTextColor";
     private static final String ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID = "outgoingMessageTextColor";
     private static final String ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID = "defaultIncomingMessageAvatar";
+    private static final String ARG_OPERATOR_AVATAR_SIZE = "operatorAvatarSize";
+    private static final String ARG_OPERATOR_SYSTEM_AVATAR_SIZE = "operatorSystemAvatarSize";
     private static final String ARG_IMAGE_PLACEHOLDER_RES_ID = "imagePlaceholder";
     private static final String ARG_CHAT_BODY_ICONS_TINT_RES_ID = "chatBodyIconsTint";
     private static final String ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID = "connectionMessageTextColor";
@@ -152,6 +155,10 @@ public class ChatStyle implements Serializable {
     public final int outgoingMessageTextColor;
     @DrawableRes
     public final int defaultIncomingMessageAvatar;
+    @DimenRes
+    public final int operatorAvatarSize;
+    @DimenRes
+    public final int operatorSystemAvatarSize;
     @DrawableRes
     public final int imagePlaceholder;
     @DrawableRes
@@ -262,6 +269,8 @@ public class ChatStyle implements Serializable {
                      int connectionMessageTextColor,
                      int filesAndMediaScreenBackgroundColor,
                      int defaultIncomingMessageAvatar,
+                     @DimenRes int operatorAvatarSize,
+                     @DimenRes int operatorSystemAvatarSize,
                      int imagePlaceholder,
                      int fileBrowserDialogStyleResId,
                      int chatTitleTextResId,
@@ -335,6 +344,8 @@ public class ChatStyle implements Serializable {
         this.incomingMessageTextColor = incomingMessageTextColor == INVALID ? R.color.black : incomingMessageTextColor;
         this.outgoingMessageTextColor = outgoingMessageTextColor == INVALID ? R.color.white : outgoingMessageTextColor;
         this.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
+        this.operatorAvatarSize = operatorAvatarSize;
+        this.operatorSystemAvatarSize = operatorSystemAvatarSize;
         this.imagePlaceholder = imagePlaceholder;
         this.defPushIconResid = defPushIconResid;
         this.defTitleResId = defTitleResId;
@@ -434,6 +445,8 @@ public class ChatStyle implements Serializable {
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_FILES_AND_MEDIA_SCREEN_BACKGROUND_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OPERATOR_AVATAR_SIZE) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OPERATOR_SYSTEM_AVATAR_SIZE) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_IMAGE_PLACEHOLDER_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID) : INVALID,
                 isChatTitleStyleExists ? chatTitleStyle.getInt(ARG_CHAT_TITLE_TEXT_RES_ID) : INVALID,
@@ -555,6 +568,8 @@ public class ChatStyle implements Serializable {
                 @ColorRes int connectionMessageTextColor,
                 @ColorRes int filesAndMediaScreenBackgroundColor,
                 @DrawableRes int defaultIncomingMessageAvatar,
+                @DimenRes int operatorAvatarSize,
+                @DimenRes int operatorSystemAvatarSize,
                 @DrawableRes int imagePlaceholder,
                 @StyleRes int fileBrowserDialogStyleResId,
                 boolean showConsultSearching,
@@ -570,6 +585,8 @@ public class ChatStyle implements Serializable {
             bundle.putInt(ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID, incomingMessageTextColor);
             bundle.putInt(ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID, outgoingMessageTextColor);
             bundle.putInt(ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID, defaultIncomingMessageAvatar);
+            bundle.putInt(ARG_OPERATOR_AVATAR_SIZE, operatorAvatarSize);
+            bundle.putInt(ARG_OPERATOR_SYSTEM_AVATAR_SIZE, operatorSystemAvatarSize);
             bundle.putInt(ARG_IMAGE_PLACEHOLDER_RES_ID, imagePlaceholder);
             bundle.putInt(ARG_CHAT_BODY_ICONS_TINT_RES_ID, chatBodyIconsTint);
             bundle.putInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID, connectionMessageTextColor);
@@ -595,6 +612,8 @@ public class ChatStyle implements Serializable {
                 @ColorRes int connectionMessageTextColor,
                 @ColorRes int filesAndMediaScreenBackgroundColor,
                 @DrawableRes int defaultIncomingMessageAvatar,
+                @DimenRes int operatorAvatarSize,
+                @DimenRes int operatorSystemAvatarSize,
                 @DrawableRes int imagePlaceholder,
                 @StyleRes int fileBrowserDialogStyleResId,
                 boolean showConsultSearching,
@@ -615,6 +634,8 @@ public class ChatStyle implements Serializable {
             bundle.putInt(ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID, incomingMessageTextColor);
             bundle.putInt(ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID, outgoingMessageTextColor);
             bundle.putInt(ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID, defaultIncomingMessageAvatar);
+            bundle.putInt(ARG_OPERATOR_AVATAR_SIZE, operatorAvatarSize);
+            bundle.putInt(ARG_OPERATOR_SYSTEM_AVATAR_SIZE, operatorSystemAvatarSize);
             bundle.putInt(ARG_IMAGE_PLACEHOLDER_RES_ID, imagePlaceholder);
             bundle.putInt(ARG_CHAT_BODY_ICONS_TINT_RES_ID, chatBodyIconsTint);
             bundle.putInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID, connectionMessageTextColor);

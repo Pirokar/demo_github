@@ -30,6 +30,7 @@
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_width="wrap_content"
+        android:layout_toRightOf="@+id/consult_avatar"
         android:background="@drawable/bubble_white">
 
         <LinearLayout
@@ -95,6 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_big"
+            android:paddingBottom="5dp"
             android:layout_below="@+id/right_text_row">
 
             <im.threads.widget.text_view.BubbleMessageTextView
@@ -102,9 +104,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="50dp"
+                android:layout_marginRight="60dp"
                 android:paddingTop="5dp"
-                android:paddingBottom="5dp"
                 android:text="text text text text "
                 android:textSize="16sp" />
 

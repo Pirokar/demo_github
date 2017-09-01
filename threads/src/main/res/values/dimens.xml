@@ -15,7 +15,8 @@
 
     <dimen name="consultant_margin_right">52dp</dimen>
     <dimen name="consultant_margin_left">55dp</dimen>
-    <dimen name="consultant_photo_size">36dp</dimen>
+    <dimen name="consultant_photo_size">40dp</dimen>
+    <dimen name="consultant_system_photo_size">40dp</dimen>
     <dimen name="consultant_photo_offset_size">-20dp</dimen>
     <dimen name="user_margin_left">72dp</dimen>
     <dimen name="user_margin_right">28dp</dimen>

@@ -3,11 +3,16 @@ package im.threads.holders;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
@@ -18,8 +23,7 @@ import im.threads.utils.CircleTransform;
 import im.threads.utils.MaskedTransformer;
 import im.threads.utils.PrefUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import static im.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 30.06.2016.
@@ -46,10 +50,18 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
 //        if (null != style && style.incomingMessageTextColor!= ChatStyle.INVALID) {
 //            mTimeStampTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.incomingMessageTextColor));
 //        }
-        if (style != null && style.chatHighlightingColor != ChatStyle.INVALID) {
-            filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        if (style != null) {
+            if (style.chatHighlightingColor != INVALID) {
+                filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+                filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+            }
+
+            if (style.operatorAvatarSize != INVALID) {
+                mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+                mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+            }
         }
+
     }
 
     public void onBind(String avatarPath
@@ -109,6 +121,12 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         @DrawableRes int resId = R.drawable.blank_avatar_round;
         if (style!=null && style.defaultIncomingMessageAvatar!= ChatStyle.INVALID)resId = style.defaultIncomingMessageAvatar;
         if (isAvatarVisible) {
+            float bubbleLeftMarginDp = itemView.getContext().getResources().getDimension(R.dimen.margin_quarter);
+            int bubbleLeftMarginPx = ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bubbleLeftMarginDp, itemView.getResources().getDisplayMetrics()));
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mImage.getLayoutParams();
+            lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
+            mImage.setLayoutParams(lp);
+
             mConsultAvatar.setVisibility(View.VISIBLE);
             if (avatarPath != null) {
                 final int finalResId = resId;
@@ -146,6 +164,14 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
+
+            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.consultant_photo_size;
+            int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
+            int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
+            int avatarLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mImage.getLayoutParams();
+            lp.setMargins(avatarSizePx + bubbleLeftMarginPx + avatarLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
+            mImage.setLayoutParams(lp);
         }
     }
 }
