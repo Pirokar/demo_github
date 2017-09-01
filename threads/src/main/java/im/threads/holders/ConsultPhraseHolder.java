@@ -192,9 +192,6 @@ public class ConsultPhraseHolder extends BaseHolder {
             lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
             mBubble.setLayoutParams(lp);
 
-            mBubble.setPadding(0, 0, 0, ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, itemView.getResources().getDisplayMetrics())));
-            mBubble.invalidate();
-
             mConsultAvatar.setVisibility(View.VISIBLE);
             mConsultAvatar.setOnClickListener(onAvatarClickListener);
             if (!isEmpty(avatarPath)) {
@@ -234,8 +231,6 @@ public class ConsultPhraseHolder extends BaseHolder {
             }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
-
-            mBubble.setPadding(0, 0, 0, ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, itemView.getResources().getDisplayMetrics())));
 
             int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.consultant_photo_size;
             int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
