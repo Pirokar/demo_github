@@ -88,6 +88,7 @@
     <string name="permissions_quit">Закрыть</string>
     <string name="permissions_settings">Настройки</string>
 
+    <string name="invalid_client_id">Минимальная длина client id - 5 символов</string>
     <string name="request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
     <string name="request_to_resolve_thread_close">Нет</string>
     <string name="request_to_resolve_thread_open">Да</string>

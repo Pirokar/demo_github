@@ -9,7 +9,6 @@ import com.pushserver.android.PushBroadcastReceiver;
 
 import im.threads.controllers.ChatController;
 import im.threads.utils.MessageMatcher;
-import im.threads.utils.PrefUtils;
 
 /**
  * Приемщик всех коротких пуш уведомлений,
@@ -25,7 +24,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
         Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
         if (isChatSystemPush(bundle)) {
-            ChatController.getInstance(context, PrefUtils.getClientID(context)).onSystemMessageFromServer(context, bundle, s);
+            ChatController.getInstance(context).onSystemMessageFromServer(context, bundle, s);
         } else {
             if (!isChatPush(bundle) && ChatController.getShortPushListener() != null) {
                 ChatController.getShortPushListener().onNewShortPushNotification(this, context, s, bundle);

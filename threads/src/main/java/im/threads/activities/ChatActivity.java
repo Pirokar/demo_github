@@ -21,7 +21,7 @@ public class ChatActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_chat_activity);
-        chatFragment = ChatFragment.newInstance(getIntent().getBundleExtra(ChatStyle.CHAT_FRAGMENT_BUNDLE));
+        chatFragment = ChatFragment.newInstance();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .add(R.id.chat_frame_layout, chatFragment, "chatFragment")

@@ -167,7 +167,9 @@ public class ChatController {
         void onException(Exception e);
     }
 
-    public static ChatController getInstance(final Context ctx, String clientId) {
+    public static ChatController getInstance(final Context ctx) {
+        String clientId = PrefUtils.getNewClientID(ctx); //clientId заданный в настройках чата
+
         if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
         if (instance == null) {
             instance = new ChatController(ctx);
@@ -193,11 +195,14 @@ public class ChatController {
                 }
             });
         }
+        else {
+            // clientId не изменился
+            PrefUtils.setNewClientId(ctx, "");
+        }
         return instance;
     }
 
     private static void onClientIdChanged(Context ctx, String finalClientId) {
-        PrefUtils.setNewClientId(ctx, finalClientId);
         try {
             getPushControllerInstance(ctx);
         } catch (PushServerErrorException e) {
@@ -361,18 +366,17 @@ public class ChatController {
     public static void notifyUnreadMessagesCountChanged(Context context) {
         UnreadMessagesCountListener unreadMessagesCountListener = getUnreadMessagesCountListener();
         if (unreadMessagesCountListener != null) {
-            ChatController controller = getInstance(context, PrefUtils.getClientID(context));
+            ChatController controller = getInstance(context);
             int unreadCount = controller.getUnreadMessagesCount();
             unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadCount);
         }
     }
 
     public static int getUnreadMessagesCount(Context context) {
-        String clientId = PrefUtils.getClientID(context);
-        if (clientId.equals("")) {
+        if (TextUtils.isEmpty(PrefUtils.getClientID(context))) {
             return 0;
         } else {
-            return getInstance(context, clientId).getUnreadMessagesCount();
+            return getInstance(context).getUnreadMessagesCount();
         }
     }
 
@@ -381,7 +385,7 @@ public class ChatController {
     }
 
     public static void resetPendingIntentCreator() {
-        ChatController.pendingIntentCreator = null;
+        pendingIntentCreator = null;
     }
 
     public int getStateOfConsult() {
@@ -1409,7 +1413,7 @@ public class ChatController {
     }
 
     public static void removeUnreadMessagesCountListener() {
-        ChatController.unreadMessagesCountListener = null;
+        unreadMessagesCountListener = null;
     }
 
     public static void setShortPushListener(ShortPushListener shortPushListener) {
@@ -1417,7 +1421,7 @@ public class ChatController {
     }
 
     public static void removeShortPushListener() {
-        ChatController.shortPushListener = null;
+        shortPushListener = null;
     }
 
     public static void setFullPushListener(FullPushListener fullPushListener) {
@@ -1425,7 +1429,7 @@ public class ChatController {
     }
 
     public static void removeFullPushListener() {
-        ChatController.fullPushListener = null;
+        fullPushListener = null;
     }
 
     public static ShortPushListener getShortPushListener() {

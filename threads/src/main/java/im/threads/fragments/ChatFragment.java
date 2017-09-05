@@ -181,10 +181,8 @@ public class ChatFragment extends Fragment implements
     private ImageButton searchUp;
     private ImageButton searchDown;
 
-    public static ChatFragment newInstance(Bundle bundle) {
-        ChatFragment chatFragment = new ChatFragment();
-        chatFragment.setArguments(bundle);
-        return chatFragment;
+    public static ChatFragment newInstance() {
+        return new ChatFragment();
     }
 
     @Nullable
@@ -193,8 +191,7 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         appContext = activity.getApplicationContext();
 
-        style = ChatStyle.getStyleFromBundleWithThrow(activity, getArguments());
-
+        style = ChatStyle.getInstance();
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 
         if (activity instanceof ChatActivity) {
@@ -244,7 +241,7 @@ public class ChatFragment extends Fragment implements
     private void initController() {
         Activity activity = getActivity();
         Bundle bundle = getArguments();
-        mChatController = ChatController.getInstance(activity, bundle == null ? null : bundle.getString(ARG_CLIENT_ID));
+        mChatController = ChatController.getInstance(activity);
         mChatController.bindFragment(this);
         if (mChatController.isNeedToShowWelcome()) {
             mWelcomeScreen.setVisibility(View.VISIBLE);

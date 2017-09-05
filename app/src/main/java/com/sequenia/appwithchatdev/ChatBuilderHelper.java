@@ -8,10 +8,10 @@ import im.threads.model.ChatStyle;
  * Created by chybakut2004 on 14.04.17.
  */
 
-public class ChatIntentHelper {
+public class ChatBuilderHelper {
 
-    public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
-        return ChatStyle.IntentBuilder
+    public static ChatStyle buildChatStyle(Activity activity, String clientId, String userName) {
+        return ChatStyle.ChatStyleBuilder
                 .getBuilder(activity, clientId, userName, "") // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
                 .setDefaultFontBold("fonts/lato-bold.ttf")
                 .setDefaultFontLight("fonts/lato-light.ttf")
@@ -71,7 +71,7 @@ public class ChatIntentHelper {
                         R.color.chatbody_icons_tint, // Цветовой фильтр на иконку выбранного ответа (касается и бинарного и не бинарного опросов) surveySelectedColorFilterResId
                         R.color.chatbody_icons_tint, // Цветовой фильтр на иконку невыбранного ответа (касается и бинарного и не бинарного опросов) surveyUnselectedColorFilterResId
                         R.color.welcome_screen_text) // Цвет основного текста опроса surveyTextColorResId
-                ;
+                .build();
     }
 
 }

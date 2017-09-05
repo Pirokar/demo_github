@@ -19,6 +19,7 @@ import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.model.PushMessage;
 
 import im.threads.BuildConfig;
+import im.threads.activities.ChatActivity;
 import im.threads.controllers.ChatController;
 import im.threads.utils.PermissionChecker;
 import io.fabric.sdk.android.Fabric;
@@ -84,15 +85,15 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        String clientId = clientIdLayout.getEditText().getText().toString();
-        String userName = userNameLayout.getEditText().getText().toString();
+        String clientId = clientIdLayout.getEditText() != null ? clientIdLayout.getEditText().getText().toString() : "";
+        String userName = userNameLayout.getEditText() != null ? userNameLayout.getEditText().getText().toString() : "";
 
         // При открытии чата нужно проверить, выданы ли необходимые разрешения.
         if (!PermissionChecker.checkPermissions(this)) {
             PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
         } else {
-            Intent i = ChatIntentHelper.getIntentBuilder(this, clientId, userName).build();
-            startActivity(i);
+            ChatBuilderHelper.buildChatStyle(this, clientId, userName);
+            startActivity(new Intent(this, ChatActivity.class));
         }
     }
 
@@ -103,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
         if (!checkFieldValid()) {
             return;
         }
-        String clientId = clientIdLayout.getEditText().getText().toString();
-        String userName = userNameLayout.getEditText().getText().toString();
+        String clientId = clientIdLayout.getEditText() != null ? clientIdLayout.getEditText().getText().toString() : "";
+        String userName = userNameLayout.getEditText() != null ? userNameLayout.getEditText().getText().toString() : "";
 
         Intent i = BottomNavigationActivity.createIntent(this, clientId, userName);
         startActivity(i);
