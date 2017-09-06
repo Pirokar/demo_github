@@ -29,7 +29,7 @@
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_toRightOf="@+id/consult_avatar"
-        android:background="@drawable/bubble_white">
+        android:background="@drawable/operator_bubble">
 
         <im.threads.views.CircularProgressButton
             android:id="@+id/circ_button"

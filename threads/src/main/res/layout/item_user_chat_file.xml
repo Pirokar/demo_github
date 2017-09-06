@@ -21,7 +21,7 @@
         android:id="@+id/bubble"
         style="@style/userBubble"
         android:paddingRight="17dp"
-        android:background="@drawable/a_user_bubble">
+        android:background="@drawable/user_bubble">
 
         <im.threads.views.CircularProgressButton
             android:id="@+id/button_download"
