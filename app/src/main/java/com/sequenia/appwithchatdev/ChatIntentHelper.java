@@ -10,9 +10,9 @@ import im.threads.model.ChatStyle;
 
 public class ChatIntentHelper {
 
-    public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
+    public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName, String data) {
         return ChatStyle.IntentBuilder
-                .getBuilder(activity, clientId, userName, "") // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+                .getBuilder(activity, clientId, userName, data) // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
                 .setDefaultFontBold("fonts/lato-bold.ttf")
                 .setDefaultFontLight("fonts/lato-light.ttf")
                 .setDefaultFontRegular("fonts/lato-regular.ttf")
