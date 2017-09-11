@@ -21,12 +21,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import im.threads.AnalyticsTracker;
-import im.threads.R;
-import im.threads.model.ChatStyle;
-import im.threads.picasso_url_connection_only.Picasso;
-import im.threads.utils.PrefUtils;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -35,6 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import im.threads.AnalyticsTracker;
+import im.threads.R;
+import im.threads.model.ChatStyle;
+import im.threads.picasso_url_connection_only.Picasso;
+import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 08.07.2016.
@@ -85,6 +85,7 @@ public class CameraActivity extends BaseActivity {
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
                     if (mSurfaceView.getVisibility() == View.VISIBLE) {
+                        releaseCamera();
                         mCamera = Camera.open(isFrontCamera ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
                         isCameraReleased = false;
                         mCamera.setPreviewDisplay(holder);
@@ -128,9 +129,7 @@ public class CameraActivity extends BaseActivity {
                 Camera.CameraInfo currentCamInfo = new Camera.CameraInfo();
                 int currentCameraId = -1;
                 if (Camera.getNumberOfCameras() > 1) {
-                    mCamera.stopPreview();
-                    mCamera.release();
-                    isCameraReleased = true;
+                    releaseCamera();
                     if (isFrontCamera) {
                         currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
                     } else {
@@ -244,6 +243,15 @@ public class CameraActivity extends BaseActivity {
 
     }
 
+    private void releaseCamera() {
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
+        isCameraReleased = true;
+    }
+
     private Camera.Parameters setFlashState(int state, Camera.Parameters p) {
         ImageButton flashButton = (ImageButton) findViewById(R.id.flash_control);
         List<String> supportedFlashParams = mCamera.getParameters().getSupportedFlashModes();
@@ -321,8 +329,7 @@ public class CameraActivity extends BaseActivity {
                 Toast.makeText(this, getString(R.string.no_cameras_detected), Toast.LENGTH_SHORT).show();
 
             } else {
-                mCamera.stopPreview();
-                mCamera.release();
+                releaseCamera();
                 isCameraReleased = true;
             }
         }
@@ -338,6 +345,7 @@ public class CameraActivity extends BaseActivity {
     }
 
     private void restoreCamera() {
+        releaseCamera();
         mCamera = Camera.open(isFrontCamera ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
         try {
             setUpCameraInitialParameters();
