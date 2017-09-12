@@ -25,40 +25,49 @@ public class ChatStyle implements Serializable {
     public static final int INVALID = -1;
 
     public static final int DEFAULT_HISTORY_LOADING_COUNT = 50;
-    public static final boolean DEFAULT_CAN_SHOW_SPECIALIST_INFO = true;
 
+    // chat title style
     @StringRes
     public int chatTitleTextResId;
     @ColorRes
-    public int chatToolbarColorResId;
+    public int chatToolbarColorResId = R.color.teal_009688;
     @ColorRes
-    public int chatStatusBarColorResId;
+    public int chatStatusBarColorResId = R.color.teal_004D40;
     @ColorRes
     public int menuItemTextColorResId;
     @ColorRes
-    public int chatToolbarTextColorResId;
+    public int chatToolbarTextColorResId = R.color.white;
     @ColorRes
     public int chatToolbarHintTextColor;
+    public boolean showBackButton;
+
+    // chat body style
     @ColorRes
-    public int chatBackgroundColor;
+    public int chatBackgroundColor = R.color.blue_eff3f8;
     @ColorRes
-    public int chatHighlightingColor;
+    public int chatHighlightingColor = R.color.blue_transparent_700F87FF;
     @ColorRes
     public int chatMessageInputColor;
     @ColorRes
     public int chatMessageInputHintTextColor;
     @ColorRes
-    public int incomingMessageBubbleColor;
+    public int incomingMessageBubbleColor = R.color.white;
     @ColorRes
-    public int outgoingMessageBubbleColor;
+    public int outgoingMessageBubbleColor = R.color.blue_3598dc;
     @DrawableRes
     public int incomingMessageBubbleBackground;
     @DrawableRes
     public int outgoingMessageBubbleBackground;
     @ColorRes
-    public int incomingMessageTextColor;
+    public int incomingMessageTextColor = R.color.black;
     @ColorRes
-    public int outgoingMessageTextColor;
+    public int outgoingMessageTextColor = R.color.white;
+    @ColorRes
+    public int chatBodyIconsTint = R.color.blue_0F87FF;
+    @ColorRes
+    public int connectionMessageTextColor = R.color.blue_grey_607d8b;
+    @ColorRes
+    public int filesAndMediaScreenBackgroundColor;
     @DrawableRes
     public int defaultIncomingMessageAvatar;
     @DimenRes
@@ -67,75 +76,13 @@ public class ChatStyle implements Serializable {
     public int operatorSystemAvatarSize;
     @DrawableRes
     public int imagePlaceholder;
-    @DrawableRes
-    public int defPushIconResId;
-    @ColorRes
-    public int nougatPushAccentColorResId;
-    @StringRes
-    public int defTitleResId;
-    public boolean isGAEnabled;
-    @DrawableRes
-    public int welcomeScreenLogoResId;
-    @StringRes
-    public int welcomeScreenTitleTextResId;
-    @StringRes
-    public int welcomeScreenSubtitleTextResId;
-    @ColorRes
-    public int welcomeScreenTextColorResId;
-    public int welcomeScreenTitleSizeInSp;
-    public int welcomeScreenSubtitleSizeInSp;
-    @ColorRes
-    public int chatBodyIconsTint;
-    @ColorRes
-    public int connectionMessageTextColor;
-    @ColorRes
-    public int filesAndMediaScreenBackgroundColor;
     @StyleRes
     public int fileBrowserDialogStyleResId;
-    @ColorRes
-    public int pushBackgroundColorResId;
-    @ColorRes
-    public int scheduleMessageTextColorResId;
-    @DrawableRes
-    public int scheduleMessageIconResId;
     public boolean showConsultSearching;
-    public boolean showBackButton;
     public boolean alwaysScrollToEnd;
-    public String inputTextFont;
     @ColorRes
     public int inputTextColor;
-    public int historyLoadingCount;
-    public boolean canShowSpecialistInfo;
-
-    //resolve thread request styles
-    @StringRes
-    public int requestToResolveThreadTextResId;
-    @StringRes
-    public int approveRequestToResolveThreadTextResId;
-    @StringRes
-    public int denyRequestToResolveThreadTextResId;
-
-    // Survey
-    @DrawableRes
-    public int binarySurveyLikeUnselectedIconResId;
-    @DrawableRes
-    public int binarySurveyLikeSelectedIconResId;
-    @DrawableRes
-    public int binarySurveyDislikeUnselectedIconResId;
-    @DrawableRes
-    public int binarySurveyDislikeSelectedIconResId;
-    @DrawableRes
-    public int optionsSurveyUnselectedIconResId;
-    @DrawableRes
-    public int optionsSurveySelectedIconResId;
-    @ColorRes
-    public int surveySelectedColorFilterResId;
-    @ColorRes
-    public int surveyUnselectedColorFilterResId;
-    @ColorRes
-    public int surveyTextColorResId;
-
-    // Scroll down button
+    public String inputTextFont;
     @DrawableRes
     public int scrollDownButtonResId;
     @ColorRes
@@ -143,6 +90,72 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int unreadMsgCountTextColorResId;
 
+    // push notification style
+    @DrawableRes
+    public int defPushIconResId;
+    @StringRes
+    public int defTitleResId;
+    @ColorRes
+    public int pushBackgroundColorResId;
+    @ColorRes
+    public int nougatPushAccentColorResId;
+
+    // resolve thread request style
+    @StringRes
+    public int requestToResolveThreadTextResId = R.string.request_to_resolve_thread;
+    @StringRes
+    public int approveRequestToResolveThreadTextResId = R.string.request_to_resolve_thread_close;
+    @StringRes
+    public int denyRequestToResolveThreadTextResId = R.string.request_to_resolve_thread_open;
+
+    // survey style
+    @DrawableRes
+    public int binarySurveyLikeUnselectedIconResId = R.drawable.ic_like_empty_36dp;
+    @DrawableRes
+    public int binarySurveyLikeSelectedIconResId = R.drawable.ic_like_full_36dp;
+    @DrawableRes
+    public int binarySurveyDislikeUnselectedIconResId = R.drawable.ic_dislike_empty_36dp;
+    @DrawableRes
+    public int binarySurveyDislikeSelectedIconResId = R.drawable.ic_dislike_full_36dp;
+    @DrawableRes
+    public int optionsSurveyUnselectedIconResId = R.drawable.ic_star_outline_grey600_24dp;
+    @DrawableRes
+    public int optionsSurveySelectedIconResId = R.drawable.ic_star_grey600_24dp;
+    @ColorRes
+    public int surveySelectedColorFilterResId;
+    @ColorRes
+    public int surveyUnselectedColorFilterResId;
+    @ColorRes
+    public int surveyTextColorResId = R.color.black;
+
+    // schedule message style
+    @ColorRes
+    public int scheduleMessageTextColorResId;
+    @DrawableRes
+    public int scheduleMessageIconResId;
+
+    // is GoogleAnalytics enabled
+    public boolean isGAEnabled;
+
+    // welcome screen style
+    @DrawableRes
+    public int welcomeScreenLogoResId;
+    @StringRes
+    public int welcomeScreenTitleTextResId;
+    @StringRes
+    public int welcomeScreenSubtitleTextResId;
+    @ColorRes
+    public int welcomeScreenTextColorResId = R.color.black;
+    public int welcomeScreenTitleSizeInSp;
+    public int welcomeScreenSubtitleSizeInSp;
+
+    // set history loading count
+    public int historyLoadingCount = 50;
+
+    // set can show specialist onfo
+    public boolean canShowSpecialistInfo = true;
+
+    // specify fonts
     public String defaultFontBold;
     public String defaultFontLight;
     public String defaultFontRegular;
@@ -180,172 +193,7 @@ public class ChatStyle implements Serializable {
     
     private ChatStyle() {}
 
-    // todo delete this monstrous constructor
-    public ChatStyle(int chatBackgroundColor,
-                     int chatHighlightingColor,
-                     int chatMessageInputColor,
-                     int chatMessageInputHintTextColor,
-                     int incomingMessageBubbleColor,
-                     int outgoingMessageBubbleColor,
-                     int incomingMessageBubbleBackground,
-                     int outgoingMessageBubbleBackground,
-                     int incomingMessageTextColor,
-                     int outgoingMessageTextColor,
-                     int chatBodyIconsTint,
-                     int connectionMessageTextColor,
-                     int filesAndMediaScreenBackgroundColor,
-                     int defaultIncomingMessageAvatar,
-                     @DimenRes int operatorAvatarSize,
-                     @DimenRes int operatorSystemAvatarSize,
-                     int imagePlaceholder,
-                     int fileBrowserDialogStyleResId,
-                     int chatTitleTextResId,
-                     int chatToolbarColorResId,
-                     int chatToolbarTextColorResId,
-                     int chatStatusBarColorResId,
-                     int menuItemTextColorResId,
-                     int chatToolbarHintTextColor,
-                     boolean showBackButton,
-                     boolean showConsultSearching,
-                     boolean alwaysScrollToEnd,
-                     boolean isGAEnabled,
-                     int defPushIconResId,
-                     int defTitleResId,
-                     int pushBackgroundColorResId,
-                     int nougatPushAccentColorResId,
-                     int welcomeScreenLogoResId,
-                     int welcomeScreenTitleTextResId,
-                     int welcomeScreenSubtitleTextResId,
-                     int welcomeScreenTextColorResId,
-                     int welcomeScreenTitleSizeInSp,
-                     int welcomeScreenSubtitleSizeInSp,
-                     int scheduleMessageTextColorResId,
-                     int scheduleMessageIconResId,
-                     String inputTextFont,
-                     int inputTextColor,
-                     int historyLoadingCount,
-                     boolean canShowSpecialistInfo,
-                     int requestToResolveThreadTextResId,
-                     int approveRequestToResolveThreadTextResId,
-                     int denyRequestToResolveThreadTextResId,
-                     @DrawableRes int binarySurveyLikeUnselectedIconResId,
-                     @DrawableRes int binarySurveyLikeSelectedIconResId,
-                     @DrawableRes int binarySurveyDislikeUnselectedIconResId,
-                     @DrawableRes int binarySurveyDislikeSelectedIconResId,
-                     @DrawableRes int optionsSurveyUnselectedIconResId,
-                     @DrawableRes int optionsSurveySelectedIconResId,
-                     @ColorRes int surveySelectedColorFilterResId,
-                     @ColorRes int surveyUnselectedColorFilterResId,
-                     @ColorRes int surveyTextColorResId,
-                     @DrawableRes int scrollDownButtonResId,
-                     @ColorRes int unreadMsgStickerColorResId,
-                     @ColorRes int unreadMsgCountTextColorResId,
-                     String defaultFontBold,
-                     String defaultFontLight,
-                     String defaultFontRegular,
-                     String toolbarTitleFont,
-                     String toolbarSubtitleFont,
-                     String placeholderTitleFont,
-                     String placeholderSubtitleFont,
-                     String inputQuotedMessageFont,
-                     String inputQuotedMessageAuthorFont,
-                     String bubbleMessageFont,
-                     String bubbleTimeFont,
-                     String quoteAuthorFont,
-                     String quoteMessageFont,
-                     String quoteTimeFont,
-                     String messageHeaderFont,
-                     String specialistConnectTitleFont,
-                     String specialistConnectSubtitleFont,
-                     String typingFont,
-                     String scheduleAlerFont
-    ) {
-        this.chatToolbarColorResId = chatToolbarColorResId == INVALID ? R.color.teal_009688 : chatToolbarColorResId;
-        this.chatTitleTextResId = chatTitleTextResId;
-        this.chatToolbarTextColorResId = chatToolbarTextColorResId == INVALID ? R.color.white : chatToolbarTextColorResId;
-        this.chatBackgroundColor = chatBackgroundColor == INVALID ? R.color.blue_eff3f8 : chatBackgroundColor;
-        this.chatMessageInputColor = chatMessageInputColor;
-        this.incomingMessageBubbleColor = incomingMessageBubbleColor == INVALID ? R.color.white : incomingMessageBubbleColor;
-        this.outgoingMessageBubbleColor = outgoingMessageBubbleColor == INVALID ? R.color.blue_3598dc : outgoingMessageBubbleColor;
-        this.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
-        this.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
-        this.incomingMessageTextColor = incomingMessageTextColor == INVALID ? R.color.black : incomingMessageTextColor;
-        this.outgoingMessageTextColor = outgoingMessageTextColor == INVALID ? R.color.white : outgoingMessageTextColor;
-        this.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
-        this.operatorAvatarSize = operatorAvatarSize;
-        this.operatorSystemAvatarSize = operatorSystemAvatarSize;
-        this.imagePlaceholder = imagePlaceholder;
-        this.defPushIconResId = defPushIconResId;
-        this.defTitleResId = defTitleResId;
-        this.isGAEnabled = isGAEnabled;
-        this.alwaysScrollToEnd = alwaysScrollToEnd;
-        this.welcomeScreenLogoResId = welcomeScreenLogoResId;
-        this.welcomeScreenTitleTextResId = welcomeScreenTitleTextResId;
-        this.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
-        this.welcomeScreenTextColorResId = welcomeScreenTextColorResId == INVALID ? R.color.black : welcomeScreenTextColorResId;
-        this.welcomeScreenTitleSizeInSp = welcomeScreenTitleSizeInSp;
-        this.welcomeScreenSubtitleSizeInSp = welcomeScreenSubtitleSizeInSp;
-        this.chatBodyIconsTint = chatBodyIconsTint == INVALID ? R.color.blue_0F87FF : chatBodyIconsTint;
-        this.connectionMessageTextColor = connectionMessageTextColor == INVALID ? R.color.blue_grey_607d8b : connectionMessageTextColor;
-        this.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
-        this.pushBackgroundColorResId = pushBackgroundColorResId;
-        this.nougatPushAccentColorResId = nougatPushAccentColorResId;
-        this.chatStatusBarColorResId = chatStatusBarColorResId == INVALID ? R.color.teal_004D40 : chatStatusBarColorResId;
-        this.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
-        this.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
-        this.menuItemTextColorResId = menuItemTextColorResId;
-        this.chatToolbarHintTextColor = chatToolbarHintTextColor;
-        this.chatHighlightingColor = chatHighlightingColor == INVALID ? R.color.blue_transparent_700F87FF : chatHighlightingColor;
-        this.scheduleMessageTextColorResId = scheduleMessageTextColorResId;
-        this.scheduleMessageIconResId = scheduleMessageIconResId;
-        this.showConsultSearching = showConsultSearching;
-        this.showBackButton = showBackButton;
-        this.inputTextFont = inputTextFont;
-        this.inputTextColor = inputTextColor;
-        this.historyLoadingCount = historyLoadingCount;
-        this.canShowSpecialistInfo = canShowSpecialistInfo;
-
-        this.requestToResolveThreadTextResId = requestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread : requestToResolveThreadTextResId;
-        this.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_close : approveRequestToResolveThreadTextResId;
-        this.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId == INVALID ? R.string.request_to_resolve_thread_open : denyRequestToResolveThreadTextResId;
-
-        this.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId == INVALID ? R.drawable.ic_like_empty_36dp : binarySurveyLikeUnselectedIconResId;
-        this.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId == INVALID ? R.drawable.ic_like_full_36dp : binarySurveyLikeSelectedIconResId;
-        this.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId == INVALID ? R.drawable.ic_dislike_empty_36dp : binarySurveyDislikeUnselectedIconResId;
-        this.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId == INVALID ? R.drawable.ic_dislike_full_36dp : binarySurveyDislikeSelectedIconResId;
-        this.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId == INVALID ? R.drawable.ic_star_outline_grey600_24dp : optionsSurveyUnselectedIconResId;
-        this.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId == INVALID ? R.drawable.ic_star_grey600_24dp : optionsSurveySelectedIconResId;
-        this.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
-        this.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
-        this.surveyTextColorResId = surveyTextColorResId == INVALID ? R.color.black : surveyTextColorResId;
-
-        this.scrollDownButtonResId = scrollDownButtonResId;
-        this.unreadMsgStickerColorResId = unreadMsgStickerColorResId;
-        this.unreadMsgCountTextColorResId = unreadMsgCountTextColorResId;
-
-        this.defaultFontBold = defaultFontBold;
-        this.defaultFontLight = defaultFontLight;
-        this.defaultFontRegular = defaultFontRegular;
-        this.toolbarTitleFont = toolbarTitleFont;
-        this.toolbarSubtitleFont = toolbarSubtitleFont;
-        this.placeholderTitleFont = placeholderTitleFont;
-        this.placeholderSubtitleFont = placeholderSubtitleFont;
-        this.inputQuotedMessageFont = inputQuotedMessageFont;
-        this.inputQuotedMessageAuthorFont = inputQuotedMessageAuthorFont;
-        this.bubbleMessageFont = bubbleMessageFont;
-        this.bubbleTimeFont = bubbleTimeFont;
-        this.quoteAuthorFont = quoteAuthorFont;
-        this.quoteMessageFont = quoteMessageFont;
-        this.quoteTimeFont = quoteTimeFont;
-        this.messageHeaderFont = messageHeaderFont;
-        this.specialistConnectTitleFont = specialistConnectTitleFont;
-        this.specialistConnectSubtitleFont = specialistConnectSubtitleFont;
-        this.typingFont = typingFont;
-        this.scheduleAlerFont = scheduleAlerFont;
-    }
-
     public static class ChatStyleBuilder {
-        private static final String TAG = "BundleBuilder ";
         private ChatStyle chatStyle;
         private Context ctx;
 

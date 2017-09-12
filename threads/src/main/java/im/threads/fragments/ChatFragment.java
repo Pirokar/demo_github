@@ -1932,6 +1932,6 @@ public class ChatFragment extends Fragment implements
 
     private boolean canShowSpecialistInfo(Context ctx) {
         ChatStyle style = PrefUtils.getIncomingStyle(ctx);
-        return style != null ? style.canShowSpecialistInfo : ChatStyle.DEFAULT_CAN_SHOW_SPECIALIST_INFO;
+        return style != null ? style.canShowSpecialistInfo : true;
     }
 }
