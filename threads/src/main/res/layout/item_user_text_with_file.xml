@@ -28,7 +28,7 @@
         android:paddingLeft="@dimen/margin_quarter"
         android:paddingRight="19dp"
         android:paddingTop="@dimen/margin_quarter"
-        android:background="@drawable/a_user_bubble">
+        android:background="@drawable/user_bubble">
 
         <TableRow
             android:id="@+id/right_text_row"

@@ -10,9 +10,9 @@ import im.threads.model.ChatStyle;
 
 public class ChatIntentHelper {
 
-    public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName) {
+    public static ChatStyle.IntentBuilder getIntentBuilder(Activity activity, String clientId, String userName, String data) {
         return ChatStyle.IntentBuilder
-                .getBuilder(activity, clientId, userName, "") // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+                .getBuilder(activity, clientId, userName, data) // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
                 .setDefaultFontBold("fonts/lato-bold.ttf")
                 .setDefaultFontLight("fonts/lato-light.ttf")
                 .setDefaultFontRegular("fonts/lato-regular.ttf")
@@ -30,6 +30,8 @@ public class ChatIntentHelper {
                         R.color.chat_message_input_background,//заливка EditText, галереи и при пересылке в тулбаре chatMessageInputColor
                         R.color.incoming_message_bubble_background,//заливка бабла входящего сообщения incomingMessageBubbleColor
                         R.color.outgoing_message_bubble_background,//заливка бабла исходящего сообщения outgoingMessageBubbleColor
+                        R.drawable.app_operator_bubble, // фон для сообщения оператора incomingMessageBubbleBackground
+                        R.drawable.app_user_bubble, // фон для сообщения клиента outgoingMessageBubbleBackground
                         R.color.incoming_message_text,//цвет текста входящего сообщения incomingMessageTextColor
                         R.color.outgoing_message_text,//цвет текста исходящего сообщения outgoingMessageTextColor
                         R.color.chatbody_icons_tint,//цвет иконок в поле сообщения chatBodyIconsTint

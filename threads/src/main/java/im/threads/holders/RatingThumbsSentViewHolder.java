@@ -19,6 +19,8 @@ import im.threads.model.ChatStyle;
 import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
+import static im.threads.model.ChatStyle.INVALID;
+
 /**
  * ViewHolder для результатов бинарного опроса
  * Created by chybakut2004 on 17.04.17.
@@ -48,9 +50,12 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
 
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
-            if (style.outgoingMessageBubbleColor != ChatStyle.INVALID)
+            if (style.outgoingMessageBubbleColor != INVALID)
                 mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-            if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
+            if (style.outgoingMessageBubbleBackground != INVALID) {
+                mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+            }
+            if (style.outgoingMessageTextColor != INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView}, style.outgoingMessageTextColor);
             }
@@ -61,16 +66,16 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
     public void bind(Survey survey) {
         int rate = survey.getQuestions().get(0).getRate();
         if (rate == 1) {
-            if (style.binarySurveyLikeSelectedIconResId != ChatStyle.INVALID) {
+            if (style.binarySurveyLikeSelectedIconResId != INVALID) {
                 thumb.setImageResource(style.binarySurveyLikeSelectedIconResId);
             }
         } else {
-            if (style.binarySurveyDislikeSelectedIconResId != ChatStyle.INVALID) {
+            if (style.binarySurveyDislikeSelectedIconResId != INVALID) {
                 thumb.setImageResource(style.binarySurveyLikeUnselectedIconResId);
             }
         }
 
-        if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
+        if (style.outgoingMessageTextColor != INVALID) {
             thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
         }
 
@@ -79,21 +84,21 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
         switch (survey.getSentState()) {
             case STATE_WAS_READ:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_done_all_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
+                if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_done_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
+                if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_cached_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
+                if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);

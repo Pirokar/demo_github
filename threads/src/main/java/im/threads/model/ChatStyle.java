@@ -56,6 +56,8 @@ public class ChatStyle implements Serializable {
     private static final String ARG_CHAT_MESSAGE_INPUT_HINT_TEXT_COLOR_RES_ID = "chatMessageInputHintTextColor";
     private static final String ARG_INCOMING_MESSAGE_BUBBLE_COLOR_RES_ID = "incomingMessageBubbleColor";
     private static final String ARG_OUTGOING_MESSAGE_BUBBLE_COLOR_RES_ID = "outgoingMessageBubbleColor";
+    private static final String ARG_INCOMING_MESSAGE_BUBBLE_BACKGROUND_RES_ID = "incomingMessageBubbleBackground";
+    private static final String ARG_OUTGOING_MESSAGE_BUBBLE_BACKGROUND_RES_ID = "outgoingMessageBubbleBackground";
     private static final String ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID = "incomingMessageTextColor";
     private static final String ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID = "outgoingMessageTextColor";
     private static final String ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID = "defaultIncomingMessageAvatar";
@@ -149,6 +151,10 @@ public class ChatStyle implements Serializable {
     public final int incomingMessageBubbleColor;
     @ColorRes
     public final int outgoingMessageBubbleColor;
+    @DrawableRes
+    public final int incomingMessageBubbleBackground;
+    @DrawableRes
+    public final int outgoingMessageBubbleBackground;
     @ColorRes
     public final int incomingMessageTextColor;
     @ColorRes
@@ -263,6 +269,8 @@ public class ChatStyle implements Serializable {
                      int chatMessageInputHintTextColor,
                      int incomingMessageBubbleColor,
                      int outgoingMessageBubbleColor,
+                     int incomingMessageBubbleBackground,
+                     int outgoingMessageBubbleBackground,
                      int incomingMessageTextColor,
                      int outgoingMessageTextColor,
                      int chatBodyIconsTint,
@@ -341,6 +349,8 @@ public class ChatStyle implements Serializable {
         this.chatMessageInputColor = chatMessageInputColor;
         this.incomingMessageBubbleColor = incomingMessageBubbleColor == INVALID ? R.color.white : incomingMessageBubbleColor;
         this.outgoingMessageBubbleColor = outgoingMessageBubbleColor == INVALID ? R.color.blue_3598dc : outgoingMessageBubbleColor;
+        this.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
+        this.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
         this.incomingMessageTextColor = incomingMessageTextColor == INVALID ? R.color.black : incomingMessageTextColor;
         this.outgoingMessageTextColor = outgoingMessageTextColor == INVALID ? R.color.white : outgoingMessageTextColor;
         this.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
@@ -439,6 +449,8 @@ public class ChatStyle implements Serializable {
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_MESSAGE_INPUT_HINT_TEXT_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INCOMING_MESSAGE_BUBBLE_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OUTGOING_MESSAGE_BUBBLE_COLOR_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INCOMING_MESSAGE_BUBBLE_BACKGROUND_RES_ID) : INVALID,
+                isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OUTGOING_MESSAGE_BUBBLE_BACKGROUND_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID) : INVALID,
                 isChatBodyStyleExists ? chatBodyStyle.getInt(ARG_CHAT_BODY_ICONS_TINT_RES_ID) : INVALID,
@@ -554,7 +566,6 @@ public class ChatStyle implements Serializable {
             return this;
         }
 
-        @Deprecated
         public IntentBuilder setChatBodyStyle(
                 @ColorRes int chatBackgroundColor,
                 @ColorRes int chatHighlightingColor,
@@ -562,50 +573,8 @@ public class ChatStyle implements Serializable {
                 @ColorRes int chatMessageInputColor,
                 @ColorRes int incomingMessageBubbleColor,
                 @ColorRes int outgoingMessageBubbleColor,
-                @ColorRes int incomingMessageTextColor,
-                @ColorRes int outgoingMessageTextColor,
-                @ColorRes int chatBodyIconsTint,
-                @ColorRes int connectionMessageTextColor,
-                @ColorRes int filesAndMediaScreenBackgroundColor,
-                @DrawableRes int defaultIncomingMessageAvatar,
-                @DimenRes int operatorAvatarSize,
-                @DimenRes int operatorSystemAvatarSize,
-                @DrawableRes int imagePlaceholder,
-                @StyleRes int fileBrowserDialogStyleResId,
-                boolean showConsultSearching,
-                boolean alwaysScrollToEnd) {
-            Bundle bundle = new Bundle();
-            b.putBundle(ARG_SET_CHAT_BODY_STYLE, bundle);
-            bundle.putInt(ARG_CHAT_BACKGROUND_COLOR_RES_ID, chatBackgroundColor);
-            bundle.putInt(ARG_CHAT_HIGHLIGHTING_COLOR_RES_ID, chatHighlightingColor);
-            bundle.putInt(ARG_CHAT_MESSAGE_INPUT_COLOR_RES_ID, chatMessageInputColor);
-            bundle.putInt(ARG_CHAT_MESSAGE_INPUT_HINT_TEXT_COLOR_RES_ID, chatMessageInputHintTextColor);
-            bundle.putInt(ARG_INCOMING_MESSAGE_BUBBLE_COLOR_RES_ID, incomingMessageBubbleColor);
-            bundle.putInt(ARG_OUTGOING_MESSAGE_BUBBLE_COLOR_RES_ID, outgoingMessageBubbleColor);
-            bundle.putInt(ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID, incomingMessageTextColor);
-            bundle.putInt(ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID, outgoingMessageTextColor);
-            bundle.putInt(ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID, defaultIncomingMessageAvatar);
-            bundle.putInt(ARG_OPERATOR_AVATAR_SIZE, operatorAvatarSize);
-            bundle.putInt(ARG_OPERATOR_SYSTEM_AVATAR_SIZE, operatorSystemAvatarSize);
-            bundle.putInt(ARG_IMAGE_PLACEHOLDER_RES_ID, imagePlaceholder);
-            bundle.putInt(ARG_CHAT_BODY_ICONS_TINT_RES_ID, chatBodyIconsTint);
-            bundle.putInt(ARG_CONNECTION_MESSAGE_TEXT_COLOR_RES_ID, connectionMessageTextColor);
-            bundle.putInt(ARG_FILES_AND_MEDIA_SCREEN_BACKGROUND_COLOR_RES_ID, filesAndMediaScreenBackgroundColor);
-            bundle.putInt(ARG_FILE_BROWSER_DIALOG_STYLE_RES_ID, fileBrowserDialogStyleResId);
-            bundle.putBoolean(ARG_SHOW_CONSULT_SEARCHING, showConsultSearching);
-            bundle.putBoolean(ARG_ALWAYS_SCROLL_TO_END, alwaysScrollToEnd);
-            bundle.putInt(ARG_INPUT_TEXT_COLOR_RES_ID, -1);
-            bundle.putString(ARG_INPUT_TEXT_FONT_PATH, null);
-            return this;
-        }
-
-        public IntentBuilder setChatBodyStyle(
-                @ColorRes int chatBackgroundColor,
-                @ColorRes int chatHighlightingColor,
-                @ColorRes int chatMessageInputHintTextColor,
-                @ColorRes int chatMessageInputColor,
-                @ColorRes int incomingMessageBubbleColor,
-                @ColorRes int outgoingMessageBubbleColor,
+                @DrawableRes int incomingMessageBubbleBackground,
+                @DrawableRes int outgoingMessageBubbleBackground,
                 @ColorRes int incomingMessageTextColor,
                 @ColorRes int outgoingMessageTextColor,
                 @ColorRes int chatBodyIconsTint,
@@ -631,6 +600,8 @@ public class ChatStyle implements Serializable {
             bundle.putInt(ARG_CHAT_MESSAGE_INPUT_HINT_TEXT_COLOR_RES_ID, chatMessageInputHintTextColor);
             bundle.putInt(ARG_INCOMING_MESSAGE_BUBBLE_COLOR_RES_ID, incomingMessageBubbleColor);
             bundle.putInt(ARG_OUTGOING_MESSAGE_BUBBLE_COLOR_RES_ID, outgoingMessageBubbleColor);
+            bundle.putInt(ARG_INCOMING_MESSAGE_BUBBLE_BACKGROUND_RES_ID, incomingMessageBubbleBackground);
+            bundle.putInt(ARG_OUTGOING_MESSAGE_BUBBLE_BACKGROUND_RES_ID, outgoingMessageBubbleBackground);
             bundle.putInt(ARG_INCOMING_MESSAGE_TEXT_COLOR_RES_ID, incomingMessageTextColor);
             bundle.putInt(ARG_OUTGOING_MESSAGE_TEXT_COLOR_RES_ID, outgoingMessageTextColor);
             bundle.putInt(ARG_DEFAULT_INCOMING_MESSAGE_AVATAR_RES_ID, defaultIncomingMessageAvatar);

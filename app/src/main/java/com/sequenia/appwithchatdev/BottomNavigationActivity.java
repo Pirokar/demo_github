@@ -175,7 +175,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 break;
             case TAB_CHAT:
                 // bundle содержит в себе настройки стилей чата
-                Bundle bundle = ChatIntentHelper.getIntentBuilder(this, clientId, userName).buildBundle();
+                Bundle bundle = ChatIntentHelper.getIntentBuilder(this, clientId, userName, "").buildBundle();
                 // создаем фрагмент чата
                 fragment = ChatFragment.newInstance(bundle);
                 break;

@@ -19,6 +19,8 @@ import im.threads.model.ChatStyle;
 import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
+import static im.threads.model.ChatStyle.INVALID;
+
 /**
  * ViewHolder для результатов опроса с рейтингом
  * Created by chybakut2004 on 17.04.17.
@@ -54,11 +56,14 @@ public class RatingStarsSentViewHolder extends BaseHolder {
 
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
-            if (style.outgoingMessageBubbleColor != ChatStyle.INVALID) {
+            if (style.outgoingMessageBubbleColor != INVALID) {
                 rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
                 mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             }
-            if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
+            if (style.outgoingMessageBubbleBackground != INVALID) {
+                mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+            }
+            if (style.outgoingMessageTextColor != INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
 
@@ -68,7 +73,7 @@ public class RatingStarsSentViewHolder extends BaseHolder {
                 );
             }
 
-            if (style.optionsSurveySelectedIconResId != ChatStyle.INVALID) {
+            if (style.optionsSurveySelectedIconResId != INVALID) {
                 star.setImageResource(style.optionsSurveySelectedIconResId);
             }
         }
@@ -84,21 +89,21 @@ public class RatingStarsSentViewHolder extends BaseHolder {
         switch (survey.getSentState()) {
             case STATE_WAS_READ:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_done_all_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
+                if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_done_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
+                if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
                 d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_cached_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
+                if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);

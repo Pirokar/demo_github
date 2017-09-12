@@ -1149,7 +1149,7 @@ public class ChatFragment extends Fragment implements
         }
     }
 
-    public void addChatItem(ChatItem item) {
+    public void addChatItem(final ChatItem item) {
         if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
             mWelcomeScreen.setVisibility(View.GONE);
             mWelcomeScreen = null;
@@ -1175,18 +1175,20 @@ public class ChatFragment extends Fragment implements
         }
 
         // do not scroll when consult is typing or write
-        if (!(item instanceof ConsultPhrase) && !(item instanceof ConsultTyping)) {
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isInMessageSearchMode) {
-                        if ((mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT) {
-                            scrollToPosition(mChatAdapter.getItemCount() - 1);
-                        }
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!isInMessageSearchMode) {
+                    int itemCount = mChatAdapter.getItemCount();
+                    int lastVisibleItemPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    boolean isUserSeesMessages = (itemCount - 1) - lastVisibleItemPosition < INVISIBLE_MSGS_COUNT;
+                    boolean isConsultMsg = (item instanceof ConsultPhrase) || (item instanceof ConsultTyping);
+                    if (isUserSeesMessages || !isConsultMsg) {
+                        scrollToPosition(itemCount - 1);
                     }
                 }
-            }, 100);
-        }
+            }
+        }, 100);
     }
 
     private void scrollToPosition(int itemCount) {
