@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         if (!PermissionChecker.checkPermissions(this)) {
             PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
         } else {
-            ChatBuilderHelper.buildChatStyle(this, clientId, userName);
+            ChatBuilderHelper.buildChatStyle(this, clientId, userName, "");
             startActivity(new Intent(this, ChatActivity.class));
         }
     }

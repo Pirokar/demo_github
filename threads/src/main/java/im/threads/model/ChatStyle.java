@@ -51,6 +51,10 @@ public class ChatStyle implements Serializable {
     public int incomingMessageBubbleColor;
     @ColorRes
     public int outgoingMessageBubbleColor;
+    @DrawableRes
+    public int incomingMessageBubbleBackground;
+    @DrawableRes
+    public int outgoingMessageBubbleBackground;
     @ColorRes
     public int incomingMessageTextColor;
     @ColorRes
@@ -175,13 +179,16 @@ public class ChatStyle implements Serializable {
     }
     
     private ChatStyle() {}
-    
+
+    // todo delete this monstrous constructor
     public ChatStyle(int chatBackgroundColor,
                      int chatHighlightingColor,
                      int chatMessageInputColor,
                      int chatMessageInputHintTextColor,
                      int incomingMessageBubbleColor,
                      int outgoingMessageBubbleColor,
+                     int incomingMessageBubbleBackground,
+                     int outgoingMessageBubbleBackground,
                      int incomingMessageTextColor,
                      int outgoingMessageTextColor,
                      int chatBodyIconsTint,
@@ -260,6 +267,8 @@ public class ChatStyle implements Serializable {
         this.chatMessageInputColor = chatMessageInputColor;
         this.incomingMessageBubbleColor = incomingMessageBubbleColor == INVALID ? R.color.white : incomingMessageBubbleColor;
         this.outgoingMessageBubbleColor = outgoingMessageBubbleColor == INVALID ? R.color.blue_3598dc : outgoingMessageBubbleColor;
+        this.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
+        this.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
         this.incomingMessageTextColor = incomingMessageTextColor == INVALID ? R.color.black : incomingMessageTextColor;
         this.outgoingMessageTextColor = outgoingMessageTextColor == INVALID ? R.color.white : outgoingMessageTextColor;
         this.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
@@ -386,6 +395,8 @@ public class ChatStyle implements Serializable {
                 @ColorRes int chatMessageInputColor,
                 @ColorRes int incomingMessageBubbleColor,
                 @ColorRes int outgoingMessageBubbleColor,
+                @DrawableRes int incomingMessageBubbleBackground,
+                @DrawableRes int outgoingMessageBubbleBackground,
                 @ColorRes int incomingMessageTextColor,
                 @ColorRes int outgoingMessageTextColor,
                 @ColorRes int chatBodyIconsTint,
@@ -403,13 +414,14 @@ public class ChatStyle implements Serializable {
                 @DrawableRes int scrollDownButtonResId,
                 @ColorRes int unreadMsgStickerColorResId,
                 @ColorRes int unreadMsgCountTextColorResId) {
-
             chatStyle.chatBackgroundColor = chatBackgroundColor;
             chatStyle.chatHighlightingColor = chatHighlightingColor;
             chatStyle.chatMessageInputColor = chatMessageInputColor;
             chatStyle.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
             chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor;
             chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor;
+            chatStyle.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
+            chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
             chatStyle.incomingMessageTextColor = incomingMessageTextColor;
             chatStyle.outgoingMessageTextColor = outgoingMessageTextColor;
             chatStyle.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;

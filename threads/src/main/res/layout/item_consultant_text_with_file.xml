@@ -31,7 +31,7 @@
         style="@style/consultBubble"
         android:layout_width="wrap_content"
         android:layout_toRightOf="@+id/consult_avatar"
-        android:background="@drawable/bubble_white">
+        android:background="@drawable/operator_bubble">
 
         <LinearLayout
             android:id="@+id/right_text_row"

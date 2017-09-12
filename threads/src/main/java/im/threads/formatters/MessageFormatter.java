@@ -173,13 +173,14 @@ public class MessageFormatter {
     }
 
     private static JSONObject getFullMessage(PushMessage pushMessage) {
-        JSONObject fullMessage;
+        JSONObject fullMessage = null;
 
         try {
-            fullMessage = new JSONObject(pushMessage.fullMessage);
+            if (pushMessage.fullMessage != null) {
+                fullMessage = new JSONObject(pushMessage.fullMessage);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
-            fullMessage = null;
         }
 
         return fullMessage;

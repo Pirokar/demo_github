@@ -175,7 +175,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 break;
             case TAB_CHAT:
                 // генерируем настройки стилей чата
-                ChatBuilderHelper.buildChatStyle(this, clientId, userName);
+                ChatBuilderHelper.buildChatStyle(this, clientId, userName, "");
                 // создаем фрагмент чата
                 fragment = ChatFragment.newInstance();
                 break;
