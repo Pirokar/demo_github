@@ -174,7 +174,7 @@ public class ChatController {
         if (instance == null) {
             instance = new ChatController(ctx);
         }
-        if (clientId == null) {
+        if (TextUtils.isEmpty(clientId)) {
             clientId = PrefUtils.getClientID(ctx);
         }
         if ((TextUtils.isEmpty(PrefUtils.getClientID(ctx)) && !TextUtils.isEmpty(clientId))
