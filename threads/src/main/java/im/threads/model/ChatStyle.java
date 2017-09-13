@@ -28,17 +28,17 @@ public class ChatStyle implements Serializable {
 
     // chat title style
     @StringRes
-    public int chatTitleTextResId;
+    public int chatTitleTextResId = INVALID;
     @ColorRes
     public int chatToolbarColorResId = R.color.teal_009688;
     @ColorRes
     public int chatStatusBarColorResId = R.color.teal_004D40;
     @ColorRes
-    public int menuItemTextColorResId;
+    public int menuItemTextColorResId = INVALID;
     @ColorRes
     public int chatToolbarTextColorResId = R.color.white;
     @ColorRes
-    public int chatToolbarHintTextColor;
+    public int chatToolbarHintTextColor = INVALID;
     public boolean showBackButton;
 
     // chat body style
@@ -47,17 +47,17 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int chatHighlightingColor = R.color.blue_transparent_700F87FF;
     @ColorRes
-    public int chatMessageInputColor;
+    public int chatMessageInputColor = INVALID;
     @ColorRes
-    public int chatMessageInputHintTextColor;
+    public int chatMessageInputHintTextColor = INVALID;
     @ColorRes
     public int incomingMessageBubbleColor = R.color.white;
     @ColorRes
     public int outgoingMessageBubbleColor = R.color.blue_3598dc;
     @DrawableRes
-    public int incomingMessageBubbleBackground;
+    public int incomingMessageBubbleBackground = INVALID;
     @DrawableRes
-    public int outgoingMessageBubbleBackground;
+    public int outgoingMessageBubbleBackground = INVALID;
     @ColorRes
     public int incomingMessageTextColor = R.color.black;
     @ColorRes
@@ -67,38 +67,38 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int connectionMessageTextColor = R.color.blue_grey_607d8b;
     @ColorRes
-    public int filesAndMediaScreenBackgroundColor;
+    public int filesAndMediaScreenBackgroundColor = INVALID;
     @DrawableRes
-    public int defaultIncomingMessageAvatar;
+    public int defaultIncomingMessageAvatar = INVALID;
     @DimenRes
-    public int operatorAvatarSize;
+    public int operatorAvatarSize = INVALID;
     @DimenRes
-    public int operatorSystemAvatarSize;
+    public int operatorSystemAvatarSize = INVALID;
     @DrawableRes
-    public int imagePlaceholder;
+    public int imagePlaceholder = INVALID;
     @StyleRes
-    public int fileBrowserDialogStyleResId;
+    public int fileBrowserDialogStyleResId = INVALID;
     public boolean showConsultSearching;
     public boolean alwaysScrollToEnd;
     @ColorRes
-    public int inputTextColor;
+    public int inputTextColor = INVALID;
     public String inputTextFont;
     @DrawableRes
-    public int scrollDownButtonResId;
+    public int scrollDownButtonResId = INVALID;
     @ColorRes
-    public int unreadMsgStickerColorResId;
+    public int unreadMsgStickerColorResId = INVALID;
     @ColorRes
-    public int unreadMsgCountTextColorResId;
+    public int unreadMsgCountTextColorResId = INVALID;
 
     // push notification style
     @DrawableRes
-    public int defPushIconResId;
+    public int defPushIconResId = INVALID;
     @StringRes
-    public int defTitleResId;
+    public int defTitleResId = INVALID;
     @ColorRes
-    public int pushBackgroundColorResId;
+    public int pushBackgroundColorResId = INVALID;
     @ColorRes
-    public int nougatPushAccentColorResId;
+    public int nougatPushAccentColorResId = INVALID;
 
     // resolve thread request style
     @StringRes
@@ -122,28 +122,28 @@ public class ChatStyle implements Serializable {
     @DrawableRes
     public int optionsSurveySelectedIconResId = R.drawable.ic_star_grey600_24dp;
     @ColorRes
-    public int surveySelectedColorFilterResId;
+    public int surveySelectedColorFilterResId = INVALID;
     @ColorRes
-    public int surveyUnselectedColorFilterResId;
+    public int surveyUnselectedColorFilterResId = INVALID;
     @ColorRes
     public int surveyTextColorResId = R.color.black;
 
     // schedule message style
     @ColorRes
-    public int scheduleMessageTextColorResId;
+    public int scheduleMessageTextColorResId = INVALID;
     @DrawableRes
-    public int scheduleMessageIconResId;
+    public int scheduleMessageIconResId = INVALID;
 
     // is GoogleAnalytics enabled
     public boolean isGAEnabled;
 
     // welcome screen style
     @DrawableRes
-    public int welcomeScreenLogoResId;
+    public int welcomeScreenLogoResId = INVALID;
     @StringRes
-    public int welcomeScreenTitleTextResId;
+    public int welcomeScreenTitleTextResId = INVALID;
     @StringRes
-    public int welcomeScreenSubtitleTextResId;
+    public int welcomeScreenSubtitleTextResId = INVALID;
     @ColorRes
     public int welcomeScreenTextColorResId = R.color.black;
     public int welcomeScreenTitleSizeInSp;
