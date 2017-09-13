@@ -8,9 +8,7 @@ import im.threads.utils.FileUtils;
  * Created by yuri on 10.06.2016.
  * сообщение оператора
  */
-public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase {
-    private String avatarPath;
-    private final String consultId;
+public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsOnlyImage {
     private final boolean sex;
     private final long timeStamp;
     private final String phrase;
@@ -41,14 +39,13 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
             , boolean sex
             , String backendId
     ) {
+        super(avatarPath, consultId);
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.consultName = consultName;
         this.messageId = messageId;
         this.phrase = phrase;
         this.timeStamp = timeStamp;
-        this.consultId = consultId;
-        this.avatarPath = avatarPath;
         this.isRead = isRead;
         this.status = status;
         this.sex = sex;
@@ -71,16 +68,8 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
         return isRead;
     }
 
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
-    }
-
     public void setRead(boolean read) {
         isRead = read;
-    }
-
-    public String getConsultId() {
-        return consultId;
     }
 
     public boolean isChosen() {
@@ -98,11 +87,6 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     public String getConsultName() {
         return consultName;
     }
-
-    public String getAvatarPath() {
-        return avatarPath;
-    }
-
 
     public boolean isAvatarVisible() {
         return isAvatarVisible;
@@ -122,6 +106,7 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
                 (getQuote() != null && getQuote().getFileDescription() != null);
     }
 
+    @Override
     public boolean isOnlyImage() {
         return fileDescription != null
                 && TextUtils.isEmpty(phrase)
@@ -135,14 +120,6 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     @Override
     public String getPhraseText() {
         return phrase;
-    }
-
-    @Override
-    public String toString() {
-        return "ConsultPhrase{" +
-                "messageId='" + messageId + '\'' +
-                ", phrase='" + phrase + '\'' +
-                '}';
     }
 
     @Override
@@ -209,14 +186,17 @@ public class ConsultPhrase implements ChatPhrase, IsOnlyImage, ConsultChatPhrase
     }
 
 
+    @Override
     public Quote getQuote() {
         return quote;
     }
 
+    @Override
     public FileDescription getFileDescription() {
         return fileDescription;
     }
 
+    @Override
     public long getTimeStamp() {
         return timeStamp;
     }

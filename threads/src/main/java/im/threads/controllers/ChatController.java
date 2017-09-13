@@ -562,11 +562,11 @@ public class ChatController {
         for (ChatItem ci : list) {
             if (ci instanceof ConsultConnectionMessage) {
                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
-                ccm.setAvatarPath(mDatabaseHolder.getLastConsultAvatarPathSync(ccm.getConsultId()));
+                ccm.setAvatarPath(fragment.getActivity(), mDatabaseHolder.getLastConsultAvatarPathSync(ccm.getConsultId()));
             }
             if (ci instanceof ConsultPhrase) {
                 ConsultPhrase cp = (ConsultPhrase) ci;
-                cp.setAvatarPath(mDatabaseHolder.getLastConsultAvatarPathSync(cp.getConsultId()));
+                cp.setAvatarPath(fragment.getActivity(), mDatabaseHolder.getLastConsultAvatarPathSync(cp.getConsultId()));
             }
         }
         return list;
