@@ -149,25 +149,31 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
 
         ConsultPhrase that = (ConsultPhrase) o;
 
-        if (sex != that.sex) return false;
-        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
+        if (sex != that.sex) {
             return false;
-        if (phrase != null ? !phrase.equals(that.phrase) : that.phrase != null) return false;
-        /*if (!(messageId != null && that.messageId != null && messageId.equals(that.messageId))) {
-            return false;
-        }*/
-        try {
-            Long thisId = Long.parseLong(messageId);
-            Long thatId = Long.parseLong(that.messageId);
-            if (Math.abs(thisId - thatId) > 5) return false;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
         }
-        if (quote != null ? !quote.equals(that.quote) : that.quote != null) return false;
-        if (fileDescription != null ? !fileDescription.equals(that.fileDescription) : that.fileDescription != null)
-            return false;
-        return status != null ? status.equals(that.status) : that.status == null;
 
+        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null) {
+            return false;
+        }
+
+        if (messageId != null && that.messageId != null) {
+            return messageId.equals(that.messageId);
+        }
+
+        if (!TextUtils.isEmpty(phrase) ? !phrase.equals(that.phrase) : !TextUtils.isEmpty(that.phrase))  {
+            return false;
+        }
+
+        if (quote != null ? !quote.equals(that.quote) : that.quote != null) {
+            return false;
+        }
+
+        if (fileDescription != null && that.fileDescription != null) {
+            return fileDescription.equals(that.fileDescription);
+        }
+
+        return status != null ? status.equals(that.status) : that.status == null;
     }
 
     @Override
