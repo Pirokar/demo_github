@@ -3,24 +3,17 @@ package im.threads.model;
 /**
  * Created by yuri on 10.06.2016.
  */
-public class ConsultTyping implements ChatItem,ConsultChatPhrase {
+public class ConsultTyping extends ConsultChatPhrase implements ChatItem {
     private long date;
-    private final String consultId;
-    private String avatarPath;
 
+    @Override
     public long getTimeStamp() {
         return date;
     }
 
     public ConsultTyping(String consultId, long date, String avatarPath) {
-        this.consultId = consultId;
+        super(avatarPath, consultId);
         this.date = date;
-        this.avatarPath = avatarPath;
-    }
-
-    @Override
-    public void setAvatarPath(String newAvatar) {
-        this.avatarPath = newAvatar;
     }
 
     public void setDate(long date) {
@@ -29,14 +22,6 @@ public class ConsultTyping implements ChatItem,ConsultChatPhrase {
 
     public long getDate() {
         return date;
-    }
-
-    public String getConsultId() {
-        return consultId;
-    }
-
-    public String getAvatarPath() {
-        return avatarPath;
     }
 
     @Override
@@ -49,23 +34,13 @@ public class ConsultTyping implements ChatItem,ConsultChatPhrase {
         if (date != that.date) return false;
         if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
             return false;
-        return avatarPath != null ? avatarPath.equals(that.avatarPath) : that.avatarPath == null;
-
+        return true;
     }
 
     @Override
     public int hashCode() {
         int result = (int) (date ^ (date >>> 32));
         result = 31 * result + (consultId != null ? consultId.hashCode() : 0);
-        result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "ConsultTyping{" +
-                "date=" + date +
-                ", avatarPath='" + avatarPath + '\'' +
-                '}';
     }
 }
