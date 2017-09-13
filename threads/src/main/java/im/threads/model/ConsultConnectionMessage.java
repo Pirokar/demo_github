@@ -1,16 +1,11 @@
 package im.threads.model;
 
-/**
- * Created by yuri on 10.06.2016.
- */
-public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
-    private final String consultId;
+public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
     private final String type;
     private final String name;
     private final boolean sex;
     private final long date;
     private final String status;
-    private String avatarPath;
     public static final String TYPE_JOINED = "OPERATOR_JOINED";
     public static final String TYPE_LEFT = "OPERATOR_LEFT";
     private String title;
@@ -41,20 +36,15 @@ public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
             , String title
             , String messageId
             , boolean displayMessage) {
-        this.consultId = consultId;
+        super(avatarPath, consultId);
         this.type = type;
         this.name = name;
         this.sex = sex;
         this.date = date;
-        this.avatarPath = avatarPath;
         this.status = status;
         this.title = title;
         this.messageId = messageId;
         this.displayMessage = displayMessage;
-    }
-
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
     }
 
     public String getMessageId() {
@@ -69,16 +59,8 @@ public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
         return status;
     }
 
-    public String getConsultId() {
-        return consultId;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public String getAvatarPath() {
-        return avatarPath;
     }
 
     public String getConnectionType() {
@@ -119,27 +101,11 @@ public class ConsultConnectionMessage implements ChatItem, ConsultChatPhrase {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (sex ? 1 : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (avatarPath != null ? avatarPath.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
     }
 
     public long getDate() {
         return date;
-    }
-
-    @Override
-    public String toString() {
-        return "ConsultConnectionMessage{" +
-                "consultId='" + consultId + '\'' +
-                ", type='" + type + '\'' +
-                ", name='" + name + '\'' +
-                ", sex=" + sex +
-                ", date=" + date +
-                ", status='" + status + '\'' +
-                ", avatarPath='" + avatarPath + '\'' +
-                ", title='" + title + '\'' +
-                ", messageId='" + messageId + '\'' +
-                '}';
     }
 }
