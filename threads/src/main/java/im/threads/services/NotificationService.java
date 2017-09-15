@@ -221,24 +221,26 @@ public class NotificationService extends Service {
             pushSmall.setTextViewText(R.id.title, getString(R.string.title_default));
             pushBig.setTextViewText(R.id.title, getString(R.string.title_default));
         }
-        int color = style != null && style.pushBackgroundColorResId != ChatStyle.INVALID ?
-                style.pushBackgroundColorResId : -1;
-        if (color > -1) {
-            builder.setColor(getResources().getColor(color));
-            pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
-            pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
-            pushSmall.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(color));
-            pushBig.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(color));
-        }
-        if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
-            pushSmall.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
-            pushBig.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
-        }
-        if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
-            final int iconResId = style.defPushIconResId;
-            builder.setSmallIcon(iconResId);
-        } else {
-            builder.setSmallIcon(R.drawable.empty);
+
+        builder.setSmallIcon(R.drawable.empty);
+
+        if (style != null) {
+            if (style.pushBackgroundColorResId != ChatStyle.INVALID) {
+                builder.setColor(getResources().getColor(style.pushBackgroundColorResId));
+                pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
+                pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
+                pushSmall.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(style.pushBackgroundColorResId));
+                pushBig.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(style.pushBackgroundColorResId));
+            }
+            if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
+                pushSmall.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
+                pushBig.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
+            }
+
+            if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
+                final int iconResId = style.defPushIconResId;
+                builder.setSmallIcon(iconResId);
+            }
         }
 
         boolean unreadMessage = !TextUtils.isEmpty(message);
@@ -250,7 +252,7 @@ public class NotificationService extends Service {
                 pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
                 pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
             } else {
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_big_icon);
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_push_icon);
                 pushSmall.setImageViewBitmap(R.id.icon_large, icon);
                 pushBig.setImageViewBitmap(R.id.icon_large, icon);
                 pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
@@ -333,7 +335,7 @@ public class NotificationService extends Service {
                 } else {
                     Picasso
                             .with(this)
-                            .load(R.drawable.defult_big_icon)
+                            .load(R.drawable.defult_push_icon)
                             .transform(new CircleTransform())
                             .into(smallPicTarger);
                 }
@@ -345,7 +347,7 @@ public class NotificationService extends Service {
                     pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
                     pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
                 } else {
-                    Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_big_icon);
+                    Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.defult_push_icon);
                     pushSmall.setImageViewBitmap(R.id.icon_large, icon);
                     pushBig.setImageViewBitmap(R.id.icon_large, icon);
                     pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
@@ -411,7 +413,7 @@ public class NotificationService extends Service {
             if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
                 builder.setSmallIcon(style.defPushIconResId);
             } else {
-                builder.setSmallIcon(R.drawable.done);
+                builder.setSmallIcon(R.drawable.defult_push_icon);
             }
             executor.execute(new Runnable() {
                 @Override
@@ -449,7 +451,7 @@ public class NotificationService extends Service {
                 if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
                     builder.setSmallIcon(style.defPushIconResId);
                 } else {
-                    builder.setSmallIcon(R.drawable.done);
+                    builder.setSmallIcon(R.drawable.defult_push_icon);
                 }
                 executor.execute(new Runnable() {
                     @Override

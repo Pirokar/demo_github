@@ -92,11 +92,11 @@ public class ChatStyle implements Serializable {
 
     // push notification style
     @DrawableRes
-    public int defPushIconResId = INVALID;
+    public int defPushIconResId = R.drawable.defult_push_icon;
     @StringRes
-    public int defTitleResId = INVALID;
+    public int defTitleResId = R.string.app_name;
     @ColorRes
-    public int pushBackgroundColorResId = INVALID;
+    public int pushBackgroundColorResId = R.color.green_dark;
     @ColorRes
     public int nougatPushAccentColorResId = INVALID;
 

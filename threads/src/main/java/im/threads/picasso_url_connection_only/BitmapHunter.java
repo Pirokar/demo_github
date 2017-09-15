@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.NetworkInfo;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -28,16 +29,13 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static android.media.ExifInterface.ORIENTATION_FLIP_HORIZONTAL;
+import static android.media.ExifInterface.ORIENTATION_FLIP_VERTICAL;
 import static android.media.ExifInterface.ORIENTATION_ROTATE_180;
 import static android.media.ExifInterface.ORIENTATION_ROTATE_270;
 import static android.media.ExifInterface.ORIENTATION_ROTATE_90;
-import static android.media.ExifInterface.ORIENTATION_FLIP_HORIZONTAL;
-import static android.media.ExifInterface.ORIENTATION_FLIP_VERTICAL;
 import static android.media.ExifInterface.ORIENTATION_TRANSPOSE;
 import static android.media.ExifInterface.ORIENTATION_TRANSVERSE;
-
-import static  im.threads.picasso_url_connection_only.Utils.getLogIdsForHunter;
-import static  im.threads.picasso_url_connection_only.Utils.log;
 
 class BitmapHunter implements Runnable {
   /**
@@ -541,7 +539,7 @@ class BitmapHunter implements Runnable {
         }
       }
 
-      // EXIf interpretation should be done before cropping in case the dimensions need to
+      // EXIf interpretation should be defult_small_icon before cropping in case the dimensions need to
       // be recalculated
       if (exifOrientation != 0) {
         int exifRotation = getExifRotation(exifOrientation);
