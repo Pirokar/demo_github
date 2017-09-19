@@ -22,7 +22,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/green_light"
+        android:background="@color/threads_green_light"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:title="@string/lib_files_and_media"
         app:titleTextColor="@android:color/white">

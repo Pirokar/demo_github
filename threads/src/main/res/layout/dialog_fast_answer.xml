@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_alignParentTop="true"
-        android:background="@color/green_light"
+        android:background="@color/threads_green_light"
         android:orientation="horizontal">
 
         <ImageView
@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/header"
-        android:background="@color/white_dark"
+        android:background="@color/threads_white_dark"
         android:gravity="center"
         android:minHeight="120dp"
         android:padding="@dimen/margin_material"

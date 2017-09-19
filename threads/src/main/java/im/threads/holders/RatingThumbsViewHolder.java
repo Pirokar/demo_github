@@ -47,9 +47,9 @@ public class RatingThumbsViewHolder extends BaseHolder {
         }
 
         if (style != null) {
-            if (style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID) {
-                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
-                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
+            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
+                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
+                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
             }
 
             if (style.surveyTextColorResId != ChatStyle.INVALID) {

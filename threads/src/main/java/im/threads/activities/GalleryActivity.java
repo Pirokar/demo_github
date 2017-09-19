@@ -320,7 +320,7 @@ public class GalleryActivity extends BaseActivity
             mSendButton.setTextColor(getResources().getColor(android.R.color.white));
         } else {
             mSendButton.setEnabled(false);
-            mSendButton.setTextColor(getResources().getColor(R.color.disabled_text_color));
+            mSendButton.setTextColor(getResources().getColor(R.color.threads_disabled_text_color));
         }
     }
 }

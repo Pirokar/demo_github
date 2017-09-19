@@ -46,7 +46,7 @@ public class ConsultActivity extends BaseActivity {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-            getWindow().setStatusBarColor(getResources().getColor(R.color.black_transparent));
+            getWindow().setStatusBarColor(getResources().getColor(R.color.threads_black_transparent));
         }
         setContentView(R.layout.activity_consult_page);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);

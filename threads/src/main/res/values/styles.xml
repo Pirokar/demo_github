@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@android:color/holo_green_light</item>
         <item name="colorPrimaryDark">@android:color/holo_green_dark</item>
-        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:windowBackground">@color/threads_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/menuItemTheme</item>
 
@@ -43,7 +43,7 @@
     <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <!--  <item name="colorPrimaryDark">@color/black_transparent</item>-->
-        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:windowBackground">@color/threads_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="windowActionBar">false</item>
 
@@ -55,7 +55,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimaryDark">#282828</item>
         <item name="windowActionBar">false</item>
-        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:windowBackground">@color/threads_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/menuItemThemeDark</item>
 

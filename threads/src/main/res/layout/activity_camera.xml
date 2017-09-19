@@ -93,7 +93,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_gray"
+        android:background="@color/threads_toolbar_gray"
         android:visibility="gone"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp" />
 
@@ -102,7 +102,7 @@
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_gravity="bottom"
-        android:background="@color/toolbar_gray"
+        android:background="@color/threads_toolbar_gray"
         android:visibility="gone">
 
         <im.threads.widget.CustomFontButton

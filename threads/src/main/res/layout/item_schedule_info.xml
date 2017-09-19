@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margin_half"
         android:layout_marginRight="@dimen/margin_material"
-        android:textColor="@color/black"
+        android:textColor="@color/threads_black"
         android:textSize="18sp"
         tools:text="Сегодня чат не работает. Все операторы отдыхают. Будем доступны завтра с 10:00 до 18:00."/>
 

@@ -33,8 +33,8 @@ public class DateViewHolder extends RecyclerView.ViewHolder {
         } else {
             sdf = new SimpleDateFormat("dd MMMM yyyy");
         }
-        if (style != null && style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID) {
-            mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
+        if (style != null && style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
+            mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
         }
     }
 

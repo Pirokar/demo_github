@@ -4,5 +4,5 @@
     <size
         android:width="@dimen/margin_half"
         android:height="@dimen/margin_half" />
-    <solid android:color="@color/red_f44336" />
+    <solid android:color="@color/threads_red_f44336" />
 </shape>

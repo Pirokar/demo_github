@@ -30,44 +30,46 @@ public class ChatStyle implements Serializable {
     @StringRes
     public int chatTitleTextResId = INVALID;
     @ColorRes
-    public int chatToolbarColorResId = R.color.teal_009688;
+    public int chatToolbarColorResId = R.color.threads_teal_009688;
     @ColorRes
-    public int chatStatusBarColorResId = R.color.teal_004D40;
+    public int chatStatusBarColorResId = R.color.threads_teal_004D40;
     @ColorRes
     public int menuItemTextColorResId = INVALID;
     @ColorRes
-    public int chatToolbarTextColorResId = R.color.white;
+    public int chatToolbarTextColorResId = R.color.threads_white;
     @ColorRes
     public int chatToolbarHintTextColor = INVALID;
     public boolean showBackButton;
 
     // chat body style
     @ColorRes
-    public int chatBackgroundColor = R.color.blue_eff3f8;
+    public int chatBackgroundColor = INVALID;
     @ColorRes
-    public int chatHighlightingColor = R.color.blue_transparent_700F87FF;
+    public int chatHighlightingColor = R.color.threads_blue_transparent_700F87FF;
     @ColorRes
     public int chatMessageInputColor = INVALID;
     @ColorRes
     public int chatMessageInputHintTextColor = INVALID;
     @ColorRes
-    public int incomingMessageBubbleColor = R.color.white;
+    public int incomingMessageBubbleColor = R.color.threads_white;
     @ColorRes
-    public int outgoingMessageBubbleColor = R.color.blue_3598dc;
+    public int outgoingMessageBubbleColor = R.color.threads_blue_3598dc;
     @DrawableRes
     public int incomingMessageBubbleBackground = INVALID;
     @DrawableRes
     public int outgoingMessageBubbleBackground = INVALID;
     @ColorRes
-    public int incomingMessageTextColor = R.color.black;
+    public int incomingMessageTextColor = R.color.threads_black;
     @ColorRes
-    public int outgoingMessageTextColor = R.color.white;
+    public int outgoingMessageTextColor = R.color.threads_white;
     @ColorRes
-    public int chatBodyIconsTint = R.color.blue_0F87FF;
+    public int chatBodyIconsTint = R.color.threads_blue_0F87FF;
     @ColorRes
-    public int connectionMessageTextColor = R.color.blue_grey_607d8b;
+    public int connectionMessageTextColor = R.color.threads_blue_grey_607d8b;
     @ColorRes
     public int filesAndMediaScreenBackgroundColor = INVALID;
+    @ColorRes
+    public int iconsAndSeparatorsColor = R.color.threads_disabled_text_color;
     @DrawableRes
     public int defaultIncomingMessageAvatar = INVALID;
     @DimenRes
@@ -94,19 +96,19 @@ public class ChatStyle implements Serializable {
     @DrawableRes
     public int defPushIconResId = R.drawable.defult_push_icon;
     @StringRes
-    public int defTitleResId = R.string.app_name;
+    public int defTitleResId = R.string.lib_app_name;
     @ColorRes
-    public int pushBackgroundColorResId = R.color.green_dark;
+    public int pushBackgroundColorResId = R.color.threads_green_dark;
     @ColorRes
     public int nougatPushAccentColorResId = INVALID;
 
     // resolve thread request style
     @StringRes
-    public int requestToResolveThreadTextResId = R.string.request_to_resolve_thread;
+    public int requestToResolveThreadTextResId = R.string.lib_request_to_resolve_thread;
     @StringRes
-    public int approveRequestToResolveThreadTextResId = R.string.request_to_resolve_thread_close;
+    public int approveRequestToResolveThreadTextResId = R.string.lib_request_to_resolve_thread_close;
     @StringRes
-    public int denyRequestToResolveThreadTextResId = R.string.request_to_resolve_thread_open;
+    public int denyRequestToResolveThreadTextResId = R.string.lib_request_to_resolve_thread_open;
 
     // survey style
     @DrawableRes
@@ -126,7 +128,7 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int surveyUnselectedColorFilterResId = INVALID;
     @ColorRes
-    public int surveyTextColorResId = R.color.black;
+    public int surveyTextColorResId = R.color.threads_black;
 
     // schedule message style
     @ColorRes
@@ -145,7 +147,9 @@ public class ChatStyle implements Serializable {
     @StringRes
     public int welcomeScreenSubtitleTextResId = INVALID;
     @ColorRes
-    public int welcomeScreenTextColorResId = R.color.black;
+    public int welcomeScreenTitleTextColorResId = INVALID;
+    @ColorRes
+    public int welcomeScreenSubtitleTextColorResId = INVALID;
     public int welcomeScreenTitleSizeInSp;
     public int welcomeScreenSubtitleSizeInSp;
 
@@ -250,6 +254,7 @@ public class ChatStyle implements Serializable {
                 @ColorRes int chatBodyIconsTint,
                 @ColorRes int connectionMessageTextColor,
                 @ColorRes int filesAndMediaScreenBackgroundColor,
+                @ColorRes int iconsAndSeparatorsColor,
                 @DrawableRes int defaultIncomingMessageAvatar,
                 @DimenRes int operatorAvatarSize,
                 @DimenRes int operatorSystemAvatarSize,
@@ -279,6 +284,7 @@ public class ChatStyle implements Serializable {
             chatStyle.chatBodyIconsTint = chatBodyIconsTint;
             chatStyle.connectionMessageTextColor = connectionMessageTextColor;
             chatStyle.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
+            chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor;
             chatStyle.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
             chatStyle.showConsultSearching = showConsultSearching;
             chatStyle.alwaysScrollToEnd = alwaysScrollToEnd;
@@ -350,10 +356,12 @@ public class ChatStyle implements Serializable {
                 , @StringRes int welcomeScreenTitleTextResId
                 , @StringRes int welcomeScreenSubtitleTextResId
                 , @ColorRes int welcomeScreenTextColorResId
+                , @ColorRes int welcomeScreenSubtitleTextColorResId
                 , int welcomeScreenTitleSizeInSp
                 , int welcomeScreenSubtitleSizeInSp) {
             chatStyle.welcomeScreenLogoResId = welcomeScreenLogoResId;
-            chatStyle.welcomeScreenTextColorResId = welcomeScreenTextColorResId;
+            chatStyle.welcomeScreenTitleTextColorResId = welcomeScreenTextColorResId;
+            chatStyle.welcomeScreenSubtitleTextColorResId = welcomeScreenSubtitleTextColorResId;
             chatStyle.welcomeScreenTitleTextResId = welcomeScreenTitleTextResId;
             chatStyle.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
             chatStyle.welcomeScreenTitleSizeInSp = welcomeScreenTitleSizeInSp;
@@ -472,7 +480,7 @@ public class ChatStyle implements Serializable {
 
         public ChatStyle build() {
             if (TextUtils.isEmpty(clientId) && PrefUtils.getClientID(ctx).equals("")) {
-                throw new IllegalStateException(ctx.getString(R.string.invalid_client_id));
+                throw new IllegalStateException(ctx.getString(R.string.lib_invalid_client_id));
             }
 
             PrefUtils.setIncomingStyle(ctx, chatStyle);

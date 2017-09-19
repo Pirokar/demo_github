@@ -37,6 +37,7 @@ public class ChatBuilderHelper {
                         R.color.chatbody_icons_tint,//цвет иконок в поле сообщения chatBodyIconsTint
                         R.color.connection_message_text_color,//цвет текста сообщения о соединениии connectionMessageTextColor
                         R.color.files_and_media_screen_bg_color,//цвет фона экрана Медиа и файлы filesAndMediaScreenBackgroundColor
+                        R.color.welcome_screen_text,//цвет сепараторов в опросах, текста оператор печатает, цвет дат и др вспомогательные элементы  iconsAndSeparatorsColor
                         R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
                         R.dimen.operator_avatar_size,// размер аватара агента для обычных сообщений operatorAvatarSize
                         R.dimen.operator_system_avatar_size,// размер аватара агента для системных сообщений (подключился/ отключился/ поставил на паузу) operatorSystemAvatarSize
@@ -58,7 +59,8 @@ public class ChatBuilderHelper {
                         R.drawable.welcom_screen_image//логотип экрана приветствия welcomeScreenLogoResId
                         , R.string.welcome//заголовок экрана приветствия welcomeScreenTitleTextResId
                         , R.string.subtitle_text//подзаголовок экрана приветствия welcomeScreenSubtitleTextResId
-                        , R.color.welcome_screen_text//цвет текста на экране приветствия welcomeScreenTextColorResId
+                        , R.color.welcome_screen_text//цвет заголовка на экране приветствия welcomeScreenTextColorResId
+                        , R.color.welcome_screen_text//цвет подзогаловка на экране приветствия welcomeScreenSubtitleTextColorResId
                         , 18//размер шрифта заголовка welcomeScreenTitleSizeInSp
                         , 14)//размер шрифта подзаголовка welcomeScreenSubtitleSizeInSp
                 .setScheduleMessageStyle(

@@ -299,9 +299,9 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
             }
 
-            if (style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID) {
-                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.welcomeScreenTitleTextColorResId));
-                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.welcomeScreenTitleTextColorResId));
+            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
+                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
+                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
             }
 
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
@@ -600,30 +600,6 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.add_attachment), style.chatBodyIconsTint);
                 ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.quote_clear), style.chatBodyIconsTint);
                 mBottomSheetView.setButtonsTint(style.chatBodyIconsTint);
-            }
-
-            if (style.welcomeScreenLogoResId != ChatStyle.INVALID) {
-                mWelcomeScreen.setLogo(style.welcomeScreenLogoResId);
-            }
-
-            if (style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID) {
-                mWelcomeScreen.setTextColor(style.welcomeScreenTitleTextColorResId);
-            }
-
-            if (style.welcomeScreenTitleTextResId != ChatStyle.INVALID && style.welcomeScreenSubtitleTextResId != ChatStyle.INVALID) {
-                mWelcomeScreen.setText(appContext.getString(style.welcomeScreenTitleTextResId), appContext.getString(style.welcomeScreenSubtitleTextResId));
-            }
-
-            if (style.welcomeScreenTitleSizeInSp != ChatStyle.INVALID) {
-                mWelcomeScreen.setTitletextSize(style.welcomeScreenTitleSizeInSp);
-            }
-
-            if (style.welcomeScreenSubtitleSizeInSp != ChatStyle.INVALID) {
-                mWelcomeScreen.setSubtitleSize(style.welcomeScreenSubtitleSizeInSp);
-            }
-
-            if (style.chatBackgroundColor != ChatStyle.INVALID) {
-                mWelcomeScreen.setBackground(style.chatBackgroundColor);
             }
 
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
@@ -1547,8 +1523,8 @@ public class ChatFragment extends Fragment implements
         mSendButton.setEnabled(enabled);
 
         if (style != null) {
-            ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? style.chatBodyIconsTint : R.color.disabled_text_color);
-            ColorsHelper.setTint(getActivity(), mSendButton, enabled ? style.chatBodyIconsTint : R.color.disabled_text_color);
+            ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
+            ColorsHelper.setTint(getActivity(), mSendButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
         }
     }
 

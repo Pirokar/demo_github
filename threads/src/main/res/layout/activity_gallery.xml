@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_gray"
+        android:background="@color/threads_toolbar_gray"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:title="@string/lib_photos"
         app:titleTextColor="@android:color/white">

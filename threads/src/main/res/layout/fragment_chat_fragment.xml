@@ -44,7 +44,7 @@
             android:id="@+id/welcome"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white_dark"
+            android:background="@color/threads_white_dark"
             android:visibility="visible" />
 
     </FrameLayout>
@@ -79,7 +79,7 @@
             android:layout_height="20dp"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:textColor="@color/white"
+            android:textColor="@color/threads_white"
             android:textSize="@dimen/text_small"
             android:text="1"/>
     </RelativeLayout>

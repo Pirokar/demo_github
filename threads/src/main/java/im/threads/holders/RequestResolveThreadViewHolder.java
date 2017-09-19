@@ -40,10 +40,10 @@ public class RequestResolveThreadViewHolder extends BaseHolder {
         }
 
         if (style != null) {
-            if (style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID) {
-                requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
-                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
-                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
+            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
+                requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
+                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
+                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
             }
 
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {

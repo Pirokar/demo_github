@@ -36,7 +36,7 @@
             android:paddingLeft="@dimen/margin_material"
             android:paddingRight="@dimen/margin_material"
             android:text="@string/lib_request_to_resolve_thread_open"
-            android:textColor="@color/blue"
+            android:textColor="@color/threads_blue"
             android:gravity="center"
             android:lines="1"/>
 
@@ -48,7 +48,7 @@
             android:paddingLeft="@dimen/margin_material"
             android:paddingRight="@dimen/margin_material"
             android:text="@string/lib_request_to_resolve_thread_close"
-            android:textColor="@color/blue"
+            android:textColor="@color/threads_blue"
             android:gravity="center"
             android:lines="1"/>
     </LinearLayout>

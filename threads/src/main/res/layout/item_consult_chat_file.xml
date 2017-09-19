@@ -52,7 +52,7 @@
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toRightOf="@+id/circ_button"
             android:text="счет на оплатуrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.pdf"
-            android:textColor="@color/gray_text" />
+            android:textColor="@color/threads_gray_text" />
 
         <im.threads.widget.text_view.BubbleMessageTextView
             android:id="@+id/file_size"
@@ -65,7 +65,7 @@
             android:layout_toRightOf="@+id/circ_button"
             android:paddingBottom="@dimen/margin_half"
             android:text="1,2 mb"
-            android:textColor="@color/gray_text" />
+            android:textColor="@color/threads_gray_text" />
 
         <im.threads.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
