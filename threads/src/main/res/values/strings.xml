@@ -57,8 +57,8 @@
     <string name="touch_to_download">Touch to download</string>
     <string name="new_">new</string>
     <string name="answer">ANSWER</string>
-    <string name="check_connection">problems with internet connection</string>
-    <string name="user_agent"  formatted="false">Android, osVersion=%s, appVersion=%s, libVersion=%s, device=%s</string>
+    <string name="check_connection">problems with internet connection</string>;
+    <string name="user_agent" formatted="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
 
     <plurals  name="unread_messages">
         <item quantity="one">%d unread message</item>

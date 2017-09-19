@@ -1,10 +1,6 @@
 package im.threads.formatters;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -28,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import im.threads.BuildConfig;
 import im.threads.R;
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
@@ -47,6 +42,8 @@ import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
+import im.threads.utils.AppInfoHelper;
+import im.threads.utils.DeviceInfoHelper;
 import im.threads.utils.MessageMatcher;
 
 /**
@@ -85,6 +82,8 @@ public class MessageFormatter {
     private static final String TYPE_OPERATOR_LEFT = "OPERATOR_LEFT";
     private static final String TYPE_CLIENT_OFFLINE = "CLIENT_OFFLINE";
     private static final String TYPE_TYPING = "TYPING";
+
+    private static String userAgent = "";
 
     private MessageFormatter() {
     }
@@ -660,11 +659,14 @@ public class MessageFormatter {
             object.put(CLIENT_ID, clientId);
             object.put("data", data);
             object.put("platform", "Android");
-            object.put("osVersion", getOsVersion());
-            object.put("device", getDeviceName());
-            object.put("appVersion", getAppVersion(ctx));
-            object.put("libVersion", getLibVersion());
-            object.put("clientLocale", getLocale(ctx));
+            object.put("osVersion", DeviceInfoHelper.getOsVersion());
+            object.put("device", DeviceInfoHelper.getDeviceName());
+            object.put("ip", DeviceInfoHelper.getIpAddress());
+            object.put("appVersion", AppInfoHelper.getAppVersion(ctx));
+            object.put("appName", AppInfoHelper.getAppName(ctx));
+            object.put("appBundle", AppInfoHelper.getAppId(ctx));
+            object.put("libVersion", AppInfoHelper.getLibVersion());
+            object.put("clientLocale", DeviceInfoHelper.getLocale(ctx));
             object.put(TYPE, TYPE_CLIENT_INFO);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -672,33 +674,6 @@ public class MessageFormatter {
 
         return object.toString().replaceAll("\\\\", "");
     }
-
-//    public static String createRatingThumbsMessage(boolean rating, String messageId) {
-//        JSONObject object = new JSONObject();
-//        try {
-//            if (rating) {
-//                object.put("rating", "good");
-//                object.put("message_id", messageId);
-//            } else {
-//                object.put("rating", "not_good");
-//                object.put("message_id", messageId);
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return object.toString().replaceAll("\\\\", "");
-//    }
-//
-//    public static String createRatingStarsMessage(int rating, String messageId) {
-//        JSONObject object = new JSONObject();
-//        try {
-//            object.put("rating", String.valueOf(rating));
-//            object.put("message_id", messageId);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return object.toString().replaceAll("\\\\", "");
-//    }
 
     public static String createRatingDoneMessage(long sendingId, long questionId, int rate, String clientId) {
         JSONObject object = new JSONObject();
@@ -750,163 +725,7 @@ public class MessageFormatter {
         return object.toString().replaceAll("\\\\", "");
     }
 
-    private static String getAppName(Context context) {
-        ApplicationInfo applicationInfo = context.getApplicationInfo();
-        String appName;
-        if (applicationInfo != null) {
-            try {
-                appName = applicationInfo.loadLabel(context.getPackageManager()).toString();
-            } catch (Exception e) {
-                e.printStackTrace();
-                appName = "Unknown";
-            }
-        } else {
-            appName = "Unknown";
-        }
-        return appName;
-    }
 
-    private static String getAppBundle() {
-        return BuildConfig.APPLICATION_ID;
-    }
-
-    private static String getOsVersion() {
-        return String.valueOf(Build.VERSION.SDK_INT);
-    }
-
-    private static String getDeviceName() {
-        return Build.MANUFACTURER + " " + Build.MODEL;
-    }
-
-    private static String getAppVersion(Context ctx) {
-
-        PackageInfo pInfo = null;
-        try {
-            pInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return pInfo != null ? pInfo.versionName + " (" + pInfo.versionCode + ")" : "";
-    }
-
-    private static String getLibVersion() {
-        return BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")";
-    }
-
-    private static String getLocale(Context ctx) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return ctx.getResources().getConfiguration().getLocales().get(0).toLanguageTag();
-        } else {
-            //noinspection deprecation
-            try {
-                return ctx.getResources().getConfiguration().locale.toLanguageTag();
-            } catch (NoSuchMethodError e) {
-                return ctx.getResources().getConfiguration().locale.getLanguage()
-                        + "-" + ctx.getResources().getConfiguration().locale.getCountry();
-            }
-        }
-    }
-
-    /*public static ArrayList<ChatItem> format(List<InOutMessage> messages) {
-        ArrayList<ChatItem> out = new ArrayList<>();
-        try {
-            for (InOutMessage message : messages) {
-                if (message == null || message.content == null || message.content.length() == 0)
-                    continue;
-                try {
-                    JSONObject body = new JSONObject(message.content);
-                    String messageId = String.valueOf(message.messageId);
-//                    String messageId = body.getString("providerId");
-                    String backendId = String.valueOf(body.getLong(BACKEND_ID));
-                    long timeStamp = message.sentAt.millis;
-                    JSONObject operatorInfo = body.has("operator") ? body.getJSONObject("operator") : null;
-                    String name = null;
-                    if (operatorInfo != null && operatorInfo.has("name") && !operatorInfo.isNull("name")) {
-                        name = operatorInfo.getString("name");
-                    }
-                    String photoUrl = null;
-                    if (operatorInfo != null && operatorInfo.has("photoUrl") && !operatorInfo.isNull("photoUrl")) {
-                        photoUrl = operatorInfo.getString("photoUrl");
-                    }
-                    String operatorId = null;
-                    if (operatorInfo != null && operatorInfo.has("id") && !operatorInfo.isNull("id")) {
-                        operatorId = operatorInfo.getString("id");
-                    }
-                    String status = null;
-                    if (operatorInfo != null && operatorInfo.has("status") && !operatorInfo.isNull("status")) {
-                        status = operatorInfo.getString("status");
-                    }
-                    boolean gender = false;
-                    if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
-                        gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
-                    }
-                    boolean displayMessage = !body.has("display") || body.getBoolean("display");
-                    if (body.has(TYPE) && (TYPE_OPERATOR_JOINED.equalsIgnoreCase(body.getString(TYPE)) || TYPE_OPERATOR_LEFT.equalsIgnoreCase(body.getString(TYPE)))) {
-                        String type = body.getString(TYPE).equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-                        out.add(new ConsultConnectionMessage(operatorId, type, name, gender, timeStamp, photoUrl, status, null, messageId, displayMessage));
-                    } else {
-                        String phraseText = body.has(TEXT) ? body.getString(TEXT) : null;
-                        FileDescription fileDescription = body.has(ATTACHMENTS) ? fileDescriptionFromJson(body.getJSONArray(ATTACHMENTS)) : null;
-                        if (fileDescription != null) {
-                            fileDescription.setFrom(name);
-                            fileDescription.setTimeStamp(timeStamp);
-                        }
-                        Quote quote = body.has(QUOTES) ? quoteFromJson(body.getJSONArray(QUOTES)) : null;
-                        if (quote != null && quote.getFileDescription() != null)
-                            quote.getFileDescription().setTimeStamp(timeStamp);
-                        if (!message.incoming) {
-                            out.add(new ConsultPhrase(fileDescription
-                                    , quote
-                                    , name
-                                    , messageId
-                                    , phraseText
-                                    , timeStamp
-                                    , operatorId
-                                    , photoUrl
-                                    , true
-                                    , status
-                                    , gender
-                                    , backendId
-                            ));
-                        } else {
-                            if (fileDescription != null) {
-                                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
-                                    fileDescription.setFrom("Я");
-                                } else {
-                                    fileDescription.setFrom("I");
-                                }
-                            }
-                            out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ, backendId));
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    if (e.getMessage() != null && e.getMessage().contains("annot be converted to")) {
-                        String cont = message.content;
-                        String type = cont.contains("присоедини") ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-                        String title = null;
-                        String name = null;
-                        try {
-                            name = cont.split(" ")[1];
-                            title = cont.split(" ")[0];
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        ConsultConnectionMessage ccm = new ConsultConnectionMessage(name, type, name, cont.contains("лся") ? true : false, message.sentAt.millis, null, null, title, String.valueOf(message.messageId), true);
-                        out.add(ccm);
-                    }
-                    Log.e(TAG, "error parsing message" + message);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "error while formatting");
-            Log.e(TAG, "" + messages);
-            e.printStackTrace();
-        }
-        return out;
-    }
-*/
     public static ArrayList<ChatItem> formatNew(List<MessgeFromHistory> messages) {
         ArrayList<ChatItem> out = new ArrayList<>();
         try {
@@ -929,14 +748,6 @@ public class MessageFormatter {
                 if (operator != null && operator.getId() != null) {
                     operatorId = String.valueOf(operator.getId());
                 }
-//                    String status = null;
-//                    if (operator != null && operatorInfo.has("status") && !operatorInfo.isNull("status")) {
-//                        status = operatorInfo.getString("status");
-//                    }
-//                    boolean gender = false;
-//                    if (operatorInfo != null && operatorInfo.has("gender") && !operatorInfo.isNull("gender")) {
-//                        gender = operatorInfo.getString("gender").equalsIgnoreCase("male");
-//                    }
 
                 if (message.getType() != null && !message.getType().isEmpty() && (message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) || message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT))) {
                     String type = message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
@@ -991,37 +802,6 @@ public class MessageFormatter {
         }
         return out;
     }
-
-    /*private static ConsultConnectionMessage getConsultConnectionMessageFromInout(InOutMessage message) throws JSONException {
-        JSONObject body = new JSONObject(message.content);
-        String type = body.getString(TYPE).equalsIgnoreCase(TYPE_OPERATOR_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
-        JSONObject operator = body.getJSONObject("operator");
-        long operatorId = operator.getLong("id");
-        String name = operator.isNull("name") ? null : operator.getString("name");
-        String status = operator.isNull("status") ? null : operator.getString("status");
-        boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
-        String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
-        String title = "";
-
-        try {
-            title = body.getString(TEXT).split(" ")[0];
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ConsultConnectionMessage c =
-                new ConsultConnectionMessage(
-                        String.valueOf(operatorId)
-                        , type
-                        , name
-                        , gender
-                        , message.sentAt.millis
-                        , photourl
-                        , status
-                        , title
-                        , String.valueOf(message.messageId)
-                        , false);
-        return c;
-    }*/
 
     public static List<String> getReadIds(Bundle b) {
         ArrayList<String> ids = new ArrayList<>();
@@ -1102,7 +882,15 @@ public class MessageFormatter {
     }
 
     public static String getUserAgent(Context ctx) {
-        return String.format(ctx.getResources().getString(R.string.user_agent), getOsVersion(),
-                getAppVersion(ctx), getLibVersion(), getDeviceName());
+        if (TextUtils.isEmpty(userAgent)) {
+            userAgent = String.format(ctx.getResources().getString(R.string.user_agent),
+                    DeviceInfoHelper.getOsVersion(),
+                    DeviceInfoHelper.getDeviceName(),
+                    DeviceInfoHelper.getIpAddress(),
+                    AppInfoHelper.getAppVersion(ctx),
+                    AppInfoHelper.getAppId(ctx),
+                    AppInfoHelper.getLibVersion());
+        }
+        return userAgent;
     }
 }
