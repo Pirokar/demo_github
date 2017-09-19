@@ -15,7 +15,7 @@
         android:layout_marginLeft="@dimen/margin_big"
         android:layout_marginRight="@dimen/margin_big"
         android:background="@android:color/transparent"
-        android:text="@string/search_more"
+        android:text="@string/lib_search_more"
         android:visibility="gone" />
 
 
@@ -170,7 +170,7 @@
                 style="@style/InputEditTextStyle"
                 android:background="@android:color/transparent"
                 android:drawablePadding="@dimen/margin_big"
-                android:hint="@string/your_message"
+                android:hint="@string/lib_your_message"
                 android:maxLines="5"
                 android:paddingLeft="64dp"
                 android:paddingRight="64dp" />
@@ -304,7 +304,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_toLeftOf="@+id/search_up_ib"
                         android:background="@null"
-                        android:hint="@string/search_messages"
+                        android:hint="@string/lib_search_messages"
                         android:lines="1"
                         android:textCursorDrawable="@null"
                         android:textSize="@dimen/text_big"

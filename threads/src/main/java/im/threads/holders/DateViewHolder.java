@@ -6,14 +6,14 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
 import im.threads.model.ChatStyle;
 import im.threads.utils.PrefUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -33,8 +33,8 @@ public class DateViewHolder extends RecyclerView.ViewHolder {
         } else {
             sdf = new SimpleDateFormat("dd MMMM yyyy");
         }
-        if (style != null && style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-            mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
+        if (style != null && style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID) {
+            mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
         }
     }
 

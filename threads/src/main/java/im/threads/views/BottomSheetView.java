@@ -13,11 +13,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import im.threads.R;
-import im.threads.model.ChatStyle;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import im.threads.R;
+import im.threads.model.ChatStyle;
 
 /**
  * Created by yuri on 06.06.2016.
@@ -113,13 +113,13 @@ public class BottomSheetView extends LinearLayout {
             if (color!=0){
                 d.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             }
-            hideButton.setText(getContext().getResources().getString(R.string.send));
+            hideButton.setText(getContext().getResources().getString(R.string.lib_send));
         } else {
             d = getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_blue_42dp);
             if (color!=0){
                 d.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             }
-            hideButton.setText(getContext().getResources().getString(R.string.hide));
+            hideButton.setText(getContext().getResources().getString(R.string.lib_hide));
         }
         hideButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, d, null, null);
         this.isSmthSelected = isSmthSelected;

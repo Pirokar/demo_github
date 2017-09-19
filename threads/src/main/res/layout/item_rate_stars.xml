@@ -16,7 +16,7 @@
         android:id="@+id/ask_for_rate"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="@string/ask_to_rate"
+        android:text="@string/lib_ask_to_rate"
         android:gravity="center"/>
 
     <im.threads.widget.Rating
@@ -33,7 +33,7 @@
         android:id="@+id/thanks_for_rate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/thanks_for_rate"
+        android:text="@string/lib_thanks_for_rate"
         android:gravity="center"
         android:visibility="gone"/>
 

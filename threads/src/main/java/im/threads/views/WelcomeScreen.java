@@ -71,8 +71,8 @@ public class WelcomeScreen extends LinearLayout {
 
 
         @ColorInt int textColor;
-        if (style != null && style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-            textColor = typedArray.getColor(R.styleable.WelcomeScreen_text_color, ContextCompat.getColor(context, style.welcomeScreenTextColorResId));
+        if (style != null && style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID) {
+            textColor = typedArray.getColor(R.styleable.WelcomeScreen_text_color, ContextCompat.getColor(context, style.welcomeScreenTitleTextColorResId));
         } else {
             textColor = typedArray.getColor(R.styleable.WelcomeScreen_text_color, ContextCompat.getColor(context, android.R.color.black));
         }
@@ -83,7 +83,7 @@ public class WelcomeScreen extends LinearLayout {
             titleText = context.getString(style.welcomeScreenTitleTextResId);
 //            String titleText = typedArray.getString(R.styleable.WelcomeScreen_title_text);
         } else {
-            titleText = context.getString(R.string.title_text);
+            titleText = context.getString(R.string.lib_title_text);
         }
 
         String subtitleText;
@@ -91,7 +91,7 @@ public class WelcomeScreen extends LinearLayout {
             subtitleText = context.getString(style.welcomeScreenSubtitleTextResId);
 //        String subtitleText = typedArray.getString(R.styleable.WelcomeScreen_subtitle_text);
         } else {
-            subtitleText = context.getString(R.string.subtitle_text);
+            subtitleText = context.getString(R.string.lib_subtitle_text);
         }
 
         title = (TextView) findViewById(R.id.welcome_title);

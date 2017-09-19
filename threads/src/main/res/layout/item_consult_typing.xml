@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/image"
-        android:text="@string/typing"
+        android:text="@string/lib_typing"
         android:textSize="@dimen/text_medium" />
 
 </RelativeLayout>

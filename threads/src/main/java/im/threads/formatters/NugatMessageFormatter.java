@@ -2,15 +2,15 @@ package im.threads.formatters;
 
 import android.content.Context;
 
+import java.util.List;
+import java.util.Locale;
+
 import im.threads.R;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.utils.Tuple;
-
-import java.util.List;
-import java.util.Locale;
 
 import static android.text.TextUtils.isEmpty;
 import static im.threads.utils.FileUtils.JPEG;
@@ -96,8 +96,8 @@ public class NugatMessageFormatter {
         if (imagesCount != 0 && plainFilesCount == 0) {
             ImagesPlurals imagesPlurals = new ImagesPlurals(Locale.getDefault());
             if (imagesCount != 0 && plainFilesCount == 0) {
-                if (isEmpty(phrase)) phrase = ctx.getString(R.string.touch_to_look);
-                String send = sex ? ctx.getString(R.string.send_male) : ctx.getString(R.string.send_female);
+                if (isEmpty(phrase)) phrase = ctx.getString(R.string.lib_touch_to_look);
+                String send = sex ? ctx.getString(R.string.lib_send_male) : ctx.getString(R.string.lib_send_female);
                 titletext += " " + send + " ";
                 if (imagesCount == 1) {
                     titletext += imagesPlurals.getForQuantity(1).toLowerCase();
@@ -108,7 +108,7 @@ public class NugatMessageFormatter {
         } else if (plainFilesCount != 0) {
             FilesPlurals filesPlurals
                     = new FilesPlurals(Locale.getDefault());
-            String send = sex ? ctx.getString(R.string.send_male) : ctx.getString(R.string.send_female);
+            String send = sex ? ctx.getString(R.string.lib_send_male) : ctx.getString(R.string.lib_send_female);
             titletext += " " + send + " ";
             if ((imagesCount + plainFilesCount) == 1) {
                 titletext += filesPlurals.getForQuantity(1).toLowerCase();
@@ -117,12 +117,12 @@ public class NugatMessageFormatter {
             }
             if (isEmpty(phrase) && plainFilesCount == 1) phrase = docName;
             else if (isEmpty(phrase) && plainFilesCount != 1) {
-                phrase = ctx.getString(R.string.touch_to_download);
+                phrase = ctx.getString(R.string.lib_touch_to_download);
             }
         } else if (plainFilesCount == 0 && imagesCount == 0 && unreadMessages.size() > 1) {
             titletext = overallPhrasesCount +
                     " "
-                    + ctx.getString(R.string.new_) +
+                    + ctx.getString(R.string.lib_new_) +
                     " "
                     + new MessagesPlurals(Locale.getDefault())
                     .getForQuantity(overallPhrasesCount);

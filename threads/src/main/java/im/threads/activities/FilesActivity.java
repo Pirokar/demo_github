@@ -22,6 +22,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import java.util.Iterator;
+import java.util.List;
+
 import im.threads.AnalyticsTracker;
 import im.threads.R;
 import im.threads.adapters.FilesAndMediaAdapter;
@@ -29,9 +32,6 @@ import im.threads.controllers.FilesAndMediaController;
 import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.utils.PrefUtils;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -85,7 +85,7 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
                 if (mSearchEditText.getVisibility() == View.VISIBLE) {
                     mSearchEditText.setText("");
                     mSearchEditText.setVisibility(View.GONE);
-                    mToolbar.setTitle(getString(R.string.files_and_media));
+                    mToolbar.setTitle(getString(R.string.lib_files_and_media));
                     if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
                 } else {
                     mSearchEditText.setVisibility(View.VISIBLE);
@@ -176,7 +176,7 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
         if (mSearchEditText.getVisibility() == View.VISIBLE) {
             mSearchEditText.setText("");
             mSearchEditText.setVisibility(View.GONE);
-            mToolbar.setTitle(getString(R.string.files_and_media));
+            mToolbar.setTitle(getString(R.string.lib_files_and_media));
             if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
         } else {
             super.onBackPressed();

@@ -20,19 +20,19 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import im.threads.AnalyticsTracker;
-import im.threads.model.ChatStyle;
-import im.threads.utils.BucketsGalleryDecorator;
-import im.threads.utils.GalleryDecorator;
 import im.threads.R;
 import im.threads.adapters.GalleryAdaper;
 import im.threads.adapters.PhotoBucketsGalleryAdapter;
+import im.threads.model.ChatStyle;
 import im.threads.model.MediaPhoto;
 import im.threads.model.PhotoBucketItem;
+import im.threads.utils.BucketsGalleryDecorator;
+import im.threads.utils.GalleryDecorator;
 import im.threads.utils.PrefUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yuri on 06.07.2016.
@@ -211,7 +211,7 @@ public class GalleryActivity extends BaseActivity
     private void setStatePhotoBuckets() {
         isInBuckets = true;
         chosentItems = null;
-        ((Toolbar) findViewById(R.id.toolbar)).setTitle(getResources().getString(R.string.photos));
+        ((Toolbar) findViewById(R.id.toolbar)).setTitle(getResources().getString(R.string.lib_photos));
         findViewById(R.id.search_label_layout).setVisibility(View.VISIBLE);
         findViewById(R.id.bottom_buttons).setVisibility(View.GONE);
         findViewById(R.id.search_layout).setVisibility(View.GONE);

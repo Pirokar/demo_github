@@ -144,7 +144,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             mCircularProgressButton.setVisibility(View.GONE);
             rightTextHeader.setText(quote.getPhraseOwnerTitle());
             mRightTextDescr.setText(quote.getText());
-            rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
+            rightTextFileStamp.setText(itemView.getContext().getString(R.string.lib_sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
             if (isEmpty(quote.getPhraseOwnerTitle())) {
                 rightTextHeader.setVisibility(View.GONE);
             } else {
@@ -178,7 +178,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             }
             String fileHeader = fileDescription.getIncomingName() == null ? FileUtils.getLastPathSegment(fileDescription.getFilePath()) : fileDescription.getIncomingName();
             mRightTextDescr.setText(fileHeader == null ? "" : fileHeader + "\n" + android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
-            rightTextFileStamp.setText(itemView.getContext().getString(R.string.sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
+            rightTextFileStamp.setText(itemView.getContext().getString(R.string.lib_sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
             mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         }
         if (fileDescription == null && quote == null) {

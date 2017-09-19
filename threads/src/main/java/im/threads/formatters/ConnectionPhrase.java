@@ -20,17 +20,17 @@ public class ConnectionPhrase {
         String temp = "";
         if (!ccm.getSex()
                 && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
-            temp = ctx.getString(R.string.push_connected_female);
+            temp = ctx.getString(R.string.lib_push_connected_female);
             out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
         } else if (!ccm.getSex()
                 && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
-            temp = ctx.getString(R.string.push_left_female);
+            temp = ctx.getString(R.string.lib_push_left_female);
             out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
         } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
-            temp = ctx.getString(R.string.push_connected);
+            temp = ctx.getString(R.string.lib_push_connected);
             out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
         } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
-            temp = ctx.getString(R.string.push_left);
+            temp = ctx.getString(R.string.lib_push_left);
             out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
         }
         return out;

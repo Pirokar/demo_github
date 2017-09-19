@@ -120,7 +120,7 @@ public class CameraActivity extends BaseActivity {
         final ImageButton takePhotoButton = (ImageButton) findViewById(R.id.take_photo);
         ImageButton switchCamButton = (ImageButton) findViewById(R.id.switch_cams);
         if (Camera.getNumberOfCameras() == 0) {
-            Toast.makeText(this, getResources().getString(R.string.no_cameras_detected), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.lib_no_cameras_detected), Toast.LENGTH_SHORT).show();
             finish();
         }
         switchCamButton.setOnClickListener(new View.OnClickListener() {
@@ -326,7 +326,7 @@ public class CameraActivity extends BaseActivity {
         super.onPause();
         if (mSurfaceView.getVisibility() == View.VISIBLE) {
             if (mCamera == null) {
-                Toast.makeText(this, getString(R.string.no_cameras_detected), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.lib_no_cameras_detected), Toast.LENGTH_SHORT).show();
 
             } else {
                 releaseCamera();

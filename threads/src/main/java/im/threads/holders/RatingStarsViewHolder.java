@@ -41,9 +41,9 @@ public class RatingStarsViewHolder extends BaseHolder {
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
 
-            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
-                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
+            if (style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID) {
+                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
+                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
             }
 
             if (style.surveyTextColorResId != ChatStyle.INVALID) {

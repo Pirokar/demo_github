@@ -883,7 +883,7 @@ public class MessageFormatter {
 
     public static String getUserAgent(Context ctx) {
         if (TextUtils.isEmpty(userAgent)) {
-            userAgent = String.format(ctx.getResources().getString(R.string.user_agent),
+            userAgent = String.format(ctx.getResources().getString(R.string.lib_user_agent),
                     DeviceInfoHelper.getOsVersion(),
                     DeviceInfoHelper.getDeviceName(),
                     DeviceInfoHelper.getIpAddress(),

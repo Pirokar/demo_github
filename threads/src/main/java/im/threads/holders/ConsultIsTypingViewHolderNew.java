@@ -29,8 +29,8 @@ public class ConsultIsTypingViewHolderNew extends RecyclerView.ViewHolder {
         mViewTypingInProgress = (TextView) itemView.findViewById(R.id.typing_in_progress);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
-            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID){
-                mViewTypingInProgress.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTextColorResId));
+            if (style.welcomeScreenTitleTextColorResId != ChatStyle.INVALID){
+                mViewTypingInProgress.setTextColor(ContextCompat.getColor(itemView.getContext(), style.welcomeScreenTitleTextColorResId));
             }
 
             if (style.operatorSystemAvatarSize != INVALID) {

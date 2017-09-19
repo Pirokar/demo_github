@@ -47,7 +47,7 @@
             android:theme="@style/Translucent"/>
         <activity
             android:name=".permissions.PermissionsActivity"
-            android:label="@string/permissions_help"
+            android:label="@string/lib_permissions_help"
             android:screenOrientation="portrait"
             android:theme="@style/Transparent"/>
         <service

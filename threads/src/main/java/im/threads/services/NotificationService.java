@@ -168,7 +168,7 @@ public class NotificationService extends Service {
             }
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNSENT_MESSAGE)) {
             final NotificationCompat.Builder nc = new NotificationCompat.Builder(this);
-            nc.setContentTitle(getString(R.string.message_were_unsent));
+            nc.setContentTitle(getString(R.string.lib_message_were_unsent));
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             PendingIntent pend = getChatIntent();
             if (style.defPushIconResId != ChatStyle.INVALID) {
@@ -217,9 +217,9 @@ public class NotificationService extends Service {
             pushSmall.setTextViewText(R.id.title, getString(style.defTitleResId));
             pushBig.setTextViewText(R.id.title, getString(style.defTitleResId));
         } else {
-            builder.setContentTitle(getString(R.string.title_default));
-            pushSmall.setTextViewText(R.id.title, getString(R.string.title_default));
-            pushBig.setTextViewText(R.id.title, getString(R.string.title_default));
+            builder.setContentTitle(getString(R.string.lib_title_default));
+            pushSmall.setTextViewText(R.id.title, getString(R.string.lib_title_default));
+            pushBig.setTextViewText(R.id.title, getString(R.string.lib_title_default));
         }
 
         builder.setSmallIcon(R.drawable.empty);
@@ -382,7 +382,7 @@ public class NotificationService extends Service {
                 pushBig.setOnClickPendingIntent(R.id.reply, buttonPend);
             }
         }
-        pushBig.setTextViewText(R.id.reply, getString(R.string.reply));
+        pushBig.setTextViewText(R.id.reply, getString(R.string.lib_reply));
         builder.setContent(pushSmall);
         PendingIntent pend = getChatIntent();
         builder.setContentIntent(pend);
@@ -419,7 +419,7 @@ public class NotificationService extends Service {
                 @Override
                 public void run() {
                     builder.setContentIntent(getChatIntent());
-                    builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
+                    builder.addAction(0, getString(R.string.lib_answer), getFastAnswerIntent());
                     completionHandler.onComplete(builder.build());
 
                 }
@@ -458,7 +458,7 @@ public class NotificationService extends Service {
                     public void run() {
                         builder.setContentIntent(getChatIntent());
                         if (out.first) {
-                            builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
+                            builder.addAction(0, getString(R.string.lib_answer), getFastAnswerIntent());
                         }
                         completionHandler.onComplete(builder.build());
 
@@ -485,7 +485,7 @@ public class NotificationService extends Service {
                             builder.setContentIntent(getChatIntent());
                             builder.setContentIntent(getChatIntent());
                             if (out.first) {
-                                builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
+                                builder.addAction(0, getString(R.string.lib_answer), getFastAnswerIntent());
                             }
                             completionHandler.onComplete(builder.build());
                         } catch (IOException e) {
@@ -506,7 +506,7 @@ public class NotificationService extends Service {
                 public void run() {
                     builder.setContentIntent(getChatIntent());
                     if (out.first) {
-                        builder.addAction(0, getString(R.string.answer), getFastAnswerIntent());
+                        builder.addAction(0, getString(R.string.lib_answer), getFastAnswerIntent());
                     }
                     completionHandler.onComplete(builder.build());
                 }

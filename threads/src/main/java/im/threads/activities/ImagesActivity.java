@@ -3,14 +3,12 @@ package im.threads.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +16,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import im.threads.R;
 import im.threads.adapters.ImagesAdapter;
@@ -28,15 +35,6 @@ import im.threads.model.FileDescription;
 import im.threads.permissions.PermissionsActivity;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yuri on 05.08.2016.
@@ -124,14 +122,14 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
     private void downloadImage() {
         if (files.get(mViewPager.getCurrentItem()).getFilePath() == null) return;
         if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_DENIED) {
-            PermissionsActivity.startActivityForResult(this, CODE_REQUQEST_DOWNLOAD, R.string.permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            PermissionsActivity.startActivityForResult(this, CODE_REQUQEST_DOWNLOAD, R.string.lib_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
         String path = files.get(mViewPager.getCurrentItem()).getFilePath().replaceAll("file://", "");
         try {
             File file = new File(path);
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) == null) {
-                Toast.makeText(this, R.string.unable_to_save, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.lib_unable_to_save, Toast.LENGTH_SHORT).show();
                 return;
             }
             File out = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), FileUtils.getLastPathSegment(path));
@@ -145,10 +143,10 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
             }
             inStream.close();
             outStram.close();
-            Toast.makeText(this, getString(R.string.saved_to) + " " + out.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.lib_saved_to) + " " + out.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, R.string.unable_to_save, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.lib_unable_to_save, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -186,7 +184,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
 
     @Override
     public void onPageSelected(int position) {
-        getSupportActionBar().setTitle(mViewPager.getCurrentItem() + 1 + " " + getString(R.string.from) + " " + collectionSize);
+        getSupportActionBar().setTitle(mViewPager.getCurrentItem() + 1 + " " + getString(R.string.lib_from) + " " + collectionSize);
     }
 
     @Override

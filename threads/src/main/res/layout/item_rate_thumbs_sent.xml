@@ -25,7 +25,7 @@
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toRightOf="@+id/thumb"
-            android:text="@string/item_user_rate_header"
+            android:text="@string/lib_item_user_rate_header"
             android:textColor="@android:color/white" />
 
         <im.threads.widget.text_view.BubbleTimeTextView

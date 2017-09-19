@@ -8,23 +8,23 @@
         android:id="@+id/camera"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:drawableTop="@drawable/ic_camera_alt_blue_42dp"
-        android:text="@string/camera" />
+        android:text="@string/lib_camera" />
 
     <im.threads.widget.CustomFontButton
         android:id="@+id/gallery"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:drawableTop="@drawable/ic_insert_photo_blue_42dp"
-        android:text="@string/gallery" />
+        android:text="@string/lib_gallery" />
 
     <im.threads.widget.CustomFontButton
         android:id="@+id/file"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:drawableTop="@drawable/ic_insert_file_blue_42dp"
-        android:text="@string/file" />
+        android:text="@string/lib_file" />
 
     <im.threads.widget.CustomFontButton
         android:id="@+id/bmsheet_hide"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:drawableTop="@drawable/ic_keyboard_arrow_down_blue_42dp"
-        android:text="@string/hide" />
+        android:text="@string/lib_hide" />
 </merge>
