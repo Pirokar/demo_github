@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Threads</string>
-    <string name="search_hint">Поиск сообщений</string>
     <string name="searching_operator">Поиск оператора...</string>
     <string name="your_message">Ваше сообщение...</string>
     <string name="no_connection">Отсутствует
@@ -17,7 +16,6 @@
     <string name="connected_female">подключилась к диалогу в</string>
     <string name="connected">подключился к диалогу в</string>
     <string name="sent_at">отправлено</string>
-    <string name="file_pdf">Текстовый файл</string>
     <string name="image">изображение</string>
     <string name="send">Отправить</string>
     <string name="search_messages">Поиск сообщений</string>
@@ -34,25 +32,17 @@
     <string name="to_photo">для фото</string>
     <string name="no_cameras_detected">На устройстве отсутствует камера</string>
     <string name="retake">Переснять</string>
-    <string name="unavailible">Недоступно</string>
     <string name="consult">Консультант</string>
     <string name="error_no_file">Файл удалён на сервере</string>
-    <string name="added_to_download_quee">Добавлено в очередь загрузок</string>
     <string name="I">Я</string>
     <string name="choose_file">Выберите файл</string>
-    <string name="choose">Выбрат</string>
     <string name="folder_up">Выше</string>
     <string name="now_you_are_in_directory">Вы находитесь в </string>
     <string name="from">из</string>
     <string name="in">в</string>
     <string name="title_default">Заголовок</string>
-    <string name="error">Произошла ошибка </string>
-    <string name="no_pdf_support">Устройство не поддерживает данный формат файлов</string>
-    <string name="retreiving_history">Загружаем историю</string>
     <string name="search_more">Искать дальше</string>
     <string name="new_">новых</string>
-    <string name="file_received">Получен файл</string>
-    <string name="with_file">(с файлом)</string>
     <string name="download">Загрузить</string>
     <string name="message_were_unsent">Сообщение не было отправлено</string>
     <string name="unknown_operator">Неизвестный</string>
@@ -63,7 +53,6 @@
     <string name="push_left">покинул диалог</string>
     <string name="push_connected_female">подключилась к диалогу</string>
     <string name="push_connected">подключился к диалогу</string>
-    <string name="with_files">(с файлами)</string>
     <string name="reply">Ответить</string>
     <string name="send_male">прислал</string>
     <string name="send_female">прислала</string>

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Threads</string>
-    <string name="search_hint">Message search</string>
     <string name="searching_operator">Searching client...</string>
     <string name="your_message">Your message...</string>
     <string name="no_connection">No internet connection</string>
@@ -15,7 +14,6 @@
     <string name="left_dialog">disconnected from dialog at</string>
     <string name="connected">connected to dialog</string>
     <string name="sent_at">sent at</string>
-    <string name="file_pdf">Text file</string>
     <string name="image">Picture</string>
     <string name="send">Send</string>
     <string name="search_messages">Search message</string>
@@ -33,26 +31,17 @@
     <string name="to_photo">to take photo</string>
     <string name="no_cameras_detected">Your device doesn\'t have a camera</string>
     <string name="retake">Retake</string>
-    <string name="unavailible">Service is unavailible</string>
     <string name="consult">Consultant</string>
     <string name="error_no_file">Unfortunately, file was deleted from server</string>
-    <string name="added_to_download_quee">Added to download queue</string>
     <string name="I">I</string>
     <string name="download">Download</string>
     <string name="choose_file">Choose file to send</string>
-    <string name="choose">Choose</string>
     <string name="folder_up">Up</string>
     <string name="now_you_are_in_directory">Your are in </string>
-    <string name="error">Error happened while </string>
     <string name="from">from</string>
     <string name="in">in</string>
-    <string name="no_pdf_support">No application supports this type of file</string>
-    <string name="retreiving_history">Retrieving history</string>
     <string name="search_more">Search more</string>
     <string name="title_default">Header</string>
-    <string name="file_received">File received</string>
-    <string name="with_file">(with file)</string>
-    <string name="with_files">(with files)</string>
     <string name="message_were_unsent">Message not sent</string>
     <string name="unknown_operator">Unknown</string>
     <string name="saved_to">Saved to</string>
