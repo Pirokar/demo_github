@@ -15,7 +15,7 @@
     <View
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/filter_offset_size"
         android:layout_below="@+id/bubble"/>
 
     <ImageView
@@ -30,6 +30,7 @@
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_width="wrap_content"
+        android:layout_marginBottom="0dp"
         android:layout_toRightOf="@+id/consult_avatar"
         android:background="@drawable/operator_bubble">
 

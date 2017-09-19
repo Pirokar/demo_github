@@ -247,13 +247,8 @@ public class ConsultPhraseHolder extends BaseHolder {
             mBubble.setLayoutParams(lp);
 
         }
-        if (isChosen) {
-            mFilterView.setVisibility(View.VISIBLE);
-            mFilterViewSecond.setVisibility(View.VISIBLE);
-        } else {
-            mFilterView.setVisibility(View.INVISIBLE);
-            mFilterViewSecond.setVisibility(View.INVISIBLE);
-        }
 
+        mFilterView.setVisibility(isChosen ? View.VISIBLE : View.INVISIBLE);
+        mFilterViewSecond.setVisibility(isChosen && isAvatarVisible ? View.VISIBLE : View.INVISIBLE);
     }
 }

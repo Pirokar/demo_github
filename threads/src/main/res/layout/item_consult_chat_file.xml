@@ -14,7 +14,7 @@
     <View
         android:id="@+id/filter_second"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_material"
+        android:layout_height="@dimen/filter_offset_size"
         android:layout_below="@+id/filter" />
 
     <ImageView
