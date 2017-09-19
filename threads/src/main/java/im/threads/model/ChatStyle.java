@@ -47,10 +47,6 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int chatHighlightingColor = R.color.threads_blue_transparent_700F87FF;
     @ColorRes
-    public int chatMessageInputColor = INVALID;
-    @ColorRes
-    public int chatMessageInputHintTextColor = INVALID;
-    @ColorRes
     public int incomingMessageBubbleColor = R.color.threads_white;
     @ColorRes
     public int outgoingMessageBubbleColor = R.color.threads_blue_3598dc;
@@ -82,15 +78,25 @@ public class ChatStyle implements Serializable {
     public int fileBrowserDialogStyleResId = INVALID;
     public boolean showConsultSearching;
     public boolean alwaysScrollToEnd;
-    @ColorRes
-    public int inputTextColor = INVALID;
-    public String inputTextFont;
     @DrawableRes
     public int scrollDownButtonResId = INVALID;
     @ColorRes
     public int unreadMsgStickerColorResId = INVALID;
     @ColorRes
     public int unreadMsgCountTextColorResId = INVALID;
+
+    // chat input style
+    @ColorRes
+    public int chatMessageInputColor = INVALID;
+    @ColorRes
+    public int chatMessageInputHintTextColor = INVALID;
+    @ColorRes
+    public int inputTextColor = INVALID;
+    public String inputTextFont;
+    @DrawableRes
+    public int attachmentsIconResId = INVALID;
+    @DrawableRes
+    public int sendMessageIconResId = INVALID;
 
     // push notification style
     @DrawableRes
@@ -243,8 +249,6 @@ public class ChatStyle implements Serializable {
         public ChatStyleBuilder setChatBodyStyle(
                 @ColorRes int chatBackgroundColor,
                 @ColorRes int chatHighlightingColor,
-                @ColorRes int chatMessageInputHintTextColor,
-                @ColorRes int chatMessageInputColor,
                 @ColorRes int incomingMessageBubbleColor,
                 @ColorRes int outgoingMessageBubbleColor,
                 @DrawableRes int incomingMessageBubbleBackground,
@@ -262,15 +266,11 @@ public class ChatStyle implements Serializable {
                 @StyleRes int fileBrowserDialogStyleResId,
                 boolean showConsultSearching,
                 boolean alwaysScrollToEnd,
-                @ColorRes int inputTextColor,
-                String inputTextFont,
                 @DrawableRes int scrollDownButtonResId,
                 @ColorRes int unreadMsgStickerColorResId,
                 @ColorRes int unreadMsgCountTextColorResId) {
             chatStyle.chatBackgroundColor = chatBackgroundColor;
             chatStyle.chatHighlightingColor = chatHighlightingColor;
-            chatStyle.chatMessageInputColor = chatMessageInputColor;
-            chatStyle.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
             chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor;
             chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor;
             chatStyle.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
@@ -288,14 +288,27 @@ public class ChatStyle implements Serializable {
             chatStyle.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
             chatStyle.showConsultSearching = showConsultSearching;
             chatStyle.alwaysScrollToEnd = alwaysScrollToEnd;
-            chatStyle.inputTextColor = inputTextColor;
-            chatStyle.inputTextFont = inputTextFont;
             chatStyle.scrollDownButtonResId = scrollDownButtonResId;
             chatStyle.unreadMsgStickerColorResId = unreadMsgStickerColorResId;
             chatStyle.unreadMsgCountTextColorResId = unreadMsgCountTextColorResId;
             return this;
         }
 
+        public ChatStyleBuilder setChatInputStyle(
+                @ColorRes int chatMessageInputHintTextColor,
+                @ColorRes int chatMessageInputColor,
+                @ColorRes int inputTextColor,
+                String inputTextFont,
+                @DrawableRes int attachmentsIconResId,
+                @DrawableRes int sendMessageIconResId) {
+            chatStyle.chatMessageInputColor = chatMessageInputColor;
+            chatStyle.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
+            chatStyle.inputTextColor = inputTextColor;
+            chatStyle.inputTextFont = inputTextFont;
+            chatStyle.attachmentsIconResId = attachmentsIconResId;
+            chatStyle.sendMessageIconResId = sendMessageIconResId;
+            return this;
+        }
 
         public ChatStyleBuilder setPushNotificationStyle(@DrawableRes int defIconResid,
                                                          @StringRes int defTitleResId,

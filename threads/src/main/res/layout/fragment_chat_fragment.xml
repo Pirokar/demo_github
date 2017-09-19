@@ -182,8 +182,7 @@
                 android:layout_height="64dp"
                 android:layout_gravity="left|bottom"
                 android:background="@android:color/transparent"
-                android:rotation="45"
-                android:src="@drawable/ic_attach_file_blue_24dp" />
+                android:src="@drawable/ic_attach" />
 
             <ImageButton
                 android:id="@+id/send_message"

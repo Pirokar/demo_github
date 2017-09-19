@@ -210,6 +210,7 @@ public class ChatFragment extends Fragment implements
         setFragmentStyle(PrefUtils.getIncomingStyle(activity));
         sendOpenChatAnalyticsEvent(appContext);
 
+        updateInputEnable(true);
         chatIsShown = true;
 
         return rootView;
@@ -552,6 +553,14 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setBackgroundColor(activity, mCopyControls, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, mBottomGallery, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.bottom_layout), style.chatMessageInputColor);
+            }
+
+            if (style.attachmentsIconResId != ChatStyle.INVALID) {
+                mAddAttachmentButton.setImageResource(style.attachmentsIconResId);
+            }
+
+            if (style.sendMessageIconResId != ChatStyle.INVALID) {
+                mSendButton.setImageResource(style.sendMessageIconResId);
             }
 
             if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
@@ -1523,8 +1532,10 @@ public class ChatFragment extends Fragment implements
         mSendButton.setEnabled(enabled);
 
         if (style != null) {
-            ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
-            ColorsHelper.setTint(getActivity(), mSendButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
+            if (style.chatBodyIconsTint != ChatStyle.INVALID) {
+                ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
+                ColorsHelper.setTint(getActivity(), mSendButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
+            }
         }
     }
 
