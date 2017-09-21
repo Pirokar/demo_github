@@ -30,7 +30,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -97,6 +96,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static android.text.TextUtils.isEmpty;
+import static im.threads.model.ChatStyle.INVALID;
 
 /**
  * Весь функционал чата находится здесь во фрагменте,
@@ -195,7 +195,7 @@ public class ChatFragment extends Fragment implements
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 
         if (activity instanceof ChatActivity) {
-            if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
+            if (style != null && style.chatStatusBarColorResId != INVALID) {
                 ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
             }
         }
@@ -293,34 +293,6 @@ public class ChatFragment extends Fragment implements
 
         searchDown.setAlpha(DISABLED_ALPHA);
         searchUp.setAlpha(DISABLED_ALPHA);
-
-        if (style != null) {
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-                ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), style.chatToolbarTextColorResId);
-                ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
-            }
-
-            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
-                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
-                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
-            }
-
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
-            }
-
-            if (style.scrollDownButtonResId != ChatStyle.INVALID) {
-                mScrollDownButton.setImageResource(style.scrollDownButtonResId);
-            }
-
-            if (style.unreadMsgStickerColorResId != ChatStyle.INVALID) {
-                mUnreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
-            }
-
-            if (style.unreadMsgCountTextColorResId != ChatStyle.INVALID) {
-                mUnreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
-            }
-        }
     }
 
     private void bindViews() {
@@ -542,28 +514,65 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
 
         if (style != null) {
-            if (style.chatBackgroundColor != ChatStyle.INVALID) {
+            if (style.chatBackgroundColor != INVALID) {
                 ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.chat_root), style.chatBackgroundColor);
             }
 
-            if (style.chatMessageInputColor != ChatStyle.INVALID) {
+            if (style.chatMessageInputColor != INVALID) {
                 ColorsHelper.setBackgroundColor(activity, mInputLayout, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, mInputEditText, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, mBottomSheetView, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, mCopyControls, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, mBottomGallery, style.chatMessageInputColor);
                 ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.bottom_layout), style.chatMessageInputColor);
             }
 
-            if (style.attachmentsIconResId != ChatStyle.INVALID) {
+            if (style.chatToolbarTextColorResId != INVALID) {
+                ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), style.chatToolbarTextColorResId);
+                ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
+            }
+
+            if (style.iconsAndSeparatorsColor != INVALID) {
+                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
+                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
+            }
+
+            if (style.chatToolbarColorResId != INVALID) {
+                mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
+            }
+
+            if (style.scrollDownButtonResId != INVALID) {
+                mScrollDownButton.setImageResource(style.scrollDownButtonResId);
+            }
+
+            if (style.unreadMsgStickerColorResId != INVALID) {
+                mUnreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+
+            if (style.unreadMsgCountTextColorResId != INVALID) {
+                mUnreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
+            }
+
+            if (style.inputHeight != INVALID) {
+                mInputEditText.getLayoutParams().height = (int) activity.getResources().getDimension(style.inputHeight);
+            }
+
+            if (style.inputBackground != INVALID) {
+                mInputEditText.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
+            }
+
+            if (style.inputHint != INVALID) {
+                mInputEditText.setHint(style.inputHint);
+            }
+
+            if (style.attachmentsIconResId != INVALID) {
                 mAddAttachmentButton.setImageResource(style.attachmentsIconResId);
             }
 
-            if (style.sendMessageIconResId != ChatStyle.INVALID) {
+            if (style.sendMessageIconResId != INVALID) {
                 mSendButton.setImageResource(style.sendMessageIconResId);
             }
 
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+            if (style.chatToolbarTextColorResId != INVALID) {
                 ColorsHelper.setTextColor(activity, mSearchMessageEditText, style.chatToolbarTextColorResId);
                 ColorsHelper.setDrawableColor(activity, popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
                 ColorsHelper.setDrawableColor(activity, backButton.getDrawable(), style.chatToolbarTextColorResId);
@@ -571,7 +580,7 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setTextColor(activity, mConsultNameView, style.chatToolbarTextColorResId);
             }
 
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+            if (style.chatToolbarTextColorResId != INVALID) {
                 ColorsHelper.setTextColor(activity, mConsultTitle, style.chatToolbarTextColorResId);
                 ColorsHelper.setTextColor(activity, mConsultNameView, style.chatToolbarTextColorResId);
             } else {
@@ -579,17 +588,17 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setTextColor(activity, mConsultNameView, android.R.color.white);
             }
 
-            if (style.chatMessageInputHintTextColor != ChatStyle.INVALID) {
+            if (style.chatMessageInputHintTextColor != INVALID) {
                 ColorsHelper.setHintTextColor(activity, mInputEditText, style.chatMessageInputHintTextColor);
             }
 
-            if (style.chatToolbarHintTextColor != ChatStyle.INVALID) {
+            if (style.chatToolbarHintTextColor != INVALID) {
                 ColorsHelper.setHintTextColor(activity, mSearchMessageEditText, style.chatToolbarHintTextColor);
             }
 
-            if (style.inputTextColor != ChatStyle.INVALID) {
+            if (style.inputTextColor != INVALID) {
                 ColorsHelper.setTextColor(activity, mInputEditText, style.inputTextColor);
-            } else if (style.incomingMessageTextColor != ChatStyle.INVALID) {
+            } else if (style.incomingMessageTextColor != INVALID) {
                 ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
             }
 
@@ -602,7 +611,7 @@ public class ChatFragment extends Fragment implements
                 }
             }
 
-            if (style.chatBodyIconsTint != ChatStyle.INVALID) {
+            if (style.chatBodyIconsTint != INVALID) {
                 ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.content_copy), style.chatBodyIconsTint);
                 ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.reply), style.chatBodyIconsTint);
                 ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.send_message), style.chatBodyIconsTint);
@@ -611,7 +620,7 @@ public class ChatFragment extends Fragment implements
                 mBottomSheetView.setButtonsTint(style.chatBodyIconsTint);
             }
 
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
+            if (style.chatToolbarColorResId != INVALID) {
                 ColorsHelper.setBackgroundColor(activity, mToolbar, style.chatToolbarColorResId);
             } else {
                 ColorsHelper.setBackgroundColor(activity, mToolbar, android.R.color.holo_green_light);
@@ -620,7 +629,7 @@ public class ChatFragment extends Fragment implements
 
         try {
             Drawable overflowDrawable = popupMenuButton.getDrawable();
-            if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+            if (style != null && style.chatToolbarTextColorResId != INVALID) {
                 ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
             } else {
                 ColorsHelper.setDrawableColor(activity, overflowDrawable, android.R.color.white);
@@ -721,14 +730,14 @@ public class ChatFragment extends Fragment implements
         Menu menu = popup.getMenu();
         MenuItem searchMenuItem = menu.getItem(0);
         SpannableString s = new SpannableString(searchMenuItem.getTitle());
-        if (style != null && style.menuItemTextColorResId != ChatStyle.INVALID) {
+        if (style != null && style.menuItemTextColorResId != INVALID) {
             s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s.length(), 0);
         }
         searchMenuItem.setTitle(s);
 
         MenuItem filesAndMedia = menu.getItem(1);
         SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
-        if (style != null && style.menuItemTextColorResId != ChatStyle.INVALID) {
+        if (style != null && style.menuItemTextColorResId != INVALID) {
             s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s2.length(), 0);
         }
         filesAndMedia.setTitle(s2);
@@ -775,7 +784,7 @@ public class ChatFragment extends Fragment implements
             return;
         }
 
-        if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID) {
+        if (style != null && style.chatBodyIconsTint != INVALID) {
             ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), style.chatBodyIconsTint);
             Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
             ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
@@ -788,7 +797,7 @@ public class ChatFragment extends Fragment implements
             backButton.setImageDrawable(d);
         }
 
-        if (style != null && style.chatMessageInputColor != ChatStyle.INVALID) {
+        if (style != null && style.chatMessageInputColor != INVALID) {
             mToolbar.setBackgroundColor(getColorInt(style.chatMessageInputColor));
         } else {
             mToolbar.setBackgroundColor(ContextCompat.getColor(ctx, android.R.color.white));
@@ -1252,12 +1261,12 @@ public class ChatFragment extends Fragment implements
                     mConsultTitle.setVisibility(View.VISIBLE);
                     mConsultNameView.setVisibility(View.VISIBLE);
                 }
-                if (!TextUtils.isEmpty(ConsultName) && !ConsultName.equals("null")) {
+                if (!isEmpty(ConsultName) && !ConsultName.equals("null")) {
                     mConsultNameView.setText(ConsultName);
                 } else {
                     mConsultNameView.setText(appContext.getString(R.string.lib_unknown_operator));
                 }
-                if (!TextUtils.isEmpty(consultTitle) && !consultTitle.equals("null")) {
+                if (!isEmpty(consultTitle) && !consultTitle.equals("null")) {
                     mConsultTitle.setText(consultTitle);
                 }
                 f.connectedConsultId = connectedConsultId;
@@ -1276,7 +1285,7 @@ public class ChatFragment extends Fragment implements
                     mConsultNameView.setVisibility(View.VISIBLE);
                     mSearchLo.setVisibility(View.GONE);
                     mSearchMessageEditText.setText("");
-                    if (style != null && style.chatTitleTextResId != ChatStyle.INVALID) {
+                    if (style != null && style.chatTitleTextResId != INVALID) {
                         mConsultNameView.setText(style.chatTitleTextResId);
                     } else {
                         mConsultNameView.setText(appContext.getString(R.string.lib_contact_center));
@@ -1306,8 +1315,8 @@ public class ChatFragment extends Fragment implements
     }
 
     private boolean isCopy(String text) {
-        if (TextUtils.isEmpty(text)) return false;
-        if (TextUtils.isEmpty(PrefUtils.getLastCopyText(getActivity()))) return false;
+        if (isEmpty(text)) return false;
+        if (isEmpty(PrefUtils.getLastCopyText(getActivity()))) return false;
         return text.contains(PrefUtils.getLastCopyText(getActivity()));
     }
 
@@ -1315,7 +1324,7 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         Context context = activity.getApplicationContext();
         setTitleStateCurrentOperatorConnected();
-        if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+        if (style != null && style.chatToolbarTextColorResId != INVALID) {
             Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
             ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
             backButton.setImageDrawable(d);
@@ -1327,7 +1336,7 @@ public class ChatFragment extends Fragment implements
             backButton.setImageDrawable(d);
             ColorsHelper.setDrawableColor(context, popupMenuButton.getDrawable(), android.R.color.white);
         }
-        if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
+        if (style != null && style.chatToolbarColorResId != INVALID) {
             ColorsHelper.setBackgroundColor(context, mToolbar, style.chatToolbarColorResId);
         } else {
             ColorsHelper.setBackgroundColor(activity, mToolbar, android.R.color.holo_green_light);
@@ -1532,7 +1541,7 @@ public class ChatFragment extends Fragment implements
         mSendButton.setEnabled(enabled);
 
         if (style != null) {
-            if (style.chatBodyIconsTint != ChatStyle.INVALID) {
+            if (style.chatBodyIconsTint != INVALID) {
                 ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
                 ColorsHelper.setTint(getActivity(), mSendButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
             }
@@ -1841,7 +1850,7 @@ public class ChatFragment extends Fragment implements
             view = rootView.findViewById(R.id.quote_layout);
             mHeader = (TextView) view.findViewById(R.id.quote_header);
 
-            if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
+            if (style != null && style.incomingMessageTextColor != INVALID) {
                 mHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
             } else {
                 mHeader.setTextColor(ContextCompat.getColor(getActivity(), android.R.color.black));

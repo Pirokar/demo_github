@@ -43,22 +43,19 @@
         android:textColor="@android:color/black"
         android:textSize="@dimen/text_medium" />
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/answer_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/question"
+        android:gravity="center_vertical"
         android:background="@android:color/white">
 
         <im.threads.widget.CustomFontEditText
             android:id="@+id/answer"
             style="@style/InputEditTextStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
             android:maxLines="5"
-            android:paddingLeft="@dimen/margin_big"
-            android:paddingRight="64dp" />
+            android:layout_marginLeft="@dimen/margin_big"/>
 
         <ImageButton
             android:id="@+id/send"
@@ -68,7 +65,7 @@
             android:layout_gravity="right|bottom"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_send_36dp" />
-    </FrameLayout>
+    </LinearLayout>
 
     <im.threads.widget.CustomFontButton
         android:id="@+id/close_button"

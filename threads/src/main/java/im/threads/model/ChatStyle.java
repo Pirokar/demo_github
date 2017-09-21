@@ -97,6 +97,12 @@ public class ChatStyle implements Serializable {
     public int attachmentsIconResId = INVALID;
     @DrawableRes
     public int sendMessageIconResId = INVALID;
+    @StringRes
+    public int inputHint = INVALID;
+    @DimenRes
+    public int inputHeight = INVALID;
+    @DrawableRes
+    public int inputBackground = INVALID;
 
     // push notification style
     @DrawableRes
@@ -300,13 +306,19 @@ public class ChatStyle implements Serializable {
                 @ColorRes int inputTextColor,
                 String inputTextFont,
                 @DrawableRes int attachmentsIconResId,
-                @DrawableRes int sendMessageIconResId) {
+                @DrawableRes int sendMessageIconResId,
+                @StringRes int inputHint,
+                @DimenRes int inputHeight,
+                @DrawableRes int inputBackground) {
             chatStyle.chatMessageInputColor = chatMessageInputColor;
             chatStyle.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
             chatStyle.inputTextColor = inputTextColor;
             chatStyle.inputTextFont = inputTextFont;
             chatStyle.attachmentsIconResId = attachmentsIconResId;
             chatStyle.sendMessageIconResId = sendMessageIconResId;
+            chatStyle.inputHint = inputHint;
+            chatStyle.inputHeight = inputHeight;
+            chatStyle.inputBackground = inputBackground;
             return this;
         }
 

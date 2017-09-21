@@ -52,8 +52,10 @@ public class ChatBuilderHelper {
                         R.color.purple, // цвет шрифта поля ввода сообщения inputTextColor
                         "fonts/lato-regular.ttf", // шрифт поля ввода сообщения inputTextFont
                         ChatStyle.INVALID, // иконка кнопки прикрепления файлов attachmentsIconResId
-                        ChatStyle.INVALID // иконка кнопки отправки сообщений sendMessageIconResId
-                )
+                        ChatStyle.INVALID, // иконка кнопки отправки сообщений sendMessageIconResId
+                        R.string.input_hint, // текст-подсказка в поле ввода сообщения inputHint
+                        ChatStyle.INVALID, // высота поля ввода сообщения в dp inputHeight
+                        ChatStyle.INVALID) // фон поля ввода сообщения inputBackground
                 .setGoogleAnalyticsEnabled(false)
                 .setPushNotificationStyle(R.drawable.ic_push_notification,
                         R.string.app_name1,
