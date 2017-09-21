@@ -336,9 +336,9 @@ public class ChatStyle implements Serializable {
         public ChatStyleBuilder setRequestResolveThreadStyle(@StringRes int requestToResolveThreadTextResId,
                                                              @StringRes int approveRequestToResolveThreadTextResId,
                                                              @StringRes int denyRequestToResolveThreadTextResId) {
-            chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId != INVALID ? requestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread;
-            chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId != INVALID ? approveRequestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread_close;
-            chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId != INVALID ? denyRequestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread_open;
+            chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId;
+            chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId;
+            chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId;
             return this;
         }
 
