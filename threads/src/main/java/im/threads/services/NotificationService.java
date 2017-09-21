@@ -304,7 +304,7 @@ public class NotificationService extends Service {
                             }
                         });
 
-                Target smallPicTarger = new Target() {
+                Target smallPicTarget = new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {//round icon in corner
                         pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap);
