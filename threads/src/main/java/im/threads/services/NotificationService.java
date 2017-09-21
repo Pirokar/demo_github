@@ -44,6 +44,7 @@ import im.threads.model.ConsultChatPhrase;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.picasso_url_connection_only.Target;
 import im.threads.utils.CircleTransform;
+import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.TargetNoError;
 import im.threads.utils.Tuple;
@@ -273,11 +274,9 @@ public class NotificationService extends Service {
 
             String avatarPath = null;
             for (int i = unreadMessages.size() - 1; i >= 0; i--) {
-                if (isEmpty(avatarPath)) {
-                    if (unreadMessages.get(i) instanceof ConsultChatPhrase) {
-                        avatarPath = ((ConsultChatPhrase) unreadMessages.get(i)).getAvatarPath();
-                        break;
-                    }
+                if (unreadMessages.get(i) instanceof ConsultChatPhrase) {
+                    avatarPath = ((ConsultChatPhrase) unreadMessages.get(i)).getAvatarPath();
+                    break;
                 }
             }
             if (!isEmpty(avatarPath)) {
@@ -331,13 +330,13 @@ public class NotificationService extends Service {
                             .with(this)
                             .load(style.defPushIconResId)
                             .transform(new CircleTransform())
-                            .into(smallPicTarger);
+                            .into(smallPicTarget);
                 } else {
                     Picasso
                             .with(this)
                             .load(R.drawable.defult_push_icon)
                             .transform(new CircleTransform())
-                            .into(smallPicTarger);
+                            .into(smallPicTarget);
                 }
             } else {
                 if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
@@ -441,9 +440,10 @@ public class NotificationService extends Service {
                         builder.setLargeIcon(bitmap);
                     }
                 };
+                String avatarPath = FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), pushContents.avatarPath);
                 Picasso
                         .with(this)
-                        .load(pushContents.avatarPath)
+                        .load(avatarPath)
                         .transform(new CircleTransform())
                         .into(avatarTarget);
             }

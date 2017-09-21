@@ -1,9 +1,6 @@
 package im.threads.model;
 
-import android.content.Context;
 import android.text.TextUtils;
-
-import im.threads.utils.PrefUtils;
 
 public class ConsultChatPhrase {
     private String avatarPath;
@@ -18,18 +15,15 @@ public class ConsultChatPhrase {
         return consultId;
     }
 
+    public boolean hasAvatar() {
+        return !TextUtils.isEmpty(avatarPath);
+    }
+
     public String getAvatarPath() {
         return avatarPath;
     }
 
-    public void setAvatarPath(Context context, String avatarPath) {
-        if (!TextUtils.isEmpty(avatarPath)) {
-            if (avatarPath.startsWith("http")) {
-                this.avatarPath = avatarPath;
-            } else {
-                this.avatarPath = PrefUtils.getServerUrlMetaInfo(context) + "files/" + avatarPath;
-            }
-        }
+    public void setAvatarPath(String avatarPath) {
+        this.avatarPath = avatarPath;
     }
-
 }

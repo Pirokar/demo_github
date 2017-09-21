@@ -25,6 +25,7 @@ import im.threads.R;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatStyle;
 import im.threads.picasso_url_connection_only.Picasso;
+import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 
 /**
@@ -66,6 +67,7 @@ public class ConsultActivity extends BaseActivity {
         String title = i.getStringExtra("title");
         String moto = i.getStringExtra("moto");
         if (null != imagePath && !imagePath.equals("null")) {
+            imagePath = FileUtils.convertRelativeUrlToAbsolute(this, imagePath);
             Picasso.with(this)
                     .load(imagePath)
                     .into(mConsultImageView);

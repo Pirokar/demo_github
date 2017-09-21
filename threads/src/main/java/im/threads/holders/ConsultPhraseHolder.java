@@ -199,6 +199,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             mConsultAvatar.setVisibility(View.VISIBLE);
             mConsultAvatar.setOnClickListener(onAvatarClickListener);
             if (!isEmpty(avatarPath)) {
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);
                 Picasso
                         .with(itemView.getContext())
                         .load(avatarPath)
@@ -209,29 +210,15 @@ public class ConsultPhraseHolder extends BaseHolder {
                         .into(mConsultAvatar, new Callback() {
                             @Override
                             public void onSuccess() {
-
                             }
 
                             @Override
                             public void onError() {
-                                Picasso
-                                        .with(itemView.getContext())
-                                        .load(defIcon)
-                                        .fit()
-                                        .noPlaceholder()
-                                        .transform(new CircleTransform())
-                                        .into(mConsultAvatar);
+                                showDefIcon();
                             }
                         });
             } else {
-                Picasso
-                        .with(itemView.getContext())
-                        .load(defIcon)
-                        .fit()
-                        .noPlaceholder()
-                        .centerCrop()
-                        .transform(new CircleTransform())
-                        .into(mConsultAvatar);
+                showDefIcon();
             }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
@@ -250,5 +237,15 @@ public class ConsultPhraseHolder extends BaseHolder {
 
         mFilterView.setVisibility(isChosen ? View.VISIBLE : View.INVISIBLE);
         mFilterViewSecond.setVisibility(isChosen && isAvatarVisible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void showDefIcon() {
+        Picasso.with(itemView.getContext())
+                .load(defIcon)
+                .centerInside()
+                .noPlaceholder()
+                .fit()
+                .transform(new CircleTransform())
+                .into(mConsultAvatar);
     }
 }
