@@ -156,7 +156,17 @@ public class NotificationService extends Service {
                         if (needsShowNotification()) {
                             data.defaults |= Notification.DEFAULT_SOUND;
                             data.defaults |= Notification.DEFAULT_VIBRATE;
-                            nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
+
+                            boolean fixPushCrash = false;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if (data.getSmallIcon() == null) {
+                                    fixPushCrash = true;
+                                }
+                            }
+
+                            if (!fixPushCrash) {
+                                nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
+                            }
                             ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
                         }
                     }
