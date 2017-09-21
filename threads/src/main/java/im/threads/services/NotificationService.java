@@ -501,6 +501,9 @@ public class NotificationService extends Service {
             } else if (pushContents.hasImage && !pushContents.hasPlainFiles) {
                 builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
             }
+            else {
+                builder.setSmallIcon(R.drawable.defult_push_icon);
+            }
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
