@@ -30,13 +30,13 @@ public class ChatStyle implements Serializable {
     @StringRes
     public int chatTitleTextResId = INVALID;
     @ColorRes
-    public int chatToolbarColorResId = R.color.threads_teal_009688;
+    public int chatToolbarColorResId = INVALID;
     @ColorRes
-    public int chatStatusBarColorResId = R.color.threads_teal_004D40;
+    public int chatStatusBarColorResId = INVALID;
     @ColorRes
     public int menuItemTextColorResId = INVALID;
     @ColorRes
-    public int chatToolbarTextColorResId = R.color.threads_white;
+    public int chatToolbarTextColorResId = INVALID;
     @ColorRes
     public int chatToolbarHintTextColor = INVALID;
     public boolean showBackButton;
@@ -45,27 +45,27 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int chatBackgroundColor = INVALID;
     @ColorRes
-    public int chatHighlightingColor = R.color.threads_blue_transparent_700F87FF;
+    public int chatHighlightingColor = INVALID;
     @ColorRes
-    public int incomingMessageBubbleColor = R.color.threads_white;
+    public int incomingMessageBubbleColor = INVALID;
     @ColorRes
-    public int outgoingMessageBubbleColor = R.color.threads_blue_3598dc;
+    public int outgoingMessageBubbleColor = INVALID;
     @DrawableRes
     public int incomingMessageBubbleBackground = INVALID;
     @DrawableRes
     public int outgoingMessageBubbleBackground = INVALID;
     @ColorRes
-    public int incomingMessageTextColor = R.color.threads_black;
+    public int incomingMessageTextColor = INVALID;
     @ColorRes
-    public int outgoingMessageTextColor = R.color.threads_white;
+    public int outgoingMessageTextColor = INVALID;
     @ColorRes
-    public int chatBodyIconsTint = R.color.threads_blue_0F87FF;
+    public int chatBodyIconsTint = INVALID;
     @ColorRes
-    public int connectionMessageTextColor = R.color.threads_blue_grey_607d8b;
+    public int connectionMessageTextColor = INVALID;
     @ColorRes
     public int filesAndMediaScreenBackgroundColor = INVALID;
     @ColorRes
-    public int iconsAndSeparatorsColor = R.color.threads_disabled_text_color;
+    public int iconsAndSeparatorsColor = INVALID;
     @DrawableRes
     public int defaultIncomingMessageAvatar = INVALID;
     @DimenRes
@@ -106,41 +106,41 @@ public class ChatStyle implements Serializable {
 
     // push notification style
     @DrawableRes
-    public int defPushIconResId = R.drawable.defult_push_icon;
+    public int defPushIconResId;
     @StringRes
-    public int defTitleResId = R.string.lib_app_name;
+    public int defTitleResId;
     @ColorRes
-    public int pushBackgroundColorResId = R.color.threads_green_dark;
+    public int pushBackgroundColorResId;
     @ColorRes
     public int nougatPushAccentColorResId = INVALID;
 
     // resolve thread request style
     @StringRes
-    public int requestToResolveThreadTextResId = R.string.lib_request_to_resolve_thread;
+    public int requestToResolveThreadTextResId;
     @StringRes
-    public int approveRequestToResolveThreadTextResId = R.string.lib_request_to_resolve_thread_close;
+    public int approveRequestToResolveThreadTextResId;
     @StringRes
-    public int denyRequestToResolveThreadTextResId = R.string.lib_request_to_resolve_thread_open;
+    public int denyRequestToResolveThreadTextResId;
 
     // survey style
     @DrawableRes
-    public int binarySurveyLikeUnselectedIconResId = R.drawable.ic_like_empty_36dp;
+    public int binarySurveyLikeUnselectedIconResId;
     @DrawableRes
-    public int binarySurveyLikeSelectedIconResId = R.drawable.ic_like_full_36dp;
+    public int binarySurveyLikeSelectedIconResId;
     @DrawableRes
-    public int binarySurveyDislikeUnselectedIconResId = R.drawable.ic_dislike_empty_36dp;
+    public int binarySurveyDislikeUnselectedIconResId;
     @DrawableRes
-    public int binarySurveyDislikeSelectedIconResId = R.drawable.ic_dislike_full_36dp;
+    public int binarySurveyDislikeSelectedIconResId;
     @DrawableRes
-    public int optionsSurveyUnselectedIconResId = R.drawable.ic_star_outline_grey600_24dp;
+    public int optionsSurveyUnselectedIconResId;
     @DrawableRes
-    public int optionsSurveySelectedIconResId = R.drawable.ic_star_grey600_24dp;
+    public int optionsSurveySelectedIconResId;
     @ColorRes
     public int surveySelectedColorFilterResId = INVALID;
     @ColorRes
     public int surveyUnselectedColorFilterResId = INVALID;
     @ColorRes
-    public int surveyTextColorResId = R.color.threads_black;
+    public int surveyTextColorResId;
 
     // schedule message style
     @ColorRes
@@ -243,9 +243,9 @@ public class ChatStyle implements Serializable {
                 @ColorRes int chatToolbarHintTextColor,
                 boolean showBackButton) {
             chatStyle.chatTitleTextResId = chatTitleTextResId;
-            chatStyle.chatToolbarColorResId = chatToolbarColorResId;
-            chatStyle.chatToolbarTextColorResId = chatToolbarTextColorResId;
-            chatStyle.chatStatusBarColorResId = chatStatusBarColorResId;
+            chatStyle.chatToolbarColorResId = chatToolbarColorResId != INVALID ? chatToolbarColorResId : R.color.threads_teal_009688;
+            chatStyle.chatToolbarTextColorResId = chatToolbarTextColorResId != INVALID ? chatToolbarTextColorResId : R.color.threads_white;
+            chatStyle.chatStatusBarColorResId = chatStatusBarColorResId != INVALID ? chatStatusBarColorResId : R.color.threads_teal_004D40;
             chatStyle.menuItemTextColorResId = menuItemTextColorResId;
             chatStyle.chatToolbarHintTextColor = chatToolbarHintTextColor;
             chatStyle.showBackButton = showBackButton;
@@ -276,13 +276,13 @@ public class ChatStyle implements Serializable {
                 @ColorRes int unreadMsgStickerColorResId,
                 @ColorRes int unreadMsgCountTextColorResId) {
             chatStyle.chatBackgroundColor = chatBackgroundColor;
-            chatStyle.chatHighlightingColor = chatHighlightingColor;
-            chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor;
-            chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor;
+            chatStyle.chatHighlightingColor = chatHighlightingColor != INVALID ? chatHighlightingColor : R.color.threads_blue_transparent_700F87FF;
+            chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor != INVALID ? incomingMessageBubbleColor : R.color.threads_white;
+            chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor != INVALID ? outgoingMessageBubbleColor : R.color.threads_blue_3598dc;
             chatStyle.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
             chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
-            chatStyle.incomingMessageTextColor = incomingMessageTextColor;
-            chatStyle.outgoingMessageTextColor = outgoingMessageTextColor;
+            chatStyle.incomingMessageTextColor = incomingMessageTextColor != INVALID ? incomingMessageTextColor : R.color.threads_black;
+            chatStyle.outgoingMessageTextColor = outgoingMessageTextColor != INVALID ? outgoingMessageTextColor : R.color.threads_white;
             chatStyle.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
             chatStyle.operatorAvatarSize = operatorAvatarSize;
             chatStyle.operatorSystemAvatarSize = operatorSystemAvatarSize;
@@ -290,7 +290,7 @@ public class ChatStyle implements Serializable {
             chatStyle.chatBodyIconsTint = chatBodyIconsTint;
             chatStyle.connectionMessageTextColor = connectionMessageTextColor;
             chatStyle.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
-            chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor;
+            chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor != INVALID ? iconsAndSeparatorsColor : R.color.threads_disabled_text_color;
             chatStyle.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
             chatStyle.showConsultSearching = showConsultSearching;
             chatStyle.alwaysScrollToEnd = alwaysScrollToEnd;
@@ -326,9 +326,9 @@ public class ChatStyle implements Serializable {
                                                          @StringRes int defTitleResId,
                                                          @ColorRes int pushBackgroundColorResId,
                                                          @ColorRes int nougatPushAccentColorResId) {
-            chatStyle.defPushIconResId = defIconResid;
-            chatStyle.defTitleResId = defTitleResId;
-            chatStyle.pushBackgroundColorResId = pushBackgroundColorResId;
+            chatStyle.defPushIconResId = defIconResid != INVALID ? defIconResid : R.drawable.defult_push_icon;
+            chatStyle.defTitleResId = defTitleResId != INVALID ? defTitleResId : R.string.lib_app_name;
+            chatStyle.pushBackgroundColorResId = pushBackgroundColorResId != INVALID ? pushBackgroundColorResId : R.color.threads_green_dark;
             chatStyle.nougatPushAccentColorResId = nougatPushAccentColorResId;
             return this;
         }
@@ -336,9 +336,9 @@ public class ChatStyle implements Serializable {
         public ChatStyleBuilder setRequestResolveThreadStyle(@StringRes int requestToResolveThreadTextResId,
                                                              @StringRes int approveRequestToResolveThreadTextResId,
                                                              @StringRes int denyRequestToResolveThreadTextResId) {
-            chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId;
-            chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId;
-            chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId;
+            chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId != INVALID ? requestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread;
+            chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId != INVALID ? approveRequestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread_close;
+            chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId != INVALID ? denyRequestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread_open;
             return this;
         }
 
@@ -351,15 +351,15 @@ public class ChatStyle implements Serializable {
                                                @ColorRes int surveySelectedColorFilterResId,
                                                @ColorRes int surveyUnselectedColorFilterResId,
                                                @ColorRes int surveyTextColorResId) {
-            chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
-            chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
-            chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
-            chatStyle.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId;
-            chatStyle.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId;
-            chatStyle.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId;
+            chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId != INVALID ? binarySurveyLikeUnselectedIconResId : R.drawable.ic_like_empty_36dp;
+            chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId != INVALID ? binarySurveyLikeSelectedIconResId : R.drawable.ic_like_full_36dp;
+            chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId != INVALID ? binarySurveyDislikeUnselectedIconResId : R.drawable.ic_dislike_empty_36dp;
+            chatStyle.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId != INVALID ? binarySurveyDislikeSelectedIconResId : R.drawable.ic_dislike_full_36dp;
+            chatStyle.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId != INVALID ? optionsSurveyUnselectedIconResId : R.drawable.ic_star_outline_grey600_24dp;
+            chatStyle.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId != INVALID ? optionsSurveySelectedIconResId : R.drawable.ic_star_grey600_24dp;
             chatStyle.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
             chatStyle.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
-            chatStyle.surveyTextColorResId = surveyTextColorResId;
+            chatStyle.surveyTextColorResId = surveyTextColorResId != INVALID ? surveyTextColorResId : R.color.threads_black;
             return this;
         }
 
