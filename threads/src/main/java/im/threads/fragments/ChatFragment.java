@@ -412,12 +412,12 @@ public class ChatFragment extends Fragment implements
                 if ( itemCount - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
                     if (mScrollDownContainer.getVisibility() != View.VISIBLE) {
                         mScrollDownContainer.setVisibility(View.VISIBLE);
-
                         showUnreadMsgsCount(mChatAdapter.getUnreadCount());
                     }
                 }
                 else {
                     mScrollDownContainer.setVisibility(View.GONE);
+                    mChatAdapter.setAllMessagesRead();
                 }
             }
         });
