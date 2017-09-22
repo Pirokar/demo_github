@@ -76,6 +76,9 @@ public class RatingStarsSentViewHolder extends BaseHolder {
             if (style.optionsSurveySelectedIconResId != INVALID) {
                 star.setImageResource(style.optionsSurveySelectedIconResId);
             }
+            else {
+                star.setImageResource(R.drawable.ic_star_grey600_24dp);
+            }
         }
     }
 

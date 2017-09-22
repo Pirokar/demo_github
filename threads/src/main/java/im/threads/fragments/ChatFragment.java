@@ -30,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -602,7 +603,7 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
             }
 
-            if (style.inputTextFont != null) {
+            if (!TextUtils.isEmpty(style.inputTextFont)) {
                 try {
                     Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
                     this.mInputEditText.setTypeface(custom_font);

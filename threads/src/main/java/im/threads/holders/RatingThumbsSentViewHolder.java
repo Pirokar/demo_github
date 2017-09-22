@@ -71,7 +71,7 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
             }
         } else {
             if (style.binarySurveyDislikeSelectedIconResId != INVALID) {
-                thumb.setImageResource(style.binarySurveyLikeUnselectedIconResId);
+                thumb.setImageResource(style.binarySurveyDislikeSelectedIconResId);
             }
         }
 

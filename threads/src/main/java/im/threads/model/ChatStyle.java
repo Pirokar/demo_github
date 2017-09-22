@@ -106,41 +106,41 @@ public class ChatStyle implements Serializable {
 
     // push notification style
     @DrawableRes
-    public int defPushIconResId;
+    public int defPushIconResId = INVALID;
     @StringRes
-    public int defTitleResId;
+    public int defTitleResId = INVALID;
     @ColorRes
-    public int pushBackgroundColorResId;
+    public int pushBackgroundColorResId = INVALID;
     @ColorRes
     public int nougatPushAccentColorResId = INVALID;
 
     // resolve thread request style
     @StringRes
-    public int requestToResolveThreadTextResId;
+    public int requestToResolveThreadTextResId = INVALID;
     @StringRes
-    public int approveRequestToResolveThreadTextResId;
+    public int approveRequestToResolveThreadTextResId = INVALID;
     @StringRes
-    public int denyRequestToResolveThreadTextResId;
+    public int denyRequestToResolveThreadTextResId = INVALID;
 
     // survey style
     @DrawableRes
-    public int binarySurveyLikeUnselectedIconResId;
+    public int binarySurveyLikeUnselectedIconResId = INVALID;
     @DrawableRes
-    public int binarySurveyLikeSelectedIconResId;
+    public int binarySurveyLikeSelectedIconResId = INVALID;
     @DrawableRes
-    public int binarySurveyDislikeUnselectedIconResId;
+    public int binarySurveyDislikeUnselectedIconResId = INVALID;
     @DrawableRes
-    public int binarySurveyDislikeSelectedIconResId;
+    public int binarySurveyDislikeSelectedIconResId = INVALID;
     @DrawableRes
-    public int optionsSurveyUnselectedIconResId;
+    public int optionsSurveyUnselectedIconResId = INVALID;
     @DrawableRes
-    public int optionsSurveySelectedIconResId;
+    public int optionsSurveySelectedIconResId = INVALID;
     @ColorRes
     public int surveySelectedColorFilterResId = INVALID;
     @ColorRes
     public int surveyUnselectedColorFilterResId = INVALID;
     @ColorRes
-    public int surveyTextColorResId;
+    public int surveyTextColorResId = INVALID;
 
     // schedule message style
     @ColorRes
@@ -162,8 +162,8 @@ public class ChatStyle implements Serializable {
     public int welcomeScreenTitleTextColorResId = INVALID;
     @ColorRes
     public int welcomeScreenSubtitleTextColorResId = INVALID;
-    public int welcomeScreenTitleSizeInSp;
-    public int welcomeScreenSubtitleSizeInSp;
+    public int welcomeScreenTitleSizeInSp = INVALID;
+    public int welcomeScreenSubtitleSizeInSp = INVALID;
 
     // set history loading count
     public int historyLoadingCount = 50;
