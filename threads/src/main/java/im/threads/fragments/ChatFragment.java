@@ -242,12 +242,9 @@ public class ChatFragment extends Fragment implements
 
     private void initController() {
         Activity activity = getActivity();
-        Bundle bundle = getArguments();
         mChatController = ChatController.getInstance(activity);
         mChatController.bindFragment(this);
-        if (mChatController.isNeedToShowWelcome()) {
-            mWelcomeScreen.setVisibility(View.VISIBLE);
-        }
+        mWelcomeScreen.setVisibility(mChatController.isNeedToShowWelcome() ? View.VISIBLE : View.GONE);
         mChatReceiver = new ChatReceiver();
         IntentFilter intentFilter = new IntentFilter(ACTION_SEARCH_CHAT_FILES);
         intentFilter.addAction(ACTION_SEARCH);
@@ -601,6 +598,9 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setTextColor(activity, mInputEditText, style.inputTextColor);
             } else if (style.incomingMessageTextColor != INVALID) {
                 ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
+            }
+            else {
+                ColorsHelper.setTextColor(activity, mInputEditText, R.color.threads_black);
             }
 
             if (!TextUtils.isEmpty(style.inputTextFont)) {

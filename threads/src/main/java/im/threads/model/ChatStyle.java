@@ -275,7 +275,7 @@ public class ChatStyle implements Serializable {
                 @DrawableRes int scrollDownButtonResId,
                 @ColorRes int unreadMsgStickerColorResId,
                 @ColorRes int unreadMsgCountTextColorResId) {
-            chatStyle.chatBackgroundColor = chatBackgroundColor;
+            chatStyle.chatBackgroundColor = chatBackgroundColor != INVALID ? chatBackgroundColor : R.color.threads_blue_eff3f8;
             chatStyle.chatHighlightingColor = chatHighlightingColor != INVALID ? chatHighlightingColor : R.color.threads_blue_transparent_700F87FF;
             chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor != INVALID ? incomingMessageBubbleColor : R.color.threads_white;
             chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor != INVALID ? outgoingMessageBubbleColor : R.color.threads_blue_3598dc;
