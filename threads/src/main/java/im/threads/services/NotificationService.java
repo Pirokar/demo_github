@@ -325,8 +325,7 @@ public class NotificationService extends Service {
                     }
                 };
 
-                if (style != null
-                        && style.defPushIconResId != ChatStyle.INVALID) {
+                if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
                     Picasso
                             .with(this)
                             .load(style.defPushIconResId)

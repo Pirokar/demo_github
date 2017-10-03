@@ -322,11 +322,11 @@ public class ChatStyle implements Serializable {
             return this;
         }
 
-        public ChatStyleBuilder setPushNotificationStyle(@DrawableRes int defIconResid,
+        public ChatStyleBuilder setPushNotificationStyle(@DrawableRes int defIconResId,
                                                          @StringRes int defTitleResId,
                                                          @ColorRes int pushBackgroundColorResId,
                                                          @ColorRes int nougatPushAccentColorResId) {
-            chatStyle.defPushIconResId = defIconResid != INVALID ? defIconResid : R.drawable.defult_push_icon;
+            chatStyle.defPushIconResId = defIconResId != INVALID ? defIconResId : R.drawable.defult_push_icon;
             chatStyle.defTitleResId = defTitleResId != INVALID ? defTitleResId : R.string.lib_app_name;
             chatStyle.pushBackgroundColorResId = pushBackgroundColorResId != INVALID ? pushBackgroundColorResId : R.color.threads_green_dark;
             chatStyle.nougatPushAccentColorResId = nougatPushAccentColorResId;
