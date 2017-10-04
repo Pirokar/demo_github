@@ -36,7 +36,7 @@
         android:layout_marginTop="@dimen/margin_quarter"
         android:layout_toRightOf="@+id/file_button"
         tools:text="2.3 Мб"
-        android:textolor="@color/threads_black"/>
+        android:textColor="@color/threads_black"/>
 
     <im.threads.widget.LightCustomFontTextView
         android:id="@+id/timestamp"
