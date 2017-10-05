@@ -31,7 +31,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-analytics-impl:10.2.0'
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.android.support:recyclerview-v7:+'
-    compile project(':push-api-release-2.0.95')
+    compile project(':push-api-release-2.0.103')
     /*
     *Если нужен retrofit, то необходимо использовать
     * версию 2.1.0 (okhttp 3.3.0), т.к. только эта версия
