@@ -1209,17 +1209,8 @@ public class ChatController {
                 new ConsultMessageReactions() {
                     @Override
                     public void consultConnected(final String id, final String name, final String title) {
-                        if (fragment != null)
+                        if (fragment != null) {
                             fragment.setStateConsultConnected(id, name, title);
-                        // Отправка данных об окружении оператору
-                        try {
-                            String userName = PrefUtils.getUserName(ctx);
-                            String clientId = PrefUtils.getClientID(ctx);
-                            String data = PrefUtils.getData(ctx);
-                            String message = MessageFormatter.createEnvironmentMessage(userName, clientId, data, appContext);
-                            sendMessageMFMSSync(appContext, message, true);
-                        } catch (PushServerErrorException e) {
-                            e.printStackTrace();
                         }
                     }
 

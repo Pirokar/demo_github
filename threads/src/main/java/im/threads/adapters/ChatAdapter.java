@@ -1178,7 +1178,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (item instanceof ConsultTyping) iter.remove();
                 }
             }
-            if (listToInsertTo.contains(itemToInsert)) return;
+            if (listToInsertTo.contains(itemToInsert)) {
+                return;
+            }
+
+            if (itemToInsert instanceof ConsultConnectionMessage && !((ConsultConnectionMessage) itemToInsert).isDisplayMessage()) {
+                return;
+            }
+
             listToInsertTo.add(itemToInsert);
             Calendar currentTimeStamp = Calendar.getInstance();
             Calendar prevTimeStamp = Calendar.getInstance();
