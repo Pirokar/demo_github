@@ -27,6 +27,7 @@ import java.util.Locale;
 import im.threads.R;
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
+import im.threads.model.ClearThreadIdChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
@@ -38,6 +39,7 @@ import im.threads.model.Operator;
 import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
 import im.threads.model.RequestResolveThread;
+import im.threads.model.SaveThreadIdChatItem;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
@@ -46,19 +48,6 @@ import im.threads.utils.AppInfoHelper;
 import im.threads.utils.DeviceInfoHelper;
 import im.threads.utils.MessageMatcher;
 
-/**
- * Created by yuri on 26.07.2016.
- * {
- * "result":"http://pushservertest.mfms.ru/push-test/file/download/eaydpjhiw2t124vxg4c2rb00p4yar7kn2nq7",
- * "optional":{
- * "type":"image/png",
- * "name":"jeb.png",
- * "size":23610,
- * "lastModified":1467358448772
- * },
- * "progress":null
- * }
- */
 public class MessageFormatter {
     private static final String TAG = "MessageFormatter ";
 
@@ -66,6 +55,7 @@ public class MessageFormatter {
     private static final String TYPE = "type";
     private static final String TEXT = "text";
     private static final String HIDE_AFTER = "hideAfter";
+    private static final String THREAD_ID = "threadId";
     private static final String QUOTES = "quotes";
     private static final String ATTACHMENTS = "attachments";
     private static final String ERROR_FORMATTING_JSON = "error formatting json";
@@ -220,23 +210,6 @@ public class MessageFormatter {
         return type != null && type.equalsIgnoreCase("threads");
     }
 
-//    private static Boolean getTypeOfSurvey(JSONObject fullMessage) {
-//        Boolean simple;
-//
-//        try {
-//            if (fullMessage.has("simple")) {
-//                simple = fullMessage.getBoolean("simple");
-//            } else {
-//                simple = true;
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            simple = true;
-//        }
-//
-//        return simple;
-//    }
-
     public static Long getHideAfter(JSONObject fullMessage) {
         try {
             return Long.parseLong(fullMessage.getString(HIDE_AFTER));
@@ -380,12 +353,14 @@ public class MessageFormatter {
                 return checkMessageIsFull(pushMessage, fullMessage);
             } else if (type.equalsIgnoreCase(MessageMatcher.REQUEST_CLOSE_THREAD)) {
                 return getCloseRequestFromPush(fullMessage);
+            } else if (type.equalsIgnoreCase(MessageMatcher.THREAD_OPENED)) {
+                return new SaveThreadIdChatItem(getThreadId(fullMessage));
+            } else if (type.equalsIgnoreCase(MessageMatcher.THREAD_CLOSED)) {
+                return new ClearThreadIdChatItem();
             } else if (type.equalsIgnoreCase(MessageMatcher.NONE)
                     || type.equalsIgnoreCase(MessageMatcher.MESSAGES_READ)
                     || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LOOKUP_STARTED)
                     || type.equalsIgnoreCase(MessageMatcher.CLIENT_BLOCKED)
-                    || type.equalsIgnoreCase(MessageMatcher.THREAD_OPENED)
-                    || type.equalsIgnoreCase(MessageMatcher.THREAD_CLOSED)
                     || type.equalsIgnoreCase(MessageMatcher.SCENARIO)
                     || isChatPush(fullMessage)) {
                 return new EmptyChatItem(type);
@@ -405,6 +380,15 @@ public class MessageFormatter {
         } else {
             return null;
         }
+    }
+
+    private static Long getThreadId(JSONObject fullMessage) {
+        try {
+            return Long.parseLong(fullMessage.getString(THREAD_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return -1L;
     }
 
     private static ScheduleInfo getScheduleInfoFromPush(PushMessage pushMessage, JSONObject fullMessage) {

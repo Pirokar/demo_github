@@ -28,6 +28,7 @@ public class PrefUtils {
     public static final String IS_UUID_SET = "IS_UUID_SET";
     public static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
     public static final String APP_STYLE = "APP_STYLE";
+    public static final String TAG_THREAD_ID = "THREAD_ID";
     public static final String SERVER_URL_META_INFO = "im.threads.getServerUrl";
 
     private PrefUtils() {
@@ -83,6 +84,15 @@ public class PrefUtils {
 
     public static String getClientID(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + TAG_CLIENT_ID, "");
+    }
+
+    public static void setThreadId(Context ctx, Long threadId) {
+        if (threadId == null) throw new IllegalStateException("threadId is null");
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putLong(PrefUtils.class + TAG_THREAD_ID, threadId).commit();
+    }
+
+    public static Long getThreadID(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getLong(PrefUtils.class + TAG_THREAD_ID, -1L);
     }
 
     public static void setClientIdWasSet(boolean isSet, Context ctx) {

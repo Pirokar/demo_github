@@ -45,6 +45,7 @@ import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
+import im.threads.model.ClearThreadIdChatItem;
 import im.threads.model.CompletionHandler;
 import im.threads.model.ConsultChatPhrase;
 import im.threads.model.ConsultConnectionMessage;
@@ -58,6 +59,7 @@ import im.threads.model.MessageState;
 import im.threads.model.MessgeFromHistory;
 import im.threads.model.PushMessageCheckResult;
 import im.threads.model.RequestResolveThread;
+import im.threads.model.SaveThreadIdChatItem;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
@@ -1153,6 +1155,15 @@ public class ChatController {
                     }
                 });
             }
+        }
+
+        if (chatItem instanceof SaveThreadIdChatItem) {
+            Long threadId = ((SaveThreadIdChatItem) chatItem).getThreadId();
+            PrefUtils.setThreadId(ctx, threadId);
+        }
+
+        if (chatItem instanceof ClearThreadIdChatItem) {
+            PrefUtils.setThreadId(ctx, -1L);
         }
 
         if (!MessageFormatter.checkId(pushMessage, PrefUtils.getClientID(ctx))
