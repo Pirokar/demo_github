@@ -903,7 +903,12 @@ public class ChatController {
     }
 
     public String getCurrentConsultName() {
-        return mConsultWriter.getCurrentConsultName() + "%%" + mConsultWriter.getCurrentConsultTitle();
+        return mConsultWriter.getCurrentConsultName();
+    }
+
+
+    public String getCurrentConsultTitle() {
+        return mConsultWriter.getCurrentConsultTitle();
     }
 
     public void onFileClick(final FileDescription fileDescription) {

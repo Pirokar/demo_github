@@ -1793,8 +1793,7 @@ public class ChatFragment extends Fragment implements
                 setTitleStateDefault();
                 break;
             case ChatController.CONSULT_STATE_FOUND:
-                String nameTitle[] = mChatController.getCurrentConsultName().split("%%");
-                setStateConsultConnected(connectedConsultId, nameTitle[0], nameTitle[1]);
+                setStateConsultConnected(connectedConsultId, mChatController.getCurrentConsultName(), mChatController.getCurrentConsultTitle());
                 break;
             case ChatController.CONSULT_STATE_SEARCHING:
                 setTitleStateSearchingConsult();
