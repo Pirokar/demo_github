@@ -33,6 +33,7 @@
     <string name="lib_no_cameras_detected">На устройстве отсутствует камера</string>
     <string name="lib_retake">Переснять</string>
     <string name="lib_consult">Консультант</string>
+    <string name="lib_operator_subtitle">Оператор</string>
     <string name="lib_error_no_file">Файл удалён на сервере</string>
     <string name="lib_I">Я</string>
     <string name="lib_choose_file">Выберите файл</string>

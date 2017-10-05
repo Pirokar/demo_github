@@ -237,7 +237,7 @@ public class ChatController {
                 instance.fragment.addChatItems(phrases);
                 ConsultInfo info = response != null ? response.getConsultInfo() : null;
                 if (info != null) {
-                    instance.fragment.setStateConsultConnected(info.getId(), info.getName(), info.getStatus());
+                    instance.fragment.setStateConsultConnected(info.getId(), info.getName());
                 }
             }
             PrefUtils.setClientIdWasSet(true, ctx);
@@ -460,7 +460,7 @@ public class ChatController {
             }
         });
         if (mConsultWriter.isConsultConnected()) {
-            fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName(), mConsultWriter.getCurrentConsultTitle());
+            fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName());
         } else if (mConsultWriter.istSearchingConsult()) {
             fragment.setStateSearchingConsult();
         } else {
@@ -548,7 +548,7 @@ public class ChatController {
                             if (null != fragment) {
                                 fragment.addChatItems(items);
                                 if (info != null) {
-                                    fragment.setStateConsultConnected(info.getId(), info.getName(), info.getStatus());
+                                    fragment.setStateConsultConnected(info.getId(), info.getName());
                                 }
                             }
                         }
@@ -1219,7 +1219,7 @@ public class ChatController {
                     @Override
                     public void consultConnected(final String id, final String name, final String title) {
                         if (fragment != null) {
-                            fragment.setStateConsultConnected(id, name, title);
+                            fragment.setStateConsultConnected(id, name);
                         }
                     }
 
@@ -1296,7 +1296,7 @@ public class ChatController {
                             fragment.addChatItems((List<ChatItem>) setLastAvatars(serverItems));
                             ConsultInfo info = response != null ? response.getConsultInfo() : null;
                             if (info != null) {
-                                fragment.setStateConsultConnected(info.getId(), info.getName(), info.getStatus());
+                                fragment.setStateConsultConnected(info.getId(), info.getName());
                             }
                         }
                         currentOffset = serverItems.size();

@@ -1253,7 +1253,7 @@ public class ChatFragment extends Fragment implements
 
     }
 
-    public void setStateConsultConnected(final String connectedConsultId, final String ConsultName, final String consultTitle) {
+    public void setStateConsultConnected(final String connectedConsultId, final String ConsultName) {
         final ChatFragment f = this;
         h.postDelayed(new Runnable() {
             @Override
@@ -1267,9 +1267,8 @@ public class ChatFragment extends Fragment implements
                 } else {
                     mConsultNameView.setText(appContext.getString(R.string.lib_unknown_operator));
                 }
-                if (!isEmpty(consultTitle) && !consultTitle.equals("null")) {
-                    mConsultTitle.setText(consultTitle);
-                }
+
+                mConsultTitle.setText(getString(R.string.lib_operator_subtitle));
                 f.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();
@@ -1793,7 +1792,7 @@ public class ChatFragment extends Fragment implements
                 setTitleStateDefault();
                 break;
             case ChatController.CONSULT_STATE_FOUND:
-                setStateConsultConnected(connectedConsultId, mChatController.getCurrentConsultName(), mChatController.getCurrentConsultTitle());
+                setStateConsultConnected(connectedConsultId, mChatController.getCurrentConsultName());
                 break;
             case ChatController.CONSULT_STATE_SEARCHING:
                 setTitleStateSearchingConsult();
