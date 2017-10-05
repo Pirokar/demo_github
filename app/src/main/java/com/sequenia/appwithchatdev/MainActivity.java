@@ -149,8 +149,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage) {
-            Log.i(TAG, "Full Push Accepted");
-            Log.i(TAG, pushMessage.fullMessage);
+            if (pushMessage != null && pushMessage.fullMessage != null) {
+                Log.i(TAG, "Full Push Accepted");
+                Log.i(TAG, pushMessage.fullMessage);
+            }
         }
     }
 }
