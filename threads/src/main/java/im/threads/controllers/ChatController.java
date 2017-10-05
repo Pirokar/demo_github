@@ -1080,7 +1080,11 @@ public class ChatController {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final int[] currentOffset = {fragment.getCurrentItemsCount()};
+                int currentItemsCount = 0;
+                if (null != fragment) {
+                    currentItemsCount = fragment.getCurrentItemsCount();
+                }
+                final int[] currentOffset = {currentItemsCount};
                 final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
                 try {
                     HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), lastLoadId, null);
