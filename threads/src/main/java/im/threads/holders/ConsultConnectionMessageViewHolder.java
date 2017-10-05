@@ -19,9 +19,9 @@ import im.threads.model.ConsultConnectionMessage;
 import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
+import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 
-import static android.text.TextUtils.isEmpty;
 import static im.threads.model.ChatStyle.INVALID;
 
 /**
@@ -85,10 +85,10 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(listener);
         }
-        if (!isEmpty(consultConnectionMessage.getAvatarPath())) {
-            Picasso
-                    .with(itemView.getContext())
-                    .load(consultConnectionMessage.getAvatarPath())
+        if (consultConnectionMessage.hasAvatar()) {
+            String avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), consultConnectionMessage.getAvatarPath());
+            Picasso.with(itemView.getContext())
+                    .load(avatarPath)
                     .centerInside()
                     .noPlaceholder()
                     .fit()
@@ -101,25 +101,21 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
 
                         @Override
                         public void onError() {
-                            Picasso
-                                    .with(itemView.getContext())
-                                    .load(defIcon)
-                                    .centerInside()
-                                    .fit()
-                                    .noPlaceholder()
-                                    .transform(new CircleTransform())
-                                    .into(mConsultAvatar);
+                            showDefIcon();
                         }
                     });
         } else {
-            Picasso
-                    .with(itemView.getContext())
-                    .load(defIcon)
-                    .centerInside()
-                    .noPlaceholder()
-                    .fit()
-                    .transform(new CircleTransform())
-                    .into(mConsultAvatar);
+            showDefIcon();
         }
+    }
+
+    private void showDefIcon() {
+        Picasso.with(itemView.getContext())
+                .load(defIcon)
+                .centerInside()
+                .noPlaceholder()
+                .fit()
+                .transform(new CircleTransform())
+                .into(mConsultAvatar);
     }
 }

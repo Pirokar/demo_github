@@ -93,7 +93,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ArrayList<ChatItem> list;
     ArrayList<ChatItem> backupList = new ArrayList<>();
-    final Picasso picasso;
     private final Context ctx;
     private AdapterInterface mAdapterInterface;
     public static final String ACTION_CHANGED = "im.threads.adapters.ACTION_CHANGED";
@@ -103,7 +102,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ChatAdapter(ArrayList<ChatItem> list, Context ctx, AdapterInterface adapterInterface) {
         this.list = list;
         if (this.list == null) this.list = new ArrayList<>();
-        picasso = Picasso.with(ctx);
         this.ctx = ctx;
         this.mAdapterInterface = adapterInterface;
         BroadcastReceiver br = new MyBroadcastReceiver();
@@ -264,10 +262,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             });
-            if (!isEmpty(ct.getAvatarPath())) {
+            if (ct.hasAvatar()) {
                 final int finalDefaultImageRes = defaultImageResId;
-                picasso
-                        .load(ct.getAvatarPath())
+                String avatarPath = FileUtils.convertRelativeUrlToAbsolute(ctx, ct.getAvatarPath());
+                Picasso.with(ctx)
+                        .load(avatarPath)
                         .fit()
                         .noPlaceholder()
                         .centerCrop()
@@ -280,7 +279,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                             @Override
                             public void onError() {
-                                picasso
+                                Picasso.with(ctx)
                                         .load(finalDefaultImageRes)
                                         .fit()
                                         .noPlaceholder()
@@ -290,7 +289,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             }
                         });
             } else {
-                picasso
+                Picasso.with(ctx)
                         .load(defaultImageResId)
                         .fit()
                         .noPlaceholder()
@@ -497,18 +496,18 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ChatItem item = getOriginalList().get(i);
             if (item instanceof ConsultChatPhrase) {
                 ConsultChatPhrase p = (ConsultChatPhrase) item;
-                if (p.getConsultId().equals(consultId) && isEmpty(newAvatarImageUrl) && isEmpty(p.getAvatarPath()))
+                if (p.getConsultId().equals(consultId) && isEmpty(newAvatarImageUrl) && !p.hasAvatar())
                     continue;
                 if (p.getConsultId().equals(consultId)
-                        && isEmpty(p.getAvatarPath())) {
-                    p.setAvatarPath(ctx, newAvatarImageUrl);
+                        && !p.hasAvatar()) {
+                    p.setAvatarPath(newAvatarImageUrl);
                     notifyItemChanged(i);
                     continue;
                 }
                 if (newAvatarImageUrl == null) newAvatarImageUrl = "";
                 if (p.getConsultId().equals(consultId)
                         && (!p.getAvatarPath().equals(newAvatarImageUrl))) {
-                    p.setAvatarPath(ctx, newAvatarImageUrl);
+                    p.setAvatarPath(newAvatarImageUrl);
                     notifyItemChanged(i);
                 }
             }
@@ -1039,7 +1038,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (!cp.getConsultId().equals(consultId)) continue;
                 String oldUrl = cp.getAvatarPath();
                 if (oldUrl == null || !oldUrl.equals(newUrl)) {
-                    cp.setAvatarPath(ctx, newUrl);
+                    cp.setAvatarPath(newUrl);
                     if (!isInSearchMode) notifyItemChanged(list.lastIndexOf(cp));
                 }
             }
@@ -1048,7 +1047,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (!ccm.getConsultId().equals(consultId)) continue;
                 String oldUrl = ccm.getAvatarPath();
                 if (oldUrl == null || !oldUrl.equals(newUrl)) {
-                    ccm.setAvatarPath(ctx, newUrl);
+                    ccm.setAvatarPath(newUrl);
                     if (!isInSearchMode) notifyItemChanged(list.lastIndexOf(ci));
                 }
             }
@@ -1179,7 +1178,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (item instanceof ConsultTyping) iter.remove();
                 }
             }
-            if (listToInsertTo.contains(itemToInsert)) return;
+            if (listToInsertTo.contains(itemToInsert)) {
+                return;
+            }
+
+            if (itemToInsert instanceof ConsultConnectionMessage && !((ConsultConnectionMessage) itemToInsert).isDisplayMessage()) {
+                return;
+            }
+
             listToInsertTo.add(itemToInsert);
             Calendar currentTimeStamp = Calendar.getInstance();
             Calendar prevTimeStamp = Calendar.getInstance();

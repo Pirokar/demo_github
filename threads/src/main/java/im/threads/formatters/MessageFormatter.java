@@ -73,6 +73,7 @@ public class MessageFormatter {
     private static final String BACKEND_ID = "backendId";
 
     // message types
+    private static final String TYPE_INIT_CHAT = "INIT_CHAT";
     private static final String TYPE_CLIENT_INFO = "CLIENT_INFO";
     private static final String TYPE_SURVEY_QUESTION_ANSWER = "SURVEY_QUESTION_ANSWER";
     private static final String TYPE_SURVEY_PASSED = "SURVEY_PASSED";
@@ -892,5 +893,15 @@ public class MessageFormatter {
                     AppInfoHelper.getLibVersion());
         }
         return userAgent;
+    }
+
+    public static String createInitChatMessage() {
+        JSONObject object = new JSONObject();
+        try {
+            object.put(TYPE, TYPE_INIT_CHAT);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return object.toString().replaceAll("\\\\", "");
     }
 }

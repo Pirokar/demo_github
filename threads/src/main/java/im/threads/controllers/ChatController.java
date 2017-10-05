@@ -221,6 +221,7 @@ public class ChatController {
                 sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
             }
             PrefUtils.setClientId(ctx, finalClientId);
+            sendMessageMFMSSync(ctx, MessageFormatter.createInitChatMessage(), true);
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                     finalClientId,
                                                                                     PrefUtils.getData(ctx),
@@ -447,6 +448,7 @@ public class ChatController {
             @Override
             public void run() {
                 try {
+                    sendMessageMFMSSync(appContext, MessageFormatter.createInitChatMessage(), true);
                     String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext),
                                                                                         PrefUtils.getClientID(appContext),
                                                                                         PrefUtils.getData(appContext),
@@ -566,11 +568,11 @@ public class ChatController {
         for (ChatItem ci : list) {
             if (ci instanceof ConsultConnectionMessage) {
                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
-                ccm.setAvatarPath(fragment.getActivity(), mDatabaseHolder.getLastConsultAvatarPathSync(ccm.getConsultId()));
+                ccm.setAvatarPath(mDatabaseHolder.getLastConsultAvatarPathSync(ccm.getConsultId()));
             }
             if (ci instanceof ConsultPhrase) {
                 ConsultPhrase cp = (ConsultPhrase) ci;
-                cp.setAvatarPath(fragment.getActivity(), mDatabaseHolder.getLastConsultAvatarPathSync(cp.getConsultId()));
+                cp.setAvatarPath(mDatabaseHolder.getLastConsultAvatarPathSync(cp.getConsultId()));
             }
         }
         return list;
@@ -901,7 +903,12 @@ public class ChatController {
     }
 
     public String getCurrentConsultName() {
-        return mConsultWriter.getCurrentConsultName() + "%%" + mConsultWriter.getCurrentConsultTitle();
+        return mConsultWriter.getCurrentConsultName();
+    }
+
+
+    public String getCurrentConsultTitle() {
+        return mConsultWriter.getCurrentConsultTitle();
     }
 
     public void onFileClick(final FileDescription fileDescription) {
@@ -1207,17 +1214,8 @@ public class ChatController {
                 new ConsultMessageReactions() {
                     @Override
                     public void consultConnected(final String id, final String name, final String title) {
-                        if (fragment != null)
+                        if (fragment != null) {
                             fragment.setStateConsultConnected(id, name, title);
-                        // Отправка данных об окружении оператору
-                        try {
-                            String userName = PrefUtils.getUserName(ctx);
-                            String clientId = PrefUtils.getClientID(ctx);
-                            String data = PrefUtils.getData(ctx);
-                            String message = MessageFormatter.createEnvironmentMessage(userName, clientId, data, appContext);
-                            sendMessageMFMSSync(appContext, message, true);
-                        } catch (PushServerErrorException e) {
-                            e.printStackTrace();
                         }
                     }
 

@@ -30,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -241,12 +242,9 @@ public class ChatFragment extends Fragment implements
 
     private void initController() {
         Activity activity = getActivity();
-        Bundle bundle = getArguments();
         mChatController = ChatController.getInstance(activity);
         mChatController.bindFragment(this);
-        if (mChatController.isNeedToShowWelcome()) {
-            mWelcomeScreen.setVisibility(View.VISIBLE);
-        }
+        mWelcomeScreen.setVisibility(mChatController.isNeedToShowWelcome() ? View.VISIBLE : View.GONE);
         mChatReceiver = new ChatReceiver();
         IntentFilter intentFilter = new IntentFilter(ACTION_SEARCH_CHAT_FILES);
         intentFilter.addAction(ACTION_SEARCH);
@@ -412,12 +410,12 @@ public class ChatFragment extends Fragment implements
                 if ( itemCount - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
                     if (mScrollDownContainer.getVisibility() != View.VISIBLE) {
                         mScrollDownContainer.setVisibility(View.VISIBLE);
-
                         showUnreadMsgsCount(mChatAdapter.getUnreadCount());
                     }
                 }
                 else {
                     mScrollDownContainer.setVisibility(View.GONE);
+                    mChatAdapter.setAllMessagesRead();
                 }
             }
         });
@@ -601,8 +599,11 @@ public class ChatFragment extends Fragment implements
             } else if (style.incomingMessageTextColor != INVALID) {
                 ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
             }
+            else {
+                ColorsHelper.setTextColor(activity, mInputEditText, R.color.threads_black);
+            }
 
-            if (style.inputTextFont != null) {
+            if (!TextUtils.isEmpty(style.inputTextFont)) {
                 try {
                     Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
                     this.mInputEditText.setTypeface(custom_font);
@@ -1792,8 +1793,7 @@ public class ChatFragment extends Fragment implements
                 setTitleStateDefault();
                 break;
             case ChatController.CONSULT_STATE_FOUND:
-                String nameTitle[] = mChatController.getCurrentConsultName().split("%%");
-                setStateConsultConnected(connectedConsultId, nameTitle[0], nameTitle[1]);
+                setStateConsultConnected(connectedConsultId, mChatController.getCurrentConsultName(), mChatController.getCurrentConsultTitle());
                 break;
             case ChatController.CONSULT_STATE_SEARCHING:
                 setTitleStateSearchingConsult();

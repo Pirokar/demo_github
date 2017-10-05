@@ -118,11 +118,12 @@ public class ConsultFileViewHolder extends BaseHolder {
             mBubble.setLayoutParams(lp);
 
             mConsultAvatar.setVisibility(View.VISIBLE);
-            @DrawableRes int resiD = R.drawable.blank_avatar_round;
-            if (style!=null && style.defaultIncomingMessageAvatar!=INVALID)resiD = style.defaultIncomingMessageAvatar;
+            @DrawableRes int resID = R.drawable.blank_avatar_round;
+            if (style!=null && style.defaultIncomingMessageAvatar!=INVALID)resID = style.defaultIncomingMessageAvatar;
 
             if (avatarPath != null) {
-                final int finalResiD = resiD;
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);
+                final int finalResiD = resID;
                 Picasso
                         .with(itemView.getContext())
                         .load(avatarPath)
@@ -149,7 +150,7 @@ public class ConsultFileViewHolder extends BaseHolder {
             } else {
                 Picasso
                         .with(itemView.getContext())
-                        .load(resiD)
+                        .load(resID)
                         .fit()
                         .noPlaceholder()
                         .transform(new CircleTransform())

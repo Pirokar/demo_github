@@ -106,41 +106,41 @@ public class ChatStyle implements Serializable {
 
     // push notification style
     @DrawableRes
-    public int defPushIconResId;
+    public int defPushIconResId = INVALID;
     @StringRes
-    public int defTitleResId;
+    public int defTitleResId = INVALID;
     @ColorRes
-    public int pushBackgroundColorResId;
+    public int pushBackgroundColorResId = INVALID;
     @ColorRes
     public int nougatPushAccentColorResId = INVALID;
 
     // resolve thread request style
     @StringRes
-    public int requestToResolveThreadTextResId;
+    public int requestToResolveThreadTextResId = INVALID;
     @StringRes
-    public int approveRequestToResolveThreadTextResId;
+    public int approveRequestToResolveThreadTextResId = INVALID;
     @StringRes
-    public int denyRequestToResolveThreadTextResId;
+    public int denyRequestToResolveThreadTextResId = INVALID;
 
     // survey style
     @DrawableRes
-    public int binarySurveyLikeUnselectedIconResId;
+    public int binarySurveyLikeUnselectedIconResId = INVALID;
     @DrawableRes
-    public int binarySurveyLikeSelectedIconResId;
+    public int binarySurveyLikeSelectedIconResId = INVALID;
     @DrawableRes
-    public int binarySurveyDislikeUnselectedIconResId;
+    public int binarySurveyDislikeUnselectedIconResId = INVALID;
     @DrawableRes
-    public int binarySurveyDislikeSelectedIconResId;
+    public int binarySurveyDislikeSelectedIconResId = INVALID;
     @DrawableRes
-    public int optionsSurveyUnselectedIconResId;
+    public int optionsSurveyUnselectedIconResId = INVALID;
     @DrawableRes
-    public int optionsSurveySelectedIconResId;
+    public int optionsSurveySelectedIconResId = INVALID;
     @ColorRes
     public int surveySelectedColorFilterResId = INVALID;
     @ColorRes
     public int surveyUnselectedColorFilterResId = INVALID;
     @ColorRes
-    public int surveyTextColorResId;
+    public int surveyTextColorResId = INVALID;
 
     // schedule message style
     @ColorRes
@@ -162,8 +162,8 @@ public class ChatStyle implements Serializable {
     public int welcomeScreenTitleTextColorResId = INVALID;
     @ColorRes
     public int welcomeScreenSubtitleTextColorResId = INVALID;
-    public int welcomeScreenTitleSizeInSp;
-    public int welcomeScreenSubtitleSizeInSp;
+    public int welcomeScreenTitleSizeInSp = INVALID;
+    public int welcomeScreenSubtitleSizeInSp = INVALID;
 
     // set history loading count
     public int historyLoadingCount = 50;
@@ -275,7 +275,7 @@ public class ChatStyle implements Serializable {
                 @DrawableRes int scrollDownButtonResId,
                 @ColorRes int unreadMsgStickerColorResId,
                 @ColorRes int unreadMsgCountTextColorResId) {
-            chatStyle.chatBackgroundColor = chatBackgroundColor;
+            chatStyle.chatBackgroundColor = chatBackgroundColor != INVALID ? chatBackgroundColor : R.color.threads_blue_eff3f8;
             chatStyle.chatHighlightingColor = chatHighlightingColor != INVALID ? chatHighlightingColor : R.color.threads_blue_transparent_700F87FF;
             chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor != INVALID ? incomingMessageBubbleColor : R.color.threads_white;
             chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor != INVALID ? outgoingMessageBubbleColor : R.color.threads_blue_3598dc;
@@ -336,9 +336,9 @@ public class ChatStyle implements Serializable {
         public ChatStyleBuilder setRequestResolveThreadStyle(@StringRes int requestToResolveThreadTextResId,
                                                              @StringRes int approveRequestToResolveThreadTextResId,
                                                              @StringRes int denyRequestToResolveThreadTextResId) {
-            chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId != INVALID ? requestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread;
-            chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId != INVALID ? approveRequestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread_close;
-            chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId != INVALID ? denyRequestToResolveThreadTextResId : R.string.lib_request_to_resolve_thread_open;
+            chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId;
+            chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId;
+            chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId;
             return this;
         }
 

@@ -112,6 +112,9 @@ public class Rating extends LinearLayout {
                 if (style.optionsSurveySelectedIconResId != ChatStyle.INVALID) {
                     star.setImageResource(style.optionsSurveySelectedIconResId);
                 }
+                else {
+                    star.setImageResource(R.drawable.ic_star_grey600_24dp);
+                }
 
                 if (style.surveySelectedColorFilterResId != ChatStyle.INVALID) {
                     star.setColorFilter(ContextCompat.getColor(context, style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
@@ -119,6 +122,9 @@ public class Rating extends LinearLayout {
             } else {
                 if (style.optionsSurveyUnselectedIconResId != ChatStyle.INVALID) {
                     star.setImageResource(style.optionsSurveyUnselectedIconResId );
+                }
+                else {
+                    star.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
                 }
 
                 if (ratingCount == 0 && style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {

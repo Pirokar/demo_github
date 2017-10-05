@@ -26,6 +26,7 @@ import im.threads.activities.TranslucentActivity;
 import im.threads.model.ChatStyle;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
+import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 
 import static im.threads.model.ChatStyle.INVALID;
@@ -76,6 +77,7 @@ public class QuickAnswerFragment extends DialogFragment {
             String consultName = arguments.getString("consultName");
             String consultPhrase = arguments.getString("consultPhrase");
             if (null != avatarPath && !avatarPath.equals("null")) {
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(getActivity(), avatarPath);
                 Picasso
                         .with(getActivity())
                         .load(avatarPath)

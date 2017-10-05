@@ -85,11 +85,11 @@ public class RatingThumbsViewHolder extends BaseHolder {
             }
         } else {
             if (style.binarySurveyLikeUnselectedIconResId != ChatStyle.INVALID) {
-                thumbUp.setImageResource(style.binarySurveyLikeSelectedIconResId);
+                thumbUp.setImageResource(style.binarySurveyLikeUnselectedIconResId);
             }
 
             if (style.binarySurveyDislikeSelectedIconResId != ChatStyle.INVALID) {
-                thumbDown.setImageResource(style.binarySurveyLikeUnselectedIconResId);
+                thumbDown.setImageResource(style.binarySurveyDislikeSelectedIconResId);
             }
 
             if (style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {

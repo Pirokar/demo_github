@@ -20,6 +20,7 @@ import im.threads.model.FileDescription;
 import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
+import im.threads.utils.FileUtils;
 import im.threads.utils.MaskedTransformer;
 import im.threads.utils.PrefUtils;
 
@@ -72,7 +73,6 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             , boolean isDownloadError
             , boolean isChosen
             , boolean isAvatarVisible) {
-        Picasso p = Picasso.with(itemView.getContext());
         mTimeStampTextView.setOnClickListener(listener);
         mTimeStampTextView.setOnLongClickListener(longListener);
         mImage.setOnClickListener(listener);
@@ -84,7 +84,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
-            p
+            Picasso.with(itemView.getContext())
                     .load(fileDescription.getFilePath())
                     .fit()
                     .centerCrop()
@@ -129,8 +129,9 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
 
             mConsultAvatar.setVisibility(View.VISIBLE);
             if (avatarPath != null) {
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);
                 final int finalResId = resId;
-                p
+                Picasso.with(itemView.getContext())
                         .load(avatarPath)
                         .fit()
                         .transform(new CircleTransform())
@@ -144,8 +145,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
 
                             @Override
                             public void onError() {
-                                Picasso
-                                        .with(itemView.getContext())
+                                Picasso.with(itemView.getContext())
                                         .load(finalResId)
                                         .fit()
                                         .noPlaceholder()
@@ -154,7 +154,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                             }
                         });
             } else {
-                p
+                Picasso.with(itemView.getContext())
                         .load(resId)
                         .fit()
                         .noPlaceholder()

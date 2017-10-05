@@ -10,13 +10,14 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@android:color/darker_gray" />
+        android:background="@color/threads_grey_aaa" />
 
     <im.threads.widget.text_view.BubbleMessageTextView
         android:id="@+id/ask_for_rate"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="@string/lib_ask_to_rate"
+        android:textColor="@color/threads_gray_text"
         android:gravity="center"/>
 
     <LinearLayout
@@ -45,6 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/lib_thanks_for_rate"
+        android:textColor="@color/threads_gray_text"
         android:gravity="center"
         android:visibility="gone"/>
 
@@ -53,7 +55,5 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@android:color/darker_gray"/>
-
-
+        android:background="@color/threads_grey_aaa"/>
 </LinearLayout>

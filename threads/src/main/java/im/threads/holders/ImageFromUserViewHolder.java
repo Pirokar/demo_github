@@ -11,17 +11,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import im.threads.model.ChatStyle;
-import im.threads.model.FileDescription;
-import im.threads.picasso_url_connection_only.Callback;
-import im.threads.utils.MaskedTransformer;
-import im.threads.R;
-import im.threads.model.MessageState;
-import im.threads.picasso_url_connection_only.Picasso;
-import im.threads.utils.PrefUtils;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import im.threads.R;
+import im.threads.model.ChatStyle;
+import im.threads.model.FileDescription;
+import im.threads.model.MessageState;
+import im.threads.picasso_url_connection_only.Callback;
+import im.threads.picasso_url_connection_only.Picasso;
+import im.threads.utils.MaskedTransformer;
+import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 30.06.2016.
@@ -67,7 +67,6 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             , boolean isDownloadError
             , boolean isChosen
             , MessageState sentState) {
-        final Picasso p = Picasso.with(itemView.getContext());
         mTimeStampTextView.setOnLongClickListener(longListener);
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
@@ -78,7 +77,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
-            p
+            Picasso.with(itemView.getContext())
                     .load(fileDescription.getFilePath())
                     .fit()
                     .centerCrop()

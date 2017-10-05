@@ -157,6 +157,10 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
             return false;
         }
 
+        if (backendId != null && that.backendId != null) {
+            return backendId.equals(that.backendId);
+        }
+
         if (messageId != null && that.messageId != null) {
             return messageId.equals(that.messageId);
         }
