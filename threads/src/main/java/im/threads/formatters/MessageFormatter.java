@@ -122,13 +122,18 @@ public class MessageFormatter {
             , ConsultInfo consultInfo
             , String quoteMfmsFilePath
             , String mfmsFilePath
-            , String clientId) {
+            , String clientId
+            , Long threadId) {
         try {
             Quote quote = upcomingUserMessage.getQuote();
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
             JSONObject formattedMessage = new JSONObject();
             formattedMessage.put(CLIENT_ID, clientId);
             formattedMessage.put(TEXT, upcomingUserMessage.getPhrase());
+
+            if (threadId != null && threadId != -1) {
+                formattedMessage.put(THREAD_ID, String.valueOf(threadId));
+            }
 
             if (quote != null) {
                 JSONArray quotes = new JSONArray();
@@ -510,7 +515,10 @@ public class MessageFormatter {
         } else if (fileDescription.getDownloadPath() != null) {
             attachments = attachmentsFromMfmsPath(fileDescription);
         }
-        attachments.getJSONObject(0).put("result", mfmsFilepath);
+
+        if (attachments != null) {
+            attachments.getJSONObject(0).put("result", mfmsFilepath);
+        }
         return attachments;
     }
 

@@ -660,7 +660,8 @@ public class ChatController {
 
     private void sendTextMessage(final UserPhrase userPhrase, ConsultInfo consultInfo) {
         String message = MessageFormatter.format(userPhrase, consultInfo, null, null,
-                PrefUtils.getClientID(appContext));
+                PrefUtils.getClientID(appContext),
+                PrefUtils.getThreadID(appContext));
 
         sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
             @Override
@@ -703,7 +704,8 @@ public class ChatController {
         }
 
         String message = MessageFormatter.format(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath,
-                PrefUtils.getClientID(appContext));
+                PrefUtils.getClientID(appContext),
+                PrefUtils.getThreadID(appContext));
 
         sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
             @Override
