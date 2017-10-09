@@ -4,10 +4,10 @@
 
     <item
         android:id="@+id/search"
-        android:title="@string/lib_search_messages"
+        android:title="@string/threads_search_messages"
         app:showAsAction="never" />
     <item
         android:id="@+id/files_and_media"
-        android:title="@string/lib_files_and_media"
+        android:title="@string/threads_files_and_media"
         app:showAsAction="never" />
 </menu>

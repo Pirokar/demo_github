@@ -56,7 +56,7 @@
                     android:layout_width="wrap_content"
                     android:gravity="center"
                     android:layout_marginRight="4dp"
-                    android:text="@string/lib_item_user_rate_text"
+                    android:text="@string/threads_item_user_rate_text"
                     android:textColor="@color/threads_outgoing_message_text" />
 
                 <im.threads.widget.text_view.BubbleMessageTextView
@@ -80,7 +80,7 @@
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toRightOf="@+id/image_layout"
-            android:text="@string/lib_item_user_rate_header"
+            android:text="@string/threads_item_user_rate_header"
             android:textColor="@color/threads_outgoing_message_text" />
 
         <im.threads.widget.text_view.BubbleTimeTextView

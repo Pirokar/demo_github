@@ -24,7 +24,7 @@
         android:layout_marginTop="@dimen/margin_half"
         android:gravity="center"
         android:textStyle="bold"
-        android:text="@string/lib_title_text"
+        android:text="@string/threads_title_text"
         android:textColor="@color/threads_gray_text"/>
 
     <im.threads.widget.text_view.PlaceholderSubtitleTextView
@@ -36,6 +36,6 @@
         android:layout_marginRight="48dp"
         android:layout_marginTop="@dimen/margin_quarter"
         android:gravity="center"
-        android:text="@string/lib_subtitle_text"
+        android:text="@string/threads_subtitle_text"
         android:textColor="@color/threads_gray_text"/>
 </LinearLayout>

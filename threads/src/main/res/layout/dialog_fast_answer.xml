@@ -73,7 +73,7 @@
         android:layout_height="56dp"
         android:layout_below="@+id/answer_layout"
         android:layout_marginBottom="@dimen/margin_half"
-        android:text="@string/lib_close"
+        android:text="@string/threads_close"
         android:textColor="@android:color/black" />
 
     <View

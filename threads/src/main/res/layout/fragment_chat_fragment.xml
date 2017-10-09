@@ -15,7 +15,7 @@
         android:layout_marginLeft="@dimen/margin_big"
         android:layout_marginRight="@dimen/margin_big"
         android:background="@android:color/transparent"
-        android:text="@string/lib_search_more"
+        android:text="@string/threads_search_more"
         android:visibility="gone" />
 
     <FrameLayout
@@ -177,7 +177,7 @@
             <im.threads.widget.CustomFontEditText
                 android:id="@+id/input"
                 style="@style/InputEditTextStyle"
-                android:hint="@string/lib_your_message"
+                android:hint="@string/threads_your_message"
                 android:maxLines="5"/>
 
             <ImageButton
@@ -298,7 +298,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_toLeftOf="@+id/search_up_ib"
                         android:background="@null"
-                        android:hint="@string/lib_search_messages"
+                        android:hint="@string/threads_search_messages"
                         android:lines="1"
                         android:textCursorDrawable="@null"
                         android:textSize="@dimen/text_big"

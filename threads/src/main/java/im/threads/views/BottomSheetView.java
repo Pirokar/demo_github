@@ -113,13 +113,13 @@ public class BottomSheetView extends LinearLayout {
             if (color!=0){
                 d.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             }
-            hideButton.setText(getContext().getResources().getString(R.string.lib_send));
+            hideButton.setText(getContext().getResources().getString(R.string.threads_send));
         } else {
             d = getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_blue_42dp);
             if (color!=0){
                 d.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             }
-            hideButton.setText(getContext().getResources().getString(R.string.lib_hide));
+            hideButton.setText(getContext().getResources().getString(R.string.threads_hide));
         }
         hideButton.setCompoundDrawablesRelativeWithIntrinsicBounds(null, d, null, null);
         this.isSmthSelected = isSmthSelected;

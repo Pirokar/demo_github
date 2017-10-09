@@ -652,7 +652,7 @@ public class ChatFragment extends Fragment implements
             if (!isCameraGranted) permissions.add(android.Manifest.permission.CAMERA);
             if (!isWriteGranted)
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_CAMERA, R.string.lib_permissions_camera_and_write_external_storage_help_text, permissions.toArray(new String[]{}));
+            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_CAMERA, R.string.threads_permissions_camera_and_write_external_storage_help_text, permissions.toArray(new String[]{}));
         }
     }
 
@@ -848,7 +848,7 @@ public class ChatFragment extends Fragment implements
         }
         if (cp instanceof UserPhrase) {
             UserPhrase userPhrase = (UserPhrase) cp;
-            headerText = appContext.getString(R.string.lib_I);
+            headerText = appContext.getString(R.string.threads_I);
             mQuote.setFromConsult(false);
             mQuote.setPhraseOwnerTitle(headerText);
             mQuote.setMessageId(userPhrase.getMessageId());
@@ -859,7 +859,7 @@ public class ChatFragment extends Fragment implements
             mQuote.setFromConsult(true);
             mQuote.setQuotedPhraseId(((ConsultPhrase) cp).getConsultId());
             if (headerText == null) {
-                headerText = appContext.getString(R.string.lib_consult);
+                headerText = appContext.getString(R.string.threads_consult);
             }
             mQuote.setPhraseOwnerTitle(headerText);
             mQuote.setMessageId(consultPhrase.getMessageId());
@@ -867,7 +867,7 @@ public class ChatFragment extends Fragment implements
         }
         if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                 || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
-            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? appContext.getString(R.string.lib_image) : text, cp.getFileDescription().getFilePath());
+            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? appContext.getString(R.string.threads_image) : text, cp.getFileDescription().getFilePath());
         } else if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PDF) {
             String fileName = "";
             try {
@@ -908,7 +908,7 @@ public class ChatFragment extends Fragment implements
             frag.setOnDirSelectedListener(this);
             frag.show(getFragmentManager(), null);
         } else {
-            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_READ_EXTERNAL, R.string.lib_permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_READ_EXTERNAL, R.string.threads_permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 
     }
@@ -933,7 +933,7 @@ public class ChatFragment extends Fragment implements
             List<UpcomingUserMessage> messages = new ArrayList<>();
             messages.add(new UpcomingUserMessage(
                     new FileDescription(
-                            appContext.getString(R.string.lib_I),
+                            appContext.getString(R.string.threads_I),
                             mAttachedImages.get(0),
                             new File(mAttachedImages.get(0).replaceAll("file://", "")).length(),
                             System.currentTimeMillis()),
@@ -943,7 +943,7 @@ public class ChatFragment extends Fragment implements
 
             for (int i = 1; i < mAttachedImages.size(); i++) {
                 FileDescription fileDescription = new FileDescription(
-                        appContext.getString(R.string.lib_I),
+                        appContext.getString(R.string.threads_I),
                         mAttachedImages.get(i),
                         new File(mAttachedImages.get(i).replaceAll("file://", "")).length(),
                         System.currentTimeMillis());
@@ -960,8 +960,8 @@ public class ChatFragment extends Fragment implements
     public void onFileSelected(File fileOrDirectory) {
         Log.i(TAG, "onFileSelected: " + fileOrDirectory);
 
-        mFileDescription = new FileDescription(appContext.getString(R.string.lib_I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(appContext.getString(R.string.lib_I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
+        mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
         mQuote = null;
     }
 
@@ -1106,7 +1106,7 @@ public class ChatFragment extends Fragment implements
                 });
             }
         } else {
-            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY, R.string.lib_permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY, R.string.threads_permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 
     }
@@ -1262,10 +1262,10 @@ public class ChatFragment extends Fragment implements
                 if (!isEmpty(ConsultName) && !ConsultName.equals("null")) {
                     mConsultNameView.setText(ConsultName);
                 } else {
-                    mConsultNameView.setText(appContext.getString(R.string.lib_unknown_operator));
+                    mConsultNameView.setText(appContext.getString(R.string.threads_unknown_operator));
                 }
 
-                mConsultTitle.setText(getString(R.string.lib_operator_subtitle));
+                mConsultTitle.setText(getString(R.string.threads_operator_subtitle));
                 f.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();
@@ -1285,7 +1285,7 @@ public class ChatFragment extends Fragment implements
                     if (style != null && style.chatTitleTextResId != INVALID) {
                         mConsultNameView.setText(style.chatTitleTextResId);
                     } else {
-                        mConsultNameView.setText(appContext.getString(R.string.lib_contact_center));
+                        mConsultNameView.setText(appContext.getString(R.string.threads_contact_center));
                     }
                 }
                 connectedConsultId = String.valueOf(-1);
@@ -1438,11 +1438,11 @@ public class ChatFragment extends Fragment implements
             if (activity != null) {
                 updateProgress(fileDescription);
                 if (t instanceof FileNotFoundException) {
-                    Toast.makeText(activity, R.string.lib_error_no_file, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.threads_error_no_file, Toast.LENGTH_SHORT).show();
                     mChatAdapter.onDownloadError(fileDescription);
                 }
                 if (t instanceof UnknownHostException) {
-                    Toast.makeText(activity, R.string.lib_check_connection, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.threads_check_connection, Toast.LENGTH_SHORT).show();
                     mChatAdapter.onDownloadError(fileDescription);
                 }
             }
@@ -1559,7 +1559,7 @@ public class ChatFragment extends Fragment implements
             if (photos.size() == 0) return;
             unChooseItem(mChosenPhrase);
             UpcomingUserMessage uum =
-                    new UpcomingUserMessage(new FileDescription(appContext.getString(R.string.lib_I)
+                    new UpcomingUserMessage(new FileDescription(appContext.getString(R.string.threads_I)
                             , photos.get(0)
                             , new File(photos.get(0).replaceAll("file://", "")).length()
                             , System.currentTimeMillis())
@@ -1574,14 +1574,14 @@ public class ChatFragment extends Fragment implements
             for (int i = 1; i < photos.size(); i++) {
                 uum =
                         new UpcomingUserMessage(
-                                new FileDescription(appContext.getString(R.string.lib_I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
+                                new FileDescription(appContext.getString(R.string.threads_I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
                                 , null
                                 , null
                                 , false);
                 mChatController.onUserInput(uum);
             }
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
-            mFileDescription = new FileDescription(appContext.getString(R.string.lib_image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
+            mFileDescription = new FileDescription(appContext.getString(R.string.threads_image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
             UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
             sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
         } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY && resultCode == PermissionsActivity.RESPONSE_GRANTED) {

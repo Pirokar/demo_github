@@ -55,21 +55,21 @@ public class RequestResolveThreadViewHolder extends BaseHolder {
                 requestToResolveThread.setText(style.requestToResolveThreadTextResId);
             }
             else {
-                requestToResolveThread.setText(R.string.lib_request_to_resolve_thread);
+                requestToResolveThread.setText(R.string.threads_request_to_resolve_thread);
             }
 
             if (style.approveRequestToResolveThreadTextResId != ChatStyle.INVALID) {
                 approveRequest.setText(style.approveRequestToResolveThreadTextResId);
             }
             else {
-                approveRequest.setText(R.string.lib_request_to_resolve_thread_close);
+                approveRequest.setText(R.string.threads_request_to_resolve_thread_close);
             }
 
             if (style.denyRequestToResolveThreadTextResId != ChatStyle.INVALID) {
                 denyRequest.setText(style.denyRequestToResolveThreadTextResId);
             }
             else {
-                denyRequest.setText(R.string.lib_request_to_resolve_thread_open);
+                denyRequest.setText(R.string.threads_request_to_resolve_thread_open);
             }
         }
     }

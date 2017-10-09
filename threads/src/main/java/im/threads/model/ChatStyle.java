@@ -505,7 +505,7 @@ public class ChatStyle implements Serializable {
 
         public ChatStyle build() {
             if (TextUtils.isEmpty(clientId) && PrefUtils.getClientID(ctx).equals("")) {
-                throw new IllegalStateException(ctx.getString(R.string.lib_invalid_client_id));
+                throw new IllegalStateException(ctx.getString(R.string.threads_invalid_client_id));
             }
 
             PrefUtils.setIncomingStyle(ctx, chatStyle);

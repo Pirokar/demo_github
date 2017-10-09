@@ -12,7 +12,7 @@
     <im.threads.widget.CustomFontTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/lib_no_connection"
+        android:text="@string/threads_no_connection"
         android:textColor="@color/threads_black"
         android:textSize="26sp" />
 
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_big"
-        android:text="@string/lib_no_connection_details"
+        android:text="@string/threads_no_connection_details"
         android:textColor="#656565"
         android:textSize="@dimen/margin_big" />
 
@@ -32,7 +32,7 @@
         android:layout_gravity="right"
         android:layout_marginTop="@dimen/margin_big"
         android:background="@android:color/transparent"
-        android:text="@string/lib_close"
+        android:text="@string/threads_close"
         android:textColor="@color/threads_blue"
         android:textSize="18sp" />
 

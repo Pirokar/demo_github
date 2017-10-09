@@ -28,7 +28,7 @@
             android:layout_marginBottom="2dp"
             android:layout_marginRight="@dimen/margin_half"
             android:layout_toStartOf="@+id/p"
-            android:text="@string/lib_press"
+            android:text="@string/threads_press"
             android:textColor="@android:color/white" />
 
         <ImageView
@@ -45,7 +45,7 @@
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_toEndOf="@+id/p"
-            android:text="@string/lib_to_photo"
+            android:text="@string/threads_to_photo"
             android:textColor="@android:color/white" />
     </RelativeLayout>
 
@@ -108,7 +108,7 @@
         <im.threads.widget.CustomFontButton
             android:id="@+id/retake"
             android:layout_gravity="left"
-            android:text="@string/lib_retake"
+            android:text="@string/threads_retake"
             style="@style/bottomButtonTransparent"
             />
 
@@ -116,7 +116,7 @@
             style="@style/bottomButtonTransparent"
             android:id="@+id/send"
             android:layout_gravity="right"
-            android:text="@string/lib_send"
+            android:text="@string/threads_send"
            />
     </FrameLayout>
 </FrameLayout>

@@ -211,7 +211,7 @@ public class GalleryActivity extends BaseActivity
     private void setStatePhotoBuckets() {
         isInBuckets = true;
         chosentItems = null;
-        ((Toolbar) findViewById(R.id.toolbar)).setTitle(getResources().getString(R.string.lib_photos));
+        ((Toolbar) findViewById(R.id.toolbar)).setTitle(getResources().getString(R.string.threads_photos));
         findViewById(R.id.search_label_layout).setVisibility(View.VISIBLE);
         findViewById(R.id.bottom_buttons).setVisibility(View.GONE);
         findViewById(R.id.search_layout).setVisibility(View.GONE);

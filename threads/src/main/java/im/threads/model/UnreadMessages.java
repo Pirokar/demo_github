@@ -30,6 +30,6 @@ public class UnreadMessages implements ChatItem {
     }
 
     public String getMessage(Context context) {
-        return context.getResources().getQuantityString(R.plurals.lib_unread_messages, count, count);
+        return context.getResources().getQuantityString(R.plurals.threads_unread_messages, count, count);
     }
 }

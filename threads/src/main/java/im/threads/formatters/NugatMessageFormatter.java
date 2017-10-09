@@ -96,8 +96,8 @@ public class NugatMessageFormatter {
         if (imagesCount != 0 && plainFilesCount == 0) {
             ImagesPlurals imagesPlurals = new ImagesPlurals(Locale.getDefault());
             if (imagesCount != 0 && plainFilesCount == 0) {
-                if (isEmpty(phrase)) phrase = ctx.getString(R.string.lib_touch_to_look);
-                String send = sex ? ctx.getString(R.string.lib_send_male) : ctx.getString(R.string.lib_send_female);
+                if (isEmpty(phrase)) phrase = ctx.getString(R.string.threads_touch_to_look);
+                String send = sex ? ctx.getString(R.string.threads_send_male) : ctx.getString(R.string.threads_send_female);
                 titletext += " " + send + " ";
                 if (imagesCount == 1) {
                     titletext += imagesPlurals.getForQuantity(1).toLowerCase();
@@ -108,7 +108,7 @@ public class NugatMessageFormatter {
         } else if (plainFilesCount != 0) {
             FilesPlurals filesPlurals
                     = new FilesPlurals(Locale.getDefault());
-            String send = sex ? ctx.getString(R.string.lib_send_male) : ctx.getString(R.string.lib_send_female);
+            String send = sex ? ctx.getString(R.string.threads_send_male) : ctx.getString(R.string.threads_send_female);
             titletext += " " + send + " ";
             if ((imagesCount + plainFilesCount) == 1) {
                 titletext += filesPlurals.getForQuantity(1).toLowerCase();
@@ -117,12 +117,12 @@ public class NugatMessageFormatter {
             }
             if (isEmpty(phrase) && plainFilesCount == 1) phrase = docName;
             else if (isEmpty(phrase) && plainFilesCount != 1) {
-                phrase = ctx.getString(R.string.lib_touch_to_download);
+                phrase = ctx.getString(R.string.threads_touch_to_download);
             }
         } else if (plainFilesCount == 0 && imagesCount == 0 && unreadMessages.size() > 1) {
             titletext = overallPhrasesCount +
                     " "
-                    + ctx.getString(R.string.lib_new_) +
+                    + ctx.getString(R.string.threads_new_) +
                     " "
                     + new MessagesPlurals(Locale.getDefault())
                     .getForQuantity(overallPhrasesCount);

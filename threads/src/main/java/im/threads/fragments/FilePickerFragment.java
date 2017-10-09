@@ -79,9 +79,9 @@ public class FilePickerFragment extends DialogFragment
         } else {
             builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyleTransparent);
         }
-        builder.setTitle(getString(R.string.lib_choose_file));
-        builder.setNeutralButton(getString(R.string.lib_folder_up), this);
-        builder.setNegativeButton(getString(R.string.lib_cancel), this);
+        builder.setTitle(getString(R.string.threads_choose_file));
+        builder.setNeutralButton(getString(R.string.threads_folder_up), this);
+        builder.setNegativeButton(getString(R.string.threads_cancel), this);
         dialog = builder.create();
         v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_directory_picker, null);
 
@@ -138,7 +138,7 @@ public class FilePickerFragment extends DialogFragment
         adapter.clear();
         adapter.addAll(Arrays.asList(folders));
         if (absolutePathDir != null && getDialog() != null) {
-            getDialog().setTitle(getString(R.string.lib_now_you_are_in_directory) + "\r\n" + absolutePathDir.getAbsolutePath());
+            getDialog().setTitle(getString(R.string.threads_now_you_are_in_directory) + "\r\n" + absolutePathDir.getAbsolutePath());
         }
         adapter.notifyDataSetChanged();
         return adapter;

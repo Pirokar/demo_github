@@ -122,14 +122,14 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
     private void downloadImage() {
         if (files.get(mViewPager.getCurrentItem()).getFilePath() == null) return;
         if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_DENIED) {
-            PermissionsActivity.startActivityForResult(this, CODE_REQUQEST_DOWNLOAD, R.string.lib_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            PermissionsActivity.startActivityForResult(this, CODE_REQUQEST_DOWNLOAD, R.string.threads_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
         String path = files.get(mViewPager.getCurrentItem()).getFilePath().replaceAll("file://", "");
         try {
             File file = new File(path);
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) == null) {
-                Toast.makeText(this, R.string.lib_unable_to_save, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
                 return;
             }
             File out = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), FileUtils.getLastPathSegment(path));
@@ -143,10 +143,10 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
             }
             inStream.close();
             outStram.close();
-            Toast.makeText(this, getString(R.string.lib_saved_to) + " " + out.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.threads_saved_to) + " " + out.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, R.string.lib_unable_to_save, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -184,7 +184,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
 
     @Override
     public void onPageSelected(int position) {
-        getSupportActionBar().setTitle(mViewPager.getCurrentItem() + 1 + " " + getString(R.string.lib_from) + " " + collectionSize);
+        getSupportActionBar().setTitle(mViewPager.getCurrentItem() + 1 + " " + getString(R.string.threads_from) + " " + collectionSize);
     }
 
     @Override

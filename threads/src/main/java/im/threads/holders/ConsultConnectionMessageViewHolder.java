@@ -63,7 +63,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         if (consultConnectionMessage.getName() == null
                 || consultConnectionMessage.getName().equals("null")) {
             Log.d(TAG, "consultName is null");
-            headerTextView.setText(itemView.getContext().getString(R.string.lib_unknown_operator));
+            headerTextView.setText(itemView.getContext().getString(R.string.threads_unknown_operator));
         } else {
             headerTextView.setText(consultConnectionMessage.getName());
         }
@@ -72,13 +72,13 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         boolean sex = consultConnectionMessage.getSex();
         long date = consultConnectionMessage.getTimeStamp();
         if (sex && isConnected) {
-            connectedText = itemView.getContext().getResources().getString(R.string.lib_connected) + " " + sdf.format(new Date(date));
+            connectedText = itemView.getContext().getResources().getString(R.string.threads_connected) + " " + sdf.format(new Date(date));
         } else if (!sex && isConnected) {
-            connectedText = itemView.getContext().getResources().getString(R.string.lib_connected_female) + " " + sdf.format(new Date(date));
+            connectedText = itemView.getContext().getResources().getString(R.string.threads_connected_female) + " " + sdf.format(new Date(date));
         } else if (sex && !isConnected) {
-            connectedText = itemView.getContext().getResources().getString(R.string.lib_left_dialog) + " " + sdf.format(new Date(date));
+            connectedText = itemView.getContext().getResources().getString(R.string.threads_left_dialog) + " " + sdf.format(new Date(date));
         } else if (!sex && !isConnected) {
-            connectedText = itemView.getContext().getResources().getString(R.string.lib_left_female) + " " + sdf.format(new Date(date));
+            connectedText = itemView.getContext().getResources().getString(R.string.threads_left_female) + " " + sdf.format(new Date(date));
         }
         connectedMessage.setText(connectedText);
         ViewGroup vg = (ViewGroup) itemView;

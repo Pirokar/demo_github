@@ -50,9 +50,9 @@ public class FilesDateStampHolder extends RecyclerView.ViewHolder {
         Calendar current = Calendar.getInstance();
         date.setTimeInMillis(timeStamp);
         if (date.get(Calendar.DAY_OF_YEAR) == current.get(Calendar.DAY_OF_YEAR)) {
-            mDateTextView.setText(itemView.getResources().getString(R.string.lib_recently));
+            mDateTextView.setText(itemView.getResources().getString(R.string.threads_recently));
         } else if ((current.get(Calendar.DAY_OF_YEAR) - date.get(Calendar.DAY_OF_YEAR) == 1)) {
-            mDateTextView.setText(itemView.getResources().getString(R.string.lib_yesterday));
+            mDateTextView.setText(itemView.getResources().getString(R.string.threads_yesterday));
         } else {
             mDateTextView.setText(sdf.format(new Date(timeStamp)));
         }

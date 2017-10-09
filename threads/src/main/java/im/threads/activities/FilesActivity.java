@@ -85,7 +85,7 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
                 if (mSearchEditText.getVisibility() == View.VISIBLE) {
                     mSearchEditText.setText("");
                     mSearchEditText.setVisibility(View.GONE);
-                    mToolbar.setTitle(getString(R.string.lib_files_and_media));
+                    mToolbar.setTitle(getString(R.string.threads_files_and_media));
                     if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
                 } else {
                     mSearchEditText.setVisibility(View.VISIBLE);
@@ -176,7 +176,7 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
         if (mSearchEditText.getVisibility() == View.VISIBLE) {
             mSearchEditText.setText("");
             mSearchEditText.setVisibility(View.GONE);
-            mToolbar.setTitle(getString(R.string.lib_files_and_media));
+            mToolbar.setTitle(getString(R.string.threads_files_and_media));
             if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
         } else {
             super.onBackPressed();
