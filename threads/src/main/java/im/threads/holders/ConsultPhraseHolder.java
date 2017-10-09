@@ -98,6 +98,9 @@ public class ConsultPhraseHolder extends BaseHolder {
                 setTintToProgressButtonConsult(mCircularProgressButton, style.chatToolbarColorResId);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
             }
+            else {
+                setTintToProgressButtonConsult(mCircularProgressButton, R.color.threads_chat_toolbar);
+            }
             if (style.chatHighlightingColor != INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
                 mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

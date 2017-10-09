@@ -22,6 +22,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/threads_chat_toolbar"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp" />
 
 
@@ -36,7 +37,7 @@
         android:gravity="center_horizontal"
         android:paddingBottom="@dimen/margin_big"
         android:paddingTop="100dp"
-        android:textColor="@android:color/white"
+        android:textColor="@color/threads_chat_toolbar_text"
        />
 
     <im.threads.widget.CustomFontTextView
@@ -46,6 +47,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/image"
         android:textSize="@dimen/text_regular"
-        android:textColor="@android:color/black" />
+        android:textColor="@color/threads_chat_toolbar_text" />
 
 </RelativeLayout>

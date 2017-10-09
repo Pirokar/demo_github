@@ -228,6 +228,10 @@ public class FilePickerFragment extends DialogFragment
                 ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
                 ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
             }
+            else {
+                ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), R.color.threads_chat_toolbar));
+                ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), R.color.threads_chat_toolbar));
+            }
         }
     }
 }

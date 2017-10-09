@@ -12,7 +12,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/logo"/>
+        android:src="@drawable/threads_welcome_logo"/>
 
     <im.threads.widget.text_view.PlaceholderTitleTextView
         android:id="@+id/welcome_title"
@@ -24,8 +24,9 @@
         android:layout_marginTop="@dimen/margin_half"
         android:gravity="center"
         android:textStyle="bold"
-        android:text="@string/threads_title_text"
-        android:textColor="@color/threads_gray_text"/>
+        android:textSize="@dimen/threads_welcome_screen_title"
+        android:text="@string/threads_welcome_screen_title_text"
+        android:textColor="@color/threads_welcome_screen_title"/>
 
     <im.threads.widget.text_view.PlaceholderSubtitleTextView
         android:id="@+id/welcome_subtitle"
@@ -36,6 +37,7 @@
         android:layout_marginRight="48dp"
         android:layout_marginTop="@dimen/margin_quarter"
         android:gravity="center"
-        android:text="@string/threads_subtitle_text"
-        android:textColor="@color/threads_gray_text"/>
+        android:textSize="@dimen/threads_welcome_screen_subtitle"
+        android:text="@string/threads_welcome_screen_subtitle_text"
+        android:textColor="@color/threads_welcome_screen_subtitle"/>
 </LinearLayout>

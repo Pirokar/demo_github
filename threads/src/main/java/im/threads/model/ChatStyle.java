@@ -234,140 +234,8 @@ public class ChatStyle implements Serializable {
             return builder;
         }
 
-        public ChatStyleBuilder setChatTitleStyle(
-                @StringRes int chatTitleTextResId,
-                @ColorRes int chatToolbarColorResId,
-                @ColorRes int chatToolbarTextColorResId,
-                @ColorRes int chatStatusBarColorResId,
-                @ColorRes int menuItemTextColorResId,
-                @ColorRes int chatToolbarHintTextColor,
-                boolean showBackButton) {
-            chatStyle.chatTitleTextResId = chatTitleTextResId;
-            chatStyle.chatToolbarColorResId = chatToolbarColorResId != INVALID ? chatToolbarColorResId : R.color.threads_teal_009688;
-            chatStyle.chatToolbarTextColorResId = chatToolbarTextColorResId != INVALID ? chatToolbarTextColorResId : R.color.threads_white;
-            chatStyle.chatStatusBarColorResId = chatStatusBarColorResId != INVALID ? chatStatusBarColorResId : R.color.threads_teal_004D40;
-            chatStyle.menuItemTextColorResId = menuItemTextColorResId;
-            chatStyle.chatToolbarHintTextColor = chatToolbarHintTextColor;
+        public ChatStyleBuilder showChatBackButton(boolean showBackButton) {
             chatStyle.showBackButton = showBackButton;
-            return this;
-        }
-
-        public ChatStyleBuilder setChatBodyStyle(
-                @ColorRes int chatBackgroundColor,
-                @ColorRes int chatHighlightingColor,
-                @ColorRes int incomingMessageBubbleColor,
-                @ColorRes int outgoingMessageBubbleColor,
-                @DrawableRes int incomingMessageBubbleBackground,
-                @DrawableRes int outgoingMessageBubbleBackground,
-                @ColorRes int incomingMessageTextColor,
-                @ColorRes int outgoingMessageTextColor,
-                @ColorRes int chatBodyIconsTint,
-                @ColorRes int connectionMessageTextColor,
-                @ColorRes int filesAndMediaScreenBackgroundColor,
-                @ColorRes int iconsAndSeparatorsColor,
-                @DrawableRes int defaultIncomingMessageAvatar,
-                @DimenRes int operatorAvatarSize,
-                @DimenRes int operatorSystemAvatarSize,
-                @DrawableRes int imagePlaceholder,
-                @StyleRes int fileBrowserDialogStyleResId,
-                boolean showConsultSearching,
-                boolean alwaysScrollToEnd,
-                @DrawableRes int scrollDownButtonResId,
-                @ColorRes int unreadMsgStickerColorResId,
-                @ColorRes int unreadMsgCountTextColorResId) {
-            chatStyle.chatBackgroundColor = chatBackgroundColor != INVALID ? chatBackgroundColor : R.color.threads_blue_eff3f8;
-            chatStyle.chatHighlightingColor = chatHighlightingColor != INVALID ? chatHighlightingColor : R.color.threads_blue_transparent_700F87FF;
-            chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor != INVALID ? incomingMessageBubbleColor : R.color.threads_white;
-            chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor != INVALID ? outgoingMessageBubbleColor : R.color.threads_blue_3598dc;
-            chatStyle.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
-            chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
-            chatStyle.incomingMessageTextColor = incomingMessageTextColor;
-            chatStyle.outgoingMessageTextColor = outgoingMessageTextColor;
-            chatStyle.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
-            chatStyle.operatorAvatarSize = operatorAvatarSize;
-            chatStyle.operatorSystemAvatarSize = operatorSystemAvatarSize;
-            chatStyle.imagePlaceholder = imagePlaceholder;
-            chatStyle.chatBodyIconsTint = chatBodyIconsTint;
-            chatStyle.connectionMessageTextColor = connectionMessageTextColor;
-            chatStyle.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
-            chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor != INVALID ? iconsAndSeparatorsColor : R.color.threads_disabled_text_color;
-            chatStyle.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
-            chatStyle.showConsultSearching = showConsultSearching;
-            chatStyle.alwaysScrollToEnd = alwaysScrollToEnd;
-            chatStyle.scrollDownButtonResId = scrollDownButtonResId;
-            chatStyle.unreadMsgStickerColorResId = unreadMsgStickerColorResId;
-            chatStyle.unreadMsgCountTextColorResId = unreadMsgCountTextColorResId;
-            return this;
-        }
-
-        public ChatStyleBuilder setChatInputStyle(
-                @ColorRes int chatMessageInputHintTextColor,
-                @ColorRes int chatMessageInputColor,
-                @ColorRes int inputTextColor,
-                String inputTextFont,
-                @DrawableRes int attachmentsIconResId,
-                @DrawableRes int sendMessageIconResId,
-                @StringRes int inputHint,
-                @DimenRes int inputHeight,
-                @DrawableRes int inputBackground) {
-            chatStyle.chatMessageInputColor = chatMessageInputColor;
-            chatStyle.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
-            chatStyle.inputTextColor = inputTextColor;
-            chatStyle.inputTextFont = inputTextFont;
-            chatStyle.attachmentsIconResId = attachmentsIconResId;
-            chatStyle.sendMessageIconResId = sendMessageIconResId;
-            chatStyle.inputHint = inputHint;
-            chatStyle.inputHeight = inputHeight;
-            chatStyle.inputBackground = inputBackground;
-            return this;
-        }
-
-        public ChatStyleBuilder setPushNotificationStyle(@DrawableRes int defIconResId,
-                                                         @StringRes int defTitleResId,
-                                                         @ColorRes int pushBackgroundColorResId,
-                                                         @ColorRes int nougatPushAccentColorResId) {
-            chatStyle.defPushIconResId = defIconResId != INVALID ? defIconResId : R.drawable.defult_push_icon;
-            chatStyle.defTitleResId = defTitleResId != INVALID ? defTitleResId : R.string.threads_app_name;
-            chatStyle.pushBackgroundColorResId = pushBackgroundColorResId != INVALID ? pushBackgroundColorResId : R.color.threads_green_dark;
-            chatStyle.nougatPushAccentColorResId = nougatPushAccentColorResId;
-            return this;
-        }
-
-        public ChatStyleBuilder setRequestResolveThreadStyle(@StringRes int requestToResolveThreadTextResId,
-                                                             @StringRes int approveRequestToResolveThreadTextResId,
-                                                             @StringRes int denyRequestToResolveThreadTextResId) {
-            chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId;
-            chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId;
-            chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId;
-            return this;
-        }
-
-        public ChatStyleBuilder setSurveyStyle(@DrawableRes int binarySurveyLikeUnselectedIconResId,
-                                               @DrawableRes int binarySurveyLikeSelectedIconResId,
-                                               @DrawableRes int binarySurveyDislikeUnselectedIconResId,
-                                               @DrawableRes int binarySurveyDislikeSelectedIconResId,
-                                               @DrawableRes int optionsSurveyUnselectedIconResId,
-                                               @DrawableRes int optionsSurveySelectedIconResId,
-                                               @ColorRes int surveySelectedColorFilterResId,
-                                               @ColorRes int surveyUnselectedColorFilterResId,
-                                               @ColorRes int surveyTextColorResId) {
-            chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId != INVALID ? binarySurveyLikeUnselectedIconResId : R.drawable.ic_like_empty_36dp;
-            chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId != INVALID ? binarySurveyLikeSelectedIconResId : R.drawable.ic_like_full_36dp;
-            chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId != INVALID ? binarySurveyDislikeUnselectedIconResId : R.drawable.ic_dislike_empty_36dp;
-            chatStyle.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId != INVALID ? binarySurveyDislikeSelectedIconResId : R.drawable.ic_dislike_full_36dp;
-            chatStyle.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId != INVALID ? optionsSurveyUnselectedIconResId : R.drawable.ic_star_outline_grey600_24dp;
-            chatStyle.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId != INVALID ? optionsSurveySelectedIconResId : R.drawable.ic_star_grey600_24dp;
-            chatStyle.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
-            chatStyle.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
-            chatStyle.surveyTextColorResId = surveyTextColorResId != INVALID ? surveyTextColorResId : R.color.threads_black;
-            return this;
-        }
-
-        public ChatStyleBuilder setScheduleMessageStyle(
-                @DrawableRes int scheduleMessageIconResId,
-                @ColorRes int scheduleMessageTextColor) {
-            chatStyle.scheduleMessageIconResId = scheduleMessageIconResId;
-            chatStyle.scheduleMessageTextColorResId = scheduleMessageTextColor;
             return this;
         }
 
@@ -375,26 +243,6 @@ public class ChatStyle implements Serializable {
             chatStyle.isGAEnabled = isEnabled;
             return this;
         }
-
-        public ChatStyleBuilder setWelcomeScreenStyle(
-                @DrawableRes int welcomeScreenLogoResId
-                , @StringRes int welcomeScreenTitleTextResId
-                , @StringRes int welcomeScreenSubtitleTextResId
-                , @ColorRes int welcomeScreenTextColorResId
-                , @ColorRes int welcomeScreenSubtitleTextColorResId
-                , int welcomeScreenTitleSizeInSp
-                , int welcomeScreenSubtitleSizeInSp) {
-            chatStyle.welcomeScreenLogoResId = welcomeScreenLogoResId;
-            chatStyle.welcomeScreenTitleTextColorResId = welcomeScreenTextColorResId;
-            chatStyle.welcomeScreenSubtitleTextColorResId = welcomeScreenSubtitleTextColorResId;
-            chatStyle.welcomeScreenTitleTextResId = welcomeScreenTitleTextResId;
-            chatStyle.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
-            chatStyle.welcomeScreenTitleSizeInSp = welcomeScreenTitleSizeInSp;
-            chatStyle.welcomeScreenSubtitleSizeInSp = welcomeScreenSubtitleSizeInSp;
-            return this;
-        }
-
-
 
         public ChatStyleBuilder setHistoryLoadingCount(Integer count) {
             if (count != null && count > 0) {
@@ -407,6 +255,8 @@ public class ChatStyle implements Serializable {
             chatStyle.canShowSpecialistInfo = show;
             return this;
         }
+
+        // set fonts
 
         public ChatStyleBuilder setDefaultFontBold(String path) {
             chatStyle.defaultFontBold = path;
@@ -455,6 +305,11 @@ public class ChatStyle implements Serializable {
 
         public ChatStyleBuilder setBubbleMessageFont(String path) {
             chatStyle.bubbleMessageFont = path;
+            return this;
+        }
+
+        public ChatStyleBuilder setInputTextFont(String path) {
+            chatStyle.inputTextFont = path;
             return this;
         }
 
@@ -516,10 +371,250 @@ public class ChatStyle implements Serializable {
 
             return chatStyle;
         }
-    }
 
-    // to prevent create a new instance of the class while deserialization
-    protected Object readResolve() {
-        return getInstance();
+        // deprecated setters
+
+        /**
+         * @deprecated
+         * Отношение старый параметр - новый параметр
+         * @param chatTitleTextResId - R.string.threads_contact_center
+         * @param chatToolbarColorResId - R.string.threads_chat_toolbar
+         * @param chatToolbarTextColorResId - R.string.threads_chat_toolbar_text
+         * @param chatStatusBarColorResId - R.color.threads_chat_status_bar
+         * @param menuItemTextColorResId - R.color.threads_chat_toolbar_menu_item
+         * @param chatToolbarHintTextColor - R.color.threads_chat_toolbar_hint
+         * @param showBackButton - showChatBackButton(boolean showBackButton)
+         */
+        @Deprecated
+        public ChatStyleBuilder setChatTitleStyle(
+                @StringRes int chatTitleTextResId,
+                @ColorRes int chatToolbarColorResId,
+                @ColorRes int chatToolbarTextColorResId,
+                @ColorRes int chatStatusBarColorResId,
+                @ColorRes int menuItemTextColorResId,
+                @ColorRes int chatToolbarHintTextColor,
+                boolean showBackButton) {
+            chatStyle.chatTitleTextResId = chatTitleTextResId;
+            chatStyle.chatToolbarColorResId = chatToolbarColorResId;
+            chatStyle.chatToolbarTextColorResId = chatToolbarTextColorResId;
+            chatStyle.chatStatusBarColorResId = chatStatusBarColorResId;
+            chatStyle.menuItemTextColorResId = menuItemTextColorResId;
+            chatStyle.chatToolbarHintTextColor = chatToolbarHintTextColor;
+            chatStyle.showBackButton = showBackButton;
+            return this;
+        }
+
+        /**
+         * @deprecated
+         * Отношение старый параметр - новый параметр
+
+         */
+        @Deprecated
+        public ChatStyleBuilder setChatBodyStyle(
+                @ColorRes int chatBackgroundColor,
+                @ColorRes int chatHighlightingColor,
+                @ColorRes int incomingMessageBubbleColor,
+                @ColorRes int outgoingMessageBubbleColor,
+                @DrawableRes int incomingMessageBubbleBackground,
+                @DrawableRes int outgoingMessageBubbleBackground,
+                @ColorRes int incomingMessageTextColor,
+                @ColorRes int outgoingMessageTextColor,
+                @ColorRes int chatBodyIconsTint,
+                @ColorRes int connectionMessageTextColor,
+                @ColorRes int filesAndMediaScreenBackgroundColor,
+                @ColorRes int iconsAndSeparatorsColor,
+                @DrawableRes int defaultIncomingMessageAvatar,
+                @DimenRes int operatorAvatarSize,
+                @DimenRes int operatorSystemAvatarSize,
+                @DrawableRes int imagePlaceholder,
+                @StyleRes int fileBrowserDialogStyleResId,
+                boolean showConsultSearching,
+                boolean alwaysScrollToEnd,
+                @DrawableRes int scrollDownButtonResId,
+                @ColorRes int unreadMsgStickerColorResId,
+                @ColorRes int unreadMsgCountTextColorResId) {
+            chatStyle.chatBackgroundColor = chatBackgroundColor != INVALID ? chatBackgroundColor : R.color.threads_blue_eff3f8;
+            chatStyle.chatHighlightingColor = chatHighlightingColor != INVALID ? chatHighlightingColor : R.color.threads_blue_transparent_700F87FF;
+            chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor != INVALID ? incomingMessageBubbleColor : R.color.threads_white;
+            chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor != INVALID ? outgoingMessageBubbleColor : R.color.threads_blue_3598dc;
+            chatStyle.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
+            chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
+            chatStyle.incomingMessageTextColor = incomingMessageTextColor;
+            chatStyle.outgoingMessageTextColor = outgoingMessageTextColor;
+            chatStyle.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
+            chatStyle.operatorAvatarSize = operatorAvatarSize;
+            chatStyle.operatorSystemAvatarSize = operatorSystemAvatarSize;
+            chatStyle.imagePlaceholder = imagePlaceholder;
+            chatStyle.chatBodyIconsTint = chatBodyIconsTint;
+            chatStyle.connectionMessageTextColor = connectionMessageTextColor;
+            chatStyle.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
+            chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor != INVALID ? iconsAndSeparatorsColor : R.color.threads_disabled_text_color;
+            chatStyle.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
+            chatStyle.showConsultSearching = showConsultSearching;
+            chatStyle.alwaysScrollToEnd = alwaysScrollToEnd;
+            chatStyle.scrollDownButtonResId = scrollDownButtonResId;
+            chatStyle.unreadMsgStickerColorResId = unreadMsgStickerColorResId;
+            chatStyle.unreadMsgCountTextColorResId = unreadMsgCountTextColorResId;
+            return this;
+        }
+
+
+        /**
+         * @deprecated
+         * Отношение старый параметр - новый параметр
+         * @param chatMessageInputHintTextColor - R.color.threads_input_hint
+         * @param chatMessageInputColor - R.color.threads_input_background
+         * @param inputTextColor - R.color.threads_input_text
+         * @param inputTextFont - setInputTextFont(String path)
+         * @param attachmentsIconResId - R.drawable.threads_ic_attachment_button
+         * @param sendMessageIconResId - R.drawable.threads_ic_send_button
+         * @param inputHint - R.string.threads_input_hint
+         * @param inputHeight - R.dimen.threads_input_height
+         * @param inputBackground
+         * @return
+         */
+
+        @Deprecated
+        public ChatStyleBuilder setChatInputStyle(
+                @ColorRes int chatMessageInputHintTextColor,
+                @ColorRes int chatMessageInputColor,
+                @ColorRes int inputTextColor,
+                String inputTextFont,
+                @DrawableRes int attachmentsIconResId,
+                @DrawableRes int sendMessageIconResId,
+                @StringRes int inputHint,
+                @DimenRes int inputHeight,
+                @DrawableRes int inputBackground) {
+
+            chatStyle.chatMessageInputColor = chatMessageInputColor;
+            chatStyle.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
+            chatStyle.inputTextColor = inputTextColor;
+            chatStyle.inputTextFont = inputTextFont;
+            chatStyle.attachmentsIconResId = attachmentsIconResId;
+            chatStyle.sendMessageIconResId = sendMessageIconResId;
+            chatStyle.inputHint = inputHint;
+            chatStyle.inputHeight = inputHeight;
+            chatStyle.inputBackground = inputBackground;
+            return this;
+        }
+
+        /**
+         * @deprecated
+         * Отношение старый параметр - новый параметр
+
+         */
+        @Deprecated
+        public ChatStyleBuilder setPushNotificationStyle(@DrawableRes int defIconResId,
+                                                         @StringRes int defTitleResId,
+                                                         @ColorRes int pushBackgroundColorResId,
+                                                         @ColorRes int nougatPushAccentColorResId) {
+            chatStyle.defPushIconResId = defIconResId != INVALID ? defIconResId : R.drawable.defult_push_icon;
+            chatStyle.defTitleResId = defTitleResId != INVALID ? defTitleResId : R.string.threads_app_name;
+            chatStyle.pushBackgroundColorResId = pushBackgroundColorResId != INVALID ? pushBackgroundColorResId : R.color.threads_green_dark;
+            chatStyle.nougatPushAccentColorResId = nougatPushAccentColorResId;
+            return this;
+        }
+
+        /**
+         * @deprecated
+         * Отношение старый параметр - новый параметр
+         * @param requestToResolveThreadTextResId - R.string.threads_request_to_resolve_thread
+         * @param approveRequestToResolveThreadTextResId - R.string.threads_request_to_resolve_thread_close
+         * @param denyRequestToResolveThreadTextResId - R.string.threads_request_to_resolve_thread_open
+         */
+        @Deprecated
+        public ChatStyleBuilder setRequestResolveThreadStyle(@StringRes int requestToResolveThreadTextResId,
+                                                             @StringRes int approveRequestToResolveThreadTextResId,
+                                                             @StringRes int denyRequestToResolveThreadTextResId) {
+            chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId;
+            chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId;
+            chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId;
+            return this;
+        }
+
+        /**
+         * @deprecated
+         * Отношение старый параметр - новый параметр
+         * @param binarySurveyLikeUnselectedIconResId
+         * @param binarySurveyLikeSelectedIconResId
+         * @param binarySurveyDislikeUnselectedIconResId
+         * @param binarySurveyDislikeSelectedIconResId
+         * @param optionsSurveyUnselectedIconResId
+         * @param optionsSurveySelectedIconResId
+         * @param surveySelectedColorFilterResId
+         * @param surveyUnselectedColorFilterResId
+         * @param surveyTextColorResId
+         */
+        @Deprecated
+        public ChatStyleBuilder setSurveyStyle(@DrawableRes int binarySurveyLikeUnselectedIconResId,
+                                               @DrawableRes int binarySurveyLikeSelectedIconResId,
+                                               @DrawableRes int binarySurveyDislikeUnselectedIconResId,
+                                               @DrawableRes int binarySurveyDislikeSelectedIconResId,
+                                               @DrawableRes int optionsSurveyUnselectedIconResId,
+                                               @DrawableRes int optionsSurveySelectedIconResId,
+                                               @ColorRes int surveySelectedColorFilterResId,
+                                               @ColorRes int surveyUnselectedColorFilterResId,
+                                               @ColorRes int surveyTextColorResId) {
+            chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId != INVALID ? binarySurveyLikeUnselectedIconResId : R.drawable.ic_like_empty_36dp;
+            chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId != INVALID ? binarySurveyLikeSelectedIconResId : R.drawable.ic_like_full_36dp;
+            chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId != INVALID ? binarySurveyDislikeUnselectedIconResId : R.drawable.ic_dislike_empty_36dp;
+            chatStyle.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId != INVALID ? binarySurveyDislikeSelectedIconResId : R.drawable.ic_dislike_full_36dp;
+            chatStyle.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId != INVALID ? optionsSurveyUnselectedIconResId : R.drawable.ic_star_outline_grey600_24dp;
+            chatStyle.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId != INVALID ? optionsSurveySelectedIconResId : R.drawable.ic_star_grey600_24dp;
+            chatStyle.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
+            chatStyle.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
+            chatStyle.surveyTextColorResId = surveyTextColorResId != INVALID ? surveyTextColorResId : R.color.threads_black;
+            return this;
+        }
+
+
+        /**
+         * @deprecated
+         * Отношение старый параметр - новый параметр
+         * @param scheduleMessageIconResId - R.drawable.threads_schedule_icon
+         * @param scheduleMessageTextColor - R.color.threads_schedule_text
+         * @return
+         */
+        @Deprecated
+        public ChatStyleBuilder setScheduleMessageStyle(
+                @DrawableRes int scheduleMessageIconResId,
+                @ColorRes int scheduleMessageTextColor) {
+            chatStyle.scheduleMessageIconResId = scheduleMessageIconResId;
+            chatStyle.scheduleMessageTextColorResId = scheduleMessageTextColor;
+
+            return this;
+        }
+
+        /**
+         * @deprecated
+         * Отношение старый параметр - новый параметр
+         * @param welcomeScreenLogoResId  - R.drawable.threads_welcome_logo
+         * @param welcomeScreenTitleTextResId - R.string.threads_welcome_screen_title_text
+         * @param welcomeScreenSubtitleTextResId - R.string.threads_welcome_screen_subtitle_text
+         * @param welcomeScreenTextColorResId - R.color.threads_welcome_screen_title
+         * @param welcomeScreenSubtitleTextColorResId - R.color.threads_welcome_screen_subtitle
+         * @param welcomeScreenTitleSizeInSp - R.dimen.welcome_screen_title
+         * @param welcomeScreenSubtitleSizeInSp - R.dimen.welcome_screen_subtitle
+         * @return
+         */
+        @Deprecated
+        public ChatStyleBuilder setWelcomeScreenStyle(
+                @DrawableRes int welcomeScreenLogoResId
+                , @StringRes int welcomeScreenTitleTextResId
+                , @StringRes int welcomeScreenSubtitleTextResId
+                , @ColorRes int welcomeScreenTextColorResId
+                , @ColorRes int welcomeScreenSubtitleTextColorResId
+                , int welcomeScreenTitleSizeInSp
+                , int welcomeScreenSubtitleSizeInSp) {
+
+            chatStyle.welcomeScreenLogoResId = welcomeScreenLogoResId;
+            chatStyle.welcomeScreenTitleTextColorResId = welcomeScreenTextColorResId;
+            chatStyle.welcomeScreenSubtitleTextColorResId = welcomeScreenSubtitleTextColorResId;
+            chatStyle.welcomeScreenTitleTextResId = welcomeScreenTitleTextResId;
+            chatStyle.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
+            chatStyle.welcomeScreenTitleSizeInSp = welcomeScreenTitleSizeInSp;
+            chatStyle.welcomeScreenSubtitleSizeInSp = welcomeScreenSubtitleSizeInSp;
+            return this;
+        }
     }
 }

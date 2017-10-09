@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_alignParentTop="true"
-        android:background="@color/threads_green_light"
+        android:background="@color/threads_chat_toolbar"
         android:orientation="horizontal">
 
         <ImageView
@@ -26,7 +26,7 @@
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/margin_half"
             android:text="Иван Иванович Иванов"
-            android:textColor="@android:color/white"
+            android:textColor="@color/threads_chat_toolbar_text"
             android:textSize="@dimen/text_medium" />
     </LinearLayout>
 
@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/question"
         android:gravity="center_vertical"
-        android:background="@android:color/white">
+        android:background="@color/threads_input_background">
 
         <im.threads.widget.CustomFontEditText
             android:id="@+id/answer"
@@ -63,7 +63,7 @@
             android:layout_height="64dp"
             android:layout_gravity="right|bottom"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_send_36dp" />
+            android:src="@drawable/threads_ic_send_button" />
     </LinearLayout>
 
     <im.threads.widget.CustomFontButton

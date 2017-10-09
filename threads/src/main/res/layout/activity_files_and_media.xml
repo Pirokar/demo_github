@@ -22,7 +22,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/threads_green_light"
+        android:background="@color/threads_chat_toolbar"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:title="@string/threads_files_and_media"
         app:titleTextColor="@android:color/white">
@@ -33,9 +33,11 @@
             android:layout_height="match_parent"
             android:background="@null"
             android:hint="@string/threads_search_files"
+            android:textColorHint="@color/threads_chat_toolbar_hint"
             android:lines="1"
             android:textCursorDrawable="@null"
             android:textSize="@dimen/text_big"
+            android:textColor="@color/threads_chat_toolbar_text"
             android:layout_marginRight="40dp"
             android:visibility="gone" />
     </android.support.v7.widget.Toolbar>

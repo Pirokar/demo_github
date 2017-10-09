@@ -1,7 +1,7 @@
 <resources>
     <string name="threads_app_name">Threads</string>
     <string name="threads_searching_operator">Searching client...</string>
-    <string name="threads_your_message">Your message...</string>
+    <string name="threads_input_hint">Your message...</string>
     <string name="threads_no_connection">No internet connection</string>
     <string name="threads_no_connection_details">Turn on mobile data or use WI-FI to resend message</string>
     <string name="threads_close">Close</string>

@@ -56,6 +56,9 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
             if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
                 window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
             }
+            else {
+                window.setStatusBarColor(getResources().getColor(R.color.threads_chat_status_bar));
+            }
         }
         setContentView(R.layout.activity_files_and_media);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -135,13 +138,17 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
 
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                 mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-                mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
             }
 
             if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
                 ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
                 mSearchEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
                 mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+            else {
+                ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, R.color.threads_chat_toolbar_text), PorterDuff.Mode.SRC_ATOP);
+                mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, R.color.threads_chat_toolbar_text), PorterDuff.Mode.SRC_ATOP);
+
             }
 
             if (style.chatToolbarHintTextColor != ChatStyle.INVALID) {
