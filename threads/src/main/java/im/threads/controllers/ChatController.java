@@ -223,7 +223,7 @@ public class ChatController {
                 sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
             }
             PrefUtils.setClientId(ctx, finalClientId);
-            sendMessageMFMSSync(ctx, MessageFormatter.createInitChatMessage(), true);
+            sendMessageMFMSSync(ctx, MessageFormatter.createInitChatMessage(finalClientId), true);
             String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                     finalClientId,
                                                                                     PrefUtils.getData(ctx),
@@ -450,7 +450,7 @@ public class ChatController {
             @Override
             public void run() {
                 try {
-                    sendMessageMFMSSync(appContext, MessageFormatter.createInitChatMessage(), true);
+                    sendMessageMFMSSync(appContext, MessageFormatter.createInitChatMessage(PrefUtils.getClientID(appContext)), true);
                     String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext),
                                                                                         PrefUtils.getClientID(appContext),
                                                                                         PrefUtils.getData(appContext),

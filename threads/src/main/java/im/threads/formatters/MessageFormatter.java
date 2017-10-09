@@ -887,9 +887,10 @@ public class MessageFormatter {
         return userAgent;
     }
 
-    public static String createInitChatMessage() {
+    public static String createInitChatMessage(String clientId) {
         JSONObject object = new JSONObject();
         try {
+            object.put(CLIENT_ID, clientId);
             object.put(TYPE, TYPE_INIT_CHAT);
         } catch (JSONException e) {
             e.printStackTrace();
