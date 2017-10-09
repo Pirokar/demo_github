@@ -599,9 +599,6 @@ public class ChatFragment extends Fragment implements
             } else if (style.incomingMessageTextColor != INVALID) {
                 ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
             }
-            else {
-                ColorsHelper.setTextColor(activity, mInputEditText, R.color.threads_black);
-            }
 
             if (!TextUtils.isEmpty(style.inputTextFont)) {
                 try {
@@ -1468,7 +1465,7 @@ public class ChatFragment extends Fragment implements
         mSearchLo.setVisibility(View.GONE);
         mSearchMessageEditText.setText("");
         if (isAdded()) {
-            mConsultNameView.setText(appContext.getString(R.string.lib_searching_operator));
+            mConsultNameView.setText(appContext.getString(R.string.threads_searching_operator));
         }
     }
 
@@ -1851,8 +1848,6 @@ public class ChatFragment extends Fragment implements
 
             if (style != null && style.incomingMessageTextColor != INVALID) {
                 mHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
-            } else {
-                mHeader.setTextColor(ContextCompat.getColor(getActivity(), android.R.color.black));
             }
 
             mText = (TextView) view.findViewById(R.id.quote_text);

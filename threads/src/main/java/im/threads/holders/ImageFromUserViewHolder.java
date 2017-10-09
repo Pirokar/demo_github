@@ -48,10 +48,6 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             style = PrefUtils.getIncomingStyle(itemView.getContext());
         }
         if (null != style) {
-//            if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
-//                messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-//                mTimeStampTextView.setTextColor(messageColor);
-//            }
             if (style.chatHighlightingColor != ChatStyle.INVALID) {
                 filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
                 filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

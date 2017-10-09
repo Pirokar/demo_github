@@ -114,7 +114,6 @@ public class QuickAnswerFragment extends DialogFragment {
             }
             if (style.incomingMessageTextColor!= INVALID){
                 ((TextView) v.findViewById(R.id.question)).setTextColor(getColorInt(style.incomingMessageTextColor));
-                ((TextView) v.findViewById(R.id.close_button)).setTextColor(getColorInt(style.incomingMessageTextColor));
                 mEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
             }
             if (style.chatMessageInputColor!= INVALID){

@@ -281,8 +281,8 @@ public class ChatStyle implements Serializable {
             chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor != INVALID ? outgoingMessageBubbleColor : R.color.threads_blue_3598dc;
             chatStyle.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
             chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
-            chatStyle.incomingMessageTextColor = incomingMessageTextColor != INVALID ? incomingMessageTextColor : R.color.threads_black;
-            chatStyle.outgoingMessageTextColor = outgoingMessageTextColor != INVALID ? outgoingMessageTextColor : R.color.threads_white;
+            chatStyle.incomingMessageTextColor = incomingMessageTextColor;
+            chatStyle.outgoingMessageTextColor = outgoingMessageTextColor;
             chatStyle.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
             chatStyle.operatorAvatarSize = operatorAvatarSize;
             chatStyle.operatorSystemAvatarSize = operatorSystemAvatarSize;
@@ -327,7 +327,7 @@ public class ChatStyle implements Serializable {
                                                          @ColorRes int pushBackgroundColorResId,
                                                          @ColorRes int nougatPushAccentColorResId) {
             chatStyle.defPushIconResId = defIconResId != INVALID ? defIconResId : R.drawable.defult_push_icon;
-            chatStyle.defTitleResId = defTitleResId != INVALID ? defTitleResId : R.string.lib_app_name;
+            chatStyle.defTitleResId = defTitleResId != INVALID ? defTitleResId : R.string.threads_app_name;
             chatStyle.pushBackgroundColorResId = pushBackgroundColorResId != INVALID ? pushBackgroundColorResId : R.color.threads_green_dark;
             chatStyle.nougatPushAccentColorResId = nougatPushAccentColorResId;
             return this;

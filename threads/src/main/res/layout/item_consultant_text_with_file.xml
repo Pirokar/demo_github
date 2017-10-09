@@ -71,7 +71,8 @@
                     android:layout_marginTop="2dp"
                     android:paddingRight="80dp"
                     android:text="Иван Петров"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/threads_incoming_message_text"/>
 
                 <im.threads.widget.text_view.QuoteMessageTextView
                     android:id="@+id/file_specs"
@@ -79,7 +80,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf" />
+                    android:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf"
+                    android:textColor="@color/threads_incoming_message_text"/>
 
                 <im.threads.widget.text_view.QuoteTimeTextView
                     android:id="@+id/send_at"
@@ -88,7 +90,8 @@
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:text="отправлено 21 апр 2016"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:textColor="@color/threads_incoming_message_text"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -108,7 +111,8 @@
                 android:layout_marginRight="60dp"
                 android:paddingTop="5dp"
                 android:text="text text text text "
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/threads_incoming_message_text"/>
 
             <im.threads.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
@@ -116,6 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:paddingRight="4dp"
+                android:textColor="@color/threads_operator_message_timestamp"
                 android:text="10:19" />
         </FrameLayout>
     </RelativeLayout>

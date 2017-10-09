@@ -92,12 +92,6 @@ public class ConsultPhraseHolder extends BaseHolder {
                         rightTextHeader,
                         mRightTextDescr,
                         rightTextFileStamp}, style.incomingMessageTextColor);
-            } else {
-                setTextColorToViews(new TextView[]{mPhraseTextView,
-                        mTimeStampTextView,
-                        rightTextHeader,
-                        mRightTextDescr,
-                        rightTextFileStamp}, android.R.color.black);
             }
             defIcon = style.defaultIncomingMessageAvatar == INVALID ? R.drawable.blank_avatar_round : style.defaultIncomingMessageAvatar;
             if (style.chatToolbarColorResId != INVALID) {

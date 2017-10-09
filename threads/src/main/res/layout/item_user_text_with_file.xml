@@ -74,7 +74,8 @@
                     android:layout_marginTop="2dp"
                     android:paddingRight="80dp"
                     android:text="Иван Петров"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/threads_outgoing_message_text"/>
 
                 <im.threads.widget.text_view.QuoteMessageTextView
                     android:id="@+id/file_specs"
@@ -82,7 +83,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:text="счет на оплату 1,2mb 436666666666364" />
+                    android:text="счет на оплату 1,2mb 436666666666364"
+                    android:textColor="@color/threads_outgoing_message_text"/>
 
                 <im.threads.widget.text_view.QuoteTimeTextView
                     android:id="@+id/send_at"
@@ -91,7 +93,8 @@
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:text="отправлено 21 апр 2016"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:textColor="@color/threads_outgoing_message_text"/>
             </LinearLayout>
         </TableRow>
 
@@ -110,6 +113,7 @@
                 android:paddingTop="5dp"
                 android:text="user text"
                 android:layout_marginRight="74dp"
+                android:textColor="@color/threads_outgoing_message_text"
                 android:textSize="16sp" />
 
             <im.threads.widget.text_view.BubbleTimeTextView
@@ -119,6 +123,7 @@
                 android:layout_gravity="bottom|right"
                 android:drawablePadding="@dimen/margin_quarter"
                 android:padding="@dimen/margin_half"
+                android:textColor="@color/threads_user_message_timestamp"
                 android:text="10:19" />
 
         </FrameLayout>

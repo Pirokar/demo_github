@@ -104,7 +104,8 @@
                 android:layout_marginTop="@dimen/margin_three_fourth"
                 android:layout_toRightOf="@+id/quote_image"
                 android:text="Мария Павлова"
-                android:textSize="@dimen/text_medium" />
+                android:textSize="@dimen/text_medium"
+                android:textColor="@color/threads_incoming_message_text"/>
 
             <im.threads.widget.text_view.InputQuotedMessageTextView
                 android:id="@+id/quote_text"
@@ -118,7 +119,7 @@
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="Добрый день!Подскажите номер вашей карты"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="@color/threads_incoming_message_text" />
 
             <ImageButton
                 android:id="@+id/quote_past"

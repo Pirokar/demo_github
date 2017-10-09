@@ -85,8 +85,6 @@ public class UserPhraseViewHolder extends BaseHolder {
                 setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
                 mFileImageButton.setBackgroundColor(style.outgoingMessageTextColor);
-            } else {
-                setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, android.R.color.white);
             }
             if (style.outgoingMessageTextColor != INVALID && style.outgoingMessageBubbleColor != INVALID) {
                 setTintToProgressButtonUser(mFileImageButton, style.outgoingMessageTextColor, style.outgoingMessageBubbleColor);

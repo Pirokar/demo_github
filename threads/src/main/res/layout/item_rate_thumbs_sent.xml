@@ -26,7 +26,7 @@
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toRightOf="@+id/thumb"
             android:text="@string/lib_item_user_rate_header"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/threads_outgoing_message_text" />
 
         <im.threads.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
@@ -35,6 +35,7 @@
             android:layout_alignRight="@+id/header"
             android:layout_below="@+id/header"
             android:layout_marginTop="@dimen/margin_quarter"
+            android:textColor="@color/threads_user_message_timestamp"
             android:text="10:19" />
 
     </RelativeLayout>
