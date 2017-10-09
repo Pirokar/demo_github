@@ -27,6 +27,7 @@ import im.threads.holders.ConsultFileViewHolder;
 import im.threads.holders.ConsultIsTypingViewHolderNew;
 import im.threads.holders.ConsultPhraseHolder;
 import im.threads.holders.DateViewHolder;
+import im.threads.holders.EmptyViewHolder;
 import im.threads.holders.ImageFromConsultViewHolder;
 import im.threads.holders.ImageFromUserViewHolder;
 import im.threads.holders.RatingStarsSentViewHolder;
@@ -133,7 +134,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_RATING_STARS) return new RatingStarsViewHolder(parent);
         if (viewType == TYPE_RATING_STARS_SENT) return new RatingStarsSentViewHolder(parent);
         if (viewType == TYPE_REQ_RESOLVE_THREAD) return new RequestResolveThreadViewHolder(parent);
-        return null;
+        return new EmptyViewHolder(parent);
     }
 
     @Override

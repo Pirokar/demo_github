@@ -4,6 +4,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import im.threads.holders.EmptyViewHolder;
 import im.threads.holders.FileAndMediaViewHolder;
 import im.threads.holders.FilesDateStampHolder;
 import im.threads.model.DateRow;
@@ -11,10 +16,6 @@ import im.threads.model.FileAndMediaItem;
 import im.threads.model.FileDescription;
 import im.threads.model.MediaAndFileItem;
 import im.threads.utils.FileUtils;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -58,7 +59,7 @@ public class FilesAndMediaAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_DATE_ROW) return new FilesDateStampHolder(parent);
         if (viewType == TYPE_FILE_AND_MEDIA_ROW) return new FileAndMediaViewHolder(parent);
-        throw new IllegalStateException("unknown view type");
+        return new EmptyViewHolder(parent);
     }
 
     @Override
