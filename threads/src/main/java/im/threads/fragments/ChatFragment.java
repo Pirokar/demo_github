@@ -821,6 +821,9 @@ public class ChatFragment extends Fragment implements
         }
         backButton.setImageDrawable(d);
 
+        ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
+        ColorsHelper.setBackgroundColor(getContext(), mToolbar, R.color.threads_chat_toolbar_text);
+
         mCopyControls.setVisibility(View.VISIBLE);
         mConsultNameView.setVisibility(View.GONE);
         mConsultTitle.setVisibility(View.GONE);
@@ -1354,6 +1357,9 @@ public class ChatFragment extends Fragment implements
         }
         if (style != null && style.chatToolbarColorResId != INVALID) {
             ColorsHelper.setBackgroundColor(context, mToolbar, style.chatToolbarColorResId);
+        }
+        else {
+            ColorsHelper.setBackgroundColor(context, mToolbar, R.color.threads_chat_toolbar);
         }
 
         mCopyControls.setVisibility(View.GONE);

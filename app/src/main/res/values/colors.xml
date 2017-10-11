@@ -47,6 +47,6 @@
     <color name="threads_push_background">@color/colorAccent</color>
     <color name="threads_nougat_push_accent">@color/colorAccent</color>
 
-    <color name="threads_survey_selected_icon">@color/colorAccent</color>
-    <color name="threads_survey_unselected_icon">@color/colorAccent</color>
+    <color name="threads_survey_selected_icon_tint">@color/colorAccent</color>
+    <color name="threads_survey_unselected_icon_tint">@color/colorAccent</color>
 </resources>

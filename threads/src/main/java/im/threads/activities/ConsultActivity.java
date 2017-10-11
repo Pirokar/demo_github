@@ -103,9 +103,6 @@ public class ConsultActivity extends BaseActivity {
     @Override
     protected void setActivityStyle(ChatStyle style) {
         if (style != null) {
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            }
             if (style.chatBackgroundColor != ChatStyle.INVALID) {
                 findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
             }
