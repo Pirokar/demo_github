@@ -25,4 +25,6 @@
     <string name="threads_request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
     <string name="threads_request_to_resolve_thread_close">Нет</string>
     <string name="threads_request_to_resolve_thread_open">Да</string>
+
+    <string name="threads_push_title">@string/app_name1</string>
 </resources>

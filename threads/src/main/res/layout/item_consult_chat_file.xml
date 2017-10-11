@@ -9,13 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:background="@color/threads_chat_highlighting"/>
 
     <View
         android:id="@+id/filter_second"
         android:layout_width="match_parent"
         android:layout_height="@dimen/filter_offset_size"
-        android:layout_below="@+id/filter" />
+        android:layout_below="@+id/filter"
+        android:background="@color/threads_chat_highlighting"/>
 
     <ImageView
         android:id="@+id/consult_avatar"
@@ -29,7 +31,7 @@
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_toRightOf="@+id/consult_avatar"
-        android:background="@drawable/operator_bubble">
+        android:background="@drawable/thread_incoming_bubble">
 
         <im.threads.views.CircularProgressButton
             android:id="@+id/circ_button"
@@ -40,6 +42,7 @@
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_marginRight="@dimen/margin_quarter"
             android:layout_marginTop="@dimen/margin_half"
+            android:background="@color/threads_chat_background"
             app:completed_drawable="@drawable/file_image_consult"
             app:in_progress_label="@drawable/ic_clear_blue_consult_36dp"
             app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp" />

@@ -10,13 +10,15 @@
         android:layout_height="@dimen/margin_quarter"
         android:layout_alignBottom="@+id/bubble"
         android:layout_alignParentTop="true"
-        android:layout_below="@+id/bubble" />
+        android:layout_below="@+id/bubble"
+        android:background="@color/threads_chat_highlighting"/>
 
     <View
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
-        android:layout_below="@+id/bubble" />
+        android:layout_below="@+id/bubble"
+        android:background="@color/threads_chat_highlighting"/>
 
     <LinearLayout
         android:id="@+id/bubble"
@@ -28,7 +30,7 @@
         android:paddingLeft="@dimen/margin_quarter"
         android:paddingRight="19dp"
         android:paddingTop="@dimen/margin_quarter"
-        android:background="@drawable/user_bubble">
+        android:background="@drawable/thread_outgoing_bubble">
 
         <TableRow
             android:id="@+id/right_text_row"

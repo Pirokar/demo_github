@@ -8,7 +8,7 @@
         style="@style/userBubble"
         android:paddingRight="17dp"
         android:layout_marginBottom="@dimen/margin_half"
-        android:background="@drawable/user_bubble">
+        android:background="@drawable/thread_outgoing_bubble">
 
         <ImageView
             android:id="@+id/thumb"

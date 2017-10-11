@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:id="@+id/layout_root"
+    android:background="@color/threads_chat_background"
     android:layout_height="wrap_content">
 
     <LinearLayout

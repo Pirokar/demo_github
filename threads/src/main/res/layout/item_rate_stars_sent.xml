@@ -10,7 +10,7 @@
         style="@style/userBubble"
         android:layout_marginBottom="@dimen/margin_half"
         android:paddingRight="17dp"
-        android:background="@drawable/user_bubble">
+        android:background="@drawable/thread_outgoing_bubble">
 
         <LinearLayout
             android:id="@+id/image_layout"

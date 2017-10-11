@@ -9,19 +9,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:background="@color/threads_chat_highlighting"/>
 
     <View
         android:id="@+id/filter_second"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
-        android:layout_below="@+id/filter" />
+        android:layout_below="@+id/filter"
+        android:background="@color/threads_chat_highlighting"/>
 
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/userBubble"
         android:paddingRight="17dp"
-        android:background="@drawable/user_bubble">
+        android:background="@drawable/thread_outgoing_bubble">
 
         <im.threads.views.CircularProgressButton
             android:id="@+id/button_download"

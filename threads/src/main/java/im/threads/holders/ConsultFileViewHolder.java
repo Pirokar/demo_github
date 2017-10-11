@@ -57,6 +57,10 @@ public class ConsultFileViewHolder extends BaseHolder {
             if (style.incomingMessageBubbleColor != INVALID) {
                 mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             }
+            else {
+                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_incoming_message_bubble), PorterDuff.Mode.SRC_ATOP);
+            }
+
             if (style.incomingMessageBubbleBackground != INVALID) {
                 mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
             }
@@ -66,6 +70,10 @@ public class ConsultFileViewHolder extends BaseHolder {
             if (style.outgoingMessageBubbleColor != INVALID) {
                 setTintToProgressButtonConsult(mCircularProgressButton, style.outgoingMessageBubbleColor);
             }
+            else {
+                setTintToProgressButtonConsult(mCircularProgressButton, R.color.threads_chat_outgoing_message_bubble);
+            }
+
             if (style.chatHighlightingColor != INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
                 mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

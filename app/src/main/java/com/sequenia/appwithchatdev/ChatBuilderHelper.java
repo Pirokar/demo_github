@@ -22,8 +22,8 @@ public class ChatBuilderHelper {
                         R.color.toolbar_background_transparent,//подсветка выделения элементов chatHighlightingColor
                         R.color.incoming_message_bubble_background,//заливка бабла входящего сообщения incomingMessageBubbleColor
                         R.color.outgoing_message_bubble_background,//заливка бабла исходящего сообщения outgoingMessageBubbleColor
-                        R.drawable.app_operator_bubble, // фон для сообщения оператора incomingMessageBubbleBackground
-                        R.drawable.app_user_bubble, // фон для сообщения клиента outgoingMessageBubbleBackground
+                        R.drawable.thread_incoming_bubble, // фон для сообщения оператора incomingMessageBubbleBackground
+                        R.drawable.thread_outgoing_bubble, // фон для сообщения клиента outgoingMessageBubbleBackground
                         R.color.incoming_message_text,//цвет текста входящего сообщения incomingMessageTextColor
                         R.color.outgoing_message_text,//цвет текста исходящего сообщения outgoingMessageTextColor
                         R.color.chatbody_icons_tint,//цвет иконок в поле сообщения chatBodyIconsTint
@@ -40,22 +40,7 @@ public class ChatBuilderHelper {
                         ChatStyle.INVALID, // иконка кнопки прокрутки чата к последнему сообщению scrollDownButtonResId
                         ChatStyle.INVALID, // цвет индикатора о непрочитанных сообщениях unreadMsgStickerColorResId
                         ChatStyle.INVALID) // цвет текста на индикаторе о непрочитанных сообщениях unreadMsgCountTextColorResId
-                .setInputTextFont("fonts/lato-regular.ttf") // шрифт поля ввода сообщения inputTextFont
-                .setChatInputStyle(
-                        R.color.chat_message_hint_input_text,//подсказка в EditText chatMessageInputHintTextColor
-                        R.color.chat_message_input_background,//заливка EditText, галереи и при пересылке в тулбаре chatMessageInputColor
-                        R.color.purple, // цвет шрифта поля ввода сообщения inputTextColor
-                        "fonts/lato-regular.ttf", // шрифт поля ввода сообщения inputTextFont
-                        ChatStyle.INVALID, // иконка кнопки прикрепления файлов attachmentsIconResId
-                        ChatStyle.INVALID, // иконка кнопки отправки сообщений sendMessageIconResId
-                        R.string.input_hint, // текст-подсказка в поле ввода сообщения inputHint
-                        ChatStyle.INVALID, // высота поля ввода сообщения в dp inputHeight
-                        ChatStyle.INVALID) // фон поля ввода сообщения inputBackground
                 .setGoogleAnalyticsEnabled(false)
-                .setPushNotificationStyle(R.drawable.ic_push_notification,
-                        R.string.app_name1,
-                        R.color.colorAccent,
-                        ChatStyle.INVALID)
                 .setSurveyStyle(ChatStyle.INVALID, // Иконка бинарного опроса для положительного невыбранного ответа binarySurveyLikeUnselectedIconResId
                         ChatStyle.INVALID, // Иконка бинарного опроса для положительного выбранного ответа binarySurveyLikeSelectedIconResId
                         ChatStyle.INVALID, // Иконка бинарного опроса для отрицательного невыбранного ответа binarySurveyDislikeUnselectedIconResId

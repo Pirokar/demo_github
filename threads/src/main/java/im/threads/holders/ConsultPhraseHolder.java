@@ -83,6 +83,10 @@ public class ConsultPhraseHolder extends BaseHolder {
             if (style.incomingMessageBubbleColor != INVALID) {
                 mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             }
+            else {
+                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_incoming_message_bubble), PorterDuff.Mode.SRC_ATOP);
+            }
+
             if (style.incomingMessageBubbleBackground != INVALID) {
                 mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
             }

@@ -40,6 +40,11 @@
     <color name="threads_chat_toolbar_menu_item">@color/threads_teal_009688</color>
     <color name="threads_chat_toolbar_hint">@color/threads_cian_b2dfdb</color>
 
+    <color name="threads_chat_background">@color/threads_blue_eff3f8</color>
+    <color name="threads_chat_highlighting">@color/threads_blue_transparent_700F87FF</color>
+    <color name="threads_chat_incoming_message_bubble">@color/threads_white</color>
+    <color name="threads_chat_outgoing_message_bubble">@color/threads_blue_3598dc</color>
+
     <color name="threads_input_background">@color/threads_white</color>
     <color name="threads_input_text">@color/threads_black</color>
     <color name="threads_input_hint">@color/threads_grey_aaa</color>
@@ -55,5 +60,8 @@
     <color name="threads_outgoing_message_received_icon">@color/threads_white</color>
 
     <color name="threads_schedule_text">@color/threads_black</color>
+
+    <color name="threads_push_background">@color/threads_green_dark</color>
+    <color name="nougat_push_accent">@color/threads_green_dark</color>
 
 </resources>

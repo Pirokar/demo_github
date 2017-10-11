@@ -3,11 +3,10 @@
     <color name="colorPrimary">#83B144</color>
     <color name="colorPrimaryDark">#698D35</color>
     <color name="colorAccent">#83B144</color>
-    <color name="transparent">#00000000</color>
 
-    <color name="chat_background">#EAF0F0</color>
-    <color name="chat_message_hint_input_text">#999999</color>
-    <color name="chat_message_input_background">#ffffff</color>
+    <color name="white">#ffffff</color>
+    <color name="gray">#707070</color>
+
     <color name="incoming_message_bubble_background">#ffffff</color>
     <color name="outgoing_message_bubble_background">#83B144</color>
     <color name="incoming_message_text">#333333</color>
@@ -19,24 +18,28 @@
     <color name="file_browser_dialog_text">#83B144</color>
     <color name="file_browser_window_background">#ffffff</color>
 
-
-    <color name="toolbar_background_transparent">#3083B144</color>
-
-    <color name="push_background">#3083B144</color>
-    <color name="nugat_push_accent">#83B144</color>
-    <color name="purple">#551a8b</color>
-
-
     <!-- цвета для кастомизации -->
-    <color name="threads_welcome_screen_title">#707070</color>
-    <color name="threads_welcome_screen_subtitle">#707070</color>
+    <color name="threads_welcome_screen_title">@color/gray</color>
+    <color name="threads_welcome_screen_subtitle">@color/gray</color>
 
     <color name="threads_chat_toolbar">@color/colorPrimary</color>
-    <color name="threads_chat_toolbar_text">#ffffff</color>
+    <color name="threads_chat_toolbar_text">@color/white</color>
     <color name="threads_chat_status_bar">@color/colorPrimaryDark</color>
     <color name="threads_chat_toolbar_menu_item">@color/colorPrimary</color>
     <color name="threads_chat_toolbar_hint">#B5D18F</color>
 
-    <color name="threads_schedule_text">#333333</color>
+    <color name="threads_chat_background">#EAF0F0</color>
+    <color name="threads_chat_highlighting">#3083B144</color>
+    <color name="threads_chat_incoming_message_bubble">@color/white</color>
+    <color name="threads_chat_outgoing_message_bubble">@color/colorPrimary</color>
 
+
+    <color name="threads_input_background">@color/white</color>
+    <color name="threads_input_text">#551a8b</color>
+    <color name="threads_input_hint">#999999</color>
+
+    <color name="threads_schedule_text">@color/gray</color>
+
+    <color name="threads_push_background">@color/colorAccent</color>
+    <color name="nougat_push_accent">@color/colorAccent</color>
 </resources>

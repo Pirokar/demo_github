@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:background="@color/threads_blue_eff3f8">
+    android:background="@color/threads_chat_background">
 
     <ImageView
         android:id="@+id/welcome_logo"

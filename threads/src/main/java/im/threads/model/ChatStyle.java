@@ -407,7 +407,29 @@ public class ChatStyle implements Serializable {
         /**
          * @deprecated
          * Отношение старый параметр - новый параметр
-
+         * @param chatBackgroundColor - R.color.threads_chat_background
+         * @param chatHighlightingColor - R.color.threads_chat_highlighting
+         * @param incomingMessageBubbleColor - R.color.threads_chat_incoming_message_bubble
+         * @param outgoingMessageBubbleColor- R.color.threads_chat_outgoing_message_bubble
+         * @param incomingMessageBubbleBackground - R.drawable.thread_incoming_bubble
+         * @param outgoingMessageBubbleBackground - R.drawable.thread_outgoing_bubble
+         * @param incomingMessageTextColor
+         * @param outgoingMessageTextColor
+         * @param chatBodyIconsTint
+         * @param connectionMessageTextColor
+         * @param filesAndMediaScreenBackgroundColor
+         * @param iconsAndSeparatorsColor
+         * @param defaultIncomingMessageAvatar
+         * @param operatorAvatarSize
+         * @param operatorSystemAvatarSize
+         * @param imagePlaceholder
+         * @param fileBrowserDialogStyleResId
+         * @param showConsultSearching
+         * @param alwaysScrollToEnd
+         * @param scrollDownButtonResId
+         * @param unreadMsgStickerColorResId
+         * @param unreadMsgCountTextColorResId
+         * @return
          */
         @Deprecated
         public ChatStyleBuilder setChatBodyStyle(
@@ -433,10 +455,10 @@ public class ChatStyle implements Serializable {
                 @DrawableRes int scrollDownButtonResId,
                 @ColorRes int unreadMsgStickerColorResId,
                 @ColorRes int unreadMsgCountTextColorResId) {
-            chatStyle.chatBackgroundColor = chatBackgroundColor != INVALID ? chatBackgroundColor : R.color.threads_blue_eff3f8;
-            chatStyle.chatHighlightingColor = chatHighlightingColor != INVALID ? chatHighlightingColor : R.color.threads_blue_transparent_700F87FF;
-            chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor != INVALID ? incomingMessageBubbleColor : R.color.threads_white;
-            chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor != INVALID ? outgoingMessageBubbleColor : R.color.threads_blue_3598dc;
+            chatStyle.chatBackgroundColor = chatBackgroundColor;
+            chatStyle.chatHighlightingColor = chatHighlightingColor;
+            chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor;
+            chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor;
             chatStyle.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
             chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
             chatStyle.incomingMessageTextColor = incomingMessageTextColor;
@@ -470,7 +492,7 @@ public class ChatStyle implements Serializable {
          * @param sendMessageIconResId - R.drawable.threads_ic_send_button
          * @param inputHint - R.string.threads_input_hint
          * @param inputHeight - R.dimen.threads_input_height
-         * @param inputBackground
+         * @param inputBackground - R.drawable.threads_chat_input_background
          * @return
          */
 
@@ -501,16 +523,21 @@ public class ChatStyle implements Serializable {
         /**
          * @deprecated
          * Отношение старый параметр - новый параметр
-
+         * @param defIconResId - R.drawable.default_push_icon
+         * @param defTitleResId - R.string.threads_push_title
+         * @param pushBackgroundColorResId - R.color.threads_push_background
+         * @param nougatPushAccentColorResId - R.color.nougat_push_accent
+         * @return
          */
         @Deprecated
         public ChatStyleBuilder setPushNotificationStyle(@DrawableRes int defIconResId,
                                                          @StringRes int defTitleResId,
                                                          @ColorRes int pushBackgroundColorResId,
                                                          @ColorRes int nougatPushAccentColorResId) {
-            chatStyle.defPushIconResId = defIconResId != INVALID ? defIconResId : R.drawable.defult_push_icon;
-            chatStyle.defTitleResId = defTitleResId != INVALID ? defTitleResId : R.string.threads_app_name;
-            chatStyle.pushBackgroundColorResId = pushBackgroundColorResId != INVALID ? pushBackgroundColorResId : R.color.threads_green_dark;
+
+            chatStyle.defPushIconResId = defIconResId;
+            chatStyle.defTitleResId = defTitleResId;
+            chatStyle.pushBackgroundColorResId = pushBackgroundColorResId;
             chatStyle.nougatPushAccentColorResId = nougatPushAccentColorResId;
             return this;
         }
