@@ -56,8 +56,8 @@ public class ConsultActivity extends BaseActivity {
         mConsultMotoTextView = (TextView) findViewById(R.id.consult_moto);
         mConsultImageView = (ImageView) findViewById(R.id.image);
 
-        if (style != null && style.imagePlaceholder != ChatStyle.INVALID) {
-            mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.imagePlaceholder));
+        if (style != null && style.defaultOperatorAvatar != ChatStyle.INVALID) {
+            mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.defaultOperatorAvatar));
         } else {
             mConsultImageView.setBackground(ContextCompat.getDrawable(this, R.drawable.threads_operator_avatar_placeholder));
         }

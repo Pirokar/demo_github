@@ -98,7 +98,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                             if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
                                 mImage.setImageResource(style.imagePlaceholder);
                             }else {
-                                mImage.setImageResource(R.drawable.no_image);
+                                mImage.setImageResource(R.drawable.threads_image_placeholder);
                             }
                         }
                     });
@@ -106,7 +106,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
                 mImage.setImageResource(style.imagePlaceholder);
             }else {
-                mImage.setImageResource(R.drawable.no_image);
+                mImage.setImageResource(R.drawable.threads_image_placeholder);
             }
         }
         if (isChosen) {
@@ -117,7 +117,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             filterSecond.setVisibility(View.INVISIBLE);
         }
         @DrawableRes int resId = R.drawable.threads_operator_avatar_placeholder;
-        if (style!=null && style.defaultIncomingMessageAvatar!= ChatStyle.INVALID)resId = style.defaultIncomingMessageAvatar;
+        if (style!=null && style.defaultOperatorAvatar != ChatStyle.INVALID)resId = style.defaultOperatorAvatar;
         if (isAvatarVisible) {
             float bubbleLeftMarginDp = itemView.getContext().getResources().getDimension(R.dimen.margin_quarter);
             int bubbleLeftMarginPx = ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bubbleLeftMarginDp, itemView.getResources().getDisplayMetrics()));
@@ -163,7 +163,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
 
-            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.consultant_photo_size;
+            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
             int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
             int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
             int avatarLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);

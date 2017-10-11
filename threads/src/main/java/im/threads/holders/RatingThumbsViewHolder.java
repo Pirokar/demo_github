@@ -61,6 +61,11 @@ public class RatingThumbsViewHolder extends BaseHolder {
                 thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
                 thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
             }
+            else {
+                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_survey_unselected_icon_tint), PorterDuff.Mode.SRC_ATOP);
+                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_survey_unselected_icon_tint), PorterDuff.Mode.SRC_ATOP);
+
+            }
         }
     }
 
@@ -79,9 +84,15 @@ public class RatingThumbsViewHolder extends BaseHolder {
             if (style.surveySelectedColorFilterResId != ChatStyle.INVALID) {
                 thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
             }
+            else {
+                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_survey_selected_icon_tint), PorterDuff.Mode.SRC_ATOP);
+            }
 
             if (style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
                 thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+            }
+            else {
+                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_survey_unselected_icon_tint), PorterDuff.Mode.SRC_ATOP);
             }
         } else {
             if (style.binarySurveyLikeUnselectedIconResId != ChatStyle.INVALID) {
@@ -95,9 +106,15 @@ public class RatingThumbsViewHolder extends BaseHolder {
             if (style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
                 thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
             }
+            else {
+                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_survey_unselected_icon_tint), PorterDuff.Mode.SRC_ATOP);
+            }
 
             if (style.surveySelectedColorFilterResId != ChatStyle.INVALID) {
                 thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+            }
+            else {
+                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_survey_selected_icon_tint), PorterDuff.Mode.SRC_ATOP);
             }
         }
 

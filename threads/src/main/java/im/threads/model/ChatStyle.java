@@ -67,7 +67,7 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int iconsAndSeparatorsColor = INVALID;
     @DrawableRes
-    public int defaultIncomingMessageAvatar = INVALID;
+    public int defaultOperatorAvatar = INVALID;
     @DimenRes
     public int operatorAvatarSize = INVALID;
     @DimenRes
@@ -432,13 +432,13 @@ public class ChatStyle implements Serializable {
          * @param filesAndMediaScreenBackgroundColor - R.color.threads_files_medias_screen_background
          * @param iconsAndSeparatorsColor - R.color.threads_icon_and_separators_color
          * @param defaultIncomingMessageAvatar - R.drawable.threads_operator_avatar_placeholder
-         * @param operatorAvatarSize
-         * @param operatorSystemAvatarSize
-         * @param imagePlaceholder
-         * @param fileBrowserDialogStyleResId
+         * @param operatorAvatarSize - R.dimen.threads_operator_photo_size
+         * @param operatorSystemAvatarSize - R.dimen.threads_system_operator_photo_size
+         * @param imagePlaceholder - R.drawable.threads_image_placeholder
+         * @param fileBrowserDialogStyleResId - deleted
          * @param showConsultSearching - setShowConsultSearching(boolean show)
          * @param alwaysScrollToEnd - setScrollChatToEndIfUserTyping(boolean scroll)
-         * @param scrollDownButtonResId
+         * @param scrollDownButtonResId - R.drawable.threads_scroll_down_btn_back
          * @param unreadMsgStickerColorResId - R.color.threads_chat_unread_msg_sticker_background
          * @param unreadMsgCountTextColorResId - R.color.threads_chat_unread_msg_count_text
          * @return
@@ -475,7 +475,7 @@ public class ChatStyle implements Serializable {
             chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
             chatStyle.incomingMessageTextColor = incomingMessageTextColor;
             chatStyle.outgoingMessageTextColor = outgoingMessageTextColor;
-            chatStyle.defaultIncomingMessageAvatar = defaultIncomingMessageAvatar;
+            chatStyle.defaultOperatorAvatar = defaultIncomingMessageAvatar;
             chatStyle.operatorAvatarSize = operatorAvatarSize;
             chatStyle.operatorSystemAvatarSize = operatorSystemAvatarSize;
             chatStyle.imagePlaceholder = imagePlaceholder;
@@ -507,7 +507,6 @@ public class ChatStyle implements Serializable {
          * @param inputBackground - R.drawable.threads_chat_input_background
          * @return
          */
-
         @Deprecated
         public ChatStyleBuilder setChatInputStyle(
                 @ColorRes int chatMessageInputHintTextColor,
@@ -574,15 +573,15 @@ public class ChatStyle implements Serializable {
         /**
          * @deprecated
          * Отношение старый параметр - новый параметр
-         * @param binarySurveyLikeUnselectedIconResId
-         * @param binarySurveyLikeSelectedIconResId
-         * @param binarySurveyDislikeUnselectedIconResId
-         * @param binarySurveyDislikeSelectedIconResId
-         * @param optionsSurveyUnselectedIconResId
-         * @param optionsSurveySelectedIconResId
-         * @param surveySelectedColorFilterResId
-         * @param surveyUnselectedColorFilterResId
-         * @param surveyTextColorResId
+         * @param binarySurveyLikeUnselectedIconResId - R.drawable.threads_binary_survey_like_unselected
+         * @param binarySurveyLikeSelectedIconResId - R.drawable.threads_binary_survey_like_selected
+         * @param binarySurveyDislikeUnselectedIconResId - R.drawable.threads_binary_survey_dislike_unselected
+         * @param binarySurveyDislikeSelectedIconResId - R.drawable.threads_binary_survey_dislike_selected
+         * @param optionsSurveyUnselectedIconResId - R.drawable.threads_options_survey_unselected
+         * @param optionsSurveySelectedIconResId - R.drawable.threads_options_survey_selected
+         * @param surveySelectedColorFilterResId - R.color.threads_survey_selected_icon_tint
+         * @param surveyUnselectedColorFilterResId - R.color.threads_survey_unselected_icon_tint
+         * @param surveyTextColorResId - R.color.threads_chat_system_message
          */
         @Deprecated
         public ChatStyleBuilder setSurveyStyle(@DrawableRes int binarySurveyLikeUnselectedIconResId,
@@ -594,15 +593,15 @@ public class ChatStyle implements Serializable {
                                                @ColorRes int surveySelectedColorFilterResId,
                                                @ColorRes int surveyUnselectedColorFilterResId,
                                                @ColorRes int surveyTextColorResId) {
-            chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId != INVALID ? binarySurveyLikeUnselectedIconResId : R.drawable.ic_like_empty_36dp;
-            chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId != INVALID ? binarySurveyLikeSelectedIconResId : R.drawable.ic_like_full_36dp;
-            chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId != INVALID ? binarySurveyDislikeUnselectedIconResId : R.drawable.ic_dislike_empty_36dp;
-            chatStyle.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId != INVALID ? binarySurveyDislikeSelectedIconResId : R.drawable.ic_dislike_full_36dp;
-            chatStyle.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId != INVALID ? optionsSurveyUnselectedIconResId : R.drawable.ic_star_outline_grey600_24dp;
-            chatStyle.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId != INVALID ? optionsSurveySelectedIconResId : R.drawable.ic_star_grey600_24dp;
+            chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
+            chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
+            chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
+            chatStyle.binarySurveyDislikeSelectedIconResId = binarySurveyDislikeSelectedIconResId;
+            chatStyle.optionsSurveyUnselectedIconResId = optionsSurveyUnselectedIconResId;
+            chatStyle.optionsSurveySelectedIconResId = optionsSurveySelectedIconResId;
             chatStyle.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
             chatStyle.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
-            chatStyle.surveyTextColorResId = surveyTextColorResId != INVALID ? surveyTextColorResId : R.color.threads_black;
+            chatStyle.surveyTextColorResId = surveyTextColorResId;
             return this;
         }
 

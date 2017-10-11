@@ -422,7 +422,7 @@ public class NotificationService extends Service {
                 builder.setColor(getColor(style.nougatPushAccentColorResId));
             }
             else {
-                builder.setColor(getColor(R.color.nougat_push_accent));
+                builder.setColor(getColor(R.color.threads_nougat_push_accent));
             }
         }
         boolean unreadMessage = !TextUtils.isEmpty(message);

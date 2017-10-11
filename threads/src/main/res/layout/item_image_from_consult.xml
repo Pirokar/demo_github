@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/consult_avatar"
-        android:layout_width="@dimen/consultant_photo_size"
-        android:layout_height="@dimen/consultant_photo_size"
+        android:layout_width="@dimen/threads_operator_photo_size"
+        android:layout_height="@dimen/threads_operator_photo_size"
         android:layout_alignTop="@+id/timestamp"
         android:layout_below="@+id/image"
         android:layout_gravity="bottom|left"

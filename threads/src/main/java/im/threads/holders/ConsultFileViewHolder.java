@@ -127,8 +127,8 @@ public class ConsultFileViewHolder extends BaseHolder {
 
             mConsultAvatar.setVisibility(View.VISIBLE);
             @DrawableRes int resID;
-            if (style!=null && style.defaultIncomingMessageAvatar != INVALID) {
-                resID = style.defaultIncomingMessageAvatar;
+            if (style!=null && style.defaultOperatorAvatar != INVALID) {
+                resID = style.defaultOperatorAvatar;
             }
             else {
                 resID = R.drawable.threads_operator_avatar_placeholder;
@@ -173,7 +173,7 @@ public class ConsultFileViewHolder extends BaseHolder {
             mConsultAvatar.setVisibility(View.GONE);
             mFilterSecond.setVisibility(View.GONE);
 
-            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.consultant_photo_size;
+            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
             int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
             int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
             int avatarLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);

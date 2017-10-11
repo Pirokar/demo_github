@@ -248,8 +248,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof ConsultIsTypingViewHolderNew) {
             ChatStyle style = PrefUtils.getIncomingStyle(ctx);
             int defaultImageResId;
-            if (style != null && style.imagePlaceholder != ChatStyle.INVALID) {
-                defaultImageResId = style.imagePlaceholder;
+            if (style != null && style.defaultOperatorAvatar != ChatStyle.INVALID) {
+                defaultImageResId = style.defaultOperatorAvatar;
             } else {
                 defaultImageResId = R.drawable.threads_operator_avatar_placeholder;
             }

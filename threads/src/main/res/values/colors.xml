@@ -70,6 +70,9 @@
     <color name="threads_schedule_text">@color/threads_black</color>
 
     <color name="threads_push_background">@color/threads_green_dark</color>
-    <color name="nougat_push_accent">@color/threads_green_dark</color>
+    <color name="threads_nougat_push_accent">@color/threads_green_dark</color>
+
+    <color name="threads_survey_selected_icon_tint">@color/threads_green_dark</color>
+    <color name="threads_survey_unselected_icon_tint">@color/threads_green_dark</color>
 
 </resources>

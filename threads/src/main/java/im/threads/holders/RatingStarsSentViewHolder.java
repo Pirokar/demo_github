@@ -82,7 +82,7 @@ public class RatingStarsSentViewHolder extends BaseHolder {
                 star.setImageResource(style.optionsSurveySelectedIconResId);
             }
             else {
-                star.setImageResource(R.drawable.ic_star_grey600_24dp);
+                star.setImageResource(R.drawable.threads_options_survey_selected);
             }
         }
     }

@@ -17,7 +17,7 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="@string/threads_ask_to_rate"
-        android:textColor="@color/threads_gray_text"
+        android:textColor="@color/threads_chat_system_message"
         android:gravity="center"/>
 
     <LinearLayout
@@ -30,14 +30,14 @@
             android:id="@+id/thumb_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_like_empty_36dp"
+            android:src="@drawable/threads_binary_survey_like_unselected"
             android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
         <ImageView
             android:id="@+id/thumb_down"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_dislike_empty_36dp"/>
+            android:src="@drawable/threads_binary_survey_dislike_unselected"/>
 
     </LinearLayout>
 
@@ -46,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/threads_thanks_for_rate"
-        android:textColor="@color/threads_gray_text"
+        android:textColor="@color/threads_chat_system_message"
         android:gravity="center"
         android:visibility="gone"/>
 
