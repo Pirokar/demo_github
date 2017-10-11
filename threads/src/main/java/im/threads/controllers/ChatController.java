@@ -1291,7 +1291,6 @@ public class ChatController {
                     if (PrefUtils.getNewClientID(ctx) == null) return;
                     try {
                         cleanAll();
-//                        getPushControllerInstance(ctx).setClientId(PrefUtils.getNewClientID(ctx));
                         PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
                         PrefUtils.setClientIdWasSet(true, ctx);
 

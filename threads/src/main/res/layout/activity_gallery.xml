@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/threads_toolbar_gray"
+        android:background="@color/threads_chat_toolbar"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:title="@string/threads_photos"
         app:titleTextColor="@android:color/white">
@@ -33,8 +33,8 @@
                 android:hint="@string/threads_search_photos"
                 android:lines="1"
                 android:paddingLeft="12dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="#989898"
+                android:textColor="@color/threads_chat_toolbar_text"
+                android:textColorHint="@color/threads_chat_toolbar_hint"
                 android:textSize="@dimen/text_big" />
 
             <ImageButton

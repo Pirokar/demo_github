@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
+import im.threads.R;
 import im.threads.controllers.QuickAnswerController;
 import im.threads.fragments.QuickAnswerFragment;
 import im.threads.model.ChatStyle;
@@ -42,6 +43,9 @@ public class TranslucentActivity
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
                 window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+            }
+            else {
+                window.setStatusBarColor(getResources().getColor(R.color.threads_chat_status_bar));
             }
         }
         mQuickAnswerReceiver = new QuickAnswerReceiver();

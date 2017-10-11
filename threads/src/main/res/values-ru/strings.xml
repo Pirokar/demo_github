@@ -1,7 +1,5 @@
 <resources>
-    <string name="threads_app_name">Threads</string>
     <string name="threads_searching_operator">Поиск оператора...</string>
-    <string name="threads_your_message">Ваше сообщение...</string>
     <string name="threads_no_connection">Отсутствует
        \nсоединение с интернетом</string>
     <string name="threads_no_connection_details">Включите передачу даннх
@@ -41,7 +39,6 @@
     <string name="threads_now_you_are_in_directory">Вы находитесь в </string>
     <string name="threads_from">из</string>
     <string name="threads_in">в</string>
-    <string name="threads_title_default">Заголовок</string>
     <string name="threads_search_more">Искать дальше</string>
     <string name="threads_new_">новых</string>
     <string name="threads_download">Загрузить</string>
@@ -61,15 +58,12 @@
     <string name="threads_touch_to_download">Дотроньтесь чтобы скачать</string>
     <string name="threads_answer">ОТВЕТИТЬ</string>
     <string name="threads_check_connection">Проблемы с доступом в интрнет, проверьте соединение</string>
-
-    <string name="threads_contact_center">Контакт центр</string>
     <string name="threads_typing">печатает…</string>
     <string name="threads_ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
     <string name="threads_thanks_for_rate">Спасибо за вашу оценку</string>
     <string name="threads_item_user_rate_header">Оценка решения вопроса</string>
     <string name="threads_item_user_rate_text">из</string>
-    <string name="threads_title_text">Добро пожаловать</string>
-    <string name="threads_subtitle_text">Отправьте ваш вопрос</string>
+
     <string name="threads_permissions_help">Помощь</string>
     <string name="threads_permissions_string_help_text">Отсутствуют разрешения.\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
     <string name="threads_permissions_camera_and_write_external_storage_help_text">Отсутствуют разрешения на Камеру и Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
@@ -79,9 +73,6 @@
     <string name="threads_permissions_settings">Настройки</string>
 
     <string name="threads_invalid_client_id">Минимальная длина client id - 5 символов</string>
-    <string name="threads_request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
-    <string name="threads_request_to_resolve_thread_close">Нет</string>
-    <string name="threads_request_to_resolve_thread_open">Да</string>
 
     <plurals  name="threads_unread_messages">
         <item quantity="one">%d непрочитанное сообщение</item>
@@ -89,4 +80,18 @@
         <item quantity="many">%d непрочитанных сообщений</item>
         <item quantity="other">%d непрочитанных сообщений</item>
     </plurals>
+
+    <!-- Тексты для кастомизации -->
+    <string name="threads_push_title">Threads</string>
+
+    <string name="threads_contact_center">Контакт центр</string>
+
+    <string name="threads_request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
+    <string name="threads_request_to_resolve_thread_close">Нет</string>
+    <string name="threads_request_to_resolve_thread_open">Да</string>
+
+    <string name="threads_welcome_screen_title_text">Добро пожаловать</string>
+    <string name="threads_welcome_screen_subtitle_text">Отправьте ваш вопрос</string>
+    <string name="threads_input_hint">Ваше сообщение...</string>
+
 </resources>

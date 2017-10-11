@@ -83,6 +83,10 @@ public class ConsultPhraseHolder extends BaseHolder {
             if (style.incomingMessageBubbleColor != INVALID) {
                 mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             }
+            else {
+                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_incoming_message_bubble), PorterDuff.Mode.SRC_ATOP);
+            }
+
             if (style.incomingMessageBubbleBackground != INVALID) {
                 mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
             }
@@ -93,10 +97,13 @@ public class ConsultPhraseHolder extends BaseHolder {
                         mRightTextDescr,
                         rightTextFileStamp}, style.incomingMessageTextColor);
             }
-            defIcon = style.defaultIncomingMessageAvatar == INVALID ? R.drawable.blank_avatar_round : style.defaultIncomingMessageAvatar;
+            defIcon = style.defaultOperatorAvatar == INVALID ? R.drawable.threads_operator_avatar_placeholder : style.defaultOperatorAvatar;
             if (style.chatToolbarColorResId != INVALID) {
                 setTintToProgressButtonConsult(mCircularProgressButton, style.chatToolbarColorResId);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
+            }
+            else {
+                setTintToProgressButtonConsult(mCircularProgressButton, R.color.threads_chat_toolbar);
             }
             if (style.chatHighlightingColor != INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
@@ -217,7 +224,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
 
-            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.consultant_photo_size;
+            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
             int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
 
             int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);

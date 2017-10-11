@@ -56,10 +56,10 @@ public class ConsultActivity extends BaseActivity {
         mConsultMotoTextView = (TextView) findViewById(R.id.consult_moto);
         mConsultImageView = (ImageView) findViewById(R.id.image);
 
-        if (style != null && style.imagePlaceholder != ChatStyle.INVALID) {
-            mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.imagePlaceholder));
+        if (style != null && style.defaultOperatorAvatar != ChatStyle.INVALID) {
+            mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.defaultOperatorAvatar));
         } else {
-            mConsultImageView.setBackground(ContextCompat.getDrawable(this, R.drawable.blank_avatar_round));
+            mConsultImageView.setBackground(ContextCompat.getDrawable(this, R.drawable.threads_operator_avatar_placeholder));
         }
 
         Intent i = getIntent();
@@ -103,9 +103,6 @@ public class ConsultActivity extends BaseActivity {
     @Override
     protected void setActivityStyle(ChatStyle style) {
         if (style != null) {
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            }
             if (style.chatBackgroundColor != ChatStyle.INVALID) {
                 findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
             }
@@ -115,6 +112,11 @@ public class ConsultActivity extends BaseActivity {
                 mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
                 mToolbar.getOverflowIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
                 mToolbar.getNavigationIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+            }
+            else {
+                mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.threads_chat_toolbar_text), PorterDuff.Mode.SRC_ATOP));
+                mToolbar.getOverflowIcon().setColorFilter(getColorInt(R.color.threads_chat_toolbar_text), PorterDuff.Mode.SRC_ATOP);
+                mToolbar.getNavigationIcon().setColorFilter(getColorInt(R.color.threads_chat_toolbar_text), PorterDuff.Mode.SRC_ATOP);
             }
         }
     }
@@ -126,12 +128,18 @@ public class ConsultActivity extends BaseActivity {
         if (style != null && style.menuItemTextColorResId != ChatStyle.INVALID) {
             s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s.length(), 0);
         }
+        else {
+            s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.threads_chat_toolbar_menu_item)), 0, s.length(), 0);
+        }
         searchMenuItem.setTitle(s);
 
         MenuItem filesAndMedia = menu.getItem(1);
         SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
         if (style != null && style.menuItemTextColorResId != ChatStyle.INVALID) {
             s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s2.length(), 0);
+        }
+        else {
+            s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.threads_chat_toolbar_menu_item)), 0, s2.length(), 0);
         }
         filesAndMedia.setTitle(s2);
 

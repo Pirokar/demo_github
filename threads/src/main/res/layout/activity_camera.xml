@@ -93,7 +93,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/threads_toolbar_gray"
+        android:background="@color/threads_chat_toolbar"
         android:visibility="gone"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp" />
 

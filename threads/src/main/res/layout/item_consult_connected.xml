@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="@dimen/consultant_system_photo_size"
-        android:layout_height="@dimen/consultant_system_photo_size"
+        android:layout_width="@dimen/threads_system_operator_photo_size"
+        android:layout_height="@dimen/threads_system_operator_photo_size"
         android:layout_marginLeft="@dimen/margin_half"
         android:layout_centerVertical="true"/>
 
@@ -21,7 +21,7 @@
         android:layout_marginLeft="@dimen/margin_material"
         android:layout_marginTop="10dp"
         tools:text="Мария Павлова"
-        android:textColor="@color/threads_gray_text"
+        android:textColor="@color/threads_chat_connection_message"
         android:textSize="18sp" />
 
     <im.threads.widget.text_view.SpecialistConnectSubtitleTextView
@@ -34,5 +34,5 @@
         android:layout_marginRight="@dimen/margin_big"
         android:layout_marginTop="@dimen/margin_quarter"
         tools:text="подключилась к диалогу в 10:21"
-        android:textColor="@color/threads_gray_text" />
+        android:textColor="@color/threads_chat_connection_message" />
 </RelativeLayout>

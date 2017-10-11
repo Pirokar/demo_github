@@ -12,8 +12,8 @@
     <dimen name="text_big">20sp</dimen>
 
     <dimen name="consultant_margin_right">52dp</dimen>
-    <dimen name="consultant_photo_size">40dp</dimen>
-    <dimen name="consultant_system_photo_size">40dp</dimen>
+    <dimen name="threads_operator_photo_size">40dp</dimen>
+    <dimen name="threads_system_operator_photo_size">40dp</dimen>
     <dimen name="consultant_photo_offset_size">-20dp</dimen>
     <dimen name="filter_offset_size">20dp</dimen>
     <dimen name="user_margin_left">72dp</dimen>
@@ -23,4 +23,9 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="icon_small_size">24dp</dimen>
+
+
+    <dimen name="threads_welcome_screen_title">18sp</dimen>
+    <dimen name="threads_welcome_screen_subtitle">14sp</dimen>
+    <dimen name="threads_input_height">64dp</dimen>
 </resources>

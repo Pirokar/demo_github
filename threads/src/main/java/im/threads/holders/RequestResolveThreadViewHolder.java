@@ -41,9 +41,12 @@ public class RequestResolveThreadViewHolder extends BaseHolder {
 
         if (style != null) {
             if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
-                requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
                 topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
                 bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
+            }
+
+            if (style.chatSystemMessageTextColor != ChatStyle.INVALID) {
+                requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
             }
 
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
@@ -54,22 +57,13 @@ public class RequestResolveThreadViewHolder extends BaseHolder {
             if (style.requestToResolveThreadTextResId != ChatStyle.INVALID) {
                 requestToResolveThread.setText(style.requestToResolveThreadTextResId);
             }
-            else {
-                requestToResolveThread.setText(R.string.threads_request_to_resolve_thread);
-            }
 
             if (style.approveRequestToResolveThreadTextResId != ChatStyle.INVALID) {
                 approveRequest.setText(style.approveRequestToResolveThreadTextResId);
             }
-            else {
-                approveRequest.setText(R.string.threads_request_to_resolve_thread_close);
-            }
 
             if (style.denyRequestToResolveThreadTextResId != ChatStyle.INVALID) {
                 denyRequest.setText(style.denyRequestToResolveThreadTextResId);
-            }
-            else {
-                denyRequest.setText(R.string.threads_request_to_resolve_thread_open);
             }
         }
     }

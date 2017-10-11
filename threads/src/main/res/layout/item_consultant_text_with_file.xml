@@ -10,18 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:background="@color/threads_chat_highlighting"/>
 
     <View
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/filter_offset_size"
-        android:layout_below="@+id/bubble"/>
+        android:layout_below="@+id/bubble"
+        android:background="@color/threads_chat_highlighting"/>
 
     <ImageView
         android:id="@+id/consult_avatar"
-        android:layout_width="@dimen/consultant_photo_size"
-        android:layout_height="@dimen/consultant_photo_size"
+        android:layout_width="@dimen/threads_operator_photo_size"
+        android:layout_height="@dimen/threads_operator_photo_size"
         android:layout_below="@+id/bubble"
         android:layout_marginLeft="@dimen/margin_half"
         android:layout_marginTop="@dimen/consultant_photo_offset_size"/>
@@ -32,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_marginBottom="0dp"
         android:layout_toRightOf="@+id/consult_avatar"
-        android:background="@drawable/operator_bubble">
+        android:background="@drawable/thread_incoming_bubble">
 
         <LinearLayout
             android:id="@+id/right_text_row"
@@ -46,6 +48,7 @@
             <im.threads.views.CircularProgressButton
                 android:id="@+id/button_download"
                 style="@style/CircularProgressButtonStyle"
+                android:background="@color/threads_chat_background"
                 app:completed_drawable="@drawable/file_image_consult"
                 app:in_progress_label="@drawable/ic_clear_blue_consult_36dp"
                 app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp" />
@@ -56,7 +59,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/margin_half"
                 android:layout_marginTop="@dimen/margin_half"
-                android:background="@color/threads_blue" />
+                android:background="@color/threads_chat_toolbar" />
 
             <LinearLayout
                 android:layout_width="match_parent"

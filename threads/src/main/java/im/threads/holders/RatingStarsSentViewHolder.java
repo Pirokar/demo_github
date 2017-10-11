@@ -60,24 +60,28 @@ public class RatingStarsSentViewHolder extends BaseHolder {
                 rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
                 mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
             }
+            else {
+                rateStarsCount.setTextColor(getColorInt(R.color.threads_chat_outgoing_message_bubble));
+                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_outgoing_message_bubble), PorterDuff.Mode.SRC_ATOP);
+
+            }
             if (style.outgoingMessageBubbleBackground != INVALID) {
                 mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
             }
             if (style.outgoingMessageTextColor != INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
-
-                star.setColorFilter(
-                        ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),
-                        PorterDuff.Mode.SRC_ATOP
-                );
+                star.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),PorterDuff.Mode.SRC_ATOP);
+            }
+            else {
+                star.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_text),PorterDuff.Mode.SRC_ATOP);
             }
 
             if (style.optionsSurveySelectedIconResId != INVALID) {
                 star.setImageResource(style.optionsSurveySelectedIconResId);
             }
             else {
-                star.setImageResource(R.drawable.ic_star_grey600_24dp);
+                star.setImageResource(R.drawable.threads_options_survey_selected);
             }
         }
     }

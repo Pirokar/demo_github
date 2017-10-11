@@ -89,7 +89,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
                             if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
                                 mImage.setImageResource(style.imagePlaceholder);
                             }else {
-                                mImage.setImageResource(R.drawable.no_image);
+                                mImage.setImageResource(R.drawable.threads_image_placeholder);
                             }
 
                         }
@@ -98,7 +98,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
                 mImage.setImageResource(style.imagePlaceholder);
             }else {
-                mImage.setImageResource(R.drawable.no_image);
+                mImage.setImageResource(R.drawable.threads_image_placeholder);
             }
         }
         if (isChosen) {

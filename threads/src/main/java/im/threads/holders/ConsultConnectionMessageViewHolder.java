@@ -42,25 +42,27 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
         headerTextView = (TextView) itemView.findViewById(R.id.quote_header);
         connectedMessage = (TextView) itemView.findViewById(R.id.text);
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
+        if (null == style) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
-            if (style.connectionMessageTextColor != ChatStyle.INVALID) {
-                headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
-                connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
+            if (INVALID != style.chatSystemMessageTextColor) {
+                headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+                connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
             }
 
-            if (style.operatorSystemAvatarSize != INVALID) {
+            if (INVALID != style.operatorSystemAvatarSize) {
                 mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
                 mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
             }
         }
-        defIcon =  style!=null && style.defaultIncomingMessageAvatar!= ChatStyle.INVALID?style.defaultIncomingMessageAvatar:R.drawable.blank_avatar_round;
+        defIcon = null != style && INVALID != style.defaultOperatorAvatar ?
+                style.defaultOperatorAvatar :
+                R.drawable.threads_operator_avatar_placeholder;
     }
 
     public void onBind(
             ConsultConnectionMessage consultConnectionMessage
             , View.OnClickListener listener) {
-        if (consultConnectionMessage.getName() == null
+        if (null == consultConnectionMessage.getName()
                 || consultConnectionMessage.getName().equals("null")) {
             Log.d(TAG, "consultName is null");
             headerTextView.setText(itemView.getContext().getString(R.string.threads_unknown_operator));

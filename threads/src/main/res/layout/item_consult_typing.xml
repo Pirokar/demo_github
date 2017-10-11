@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="@dimen/consultant_system_photo_size"
-        android:layout_height="@dimen/consultant_system_photo_size"
+        android:layout_width="@dimen/threads_system_operator_photo_size"
+        android:layout_height="@dimen/threads_system_operator_photo_size"
         android:padding="@dimen/margin_half"
         android:scaleType="centerCrop"
         android:visibility="gone" />
@@ -18,6 +18,7 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/image"
+        android:textColor="@color/threads_chat_system_message"
         android:text="@string/threads_typing"
         android:textSize="@dimen/text_medium" />
 

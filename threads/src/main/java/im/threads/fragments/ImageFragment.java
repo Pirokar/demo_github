@@ -66,7 +66,7 @@ public class ImageFragment extends Fragment {
                     .load(fd.getFilePath())
                     .fit()
                     .centerInside()
-                    .error(R.drawable.no_image)
+                    .error(R.drawable.threads_image_placeholder)
                     .into(imageView);
         }
         return v;

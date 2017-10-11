@@ -40,10 +40,11 @@ public class FileAndMediaViewHolder extends BaseHolder {
         timeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         tintedDrawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
         style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            if (style.chatBodyIconsTint != ChatStyle.INVALID) {
-                tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
-            }
+        if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID) {
+            tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+        }
+        else {
+            tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_chat_icons_tint), PorterDuff.Mode.SRC_ATOP);
         }
     }
 

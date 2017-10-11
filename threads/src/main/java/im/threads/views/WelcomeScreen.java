@@ -45,7 +45,6 @@ public class WelcomeScreen extends LinearLayout {
         ChatStyle style = PrefUtils.getIncomingStyle(context);
 
         if (style != null) {
-            //ColorsHelper.setBackgroundColor(context, back, style.chatToolbarColorResId);
             ColorsHelper.setBackgroundColor(context, this, style.chatBackgroundColor);
             ColorsHelper.setTextColor(context, title, style.welcomeScreenTitleTextColorResId);
             ColorsHelper.setTextColor(context, subTitle, style.welcomeScreenSubtitleTextColorResId);
@@ -57,19 +56,14 @@ public class WelcomeScreen extends LinearLayout {
             float titleSize;
             if (style.welcomeScreenTitleSizeInSp != ChatStyle.INVALID) {
                 titleSize = style.welcomeScreenTitleSizeInSp;
-            } else {
-                titleSize = getResources().getInteger(R.integer.title_size);
+                title.setTextSize(titleSize);
             }
-            title.setTextSize(titleSize);
 
             float subtitleSize;
             if (style.welcomeScreenSubtitleSizeInSp != ChatStyle.INVALID) {
                 subtitleSize = style.welcomeScreenSubtitleSizeInSp;
-            } else {
-                subtitleSize = getResources().getInteger(R.integer.subtitle_size);
+                subTitle.setTextSize(subtitleSize);
             }
-            subTitle.setTextSize(subtitleSize);
-
 
             if (style.welcomeScreenTitleTextResId != ChatStyle.INVALID) {
                 title.setText(style.welcomeScreenTitleTextResId);

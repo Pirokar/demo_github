@@ -1,7 +1,7 @@
 <resources>
-    <string name="threads_app_name">Threads</string>
+    <string name="threads_push_title">Threads</string>
     <string name="threads_searching_operator">Searching client...</string>
-    <string name="threads_your_message">Your message...</string>
+    <string name="threads_input_hint">Your message...</string>
     <string name="threads_no_connection">No internet connection</string>
     <string name="threads_no_connection_details">Turn on mobile data or use WI-FI to resend message</string>
     <string name="threads_close">Close</string>
@@ -42,7 +42,6 @@
     <string name="threads_from">from</string>
     <string name="threads_in">in</string>
     <string name="threads_search_more">Search more</string>
-    <string name="threads_title_default">Header</string>
     <string name="threads_message_were_unsent">Message not sent</string>
     <string name="threads_unknown_operator">Unknown</string>
     <string name="threads_saved_to">Saved to</string>
