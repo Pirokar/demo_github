@@ -21,11 +21,11 @@ public final class AppInfoHelper {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        return pInfo != null ? pInfo.versionName + " (" + pInfo.versionCode + ")" : "";
+        return pInfo != null ? pInfo.versionName : "";
     }
 
     public static String getLibVersion() {
-        return BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")";
+        return BuildConfig.VERSION_NAME;
     }
 
     public static String getAppName(Context context) {
