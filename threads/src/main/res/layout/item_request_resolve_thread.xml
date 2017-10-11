@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@android:color/darker_gray" />
+        android:background="@color/threads_icon_and_separators_color" />
 
     <im.threads.widget.text_view.BubbleMessageTextView
         android:id="@+id/request_to_resolve_thread"
@@ -19,6 +19,7 @@
         android:textSize="@dimen/text_regular"
         android:paddingLeft="@dimen/margin_material"
         android:paddingRight="@dimen/margin_material"
+        android:textColor="@color/threads_chat_system_message"
         android:text="@string/threads_request_to_resolve_thread"
         android:gravity="center"/>
 
@@ -58,6 +59,6 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@android:color/darker_gray"/>
+        android:background="@color/threads_icon_and_separators_color"/>
 
 </LinearLayout>

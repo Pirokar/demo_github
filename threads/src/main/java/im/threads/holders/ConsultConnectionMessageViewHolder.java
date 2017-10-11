@@ -44,9 +44,9 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         connectedMessage = (TextView) itemView.findViewById(R.id.text);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
-            if (style.connectionMessageTextColor != ChatStyle.INVALID) {
-                headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
-                connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.connectionMessageTextColor));
+            if (style.chatSystemMessageTextColor != ChatStyle.INVALID) {
+                headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+                connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
             }
 
             if (style.operatorSystemAvatarSize != INVALID) {

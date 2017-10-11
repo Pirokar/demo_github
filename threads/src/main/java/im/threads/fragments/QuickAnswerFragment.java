@@ -119,11 +119,11 @@ public class QuickAnswerFragment extends DialogFragment {
             if (style.chatMessageInputColor!= INVALID){
                 v.findViewById(R.id.answer_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
             }
-            if (style.chatBodyIconsTint!= INVALID){
-                Drawable d =imageButton.getDrawable();
-                d.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
-                imageButton.setImageDrawable(d);
-            }
+
+            Drawable d =imageButton.getDrawable();
+            d.setColorFilter(getColorInt(style.chatBodyIconsTint!= INVALID ? style.chatBodyIconsTint : R.color.threads_chat_icons_tint), PorterDuff.Mode.SRC_ATOP);
+            imageButton.setImageDrawable(d);
+
             if (style.chatMessageInputHintTextColor!= INVALID){
                 mEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
             }

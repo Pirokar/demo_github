@@ -18,6 +18,7 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/image"
+        android:textColor="@color/threads_chat_system_message"
         android:text="@string/threads_typing"
         android:textSize="@dimen/text_medium" />
 

@@ -15,6 +15,6 @@
         android:paddingRight="@dimen/margin_big"
         android:text="@string/threads_recently"
         android:textAllCaps="true"
-        android:textColor="@color/threads_gray_text"/>
+        android:textColor="@color/threads_chat_system_message"/>
 
 </LinearLayout>

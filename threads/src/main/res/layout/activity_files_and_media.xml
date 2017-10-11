@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/threads_files_medias_screen_background"
     android:id="@+id/activity_root">
 
 

@@ -41,6 +41,8 @@ public class ChatBuilderHelper {
                         ChatStyle.INVALID, // цвет индикатора о непрочитанных сообщениях unreadMsgStickerColorResId
                         ChatStyle.INVALID) // цвет текста на индикаторе о непрочитанных сообщениях unreadMsgCountTextColorResId
                 .setGoogleAnalyticsEnabled(false)
+                .setShowConsultSearching(true) //показывать загрузку при поиске консультанта
+                .setScrollChatToEndIfUserTyping(false) // всегда прокручивать чат к последнему сообщению, если пользователь начал ввод
                 .setSurveyStyle(ChatStyle.INVALID, // Иконка бинарного опроса для положительного невыбранного ответа binarySurveyLikeUnselectedIconResId
                         ChatStyle.INVALID, // Иконка бинарного опроса для положительного выбранного ответа binarySurveyLikeSelectedIconResId
                         ChatStyle.INVALID, // Иконка бинарного опроса для отрицательного невыбранного ответа binarySurveyDislikeUnselectedIconResId

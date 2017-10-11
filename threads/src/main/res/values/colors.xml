@@ -44,6 +44,14 @@
     <color name="threads_chat_highlighting">@color/threads_blue_transparent_700F87FF</color>
     <color name="threads_chat_incoming_message_bubble">@color/threads_white</color>
     <color name="threads_chat_outgoing_message_bubble">@color/threads_blue_3598dc</color>
+    <color name="threads_chat_icons_tint">@color/threads_black</color>
+    <color name="threads_chat_system_message">@color/threads_gray_text</color>
+
+    <color name="threads_chat_unread_msg_sticker_background">@color/threads_red_f44336</color>
+    <color name="threads_chat_unread_msg_count_text">@color/threads_white</color>
+
+    <color name="threads_files_medias_screen_background">@color/threads_blue_eff3f8</color>
+    <color name="threads_icon_and_separators_color">@color/threads_disabled_text_color</color>
 
     <color name="threads_input_background">@color/threads_white</color>
     <color name="threads_input_text">@color/threads_black</color>

@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@color/threads_grey_aaa" />
+        android:background="@color/threads_icon_and_separators_color" />
 
     <im.threads.widget.text_view.BubbleMessageTextView
         android:id="@+id/ask_for_rate"
@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@color/threads_grey_aaa"/>
+        android:background="@color/threads_icon_and_separators_color"/>
 
 
 </LinearLayout>

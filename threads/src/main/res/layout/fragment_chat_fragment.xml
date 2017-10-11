@@ -78,7 +78,7 @@
             android:layout_height="20dp"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:textColor="@color/threads_white"
+            android:textColor="@color/threads_chat_unread_msg_count_text"
             android:textSize="@dimen/text_small"
             android:text="1"/>
     </RelativeLayout>

@@ -61,7 +61,7 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int chatBodyIconsTint = INVALID;
     @ColorRes
-    public int connectionMessageTextColor = INVALID;
+    public int chatSystemMessageTextColor = INVALID;
     @ColorRes
     public int filesAndMediaScreenBackgroundColor = INVALID;
     @ColorRes
@@ -77,7 +77,7 @@ public class ChatStyle implements Serializable {
     @StyleRes
     public int fileBrowserDialogStyleResId = INVALID;
     public boolean showConsultSearching;
-    public boolean alwaysScrollToEnd;
+    public boolean scrollChatToEndIfUserTyping;
     @DrawableRes
     public int scrollDownButtonResId = INVALID;
     @ColorRes
@@ -243,6 +243,18 @@ public class ChatStyle implements Serializable {
             chatStyle.isGAEnabled = isEnabled;
             return this;
         }
+
+        public ChatStyleBuilder setShowConsultSearching(boolean show) {
+            chatStyle.showConsultSearching = show;
+            return this;
+        }
+
+
+        public ChatStyleBuilder setScrollChatToEndIfUserTyping(boolean scroll) {
+            chatStyle.scrollChatToEndIfUserTyping = scroll;
+            return this;
+        }
+
 
         public ChatStyleBuilder setHistoryLoadingCount(Integer count) {
             if (count != null && count > 0) {
@@ -413,22 +425,22 @@ public class ChatStyle implements Serializable {
          * @param outgoingMessageBubbleColor- R.color.threads_chat_outgoing_message_bubble
          * @param incomingMessageBubbleBackground - R.drawable.thread_incoming_bubble
          * @param outgoingMessageBubbleBackground - R.drawable.thread_outgoing_bubble
-         * @param incomingMessageTextColor
-         * @param outgoingMessageTextColor
-         * @param chatBodyIconsTint
-         * @param connectionMessageTextColor
-         * @param filesAndMediaScreenBackgroundColor
-         * @param iconsAndSeparatorsColor
+         * @param incomingMessageTextColor - R.color.threads_incoming_message_text
+         * @param outgoingMessageTextColor - R.color.threads_outgoing_message_text
+         * @param chatBodyIconsTint - R.color.threads_chat_icons_tint
+         * @param connectionMessageTextColor - R.color.threads_chat_system_message
+         * @param filesAndMediaScreenBackgroundColor - R.color.threads_files_medias_screen_background
+         * @param iconsAndSeparatorsColor - R.color.threads_icon_and_separators_color
          * @param defaultIncomingMessageAvatar
          * @param operatorAvatarSize
          * @param operatorSystemAvatarSize
          * @param imagePlaceholder
          * @param fileBrowserDialogStyleResId
-         * @param showConsultSearching
-         * @param alwaysScrollToEnd
+         * @param showConsultSearching - setShowConsultSearching(boolean show)
+         * @param alwaysScrollToEnd - setScrollChatToEndIfUserTyping(boolean scroll)
          * @param scrollDownButtonResId
-         * @param unreadMsgStickerColorResId
-         * @param unreadMsgCountTextColorResId
+         * @param unreadMsgStickerColorResId - R.color.threads_chat_unread_msg_sticker_background
+         * @param unreadMsgCountTextColorResId - R.color.threads_chat_unread_msg_count_text
          * @return
          */
         @Deprecated
@@ -468,12 +480,12 @@ public class ChatStyle implements Serializable {
             chatStyle.operatorSystemAvatarSize = operatorSystemAvatarSize;
             chatStyle.imagePlaceholder = imagePlaceholder;
             chatStyle.chatBodyIconsTint = chatBodyIconsTint;
-            chatStyle.connectionMessageTextColor = connectionMessageTextColor;
+            chatStyle.chatSystemMessageTextColor = connectionMessageTextColor;
             chatStyle.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
-            chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor != INVALID ? iconsAndSeparatorsColor : R.color.threads_disabled_text_color;
+            chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor;
             chatStyle.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
             chatStyle.showConsultSearching = showConsultSearching;
-            chatStyle.alwaysScrollToEnd = alwaysScrollToEnd;
+            chatStyle.scrollChatToEndIfUserTyping = alwaysScrollToEnd;
             chatStyle.scrollDownButtonResId = scrollDownButtonResId;
             chatStyle.unreadMsgStickerColorResId = unreadMsgStickerColorResId;
             chatStyle.unreadMsgCountTextColorResId = unreadMsgCountTextColorResId;

@@ -36,8 +36,8 @@ public class FilesDateStampHolder extends RecyclerView.ViewHolder {
         }
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
-            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
-                mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.iconsAndSeparatorsColor));
+            if (style.chatSystemMessageTextColor != ChatStyle.INVALID) {
+                mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.chatSystemMessageTextColor));
             }
             if (style.chatBackgroundColor != ChatStyle.INVALID) {
                 linearLayout.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatBackgroundColor));

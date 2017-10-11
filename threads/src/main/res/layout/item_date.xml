@@ -13,5 +13,5 @@
         android:text="29 апреля 2016"
         android:textSize="@dimen/text_medium"
         android:textStyle="bold"
-        android:textColor="@color/threads_gray_text"/>
+        android:textColor="@color/threads_chat_system_message"/>
 </FrameLayout>

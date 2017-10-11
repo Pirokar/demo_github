@@ -540,6 +540,10 @@ public class ChatFragment extends Fragment implements
                 mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
                 mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
             }
+            else {
+                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, R.color.threads_icon_and_separators_color));
+                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, R.color.threads_icon_and_separators_color));
+            }
 
             if (style.chatToolbarColorResId != INVALID) {
                 mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
@@ -610,8 +614,6 @@ public class ChatFragment extends Fragment implements
 
             if (style.inputTextColor != INVALID) {
                 ColorsHelper.setTextColor(activity, mInputEditText, style.inputTextColor);
-            } else if (style.incomingMessageTextColor != INVALID) {
-                ColorsHelper.setTextColor(activity, mInputEditText, style.incomingMessageTextColor);
             }
 
             if (!TextUtils.isEmpty(style.inputTextFont)) {
@@ -630,6 +632,14 @@ public class ChatFragment extends Fragment implements
                 ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.add_attachment), style.chatBodyIconsTint);
                 ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.quote_clear), style.chatBodyIconsTint);
                 mBottomSheetView.setButtonsTint(style.chatBodyIconsTint);
+            }
+            else {
+                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.content_copy), R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.reply), R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.send_message), R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.add_attachment), R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.quote_clear), R.color.threads_chat_icons_tint);
+                mBottomSheetView.setButtonsTint(R.color.threads_chat_icons_tint);
             }
 
             if (style.chatToolbarColorResId != INVALID) {
@@ -800,18 +810,16 @@ public class ChatFragment extends Fragment implements
             return;
         }
 
+        Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
+
         if (style != null && style.chatBodyIconsTint != INVALID) {
             ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), style.chatBodyIconsTint);
-            Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
             ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
-            backButton.setImageDrawable(d);
         } else {
-//            mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_blue_24dp);
-            ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), android.R.color.black);
-            Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
-            ColorsHelper.setDrawableColor(ctx, d, android.R.color.black);
-            backButton.setImageDrawable(d);
+            ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
+            ColorsHelper.setDrawableColor(ctx, d, R.color.threads_chat_icons_tint);
         }
+        backButton.setImageDrawable(d);
 
         mCopyControls.setVisibility(View.VISIBLE);
         mConsultNameView.setVisibility(View.GONE);
@@ -1550,6 +1558,10 @@ public class ChatFragment extends Fragment implements
             if (style.chatBodyIconsTint != INVALID) {
                 ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
                 ColorsHelper.setTint(getActivity(), mSendButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
+            }
+            else {
+                ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? R.color.threads_chat_icons_tint : R.color.threads_disabled_text_color);
+                ColorsHelper.setTint(getActivity(), mSendButton, enabled ? R.color.threads_chat_icons_tint : R.color.threads_disabled_text_color);
             }
         }
     }
