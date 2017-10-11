@@ -126,8 +126,13 @@ public class ConsultFileViewHolder extends BaseHolder {
             mBubble.setLayoutParams(lp);
 
             mConsultAvatar.setVisibility(View.VISIBLE);
-            @DrawableRes int resID = R.drawable.blank_avatar_round;
-            if (style!=null && style.defaultIncomingMessageAvatar!=INVALID)resID = style.defaultIncomingMessageAvatar;
+            @DrawableRes int resID;
+            if (style!=null && style.defaultIncomingMessageAvatar != INVALID) {
+                resID = style.defaultIncomingMessageAvatar;
+            }
+            else {
+                resID = R.drawable.threads_operator_avatar_placeholder;
+            }
 
             if (avatarPath != null) {
                 avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);

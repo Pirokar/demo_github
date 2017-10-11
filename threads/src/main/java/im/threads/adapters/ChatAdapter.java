@@ -251,7 +251,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (style != null && style.imagePlaceholder != ChatStyle.INVALID) {
                 defaultImageResId = style.imagePlaceholder;
             } else {
-                defaultImageResId = R.drawable.blank_avatar_round;
+                defaultImageResId = R.drawable.threads_operator_avatar_placeholder;
             }
             ConsultTyping ct = (ConsultTyping) list.get(holder.getAdapterPosition());
             ((ConsultIsTypingViewHolderNew) holder).onBind(new View.OnClickListener() {

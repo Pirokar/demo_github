@@ -30,7 +30,7 @@ public class ChatBuilderHelper {
                         R.color.connection_message_text_color,//цвет текста сообщения о соединениии connectionMessageTextColor
                         R.color.files_and_media_screen_bg_color,//цвет фона экрана Медиа и файлы filesAndMediaScreenBackgroundColor
                         R.color.threads_welcome_screen_title,//цвет сепараторов в опросах, текста оператор печатает, цвет дат и др вспомогательные элементы  iconsAndSeparatorsColor
-                        R.drawable.blank_avatar_round_main,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
+                        R.drawable.threads_operator_avatar_placeholder,//аватар по умолчанию входящего сообщения defaultIncomingMessageAvatar
                         R.dimen.operator_avatar_size,// размер аватара агента для обычных сообщений operatorAvatarSize
                         R.dimen.operator_system_avatar_size,// размер аватара агента для системных сообщений (подключился/ отключился/ поставил на паузу) operatorSystemAvatarSize
                         R.drawable.no_image,//заглушка вместо картинки imagePlaceholder

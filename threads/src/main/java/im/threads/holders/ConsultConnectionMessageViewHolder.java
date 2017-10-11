@@ -54,7 +54,9 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
                 mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
             }
         }
-        defIcon =  style!=null && style.defaultIncomingMessageAvatar!= ChatStyle.INVALID?style.defaultIncomingMessageAvatar:R.drawable.blank_avatar_round;
+        defIcon = style != null && style.defaultIncomingMessageAvatar != ChatStyle.INVALID ?
+                style.defaultIncomingMessageAvatar :
+                R.drawable.threads_operator_avatar_placeholder;
     }
 
     public void onBind(

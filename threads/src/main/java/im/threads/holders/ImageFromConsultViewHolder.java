@@ -116,7 +116,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             filter.setVisibility(View.INVISIBLE);
             filterSecond.setVisibility(View.INVISIBLE);
         }
-        @DrawableRes int resId = R.drawable.blank_avatar_round;
+        @DrawableRes int resId = R.drawable.threads_operator_avatar_placeholder;
         if (style!=null && style.defaultIncomingMessageAvatar!= ChatStyle.INVALID)resId = style.defaultIncomingMessageAvatar;
         if (isAvatarVisible) {
             float bubbleLeftMarginDp = itemView.getContext().getResources().getDimension(R.dimen.margin_quarter);

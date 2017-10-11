@@ -391,7 +391,7 @@ public class ChatFragment extends Fragment implements
                     mRecyclerView.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (style != null && style.alwaysScrollToEnd) {
+                            if (style != null && style.scrollChatToEndIfUserTyping) {
                                 scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                             }
                             else {

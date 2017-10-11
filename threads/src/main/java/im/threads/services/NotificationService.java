@@ -309,7 +309,7 @@ public class NotificationService extends Service {
 
                             @Override
                             public void onBitmapFailed(Drawable errorDrawable) {
-                                Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
+                                Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
                                 pushSmall.setImageViewBitmap(R.id.icon_large, big);
                                 pushBig.setImageViewBitmap(R.id.icon_large, big);
                             }
@@ -329,7 +329,7 @@ public class NotificationService extends Service {
 
                     @Override
                     public void onBitmapFailed(Drawable errorDrawable) {
-                        Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.blank_avatar_round);
+                        Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
                         pushSmall.setImageViewBitmap(R.id.icon_small_corner, big);
                         pushBig.setImageViewBitmap(R.id.icon_small_corner, big);
                     }

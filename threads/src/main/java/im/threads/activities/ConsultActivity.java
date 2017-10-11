@@ -59,7 +59,7 @@ public class ConsultActivity extends BaseActivity {
         if (style != null && style.imagePlaceholder != ChatStyle.INVALID) {
             mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.imagePlaceholder));
         } else {
-            mConsultImageView.setBackground(ContextCompat.getDrawable(this, R.drawable.blank_avatar_round));
+            mConsultImageView.setBackground(ContextCompat.getDrawable(this, R.drawable.threads_operator_avatar_placeholder));
         }
 
         Intent i = getIntent();
