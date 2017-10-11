@@ -71,11 +71,10 @@ public class RatingStarsSentViewHolder extends BaseHolder {
             if (style.outgoingMessageTextColor != INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
-
-                star.setColorFilter(
-                        ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),
-                        PorterDuff.Mode.SRC_ATOP
-                );
+                star.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),PorterDuff.Mode.SRC_ATOP);
+            }
+            else {
+                star.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_text),PorterDuff.Mode.SRC_ATOP);
             }
 
             if (style.optionsSurveySelectedIconResId != INVALID) {

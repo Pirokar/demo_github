@@ -46,6 +46,7 @@
     <color name="threads_chat_outgoing_message_bubble">@color/threads_blue_3598dc</color>
     <color name="threads_chat_icons_tint">@color/threads_black</color>
     <color name="threads_chat_system_message">@color/threads_gray_text</color>
+    <color name="threads_chat_connection_message">@color/threads_black</color>
 
     <color name="threads_chat_unread_msg_sticker_background">@color/threads_red_f44336</color>
     <color name="threads_chat_unread_msg_count_text">@color/threads_white</color>

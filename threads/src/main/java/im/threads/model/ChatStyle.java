@@ -428,7 +428,7 @@ public class ChatStyle implements Serializable {
          * @param incomingMessageTextColor - R.color.threads_incoming_message_text
          * @param outgoingMessageTextColor - R.color.threads_outgoing_message_text
          * @param chatBodyIconsTint - R.color.threads_chat_icons_tint
-         * @param connectionMessageTextColor - R.color.threads_chat_system_message
+         * @param connectionMessageTextColor - R.color.threads_chat_connection_message
          * @param filesAndMediaScreenBackgroundColor - R.color.threads_files_medias_screen_background
          * @param iconsAndSeparatorsColor - R.color.threads_icon_and_separators_color
          * @param defaultIncomingMessageAvatar - R.drawable.threads_operator_avatar_placeholder
