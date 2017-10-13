@@ -256,8 +256,8 @@ public class ChatStyle implements Serializable {
         }
 
 
-        public ChatStyleBuilder setHistoryLoadingCount(Integer count) {
-            if (count != null && count > 0) {
+        public ChatStyleBuilder setHistoryLoadingCount(int count) {
+            if (count > 0) {
                 chatStyle.historyLoadingCount = count;
             }
             return this;
