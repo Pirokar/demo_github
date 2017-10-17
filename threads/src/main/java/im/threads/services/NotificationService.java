@@ -33,8 +33,8 @@ import java.util.concurrent.Executors;
 import im.threads.R;
 import im.threads.activities.TranslucentActivity;
 import im.threads.controllers.ChatController;
+import im.threads.formatters.IncomingMessageParser;
 import im.threads.formatters.MarshmellowPushMessageFormatter;
-import im.threads.formatters.MessageFormatter;
 import im.threads.formatters.NugatMessageFormatter;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
@@ -140,7 +140,7 @@ public class NotificationService extends Service {
         } else if (il != null) {
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
-            List<ChatItem> items = MessageFormatter.formatMessages(il);
+            List<ChatItem> items = IncomingMessageParser.formatMessages(il);
             if (Build.VERSION.SDK_INT < 24) {
                 Notification notification = getMstyleNotif(notificationBuilder, items, null);
                 notification.defaults |= Notification.DEFAULT_SOUND;

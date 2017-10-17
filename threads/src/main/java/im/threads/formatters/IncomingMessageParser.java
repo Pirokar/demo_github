@@ -1,9 +1,7 @@
 package im.threads.formatters;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -14,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,12 +21,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import im.threads.R;
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
 import im.threads.model.ClearThreadIdChatItem;
 import im.threads.model.ConsultConnectionMessage;
-import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
@@ -42,129 +37,13 @@ import im.threads.model.RequestResolveThread;
 import im.threads.model.SaveThreadIdChatItem;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
-import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
-import im.threads.utils.AppInfoHelper;
-import im.threads.utils.DeviceInfoHelper;
 import im.threads.utils.MessageMatcher;
 
-public class MessageFormatter {
+public class IncomingMessageParser {
     private static final String TAG = "MessageFormatter ";
 
-    private static final String CLIENT_ID = "clientId";
-    private static final String TYPE = "type";
-    private static final String TEXT = "text";
-    private static final String HIDE_AFTER = "hideAfter";
-    private static final String THREAD_ID = "threadId";
-    private static final String QUOTES = "quotes";
-    private static final String ATTACHMENTS = "attachments";
-    private static final String ERROR_FORMATTING_JSON = "error formatting json";
-    private static final String PROVIDER_ID = "providerId";
-    private static final String BACKEND_ID = "backendId";
-
-    // message types
-    private static final String TYPE_INIT_CHAT = "INIT_CHAT";
-    private static final String TYPE_CLIENT_INFO = "CLIENT_INFO";
-    private static final String TYPE_SURVEY_QUESTION_ANSWER = "SURVEY_QUESTION_ANSWER";
-    private static final String TYPE_SURVEY_PASSED = "SURVEY_PASSED";
-    private static final String TYPE_CLOSE_THREAD = "CLOSE_THREAD";
-    private static final String TYPE_REOPEN_THREAD = "REOPEN_THREAD";
-    private static final String TYPE_OPERATOR_JOINED = "OPERATOR_JOINED";
-    private static final String TYPE_OPERATOR_LEFT = "OPERATOR_LEFT";
-    private static final String TYPE_CLIENT_OFFLINE = "CLIENT_OFFLINE";
-    private static final String TYPE_TYPING = "TYPING";
-
-    private static String userAgent = "";
-
-    private MessageFormatter() {
-    }
-
-    public static String format(
-            UpcomingUserMessage upcomingUserMessage
-            , String quoteMfmsFilePath
-            , String mfmsFilePath
-            , String clientId) {
-        if (upcomingUserMessage == null) return "";
-        try {
-            Quote quote = upcomingUserMessage.getQuote();
-            FileDescription fileDescription = upcomingUserMessage.getFileDescription();
-            JSONObject formattedMessage = new JSONObject();
-            formattedMessage.put(CLIENT_ID, clientId);
-            formattedMessage.put(TEXT, upcomingUserMessage.getText());
-            if (quote != null) {
-                JSONArray quotes = new JSONArray();
-                formattedMessage.put(QUOTES, quotes);
-                JSONObject quoteJson = new JSONObject();
-                quotes.put(quoteJson);
-                if (!TextUtils.isEmpty(quote.getText())) {
-                    quoteJson.put(TEXT, quote.getText());
-
-                }
-                if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
-                    quoteJson.put(ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
-                }
-            }
-            if (fileDescription != null && mfmsFilePath != null) {
-                formattedMessage.put(ATTACHMENTS, attachmentsFromFileDescription(fileDescription, mfmsFilePath));
-            }
-            //   return formattedMessage.toString().replaceAll("\\\\", "");
-            return formattedMessage.toString();
-        } catch (JSONException e) {
-            Log.e(TAG, ERROR_FORMATTING_JSON);
-            e.printStackTrace();
-
-        }
-        return "";
-    }
-
-    public static String format(
-            UserPhrase upcomingUserMessage
-            , ConsultInfo consultInfo
-            , String quoteMfmsFilePath
-            , String mfmsFilePath
-            , String clientId
-            , Long threadId) {
-        try {
-            Quote quote = upcomingUserMessage.getQuote();
-            FileDescription fileDescription = upcomingUserMessage.getFileDescription();
-            JSONObject formattedMessage = new JSONObject();
-            formattedMessage.put(CLIENT_ID, clientId);
-            formattedMessage.put(TEXT, upcomingUserMessage.getPhrase());
-
-            if (threadId != null && threadId != -1) {
-                formattedMessage.put(THREAD_ID, String.valueOf(threadId));
-            }
-
-            if (quote != null) {
-                JSONArray quotes = new JSONArray();
-
-                formattedMessage.put(QUOTES, quotes);
-                JSONObject quoteJson = new JSONObject();
-                quotes.put(quoteJson);
-                if (!TextUtils.isEmpty(quote.getText())) {
-                    quoteJson.put(TEXT, quote.getText());
-                }
-                if (null != consultInfo) quoteJson.put("operator", consultInfo.toJson());
-                if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
-                    quoteJson.put(ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
-                }
-                if (upcomingUserMessage.getQuote().getMessageId() != null) {
-                    quoteJson.put(PROVIDER_ID, upcomingUserMessage.getQuote().getMessageId());
-                }
-                if (upcomingUserMessage.getQuote().getBackendId() != null) {
-                    quoteJson.put(BACKEND_ID, upcomingUserMessage.getQuote().getBackendId());
-                }
-            }
-            if (fileDescription != null && mfmsFilePath != null) {
-                formattedMessage.put(ATTACHMENTS, attachmentsFromFileDescription(fileDescription, mfmsFilePath));
-            }
-            return formattedMessage.toString();
-        } catch (JSONException e) {
-            Log.e(TAG, ERROR_FORMATTING_JSON);
-            e.printStackTrace();
-
-        }
-        return "";
+    private IncomingMessageParser() {
     }
 
     private static JSONObject getFullMessage(PushMessage pushMessage) {
@@ -185,8 +64,8 @@ public class MessageFormatter {
         String type;
 
         try {
-            if (fullMessage.has(TYPE)) {
-                type = fullMessage.getString(TYPE);
+            if (fullMessage.has(PushMessageAttributes.TYPE)) {
+                type = fullMessage.getString(PushMessageAttributes.TYPE);
             } else {
                 type = null;
             }
@@ -217,7 +96,7 @@ public class MessageFormatter {
 
     public static Long getHideAfter(JSONObject fullMessage) {
         try {
-            return Long.parseLong(fullMessage.getString(HIDE_AFTER));
+            return Long.parseLong(fullMessage.getString(PushMessageAttributes.HIDE_AFTER));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -227,8 +106,8 @@ public class MessageFormatter {
     private static String getMessage(JSONObject fullMessage, PushMessage pushMessage) {
         String message = null;
         try {
-            message = fullMessage.getString(TEXT) == null
-                    ? pushMessage.shortMessage : fullMessage.getString(TEXT);
+            message = fullMessage.getString(PushMessageAttributes.TEXT) == null
+                    ? pushMessage.shortMessage : fullMessage.getString(PushMessageAttributes.TEXT);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -243,7 +122,7 @@ public class MessageFormatter {
             String messageId = pushMessage.messageId;
             String backendId;
             try {
-                backendId = String.valueOf(fullMessage.getInt(BACKEND_ID));
+                backendId = String.valueOf(fullMessage.getInt(PushMessageAttributes.BACKEND_ID));
             } catch (Exception e) {
                 backendId = "0";
             }
@@ -252,17 +131,17 @@ public class MessageFormatter {
             final String name = operatorInfo.getString("name");
             String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
             String status = operatorInfo.has("status") && !operatorInfo.isNull("status") ? operatorInfo.getString("status") : null;
-            JSONArray attachmentsArray = fullMessage.has(ATTACHMENTS) ? fullMessage.getJSONArray(ATTACHMENTS) : null;
+            JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
             FileDescription fileDescription = null;
             if (null != attachmentsArray)
-                fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray(ATTACHMENTS));
+                fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS));
             if (fileDescription != null) {
                 fileDescription.setFrom(name);
                 fileDescription.setTimeStamp(timeStamp);
             }
             Quote quote = null;
-            if (fullMessage.has(QUOTES))
-                quote = quoteFromJson(fullMessage.getJSONArray(QUOTES));
+            if (fullMessage.has(PushMessageAttributes.QUOTES))
+                quote = quoteFromJson(fullMessage.getJSONArray(PushMessageAttributes.QUOTES));
             if (quote != null && quote.getFileDescription() != null) {
                 quote.getFileDescription().setTimeStamp(timeStamp);
             }
@@ -295,21 +174,21 @@ public class MessageFormatter {
             String messageId = pushMessage.messageId;
             String backendId;
             try {
-                backendId = String.valueOf(fullMessage.getInt(BACKEND_ID));
+                backendId = String.valueOf(fullMessage.getInt(PushMessageAttributes.BACKEND_ID));
             } catch (Exception e) {
                 backendId = "0";
             }
             long phraseTimeStamp = pushMessage.sentAt;
-            JSONArray attachmentsArray = fullMessage.has(ATTACHMENTS) ? fullMessage.getJSONArray(ATTACHMENTS) : null;
+            JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
             FileDescription fileDescription = null;
             if (null != attachmentsArray)
-                fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray(ATTACHMENTS));
+                fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS));
             if (fileDescription != null) {
                 fileDescription.setTimeStamp(phraseTimeStamp);
             }
             Quote mQuote = null;
-            if (fullMessage.has(QUOTES))
-                mQuote = quoteFromJson(fullMessage.getJSONArray(QUOTES));
+            if (fullMessage.has(PushMessageAttributes.QUOTES))
+                mQuote = quoteFromJson(fullMessage.getJSONArray(PushMessageAttributes.QUOTES));
             if (mQuote != null && mQuote.getFileDescription() != null) {
                 mQuote.getFileDescription().setTimeStamp(phraseTimeStamp);
             }
@@ -379,7 +258,7 @@ public class MessageFormatter {
     @Nullable
     private static ChatItem checkMessageIsFull(PushMessage pushMessage, JSONObject fullMessage) {
         String message = getMessage(fullMessage, pushMessage);
-        if (message != null || fullMessage.has(ATTACHMENTS) || fullMessage.has(QUOTES)) {
+        if (message != null || fullMessage.has(PushMessageAttributes.ATTACHMENTS) || fullMessage.has(PushMessageAttributes.QUOTES)) {
             ChatItem item = getConsultPhraseFromPush(pushMessage, fullMessage, message);
             return item != null ? item : getUserPhraseFromPush(pushMessage, fullMessage, message);
         } else {
@@ -389,7 +268,7 @@ public class MessageFormatter {
 
     private static Long getThreadId(JSONObject fullMessage) {
         try {
-            return Long.parseLong(fullMessage.getString(THREAD_ID));
+            return Long.parseLong(fullMessage.getString(PushMessageAttributes.THREAD_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -446,7 +325,9 @@ public class MessageFormatter {
             long operatorId = operator.getLong("id");
             String name = operator.isNull("name") ? null : operator.getString("name");
             String status = operator.isNull("status") ? null : operator.getString("status");
-            String type = fullMessage.getString(TYPE).equalsIgnoreCase(TYPE_OPERATOR_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+            String type = fullMessage.getString(PushMessageAttributes.TYPE).equalsIgnoreCase(PushMessageTypes.TYPE_OPERATOR_JOINED) ?
+                                                                                            ConsultConnectionMessage.TYPE_JOINED :
+                                                                                            ConsultConnectionMessage.TYPE_LEFT;
             boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
             String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
             String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
@@ -470,84 +351,24 @@ public class MessageFormatter {
         return chatItem;
     }
 
-    private static JSONArray attachmentsFromFileDescription(File file) throws JSONException {
-        JSONArray attachments = new JSONArray();
-        JSONObject attachment = new JSONObject();
-        attachments.put(attachment);
-        JSONObject optional = new JSONObject();
-        attachment.put("optional", optional);
-        String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(".") + 1).toLowerCase();
-        String type = null;
-        if (extension.equals("jpg")) type = "image/jpg";
-        if (extension.equals("png")) type = "image/png";
-        if (extension.equals("pdf")) type = "text/pdf";
-        optional.put(TYPE, type);
-        optional.put("name", file.getName());
-        optional.put("size", file.length());
-        optional.put("lastModified", file.lastModified());
-        return attachments;
-    }
-
-    private static JSONArray attachmentsFromMfmsPath(FileDescription fileDescription) throws JSONException {
-        JSONArray attachments = new JSONArray();
-        JSONObject attachment = new JSONObject();
-        attachments.put(attachment);
-        JSONObject optional = new JSONObject();
-        attachment.put("optional", optional);
-        if (fileDescription.getIncomingName() != null) {
-            String extension = fileDescription.getIncomingName().substring(fileDescription.getIncomingName().lastIndexOf(".") + 1).toLowerCase();
-            String type = null;
-            if (extension.equals("jpg")) type = "image/jpg";
-            if (extension.equals("png")) type = "image/png";
-            if (extension.equals("pdf")) type = "text/pdf";
-            optional.put(TYPE, type);
-        }
-        optional.put("name", fileDescription.getIncomingName());
-        optional.put("size", fileDescription.getSize());
-        optional.put("lastModified", System.currentTimeMillis());
-        return attachments;
-    }
-
-    public static JSONArray attachmentsFromFileDescription(FileDescription fileDescription, String mfmsFilepath) throws JSONException {
-        JSONArray attachments = null;
-        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath().replaceAll("file://", "")).exists()) {
-            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath().replaceAll("file://", "")));
-        } else if (fileDescription.getDownloadPath() != null) {
-            attachments = attachmentsFromMfmsPath(fileDescription);
-        }
-
-        if (attachments != null) {
-            attachments.getJSONObject(0).put("result", mfmsFilepath);
-        }
-        return attachments;
-    }
-
-    public static boolean hasFile(UpcomingUserMessage message) {
-        return (message.getFileDescription() != null || (message.getQuote() != null && message.getQuote().getFileDescription() != null));
-    }
-
-    public static boolean hasFile(UserPhrase message) {
-        return (message.getFileDescription() != null || (message.getQuote() != null && message.getQuote().getFileDescription() != null));
-    }
-
     public static Quote quoteFromJson(JSONArray quotes) throws JSONException {
         Quote quote = null;
         FileDescription quoteFileDescription = null;
         String quoteString = null;
         String consultName = "";
-        if (quotes.length() > 0 && quotes.getJSONObject(0) != null && (quotes.getJSONObject(0).has(TEXT))) {
-            quoteString = quotes.getJSONObject(0).getString(TEXT);
+        if (quotes.length() > 0 && quotes.getJSONObject(0) != null && (quotes.getJSONObject(0).has(PushMessageAttributes.TEXT))) {
+            quoteString = quotes.getJSONObject(0).getString(PushMessageAttributes.TEXT);
         }
         if (quotes.length() > 0
                 && quotes.getJSONObject(0) != null
-                && (quotes.getJSONObject(0).has(ATTACHMENTS))
-                && (quotes.getJSONObject(0).getJSONArray(ATTACHMENTS).length() > 0
-                && (quotes.getJSONObject(0).getJSONArray(ATTACHMENTS).getJSONObject(0).has("result")))) {
+                && (quotes.getJSONObject(0).has(PushMessageAttributes.ATTACHMENTS))
+                && (quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS).length() > 0
+                && (quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).has("result")))) {
             String header = null;
-            if (quotes.getJSONObject(0).getJSONArray(ATTACHMENTS).getJSONObject(0).has("optional")) {
-                header = quotes.getJSONObject(0).getJSONArray(ATTACHMENTS).getJSONObject(0).getJSONObject("optional").getString("name");
+            if (quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).has("optional")) {
+                header = quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).getJSONObject("optional").getString("name");
             }
-            quoteFileDescription = fileDescriptionFromJson(quotes.getJSONObject(0).getJSONArray(ATTACHMENTS));
+            quoteFileDescription = fileDescriptionFromJson(quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS));
         }
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && quotes.getJSONObject(0).has("operator")) {
             try {
@@ -645,80 +466,6 @@ public class MessageFormatter {
         return list;
     }
 
-    public static String createEnvironmentMessage(String clientName, String clientId, String data, Context ctx) {
-        JSONObject object = new JSONObject();
-        try {
-            object.put("name", clientName);
-            object.put(CLIENT_ID, clientId);
-            object.put("data", data);
-            object.put("platform", "Android");
-            object.put("osVersion", DeviceInfoHelper.getOsVersion());
-            object.put("device", DeviceInfoHelper.getDeviceName());
-            object.put("ip", DeviceInfoHelper.getIpAddress());
-            object.put("appVersion", AppInfoHelper.getAppVersion(ctx));
-            object.put("appName", AppInfoHelper.getAppName(ctx));
-            object.put("appBundle", AppInfoHelper.getAppId(ctx));
-            object.put("libVersion", AppInfoHelper.getLibVersion());
-            object.put("clientLocale", DeviceInfoHelper.getLocale(ctx));
-            object.put(TYPE, TYPE_CLIENT_INFO);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return object.toString().replaceAll("\\\\", "");
-    }
-
-    public static String createRatingDoneMessage(long sendingId, long questionId, int rate, String clientId) {
-        JSONObject object = new JSONObject();
-        try {
-            object.put(CLIENT_ID, clientId);
-            object.put(TYPE, TYPE_SURVEY_QUESTION_ANSWER);
-            object.put("sendingId", sendingId);
-            object.put("questionId", questionId);
-            object.put("rate", rate);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return object.toString().replaceAll("\\\\", "");
-    }
-
-    public static String createRatingRecievedMessage(long sendingId, String clientId) {
-        JSONObject object = new JSONObject();
-        try {
-            object.put(CLIENT_ID, clientId);
-            object.put(TYPE, TYPE_SURVEY_PASSED);
-            object.put("sendingId", sendingId);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return object.toString().replaceAll("\\\\", "");
-    }
-
-    public static String createResolveThreadMessage(String clientId) {
-        JSONObject object = new JSONObject();
-        try {
-            object.put(CLIENT_ID, clientId);
-            object.put(TYPE, TYPE_CLOSE_THREAD);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return object.toString().replaceAll("\\\\", "");
-    }
-
-    public static String createReopenThreadMessage(String clientId) {
-        JSONObject object = new JSONObject();
-        try {
-            object.put(CLIENT_ID, clientId);
-            object.put(TYPE, TYPE_REOPEN_THREAD);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return object.toString().replaceAll("\\\\", "");
-    }
-
-
     public static ArrayList<ChatItem> formatNew(List<MessgeFromHistory> messages) {
         ArrayList<ChatItem> out = new ArrayList<>();
         try {
@@ -804,7 +551,10 @@ public class MessageFormatter {
 
             if (o instanceof ArrayList) {
                 Log.i(TAG, "getReadIds o instanceof ArrayList");
-                ids.addAll((Collection<? extends String>) b.get("readInMessageIds"));
+                Collection<? extends String> readInMessageIds = (Collection<? extends String>) b.get("readInMessageIds");
+                if (readInMessageIds != null) {
+                    ids.addAll(readInMessageIds);
+                }
 
                 Log.e(TAG, "getReadIds = ");
             }
@@ -826,30 +576,6 @@ public class MessageFormatter {
         return ids;
     }
 
-    public static String getMessageTyping(String clientId) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put(CLIENT_ID, clientId);
-            jsonObject.put(TYPE, TYPE_TYPING);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return jsonObject.toString().replace("\\\\", "");
-    }
-
-    public static String getMessageClientOffline(String clientId) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put(CLIENT_ID, clientId);
-            jsonObject.put(TYPE, TYPE_CLIENT_OFFLINE);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return jsonObject.toString().replace("\\\\", "");
-    }
-
     /**
      * метод проверяет наличие поля clientId во входящем сообщении
      *
@@ -865,36 +591,12 @@ public class MessageFormatter {
         }
 
         try {
-            if (fullMessage.has(CLIENT_ID) && !clientID.equals(fullMessage.get(CLIENT_ID))) {
+            if (fullMessage.has(PushMessageAttributes.CLIENT_ID) && !clientID.equals(fullMessage.get(PushMessageAttributes.CLIENT_ID))) {
                 return false;
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return true;
-    }
-
-    public static String getUserAgent(Context ctx) {
-        if (TextUtils.isEmpty(userAgent)) {
-            userAgent = String.format(ctx.getResources().getString(R.string.threads_user_agent),
-                    DeviceInfoHelper.getOsVersion(),
-                    DeviceInfoHelper.getDeviceName(),
-                    DeviceInfoHelper.getIpAddress(),
-                    AppInfoHelper.getAppVersion(ctx),
-                    AppInfoHelper.getAppId(ctx),
-                    AppInfoHelper.getLibVersion());
-        }
-        return userAgent;
-    }
-
-    public static String createInitChatMessage(String clientId) {
-        JSONObject object = new JSONObject();
-        try {
-            object.put(CLIENT_ID, clientId);
-            object.put(TYPE, TYPE_INIT_CHAT);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return object.toString().replaceAll("\\\\", "");
     }
 }

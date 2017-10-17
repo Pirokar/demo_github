@@ -40,7 +40,8 @@ import im.threads.activities.ChatActivity;
 import im.threads.activities.ConsultActivity;
 import im.threads.activities.ImagesActivity;
 import im.threads.database.DatabaseHolder;
-import im.threads.formatters.MessageFormatter;
+import im.threads.formatters.IncomingMessageParser;
+import im.threads.formatters.OutgoingMessageCreator;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
@@ -220,11 +221,11 @@ public class ChatController {
             String oldClientId = PrefUtils.getClientID(ctx);
             if (!TextUtils.isEmpty(oldClientId)) {
                 // send CLIENT_OFFLINE message
-                sendMessageMFMSSync(ctx, MessageFormatter.getMessageClientOffline(oldClientId), true);
+                sendMessageMFMSSync(ctx, OutgoingMessageCreator.createMessageClientOffline(oldClientId), true);
             }
             PrefUtils.setClientId(ctx, finalClientId);
-            sendMessageMFMSSync(ctx, MessageFormatter.createInitChatMessage(finalClientId), true);
-            String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx),
+            sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId), true);
+            String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                     finalClientId,
                                                                                     PrefUtils.getData(ctx),
                                                                                     ctx);
@@ -253,7 +254,7 @@ public class ChatController {
         if (chatItem != null) {
             addMessage(chatItem, appContext);
         }
-        String ratingDoneMessage = MessageFormatter.createRatingDoneMessage(
+        String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(
                 survey.getSendingId(),
                 survey.getQuestions().get(0).getId(),
                 survey.getQuestions().get(0).getRate(),
@@ -290,8 +291,8 @@ public class ChatController {
         // and then delete the request from the chat history
         String clientID = PrefUtils.getClientID(appContext);
         String resolveThreadMessage = approveResolve ?
-                MessageFormatter.createResolveThreadMessage(clientID) :
-                MessageFormatter.createReopenThreadMessage(clientID);
+                OutgoingMessageCreator.createResolveThreadMessage(clientID) :
+                OutgoingMessageCreator.createReopenThreadMessage(clientID);
 
         sendMessageMFMSAsync(context, resolveThreadMessage, true,
                 new RequestCallback<String, PushServerErrorException>() {
@@ -406,6 +407,8 @@ public class ChatController {
             mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
         appContext = ctx;
         mAnalyticsTracker = AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx));
+
+        ServiceGenerator.setUserAgent(OutgoingMessageCreator.getUserAgent(ctx));
     }
 
     public void onUserTyping() {
@@ -413,7 +416,7 @@ public class ChatController {
         if ((currentTime - lastUserTypingSend) >= 3000) {
             lastUserTypingSend = currentTime;
             sendMessageMFMSAsync(appContext,
-                    MessageFormatter.getMessageTyping(PrefUtils.getClientID(appContext)),
+                    OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext)),
                     true, new RequestCallback<String, PushServerErrorException>() {
                         @Override
                         public void onResult(String aVoid) {
@@ -450,8 +453,8 @@ public class ChatController {
             @Override
             public void run() {
                 try {
-                    sendMessageMFMSSync(appContext, MessageFormatter.createInitChatMessage(PrefUtils.getClientID(appContext)), true);
-                    String environmentMessage = MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(appContext),
+                    sendMessageMFMSSync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext)), true);
+                    String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
                                                                                         PrefUtils.getClientID(appContext),
                                                                                         PrefUtils.getData(appContext),
                                                                                         appContext);
@@ -659,7 +662,7 @@ public class ChatController {
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, ConsultInfo consultInfo) {
-        String message = MessageFormatter.format(userPhrase, consultInfo, null, null,
+        String message = OutgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, null, null,
                 PrefUtils.getClientID(appContext),
                 PrefUtils.getThreadID(appContext));
 
@@ -703,7 +706,7 @@ public class ChatController {
             Log.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
         }
 
-        String message = MessageFormatter.format(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath,
+        String message = OutgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath,
                 PrefUtils.getClientID(appContext),
                 PrefUtils.getThreadID(appContext));
 
@@ -846,7 +849,7 @@ public class ChatController {
                     lastMessageId = items.get(items.size() - 1).getId();
                     currentOffset += items.size();
                     isAllMessagesDownloaded = items.size() != chunk;
-                    List<ChatItem> chatItems = MessageFormatter.formatNew(items);
+                    List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
                     mDatabaseHolder.putMessagesSync(chatItems);
                     isDownloadingMessages = false;
                     if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
@@ -1050,7 +1053,7 @@ public class ChatController {
                 addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentAvatarPath()), ctx);
                 break;
             case MessageMatcher.TYPE_MESSAGES_READ:
-                List<String> list = MessageFormatter.getReadIds(bundle);
+                List<String> list = IncomingMessageParser.getReadIds(bundle);
                 if (BuildConfig.DEBUG)
                     Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
                 for (String s : list) {
@@ -1136,7 +1139,7 @@ public class ChatController {
      */
     public synchronized PushMessageCheckResult onFullMessage(PushMessage pushMessage, final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onFullMessage: " + pushMessage);
-        final ChatItem chatItem = MessageFormatter.format(pushMessage);
+        final ChatItem chatItem = IncomingMessageParser.format(pushMessage);
         PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
 
         if (chatItem == null) {
@@ -1168,7 +1171,7 @@ public class ChatController {
             PrefUtils.setThreadId(ctx, -1L);
         }
 
-        if (!MessageFormatter.checkId(pushMessage, PrefUtils.getClientID(ctx))
+        if (!IncomingMessageParser.checkId(pushMessage, PrefUtils.getClientID(ctx))
                 || chatItem instanceof EmptyChatItem) {
             pushMessageCheckResult.setNeedsShowIsStatusBar(false);
             return pushMessageCheckResult;
@@ -1176,7 +1179,7 @@ public class ChatController {
 
         if (chatItem instanceof Survey) {
             final Survey survey = (Survey) chatItem;
-            String ratingDoneMessage = MessageFormatter.createRatingRecievedMessage(
+            String ratingDoneMessage = OutgoingMessageCreator.createRatingRecievedMessage(
                     survey.getSendingId(),
                     PrefUtils.getClientID(appContext)
             );
@@ -1296,7 +1299,7 @@ public class ChatController {
 
                         getPushControllerInstance(ctx).resetCounterSync();
 
-                        sendMessageMFMSSync(ctx, MessageFormatter.createEnvironmentMessage(PrefUtils.getUserName(ctx),
+                        sendMessageMFMSSync(ctx, OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                             PrefUtils.getNewClientID(ctx),
                                                                                             PrefUtils.getData(ctx),
                                                                                             ctx), true);
@@ -1524,7 +1527,6 @@ public class ChatController {
      */
     private static HistoryResponseV2 getHistorySync(Context ctx, Long start, Long count) throws Exception {
         String token = getPushControllerInstance(ctx).getDeviceAddress() + ":" + PrefUtils.getClientID(ctx);
-        String userAgent = MessageFormatter.getUserAgent(ctx);
         String url = PrefUtils.getServerUrlMetaInfo(ctx);
         if (count == null) {
             count = getHistoryLoadingCount(ctx);
@@ -1532,12 +1534,12 @@ public class ChatController {
         if (url != null && !url.isEmpty() && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
             RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-            Call<HistoryResponseV2> call = retrofitService.historyV2(token, userAgent, start, count, getLibraryVersion());
+            Call<HistoryResponseV2> call = retrofitService.historyV2(token, start, count, getLibraryVersion());
             Response<HistoryResponseV2> response = call.execute();
             if (response.isSuccessful()) {
                 return response.body();
             } else {
-                Call<List<MessgeFromHistory>> call2 = retrofitService.history(token, userAgent, start, count, getLibraryVersion());
+                Call<List<MessgeFromHistory>> call2 = retrofitService.history(token, start, count, getLibraryVersion());
                 return new HistoryResponseV2(call2.execute().body());
             }
         } else {
@@ -1555,7 +1557,7 @@ public class ChatController {
         if (response != null) {
             List<MessgeFromHistory> responseList = response.getMessages();
             if (responseList != null) {
-                list = MessageFormatter.formatNew(responseList);
+                list = IncomingMessageParser.formatNew(responseList);
                 setupLastItemIdFromHistory(responseList);
             }
         }
