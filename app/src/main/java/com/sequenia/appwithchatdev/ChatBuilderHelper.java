@@ -12,10 +12,10 @@ public class ChatBuilderHelper {
                 .setDefaultFontBold("fonts/lato-bold.ttf")
                 .setDefaultFontLight("fonts/lato-light.ttf")
                 .setDefaultFontRegular("fonts/lato-regular.ttf")
-                .showChatBackButton(true)// показывать кнопку назад showBackButton
-                .setGoogleAnalyticsEnabled(false)
+                .showChatBackButton(true)// показывать кнопку назад
+                .setGoogleAnalyticsEnabled(false) // не отправлять статистику в GoogleAnalytics
                 .setShowConsultSearching(true) //показывать загрузку при поиске консультанта
-                .setScrollChatToEndIfUserTyping(false) // всегда прокручивать чат к последнему сообщению, если пользователь начал ввод
+                .setScrollChatToEndIfUserTyping(false) // не прокручивать чат к последнему сообщению, если пользователь начал ввод
                 .build();
     }
 }
