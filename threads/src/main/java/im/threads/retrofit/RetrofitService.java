@@ -1,7 +1,5 @@
 package im.threads.retrofit;
 
-import com.google.gson.JsonElement;
-
 import java.util.List;
 
 import im.threads.model.FileUploadResponse;
@@ -25,7 +23,6 @@ public interface RetrofitService {
     @Multipart
     @PUT("files")
     Call<FileUploadResponse> upload(
-            @Header("User-Agent") String userAgent,
             @Part MultipartBody.Part file,
             @Header("X-Client-Token") String token
     );
@@ -33,7 +30,6 @@ public interface RetrofitService {
     @GET("history")
     Call<List<MessgeFromHistory>> history(
             @Header("X-Client-Token") String token,
-            @Header("User-Agent") String userAgent,
             @Query("start") Long start,
             @Query("count") Long count,
             @Query("libVersion") String version
@@ -42,7 +38,6 @@ public interface RetrofitService {
     @GET("history/v2")
     Call<HistoryResponseV2> historyV2(
             @Header("X-Client-Token") String token,
-            @Header("User-Agent") String userAgent,
             @Query("start") Long start,
             @Query("count") Long count,
             @Query("libVersion") String version
