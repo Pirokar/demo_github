@@ -1,12 +1,13 @@
 package im.threads.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import im.threads.formatters.PushMessageTypes;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.utils.Tuple;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yuri on 01.09.2016.
@@ -74,14 +75,14 @@ public class PushNotificationFormatter {
             } else if (unreadMessages.get(0) instanceof ConsultConnectionMessage) {
                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) unreadMessages.get(0);
                 if (!ccm.getSex()
-                        && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
+                        && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
                     notif = ccm.getName() + " " + connectionMessageFemale;
                 } else if (!ccm.getSex()
-                        && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
+                        && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name())) {
                     notif = ccm.getName() + " " + leaveMessageFemale;
-                } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
+                } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
                     notif = ccm.getName() + " " + connectionMessageMale;
-                } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
+                } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name())) {
                     notif = ccm.getName() + " " + leaveMessageMale;
                 }
             }
@@ -110,14 +111,14 @@ public class PushNotificationFormatter {
                 } else if (ci instanceof ConsultConnectionMessage) {
                     ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
                     if (!ccm.getSex()
-                            && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
+                            && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
                         notif = ccm.getName() + " " + connectionMessageFemale;
                     } else if (!ccm.getSex()
-                            && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
+                            && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name())) {
                         notif = ccm.getName() + " " + leaveMessageFemale;
-                    } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
+                    } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
                         notif = ccm.getName() + " " + connectionMessageMale;
-                    } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
+                    } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name())) {
                         notif = ccm.getName() + " " + leaveMessageMale;
                     }
                 }

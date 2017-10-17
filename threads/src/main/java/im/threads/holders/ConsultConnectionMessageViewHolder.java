@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import im.threads.R;
+import im.threads.formatters.PushMessageTypes;
 import im.threads.model.ChatStyle;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.picasso_url_connection_only.Callback;
@@ -70,7 +71,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
             headerTextView.setText(consultConnectionMessage.getName());
         }
         String connectedText = "";
-        boolean isConnected = consultConnectionMessage.getConnectionType().equals(ConsultConnectionMessage.TYPE_JOINED);
+        boolean isConnected = consultConnectionMessage.getConnectionType().equals(PushMessageTypes.OPERATOR_JOINED.name());
         boolean sex = consultConnectionMessage.getSex();
         long date = consultConnectionMessage.getTimeStamp();
         if (sex && isConnected) {

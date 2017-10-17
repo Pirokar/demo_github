@@ -42,6 +42,7 @@ import im.threads.activities.ImagesActivity;
 import im.threads.database.DatabaseHolder;
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.formatters.OutgoingMessageCreator;
+import im.threads.formatters.PushMessageTypes;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
@@ -74,7 +75,6 @@ import im.threads.utils.CallbackNoError;
 import im.threads.utils.ConsultWriter;
 import im.threads.utils.DualFilePoster;
 import im.threads.utils.FileUtils;
-import im.threads.utils.MessageMatcher;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.Seeker;
 import retrofit2.Call;
@@ -1048,11 +1048,12 @@ public class ChatController {
     public void onSystemMessageFromServer(Context ctx, Bundle bundle, String shortMessage) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onSystemMessageFromServer:");
         long currentTimeMillis = System.currentTimeMillis();
-        switch (MessageMatcher.getType(bundle)) {
-            case MessageMatcher.TYPE_OPERATOR_TYPING:
+        PushMessageTypes pushMessageTypes = PushMessageTypes.getKnownType(bundle);
+        switch (pushMessageTypes) {
+            case TYPING:
                 addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentAvatarPath()), ctx);
                 break;
-            case MessageMatcher.TYPE_MESSAGES_READ:
+            case MESSAGES_READ:
                 List<String> list = IncomingMessageParser.getReadIds(bundle);
                 if (BuildConfig.DEBUG)
                     Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
@@ -1064,12 +1065,12 @@ public class ChatController {
                         mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
                 }
                 break;
-            case MessageMatcher.TYPE_REMOVE_PUSHES:
+            case REMOVE_PUSHES:
                 Intent intent = new Intent(ctx, NotificationService.class);
                 intent.setAction(NotificationService.ACTION_REMOVE_NOTIFICATION);
                 ctx.startService(intent);
                 break;
-            case MessageMatcher.TYPE_UNREAD_MESSAGE_NOTIFICATION:
+            case UNREAD_MESSAGE_NOTIFICATION:
                 Intent intent2 = new Intent(ctx, NotificationService.class);
                 intent2.putExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT, shortMessage);
                 intent2.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT);
@@ -1152,7 +1153,7 @@ public class ChatController {
         // remove close request from the history
         if (chatItem instanceof EmptyChatItem) {
             if (isResolveRequestVisible &&
-                    MessageMatcher.THREAD_CLOSED.equalsIgnoreCase(((EmptyChatItem) chatItem).getType())) {
+                    PushMessageTypes.THREAD_CLOSED.name().equalsIgnoreCase(((EmptyChatItem) chatItem).getType())) {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {

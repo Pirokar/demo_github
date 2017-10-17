@@ -19,17 +19,17 @@ public class ConnectionPhrase {
         String out = "";
         String temp = "";
         if (!ccm.getSex()
-                && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
+                && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
             temp = ctx.getString(R.string.threads_push_connected_female);
             out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
         } else if (!ccm.getSex()
-                && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
+                && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name())) {
             temp = ctx.getString(R.string.threads_push_left_female);
             out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
-        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
+        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
             temp = ctx.getString(R.string.threads_push_connected);
             out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
-        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT)) {
+        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name())) {
             temp = ctx.getString(R.string.threads_push_left);
             out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
         }

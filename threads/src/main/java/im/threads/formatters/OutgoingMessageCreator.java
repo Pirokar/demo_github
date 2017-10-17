@@ -145,7 +145,7 @@ public class OutgoingMessageCreator {
             object.put("appBundle", AppInfoHelper.getAppId(ctx));
             object.put("libVersion", AppInfoHelper.getLibVersion());
             object.put("clientLocale", DeviceInfoHelper.getLocale(ctx));
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPE_CLIENT_INFO);
+            object.put(PushMessageAttributes.TYPE, PushMessageTypes.CLIENT_INFO.name());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -157,7 +157,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPE_SURVEY_QUESTION_ANSWER);
+            object.put(PushMessageAttributes.TYPE, PushMessageTypes.SURVEY_QUESTION_ANSWER.name());
             object.put("sendingId", sendingId);
             object.put("questionId", questionId);
             object.put("rate", rate);
@@ -171,7 +171,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPE_SURVEY_PASSED);
+            object.put(PushMessageAttributes.TYPE, PushMessageTypes.SURVEY_PASSED.name());
             object.put("sendingId", sendingId);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -183,7 +183,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPE_CLOSE_THREAD);
+            object.put(PushMessageAttributes.TYPE, PushMessageTypes.CLOSE_THREAD.name());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -195,7 +195,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPE_REOPEN_THREAD);
+            object.put(PushMessageAttributes.TYPE, PushMessageTypes.REOPEN_THREAD.name());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -207,7 +207,7 @@ public class OutgoingMessageCreator {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
-            jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPE_TYPING);
+            jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPING.name());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -219,7 +219,7 @@ public class OutgoingMessageCreator {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
-            jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPE_CLIENT_OFFLINE);
+            jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.CLIENT_OFFLINE.name());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -244,7 +244,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPE_INIT_CHAT);
+            object.put(PushMessageAttributes.TYPE, PushMessageTypes.INIT_CHAT.name());
         } catch (JSONException e) {
             e.printStackTrace();
         }

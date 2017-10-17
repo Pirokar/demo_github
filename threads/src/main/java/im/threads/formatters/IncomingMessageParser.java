@@ -23,7 +23,6 @@ import java.util.Locale;
 
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
-import im.threads.model.ClearThreadIdChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.EmptyChatItem;
@@ -34,11 +33,9 @@ import im.threads.model.Operator;
 import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
 import im.threads.model.RequestResolveThread;
-import im.threads.model.SaveThreadIdChatItem;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UserPhrase;
-import im.threads.utils.MessageMatcher;
 
 public class IncomingMessageParser {
     private static final String TAG = "MessageFormatter ";
@@ -220,38 +217,38 @@ public class IncomingMessageParser {
             return null;
         }
 
-        String type = getType(fullMessage);
+        String typeStr = getType(fullMessage);
 
-        // В пуше либо должен быть type известных чату типов,
-        if (type != null) {
-            if (type.equalsIgnoreCase(MessageMatcher.OPERATOR_JOINED) || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LEFT)) {
-                return getConsultConnectionFromPush(pushMessage);
-            } else if (type.equalsIgnoreCase(MessageMatcher.SCHEDULE)) {
-                return getScheduleInfoFromPush(pushMessage, fullMessage);
-            } else if (type.equalsIgnoreCase(MessageMatcher.SURVEY)) {
-                return getRatingFromPush(pushMessage, fullMessage);
-            } else if (type.equalsIgnoreCase(MessageMatcher.MESSAGE)
-                    || type.equalsIgnoreCase(MessageMatcher.ON_HOLD)) {
-                // Либо в fullMessage должны содержаться ключи из списка:
-                // "attachments", "text", "quotes"
-                return checkMessageIsFull(pushMessage, fullMessage);
-            } else if (type.equalsIgnoreCase(MessageMatcher.REQUEST_CLOSE_THREAD)) {
-                return getCloseRequestFromPush(fullMessage);
-            } else if (type.equalsIgnoreCase(MessageMatcher.THREAD_OPENED)) {
-                return new SaveThreadIdChatItem(getThreadId(fullMessage));
-            } else if (type.equalsIgnoreCase(MessageMatcher.THREAD_CLOSED)) {
-                return new ClearThreadIdChatItem();
-            } else if (type.equalsIgnoreCase(MessageMatcher.NONE)
-                    || type.equalsIgnoreCase(MessageMatcher.MESSAGES_READ)
-                    || type.equalsIgnoreCase(MessageMatcher.OPERATOR_LOOKUP_STARTED)
-                    || type.equalsIgnoreCase(MessageMatcher.CLIENT_BLOCKED)
-                    || type.equalsIgnoreCase(MessageMatcher.SCENARIO)
-                    || isChatPush(fullMessage)) {
-                return new EmptyChatItem(type);
-            } else {
-                return checkMessageIsFull(pushMessage, fullMessage);
+        try {
+            PushMessageTypes type = PushMessageTypes.valueOf(typeStr);
+            switch (type) {
+                case OPERATOR_JOINED:
+                case OPERATOR_LEFT:
+                    return getConsultConnectionFromPush(pushMessage);
+                case SCHEDULE:
+                    return getScheduleInfoFromPush(pushMessage, fullMessage);
+                case SURVEY:
+                    return getRatingFromPush(pushMessage, fullMessage);
+                case REQUEST_CLOSE_THREAD:
+                    return getCloseRequestFromPush(fullMessage);
+                case MESSAGE:
+                case ON_HOLD:
+                    // Либо в fullMessage должны содержаться ключи из списка:
+                    // "attachments", "text", "quotes"
+                    return checkMessageIsFull(pushMessage, fullMessage);
+                case NONE:
+                case MESSAGES_READ:
+                case OPERATOR_LOOKUP_STARTED:
+                case CLIENT_BLOCKED:
+                case SCENARIO:
+                    return new EmptyChatItem(type.name());
+                default:
+                    return checkMessageIsFull(pushMessage, fullMessage);
             }
+        } catch (IllegalArgumentException ex) {
+            // pass
         }
+
         return null;
     }
 
@@ -325,9 +322,7 @@ public class IncomingMessageParser {
             long operatorId = operator.getLong("id");
             String name = operator.isNull("name") ? null : operator.getString("name");
             String status = operator.isNull("status") ? null : operator.getString("status");
-            String type = fullMessage.getString(PushMessageAttributes.TYPE).equalsIgnoreCase(PushMessageTypes.TYPE_OPERATOR_JOINED) ?
-                                                                                            ConsultConnectionMessage.TYPE_JOINED :
-                                                                                            ConsultConnectionMessage.TYPE_LEFT;
+            String type = fullMessage.getString(PushMessageAttributes.TYPE);
             boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
             String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
             String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
@@ -489,8 +484,10 @@ public class IncomingMessageParser {
                     operatorId = String.valueOf(operator.getId());
                 }
 
-                if (message.getType() != null && !message.getType().isEmpty() && (message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) || message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_LEFT))) {
-                    String type = message.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED) ? ConsultConnectionMessage.TYPE_JOINED : ConsultConnectionMessage.TYPE_LEFT;
+                if (message.getType() != null && !message.getType().isEmpty() &&
+                        (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
+                        message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
+                    String type = message.getType();
                     out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId, false));
                 } else {
                     String phraseText = message.getText();

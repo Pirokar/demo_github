@@ -8,7 +8,7 @@ import android.util.Log;
 import com.pushserver.android.PushBroadcastReceiver;
 
 import im.threads.controllers.ChatController;
-import im.threads.utils.MessageMatcher;
+import im.threads.formatters.PushMessageTypes;
 
 /**
  * Приемщик всех коротких пуш уведомлений,
@@ -33,15 +33,15 @@ public class MainPBReceiver extends PushBroadcastReceiver {
     }
 
     private boolean isChatSystemPush(Bundle bundle) {
-        int messageType = MessageMatcher.getType(bundle);
-        return messageType == MessageMatcher.TYPE_OPERATOR_TYPING
-                || messageType == MessageMatcher.TYPE_MESSAGES_READ
-                || messageType == MessageMatcher.TYPE_REMOVE_PUSHES
-                || messageType == MessageMatcher.TYPE_UNREAD_MESSAGE_NOTIFICATION;
+        PushMessageTypes messageType = PushMessageTypes.getKnownType(bundle);
+        return messageType == PushMessageTypes.TYPING
+                || messageType == PushMessageTypes.MESSAGES_READ
+                || messageType == PushMessageTypes.REMOVE_PUSHES
+                || messageType == PushMessageTypes.UNREAD_MESSAGE_NOTIFICATION;
     }
 
     private boolean isChatPush(Bundle bundle) {
-        return MessageMatcher.getType(bundle) != MessageMatcher.UNKNOWN;
+        return PushMessageTypes.getKnownType(bundle) != PushMessageTypes.UNKNOWN;
     }
 
     @Override

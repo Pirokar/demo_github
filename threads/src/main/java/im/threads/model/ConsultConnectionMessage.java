@@ -6,8 +6,6 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
     private final boolean sex;
     private final long date;
     private final String status;
-    public static final String TYPE_JOINED = "OPERATOR_JOINED";
-    public static final String TYPE_LEFT = "OPERATOR_LEFT";
     private String title;
     private final String messageId;
     private boolean displayMessage;
