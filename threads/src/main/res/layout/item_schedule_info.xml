@@ -16,7 +16,7 @@
         android:padding="14dp"
         android:layout_marginLeft="@dimen/margin_material">
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/schedule_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/threads_schedule_icon" />
