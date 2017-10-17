@@ -68,10 +68,10 @@ public class ConsultFileViewHolder extends BaseHolder {
                 setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.incomingMessageTextColor);
             }
             if (style.outgoingMessageBubbleColor != INVALID) {
-                setTintToProgressButtonConsult(mCircularProgressButton, style.outgoingMessageBubbleColor);
+                setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
             }
             else {
-                setTintToProgressButtonConsult(mCircularProgressButton, R.color.threads_chat_outgoing_message_bubble);
+                setTintToProgressButtonConsult(mCircularProgressButton, R.color.threads_chat_icons_tint);
             }
 
             if (style.chatHighlightingColor != INVALID) {

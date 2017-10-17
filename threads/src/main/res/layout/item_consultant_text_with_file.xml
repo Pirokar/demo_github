@@ -59,7 +59,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/margin_half"
                 android:layout_marginTop="@dimen/margin_half"
-                android:background="@color/threads_chat_toolbar" />
+                android:background="@color/threads_chat_icons_tint" />
 
             <LinearLayout
                 android:layout_width="match_parent"

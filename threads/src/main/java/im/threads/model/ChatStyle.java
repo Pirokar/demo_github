@@ -256,8 +256,8 @@ public class ChatStyle implements Serializable {
         }
 
 
-        public ChatStyleBuilder setHistoryLoadingCount(Integer count) {
-            if (count != null && count > 0) {
+        public ChatStyleBuilder setHistoryLoadingCount(int count) {
+            if (count > 0) {
                 chatStyle.historyLoadingCount = count;
             }
             return this;
@@ -390,8 +390,8 @@ public class ChatStyle implements Serializable {
          * @deprecated
          * Отношение старый параметр - новый параметр
          * @param chatTitleTextResId - R.string.threads_contact_center
-         * @param chatToolbarColorResId - R.string.threads_chat_toolbar
-         * @param chatToolbarTextColorResId - R.string.threads_chat_toolbar_text
+         * @param chatToolbarColorResId - R.color.threads_chat_toolbar
+         * @param chatToolbarTextColorResId - R.color.threads_chat_toolbar_text
          * @param chatStatusBarColorResId - R.color.threads_chat_status_bar
          * @param menuItemTextColorResId - R.color.threads_chat_toolbar_menu_item
          * @param chatToolbarHintTextColor - R.color.threads_chat_toolbar_hint

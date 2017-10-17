@@ -99,11 +99,11 @@ public class ConsultPhraseHolder extends BaseHolder {
             }
             defIcon = style.defaultOperatorAvatar == INVALID ? R.drawable.threads_operator_avatar_placeholder : style.defaultOperatorAvatar;
             if (style.chatToolbarColorResId != INVALID) {
-                setTintToProgressButtonConsult(mCircularProgressButton, style.chatToolbarColorResId);
+                setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
             }
             else {
-                setTintToProgressButtonConsult(mCircularProgressButton, R.color.threads_chat_toolbar);
+                setTintToProgressButtonConsult(mCircularProgressButton, R.color.threads_chat_icons_tint);
             }
             if (style.chatHighlightingColor != INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

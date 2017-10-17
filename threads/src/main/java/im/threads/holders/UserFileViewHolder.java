@@ -64,9 +64,9 @@ public class UserFileViewHolder extends BaseHolder {
                 mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
             }
             if (style.incomingMessageBubbleColor != INVALID && style.outgoingMessageBubbleColor != INVALID) {
-                setTintToProgressButtonUser(mCircularProgressButton, style.incomingMessageBubbleColor, style.outgoingMessageBubbleColor);
+                setTintToProgressButtonUser(mCircularProgressButton, style.incomingMessageBubbleColor, style.chatBodyIconsTint);
             } else {
-                setTintToProgressButtonUser(mCircularProgressButton, R.color.threads_chat_incoming_message_bubble, android.R.color.holo_green_light);
+                setTintToProgressButtonUser(mCircularProgressButton, R.color.threads_chat_incoming_message_bubble, R.color.threads_chat_icons_tint);
             }
 
             if (style.chatHighlightingColor != INVALID) {
