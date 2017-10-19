@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -23,11 +24,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -40,11 +39,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -64,6 +58,7 @@ import im.threads.activities.ImagesActivity;
 import im.threads.adapters.BottomGalleryAdapter;
 import im.threads.adapters.ChatAdapter;
 import im.threads.controllers.ChatController;
+import im.threads.databinding.FragmentChatBinding;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
@@ -88,16 +83,8 @@ import im.threads.utils.LateTextWatcher;
 import im.threads.utils.MyFileFilter;
 import im.threads.utils.PermissionChecker;
 import im.threads.utils.PrefUtils;
-import im.threads.views.BottomGallery;
 import im.threads.views.BottomSheetView;
 import im.threads.views.MySwipeRefreshLayout;
-import im.threads.views.WelcomeScreen;
-
-import static android.app.Activity.RESULT_OK;
-import static android.content.Context.CLIPBOARD_SERVICE;
-import static android.content.Context.INPUT_METHOD_SERVICE;
-import static android.text.TextUtils.isEmpty;
-import static im.threads.model.ChatStyle.INVALID;
 
 /**
  * Весь функционал чата находится здесь во фрагменте,
@@ -121,8 +108,6 @@ public class ChatFragment extends Fragment implements
     public static final int REQUEST_PERMISSION_CAMERA = 103;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
 
-    private static final String ARG_CLIENT_ID = "clientId";
-
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
@@ -136,51 +121,26 @@ public class ChatFragment extends Fragment implements
 
     private Context appContext;
 
-    private View rootView;
-
     private Handler mSearchHandler = new Handler(Looper.getMainLooper());
     private Handler h = new Handler(Looper.getMainLooper());
 
     private ChatController mChatController;
-    private WelcomeScreen mWelcomeScreen;
-    private ViewGroup mInputLayout;
-    private EditText mInputEditText;
-    private BottomSheetView mBottomSheetView;
-    private BottomGallery mBottomGallery;
     private ChatAdapter mChatAdapter;
-    private TextView mConsultNameView;
-    private TextView mConsultTitle;
-    private View mCopyControls;
-    private Toolbar mToolbar;
     private QuoteLayoutHolder mQuoteLayoutHolder;
-    private RecyclerView mRecyclerView;
     private Quote mQuote = null;
     private FileDescription mFileDescription = null;
     private ChatPhrase mChosenPhrase = null;
     private List<String> mAttachedImages = new ArrayList<>();
-    private AppCompatEditText mSearchMessageEditText;
-    private MySwipeRefreshLayout mSwipeRefreshLayout;
-    private Button mSearchMoreButton;
-    private View mSearchLo;
-    private ImageButton backButton;
-    private ImageButton popupMenuButton;
-    private ImageButton mSendButton;
-    private ImageButton mAddAttachmentButton;
     private String connectedConsultId;
     private ChatReceiver mChatReceiver;
 
     private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
-    private View mScrollDownContainer;
-    private ImageView mScrollDownButton;
-    private View mUnreadMsgSticker;
-    private TextView mUnreadMsgCount;
 
     private boolean isInMessageSearchMode;
     private boolean isResumed;
     private ChatStyle style;
 
-    private ImageButton searchUp;
-    private ImageButton searchDown;
+    private FragmentChatBinding binding;
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -196,7 +156,7 @@ public class ChatFragment extends Fragment implements
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 
         if (activity instanceof ChatActivity) {
-            if (style != null && style.chatStatusBarColorResId != INVALID) {
+            if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
                 ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
             }
             else {
@@ -204,7 +164,7 @@ public class ChatFragment extends Fragment implements
             }
         }
 
-        rootView = inflater.inflate(R.layout.fragment_chat_fragment, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
 
         initViews();
         bindViews();
@@ -217,7 +177,7 @@ public class ChatFragment extends Fragment implements
         updateInputEnable(true);
         chatIsShown = true;
 
-        return rootView;
+        return binding.getRoot();
     }
 
     @Override
@@ -247,7 +207,7 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         mChatController = ChatController.getInstance(activity);
         mChatController.bindFragment(this);
-        mWelcomeScreen.setVisibility(mChatController.isNeedToShowWelcome() ? View.VISIBLE : View.GONE);
+        welcomeScreenVisibility(mChatController.isNeedToShowWelcome());
         mChatReceiver = new ChatReceiver();
         IntentFilter intentFilter = new IntentFilter(ACTION_SEARCH_CHAT_FILES);
         intentFilter.addAction(ACTION_SEARCH);
@@ -259,73 +219,47 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
 
         mQuoteLayoutHolder = new QuoteLayoutHolder();
-        mBottomSheetView = (BottomSheetView) rootView.findViewById(R.id.file_input_sheet);
-        mBottomSheetView.setButtonsListener(this);
-        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        mSearchMessageEditText = (AppCompatEditText) rootView.findViewById(R.id.search);
-        mBottomGallery = (BottomGallery) rootView.findViewById(R.id.bottom_gallery);
-        mSwipeRefreshLayout = (MySwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh);
-        mInputEditText = (EditText) rootView.findViewById(R.id.input);
-        mInputLayout = (ViewGroup) rootView.findViewById(R.id.input_layout);
-        mSendButton = (ImageButton) rootView.findViewById(R.id.send_message);
-        mAddAttachmentButton = (ImageButton) rootView.findViewById(R.id.add_attachment);
-
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler);
+        binding.fileInputSheet.setButtonsListener(this);
+        
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        binding.recycler.setLayoutManager(mLayoutManager);
         mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), activity, this);
-        mRecyclerView.getItemAnimator().setChangeDuration(0);
-        mRecyclerView.setAdapter(mChatAdapter);
+        binding.recycler.getItemAnimator().setChangeDuration(0);
+        binding.recycler.setAdapter(mChatAdapter);
 
-        mSearchLo = rootView.findViewById(R.id.search_lo);
-        searchUp = (ImageButton) rootView.findViewById(R.id.search_up_ib);
-        searchDown = (ImageButton) rootView.findViewById(R.id.search_down_ib);
-
-        mWelcomeScreen = (WelcomeScreen) rootView.findViewById(R.id.welcome);
-        mSearchMoreButton = (Button) rootView.findViewById(R.id.search_more);
-        mConsultNameView = (TextView) rootView.findViewById(R.id.consult_name);
-        mConsultTitle = (TextView) rootView.findViewById(R.id.subtitle);
-        mCopyControls = rootView.findViewById(R.id.copy_controls);
-
-        mScrollDownContainer = rootView.findViewById(R.id.scroll_down_button_container);
-        mScrollDownButton = (ImageView) rootView.findViewById(R.id.scroll_down_button);
-        mUnreadMsgSticker = rootView.findViewById(R.id.unread_msg_sticker);
-        mUnreadMsgCount = (TextView) rootView.findViewById(R.id.unread_msg_count);
-
-        searchDown.setAlpha(DISABLED_ALPHA);
-        searchUp.setAlpha(DISABLED_ALPHA);
+        binding.searchDownIb.setAlpha(DISABLED_ALPHA);
+        binding.searchUpIb.setAlpha(DISABLED_ALPHA);
     }
 
     private void bindViews() {
-        mSwipeRefreshLayout.setmSwipeListener(new MySwipeRefreshLayout.SwipeListener() {
+        binding.swipeRefresh.setmSwipeListener(new MySwipeRefreshLayout.SwipeListener() {
             @Override
             public void onSwipe() {
-                //finish();
             }
         });
 
-        mAddAttachmentButton.setOnClickListener(new View.OnClickListener() {
+        binding.addAttachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openBottomSheetAndGallery();
             }
         });
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        binding.swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 ChatFragment.this.onRefresh();
             }
         });
 
-        mSendButton.setOnClickListener(new View.OnClickListener() {
+        binding.sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onSendButtonClick();
             }
         });
 
-        mConsultNameView.setOnClickListener(new View.OnClickListener() {
+        binding.consultName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mChatController.isConsultFound())
@@ -333,7 +267,7 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        mConsultTitle.setOnClickListener(new View.OnClickListener() {
+        binding.subtitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mChatController.isConsultFound())
@@ -341,40 +275,39 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        mInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        binding.input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus && mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
-                    mWelcomeScreen.setVisibility(View.GONE);
-                    mWelcomeScreen = null;
+                if (hasFocus) {
+                    welcomeScreenVisibility(false);
                 }
             }
         });
 
-        mInputEditText.addTextChangedListener(new LateTextWatcher() {
+        binding.input.addTextChangedListener(new LateTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 mChatController.onUserTyping();
             }
         });
 
-        searchUp.setOnClickListener(new View.OnClickListener() {
+        binding.searchUpIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isEmpty(mSearchMessageEditText.getText())) return;
-                doFancySearch(mSearchMessageEditText.getText().toString(), true);
+                if (TextUtils.isEmpty(binding.search.getText())) return;
+                doFancySearch(binding.search.getText().toString(), true);
             }
         });
 
-        searchDown.setOnClickListener(new View.OnClickListener() {
+        binding.searchDownIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isEmpty(mSearchMessageEditText.getText())) return;
-                doFancySearch(mSearchMessageEditText.getText().toString(), false);
+                if (TextUtils.isEmpty(binding.search.getText())) return;
+                doFancySearch(binding.search.getText().toString(), false);
             }
         });
 
-        mSearchMessageEditText.addTextChangedListener(new LateTextWatcher() {
+        binding.search.addTextChangedListener(new LateTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 if (!isInMessageSearchMode) return;
@@ -382,20 +315,20 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        binding.recycler.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v,
                                        int left, int top, int right, final int bottom,
                                        int oldLeft, int oldTop, int oldRight, final int oldBottom) {
                 if (bottom < oldBottom) {
-                    mRecyclerView.postDelayed(new Runnable() {
+                    binding.recycler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             if (style != null && style.scrollChatToEndIfUserTyping) {
-                                scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                                scrollToPosition(binding.recycler.getAdapter().getItemCount() - 1);
                             }
                             else {
-                                mRecyclerView.smoothScrollBy(0, oldBottom - bottom);
+                                binding.recycler.smoothScrollBy(0, oldBottom - bottom);
                             }
                         }
                     }, 100);
@@ -403,27 +336,27 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                int lastVisibleItemPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                int lastVisibleItemPosition = ((LinearLayoutManager) binding.recycler.getLayoutManager()).findLastVisibleItemPosition();
                 int itemCount = mChatAdapter.getItemCount();
                 if ( itemCount - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
-                    if (mScrollDownContainer.getVisibility() != View.VISIBLE) {
-                        mScrollDownContainer.setVisibility(View.VISIBLE);
+                    if (binding.scrollDownButtonContainer.getVisibility() != View.VISIBLE) {
+                        binding.scrollDownButtonContainer.setVisibility(View.VISIBLE);
                         showUnreadMsgsCount(mChatAdapter.getUnreadCount());
                     }
                 }
                 else {
-                    mScrollDownContainer.setVisibility(View.GONE);
+                    binding.scrollDownButtonContainer.setVisibility(View.GONE);
                     mChatAdapter.setAllMessagesRead();
                 }
             }
         });
 
-        mScrollDownContainer.setOnClickListener(new View.OnClickListener() {
+        binding.scrollDownButtonContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 showUnreadMsgsCount(0);
@@ -432,10 +365,10 @@ public class ChatFragment extends Fragment implements
                     scrollToNewMessages();
                 }
                 else {
-                    scrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                    scrollToPosition(binding.recycler.getAdapter().getItemCount() - 1);
                 }
                 mChatAdapter.setAllMessagesRead();
-                mScrollDownContainer.setVisibility(View.GONE);
+                binding.scrollDownButtonContainer.setVisibility(View.GONE);
 
                 if (isInMessageSearchMode) {
                     hideSearchMode();
@@ -445,30 +378,27 @@ public class ChatFragment extends Fragment implements
     }
 
     private void showUnreadMsgsCount(int unreadCount) {
-        if (mScrollDownContainer.getVisibility() == View.VISIBLE) {
+        if (binding.scrollDownButtonContainer.getVisibility() == View.VISIBLE) {
             boolean hasUnreadCount = unreadCount > 0;
-            mUnreadMsgCount.setText(hasUnreadCount ? String.valueOf(unreadCount) : "");
-            mUnreadMsgCount.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
-            mUnreadMsgSticker.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
+            binding.unreadMsgCount.setText(hasUnreadCount ? String.valueOf(unreadCount) : "");
+            binding.unreadMsgCount.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
+            binding.unreadMsgSticker.setVisibility(hasUnreadCount ? View.VISIBLE : View.GONE);
         }
     }
 
     private void onSendButtonClick() {
-        if (mInputEditText.getText().length() == 0 && ((mQuote == null) && (mFileDescription == null))) {
+        if (binding.input.getText().length() == 0 && ((mQuote == null) && (mFileDescription == null))) {
             return;
         }
 
-        if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
-            mWelcomeScreen.setVisibility(View.GONE);
-            mWelcomeScreen = null;
-        }
+        welcomeScreenVisibility(false);
 
         List<UpcomingUserMessage> input = new ArrayList<>();
         UpcomingUserMessage message = new UpcomingUserMessage(
                 mFileDescription,
                 mQuote,
-                mInputEditText.getText().toString().trim(),
-                isCopy(mInputEditText.getText().toString())
+                binding.input.getText().toString().trim(),
+                isCopy(binding.input.getText().toString())
         );
         input.add(message);
         sendMessage(input, true);
@@ -502,10 +432,10 @@ public class ChatFragment extends Fragment implements
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    mSwipeRefreshLayout.clearAnimation();
-                    mSwipeRefreshLayout.destroyDrawingCache();
-                    mSwipeRefreshLayout.invalidate();
+                    binding.swipeRefresh.setRefreshing(false);
+                    binding.swipeRefresh.clearAnimation();
+                    binding.swipeRefresh.destroyDrawingCache();
+                    binding.swipeRefresh.invalidate();
                 }
             }, i * 500);
         }
@@ -515,141 +445,141 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
 
         if (style != null) {
-            if (style.chatBackgroundColor != INVALID) {
-                ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.chat_root), style.chatBackgroundColor);
+            if (style.chatBackgroundColor != ChatStyle.INVALID) {
+                ColorsHelper.setBackgroundColor(activity, binding.chatRoot, style.chatBackgroundColor);
             }
 
-            if (style.chatMessageInputColor != INVALID) {
-                ColorsHelper.setBackgroundColor(activity, mInputLayout, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, mBottomSheetView, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, mCopyControls, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, mBottomGallery, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, rootView.findViewById(R.id.bottom_layout), style.chatMessageInputColor);
+            if (style.chatMessageInputColor != ChatStyle.INVALID) {
+                ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
+                ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
+                ColorsHelper.setBackgroundColor(activity, binding.copyControls, style.chatMessageInputColor);
+                ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
+                ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
             }
 
-            if (style.chatToolbarTextColorResId != INVALID) {
-                ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), style.chatToolbarTextColorResId);
-                ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), style.chatToolbarTextColorResId);
+            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+                ColorsHelper.setDrawableColor(activity, binding.searchUpIb.getDrawable(), style.chatToolbarTextColorResId);
+                ColorsHelper.setDrawableColor(activity, binding.searchDownIb.getDrawable(), style.chatToolbarTextColorResId);
             }
             else {
-                ColorsHelper.setDrawableColor(activity, searchUp.getDrawable(), R.color.threads_chat_toolbar_text);
-                ColorsHelper.setDrawableColor(activity, searchDown.getDrawable(), R.color.threads_chat_toolbar_text);
+                ColorsHelper.setDrawableColor(activity, binding.searchUpIb.getDrawable(), R.color.threads_chat_toolbar_text);
+                ColorsHelper.setDrawableColor(activity, binding.searchDownIb.getDrawable(), R.color.threads_chat_toolbar_text);
             }
 
-            if (style.iconsAndSeparatorsColor != INVALID) {
-                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
-                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
+            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
+                binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
+                binding.searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
             }
             else {
-                mSearchMoreButton.setBackgroundColor(ContextCompat.getColor(activity, R.color.threads_icon_and_separators_color));
-                mSearchMoreButton.setTextColor(ContextCompat.getColor(activity, R.color.threads_icon_and_separators_color));
+                binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, R.color.threads_icon_and_separators_color));
+                binding.searchMore.setTextColor(ContextCompat.getColor(activity, R.color.threads_icon_and_separators_color));
             }
 
-            if (style.chatToolbarColorResId != INVALID) {
-                mSwipeRefreshLayout.setColorSchemeResources(style.chatToolbarColorResId);
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
+                binding.swipeRefresh.setColorSchemeResources(style.chatToolbarColorResId);
             }
             else {
-                mSwipeRefreshLayout.setColorSchemeResources(R.color.threads_chat_toolbar);
+                binding.swipeRefresh.setColorSchemeResources(R.color.threads_chat_toolbar);
             }
 
-            if (style.scrollDownButtonResId != INVALID) {
-                mScrollDownButton.setImageResource(style.scrollDownButtonResId);
+            if (style.scrollDownButtonResId != ChatStyle.INVALID) {
+                binding.scrollDownButton.setImageResource(style.scrollDownButtonResId);
             }
 
-            if (style.unreadMsgStickerColorResId != INVALID) {
-                mUnreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
+            if (style.unreadMsgStickerColorResId != ChatStyle.INVALID) {
+                binding.unreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
             }
 
-            if (style.unreadMsgCountTextColorResId != INVALID) {
-                mUnreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
+            if (style.unreadMsgCountTextColorResId != ChatStyle.INVALID) {
+                binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
             }
 
-            if (style.inputHeight != INVALID) {
-                mInputEditText.getLayoutParams().height = (int) activity.getResources().getDimension(style.inputHeight);
+            if (style.inputHeight != ChatStyle.INVALID) {
+                binding.input.getLayoutParams().height = (int) activity.getResources().getDimension(style.inputHeight);
             }
             else {
 
             }
 
-            if (style.inputBackground != INVALID) {
-                mInputEditText.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
+            if (style.inputBackground != ChatStyle.INVALID) {
+                binding.input.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
             }
 
-            if (style.inputHint != INVALID) {
-                mInputEditText.setHint(style.inputHint);
+            if (style.inputHint != ChatStyle.INVALID) {
+                binding.input.setHint(style.inputHint);
             }
 
-            if (style.attachmentsIconResId != INVALID) {
-                mAddAttachmentButton.setImageResource(style.attachmentsIconResId);
+            if (style.attachmentsIconResId != ChatStyle.INVALID) {
+                binding.addAttachment.setImageResource(style.attachmentsIconResId);
             }
 
-            if (style.sendMessageIconResId != INVALID) {
-                mSendButton.setImageResource(style.sendMessageIconResId);
+            if (style.sendMessageIconResId != ChatStyle.INVALID) {
+                binding.sendMessage.setImageResource(style.sendMessageIconResId);
             }
 
-            if (style.chatToolbarTextColorResId != INVALID) {
-                ColorsHelper.setTextColor(activity, mSearchMessageEditText, style.chatToolbarTextColorResId);
-                ColorsHelper.setDrawableColor(activity, popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
-                ColorsHelper.setDrawableColor(activity, backButton.getDrawable(), style.chatToolbarTextColorResId);
-                ColorsHelper.setTextColor(activity, mConsultTitle, style.chatToolbarTextColorResId);
-                ColorsHelper.setTextColor(activity, mConsultNameView, style.chatToolbarTextColorResId);
+            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+                ColorsHelper.setTextColor(activity, binding.search, style.chatToolbarTextColorResId);
+                ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
+                ColorsHelper.setDrawableColor(activity, binding.chatBackButton.getDrawable(), style.chatToolbarTextColorResId);
+                ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
+                ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
             }
             else {
-                ColorsHelper.setDrawableColor(activity, popupMenuButton.getDrawable(), R.color.threads_chat_toolbar_text);
-                ColorsHelper.setDrawableColor(activity, backButton.getDrawable(), R.color.threads_chat_toolbar_text);
+                ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), R.color.threads_chat_toolbar_text);
+                ColorsHelper.setDrawableColor(activity, binding.chatBackButton.getDrawable(), R.color.threads_chat_toolbar_text);
             }
 
-            if (style.chatToolbarTextColorResId != INVALID) {
-                ColorsHelper.setTextColor(activity, mConsultTitle, style.chatToolbarTextColorResId);
-                ColorsHelper.setTextColor(activity, mConsultNameView, style.chatToolbarTextColorResId);
+            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
+                ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
+                ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
             }
 
-            if (style.chatMessageInputHintTextColor != INVALID) {
-                ColorsHelper.setHintTextColor(activity, mInputEditText, style.chatMessageInputHintTextColor);
+            if (style.chatMessageInputHintTextColor != ChatStyle.INVALID) {
+                ColorsHelper.setHintTextColor(activity, binding.input, style.chatMessageInputHintTextColor);
             }
 
-            if (style.chatToolbarHintTextColor != INVALID) {
-                ColorsHelper.setHintTextColor(activity, mSearchMessageEditText, style.chatToolbarHintTextColor);
+            if (style.chatToolbarHintTextColor != ChatStyle.INVALID) {
+                ColorsHelper.setHintTextColor(activity, binding.search, style.chatToolbarHintTextColor);
             }
 
-            if (style.inputTextColor != INVALID) {
-                ColorsHelper.setTextColor(activity, mInputEditText, style.inputTextColor);
+            if (style.inputTextColor != ChatStyle.INVALID) {
+                ColorsHelper.setTextColor(activity, binding.input, style.inputTextColor);
             }
 
             if (!TextUtils.isEmpty(style.inputTextFont)) {
                 try {
                     Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
-                    this.mInputEditText.setTypeface(custom_font);
+                    this.binding.input.setTypeface(custom_font);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
-            if (style.chatBodyIconsTint != INVALID) {
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.content_copy), style.chatBodyIconsTint);
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.reply), style.chatBodyIconsTint);
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.send_message), style.chatBodyIconsTint);
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.add_attachment), style.chatBodyIconsTint);
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.quote_clear), style.chatBodyIconsTint);
-                mBottomSheetView.setButtonsTint(style.chatBodyIconsTint);
+            if (style.chatBodyIconsTint != ChatStyle.INVALID) {
+                ColorsHelper.setTint(activity, binding.contentCopy, style.chatBodyIconsTint);
+                ColorsHelper.setTint(activity, binding.reply, style.chatBodyIconsTint);
+                ColorsHelper.setTint(activity, binding.sendMessage, style.chatBodyIconsTint);
+                ColorsHelper.setTint(activity, binding.addAttachment, style.chatBodyIconsTint);
+                ColorsHelper.setTint(activity, binding.quoteClear, style.chatBodyIconsTint);
+                binding.fileInputSheet.setButtonsTint(style.chatBodyIconsTint);
             }
             else {
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.content_copy), R.color.threads_chat_icons_tint);
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.reply), R.color.threads_chat_icons_tint);
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.send_message), R.color.threads_chat_icons_tint);
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.add_attachment), R.color.threads_chat_icons_tint);
-                ColorsHelper.setTint(activity, (ImageView) rootView.findViewById(R.id.quote_clear), R.color.threads_chat_icons_tint);
-                mBottomSheetView.setButtonsTint(R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, binding.contentCopy, R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, binding.reply, R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, binding.sendMessage, R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, binding.addAttachment, R.color.threads_chat_icons_tint);
+                ColorsHelper.setTint(activity, binding.quoteClear, R.color.threads_chat_icons_tint);
+                binding.fileInputSheet.setButtonsTint(R.color.threads_chat_icons_tint);
             }
 
-            if (style.chatToolbarColorResId != INVALID) {
-                ColorsHelper.setBackgroundColor(activity, mToolbar, style.chatToolbarColorResId);
+            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
+                ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
             }
         }
 
         try {
-            Drawable overflowDrawable = popupMenuButton.getDrawable();
-            if (style != null && style.chatToolbarTextColorResId != INVALID) {
+            Drawable overflowDrawable = binding.popupMenuButton.getDrawable();
+            if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
                 ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
             } else {
                 ColorsHelper.setDrawableColor(activity, overflowDrawable, R.color.threads_chat_toolbar_text);
@@ -667,7 +597,7 @@ public class ChatFragment extends Fragment implements
         Log.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             setBottomStateDefault();
-            mBottomGallery.setVisibility(View.GONE);
+            binding.bottomGallery.setVisibility(View.GONE);
             startActivityForResult(new Intent(activity, CameraActivity.class), REQUEST_CODE_PHOTO);
         } else {
             ArrayList<String> permissions = new ArrayList<>();
@@ -742,7 +672,7 @@ public class ChatFragment extends Fragment implements
     }
 
     private void showPopup() {
-        PopupMenu popup = new PopupMenu(getActivity(), popupMenuButton);
+        PopupMenu popup = new PopupMenu(getActivity(), binding.popupMenuButton);
         popup.setOnMenuItemClickListener(this);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu_main, popup.getMenu());
@@ -750,7 +680,7 @@ public class ChatFragment extends Fragment implements
         Menu menu = popup.getMenu();
         MenuItem searchMenuItem = menu.getItem(0);
         SpannableString s = new SpannableString(searchMenuItem.getTitle());
-        if (style != null && style.menuItemTextColorResId != INVALID) {
+        if (style != null && style.menuItemTextColorResId != ChatStyle.INVALID) {
             s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s.length(), 0);
         }
         else {
@@ -760,7 +690,7 @@ public class ChatFragment extends Fragment implements
 
         MenuItem filesAndMedia = menu.getItem(1);
         SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
-        if (style != null && style.menuItemTextColorResId != INVALID) {
+        if (style != null && style.menuItemTextColorResId != ChatStyle.INVALID) {
             s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s2.length(), 0);
         }
         else {
@@ -785,16 +715,10 @@ public class ChatFragment extends Fragment implements
         if (item.getItemId() == R.id.search && isInMessageSearchMode) {
             return true;
         } else if (item.getItemId() == R.id.search) {
-            if (mWelcomeScreen != null) {
-                mWelcomeScreen.setVisibility(View.GONE);
-                ((ViewGroup) rootView).removeView(mWelcomeScreen);
-                mWelcomeScreen = null;
-            }
+            welcomeScreenVisibility(false);
             AnalyticsTracker.getInstance(activity, PrefUtils.getGaTrackerId(activity)).setTextSearchWasOpened();
             search(false);
-            if (backButton.getVisibility() == View.GONE) {
-                backButton.setVisibility(View.VISIBLE);
-            }
+            binding.chatBackButton.setVisibility(View.VISIBLE);
         }
         return false;
     }
@@ -812,29 +736,27 @@ public class ChatFragment extends Fragment implements
 
         Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
 
-        if (style != null && style.chatBodyIconsTint != INVALID) {
-            ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), style.chatBodyIconsTint);
+        if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID) {
+            ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
             ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
         } else {
-            ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
+            ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
             ColorsHelper.setDrawableColor(ctx, d, R.color.threads_chat_icons_tint);
         }
-        backButton.setImageDrawable(d);
+        binding.chatBackButton.setImageDrawable(d);
 
-        ColorsHelper.setDrawableColor(ctx, popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
-        ColorsHelper.setBackgroundColor(getContext(), mToolbar, R.color.threads_chat_toolbar_text);
+        ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
+        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, R.color.threads_chat_toolbar_text);
 
-        mCopyControls.setVisibility(View.VISIBLE);
-        mConsultNameView.setVisibility(View.GONE);
-        mConsultTitle.setVisibility(View.GONE);
+        binding.copyControls.setVisibility(View.VISIBLE);
+        binding.consultName.setVisibility(View.GONE);
+        binding.subtitle.setVisibility(View.GONE);
 
-        if (backButton.getVisibility() == View.GONE) {
-            backButton.setVisibility(View.VISIBLE);
+        if (binding.chatBackButton.getVisibility() == View.GONE) {
+            binding.chatBackButton.setVisibility(View.VISIBLE);
         }
 
-        ImageButton reply = (ImageButton) mCopyControls.findViewById(R.id.reply);
-        ImageButton copy = (ImageButton) mCopyControls.findViewById(R.id.content_copy);
-        copy.setOnClickListener(new View.OnClickListener() {
+        binding.contentCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onCopyClick(activity, cp);
@@ -842,7 +764,7 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        reply.setOnClickListener(new View.OnClickListener() {
+        binding.reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onReplyClick(cp, position);
@@ -864,9 +786,9 @@ public class ChatFragment extends Fragment implements
         if (quoteFileDescription == null && cp.getQuote() != null) {
             quoteFileDescription = cp.getQuote().getFileDescription();
         }
-        mQuote = new Quote(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
+        mQuote = new Quote(TextUtils.isEmpty(headerText) ? "" : headerText, TextUtils.isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
         mFileDescription = null;
-        if (isEmpty(cp.getPhraseText())) {
+        if (TextUtils.isEmpty(cp.getPhraseText())) {
             mQuote = new Quote(headerText, cp.getPhraseText(), quoteFileDescription, System.currentTimeMillis());
         }
         if (cp instanceof UserPhrase) {
@@ -890,7 +812,7 @@ public class ChatFragment extends Fragment implements
         }
         if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                 || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
-            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? appContext.getString(R.string.threads_image) : text, cp.getFileDescription().getFilePath());
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText, TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text, cp.getFileDescription().getFilePath());
         } else if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PDF) {
             String fileName = "";
             try {
@@ -898,16 +820,16 @@ public class ChatFragment extends Fragment implements
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText,
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText,
                     fileName,
                     null);
         } else {
-            mQuoteLayoutHolder.setText(isEmpty(headerText) ? "" : headerText, isEmpty(text) ? "" : text, null);
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText, TextUtils.isEmpty(text) ? "" : text, null);
         }
     }
 
     private void onCopyClick(Activity activity, ChatPhrase cp) {
-        ClipboardManager cm = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
+        ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
         cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
         hideCopyControls();
         PrefUtils.setLastCopyText(activity.getApplicationContext(), cp.getPhraseText());
@@ -938,12 +860,12 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onHideClick() {
-        mBottomGallery.setVisibility(View.GONE);
-        mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
+        binding.bottomGallery.setVisibility(View.GONE);
+        binding.fileInputSheet.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
-                mBottomSheetView.setVisibility(View.GONE);
-                mInputLayout.setVisibility(View.VISIBLE);
+                binding.fileInputSheet.setVisibility(View.GONE);
+                binding.inputLayout.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -951,7 +873,7 @@ public class ChatFragment extends Fragment implements
     @Override
     public void onSendClick() {
         if (mAttachedImages == null || mAttachedImages.size() == 0) {
-            mBottomGallery.setVisibility(View.GONE);
+            binding.bottomGallery.setVisibility(View.GONE);
         } else {
             List<UpcomingUserMessage> messages = new ArrayList<>();
             messages.add(new UpcomingUserMessage(
@@ -961,8 +883,8 @@ public class ChatFragment extends Fragment implements
                             new File(mAttachedImages.get(0).replaceAll("file://", "")).length(),
                             System.currentTimeMillis()),
                     mQuote,
-                    mInputEditText.getText().toString().trim(),
-                    isCopy(mInputEditText.getText().toString())));
+                    binding.input.getText().toString().trim(),
+                    isCopy(binding.input.getText().toString())));
 
             for (int i = 1; i < mAttachedImages.size(); i++) {
                 FileDescription fileDescription = new FileDescription(
@@ -990,11 +912,11 @@ public class ChatFragment extends Fragment implements
 
     private void doFancySearch(final String request,
                                final boolean forward) {
-        if (isEmpty(request)) {
+        if (TextUtils.isEmpty(request)) {
             mChatAdapter.removeHighlight();
             mSearchHandler.removeCallbacksAndMessages(null);
-            searchUp.setAlpha(DISABLED_ALPHA);
-            searchDown.setAlpha(DISABLED_ALPHA);
+            binding.searchUpIb.setAlpha(DISABLED_ALPHA);
+            binding.searchDownIb.setAlpha(DISABLED_ALPHA);
             return;
         }
         mSearchHandler.removeCallbacksAndMessages(null);
@@ -1059,15 +981,15 @@ public class ChatFragment extends Fragment implements
 
                     //для поиска - если можно перемещаться, подсвечиваем
                     if (first != -1 && i > first) {
-                        searchDown.setAlpha(ENABLED_ALPHA);
+                        binding.searchDownIb.setAlpha(ENABLED_ALPHA);
                     } else {
-                        searchDown.setAlpha(DISABLED_ALPHA);
+                        binding.searchDownIb.setAlpha(DISABLED_ALPHA);
                     }
                     //для поиска - если можно перемещаться, подсвечиваем
                     if (last != -1 && i < last) {
-                        searchUp.setAlpha(ENABLED_ALPHA);
+                        binding.searchUpIb.setAlpha(ENABLED_ALPHA);
                     } else {
-                        searchUp.setAlpha(DISABLED_ALPHA);
+                        binding.searchUpIb.setAlpha(DISABLED_ALPHA);
                     }
 
                     break;
@@ -1083,16 +1005,16 @@ public class ChatFragment extends Fragment implements
         if (PermissionChecker.isReadExternalPermissionGranted(getActivity())) {
             setTitleStateCurrentOperatorConnected();
 
-            if (mBottomSheetView.getVisibility() == View.GONE) {
-                mBottomSheetView.setVisibility(View.VISIBLE);
-                mBottomSheetView.setAlpha(0.0f);
-                mBottomSheetView.animate().alpha(1.0f).setDuration(300).withEndAction(new Runnable() {
+            if (binding.fileInputSheet.getVisibility() == View.GONE) {
+                binding.fileInputSheet.setVisibility(View.VISIBLE);
+                binding.fileInputSheet.setAlpha(0.0f);
+                binding.fileInputSheet.animate().alpha(1.0f).setDuration(300).withEndAction(new Runnable() {
                     @Override
                     public void run() {
-                        mBottomSheetView.setVisibility(View.VISIBLE);
+                        binding.fileInputSheet.setVisibility(View.VISIBLE);
                     }
                 });
-                mInputLayout.setVisibility(View.GONE);
+                binding.inputLayout.setVisibility(View.GONE);
                 scrollToPosition(mChatAdapter.getItemCount() - 1);
                 String[] projection = new String[]{MediaStore.Images.Media.DATA};
 
@@ -1106,25 +1028,25 @@ public class ChatFragment extends Fragment implements
                         allItems.add("file://" + c.getString(DATA));
                     }
                 }
-                mBottomGallery.setVisibility(View.VISIBLE);
-                mBottomGallery.setAlpha(0.0f);
-                mBottomGallery.animate().alpha(1.0f).setDuration(200).start();
-                mBottomGallery.setImages(allItems, new BottomGalleryAdapter.OnChooseItemsListener() {
+                binding.bottomGallery.setVisibility(View.VISIBLE);
+                binding.bottomGallery.setAlpha(0.0f);
+                binding.bottomGallery.animate().alpha(1.0f).setDuration(200).start();
+                binding.bottomGallery.setImages(allItems, new BottomGalleryAdapter.OnChooseItemsListener() {
                     @Override
                     public void onChosenItems(List<String> items) {
                         mAttachedImages = new ArrayList<>(items);
                         if (mAttachedImages.size() > 0) {
-                            mBottomSheetView.setSelectedState(true);
+                            binding.fileInputSheet.setSelectedState(true);
                         } else {
-                            mBottomSheetView.setSelectedState(false);
+                            binding.fileInputSheet.setSelectedState(false);
                         }
                     }
                 });
             } else {
-                mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
+                binding.fileInputSheet.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
                     @Override
                     public void run() {
-                        mBottomSheetView.setVisibility(View.GONE);
+                        binding.fileInputSheet.setVisibility(View.GONE);
                     }
                 });
             }
@@ -1143,16 +1065,16 @@ public class ChatFragment extends Fragment implements
         if (null != mQuoteLayoutHolder)
             mQuoteLayoutHolder.setIsVisible(false);
         if (null != mChatAdapter) mChatAdapter.setAllMessagesRead();
-        mBottomSheetView.setSelectedState(false);
+        binding.fileInputSheet.setSelectedState(false);
         if (clearInput) {
-            mInputEditText.setText("");
+            binding.input.setText("");
             if (!isInMessageSearchMode) mQuoteLayoutHolder.setIsVisible(false);
             mQuote = null;
             mFileDescription = null;
             setBottomStateDefault();
             hideCopyControls();
             mAttachedImages.clear();
-            mBottomGallery.setVisibility(View.GONE);
+            binding.bottomGallery.setVisibility(View.GONE);
             if (mChosenPhrase != null && mChatAdapter != null) {
                 mChatAdapter.setItemChosen(false, mChosenPhrase);
                 mChosenPhrase = null;
@@ -1162,12 +1084,9 @@ public class ChatFragment extends Fragment implements
     }
 
     public void addChatItem(final ChatItem item) {
-        if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
-            mWelcomeScreen.setVisibility(View.GONE);
-            mWelcomeScreen = null;
-        }
+        welcomeScreenVisibility(false);
 
-        boolean isUserSeesMessage = (mChatAdapter.getItemCount() - ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT;
+        boolean isUserSeesMessage = (mChatAdapter.getItemCount() - ((LinearLayoutManager) binding.recycler.getLayoutManager()).findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT;
         if (item instanceof ConsultPhrase) {
             if (isUserSeesMessage && isResumed && !isInMessageSearchMode) {
                 ((ConsultPhrase) item).setRead(true);
@@ -1192,7 +1111,7 @@ public class ChatFragment extends Fragment implements
             public void run() {
                 if (!isInMessageSearchMode) {
                     int itemCount = mChatAdapter.getItemCount();
-                    int lastVisibleItemPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    int lastVisibleItemPosition = ((LinearLayoutManager) binding.recycler.getLayoutManager()).findLastVisibleItemPosition();
                     boolean isUserSeesMessages = (itemCount - 1) - lastVisibleItemPosition < INVISIBLE_MSGS_COUNT;
                     boolean isConsultMsg = (item instanceof ConsultPhrase) || (item instanceof ConsultTyping);
                     if (isUserSeesMessages || !isConsultMsg) {
@@ -1205,7 +1124,7 @@ public class ChatFragment extends Fragment implements
 
     private void scrollToPosition(int itemCount) {
         if (itemCount >= 0) {
-            mRecyclerView.scrollToPosition(itemCount);
+            binding.recycler.scrollToPosition(itemCount);
         }
     }
 
@@ -1225,11 +1144,7 @@ public class ChatFragment extends Fragment implements
         h.post(new Runnable() {
             @Override
             public void run() {
-                if (mWelcomeScreen != null) {
-                    mWelcomeScreen.setVisibility(View.GONE);
-                    ((ViewGroup) rootView).removeView(mWelcomeScreen);
-                    mWelcomeScreen = null;
-                }
+                welcomeScreenVisibility(false);
                 mChatAdapter.addItems(list);
             }
         });
@@ -1248,10 +1163,10 @@ public class ChatFragment extends Fragment implements
                             @Override
                             public void run() {
                                 if (!isInMessageSearchMode) {
-                                    mRecyclerView.post(new Runnable() {
+                                    binding.recycler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            ((LinearLayoutManager) mRecyclerView.getLayoutManager()).scrollToPositionWithOffset(index - 1, 0);
+                                            ((LinearLayoutManager) binding.recycler.getLayoutManager()).scrollToPositionWithOffset(index - 1, 0);
                                         }
                                     });
                                 }
@@ -1273,22 +1188,22 @@ public class ChatFragment extends Fragment implements
 
     }
 
-    public void setStateConsultConnected(final String connectedConsultId, final String ConsultName) {
+    public void setStateConsultConnected(final String connectedConsultId, final String consultName) {
         final ChatFragment f = this;
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (!isInMessageSearchMode) {
-                    mConsultTitle.setVisibility(View.VISIBLE);
-                    mConsultNameView.setVisibility(View.VISIBLE);
+                    binding.subtitle.setVisibility(View.VISIBLE);
+                    binding.consultName.setVisibility(View.VISIBLE);
                 }
-                if (!isEmpty(ConsultName) && !ConsultName.equals("null")) {
-                    mConsultNameView.setText(ConsultName);
+                if (!TextUtils.isEmpty(consultName) && !consultName.equals("null")) {
+                    binding.consultName.setText(consultName);
                 } else {
-                    mConsultNameView.setText(appContext.getString(R.string.threads_unknown_operator));
+                    binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
                 }
 
-                mConsultTitle.setText(getString(R.string.threads_operator_subtitle));
+                binding.subtitle.setText(getString(R.string.threads_operator_subtitle));
                 f.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();
@@ -1301,14 +1216,14 @@ public class ChatFragment extends Fragment implements
             @Override
             public void run() {
                 if (!isInMessageSearchMode) {
-                    mConsultTitle.setVisibility(View.GONE);
-                    mConsultNameView.setVisibility(View.VISIBLE);
-                    mSearchLo.setVisibility(View.GONE);
-                    mSearchMessageEditText.setText("");
-                    if (style != null && style.chatTitleTextResId != INVALID) {
-                        mConsultNameView.setText(style.chatTitleTextResId);
+                    binding.subtitle.setVisibility(View.GONE);
+                    binding.consultName.setVisibility(View.VISIBLE);
+                    binding.searchLo.setVisibility(View.GONE);
+                    binding.search.setText("");
+                    if (style != null && style.chatTitleTextResId != ChatStyle.INVALID) {
+                        binding.consultName.setText(style.chatTitleTextResId);
                     } else {
-                        mConsultNameView.setText(appContext.getString(R.string.threads_contact_center));
+                        binding.consultName.setText(appContext.getString(R.string.threads_contact_center));
                     }
                 }
                 connectedConsultId = String.valueOf(-1);
@@ -1335,8 +1250,8 @@ public class ChatFragment extends Fragment implements
     }
 
     private boolean isCopy(String text) {
-        if (isEmpty(text)) return false;
-        if (isEmpty(PrefUtils.getLastCopyText(getActivity()))) return false;
+        if (TextUtils.isEmpty(text)) return false;
+        if (TextUtils.isEmpty(PrefUtils.getLastCopyText(getActivity()))) return false;
         return text.contains(PrefUtils.getLastCopyText(getActivity()));
     }
 
@@ -1344,52 +1259,52 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         Context context = activity.getApplicationContext();
         setTitleStateCurrentOperatorConnected();
-        if (style != null && style.chatToolbarTextColorResId != INVALID) {
+        if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
             Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
             ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
-            backButton.setImageDrawable(d);
-            ColorsHelper.setDrawableColor(context, popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
+            binding.chatBackButton.setImageDrawable(d);
+            ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
         } else {
             Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
             ColorsHelper.setDrawableColor(context, d, R.color.threads_chat_toolbar_text);
-            backButton.setImageDrawable(d);
-            ColorsHelper.setDrawableColor(context, popupMenuButton.getDrawable(), R.color.threads_chat_toolbar_text);
+            binding.chatBackButton.setImageDrawable(d);
+            ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), R.color.threads_chat_toolbar_text);
         }
-        if (style != null && style.chatToolbarColorResId != INVALID) {
-            ColorsHelper.setBackgroundColor(context, mToolbar, style.chatToolbarColorResId);
+        if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
+            ColorsHelper.setBackgroundColor(context, binding.toolbar, style.chatToolbarColorResId);
         }
         else {
-            ColorsHelper.setBackgroundColor(context, mToolbar, R.color.threads_chat_toolbar);
+            ColorsHelper.setBackgroundColor(context, binding.toolbar, R.color.threads_chat_toolbar);
         }
 
-        mCopyControls.setVisibility(View.GONE);
-        if (!isInMessageSearchMode) mConsultNameView.setVisibility(View.VISIBLE);
+        binding.copyControls.setVisibility(View.GONE);
+        if (!isInMessageSearchMode) binding.consultName.setVisibility(View.VISIBLE);
         if (mChatController != null && mChatController.isConsultFound() && !isInMessageSearchMode) {
-            mConsultTitle.setVisibility(View.VISIBLE);
+            binding.subtitle.setVisibility(View.VISIBLE);
         }
     }
 
     private void setBottomStateDefault() {
-        mBottomSheetView.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
+        binding.fileInputSheet.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
             @Override
             public void run() {
-                mBottomSheetView.setVisibility(View.GONE);
-                mInputLayout.setVisibility(View.VISIBLE);
+                binding.fileInputSheet.setVisibility(View.GONE);
+                binding.inputLayout.setVisibility(View.VISIBLE);
             }
         });
-        if (!isInMessageSearchMode) mSearchLo.setVisibility(View.GONE);
-        if (!isInMessageSearchMode) mSearchMessageEditText.setText("");
-        mBottomGallery.setVisibility(View.GONE);
+        if (!isInMessageSearchMode) binding.searchLo.setVisibility(View.GONE);
+        if (!isInMessageSearchMode) binding.search.setText("");
+        binding.bottomGallery.setVisibility(View.GONE);
     }
 
 
     private void setTitleStateCurrentOperatorConnected() {
         if (isInMessageSearchMode) return;
         if (mChatController.isConsultFound()) {
-            mConsultTitle.setVisibility(View.VISIBLE);
-            mConsultNameView.setVisibility(View.VISIBLE);
-            mSearchLo.setVisibility(View.GONE);
-            mSearchMessageEditText.setText("");
+            binding.subtitle.setVisibility(View.VISIBLE);
+            binding.consultName.setVisibility(View.VISIBLE);
+            binding.searchLo.setVisibility(View.GONE);
+            binding.search.setText("");
         }
     }
 
@@ -1401,24 +1316,20 @@ public class ChatFragment extends Fragment implements
                 @Override
                 public void run() {
                     mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), activity, fragment);
-                    mRecyclerView.setAdapter(mChatAdapter);
+                    binding.recycler.setAdapter(mChatAdapter);
                     setTitleStateDefault();
-                    if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
-                        mWelcomeScreen.setVisibility(View.GONE);
-                        mWelcomeScreen = null;
-                    }
-                    mInputEditText.clearFocus();
-                    showHelloScreen();
+                    welcomeScreenVisibility(false);
+                    binding.input.clearFocus();
+                    welcomeScreenVisibility(true);
                 }
             });
         }
     }
 
-    private void showHelloScreen() {
-        if (mWelcomeScreen == null)
-            mWelcomeScreen = (WelcomeScreen) rootView.findViewById(R.id.welcome);
-        mWelcomeScreen.setVisibility(View.VISIBLE);
+    private void welcomeScreenVisibility(boolean show) {
+        binding.welcome.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
 
     public void setPhraseSentStatus(String id, MessageState messageState) {
         mChatAdapter.changeStateOfMessage(id, messageState);
@@ -1483,20 +1394,20 @@ public class ChatFragment extends Fragment implements
 
     private void setTitleStateSearchingConsult() {
         if (isInMessageSearchMode) return;
-        mConsultTitle.setVisibility(View.GONE);
-        mConsultNameView.setVisibility(View.VISIBLE);
-        mSearchLo.setVisibility(View.GONE);
-        mSearchMessageEditText.setText("");
+        binding.subtitle.setVisibility(View.GONE);
+        binding.consultName.setVisibility(View.VISIBLE);
+        binding.searchLo.setVisibility(View.GONE);
+        binding.search.setText("");
         if (isAdded()) {
-            mConsultNameView.setText(appContext.getString(R.string.threads_searching_operator));
+            binding.consultName.setText(appContext.getString(R.string.threads_searching_operator));
         }
     }
 
     public void setTitleStateSearchingMessage() {
-        mConsultTitle.setVisibility(View.GONE);
-        mConsultNameView.setVisibility(View.GONE);
-        mSearchLo.setVisibility(View.VISIBLE);
-        mSearchMessageEditText.setText("");
+        binding.subtitle.setVisibility(View.GONE);
+        binding.consultName.setVisibility(View.GONE);
+        binding.searchLo.setVisibility(View.VISIBLE);
+        binding.search.setText("");
     }
 
     public void setStateSearchingConsult() {
@@ -1556,18 +1467,18 @@ public class ChatFragment extends Fragment implements
     }
 
     public void updateInputEnable(boolean enabled) {
-        mInputEditText.setEnabled(enabled);
-        mAddAttachmentButton.setEnabled(enabled);
-        mSendButton.setEnabled(enabled);
+        binding.input.setEnabled(enabled);
+        binding.addAttachment.setEnabled(enabled);
+        binding.sendMessage.setEnabled(enabled);
 
         if (style != null) {
-            if (style.chatBodyIconsTint != INVALID) {
-                ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
-                ColorsHelper.setTint(getActivity(), mSendButton, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
+            if (style.chatBodyIconsTint != ChatStyle.INVALID) {
+                ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
+                ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
             }
             else {
-                ColorsHelper.setTint(getActivity(), mAddAttachmentButton, enabled ? R.color.threads_chat_icons_tint : R.color.threads_disabled_text_color);
-                ColorsHelper.setTint(getActivity(), mSendButton, enabled ? R.color.threads_chat_icons_tint : R.color.threads_disabled_text_color);
+                ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? R.color.threads_chat_icons_tint : R.color.threads_disabled_text_color);
+                ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? R.color.threads_chat_icons_tint : R.color.threads_disabled_text_color);
             }
         }
     }
@@ -1576,13 +1487,10 @@ public class ChatFragment extends Fragment implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_PHOTOS && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_PHOTOS && resultCode == Activity.RESULT_OK) {
             ArrayList<String> photos = data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG);
             onHideClick();
-            if (mWelcomeScreen != null && mWelcomeScreen.getVisibility() == View.VISIBLE) {
-                mWelcomeScreen.setVisibility(View.GONE);
-                mWelcomeScreen = null;
-            }
+            welcomeScreenVisibility(false);
             if (photos.size() == 0) return;
             unChooseItem(mChosenPhrase);
             UpcomingUserMessage uum =
@@ -1591,10 +1499,10 @@ public class ChatFragment extends Fragment implements
                             , new File(photos.get(0).replaceAll("file://", "")).length()
                             , System.currentTimeMillis())
                             , null
-                            , mInputEditText.getText().toString().trim()
-                            , isCopy(mInputEditText.getText().toString()));
+                            , binding.input.getText().toString().trim()
+                            , isCopy(binding.input.getText().toString()));
             mChatController.onUserInput(uum);
-            mInputEditText.setText("");
+            binding.input.setText("");
             mQuoteLayoutHolder.setIsVisible(false);
             mQuote = null;
             mFileDescription = null;
@@ -1607,7 +1515,7 @@ public class ChatFragment extends Fragment implements
                                 , false);
                 mChatController.onUserInput(uum);
             }
-        } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == Activity.RESULT_OK) {
             mFileDescription = new FileDescription(appContext.getString(R.string.threads_image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
             UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
             sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
@@ -1636,7 +1544,7 @@ public class ChatFragment extends Fragment implements
         List<ChatItem> list = mChatAdapter.getList();
         for (int i = 1; i < list.size(); i++) {
             if (list.get(i) instanceof UnreadMessages) {
-                ((LinearLayoutManager) mRecyclerView.getLayoutManager()).scrollToPositionWithOffset(i - 1, 0);
+                ((LinearLayoutManager) binding.recycler.getLayoutManager()).scrollToPositionWithOffset(i - 1, 0);
             }
         }
     }
@@ -1654,10 +1562,10 @@ public class ChatFragment extends Fragment implements
                             @Override
                             public void run() {
                                 if (!isInMessageSearchMode) {
-                                    mRecyclerView.post(new Runnable() {
+                                    binding.recycler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            ((LinearLayoutManager) mRecyclerView.getLayoutManager()).scrollToPositionWithOffset(index - 1, 0);
+                                            ((LinearLayoutManager) binding.recycler.getLayoutManager()).scrollToPositionWithOffset(index - 1, 0);
                                         }
                                     });
                                 }
@@ -1682,36 +1590,34 @@ public class ChatFragment extends Fragment implements
     public void onPause() {
         super.onPause();
         mChatController.setActivityIsForeground(false);
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.setRefreshing(false);
-            mSwipeRefreshLayout.destroyDrawingCache();
-            mSwipeRefreshLayout.clearAnimation();
+        if (binding.swipeRefresh != null) {
+            binding.swipeRefresh.setRefreshing(false);
+            binding.swipeRefresh.destroyDrawingCache();
+            binding.swipeRefresh.clearAnimation();
         }
     }
 
     private void initToolbar() {
-        mToolbar.setTitle("");
+        binding.toolbar.setTitle("");
 
-        backButton = (ImageButton) rootView.findViewById(R.id.chat_back_button);
         Activity activity = getActivity();
         if (activity instanceof ChatActivity) {
-            backButton.setVisibility(View.VISIBLE);
+            binding.chatBackButton.setVisibility(View.VISIBLE);
         } else {
             if (style != null && style.showBackButton) {
-                backButton.setVisibility(View.VISIBLE);
+                binding.chatBackButton.setVisibility(View.VISIBLE);
             } else {
-                backButton.setVisibility(View.GONE);
+                binding.chatBackButton.setVisibility(View.GONE);
             }
         }
-        backButton.setOnClickListener(new View.OnClickListener() {
+        binding.chatBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onActivityBackPressed();
             }
         });
 
-        popupMenuButton = (ImageButton) rootView.findViewById(R.id.popup_menu_button);
-        popupMenuButton.setOnClickListener(new View.OnClickListener() {
+        binding.popupMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showPopup();
@@ -1721,11 +1627,11 @@ public class ChatFragment extends Fragment implements
     }
 
     private void showOverflowMenu() {
-        popupMenuButton.setVisibility(View.VISIBLE);
+        binding.popupMenuButton.setVisibility(View.VISIBLE);
     }
 
     private void hideOverflowMenu() {
-        popupMenuButton.setVisibility(View.GONE);
+        binding.popupMenuButton.setVisibility(View.GONE);
     }
 
     private void onActivityBackPressed() {
@@ -1743,44 +1649,44 @@ public class ChatFragment extends Fragment implements
     public boolean onBackPressed() {
         if (null != mChatAdapter) mChatAdapter.removeHighlight();
         boolean isNeedToClose = true;
-        if (mBottomSheetView.getVisibility() == View.VISIBLE && mBottomGallery.getVisibility() == View.VISIBLE) {
-            mBottomSheetView.setVisibility(View.GONE);
-            mInputLayout.setVisibility(View.VISIBLE);
+        if (binding.fileInputSheet.getVisibility() == View.VISIBLE && binding.bottomGallery.getVisibility() == View.VISIBLE) {
+            binding.fileInputSheet.setVisibility(View.GONE);
+            binding.inputLayout.setVisibility(View.VISIBLE);
             onHideClick();
             return false;
         }
-        if (mBottomSheetView.getVisibility() == View.VISIBLE) {
-            mBottomSheetView.setVisibility(View.GONE);
-            mInputLayout.setVisibility(View.VISIBLE);
+        if (binding.fileInputSheet.getVisibility() == View.VISIBLE) {
+            binding.fileInputSheet.setVisibility(View.GONE);
+            binding.inputLayout.setVisibility(View.VISIBLE);
             return false;
         }
 
-        if (mCopyControls.getVisibility() == View.VISIBLE
-                && mSearchLo.getVisibility() == View.VISIBLE) {
+        if (binding.copyControls.getVisibility() == View.VISIBLE
+                && binding.searchLo.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
-            mSearchMessageEditText.requestFocus();
+            binding.search.requestFocus();
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(mSearchMessageEditText, InputMethodManager.SHOW_IMPLICIT);
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(binding.search, InputMethodManager.SHOW_IMPLICIT);
                 }
             }, 100);
             return false;
         }
-        if (mCopyControls.getVisibility() == View.VISIBLE) {
+        if (binding.copyControls.getVisibility() == View.VISIBLE) {
             unChooseItem(mChosenPhrase);
             hideBackButton();
             isNeedToClose = false;
         }
-        if (mSearchLo.getVisibility() == View.VISIBLE) {
+        if (binding.searchLo.getVisibility() == View.VISIBLE) {
             isNeedToClose = false;
             hideSearchMode();
-            if (mRecyclerView != null && mChatAdapter != null) {
+            if (binding.recycler != null && mChatAdapter != null) {
                 scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
         }
-        if (mBottomGallery.getVisibility() == View.VISIBLE) {
+        if (binding.bottomGallery.getVisibility() == View.VISIBLE) {
             onHideClick();
             return false;
         }
@@ -1796,20 +1702,20 @@ public class ChatFragment extends Fragment implements
     }
 
     private void hideSearchMode() {
-        mSearchLo.setVisibility(View.GONE);
+        binding.searchLo.setVisibility(View.GONE);
         setMenuVisibility(true);
         isInMessageSearchMode = false;
-        mSearchMessageEditText.setText("");
+        binding.search.setText("");
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(mSearchMessageEditText.getWindowToken(), 0);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(binding.search.getWindowToken(), 0);
             }
         }, 100);
 
-        mSearchMoreButton.setVisibility(View.GONE);
-        mSwipeRefreshLayout.setEnabled(true);
+        binding.searchMore.setVisibility(View.GONE);
+        binding.swipeRefresh.setEnabled(true);
         int state = mChatController.getStateOfConsult();
         switch (state) {
             case ChatController.CONSULT_STATE_DEFAULT:
@@ -1830,7 +1736,7 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         if (!(activity instanceof ChatActivity)) {
             if (style != null && !style.showBackButton) {
-                backButton.setVisibility(View.GONE);
+                binding.chatBackButton.setVisibility(View.GONE);
             }
         }
     }
@@ -1844,18 +1750,18 @@ public class ChatFragment extends Fragment implements
         isInMessageSearchMode = true;
         setBottomStateDefault();
         setTitleStateSearchingMessage();
-        mSearchMessageEditText.requestFocus();
+        binding.search.requestFocus();
         hideOverflowMenu();
         setMenuVisibility(false);
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-                imm.showSoftInput(mSearchMessageEditText, InputMethodManager.SHOW_IMPLICIT);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(binding.search, InputMethodManager.SHOW_IMPLICIT);
             }
         }, 100);
-        mSwipeRefreshLayout.setEnabled(false);
-        mSearchMoreButton.setVisibility(View.GONE);
+        binding.swipeRefresh.setEnabled(false);
+        binding.searchMore.setVisibility(View.GONE);
     }
 
     @ColorInt
@@ -1864,28 +1770,16 @@ public class ChatFragment extends Fragment implements
     }
 
     private class QuoteLayoutHolder {
-        private View view;
-        private TextView mHeader;
-        private TextView mText;
-        private ImageView mQuoteImage;
-
         public QuoteLayoutHolder() {
-            view = rootView.findViewById(R.id.quote_layout);
-            mHeader = (TextView) view.findViewById(R.id.quote_header);
-
-            if (style != null && style.incomingMessageTextColor != INVALID) {
-                mHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
+            if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
+                binding.quoteHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
             }
-
-            mText = (TextView) view.findViewById(R.id.quote_text);
-            mQuoteImage = (ImageView) rootView.findViewById(R.id.quote_image);
-            View clear = view.findViewById(R.id.quote_clear);
-            clear.setOnClickListener(new View.OnClickListener() {
+            binding.quoteClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mHeader.setText("");
-                    mText.setText("");
-                    view.setVisibility(View.GONE);
+                    binding.quoteHeader.setText("");
+                    binding.quoteText.setText("");
+                    binding.quoteLayout.setVisibility(View.GONE);
                     mQuote = null;
                     mFileDescription = null;
                     unChooseItem(mChosenPhrase);
@@ -1894,40 +1788,40 @@ public class ChatFragment extends Fragment implements
         }
 
         public boolean isVisible() {
-            return view.getVisibility() == View.VISIBLE;
+            return binding.quoteLayout.getVisibility() == View.VISIBLE;
         }
 
         public void setIsVisible(boolean isVisible) {
             if (isVisible) {
-                view.setVisibility(View.VISIBLE);
+                binding.quoteLayout.setVisibility(View.VISIBLE);
             } else {
-                view.setVisibility(View.GONE);
+                binding.quoteLayout.setVisibility(View.GONE);
             }
         }
 
         private void setImage(String path) {
-            mQuoteImage.setVisibility(View.VISIBLE);
+            binding.quoteImage.setVisibility(View.VISIBLE);
             Picasso
                     .with(getActivity().getApplicationContext())
                     .load(path)
                     .fit()
                     .centerCrop()
-                    .into(mQuoteImage);
+                    .into(binding.quoteImage);
         }
 
         private void removeImage() {
-            mQuoteImage.setVisibility(View.GONE);
+            binding.quoteImage.setVisibility(View.GONE);
         }
 
         void setText(String header, String text, String imagePath) {
             setIsVisible(true);
             if (header == null || header.equals("null")) {
-                mHeader.setVisibility(View.INVISIBLE);
+                binding.quoteHeader.setVisibility(View.INVISIBLE);
             } else {
-                mHeader.setVisibility(View.VISIBLE);
+                binding.quoteHeader.setVisibility(View.VISIBLE);
             }
-            mHeader.setText(header);
-            mText.setText(text);
+            binding.quoteHeader.setText(header);
+            binding.quoteText.setText(text);
             if (imagePath != null) {
                 setImage(imagePath);
             } else {

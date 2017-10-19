@@ -61,6 +61,10 @@ android {
         javaMaxHeapSize "12g"
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
             def file = output.outputFile

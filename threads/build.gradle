@@ -9,6 +9,10 @@ android {
         disable 'InvalidPackage'
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 25
