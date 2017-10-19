@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,7 +24,6 @@ import com.pushserver.android.exception.PushServerErrorException;
 import com.pushserver.android.model.PushMessage;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +37,7 @@ import im.threads.BuildConfig;
 import im.threads.activities.ChatActivity;
 import im.threads.activities.ConsultActivity;
 import im.threads.activities.ImagesActivity;
+import im.threads.broadcastReceivers.ProgressReceiver;
 import im.threads.database.DatabaseHolder;
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.formatters.OutgoingMessageCreator;
@@ -46,7 +45,6 @@ import im.threads.formatters.PushMessageTypes;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
-import im.threads.model.ChatStyle;
 import im.threads.model.ClearThreadIdChatItem;
 import im.threads.model.CompletionHandler;
 import im.threads.model.ConsultChatPhrase;
@@ -66,7 +64,6 @@ import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
-import im.threads.retrofit.RetrofitService;
 import im.threads.retrofit.ServiceGenerator;
 import im.threads.services.DownloadService;
 import im.threads.services.NotificationService;
@@ -77,8 +74,7 @@ import im.threads.utils.DualFilePoster;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.Seeker;
-import retrofit2.Call;
-import retrofit2.Response;
+import im.threads.utils.Transport;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -86,18 +82,13 @@ import retrofit2.Response;
  * all work here
  * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
  */
-public class ChatController {
+public class ChatController implements ProgressReceiver.DeviceIdChangedListener {
     // Некоторые операции производятся в отдельном потоке через Executor.
     // Чтобы отправить результат из него в UI Thread используется Handler.
     private static final Handler h = new Handler(Looper.getMainLooper());
     private Executor mExecutor = Executors.newSingleThreadExecutor();
     private Executor mMessagesExecutor = Executors.newSingleThreadExecutor();
 
-    // Сообщения для Broadcast Receivers
-    public static final String PROGRESS_BROADCAST = "im.threads.controllers.PROGRESS_BROADCAST";
-    public static final String DOWNLOADED_SUCCESSFULLY_BROADCAST = "im.threads.controllers.DOWNLOADED_SUCCESSFULLY_BROADCAST";
-    public static final String DOWNLOAD_ERROR_BROADCAST = "im.threads.controllers.DOWNLOAD_ERROR_BROADCAST";
-    public static final String DEVICE_ID_IS_SET_BROADCAST = "im.threads.controllers.DEVICE_ID_IS_SET_BROADCAST";
 
     // Состояния консультанта
     public static final int CONSULT_STATE_FOUND = 1;
@@ -125,7 +116,6 @@ public class ChatController {
     private Context appContext;
     private static ChatController instance;
     private int currentOffset = 0;
-    private int searchOffset = 0;
     private Long lastMessageId;
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
@@ -137,8 +127,6 @@ public class ChatController {
     private String lastSearchQuery = "";
     private boolean isAllMessagesDownloaded = false;
     private boolean isDownloadingMessages;
-
-    private static Long lastLoadId;
 
     // Используется для создания PendingIntent при открытии чата из пуш уведомления.
     // По умолчанию открывается ChatActivity.
@@ -164,10 +152,6 @@ public class ChatController {
      */
     public interface FullPushListener {
         void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage);
-    }
-
-    private interface ExceptionListener {
-        void onException(Exception e);
     }
 
     public static ChatController getInstance(final Context ctx) {
@@ -207,7 +191,7 @@ public class ChatController {
 
     private static void onClientIdChanged(Context ctx, String finalClientId) {
         try {
-            getPushControllerInstance(ctx);
+            Transport.getPushControllerInstance(ctx);
         } catch (PushServerErrorException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "device address was not set, returning");
             return;
@@ -221,19 +205,19 @@ public class ChatController {
             String oldClientId = PrefUtils.getClientID(ctx);
             if (!TextUtils.isEmpty(oldClientId)) {
                 // send CLIENT_OFFLINE message
-                sendMessageMFMSSync(ctx, OutgoingMessageCreator.createMessageClientOffline(oldClientId), true);
+                Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createMessageClientOffline(oldClientId), true);
             }
             PrefUtils.setClientId(ctx, finalClientId);
-            sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId), true);
+            Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId), true);
             String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                     finalClientId,
                                                                                     PrefUtils.getData(ctx),
                                                                                     ctx);
-            sendMessageMFMSSync(ctx, environmentMessage, true);
-            getPushControllerInstance(ctx).resetCounterSync();
+            Transport.sendMessageMFMSSync(ctx, environmentMessage, true);
+            Transport.getPushControllerInstance(ctx).resetCounterSync();
 
-            HistoryResponseV2 response = getHistorySync(ctx, null, null);
-            List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+            HistoryResponseV2 response = Transport.getHistorySync(ctx, null, true);
+            List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
             instance.mDatabaseHolder.putMessagesSync(serverItems);
             ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
             if (instance.fragment != null) {
@@ -261,7 +245,7 @@ public class ChatController {
                 PrefUtils.getClientID(appContext)
         );
 
-        sendMessageMFMSAsync(context, ratingDoneMessage, false,
+        Transport.sendMessageMFMSAsync(context, ratingDoneMessage, false,
                 new RequestCallback<String, PushServerErrorException>() {
                     @Override
                     public void onResult(String s) {
@@ -294,7 +278,7 @@ public class ChatController {
                 OutgoingMessageCreator.createResolveThreadMessage(clientID) :
                 OutgoingMessageCreator.createReopenThreadMessage(clientID);
 
-        sendMessageMFMSAsync(context, resolveThreadMessage, true,
+        Transport.sendMessageMFMSAsync(context, resolveThreadMessage, true,
                 new RequestCallback<String, PushServerErrorException>() {
                     @Override
                     public void onResult(String s) {
@@ -415,7 +399,7 @@ public class ChatController {
         long currentTime = System.currentTimeMillis();
         if ((currentTime - lastUserTypingSend) >= 3000) {
             lastUserTypingSend = currentTime;
-            sendMessageMFMSAsync(appContext,
+            Transport.sendMessageMFMSAsync(appContext,
                     OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext)),
                     true, new RequestCallback<String, PushServerErrorException>() {
                         @Override
@@ -453,12 +437,12 @@ public class ChatController {
             @Override
             public void run() {
                 try {
-                    sendMessageMFMSSync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext)), true);
+                    Transport.sendMessageMFMSSync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext)), true);
                     String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
                                                                                         PrefUtils.getClientID(appContext),
                                                                                         PrefUtils.getData(appContext),
                                                                                         appContext);
-                    sendMessageMFMSSync(appContext, environmentMessage, true);
+                    Transport.sendMessageMFMSSync(appContext, environmentMessage, true);
                 } catch (PushServerErrorException e) {
                     e.printStackTrace();
                 }
@@ -471,12 +455,12 @@ public class ChatController {
         } else {
             fragment.setTitleStateDefault();
         }
-        mProgressReceiver = new ProgressReceiver();
+        mProgressReceiver = new ProgressReceiver(fragment, this);
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(PROGRESS_BROADCAST);
-        intentFilter.addAction(DOWNLOADED_SUCCESSFULLY_BROADCAST);
-        intentFilter.addAction(DOWNLOAD_ERROR_BROADCAST);
-        intentFilter.addAction(DEVICE_ID_IS_SET_BROADCAST);
+        intentFilter.addAction(ProgressReceiver.PROGRESS_BROADCAST);
+        intentFilter.addAction(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST);
+        intentFilter.addAction(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST);
+        intentFilter.addAction(ProgressReceiver.DEVICE_ID_IS_SET_BROADCAST);
         activity.registerReceiver(mProgressReceiver, intentFilter);
     }
 
@@ -491,7 +475,8 @@ public class ChatController {
 
     private void updateChatItemsOnBind() {
         if (null != fragment) {
-            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, (int) getHistoryLoadingCount(fragment.getActivity())));
+            int historyLoadingCount = (int) Transport.getHistoryLoadingCount(fragment.getActivity());
+            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, historyLoadingCount));
             h.post(new Runnable() {
                 @Override
                 public void run() {
@@ -510,37 +495,13 @@ public class ChatController {
         });
     }
 
-//    private void updateChatHistoryOnBind() {
-//        if (fragment != null) {
-//            try {
-//                PushController.getInstance(appContext).resetCounterSync();
-//                List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, 20);
-//                List<ChatItem> serverItems = MessageFormatter.format(PushController.getInstance(appContext).getMessageHistory(20));
-//                if (dbItems.size() != serverItems.size()
-//                        || !dbItems.containsAll(serverItems)) {
-//                    Log.i(TAG, "not same!");
-//                    mDatabaseHolder.putMessagesSync(serverItems);
-//                    h.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, 20));
-//                            if (null != fragment) fragment.addChatItems(items);
-//                        }
-//                    });
-//                }
-//            } catch (PushServerErrorException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
     private void updateChatHistoryOnBind() {
         if (fragment != null) {
             try {
-                HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), null, null);
-                List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+                HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
+                List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                 final ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
+                final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
                 List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, count);
                 if (dbItems.size() != serverItems.size()
                         || !dbItems.containsAll(serverItems)) {
@@ -631,7 +592,7 @@ public class ChatController {
             consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
         }
 
-        reportAbountSendMessage(userPhrase);
+        reportAboutSendMessage(userPhrase);
 
         try {
             if (!userPhrase.hasFile()) {
@@ -651,7 +612,7 @@ public class ChatController {
                     public void run() {
                         if (fragment != null)
                             try {
-                                getPushControllerInstance(appContext).notifyMessageUpdateNeeded();
+                                Transport.getPushControllerInstance(appContext).notifyMessageUpdateNeeded();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -666,7 +627,7 @@ public class ChatController {
                 PrefUtils.getClientID(appContext),
                 PrefUtils.getThreadID(appContext));
 
-        sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
+        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
             @Override
             public void onResult(String string) {
                 onMessageSent(userPhrase, string);
@@ -676,7 +637,7 @@ public class ChatController {
             public void onError(PushServerErrorException e) {
                 onMessageSentError(userPhrase);
             }
-        }, new ExceptionListener() {
+        }, new Transport.ExceptionListener() {
             @Override
             public void onException(Exception e) {
                 onMessageSentError(userPhrase);
@@ -710,7 +671,7 @@ public class ChatController {
                 PrefUtils.getClientID(appContext),
                 PrefUtils.getThreadID(appContext));
 
-        sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
+        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
             @Override
             public void onResult(String string) {
                 onMessageSent(userPhrase, string);
@@ -784,7 +745,7 @@ public class ChatController {
         }
     }
 
-    private void reportAbountSendMessage(UserPhrase userPhrase) {
+    private void reportAboutSendMessage(UserPhrase userPhrase) {
         if (BuildConfig.DEBUG) Log.i(TAG, "sendMessage: " + userPhrase);
         if (BuildConfig.DEBUG) Log.i(TAG, "sendMessage: " + mAnalyticsTracker);
         if (userPhrase.isWithPhrase())
@@ -833,9 +794,7 @@ public class ChatController {
                 }
             }
         });
-
     }
-
 
     private void downloadMessagesTillEnd() {
         if (isDownloadingMessages) return;
@@ -849,7 +808,7 @@ public class ChatController {
                     isDownloadingMessages = true;
                     final Long chunk = 100L;
                     Long start = lastMessageId == null ? null : lastMessageId;
-                    HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), start, chunk);
+                    HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
                     List<MessgeFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
                     lastMessageId = items.get(items.size() - 1).getId();
@@ -864,9 +823,7 @@ public class ChatController {
                 }
             }
         });
-
     }
-
 
     void addMessage(final ChatItem cm, Context ctx) {
         mDatabaseHolder.putChatItem(cm);
@@ -969,7 +926,6 @@ public class ChatController {
         if (fragment != null) fragment.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
         mConsultWriter.setSearchingConsult(false);
-        searchOffset = 0;
         currentOffset = 0;
         h.removeCallbacksAndMessages(null);
         if (appContext != null) {
@@ -1099,10 +1055,10 @@ public class ChatController {
                     currentItemsCount = fragment.getCurrentItemsCount();
                 }
                 final int[] currentOffset = {currentItemsCount};
-                final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
+                final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
                 try {
-                    HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), lastLoadId, null);
-                    List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+                    HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), null, false);
+                    List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                     mDatabaseHolder.putMessagesSync(serverItems);
                     final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                     currentOffset[0] += chatItems.size();
@@ -1191,7 +1147,7 @@ public class ChatController {
                     PrefUtils.getClientID(appContext)
             );
 
-            sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
+            Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
                 @Override
                 public void onResult(String s) {
                     survey.setMessageId(s);
@@ -1292,7 +1248,7 @@ public class ChatController {
         mDatabaseHolder.getLastUnreadPhrase(handler);
     }
 
-    private void onSettingClientId(final Context ctx) {
+    public void onSettingClientId(final Context ctx) {
         if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");
         mExecutor.execute(new Runnable() {
             @Override
@@ -1304,15 +1260,15 @@ public class ChatController {
                         PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
                         PrefUtils.setClientIdWasSet(true, ctx);
 
-                        getPushControllerInstance(ctx).resetCounterSync();
+                        Transport.getPushControllerInstance(ctx).resetCounterSync();
 
-                        sendMessageMFMSSync(ctx, OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
+                        Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                             PrefUtils.getNewClientID(ctx),
                                                                                             PrefUtils.getData(ctx),
                                                                                             ctx), true);
 
-                        HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), null, null);
-                        List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+                        HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
+                        List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                         mDatabaseHolder.putMessagesSync(serverItems);
                         if (fragment != null) {
                             fragment.addChatItems((List<ChatItem>) setLastAvatars(serverItems));
@@ -1369,61 +1325,6 @@ public class ChatController {
         if (fragment != null) fragment.setAllMessagesWereRead();
     }
 
-    /**
-     * В чате есть возможность скачать файл из сообщения.
-     * Он скачивается через сервис.
-     * Для приема сообщений из сервиса используется данный BroadcastReceiver
-     */
-    private class ProgressReceiver extends BroadcastReceiver {
-        private static final String TAG = "ProgressReceiver ";
-
-        public ProgressReceiver() {
-
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "onReceive:");
-            String action = intent.getAction();
-            if (action == null) return;
-            if (action.equals(PROGRESS_BROADCAST)) {
-                Log.i(TAG, "onReceive: PROGRESS_BROADCAST ");
-                FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
-                if (fragment != null && fileDescription != null)
-                    fragment.updateProgress(fileDescription);
-            } else if (action.equals(DOWNLOADED_SUCCESSFULLY_BROADCAST)) {
-                Log.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ");
-                FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
-                fileDescription.setDownloadProgress(100);
-                if (fragment != null)
-                    fragment.updateProgress(fileDescription);
-            } else if (action.equals(DOWNLOAD_ERROR_BROADCAST)) {
-                Log.i(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ");
-                FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
-                if (fragment != null && fileDescription != null) {
-                    Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
-                    fragment.onDownloadError(fileDescription, t);
-                }
-            } else if (action.equals(DEVICE_ID_IS_SET_BROADCAST)) {
-                onSettingClientId(context);
-            }
-        }
-    }
-
-    /**
-     * обращение к пуш контроллеру, если нет DeviceAddress,
-     * то выкидывает PushServerErrorException
-     */
-    private static PushController getPushControllerInstance(Context ctx) throws PushServerErrorException {
-        PushController controller = PushController.getInstance(ctx);
-        String deviceAddress = controller.getDeviceAddress();
-        if (deviceAddress != null && !deviceAddress.isEmpty()) {
-            return PushController.getInstance(ctx);
-        } else {
-            throw new PushServerErrorException(PushServerErrorException.DEVICE_ADDRESS_INVALID);
-        }
-    }
-
     public static UnreadMessagesCountListener getUnreadMessagesCountListener() {
         return unreadMessagesCountListener == null ? null : unreadMessagesCountListener.get();
     }
@@ -1472,120 +1373,9 @@ public class ChatController {
         void onUnreadMessagesCountChanged(int count);
     }
 
-    /**
-     * @return версию библиотеки
-     */
-    private static String getLibraryVersion() {
-        return BuildConfig.VERSION_NAME;
-    }
-
-
-    /**
-     * метод-обертка над методом mfms sendMessage
-     */
-    private static void sendMessageMFMSSync(Context ctx, String message, boolean isSystem) throws PushServerErrorException {
-        getPushControllerInstance(ctx).sendMessage(message, isSystem);
-    }
-
-    /**
-     * метод обертка над методом mfms sendMessageAsync
-     *
-     * @param message           сообщение для отправки
-     * @param isSystem          системное сообщение
-     * @param listener          слушатель успешной/неуспешной отправки
-     * @param exceptionListener слушатель ошибки отсутствия DeviceAdress
-     */
-    private static void sendMessageMFMSAsync(Context ctx,
-                                             String message,
-                                             boolean isSystem,
-                                             final RequestCallback<String, PushServerErrorException> listener,
-                                             final ExceptionListener exceptionListener) {
-        try {
-            getPushControllerInstance(ctx).sendMessageAsync(
-                    message, isSystem, new RequestCallback<String, PushServerErrorException>() {
-                        @Override
-                        public void onResult(String aVoid) {
-                            if (listener != null) {
-                                listener.onResult(aVoid);
-                            }
-                        }
-
-                        @Override
-                        public void onError(PushServerErrorException e) {
-                            if (listener != null) {
-                                listener.onError(e);
-                            }
-                        }
-                    });
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (exceptionListener != null) {
-                exceptionListener.onException(e);
-            }
-        }
-    }
-
-    /**
-     * метод обертка для запроса истории сообщений
-     * выполняется синхронно
-     *
-     * @param start ид сообщения от которого грузить, null если с начала
-     * @param count количество сообщений для загрузки
-     */
-    private static HistoryResponseV2 getHistorySync(Context ctx, Long start, Long count) throws Exception {
-        String token = getPushControllerInstance(ctx).getDeviceAddress() + ":" + PrefUtils.getClientID(ctx);
-        String url = PrefUtils.getServerUrlMetaInfo(ctx);
-        if (count == null) {
-            count = getHistoryLoadingCount(ctx);
-        }
-        if (url != null && !url.isEmpty() && !token.isEmpty()) {
-            ServiceGenerator.setUrl(url);
-            RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-            Call<HistoryResponseV2> call = retrofitService.historyV2(token, start, count, getLibraryVersion());
-            Response<HistoryResponseV2> response = call.execute();
-            if (response.isSuccessful()) {
-                return response.body();
-            } else {
-                Call<List<MessgeFromHistory>> call2 = retrofitService.history(token, start, count, getLibraryVersion());
-                return new HistoryResponseV2(call2.execute().body());
-            }
-        } else {
-            throw new IOException();
-        }
-    }
-
-    private static long getHistoryLoadingCount(Context ctx) {
-        ChatStyle style = PrefUtils.getIncomingStyle(ctx);
-        return style != null ? (long) style.historyLoadingCount : ChatStyle.DEFAULT_HISTORY_LOADING_COUNT;
-    }
-
-    private static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponseV2 response) {
-        List<ChatItem> list = new ArrayList<>();
-        if (response != null) {
-            List<MessgeFromHistory> responseList = response.getMessages();
-            if (responseList != null) {
-                list = IncomingMessageParser.formatNew(responseList);
-                setupLastItemIdFromHistory(responseList);
-            }
-        }
-        return list;
-    }
-
-    private static void setupLastItemIdFromHistory(List<MessgeFromHistory> list) {
-        if (list != null) {
-            for (MessgeFromHistory item : list) {
-                if (lastLoadId == null) {
-                    lastLoadId = item.getId();
-                } else if (lastLoadId > item.getId()) {
-                    lastLoadId = item.getId();
-                }
-            }
-        }
-    }
-
     private void setConsultMessageRead(Context ctx, String messageId) {
         try {
-            getPushControllerInstance(ctx).notifyMessageRead(messageId);
+            Transport.getPushControllerInstance(ctx).notifyMessageRead(messageId);
             mDatabaseHolder.setMessageWereRead(messageId);
         } catch (PushServerErrorException e) {
             e.printStackTrace();

@@ -1,9 +1,8 @@
-package im.threads.controllers;
+package im.threads.formatters;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import im.threads.formatters.PushMessageTypes;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;

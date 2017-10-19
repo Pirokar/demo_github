@@ -55,7 +55,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                context.sendBroadcast(new Intent(ChatController.DEVICE_ID_IS_SET_BROADCAST));
+                context.sendBroadcast(new Intent(ProgressReceiver.DEVICE_ID_IS_SET_BROADCAST));
             }
         }).start();
     }
