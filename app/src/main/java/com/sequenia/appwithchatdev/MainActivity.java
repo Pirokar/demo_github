@@ -18,9 +18,9 @@ import com.pushserver.android.PushController;
 import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.model.PushMessage;
 
-import im.threads.BuildConfig;
 import im.threads.activities.ChatActivity;
 import im.threads.controllers.ChatController;
+import im.threads.utils.AppInfoHelper;
 import im.threads.utils.PermissionChecker;
 import io.fabric.sdk.android.Fabric;
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         TextView versionView = (TextView) findViewById(R.id.version_name);
-        versionView.setText(getString(R.string.lib_version, BuildConfig.VERSION_NAME));
+        versionView.setText(getString(R.string.lib_version, AppInfoHelper.getLibVersion()));
 
         clientIdLayout = (TextInputLayout) findViewById(R.id.client_id);
         userNameLayout = (TextInputLayout) findViewById(R.id.user_name);

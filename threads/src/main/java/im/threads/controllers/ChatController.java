@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,12 +29,14 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import im.threads.AnalyticsTracker;
 import im.threads.BuildConfig;
+import im.threads.R;
 import im.threads.activities.ChatActivity;
 import im.threads.activities.ConsultActivity;
 import im.threads.activities.ImagesActivity;
@@ -70,6 +73,7 @@ import im.threads.services.NotificationService;
 import im.threads.utils.Callback;
 import im.threads.utils.CallbackNoError;
 import im.threads.utils.ConsultWriter;
+import im.threads.utils.DeviceInfoHelper;
 import im.threads.utils.DualFilePoster;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
@@ -98,6 +102,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     public static final int SURVEY_CHANGE_STATE_TIMEOUT = 2;
 
     public static final String TAG = "ChatController ";
+    private static final int RESEND_MSG = 123;
 
     // Ссылка на фрагмент, которым управляет контроллер
     private ChatFragment fragment;
@@ -127,7 +132,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private String lastSearchQuery = "";
     private boolean isAllMessagesDownloaded = false;
     private boolean isDownloadingMessages;
+    private List<UserPhrase> unsendMessages = new ArrayList<>();
+    private int resendTimeInterval;
 
+    private Handler mUnsendMessageHandler;
     // Используется для создания PendingIntent при открытии чата из пуш уведомления.
     // По умолчанию открывается ChatActivity.
     private static PendingIntentCreator pendingIntentCreator;
@@ -172,7 +180,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
             final String finalClientId = clientId;
             // Начальная инициализация чата.
-            // Сдесь происходит первоначальная загрузка истории сообщений,
+            // Здесь происходит первоначальная загрузка истории сообщений,
             // отправка сообщения о клиенте
             // и т.п.
             instance.mExecutor.execute(new Runnable() {
@@ -187,6 +195,46 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             PrefUtils.setNewClientId(ctx, "");
         }
         return instance;
+    }
+
+    @SuppressLint("all")
+    private ChatController(final Context ctx) {
+        appContext = ctx;
+        if (mDatabaseHolder == null) {
+            mDatabaseHolder = DatabaseHolder.getInstance(ctx);
+        }
+        if (mConsultWriter == null) {
+            mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
+        }
+        mAnalyticsTracker = AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx));
+
+        ServiceGenerator.setUserAgent(OutgoingMessageCreator.getUserAgent(ctx));
+
+        resendTimeInterval = ctx.getResources().getInteger(R.integer.check_internet_interval_ms);
+
+        mUnsendMessageHandler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(final Message msg) {
+                if (msg.what == RESEND_MSG) {
+                    if (!unsendMessages.isEmpty()) {
+                        if (DeviceInfoHelper.hasNoInternet(ctx)) {
+                            scheduleResend();
+                        }
+                        else {
+                            // try to send all unsent messages
+                            mUnsendMessageHandler.removeMessages(RESEND_MSG);
+                            ListIterator<UserPhrase> iterator = unsendMessages.listIterator();
+                            while(iterator.hasNext()) {
+                                UserPhrase phrase = iterator.next();
+                                checkAndResendPhrase(phrase);
+                                iterator.remove();
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     private static void onClientIdChanged(Context ctx, String finalClientId) {
@@ -382,19 +430,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         else return CONSULT_STATE_DEFAULT;
     }
 
-    @SuppressLint("all")
-    public ChatController(final Context ctx) {
-        if (mDatabaseHolder == null) {
-            mDatabaseHolder = DatabaseHolder.getInstance(ctx);
-        }
-        if (mConsultWriter == null)
-            mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
-        appContext = ctx;
-        mAnalyticsTracker = AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx));
-
-        ServiceGenerator.setUserAgent(OutgoingMessageCreator.getUserAgent(ctx));
-    }
-
     public void onUserTyping() {
         long currentTime = System.currentTimeMillis();
         if ((currentTime - lastUserTypingSend) >= 3000) {
@@ -486,6 +521,13 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 }
             });
             currentOffset = items.size();
+
+            List<UserPhrase> unsendUserPhrase = mDatabaseHolder.getUnsendUserPhrase(historyLoadingCount);
+            if (!unsendUserPhrase.isEmpty()) {
+                unsendMessages.clear();
+                unsendMessages.addAll(unsendUserPhrase);
+                scheduleResend();
+            }
         }
         mExecutor.execute(new Runnable() {
             @Override
@@ -657,7 +699,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
             @Override
             public void onError(Throwable e) {
-                onFileSentError(userPhrase, e);
+                onMessageSentError(userPhrase);
             }
         };
     }
@@ -679,7 +721,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
             @Override
             public void onError(PushServerErrorException e) {
-                onFileMessageSentError(userPhrase, e);
+                onMessageSentError(userPhrase);
             }
         }, null);
     }
@@ -697,9 +739,12 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     private void onMessageSentError(UserPhrase userPhrase) {
         setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+        addMsgToResendQueue(userPhrase);
+
         if (fragment != null && isActive) {
             fragment.showConnectionError();
         }
+
         if (appContext != null) {
             Intent i = new Intent(appContext, NotificationService.class);
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
@@ -707,31 +752,16 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         }
     }
 
-    private void onFileMessageSentError(UserPhrase userPhrase, PushServerErrorException e) {
-        Log.e(TAG, "error while sending message to server");
-        e.printStackTrace();
-        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-        if (fragment != null && isActive) {
-            fragment.showConnectionError();
-        }
-        if (appContext != null) {
-            Intent i = new Intent(appContext, NotificationService.class);
-            i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
-            if (!isActive) appContext.startService(i);
+    private void addMsgToResendQueue(UserPhrase userPhrase) {
+        if (unsendMessages.indexOf(userPhrase) == -1) {
+            unsendMessages.add(userPhrase);
+            scheduleResend();
         }
     }
 
-    private void onFileSentError(UserPhrase userPhrase, Throwable e) {
-        Log.e(TAG, "error while sending files to server");
-        e.printStackTrace();
-        setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
-        if (fragment != null && isActive) {
-            fragment.showConnectionError();
-        }
-        if (appContext != null) {
-            Intent i = new Intent(appContext, NotificationService.class);
-            i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
-            if (!isActive) appContext.startService(i);
+    private void scheduleResend() {
+        if (!mUnsendMessageHandler.hasMessages(RESEND_MSG)) {
+            mUnsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendTimeInterval);
         }
     }
 

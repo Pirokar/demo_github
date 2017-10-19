@@ -1,6 +1,8 @@
 package im.threads.utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 
 import java.net.InetAddress;
@@ -50,6 +52,12 @@ public final class DeviceInfoHelper {
             }
         } catch (Exception ex) { } // for now eat exceptions
         return "";
+    }
+
+    public static boolean hasNoInternet(final Context context) {
+        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return null == netInfo || !netInfo.isConnected();
     }
 }
 

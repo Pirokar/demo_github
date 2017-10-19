@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import im.threads.BuildConfig;
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
@@ -104,12 +103,12 @@ public final class Transport {
         if (url != null && !url.isEmpty() && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
             RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-            Call<HistoryResponseV2> call = retrofitService.historyV2(token, start, count, BuildConfig.VERSION_NAME);
+            Call<HistoryResponseV2> call = retrofitService.historyV2(token, start, count, AppInfoHelper.getLibVersion());
             Response<HistoryResponseV2> response = call.execute();
             if (response.isSuccessful()) {
                 return response.body();
             } else {
-                Call<List<MessgeFromHistory>> call2 = retrofitService.history(token, start, count, BuildConfig.VERSION_NAME);
+                Call<List<MessgeFromHistory>> call2 = retrofitService.history(token, start, count, AppInfoHelper.getLibVersion());
                 return new HistoryResponseV2(call2.execute().body());
             }
         } else {
