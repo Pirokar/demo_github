@@ -750,6 +750,9 @@ public class ChatController {
         Log.e(TAG, "error while sending message to server");
         e.printStackTrace();
         setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+        if (fragment != null && isActive) {
+            fragment.showConnectionError();
+        }
         if (appContext != null) {
             Intent i = new Intent(appContext, NotificationService.class);
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
@@ -761,6 +764,9 @@ public class ChatController {
         Log.e(TAG, "error while sending files to server");
         e.printStackTrace();
         setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
+        if (fragment != null && isActive) {
+            fragment.showConnectionError();
+        }
         if (appContext != null) {
             Intent i = new Intent(appContext, NotificationService.class);
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
