@@ -1,68 +1,84 @@
 <resources>
-    <string name="lib_app_name">Threads</string>
-    <string name="lib_searching_operator">Searching operator...</string>
-    <string name="lib_your_message">Your message...</string>
-    <string name="lib_no_connection">No internet connection</string>
-    <string name="lib_no_connection_details">Turn on mobile data or use WI-FI to resend message</string>
-    <string name="lib_close">Close</string>
-    <string name="lib_camera">Camera</string>
-    <string name="lib_gallery">Gallery</string>
-    <string name="lib_file">File</string>
-    <string name="lib_hide">Hide</string>
-    <string name="lib_connected_female">connected to dialog at</string>
-    <string name="lib_left_female">disconnected from dialog at</string>
-    <string name="lib_left_dialog">disconnected from dialog at</string>
-    <string name="lib_connected">connected to dialog</string>
-    <string name="lib_sent_at">sent at</string>
-    <string name="lib_image">Picture</string>
-    <string name="lib_send">Send</string>
-    <string name="lib_typing">typing…</string>
-    <string name="lib_search_messages">Search message</string>
-    <string name="lib_search_files">Search files</string>
-    <string name="lib_search_photos">Search photos...</string>
-    <string name="lib_files_and_media">Files and media</string>
-    <string name="lib_recently">Recently</string>
-    <string name="lib_yesterday">Yesterday</string>
-    <string name="lib_photos">Photographies</string>
-    <string name="lib_find_photos">Find photos</string>
-    <string name="lib_on_your_device">on your device</string>
-    <string name="lib_cancel">Cancel</string>
-    <string name="lib_nothing_found">Nothing found</string>
-    <string name="lib_press">Press</string>
-    <string name="lib_to_photo">to take photo</string>
-    <string name="lib_no_cameras_detected">Your device doesn\'t have a camera</string>
-    <string name="lib_retake">Retake</string>
-    <string name="lib_consult">Consultant</string>
-    <string name="lib_error_no_file">Unfortunately, file was deleted from server</string>
-    <string name="lib_I">I</string>
-    <string name="lib_download">Download</string>
-    <string name="lib_choose_file">Choose file to send</string>
-    <string name="lib_folder_up">Up</string>
-    <string name="lib_now_you_are_in_directory">Your are in </string>
-    <string name="lib_from">from</string>
-    <string name="lib_in">in</string>
-    <string name="lib_search_more">Search more</string>
-    <string name="lib_title_default">Header</string>
-    <string name="lib_message_were_unsent">Message not sent</string>
-    <string name="lib_unknown_operator">Unknown</string>
-    <string name="lib_saved_to">Saved to</string>
-    <string name="lib_unable_to_save">Unable to save file</string>
-    <string name="lib_push_left_female">left dialog</string>
-    <string name="lib_push_left">left dialog</string>
-    <string name="lib_push_connected_female">connected to dialog</string>
-    <string name="lib_push_connected">connected to dialog</string>
-    <string name="lib_reply">reply</string>
-    <string name="lib_send_male">send</string>
-    <string name="lib_send_female">send</string>
-    <string name="lib_touch_to_look">Touch to look</string>
-    <string name="lib_touch_to_download">Touch to download</string>
-    <string name="lib_new_">new</string>
-    <string name="lib_answer">ANSWER</string>
-    <string name="lib_check_connection">problems with internet connection</string>;
-    <string name="lib_user_agent" formatted="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
+    <string name="threads_push_title">Threads</string>
+    <string name="threads_searching_operator">Searching client...</string>
+    <string name="threads_input_hint">Your message...</string>
+    <string name="threads_no_connection">No internet connection</string>
+    <string name="threads_no_connection_details">Turn on mobile data or use WI-FI to resend message</string>
+    <string name="threads_close">Close</string>
+    <string name="threads_camera">Camera</string>
+    <string name="threads_gallery">Gallery</string>
+    <string name="threads_file">File</string>
+    <string name="threads_hide">Hide</string>
+    <string name="threads_connected_female">connected to dialog at</string>
+    <string name="threads_left_female">disconnected from dialog at</string>
+    <string name="threads_left_dialog">disconnected from dialog at</string>
+    <string name="threads_connected">connected to dialog</string>
+    <string name="threads_sent_at">sent at</string>
+    <string name="threads_image">Picture</string>
+    <string name="threads_send">Send</string>
+    <string name="threads_search_messages">Search message</string>
+    <string name="threads_search_files">Search files</string>
+    <string name="threads_search_photos">Search photos...</string>
+    <string name="threads_files_and_media">Files and media</string>
+    <string name="threads_recently">Recently</string>
+    <string name="threads_yesterday">Yesterday</string>
+    <string name="threads_photos">Photographies</string>
+    <string name="threads_find_photos">Find photos</string>
+    <string name="threads_on_your_device">on your device</string>
+    <string name="threads_cancel">Cancel</string>
+    <string name="threads_nothing_found">Nothing found</string>
+    <string name="threads_press">Press</string>
+    <string name="threads_to_photo">to take photo</string>
+    <string name="threads_no_cameras_detected">Your device doesn\'t have a camera</string>
+    <string name="threads_retake">Retake</string>
+    <string name="threads_consult">Consultant</string>
+    <string name="threads_operator_subtitle">Operator</string>
+    <string name="threads_error_no_file">Unfortunately, file was deleted from server</string>
+    <string name="threads_I">I</string>
+    <string name="threads_download">Download</string>
+    <string name="threads_choose_file">Choose file to send</string>
+    <string name="threads_folder_up">Up</string>
+    <string name="threads_now_you_are_in_directory">Your are in </string>
+    <string name="threads_from">from</string>
+    <string name="threads_in">in</string>
+    <string name="threads_search_more">Search more</string>
+    <string name="threads_message_were_unsent">Message not sent</string>
+    <string name="threads_unknown_operator">Unknown</string>
+    <string name="threads_saved_to">Saved to</string>
+    <string name="threads_unable_to_save">Unable to save file</string>
+    <string name="threads_push_left_female">left dialog</string>
+    <string name="threads_push_left">left dialog</string>
+    <string name="threads_push_connected_female">connected to dialog</string>
+    <string name="threads_push_connected">connected to dialog</string>
+    <string name="threads_reply">reply</string>
+    <string name="threads_send_male">send</string>
+    <string name="threads_send_female">send</string>
+    <string name="threads_touch_to_look">Touch to look</string>
+    <string name="threads_touch_to_download">Touch to download</string>
+    <string name="threads_new_">new</string>
+    <string name="threads_answer">ANSWER</string>
+    <string name="threads_check_connection">problems with internet connection</string>
 
-    <plurals  name="lib_unread_messages">
+    <string name="threads_user_agent" formatted="false" translatable="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
+
+    <plurals  name="threads_unread_messages">
+
         <item quantity="one">%d unread message</item>
         <item quantity="other">%d unread messages</item>
+    </plurals>
+
+    <plurals  name="threads_new_messages">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
+
+    <plurals  name="threads_images">
+        <item quantity="one">%d image</item>
+        <item quantity="other">%d images</item>
+    </plurals>
+
+    <plurals  name="threads_files">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
     </plurals>
 </resources>
