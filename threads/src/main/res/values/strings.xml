@@ -1,84 +1,114 @@
 <resources>
-    <string name="threads_push_title">Threads</string>
-    <string name="threads_searching_operator">Searching client...</string>
-    <string name="threads_input_hint">Your message...</string>
-    <string name="threads_no_connection">No internet connection</string>
-    <string name="threads_no_connection_details">Turn on mobile data or use WI-FI to resend message</string>
-    <string name="threads_close">Close</string>
-    <string name="threads_camera">Camera</string>
-    <string name="threads_gallery">Gallery</string>
-    <string name="threads_file">File</string>
-    <string name="threads_hide">Hide</string>
-    <string name="threads_connected_female">connected to dialog at</string>
-    <string name="threads_left_female">disconnected from dialog at</string>
-    <string name="threads_left_dialog">disconnected from dialog at</string>
-    <string name="threads_connected">connected to dialog</string>
-    <string name="threads_sent_at">sent at</string>
-    <string name="threads_image">Picture</string>
-    <string name="threads_send">Send</string>
-    <string name="threads_search_messages">Search message</string>
-    <string name="threads_search_files">Search files</string>
-    <string name="threads_search_photos">Search photos...</string>
-    <string name="threads_files_and_media">Files and media</string>
-    <string name="threads_recently">Recently</string>
-    <string name="threads_yesterday">Yesterday</string>
-    <string name="threads_photos">Photographies</string>
-    <string name="threads_find_photos">Find photos</string>
-    <string name="threads_on_your_device">on your device</string>
-    <string name="threads_cancel">Cancel</string>
-    <string name="threads_nothing_found">Nothing found</string>
-    <string name="threads_press">Press</string>
-    <string name="threads_to_photo">to take photo</string>
-    <string name="threads_no_cameras_detected">Your device doesn\'t have a camera</string>
-    <string name="threads_retake">Retake</string>
-    <string name="threads_consult">Consultant</string>
-    <string name="threads_operator_subtitle">Operator</string>
-    <string name="threads_error_no_file">Unfortunately, file was deleted from server</string>
-    <string name="threads_I">I</string>
-    <string name="threads_download">Download</string>
-    <string name="threads_choose_file">Choose file to send</string>
-    <string name="threads_folder_up">Up</string>
-    <string name="threads_now_you_are_in_directory">Your are in </string>
-    <string name="threads_from">from</string>
-    <string name="threads_in">in</string>
-    <string name="threads_search_more">Search more</string>
-    <string name="threads_message_were_unsent">Message not sent</string>
-    <string name="threads_unknown_operator">Unknown</string>
-    <string name="threads_saved_to">Saved to</string>
-    <string name="threads_unable_to_save">Unable to save file</string>
-    <string name="threads_push_left_female">left dialog</string>
-    <string name="threads_push_left">left dialog</string>
-    <string name="threads_push_connected_female">connected to dialog</string>
-    <string name="threads_push_connected">connected to dialog</string>
-    <string name="threads_reply">reply</string>
-    <string name="threads_send_male">send</string>
-    <string name="threads_send_female">send</string>
-    <string name="threads_touch_to_look">Touch to look</string>
-    <string name="threads_touch_to_download">Touch to download</string>
-    <string name="threads_new_">new</string>
-    <string name="threads_answer">ANSWER</string>
-    <string name="threads_check_connection">problems with internet connection</string>
+    <string name="threads_searching_operator">Поиск оператора...</string>
+    <string name="threads_no_connection">Отсутствует
+       \nсоединение с интернетом</string>
+    <string name="threads_no_connection_details">Включите передачу даннх
+       \nили воспользуйтесь WI_FI для\nотправки сообщения</string>
+    <string name="threads_close">Закрыть</string>
+    <string name="threads_camera">Камера</string>
+    <string name="threads_gallery">Галерея</string>
+    <string name="threads_file">Файл</string>
+    <string name="threads_hide">Свернуть</string>
+    <string name="threads_left_female">покинула диалог в</string>
+    <string name="threads_left_dialog">покинул диалог в</string>
+    <string name="threads_connected_female">подключилась к диалогу в</string>
+    <string name="threads_connected">подключился к диалогу в</string>
+    <string name="threads_sent_at">отправлено</string>
+    <string name="threads_image">изображение</string>
+    <string name="threads_send">Отправить</string>
+    <string name="threads_search_messages">Поиск сообщений</string>
+    <string name="threads_files_and_media">Медиа и файлы</string>
+    <string name="threads_recently">Недавно</string>
+    <string name="threads_yesterday">Вчера</string>
+    <string name="threads_photos">Фотографии</string>
+    <string name="threads_find_photos">Найти фотографии</string>
+    <string name="threads_on_your_device">на вашем устройстве</string>
+    <string name="threads_cancel">Отмена</string>
+    <string name="threads_search_photos">Поиск изображений...</string>
+    <string name="threads_nothing_found">Ничего не найден</string>
+    <string name="threads_press">Нажмите</string>
+    <string name="threads_to_photo">для фото</string>
+    <string name="threads_no_cameras_detected">На устройстве отсутствует камера</string>
+    <string name="threads_retake">Переснять</string>
+    <string name="threads_consult">Консультант</string>
 
-    <string name="threads_user_agent" formatted="false" translatable="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
+    <string name="threads_error_no_file">Файл удалён на сервере</string>
+    <string name="threads_I">Я</string>
+    <string name="threads_choose_file">Выберите файл</string>
+    <string name="threads_folder_up">Выше</string>
+    <string name="threads_now_you_are_in_directory">Вы находитесь в </string>
+    <string name="threads_from">из</string>
+    <string name="threads_in">в</string>
+    <string name="threads_search_more">Искать дальше</string>
+    <string name="threads_download">Загрузить</string>
+    <string name="threads_message_were_unsent">Сообщение не было отправлено</string>
+    <string name="threads_unknown_operator">Неизвестный</string>
+    <string name="threads_saved_to">Сохранено в</string>
+    <string name="threads_unable_to_save">Сейчас невозможно сохранить файл</string>
+    <string name="threads_search_files">Искать файлы</string>
+    <string name="threads_push_left_female">покинула диалог</string>
+    <string name="threads_push_left">покинул диалог</string>
+    <string name="threads_push_connected_female">подключилась к диалогу</string>
+    <string name="threads_push_connected">подключился к диалогу</string>
+    <string name="threads_reply">Ответить</string>
+    <string name="threads_send_male">прислал</string>
+    <string name="threads_send_female">прислала</string>
+    <string name="threads_touch_to_look">Дотроньтесь для просмотра</string>
+    <string name="threads_touch_to_download">Дотроньтесь чтобы скачать</string>
+    <string name="threads_answer">ОТВЕТИТЬ</string>
+    <string name="threads_check_connection">Проблемы с доступом в интрнет, проверьте соединение</string>
+    <string name="threads_message_not_sent">Сообщение не отправлено, проверьте настройки подключения</string>
+    <string name="threads_typing">печатает…</string>
+    <string name="threads_ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
+    <string name="threads_thanks_for_rate">Спасибо за вашу оценку</string>
+    <string name="threads_item_user_rate_header">Оценка решения вопроса</string>
+    <string name="threads_item_user_rate_text">из</string>
+
+    <string name="threads_permissions_help">Помощь</string>
+    <string name="threads_permissions_string_help_text">Отсутствуют разрешения.\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="threads_permissions_camera_and_write_external_storage_help_text">Отсутствуют разрешения на Камеру и Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="threads_permissions_write_external_storage_help_text">Отсутствует разрешение на Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="threads_permissions_read_external_storage_help_text">Отсутствует разрешение на Память (Чтение с вешнего хранилища).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="threads_permissions_quit">Закрыть</string>
+    <string name="threads_permissions_settings">Настройки</string>
+
+    <string name="threads_invalid_client_id">Минимальная длина client id - 5 символов</string>
 
     <plurals  name="threads_unread_messages">
-        <item quantity="one">%d unread message</item>
-        <item quantity="other">%d unread messages</item>
+        <item quantity="one">%d непрочитанное сообщение</item>
+        <item quantity="few">%d непрочитанных сообщения</item>
+        <item quantity="many">%d непрочитанных сообщений</item>
     </plurals>
 
     <plurals  name="threads_new_messages">
-        <item quantity="one">%d new message</item>
-        <item quantity="other">%d new messages</item>
+        <item quantity="one">%d новое сообщение</item>
+        <item quantity="few">%d новых сообщения</item>
+        <item quantity="many">%d новых сообщений</item>
     </plurals>
 
     <plurals  name="threads_images">
-        <item quantity="one">%d image</item>
-        <item quantity="other">%d images</item>
+        <item quantity="one">%d изображение</item>
+        <item quantity="few">%d изображения</item>
+        <item quantity="many">%d изображений</item>
     </plurals>
 
     <plurals  name="threads_files">
-        <item quantity="one">%d file</item>
-        <item quantity="other">%d files</item>
+        <item quantity="one">%d файл</item>
+        <item quantity="few">%d файла</item>
+        <item quantity="many">%d файлов</item>
     </plurals>
 
+    <!-- Тексты для кастомизации -->
+    <string name="threads_push_title">Threads</string>
+
+    <string name="threads_contact_center">Контакт центр</string>
+    <string name="threads_operator_subtitle">Оператор</string>
+
+    <string name="threads_request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
+    <string name="threads_request_to_resolve_thread_close">Нет</string>
+    <string name="threads_request_to_resolve_thread_open">Да</string>
+
+    <string name="threads_welcome_screen_title_text">Добро пожаловать</string>
+    <string name="threads_welcome_screen_subtitle_text">Отправьте ваш вопрос</string>
+    <string name="threads_input_hint">Ваше сообщение...</string>
 </resources>

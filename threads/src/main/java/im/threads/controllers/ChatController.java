@@ -1080,35 +1080,33 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                int currentItemsCount = 0;
-                if (null != fragment) {
-                    currentItemsCount = fragment.getCurrentItemsCount();
-                }
-                final int[] currentOffset = {currentItemsCount};
-                final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
-                try {
-                    HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), null, false);
-                    List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
-                    mDatabaseHolder.putMessagesSync(serverItems);
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
-                    currentOffset[0] += chatItems.size();
-                    ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(chatItems);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
-                    currentOffset[0] += chatItems.size();
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(chatItems);
-                        }
-                    });
+                if (instance.fragment != null) {
+                    final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
+                    final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
+                    try {
+                        HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), null, false);
+                        List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
+                        mDatabaseHolder.putMessagesSync(serverItems);
+                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
+                        currentOffset[0] += chatItems.size();
+                        ConsultInfo info = response != null ? response.getConsultInfo() : null;
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(chatItems);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
+                        currentOffset[0] += chatItems.size();
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(chatItems);
+                            }
+                        });
+                    }
                 }
             }
         });
