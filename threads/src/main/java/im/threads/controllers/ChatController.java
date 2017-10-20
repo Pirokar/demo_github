@@ -1080,31 +1080,33 @@ public class ChatController {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final int[] currentOffset = {fragment.getCurrentItemsCount()};
-                final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
-                try {
-                    HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), lastLoadId, null);
-                    List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
-                    mDatabaseHolder.putMessagesSync(serverItems);
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
-                    currentOffset[0] += chatItems.size();
-                    ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(chatItems);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
-                    currentOffset[0] += chatItems.size();
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(chatItems);
-                        }
-                    });
+                if (instance.fragment != null) {
+                    final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
+                    final int count = (int) getHistoryLoadingCount(instance.fragment.getActivity());
+                    try {
+                        HistoryResponseV2 response = getHistorySync(instance.fragment.getActivity(), lastLoadId, null);
+                        List<ChatItem> serverItems = getChatItemFromHistoryResponse(response);
+                        mDatabaseHolder.putMessagesSync(serverItems);
+                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
+                        currentOffset[0] += chatItems.size();
+                        ConsultInfo info = response != null ? response.getConsultInfo() : null;
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(chatItems);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
+                        currentOffset[0] += chatItems.size();
+                        h.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(chatItems);
+                            }
+                        });
+                    }
                 }
             }
         });
