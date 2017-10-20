@@ -142,6 +142,8 @@ public class ChatFragment extends Fragment implements
 
     private FragmentChatBinding binding;
 
+    private Toast mToast;
+
     public static ChatFragment newInstance() {
         return new ChatFragment();
     }
@@ -1236,13 +1238,15 @@ public class ChatFragment extends Fragment implements
     }
 
     public void showConnectionError() {
-        final NoConnectionDialogFragment ncdf = NoConnectionDialogFragment.getInstance(new NoConnectionDialogFragment.OnCancelListener() {
-            @Override
-            public void onCancel() {
-            }
-        });
-        ncdf.setCancelable(true);
-        ncdf.show(getFragmentManager(), null);
+        showToast(getString(R.string.threads_message_not_sent));
+    }
+
+    public void showToast(final String message) {
+        if (null != mToast) {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
+        mToast.show();
     }
 
     public void setMessageState(String messageId, MessageState state) {

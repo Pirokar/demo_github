@@ -57,6 +57,7 @@
     <string name="threads_touch_to_download">Дотроньтесь чтобы скачать</string>
     <string name="threads_answer">ОТВЕТИТЬ</string>
     <string name="threads_check_connection">Проблемы с доступом в интрнет, проверьте соединение</string>
+    <string name="threads_message_not_sent">Сообщение не отправлено, проверьте настройки подключения</string>
     <string name="threads_typing">печатает…</string>
     <string name="threads_ask_to_rate">Пожалуйста, оцените качество нашего сервиса</string>
     <string name="threads_thanks_for_rate">Спасибо за вашу оценку</string>
