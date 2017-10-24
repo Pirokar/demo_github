@@ -59,8 +59,6 @@
     <string name="threads_answer">ANSWER</string>
     <string name="threads_check_connection">problems with internet connection</string>
 
-    <string name="threads_user_agent" formatted="false" translatable="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
-
     <plurals  name="threads_unread_messages">
 
         <item quantity="one">%d unread message</item>
