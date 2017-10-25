@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import im.threads.AnalyticsTracker;
 import im.threads.R;
 import im.threads.activities.CameraActivity;
 import im.threads.activities.ChatActivity;
@@ -99,8 +98,6 @@ public class ChatFragment extends Fragment implements
         PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = "ChatFragment ";
-
-    private static AnalyticsTracker tracker;
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -174,7 +171,6 @@ public class ChatFragment extends Fragment implements
         setHasOptionsMenu(true);
         initController();
         setFragmentStyle(PrefUtils.getIncomingStyle(activity));
-        sendOpenChatAnalyticsEvent(appContext);
 
         updateInputEnable(true);
         chatIsShown = true;
@@ -190,19 +186,7 @@ public class ChatFragment extends Fragment implements
         Context context = activity.getApplicationContext();
         activity.unregisterReceiver(mChatReceiver);
 
-        if (tracker == null) {
-            tracker = AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context));
-        }
-        tracker.setUserLeftChat();
         chatIsShown = false;
-    }
-
-    private void sendOpenChatAnalyticsEvent(Context context) {
-        if (tracker == null) {
-            tracker = AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context));
-        }
-        tracker.chatWasOpened(PrefUtils.getClientID(context));
-        tracker.setUserEnteredChat();
     }
 
     private void initController() {
@@ -654,7 +638,6 @@ public class ChatFragment extends Fragment implements
                 startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));
             }
         } else if (chatPhrase instanceof ConsultPhrase) {
-            AnalyticsTracker.getInstance(activity, PrefUtils.getGaTrackerId(activity)).setAttachmentWasOpened();
             startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));
         }
     }
@@ -718,7 +701,6 @@ public class ChatFragment extends Fragment implements
             return true;
         } else if (item.getItemId() == R.id.search) {
             welcomeScreenVisibility(false);
-            AnalyticsTracker.getInstance(activity, PrefUtils.getGaTrackerId(activity)).setTextSearchWasOpened();
             search(false);
             binding.chatBackButton.setVisibility(View.VISIBLE);
         }

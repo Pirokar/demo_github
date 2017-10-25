@@ -25,7 +25,6 @@ import android.widget.ImageButton;
 import java.util.Iterator;
 import java.util.List;
 
-import im.threads.AnalyticsTracker;
 import im.threads.R;
 import im.threads.adapters.FilesAndMediaAdapter;
 import im.threads.controllers.FilesAndMediaController;
@@ -83,8 +82,6 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
         findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx)).setFileSearchWasOpened();
-                AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx)).setImageSearchWasOpened();
                 if (mSearchEditText.getVisibility() == View.VISIBLE) {
                     mSearchEditText.setText("");
                     mSearchEditText.setVisibility(View.GONE);

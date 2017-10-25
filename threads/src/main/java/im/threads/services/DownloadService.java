@@ -12,12 +12,10 @@ import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import im.threads.AnalyticsTracker;
 import im.threads.broadcastReceivers.ProgressReceiver;
 import im.threads.database.DatabaseHolder;
 import im.threads.model.FileDescription;
 import im.threads.utils.FileDownloader;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 01.08.2016.
@@ -60,7 +58,6 @@ public class DownloadService extends Service {
                 DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
                 runningDownloads.remove(fileDescription);
                 sendFinishBroadcast(fileDescription);
-                AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context)).setUserUploadedFile(file.length() / 1024);
                 if (runningDownloads.size() == 0) stopSelf();
             }
 

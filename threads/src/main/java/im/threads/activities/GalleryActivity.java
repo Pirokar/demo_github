@@ -23,7 +23,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import im.threads.AnalyticsTracker;
 import im.threads.R;
 import im.threads.adapters.GalleryAdaper;
 import im.threads.adapters.PhotoBucketsGalleryAdapter;
@@ -32,7 +31,6 @@ import im.threads.model.MediaPhoto;
 import im.threads.model.PhotoBucketItem;
 import im.threads.utils.BucketsGalleryDecorator;
 import im.threads.utils.GalleryDecorator;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 06.07.2016.
@@ -60,7 +58,6 @@ public class GalleryActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-        AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setGalleryWasOpened();
         initViews();
        /* ChatStyle style = PrefUtils.getIncomingStyle(this);
         if (null != style) {

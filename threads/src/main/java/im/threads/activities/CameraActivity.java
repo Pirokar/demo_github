@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import im.threads.AnalyticsTracker;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.picasso_url_connection_only.Picasso;
@@ -56,7 +55,6 @@ public class CameraActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setCameraWasOpened();
         setContentView(R.layout.activity_camera);
         setActivityStyle(PrefUtils.getIncomingStyle(this));
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);

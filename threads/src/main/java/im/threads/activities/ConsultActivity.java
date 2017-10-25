@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import im.threads.AnalyticsTracker;
 import im.threads.R;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatStyle;
@@ -42,7 +41,6 @@ public class ConsultActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AnalyticsTracker.getInstance(this, PrefUtils.getGaTrackerId(this)).setConsultScreenOpened();
         if (Build.VERSION.SDK_INT > 20) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE

@@ -34,7 +34,6 @@ import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import im.threads.AnalyticsTracker;
 import im.threads.BuildConfig;
 import im.threads.R;
 import im.threads.activities.ChatActivity;
@@ -125,7 +124,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
     private ConsultWriter mConsultWriter;
-    private AnalyticsTracker mAnalyticsTracker;
     private List<ChatItem> lastItems = new ArrayList<>();
     private Seeker seeker = new Seeker();
     private long lastFancySearchDate = 0;
@@ -206,7 +204,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (mConsultWriter == null) {
             mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
         }
-        mAnalyticsTracker = AnalyticsTracker.getInstance(ctx, PrefUtils.getGaTrackerId(ctx));
 
         ServiceGenerator.setUserAgent(OutgoingMessageCreator.getUserAgent(ctx));
 
@@ -634,8 +631,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
         }
 
-        reportAboutSendMessage(userPhrase);
-
         try {
             if (!userPhrase.hasFile()) {
                 sendTextMessage(userPhrase, consultInfo);
@@ -773,18 +768,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         } else if (e instanceof IllegalStateException) {
             PushController.getInstance(appContext).init();
         }
-    }
-
-    private void reportAboutSendMessage(UserPhrase userPhrase) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "sendMessage: " + userPhrase);
-        if (BuildConfig.DEBUG) Log.i(TAG, "sendMessage: " + mAnalyticsTracker);
-        if (userPhrase.isWithPhrase())
-            if (null != mAnalyticsTracker) mAnalyticsTracker.setTextWasSent();
-        if (userPhrase.isWithFile())
-            if (null != mAnalyticsTracker) mAnalyticsTracker.setFileWasSent();
-        if (userPhrase.isWithQuote())
-            if (null != mAnalyticsTracker) mAnalyticsTracker.setQuoteWasSent();
-        if (userPhrase.isCopy()) if (null != mAnalyticsTracker) mAnalyticsTracker.setCopyWasSent();
     }
 
     public void fancySearch(final String query,
@@ -931,7 +914,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     );
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     try {
-                        mAnalyticsTracker.setAttachmentWasOpened();
                         activity.startActivity(target);
                     } catch (ActivityNotFoundException e) {
                         Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
@@ -1237,9 +1219,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 });
         consultReactor.onPushMessage(chatItem);
         addMessage(chatItem, ctx);
-        if (chatItem instanceof ConsultPhrase) {
-            mAnalyticsTracker.setConsultMessageWasReceived();
-        }
 
         if ((chatItem instanceof ScheduleInfo || chatItem instanceof UserPhrase)) {
             // не показывать уведомление для расписания и сообщений пользователя
