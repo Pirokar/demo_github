@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
     </data>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/chat_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/threads_chat_background"
-        tools:context="im.threads.activities.ChatActivity">
+        android:background="@color/threads_chat_background">
 
         <im.threads.widget.CustomFontButton
             android:id="@+id/search_more"
@@ -84,7 +83,7 @@
                 android:gravity="center"
                 android:textColor="@color/threads_chat_unread_msg_count_text"
                 android:textSize="@dimen/text_small"
-                android:text="1"/>
+                tools:text="1"/>
         </RelativeLayout>
 
         <LinearLayout
@@ -108,7 +107,6 @@
                     android:layout_marginLeft="@dimen/margin_quarter"
                     android:layout_marginTop="@dimen/margin_three_fourth"
                     android:layout_toRightOf="@+id/quote_image"
-                    android:text="Мария Павлова"
                     android:textSize="@dimen/text_medium"
                     android:textColor="@color/threads_incoming_message_text"/>
 
@@ -123,7 +121,6 @@
                     android:layout_toRightOf="@+id/quote_image"
                     android:ellipsize="end"
                     android:lines="1"
-                    android:text="Добрый день!Подскажите номер вашей карты"
                     android:textColor="@color/threads_incoming_message_text" />
 
                 <ImageButton

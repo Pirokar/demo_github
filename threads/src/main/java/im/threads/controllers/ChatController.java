@@ -417,7 +417,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private int getUnreadMessagesCount() {
-        return mDatabaseHolder.getUnreaMessagesId().size();
+        return mDatabaseHolder.getUnreadMessagesCount();
     }
 
     public static void resetPendingIntentCreator() {
@@ -973,7 +973,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 if (cm != null
                         && cm.getActiveNetworkInfo() != null
                         && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
-                    List<String> unread = mDatabaseHolder.getUnreaMessagesId();
+                    List<String> unread = mDatabaseHolder.getUnreadMessagesId();
                     if (unread != null && !unread.isEmpty()) {
                         firstUnreadMessageId = unread.get(0); // для скролла к первому непрочитанному сообщению
                     } else {
