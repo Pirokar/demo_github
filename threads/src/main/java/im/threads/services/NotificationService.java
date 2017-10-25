@@ -182,7 +182,7 @@ public class NotificationService extends Service {
             nc.setContentTitle(getString(R.string.lib_message_were_unsent));
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             PendingIntent pend = getChatIntent();
-            if (style.defPushIconResId != ChatStyle.INVALID) {
+            if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
                 final int iconResId = style.defPushIconResId;
                 nc.setSmallIcon(iconResId);
             } else {
@@ -243,12 +243,12 @@ public class NotificationService extends Service {
                 pushSmall.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(style.pushBackgroundColorResId));
                 pushBig.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(style.pushBackgroundColorResId));
             }
-            if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
+            if (style.incomingMessageTextColor != ChatStyle.INVALID) {
                 pushSmall.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
                 pushBig.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
             }
 
-            if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
+            if (style.defPushIconResId != ChatStyle.INVALID) {
                 final int iconResId = style.defPushIconResId;
                 builder.setSmallIcon(iconResId);
             }

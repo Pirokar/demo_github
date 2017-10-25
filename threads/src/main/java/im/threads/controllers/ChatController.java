@@ -62,8 +62,8 @@ import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
-import im.threads.retrofit.RetrofitService;
 import im.threads.retrofit.ServiceGenerator;
+import im.threads.retrofit.ThreadsApi;
 import im.threads.services.DownloadService;
 import im.threads.services.NotificationService;
 import im.threads.utils.Callback;
@@ -1517,13 +1517,13 @@ public class ChatController {
         }
         if (url != null && !url.isEmpty() && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
-            RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
-            Call<HistoryResponseV2> call = retrofitService.historyV2(token, userAgent, start, count, getLibraryVersion());
+            ThreadsApi threadsApi = ServiceGenerator.getThreadsApi();
+            Call<HistoryResponseV2> call = threadsApi.historyV2(token, userAgent, start, count, getLibraryVersion());
             Response<HistoryResponseV2> response = call.execute();
             if (response.isSuccessful()) {
                 return response.body();
             } else {
-                Call<List<MessgeFromHistory>> call2 = retrofitService.history(token, userAgent, start, count, getLibraryVersion());
+                Call<List<MessgeFromHistory>> call2 = threadsApi.history(token, userAgent, start, count, getLibraryVersion());
                 return new HistoryResponseV2(call2.execute().body());
             }
         } else {

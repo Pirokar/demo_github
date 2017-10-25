@@ -1,7 +1,5 @@
 package im.threads.retrofit;
 
-import com.google.gson.JsonElement;
-
 import java.util.List;
 
 import im.threads.model.FileUploadResponse;
@@ -21,7 +19,7 @@ import retrofit2.http.Query;
  * описание серверных методов
  */
 
-public interface RetrofitService {
+public interface ThreadsApi {
     @Multipart
     @PUT("files")
     Call<FileUploadResponse> upload(
