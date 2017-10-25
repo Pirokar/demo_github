@@ -1,5 +1,6 @@
 package im.threads.utils;
 
+import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.webkit.MimeTypeMap;
 
@@ -82,8 +83,8 @@ public class FilePoster {
                 callback.onSuccess(fileDescription.getDownloadPath());
             }
         }
-
+        else {
+            callback.onFail(new NetworkErrorException());
+        }
     }
-
-
 }
