@@ -59,6 +59,7 @@
     <string name="lib_new_">new</string>
     <string name="lib_answer">ANSWER</string>
     <string name="lib_check_connection">problems with internet connection</string>;
+    <string name="lib_user_agent" formatted="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
 
     <plurals  name="lib_unread_messages">
         <item quantity="one">%d unread message</item>

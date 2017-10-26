@@ -81,6 +81,7 @@
     <string name="lib_request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>
     <string name="lib_request_to_resolve_thread_close">Нет</string>
     <string name="lib_request_to_resolve_thread_open">Да</string>
+    <string name="lib_user_agent" formatted="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
 
     <plurals  name="lib_unread_messages">
         <item quantity="one">%d непрочитанное сообщение</item>
