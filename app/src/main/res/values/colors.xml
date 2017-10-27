@@ -5,7 +5,9 @@
     <color name="colorAccent">#83B144</color>
 
     <color name="white">#ffffff</color>
+    <color name="shadow">#30000000</color>
     <color name="gray">#707070</color>
+    <color name="light_green">#B5D18F</color>
 
     <!-- цвета для кастомизации -->
     <color name="threads_welcome_screen_title">@color/gray</color>
