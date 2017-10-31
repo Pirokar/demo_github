@@ -205,11 +205,13 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
 
     @Override
     public void onOkClicked(final int requestCode) {
-        List<Card> cards = PrefUtils.getCards(MainActivity.this);
+        List<Card> cards = PrefUtils.getCards(this);
         if (cards.contains(cardForDelete)) {
             cards.remove(cardForDelete);
             updateViews(cards);
-            PrefUtils.storeCards(MainActivity.this, cards);
+            PrefUtils.storeCards(this, cards);
+
+            ChatController.logoutClient(this, cardForDelete.getUserId());
         }
         cardForDelete = null;
     }

@@ -247,11 +247,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 instance.fragment.removeSearching();
             }
             instance.mConsultWriter.setCurrentConsultLeft();
-            String oldClientId = PrefUtils.getClientID(ctx);
-            if (!TextUtils.isEmpty(oldClientId)) {
-                // send CLIENT_OFFLINE message
-                Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createMessageClientOffline(oldClientId), true);
-            }
             PrefUtils.setClientId(ctx, finalClientId);
             Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId), true);
             String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
@@ -275,6 +270,13 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             PrefUtils.setClientIdWasSet(true, ctx);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // send CLIENT_OFFLINE message
+    public static void logoutClient(Context ctx, String clientId) {
+        if (!TextUtils.isEmpty(clientId)) {
+            Transport.sendMessageMFMSAsync(ctx, OutgoingMessageCreator.createMessageClientOffline(clientId), true, null, null);
         }
     }
 
