@@ -24,6 +24,7 @@ import com.pushserver.android.model.PushMessage;
 import com.sequenia.appwithchatdev.R;
 import com.sequenia.appwithchatdev.data.Card;
 import com.sequenia.appwithchatdev.databinding.ActivityMainBinding;
+import com.sequenia.appwithchatdev.utils.ChatBuilderHelper;
 import com.sequenia.appwithchatdev.utils.PrefUtils;
 
 import java.util.List;
@@ -39,11 +40,13 @@ import io.fabric.sdk.android.Fabric;
  * - в виде новой Активности
  * - в виде активности, где чат выступает в качестве фрагмента
  */
-public class MainActivity extends AppCompatActivity implements AddCardDialog.AddCardDialogActionsListener {
+public class MainActivity extends AppCompatActivity implements AddCardDialog.AddCardDialogActionsListener, YesNoDialog.YesNoDialogActionListener {
 
     private static final int CHAT_PERMISSIONS_REQUEST_CODE = 123;
+    private static final int YES_NO_DIALOG_REQUEST_CODE = 323;
 
     private CardsAdapter cardsAdapter;
+    private Card cardForDelete;
 
     ActivityMainBinding binding;
 
@@ -68,7 +71,12 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         cardsAdapter.setRemoveCardListener(new CardsAdapter.RemoveCardListener() {
             @Override
             public void onRemoved(final Card card) {
-                updateViews();
+                cardForDelete = card;
+                YesNoDialog.open(MainActivity.this, getString(R.string.card_delete_text),
+                                                            getString(R.string.card_delete_yes),
+                                                            getString(R.string.card_delete_no),
+                                                            YES_NO_DIALOG_REQUEST_CODE);
+
             }
         });
         binding.cardsView.setAdapter(cardsAdapter);
@@ -193,6 +201,22 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
     @Override
     public void onCancel() {
 
+    }
+
+    @Override
+    public void onOkClicked(final int requestCode) {
+        List<Card> cards = PrefUtils.getCards(MainActivity.this);
+        if (cards.contains(cardForDelete)) {
+            cards.remove(cardForDelete);
+            updateViews(cards);
+            PrefUtils.storeCards(MainActivity.this, cards);
+        }
+        cardForDelete = null;
+    }
+
+    @Override
+    public void onCancelClicked(final int requestCode) {
+        cardForDelete = null;
     }
 
     public static class CustomShortPushListener implements ChatController.ShortPushListener {

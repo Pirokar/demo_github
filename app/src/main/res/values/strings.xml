@@ -13,6 +13,10 @@
     <string name="no_cards">Добавьте клиента</string>
     <string name="client_id_already_exist">Такой client_id уже существует</string>
 
+    <string name="card_delete_text">Выдействительно хотите удалить клиента?</string>
+    <string name="card_delete_yes">Да</string>
+    <string name="card_delete_no">Нет</string>
+
     <string name="card_add_button">Добавить</string>
     <string name="card_cancel_button">Отменить</string>
 

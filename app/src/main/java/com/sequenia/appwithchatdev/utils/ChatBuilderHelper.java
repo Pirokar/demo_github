@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatdev.ui;
+package com.sequenia.appwithchatdev.utils;
 
 import android.app.Activity;
 
