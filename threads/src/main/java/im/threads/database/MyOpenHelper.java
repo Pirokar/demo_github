@@ -586,20 +586,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return ids;
     }
 
-    List<String> getUnreadConsultConnectedMessagesId() {
-        ArrayList<String> ids = new ArrayList<>();
-        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID +
-                " from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_CONNECTED.type
-                + " and " + COLUMN_IS_READ + " = 0"
-                + " order by " + COLUMN_TIMESTAMP + " asc", null);
-        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            ids.add(c.getString(0));
-        }
-        c.close();
-        return ids;
-    }
-
     private void putFd(FileDescription fileDescription, String id, boolean isFromQuote) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FD_MESSAGE_ID_EXT, id);

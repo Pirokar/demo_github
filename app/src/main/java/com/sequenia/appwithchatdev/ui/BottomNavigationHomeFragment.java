@@ -34,8 +34,6 @@ public class BottomNavigationHomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_bottom_navigation_home, container, false);
         unreadMessagesCount = (TextView) view.findViewById(R.id.unread_messages_count);
 
-        showUnreadMessagesCount(ChatController.getUnreadMessagesCount(getActivity().getApplicationContext()));
-
         // Обработка изменения количества непрочитанных в чате сообщений
         unreadMessagesCountListener = new ChatController.UnreadMessagesCountListener() {
             @Override
@@ -48,6 +46,9 @@ public class BottomNavigationHomeFragment extends Fragment {
                 });
             }
         };
+
+        ChatController.getUnreadMessagesCount(getActivity().getApplicationContext(), unreadMessagesCountListener);
+
         ChatController.setUnreadMessagesCountListener(unreadMessagesCountListener);
 
         return view;

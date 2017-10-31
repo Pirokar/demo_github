@@ -1,12 +1,15 @@
 package im.threads.database;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import im.threads.controllers.ChatController;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.CompletionHandler;
@@ -233,10 +236,27 @@ public class DatabaseHolder {
         return mMyOpenHelper.getUnreadMessagesId();
     }
 
-    public int getUnreadMessagesCount() {
-        int msgSize = mMyOpenHelper.getUnreadMessagesId().size();
-        int conSize = mMyOpenHelper.getUnreadConsultConnectedMessagesId().size();
-        return msgSize + conSize;
+    // let the DB time to write the incoming message
+    public void getUnreadMessagesCount(boolean immediate, final ChatController.UnreadMessagesCountListener unreadMessagesCountListener) {
+        if (immediate) {
+            getUnreadMessagesCount(unreadMessagesCountListener);
+        }
+        else {
+            final Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getUnreadMessagesCount(unreadMessagesCountListener);
+                }
+            }, 1000);
+        }
+    }
+
+    private void getUnreadMessagesCount(final ChatController.UnreadMessagesCountListener unreadMessagesCountListener) {
+        if (unreadMessagesCountListener != null) {
+            final int unreadMessagesCount = mMyOpenHelper.getUnreadMessagesId().size();
+            unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadMessagesCount);
+        }
     }
 
     public void setMessageWereRead(String messageId) {

@@ -103,32 +103,22 @@ public class NotificationService extends Service {
             return START_STICKY;
         }
 
+        final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
         ArrayList<com.pushserver.android.model.PushMessage> il =
                 intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
         if (intent.getAction() != null && intent.getAction().equals(ACTION_REMOVE_NOTIFICATION)) {
             dismissUnreadMessagesNotification();
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNREAD_MESSAGE_TEXT)) {
             String message = intent.getStringExtra(ACTION_ADD_UNREAD_MESSAGE_TEXT);
-            final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
             if (Build.VERSION.SDK_INT < 24) {
-                Notification notification = getMstyleNotif(notificationBuilder, null, message);
-                notification.defaults |= Notification.DEFAULT_SOUND;
-                notification.defaults |= Notification.DEFAULT_VIBRATE;
-                if (needsShowNotification()) {
-                    nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
-                    ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
-                }
+                Notification notification = getMstyleNotif(null, message);
+                notifyUnreadMessagesCountChanged(nm, notification);
             } else {
-                getNstyleNotif(notificationBuilder, null, new CompletionHandler<Notification>() {
+                getNstyleNotif(null, new CompletionHandler<Notification>() {
                     @Override
-                    public void onComplete(final Notification data) {
-                        if (needsShowNotification()) {
-                            data.defaults |= Notification.DEFAULT_SOUND;
-                            data.defaults |= Notification.DEFAULT_VIBRATE;
-                            nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
-                            ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
-                        }
+                    public void onComplete(final Notification notification) {
+                        notifyUnreadMessagesCountChanged(nm, notification);
                     }
 
                     @Override
@@ -138,37 +128,15 @@ public class NotificationService extends Service {
                 }, message);
             }
         } else if (il != null) {
-            final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
             List<ChatItem> items = IncomingMessageParser.formatMessages(il);
             if (Build.VERSION.SDK_INT < 24) {
-                Notification notification = getMstyleNotif(notificationBuilder, items, null);
-                notification.defaults |= Notification.DEFAULT_SOUND;
-                notification.defaults |= Notification.DEFAULT_VIBRATE;
-                if (needsShowNotification()) {
-                    nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
-                    ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
-                }
+                Notification notification = getMstyleNotif(items, null);
+                notifyUnreadMessagesCountChanged(nm, notification);
             } else {
-                getNstyleNotif(notificationBuilder, items, new CompletionHandler<Notification>() {
+                getNstyleNotif(items, new CompletionHandler<Notification>() {
                     @Override
-                    public void onComplete(final Notification data) {
-                        if (needsShowNotification()) {
-                            data.defaults |= Notification.DEFAULT_SOUND;
-                            data.defaults |= Notification.DEFAULT_VIBRATE;
-
-                            boolean fixPushCrash = false;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                if (data.getSmallIcon() == null) {
-                                    fixPushCrash = true;
-                                }
-                            }
-
-                            if (!fixPushCrash) {
-                                nm.notify(UNREAD_MESSAGE_PUSH_ID, data);
-                            }
-                            ChatController.notifyUnreadMessagesCountChanged(NotificationService.this);
-                        }
+                    public void onComplete(final Notification notification) {
+                        notifyUnreadMessagesCountChanged(nm, notification);
                     }
 
                     @Override
@@ -178,22 +146,21 @@ public class NotificationService extends Service {
                 }, null);
             }
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNSENT_MESSAGE)) {
-            final NotificationCompat.Builder nc = new NotificationCompat.Builder(this);
-            nc.setContentTitle(getString(R.string.threads_message_were_unsent));
-            final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+            notificationBuilder.setContentTitle(getString(R.string.threads_message_were_unsent));
             PendingIntent pend = getChatIntent();
             if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
                 final int iconResId = style.defPushIconResId;
-                nc.setSmallIcon(iconResId);
+                notificationBuilder.setSmallIcon(iconResId);
             } else {
-                nc.setSmallIcon(R.drawable.default_push_icon);
+                notificationBuilder.setSmallIcon(R.drawable.default_push_icon);
             }
-            nc.setContentIntent(pend);
-            nc.setAutoCancel(true);
+            notificationBuilder.setContentIntent(pend);
+            notificationBuilder.setAutoCancel(true);
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    nm.notify(UNSENT_MESSAGE_PUSH_ID, nc.build());
+                    nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build());
                 }
             }, 1500);
         }
@@ -203,6 +170,24 @@ public class NotificationService extends Service {
 
     private boolean needsShowNotification() {
         return !ChatFragment.isShown();
+    }
+
+    private void notifyUnreadMessagesCountChanged(final NotificationManager nm, Notification notification) {
+        notification.defaults |= Notification.DEFAULT_SOUND;
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
+        if (needsShowNotification()) {
+
+            boolean fixPushCrash = false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && notification.getSmallIcon() == null) {
+                fixPushCrash = true;
+            }
+
+            if (!fixPushCrash) {
+                nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
+            }
+
+            ChatController.notifyUnreadMessagesCountChanged(this);
+        }
     }
 
     @Override
@@ -218,8 +203,9 @@ public class NotificationService extends Service {
         nm.cancel(UNREAD_MESSAGE_PUSH_ID);
     }
 
-    Notification getMstyleNotif(
-            NotificationCompat.Builder builder, List<ChatItem> items, String message) {
+    Notification getMstyleNotif(List<ChatItem> items, String message) {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
         final RemoteViews pushSmall = new RemoteViews(getPackageName(), R.layout.remote_push_small);
         final RemoteViews pushBig = new RemoteViews(getPackageName(), R.layout.remote_push_expanded);
 
@@ -413,9 +399,9 @@ public class NotificationService extends Service {
         return notification;
     }
 
-    void getNstyleNotif(
-            final NotificationCompat.Builder builder
-            , List<ChatItem> items, final CompletionHandler<Notification> completionHandler, String message) {
+    void getNstyleNotif(List<ChatItem> items, final CompletionHandler<Notification> completionHandler, String message) {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
         builder.setShowWhen(true);
         if (Build.VERSION.SDK_INT > 23) {
             if (style != null && style.nougatPushAccentColorResId != ChatStyle.INVALID) {
