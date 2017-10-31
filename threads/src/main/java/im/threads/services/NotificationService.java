@@ -182,7 +182,7 @@ public class NotificationService extends Service {
             nc.setContentTitle(getString(R.string.threads_message_were_unsent));
             final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             PendingIntent pend = getChatIntent();
-            if (style.defPushIconResId != ChatStyle.INVALID) {
+            if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
                 final int iconResId = style.defPushIconResId;
                 nc.setSmallIcon(iconResId);
             } else {

@@ -2,6 +2,7 @@ package im.threads.formatters;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -43,38 +44,45 @@ public class IncomingMessageParser {
     private IncomingMessageParser() {
     }
 
-    private static JSONObject getFullMessage(PushMessage pushMessage) {
+    private static JSONObject getFullMessage(final PushMessage pushMessage) {
         JSONObject fullMessage = null;
 
         try {
             if (pushMessage.fullMessage != null) {
                 fullMessage = new JSONObject(pushMessage.fullMessage);
             }
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
         }
 
         return fullMessage;
     }
 
-    private static String getType(JSONObject fullMessage) {
-        String type;
+    private static String getType(final JSONObject fullMessage) {
+        String type = "";
 
         try {
-            if (fullMessage.has(PushMessageAttributes.TYPE)) {
-                type = fullMessage.getString(PushMessageAttributes.TYPE);
-            } else {
-                type = null;
-            }
-        } catch (JSONException e) {
+            type = fullMessage.getString(PushMessageAttributes.TYPE);
+        } catch (final JSONException e) {
             e.printStackTrace();
-            type = null;
         }
 
         return type;
     }
 
-    private static boolean isChatPush(JSONObject fullMessage) {
+    private static String getClientId(final JSONObject fullMessage) {
+        String type = "";
+
+        try {
+            type = fullMessage.getString(PushMessageAttributes.CLIENT_ID);
+        } catch (final JSONException e) {
+            e.printStackTrace();
+        }
+
+        return type;
+    }
+
+    private static boolean isChatPush(final JSONObject fullMessage) {
         String type;
 
         try {
@@ -83,7 +91,7 @@ public class IncomingMessageParser {
             } else {
                 type = null;
             }
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
             type = null;
         }
@@ -91,44 +99,44 @@ public class IncomingMessageParser {
         return type != null && type.equalsIgnoreCase("threads");
     }
 
-    public static Long getHideAfter(JSONObject fullMessage) {
+    public static Long getHideAfter(final JSONObject fullMessage) {
         try {
             return Long.parseLong(fullMessage.getString(PushMessageAttributes.HIDE_AFTER));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return 0L;
     }
 
-    private static String getMessage(JSONObject fullMessage, PushMessage pushMessage) {
+    private static String getMessage(final JSONObject fullMessage, final PushMessage pushMessage) {
         String message = null;
         try {
             message = fullMessage.getString(PushMessageAttributes.TEXT) == null
                     ? pushMessage.shortMessage : fullMessage.getString(PushMessageAttributes.TEXT);
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
         }
 
         return message;
     }
 
-    private static ConsultPhrase getConsultPhraseFromPush(PushMessage pushMessage,
-                                                          JSONObject fullMessage,
-                                                          String message) {
+    private static ConsultPhrase getConsultPhraseFromPush(final PushMessage pushMessage,
+                                                          final JSONObject fullMessage,
+                                                          final String message) {
         try {
-            String messageId = pushMessage.messageId;
+            final String messageId = pushMessage.messageId;
             String backendId;
             try {
                 backendId = String.valueOf(fullMessage.getInt(PushMessageAttributes.BACKEND_ID));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 backendId = "0";
             }
-            long timeStamp = pushMessage.sentAt;
-            JSONObject operatorInfo = fullMessage.getJSONObject("operator");
+            final long timeStamp = pushMessage.sentAt;
+            final JSONObject operatorInfo = fullMessage.getJSONObject("operator");
             final String name = operatorInfo.getString("name");
-            String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
-            String status = operatorInfo.has("status") && !operatorInfo.isNull("status") ? operatorInfo.getString("status") : null;
-            JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
+            final String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
+            final String status = operatorInfo.has("status") && !operatorInfo.isNull("status") ? operatorInfo.getString("status") : null;
+            final JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
             FileDescription fileDescription = null;
             if (null != attachmentsArray)
                 fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS));
@@ -142,7 +150,7 @@ public class IncomingMessageParser {
             if (quote != null && quote.getFileDescription() != null) {
                 quote.getFileDescription().setTimeStamp(timeStamp);
             }
-            boolean gender = operatorInfo.isNull("gender") ? false : operatorInfo.getString("gender").equalsIgnoreCase("male");
+            final boolean gender = operatorInfo.isNull("gender") ? false : operatorInfo.getString("gender").equalsIgnoreCase("male");
 
             return new ConsultPhrase(
                     fileDescription,
@@ -158,25 +166,25 @@ public class IncomingMessageParser {
                     gender,
                     backendId
             );
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private static UserPhrase getUserPhraseFromPush(PushMessage pushMessage,
-                                                    JSONObject fullMessage,
-                                                    String message) {
+    private static UserPhrase getUserPhraseFromPush(final PushMessage pushMessage,
+                                                    final JSONObject fullMessage,
+                                                    final String message) {
         try {
-            String messageId = pushMessage.messageId;
+            final String messageId = pushMessage.messageId;
             String backendId;
             try {
                 backendId = String.valueOf(fullMessage.getInt(PushMessageAttributes.BACKEND_ID));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 backendId = "0";
             }
-            long phraseTimeStamp = pushMessage.sentAt;
-            JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
+            final long phraseTimeStamp = pushMessage.sentAt;
+            final JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
             FileDescription fileDescription = null;
             if (null != attachmentsArray)
                 fileDescription = fileDescriptionFromJson(fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS));
@@ -190,7 +198,7 @@ public class IncomingMessageParser {
                 mQuote.getFileDescription().setTimeStamp(phraseTimeStamp);
             }
 
-            UserPhrase userPhrase = new UserPhrase(
+            final UserPhrase userPhrase = new UserPhrase(
                     messageId,
                     message,
                     mQuote,
@@ -200,7 +208,7 @@ public class IncomingMessageParser {
             );
             userPhrase.setSentState(MessageState.STATE_SENT);
             return userPhrase;
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
             return null;
         }
@@ -209,18 +217,22 @@ public class IncomingMessageParser {
     /**
      * @return null, если не удалось распознать формат сообщения.
      */
-    public static ChatItem format(PushMessage pushMessage) {
-        JSONObject fullMessage = getFullMessage(pushMessage);
+    public static ChatItem format(final PushMessage pushMessage) {
+        final JSONObject fullMessage = getFullMessage(pushMessage);
 
         // В пуше для чата должен быть fullMessage, и он должен соответствовать формату JSON.
         if (fullMessage == null) {
             return null;
         }
 
-        String typeStr = getType(fullMessage);
+        final String typeStr = getType(fullMessage);
+
+        if (TextUtils.isEmpty(typeStr)) {
+            return null;
+        }
 
         try {
-            PushMessageTypes type = PushMessageTypes.valueOf(typeStr);
+            final PushMessageTypes type = PushMessageTypes.valueOf(typeStr);
             switch (type) {
                 case OPERATOR_JOINED:
                 case OPERATOR_LEFT:
@@ -245,7 +257,7 @@ public class IncomingMessageParser {
                 default:
                     return checkMessageIsFull(pushMessage, fullMessage);
             }
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             // pass
         }
 
@@ -253,52 +265,52 @@ public class IncomingMessageParser {
     }
 
     @Nullable
-    private static ChatItem checkMessageIsFull(PushMessage pushMessage, JSONObject fullMessage) {
-        String message = getMessage(fullMessage, pushMessage);
+    private static ChatItem checkMessageIsFull(final PushMessage pushMessage, final JSONObject fullMessage) {
+        final String message = getMessage(fullMessage, pushMessage);
         if (message != null || fullMessage.has(PushMessageAttributes.ATTACHMENTS) || fullMessage.has(PushMessageAttributes.QUOTES)) {
-            ChatItem item = getConsultPhraseFromPush(pushMessage, fullMessage, message);
+            final ChatItem item = getConsultPhraseFromPush(pushMessage, fullMessage, message);
             return item != null ? item : getUserPhraseFromPush(pushMessage, fullMessage, message);
         } else {
             return null;
         }
     }
 
-    private static Long getThreadId(JSONObject fullMessage) {
+    private static Long getThreadId(final JSONObject fullMessage) {
         try {
             return Long.parseLong(fullMessage.getString(PushMessageAttributes.THREAD_ID));
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
         }
         return -1L;
     }
 
-    private static ScheduleInfo getScheduleInfoFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+    private static ScheduleInfo getScheduleInfoFromPush(final PushMessage pushMessage, final JSONObject fullMessage) {
         ScheduleInfo scheduleInfo = null;
-        String text = getMessage(fullMessage, pushMessage);
+        final String text = getMessage(fullMessage, pushMessage);
         if (text != null) {
             try {
                 scheduleInfo = new Gson().fromJson(text, ScheduleInfo.class);
                 scheduleInfo.setDate(new Date().getTime());
-            } catch (JsonSyntaxException e) {
+            } catch (final JsonSyntaxException e) {
                 e.printStackTrace();
             }
         }
         return scheduleInfo;
     }
 
-    private static Survey getRatingFromPush(PushMessage pushMessage, JSONObject fullMessage) {
+    private static Survey getRatingFromPush(final PushMessage pushMessage, final JSONObject fullMessage) {
         Survey survey = null;
-        String text = getMessage(fullMessage, pushMessage);
+        final String text = getMessage(fullMessage, pushMessage);
         if (text != null) {
             try {
                 survey = new Gson().fromJson(text, Survey.class);
-                long time = new Date().getTime();
+                final long time = new Date().getTime();
                 survey.setPhraseTimeStamp(time);
                 survey.setSentState(MessageState.STATE_NOT_SENT);
-                for (QuestionDTO questionDTO : survey.getQuestions()) {
+                for (final QuestionDTO questionDTO : survey.getQuestions()) {
                     questionDTO.setPhraseTimeStamp(time);
                 }
-            } catch (JsonSyntaxException e) {
+            } catch (final JsonSyntaxException e) {
                 e.printStackTrace();
             }
         }
@@ -306,27 +318,27 @@ public class IncomingMessageParser {
     }
 
     // show close thread's request only if thread has time till close (hideAfter)
-    private static RequestResolveThread getCloseRequestFromPush(JSONObject fullMessage) {
-        Long hideAfter = getHideAfter(fullMessage);
+    private static RequestResolveThread getCloseRequestFromPush(final JSONObject fullMessage) {
+        final Long hideAfter = getHideAfter(fullMessage);
         return hideAfter > 0 ? new RequestResolveThread(hideAfter, System.currentTimeMillis()) : null;
     }
 
-    private static ConsultConnectionMessage getConsultConnectionFromPush(PushMessage pushMessage) {
+    private static ConsultConnectionMessage getConsultConnectionFromPush(final PushMessage pushMessage) {
         ConsultConnectionMessage chatItem = null;
 
         try {
-            JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
-            String messageId = pushMessage.messageId;
-            long timeStamp = pushMessage.sentAt;
-            JSONObject operator = fullMessage.getJSONObject("operator");
-            long operatorId = operator.getLong("id");
-            String name = operator.isNull("name") ? null : operator.getString("name");
-            String status = operator.isNull("status") ? null : operator.getString("status");
-            String type = fullMessage.getString(PushMessageAttributes.TYPE);
-            boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
-            String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
-            String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
-            boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
+            final JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
+            final String messageId = pushMessage.messageId;
+            final long timeStamp = pushMessage.sentAt;
+            final JSONObject operator = fullMessage.getJSONObject("operator");
+            final long operatorId = operator.getLong("id");
+            final String name = operator.isNull("name") ? null : operator.getString("name");
+            final String status = operator.isNull("status") ? null : operator.getString("status");
+            final String type = fullMessage.getString(PushMessageAttributes.TYPE);
+            final boolean gender = operator.isNull("gender") ? false : operator.getString("gender").equalsIgnoreCase("male");
+            final String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
+            final String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
+            final boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
             chatItem = new ConsultConnectionMessage(
                     String.valueOf(operatorId)
                     , type
@@ -339,14 +351,14 @@ public class IncomingMessageParser {
                     , pushMessage.messageId
                     , displayMessage);
 
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
         }
 
         return chatItem;
     }
 
-    public static Quote quoteFromJson(JSONArray quotes) throws JSONException {
+    public static Quote quoteFromJson(final JSONArray quotes) throws JSONException {
         Quote quote = null;
         FileDescription quoteFileDescription = null;
         String quoteString = null;
@@ -368,7 +380,7 @@ public class IncomingMessageParser {
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && quotes.getJSONObject(0).has("operator")) {
             try {
                 consultName = quotes.getJSONObject(0).getJSONObject("operator").getString("name");
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 Log.e(TAG, "" + quotes);
                 e.printStackTrace();
             }
@@ -382,7 +394,7 @@ public class IncomingMessageParser {
         return quote;
     }
 
-    public static Quote quoteFromList(List<MessgeFromHistory> quotes) {
+    public static Quote quoteFromList(final List<MessgeFromHistory> quotes) {
         Quote quote = null;
         FileDescription quoteFileDescription = null;
         String quoteString = null;
@@ -413,7 +425,7 @@ public class IncomingMessageParser {
         return quote;
     }
 
-    public static FileDescription fileDescriptionFromJson(JSONArray jsonArray) throws JSONException {
+    public static FileDescription fileDescriptionFromJson(final JSONArray jsonArray) throws JSONException {
         FileDescription fileDescription = null;
         if (jsonArray.length() > 0
                 && jsonArray.getJSONObject(0) != null) {
@@ -432,7 +444,7 @@ public class IncomingMessageParser {
         return fileDescription;
     }
 
-    public static FileDescription fileDescriptionFromList(List<Attachment> attachments) {
+    public static FileDescription fileDescriptionFromList(final List<Attachment> attachments) {
         FileDescription fileDescription = null;
         if (attachments.size() > 0 && attachments.get(0) != null) {
             String header = null;
@@ -450,10 +462,10 @@ public class IncomingMessageParser {
         return fileDescription;
     }
 
-    public static List<ChatItem> formatMessages(List<PushMessage> messages) {
-        List<ChatItem> list = new ArrayList<>();
+    public static List<ChatItem> formatMessages(final List<PushMessage> messages) {
+        final List<ChatItem> list = new ArrayList<>();
         for (int i = 0; i < messages.size(); i++) {
-            ChatItem chatItem = format(messages.get(i));
+            final ChatItem chatItem = format(messages.get(i));
             if (chatItem != null) {
                 list.add(chatItem);
             }
@@ -461,16 +473,16 @@ public class IncomingMessageParser {
         return list;
     }
 
-    public static ArrayList<ChatItem> formatNew(List<MessgeFromHistory> messages) {
-        ArrayList<ChatItem> out = new ArrayList<>();
+    public static ArrayList<ChatItem> formatNew(final List<MessgeFromHistory> messages) {
+        final ArrayList<ChatItem> out = new ArrayList<>();
         try {
-            for (MessgeFromHistory message : messages) {
+            for (final MessgeFromHistory message : messages) {
                 if (message == null)
                     continue;
-                String messageId = message.getProviderId();
-                String backendId = String.valueOf(message.getId());
-                long timeStamp = message.getTimeStamp();
-                Operator operator = message.getOperator();
+                final String messageId = message.getProviderId();
+                final String backendId = String.valueOf(message.getId());
+                final long timeStamp = message.getTimeStamp();
+                final Operator operator = message.getOperator();
                 String name = null;
                 if (operator != null && operator.getName() != null && !operator.getName().isEmpty()) {
                     name = operator.getName();
@@ -487,16 +499,16 @@ public class IncomingMessageParser {
                 if (message.getType() != null && !message.getType().isEmpty() &&
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
                         message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
-                    String type = message.getType();
+                    final String type = message.getType();
                     out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId, false));
                 } else {
-                    String phraseText = message.getText();
-                    FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
+                    final String phraseText = message.getText();
+                    final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
                     if (fileDescription != null) {
                         fileDescription.setFrom(name);
                         fileDescription.setTimeStamp(timeStamp);
                     }
-                    Quote quote = message.getQuotes() != null ? quoteFromList(message.getQuotes()) : null;
+                    final Quote quote = message.getQuotes() != null ? quoteFromList(message.getQuotes()) : null;
                     if (quote != null && quote.getFileDescription() != null)
                         quote.getFileDescription().setTimeStamp(timeStamp);
                     if (message.getOperator() != null) {
@@ -527,11 +539,11 @@ public class IncomingMessageParser {
             }
             Collections.sort(out, new Comparator<ChatItem>() {
                 @Override
-                public int compare(ChatItem ci1, ChatItem ci2) {
+                public int compare(final ChatItem ci1, final ChatItem ci2) {
                     return Long.valueOf(ci1.getTimeStamp()).compareTo(ci2.getTimeStamp());
                 }
             });
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             Log.e(TAG, "error while formatting");
             Log.e(TAG, "" + messages);
@@ -540,15 +552,15 @@ public class IncomingMessageParser {
         return out;
     }
 
-    public static List<String> getReadIds(Bundle b) {
-        ArrayList<String> ids = new ArrayList<>();
+    public static List<String> getReadIds(final Bundle b) {
+        final ArrayList<String> ids = new ArrayList<>();
         try {
             if (b == null) return new ArrayList<>();
-            Object o = b.get("readInMessageIds");
+            final Object o = b.get("readInMessageIds");
 
             if (o instanceof ArrayList) {
                 Log.i(TAG, "getReadIds o instanceof ArrayList");
-                Collection<? extends String> readInMessageIds = (Collection<? extends String>) b.get("readInMessageIds");
+                final Collection<? extends String> readInMessageIds = (Collection<? extends String>) b.get("readInMessageIds");
                 if (readInMessageIds != null) {
                     ids.addAll(readInMessageIds);
                 }
@@ -557,17 +569,17 @@ public class IncomingMessageParser {
             }
             if (o instanceof String) {
                 Log.i(TAG, "getReadIds o instanceof String " + o);
-                String contents = (String) o;
+                final String contents = (String) o;
                 if (!contents.contains(",")) {
                     ids.add((String) o);
                 } else {
-                    String[] idsArray = contents.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+                    final String[] idsArray = contents.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
                     ids.addAll(Arrays.asList(idsArray));
                 }
 
             }
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return ids;
@@ -578,8 +590,8 @@ public class IncomingMessageParser {
      *
      * @return true если нет поля clientId или оно совпадает с текущим clientId
      */
-    public static boolean checkId(PushMessage pushMessage, String clientID) {
-        JSONObject fullMessage = getFullMessage(pushMessage);
+    public static boolean checkId(final PushMessage pushMessage, final String clientID) {
+        final JSONObject fullMessage = getFullMessage(pushMessage);
         if (fullMessage == null) {
             return true;
         }
@@ -591,7 +603,7 @@ public class IncomingMessageParser {
             if (fullMessage.has(PushMessageAttributes.CLIENT_ID) && !clientID.equals(fullMessage.get(PushMessageAttributes.CLIENT_ID))) {
                 return false;
             }
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
         }
         return true;

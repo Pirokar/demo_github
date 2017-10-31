@@ -19,7 +19,7 @@ import retrofit2.http.Query;
  * описание серверных методов
  */
 
-public interface RetrofitService {
+public interface ThreadsApi {
     @Multipart
     @PUT("files")
     Call<FileUploadResponse> upload(

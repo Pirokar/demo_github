@@ -20,18 +20,19 @@ public class ServiceGenerator {
     private static String apiBaseUrl = "https://datastore.threads.im/";
 
     private static String userAgent;
-    private static RetrofitService retrofitService;
+    private static ThreadsApi sThreadsApi;
 
     private static final String USER_AGENT_HEADER = "User-Agent";
 
-    public static RetrofitService getRetrofitService() {
-        if (retrofitService == null) {
-            retrofitService = createService();
+
+    public static ThreadsApi getThreadsApi() {
+        if (sThreadsApi == null) {
+            sThreadsApi = createService();
         }
-        return retrofitService;
+        return sThreadsApi;
     }
 
-    private static RetrofitService createService() {
+    private static ThreadsApi createService() {
         Retrofit.Builder builder =
                 new Retrofit.Builder()
                         .baseUrl(apiBaseUrl)
@@ -58,7 +59,7 @@ public class ServiceGenerator {
         httpClient.connectTimeout(60, TimeUnit.SECONDS);
         builder.client(httpClient.build());
         Retrofit retrofit = builder.build();
-        return retrofit.create(RetrofitService.class);
+        return retrofit.create(ThreadsApi.class);
     }
 
     public static void setUrl(String newApiBaseUrl) {

@@ -67,6 +67,7 @@ import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
 import im.threads.retrofit.ServiceGenerator;
+import im.threads.retrofit.ThreadsApi;
 import im.threads.services.DownloadService;
 import im.threads.services.NotificationService;
 import im.threads.utils.Callback;

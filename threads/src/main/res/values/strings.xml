@@ -74,6 +74,8 @@
 
     <string name="threads_invalid_client_id">Минимальная длина client id - 5 символов</string>
 
+    <string name="threads_user_agent" formatted="false" translatable="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
+
     <plurals  name="threads_unread_messages">
         <item quantity="one">%d непрочитанное сообщение</item>
         <item quantity="few">%d непрочитанных сообщения</item>

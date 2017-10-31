@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import im.threads.model.ChatStyle;
 
@@ -120,10 +121,18 @@ public class PrefUtils {
 
     public static ChatStyle getIncomingStyle(Context ctx) {
         ChatStyle style = null;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-        if (sharedPreferences.getString(APP_STYLE, null) != null) {
-            String sharedPreferencesString = sharedPreferences.getString(APP_STYLE, null);
-            style = new Gson().fromJson(sharedPreferencesString, ChatStyle.class);
+        try {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+            if (sharedPreferences.getString(APP_STYLE, null) != null) {
+                String sharedPreferencesString = sharedPreferences.getString(APP_STYLE, null);
+                style = new Gson().fromJson(sharedPreferencesString, ChatStyle.class);
+            }
+        }
+        catch (IllegalStateException ex) {
+
+        }
+        catch (JsonSyntaxException ex) {
+
         }
         return style;
     }
