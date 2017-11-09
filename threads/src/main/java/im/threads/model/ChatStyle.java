@@ -148,9 +148,6 @@ public class ChatStyle implements Serializable {
     @DrawableRes
     public int scheduleMessageIconResId = INVALID;
 
-    // is GoogleAnalytics enabled
-    public boolean isGAEnabled;
-
     // welcome screen style
     @DrawableRes
     public int welcomeScreenLogoResId = INVALID;
@@ -236,11 +233,6 @@ public class ChatStyle implements Serializable {
 
         public ChatStyleBuilder showChatBackButton(boolean showBackButton) {
             chatStyle.showBackButton = showBackButton;
-            return this;
-        }
-
-        public ChatStyleBuilder setGoogleAnalyticsEnabled(boolean isEnabled) {
-            chatStyle.isGAEnabled = isEnabled;
             return this;
         }
 
