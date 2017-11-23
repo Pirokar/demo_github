@@ -1162,13 +1162,13 @@ public class ChatFragment extends Fragment implements
             }
         }
 
-        h.postDelayed(new Runnable() {
+        h.post(new Runnable() {
             @Override
             public void run() {
                 if (!isInMessageSearchMode)
                     scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
-        }, 600);
+        });
 
     }
 
