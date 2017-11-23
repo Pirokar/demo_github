@@ -115,14 +115,14 @@ public class UserFileViewHolder extends BaseHolder {
         Drawable d;
         switch (sentState) {
             case STATE_WAS_READ:
-                d = itemView.getResources().getDrawable(R.drawable.ic_done_all_white_18dp);
+                d = itemView.getResources().getDrawable(R.drawable.threads_message_received);
                 if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.ic_done_white_18dp);
+                d = itemView.getResources().getDrawable(R.drawable.threads_message_sent);
                 if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }

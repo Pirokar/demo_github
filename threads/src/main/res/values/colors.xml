@@ -58,7 +58,8 @@
     <color name="threads_chat_connection_message">@color/threads_black</color>
 
     <color name="threads_icon_and_separators_color">@color/threads_disabled_text_color</color>
-    <color name="threads_user_message_send_status">@color/threads_white</color>
+    <color name="threads_time_underlay">#80000000</color>
+    <color name="threads_message_time">@color/threads_white</color>
 
     <color name="threads_outgoing_message_sent_icon">@color/threads_white</color>
     <color name="threads_outgoing_message_received_icon">@color/threads_white</color>
