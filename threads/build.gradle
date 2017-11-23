@@ -31,9 +31,13 @@ android {
 
 }
 dependencies {
-    compile 'com.android.support:appcompat-v7:+'
-    compile 'com.android.support:recyclerview-v7:+'
+    def final supportVersion = "25.3.1"
+
     compile project(':push-api-release-2.0.103')
+
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:recyclerview-v7:$supportVersion"
+
     /*
     *Если нужен retrofit, то необходимо использовать
     * версию 2.1.0 (okhttp 3.3.0), т.к. только эта версия
@@ -44,8 +48,6 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
 
     compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
-
-    compile 'com.azoft.carousellayoutmanager:carousel:1.2.1'
 }
 
 
