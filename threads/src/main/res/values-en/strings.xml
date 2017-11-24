@@ -55,9 +55,33 @@
     <string name="threads_send_female">send</string>
     <string name="threads_touch_to_look">Touch to look</string>
     <string name="threads_touch_to_download">Touch to download</string>
-    <string name="threads_new_">new</string>
     <string name="threads_answer">ANSWER</string>
     <string name="threads_check_connection">problems with internet connection</string>
+
+    <string name="threads_message_not_sent">Message not sent, check connection settings</string>
+    <string name="threads_typing">typing…</string>
+    <string name="threads_ask_to_rate">Please rate the quality of our service</string>
+    <string name="threads_thanks_for_rate">Thank you for your mark</string>
+    <string name="threads_item_user_rate_header">Evaluation of the solution</string>
+    <string name="threads_item_user_rate_text">from</string>
+
+    <string name="threads_permissions_help">Help</string>
+    <string name="threads_permissions_string_help_text">Permission is not available.\n\nTo provide permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="threads_permissions_camera_and_write_external_storage_help_text">There are no permissions to the Camera and External Storage\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="threads_permissions_write_external_storage_help_text">Memory permission is missing (Write to external storage).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="threads_permissions_read_external_storage_help_text">There is no permission to Memory (Reading from external storage).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
+    <string name="threads_permissions_quit">Close</string>
+    <string name="threads_permissions_settings">Settings</string>
+
+    <string name="threads_invalid_client_id">Minimum client id length - 5 characters</string>
+    <string name="threads_contact_center">Contact center</string>
+
+    <string name="threads_request_to_resolve_thread">Operator answered all your questions, continue the consultation?</string>
+    <string name="threads_request_to_resolve_thread_close">No</string>
+    <string name="threads_request_to_resolve_thread_open">Yes</string>
+
+    <string name="threads_welcome_screen_title_text">Welcome!</string>
+    <string name="threads_welcome_screen_subtitle_text">Send your question</string>
 
     <plurals  name="threads_unread_messages">
 
