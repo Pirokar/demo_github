@@ -18,6 +18,7 @@ import im.threads.database.DatabaseHolder;
 import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
+import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 
 /**
@@ -48,7 +49,7 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
             public void onComplete(List<FileDescription> data) {
                 List<FileDescription> output = new ArrayList<>();
                 for (FileDescription fd : data) {
-                    if (fd.hasImage()) {
+                    if (FileUtils.isImage(fd)) {
                         Log.e(TAG, "hasImage()");
                         output.add(fd);
                     }

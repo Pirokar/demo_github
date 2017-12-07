@@ -6,8 +6,6 @@ import java.util.UUID;
 
 import im.threads.utils.FileUtils;
 
-import static im.threads.utils.FileUtils.getExtensionFromPath;
-
 /**
  * Created by yuri on 10.06.2016.
  */
@@ -195,10 +193,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         return fileDescription != null
                 && TextUtils.isEmpty(phrase)
                 && mQuote == null
-                && (getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.JPEG
-                || getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PNG
-                || getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG
-                || getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.JPEG);
+                && FileUtils.isImage(fileDescription);
     }
 
     @Override

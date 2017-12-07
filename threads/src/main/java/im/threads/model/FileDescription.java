@@ -3,8 +3,6 @@ package im.threads.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import im.threads.utils.FileUtils;
-
 /**
  * Created by yuri on 13.06.2016.
  */
@@ -148,13 +146,6 @@ public class FileDescription implements Parcelable {
 
     public String getFrom() {
         return from;
-    }
-
-    public boolean hasImage() {
-        return FileUtils.getExtensionFromPath(incomingName) == FileUtils.PNG
-                || FileUtils.getExtensionFromPath(incomingName) == FileUtils.JPEG
-                || FileUtils.getExtensionFromPath(filePath) == FileUtils.JPEG
-                || FileUtils.getExtensionFromPath(filePath) == FileUtils.PNG;
     }
 
     @Override

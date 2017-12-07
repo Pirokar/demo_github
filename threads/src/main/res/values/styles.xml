@@ -144,7 +144,6 @@
         <item name="android:layout_marginLeft">@dimen/user_margin_left</item>
         <item name="android:layout_marginRight">@dimen/user_margin_right</item>
         <item name="android:layout_marginTop">@dimen/margin_quarter</item>
-        <item name="android:paddingRight">@dimen/margin_half</item>
     </style>
 
     <style name="consultBubble">
@@ -153,8 +152,6 @@
         <item name="android:layout_marginRight">@dimen/consultant_margin_right</item>
         <item name="android:layout_marginTop">@dimen/margin_quarter</item>
         <item name="android:layout_marginBottom">@dimen/margin_quarter</item>
-
-        <item name="android:paddingRight">@dimen/margin_half</item>
     </style>
 
     <style name="FocusCatcher">

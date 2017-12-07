@@ -70,7 +70,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
             public void onComplete(List<FileDescription> data) {
                 files = new ArrayList<>();
                 for (FileDescription fd : data) {
-                    if (fd.hasImage() && fd.getFilePath() != null) {
+                    if (FileUtils.isImage(fd) && fd.getFilePath() != null) {
                         files.add(fd);
                     }
                 }

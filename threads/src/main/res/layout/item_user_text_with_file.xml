@@ -32,14 +32,19 @@
         android:paddingTop="@dimen/margin_quarter"
         android:background="@drawable/thread_outgoing_bubble">
 
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:minWidth="240dp"/>
+
         <TableRow
             android:id="@+id/right_text_row"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginBottom="@dimen/margin_quarter"
-            android:paddingTop="@dimen/margin_quarter"
-            android:visibility="gone">
+            android:paddingTop="@dimen/margin_quarter">
 
             <im.threads.views.CircularProgressButton
                 android:id="@+id/button_download"
@@ -49,7 +54,6 @@
                 android:layout_marginBottom="@dimen/margin_half"
                 android:layout_marginTop="@dimen/margin_half"
                 android:background="@drawable/file_image_user"
-                android:visibility="gone"
                 app:completed_drawable="@drawable/file_image_user"
                 app:in_progress_label="@drawable/ic_clear_blue_user_36dp"
                 app:start_download_label="@drawable/ic_vertical_align_bottom_user_24dp" />

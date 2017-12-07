@@ -75,4 +75,11 @@ public class FileUtils {
         return PrefUtils.getServerUrlMetaInfo(context) + "files/" + relativeUrl;
     }
 
+    public static boolean isImage(final FileDescription fileDescription) {
+        return fileDescription != null
+                && (getExtensionFromPath(fileDescription.getFilePath()) == JPEG
+                || getExtensionFromPath(fileDescription.getFilePath()) == PNG
+                || getExtensionFromPath(fileDescription.getIncomingName()) == PNG
+                || getExtensionFromPath(fileDescription.getIncomingName()) == JPEG);
+    }
 }

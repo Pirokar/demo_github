@@ -43,6 +43,7 @@ public class ConsultPhraseHolder extends BaseHolder {
     private View fileRow;
     private CircularProgressButton mCircularProgressButton;
     private TextView rightTextHeader;
+    private ImageView mImage;
     private TextView mRightTextDescr;
     private TextView rightTextFileStamp;
     private TextView mTimeStampTextView;
@@ -62,7 +63,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
         fileRow = itemView.findViewById(R.id.right_text_row);
         mCircularProgressButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
-
+        mImage = (ImageView) itemView.findViewById(R.id.image);
         rightTextHeader = (TextView) itemView.findViewById(R.id.to);
         mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         rightTextFileStamp = (TextView) itemView.findViewById(R.id.send_at);
@@ -127,6 +128,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             , boolean isAvatarVisible
             , Quote quote
             , FileDescription fileDescription
+            , final View.OnClickListener imageClickListener
             , @Nullable View.OnClickListener fileClickListener
             , View.OnLongClickListener onRowLongClickListener
             , View.OnClickListener onAvatarClickListener
@@ -138,6 +140,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(phrase);
         }
+        mImage.setVisibility(View.GONE);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
         if (quote != null) {
@@ -166,21 +169,53 @@ public class ConsultPhraseHolder extends BaseHolder {
             }
         }
         if (fileDescription != null) {
-            fileRow.setVisibility(View.VISIBLE);
-            mCircularProgressButton.setVisibility(View.VISIBLE);
-            if (fileClickListener != null) {
-                mCircularProgressButton.setOnClickListener(fileClickListener);
+            if (FileUtils.isImage(fileDescription)) {
+                fileRow.setVisibility(View.GONE);
+                mCircularProgressButton.setVisibility(View.GONE);
+                mImage.setVisibility(View.VISIBLE);
+                mImage.setOnClickListener(imageClickListener);
+
+                Picasso.with(itemView.getContext())
+                        .load(fileDescription.getDownloadPath())
+                        .fit()
+                        .centerCrop()
+                        .into(mImage, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
+                                    mImage.setImageResource(style.imagePlaceholder);
+                                }else {
+                                    mImage.setImageResource(R.drawable.threads_image_placeholder);
+                                }
+                            }
+                        });
             }
-            rightTextHeader.setText(fileDescription.getFileSentTo() == null ? "" : fileDescription.getFileSentTo());
-            if (!isEmpty(rightTextHeader.getText())) {
-                rightTextHeader.setVisibility(View.VISIBLE);
-            } else {
-                rightTextHeader.setVisibility(View.GONE);
+            else {
+                fileRow.setVisibility(View.VISIBLE);
+                mCircularProgressButton.setVisibility(View.VISIBLE);
+
+                if (fileClickListener != null) {
+                    mCircularProgressButton.setOnClickListener(fileClickListener);
+                }
+                rightTextHeader.setText(fileDescription.getFileSentTo() == null ? "" : fileDescription.getFileSentTo());
+                if (!isEmpty(rightTextHeader.getText())) {
+                    rightTextHeader.setVisibility(View.VISIBLE);
+                } else {
+                    rightTextHeader.setVisibility(View.GONE);
+                }
+                String fileHeader = fileDescription.getIncomingName() == null ? FileUtils.getLastPathSegment(fileDescription.getFilePath()) : fileDescription
+                        .getIncomingName();
+                mRightTextDescr.setText(fileHeader == null ? "" : fileHeader + "\n" + android.text.format.Formatter
+                        .formatFileSize(itemView.getContext(), fileDescription.getSize()));
+                rightTextFileStamp
+                        .setText(itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
+                mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
             }
-            String fileHeader = fileDescription.getIncomingName() == null ? FileUtils.getLastPathSegment(fileDescription.getFilePath()) : fileDescription.getIncomingName();
-            mRightTextDescr.setText(fileHeader == null ? "" : fileHeader + "\n" + android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
-            rightTextFileStamp.setText(itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
-            mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         }
         if (fileDescription == null && quote == null) {
             fileRow.setVisibility(View.GONE);

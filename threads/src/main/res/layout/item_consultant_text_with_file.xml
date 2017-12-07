@@ -28,13 +28,20 @@
         android:layout_marginLeft="@dimen/margin_half"
         android:layout_marginTop="@dimen/consultant_photo_offset_size"/>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_width="wrap_content"
         android:layout_marginBottom="0dp"
+        android:orientation="vertical"
         android:layout_toRightOf="@+id/consult_avatar"
         android:background="@drawable/thread_incoming_bubble">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:minWidth="240dp"/>
 
         <LinearLayout
             android:id="@+id/right_text_row"
@@ -103,8 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_big"
-            android:paddingBottom="5dp"
-            android:layout_below="@+id/right_text_row">
+            android:paddingBottom="5dp">
 
             <im.threads.widget.text_view.BubbleMessageTextView
                 android:id="@+id/text"
@@ -126,5 +132,5 @@
                 android:textColor="@color/threads_operator_message_timestamp"
                 android:text="10:19" />
         </FrameLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </RelativeLayout>

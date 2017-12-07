@@ -471,16 +471,12 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Transport.sendMessageMFMSSync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext)), true);
-                    final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
-                                                                                        PrefUtils.getClientID(appContext),
-                                                                                        PrefUtils.getData(appContext),
-                                                                                        appContext);
-                    Transport.sendMessageMFMSSync(appContext, environmentMessage, true);
-                } catch (final PushServerErrorException e) {
-                    e.printStackTrace();
-                }
+                Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext)), true, null, null);
+                final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
+                                                                                    PrefUtils.getClientID(appContext),
+                                                                                    PrefUtils.getData(appContext),
+                                                                                    appContext);
+                Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
             }
         });
         if (mConsultWriter.isConsultConnected()) {
@@ -907,7 +903,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
                     i.putExtra(DownloadService.FD_TAG, fileDescription);
                     activity.startService(i);
-                } else if (fileDescription.hasImage() && fileDescription.getFilePath() != null) {
+                } else if (FileUtils.isImage(fileDescription) && fileDescription.getFilePath() != null) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
                 } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
                     final Intent target = new Intent(Intent.ACTION_VIEW);

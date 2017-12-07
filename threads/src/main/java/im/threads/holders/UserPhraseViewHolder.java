@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -23,6 +24,8 @@ import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
+import im.threads.picasso_url_connection_only.Callback;
+import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.ViewUtils;
@@ -38,6 +41,7 @@ public class UserPhraseViewHolder extends BaseHolder {
     private static final String TAG = "UserPhraseViewHolder ";
     private TextView mPhraseTextView;
     private TableRow mRightTextRow;
+    private ImageView mImage;
     private TextView mRightTextDescr;
     private TextView mRightTextHeader;
     private TextView mRightTextTimeStamp;
@@ -54,9 +58,10 @@ public class UserPhraseViewHolder extends BaseHolder {
     @ColorInt
     int messageColor;
 
-    public UserPhraseViewHolder(ViewGroup parent) {
+    public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
         mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
+        mImage = (ImageView) itemView.findViewById(R.id.image);
         mRightTextRow = (TableRow) itemView.findViewById(R.id.right_text_row);
         mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
@@ -98,21 +103,23 @@ public class UserPhraseViewHolder extends BaseHolder {
         }
     }
 
-    public void onBind(String phrase
-            , long timeStamp
-            , MessageState sentState
-            , Quote quote
-            , FileDescription fileDescription
-            , @Nullable View.OnClickListener fileClickListener
-            , View.OnClickListener onRowClickListener
-            , View.OnLongClickListener onLongClickListener
-            , boolean isChosen) {
+    public void onBind(final String phrase
+            , final long timeStamp
+            , final MessageState sentState
+            , final Quote quote
+            , final FileDescription fileDescription
+            , final View.OnClickListener imageClickListener
+            , @Nullable final View.OnClickListener fileClickListener
+            , final View.OnClickListener onRowClickListener
+            , final View.OnLongClickListener onLongClickListener
+            , final boolean isChosen) {
         if (phrase == null || phrase.length() == 0) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(phrase);
         }
+        mImage.setVisibility(View.GONE);
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
@@ -142,24 +149,55 @@ public class UserPhraseViewHolder extends BaseHolder {
             }
         }
         if (fileDescription != null) {
-            if (fileDescription.getFilePath() != null) fileDescription.setDownloadProgress(100);
-            mRightTextRow.setVisibility(View.VISIBLE);
-            mFileImageButton.setVisibility(View.VISIBLE);
-            String filename = fileDescription.getIncomingName();
-            if (filename == null) {
-                filename = FileUtils.getLastPathSegment(fileDescription.getFilePath()) == null ? "" : FileUtils.getLastPathSegment(fileDescription.getFilePath());
+            if (FileUtils.isImage(fileDescription)) {
+                mRightTextRow.setVisibility(View.GONE);
+                mFileImageButton.setVisibility(View.GONE);
+                mImage.setVisibility(View.VISIBLE);
+                mImage.setOnClickListener(imageClickListener);
+
+                Picasso.with(itemView.getContext())
+                        .load(fileDescription.getFilePath())
+                        .fit()
+                        .centerCrop()
+                        .into(mImage, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
+                                    mImage.setImageResource(style.imagePlaceholder);
+                                }else {
+                                    mImage.setImageResource(R.drawable.threads_image_placeholder);
+                                }
+
+                            }
+                        });
             }
-            mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
-            mRightTextHeader.setText(quote == null ? fileDescription.getFileSentTo() : quote.getPhraseOwnerTitle());
-            mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(fileDescription.getTimeStamp()));
-            if (fileClickListener != null) {
-                mFileImageButton.setOnClickListener(fileClickListener);
-            }
-            mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
-            if (fileDescription.getFilePath() != null) {
-                mFileImageButton.setProgress(100);
-            } else {
-                mFileImageButton.setProgress(fileDescription.getDownloadProgress());
+            else {
+                if (fileDescription.getFilePath() != null) fileDescription.setDownloadProgress(100);
+                mRightTextRow.setVisibility(View.VISIBLE);
+                mFileImageButton.setVisibility(View.VISIBLE);
+                String filename = fileDescription.getIncomingName();
+                if (filename == null) {
+                    filename = FileUtils.getLastPathSegment(fileDescription.getFilePath()) == null ? "" : FileUtils
+                            .getLastPathSegment(fileDescription.getFilePath());
+                }
+                mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
+                mRightTextHeader.setText(quote == null ? fileDescription.getFileSentTo() : quote.getPhraseOwnerTitle());
+                mRightTextTimeStamp
+                        .setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(fileDescription.getTimeStamp()));
+                if (fileClickListener != null) {
+                    mFileImageButton.setOnClickListener(fileClickListener);
+                }
+                mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
+                if (fileDescription.getFilePath() != null) {
+                    mFileImageButton.setProgress(100);
+                } else {
+                    mFileImageButton.setProgress(fileDescription.getDownloadProgress());
+                }
             }
         }
         if (quote != null || fileDescription != null) {
@@ -173,7 +211,7 @@ public class UserPhraseViewHolder extends BaseHolder {
         } else {
             mRightTextHeader.setVisibility(View.VISIBLE);
         }
-        Drawable d;
+        final Drawable d;
         switch (sentState) {
             case STATE_WAS_READ:
                 d = itemView.getResources().getDrawable(R.drawable.threads_message_received);

@@ -111,10 +111,7 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
         return fileDescription != null
                 && TextUtils.isEmpty(phrase)
                 && quote == null
-                && (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.JPEG
-                || FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PNG
-                || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG
-                || FileUtils.getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.JPEG);
+                && FileUtils.isImage(fileDescription);
     }
 
     @Override
