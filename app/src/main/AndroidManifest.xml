@@ -65,7 +65,7 @@
             android:value="1e16d59476dc33c7506b19bf8b6ed04de67068cd" />
         <meta-data
             android:name="com.pushserver.android.senderId"
-            android:value="!STRING!1079639835466" />
+            android:value="@string/senderId" />
         <meta-data
             android:name="com.pushserver.android.serverUrl"
             android:value="https://pushserver.mfms.ru/brooma" />

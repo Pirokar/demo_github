@@ -2,4 +2,5 @@
 <resources>
     <string name="mfms_provider_uid">PH5AckgzOkYoSz82QVN1M2ovbiZePEdBMi80QHFdOm0vbi9DNkA1Sjt+Pgo=</string>
     <string name="datastore_url">https://winlabstore.threads.im/</string>
+    <string name="senderId">!STRING!1079639835466</string>
 </resources>

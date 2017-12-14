@@ -52,6 +52,11 @@ android {
             applicationId "com.sequenia.appwithchat.beta4"
             resValue "string", "app_name1", "Winlab"
         }
+
+        winlab0 {
+            applicationId "com.threads.android.winlab0"
+            resValue "string", "app_name1", "Winlab"
+        }
     }
 
     lintOptions {

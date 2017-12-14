@@ -2,4 +2,5 @@
 <resources>
     <string name="mfms_provider_uid">PH5AckgzOkYoSz82QVN1M2ovbiZePEdBMi80QHFdOm0vUyZGOS5tXCZgRWM1WiYkM34+Cg==</string>
     <string name="datastore_url">https://datastore.threads.im/</string>
+    <string name="senderId">!STRING!1079639835466</string>
 </resources>
