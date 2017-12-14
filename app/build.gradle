@@ -55,7 +55,7 @@ android {
 
         winlab0 {
             applicationId "com.threads.android.winlab0"
-            resValue "string", "app_name1", "Winlab"
+            resValue "string", "app_name1", "Winlab0"
         }
     }
 
