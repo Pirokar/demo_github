@@ -1151,7 +1151,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
         if (chatItem instanceof Survey) {
             final Survey survey = (Survey) chatItem;
-            final String ratingDoneMessage = OutgoingMessageCreator.createRatingRecievedMessage(
+            final String ratingDoneMessage = OutgoingMessageCreator.createRatingReceivedMessage(
                     survey.getSendingId(),
                     PrefUtils.getClientID(appContext)
             );

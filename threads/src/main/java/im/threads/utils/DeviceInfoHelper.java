@@ -13,7 +13,7 @@ import java.util.List;
 public final class DeviceInfoHelper {
 
     public static String getOsVersion() {
-        return String.valueOf(Build.VERSION.SDK_INT);
+        return Build.VERSION.RELEASE;
     }
 
     public static String getDeviceName() {

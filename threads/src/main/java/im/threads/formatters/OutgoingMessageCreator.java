@@ -167,7 +167,7 @@ public class OutgoingMessageCreator {
         return object.toString().replaceAll("\\\\", "");
     }
 
-    public static String createRatingRecievedMessage(long sendingId, String clientId) {
+    public static String createRatingReceivedMessage(long sendingId, String clientId) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
