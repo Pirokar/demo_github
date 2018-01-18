@@ -2,8 +2,8 @@ apply plugin: 'com.android.library'
 
 android {
 
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
 
     lintOptions {
         disable 'InvalidPackage'
@@ -15,9 +15,9 @@ android {
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 25
-        versionCode 63
-        versionName "2.31"
+        targetSdkVersion 26
+        versionCode 64
+        versionName "2.32"
     }
 
     buildTypes {
@@ -31,7 +31,7 @@ android {
 
 }
 dependencies {
-    def final supportVersion = "25.3.1"
+    def final supportVersion = "26.0.2"
 
     compile project(':push-api-release-2.0.103')
 

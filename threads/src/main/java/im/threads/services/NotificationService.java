@@ -1,6 +1,7 @@
 package im.threads.services;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -16,7 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -57,7 +58,8 @@ import static android.text.TextUtils.isEmpty;
  */
 public class NotificationService extends Service {
 
-    private static final String TAG = "NotificationService ";
+    private static final String TAG = "NotificationService";
+    private static final String CHANNEL_ID = "im.threads.services.NotificationService.CHANNEL_ID";
 
     public static final String ACTION_ALL_MESSAGES_WERE_READ = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_MESSAGES_WERE_READ";
     public static final String ACTION_ADD_UNREAD_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE";
@@ -81,12 +83,12 @@ public class NotificationService extends Service {
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(final Intent intent) {
         return null;
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
         Log.i(TAG, "onStartCommand");
 
         if (style == null) {
@@ -105,14 +107,19 @@ public class NotificationService extends Service {
 
         final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        ArrayList<com.pushserver.android.model.PushMessage> il =
+        if (nm != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            final NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Threads Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            nm.createNotificationChannel(channel);
+        }
+
+        final ArrayList<com.pushserver.android.model.PushMessage> il =
                 intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
         if (intent.getAction() != null && intent.getAction().equals(ACTION_REMOVE_NOTIFICATION)) {
             dismissUnreadMessagesNotification();
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNREAD_MESSAGE_TEXT)) {
-            String message = intent.getStringExtra(ACTION_ADD_UNREAD_MESSAGE_TEXT);
+            final String message = intent.getStringExtra(ACTION_ADD_UNREAD_MESSAGE_TEXT);
             if (Build.VERSION.SDK_INT < 24) {
-                Notification notification = getMstyleNotif(null, message);
+                final Notification notification = getMstyleNotif(null, message);
                 notifyUnreadMessagesCountChanged(nm, notification);
             } else {
                 getNstyleNotif(null, new CompletionHandler<Notification>() {
@@ -122,15 +129,15 @@ public class NotificationService extends Service {
                     }
 
                     @Override
-                    public void onError(Throwable e, String message, Notification data) {
+                    public void onError(final Throwable e, final String message, final Notification data) {
 
                     }
                 }, message);
             }
         } else if (il != null) {
-            List<ChatItem> items = IncomingMessageParser.formatMessages(il);
+            final List<ChatItem> items = IncomingMessageParser.formatMessages(il);
             if (Build.VERSION.SDK_INT < 24) {
-                Notification notification = getMstyleNotif(items, null);
+                final Notification notification = getMstyleNotif(items, null);
                 notifyUnreadMessagesCountChanged(nm, notification);
             } else {
                 getNstyleNotif(items, new CompletionHandler<Notification>() {
@@ -140,15 +147,15 @@ public class NotificationService extends Service {
                     }
 
                     @Override
-                    public void onError(Throwable e, String message, Notification data) {
+                    public void onError(final Throwable e, final String message, final Notification data) {
 
                     }
                 }, null);
             }
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNSENT_MESSAGE)) {
-            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
             notificationBuilder.setContentTitle(getString(R.string.threads_message_were_unsent));
-            PendingIntent pend = getChatIntent();
+            final PendingIntent pend = getChatIntent();
             if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
                 final int iconResId = style.defPushIconResId;
                 notificationBuilder.setSmallIcon(iconResId);
@@ -172,7 +179,7 @@ public class NotificationService extends Service {
         return !ChatFragment.isShown();
     }
 
-    private void notifyUnreadMessagesCountChanged(final NotificationManager nm, Notification notification) {
+    private void notifyUnreadMessagesCountChanged(final NotificationManager nm, final Notification notification) {
         notification.defaults |= Notification.DEFAULT_SOUND;
         notification.defaults |= Notification.DEFAULT_VIBRATE;
         if (needsShowNotification()) {
@@ -199,12 +206,12 @@ public class NotificationService extends Service {
 
     private void dismissUnreadMessagesNotification() {
         unreadMessages.clear();
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.cancel(UNREAD_MESSAGE_PUSH_ID);
     }
 
-    Notification getMstyleNotif(List<ChatItem> items, String message) {
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+    Notification getMstyleNotif(final List<ChatItem> items, final String message) {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
 
         final RemoteViews pushSmall = new RemoteViews(getPackageName(), R.layout.remote_push_small);
         final RemoteViews pushBig = new RemoteViews(getPackageName(), R.layout.remote_push_expanded);
@@ -246,16 +253,16 @@ public class NotificationService extends Service {
             }
         }
 
-        boolean unreadMessage = !TextUtils.isEmpty(message);
+        final boolean unreadMessage = !TextUtils.isEmpty(message);
         if (unreadMessage) {
             if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
+                final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
                 pushSmall.setImageViewBitmap(R.id.icon_large, icon);
                 pushBig.setImageViewBitmap(R.id.icon_large, icon);
                 pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
                 pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
             } else {
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.default_push_icon);
+                final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.default_push_icon);
                 pushSmall.setImageViewBitmap(R.id.icon_large, icon);
                 pushBig.setImageViewBitmap(R.id.icon_large, icon);
                 pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
@@ -270,7 +277,7 @@ public class NotificationService extends Service {
             pushSmall.setViewVisibility(R.id.attach_image, View.GONE);
             pushBig.setViewVisibility(R.id.attach_image, View.GONE);
         } else {
-            Tuple<Boolean, MarshmellowPushMessageFormatter.PushContents> pushText = new
+            final Tuple<Boolean, MarshmellowPushMessageFormatter.PushContents> pushText = new
                     MarshmellowPushMessageFormatter(this, unreadMessages, items)
                     .getFormattedMessageAsPushContents();
 
@@ -288,40 +295,40 @@ public class NotificationService extends Service {
                         .transform(new CircleTransform())
                         .into(new Target() {
                             @Override
-                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {
                                 pushSmall.setImageViewBitmap(R.id.icon_large, bitmap);
                                 pushBig.setImageViewBitmap(R.id.icon_large, bitmap);
                             }
 
                             @Override
-                            public void onBitmapFailed(Drawable errorDrawable) {
-                                Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
+                            public void onBitmapFailed(final Drawable errorDrawable) {
+                                final Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
                                 pushSmall.setImageViewBitmap(R.id.icon_large, big);
                                 pushBig.setImageViewBitmap(R.id.icon_large, big);
                             }
 
                             @Override
-                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            public void onPrepareLoad(final Drawable placeHolderDrawable) {
 
                             }
                         });
 
-                Target smallPicTarget = new Target() {
+                final Target smallPicTarget = new Target() {
                     @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {//round icon in corner
+                    public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {//round icon in corner
                         pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap);
                         pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap);
                     }
 
                     @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
+                    public void onBitmapFailed(final Drawable errorDrawable) {
+                        final Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
                         pushSmall.setImageViewBitmap(R.id.icon_small_corner, big);
                         pushBig.setImageViewBitmap(R.id.icon_small_corner, big);
                     }
 
                     @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    public void onPrepareLoad(final Drawable placeHolderDrawable) {
 
                     }
                 };
@@ -341,13 +348,13 @@ public class NotificationService extends Service {
                 }
             } else {
                 if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
-                    Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
+                    final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
                     pushSmall.setImageViewBitmap(R.id.icon_large, icon);
                     pushBig.setImageViewBitmap(R.id.icon_large, icon);
                     pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
                     pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
                 } else {
-                    Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.default_push_icon);
+                    final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.default_push_icon);
                     pushSmall.setImageViewBitmap(R.id.icon_large, icon);
                     pushBig.setImageViewBitmap(R.id.icon_large, icon);
                     pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
@@ -363,13 +370,13 @@ public class NotificationService extends Service {
             if (pushText.second.isOnlyImages) {
                 pushSmall.setViewVisibility(R.id.attach_image, View.VISIBLE);
                 pushBig.setViewVisibility(R.id.attach_image, View.VISIBLE);
-                Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.insert_photo_grey_48x48);
+                final Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.insert_photo_grey_48x48);
                 pushSmall.setImageViewBitmap(R.id.attach_image, b);
                 pushBig.setImageViewBitmap(R.id.attach_image, b);
             } else if (pushText.second.isWithAttachments) {
                 pushSmall.setViewVisibility(R.id.attach_image, View.VISIBLE);
                 pushBig.setViewVisibility(R.id.attach_image, View.VISIBLE);
-                Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.attach_file_grey_48x48);
+                final Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.attach_file_grey_48x48);
                 pushSmall.setImageViewBitmap(R.id.attach_image, b);
                 pushBig.setImageViewBitmap(R.id.attach_image, b);
             } else if (!pushText.second.isWithAttachments) {
@@ -378,29 +385,29 @@ public class NotificationService extends Service {
             }
             if (pushText.first) {
                 builder.setCustomBigContentView(pushBig);
-                PendingIntent buttonPend = getFastAnswerIntent();
+                final PendingIntent buttonPend = getFastAnswerIntent();
                 pushBig.setOnClickPendingIntent(R.id.reply, buttonPend);
             }
         }
         pushBig.setTextViewText(R.id.reply, getString(R.string.threads_reply));
         builder.setContent(pushSmall);
-        PendingIntent pend = getChatIntent();
+        final PendingIntent pend = getChatIntent();
         builder.setContentIntent(pend);
         builder.setAutoCancel(true);
         builder.setContentIntent(pend);
 
-        Notification notification = builder.build();
+        final Notification notification = builder.build();
         try {
-            int smallIconViewId = getResources().getIdentifier("right_icon", "id", android.R.class.getPackage().getName());
+            final int smallIconViewId = getResources().getIdentifier("right_icon", "id", android.R.class.getPackage().getName());
             notification.contentView.setViewVisibility(smallIconViewId, View.INVISIBLE);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return notification;
     }
 
-    void getNstyleNotif(List<ChatItem> items, final CompletionHandler<Notification> completionHandler, String message) {
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+    void getNstyleNotif(final List<ChatItem> items, final CompletionHandler<Notification> completionHandler, final String message) {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
 
         builder.setShowWhen(true);
         if (Build.VERSION.SDK_INT > 23) {
@@ -411,7 +418,7 @@ public class NotificationService extends Service {
                 builder.setColor(getColor(R.color.threads_nougat_push_accent));
             }
         }
-        boolean unreadMessage = !TextUtils.isEmpty(message);
+        final boolean unreadMessage = !TextUtils.isEmpty(message);
         if (unreadMessage) {
             builder.setContentText(message);
             if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
@@ -439,13 +446,13 @@ public class NotificationService extends Service {
                 builder.setContentText(pushContents.contentText);
             }
             if (pushContents.hasAvatar) {
-                TargetNoError avatarTarget = new TargetNoError() {
+                final TargetNoError avatarTarget = new TargetNoError() {
                     @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {
                         builder.setLargeIcon(bitmap);
                     }
                 };
-                String avatarPath = FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), pushContents.avatarPath);
+                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), pushContents.avatarPath);
                 Picasso
                         .with(this)
                         .load(avatarPath)
@@ -481,8 +488,8 @@ public class NotificationService extends Service {
                     @Override
                     public void run() {
                         try {
-                            URLConnection url = new URL(pushContents.lastImagePath).openConnection();
-                            Bitmap b = BitmapFactory.decodeStream(url.getInputStream());
+                            final URLConnection url = new URL(pushContents.lastImagePath).openConnection();
+                            final Bitmap b = BitmapFactory.decodeStream(url.getInputStream());
                             pictureStyle.bigPicture(b);
                             builder.setContentIntent(getChatIntent());
                             builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
@@ -493,7 +500,7 @@ public class NotificationService extends Service {
                                 builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
                             }
                             completionHandler.onComplete(builder.build());
-                        } catch (IOException e) {
+                        } catch (final IOException e) {
                             e.printStackTrace();
                         }
                     }
@@ -523,10 +530,10 @@ public class NotificationService extends Service {
     }
 
     private PendingIntent getFastAnswerIntent() {
-        Intent buttonIntent = new Intent(this, TranslucentActivity.class);
+        final Intent buttonIntent = new Intent(this, TranslucentActivity.class);
         buttonIntent.setFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent buttonPend = PendingIntent.getActivity(
+        final PendingIntent buttonPend = PendingIntent.getActivity(
                 this,
                 1
                 , buttonIntent
@@ -542,7 +549,7 @@ public class NotificationService extends Service {
 
     private class myBroadcastReceiver extends BroadcastReceiver {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals(NotificationService.ACTION_ALL_MESSAGES_WERE_READ)) {
                 dismissUnreadMessagesNotification();
             }
