@@ -57,6 +57,11 @@ android {
             applicationId "com.threads.android.winlab0"
             resValue "string", "app_name1", "Winlab0"
         }
+
+        bobtail {
+            applicationId "com.threads.android.bobtail"
+            resValue "string", "app_name1", "bobtail"
+        }
     }
 
     lintOptions {
