@@ -40,7 +40,8 @@ public class OutgoingMessageCreator {
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
             JSONObject formattedMessage = new JSONObject();
             formattedMessage.put(PushMessageAttributes.CLIENT_ID, clientId);
-            formattedMessage.put(PushMessageAttributes.TEXT, upcomingUserMessage.getPhrase());
+            final String phrase = upcomingUserMessage.getPhrase();
+            formattedMessage.put(PushMessageAttributes.TEXT, phrase == null ? "" : phrase);
 
             if (threadId != null && threadId != -1) {
                 formattedMessage.put(PushMessageAttributes.THREAD_ID, String.valueOf(threadId));
