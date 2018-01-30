@@ -228,7 +228,7 @@ public class UserPhraseViewHolder extends BaseHolder {
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.ic_cached_white_18dp);
+                d = itemView.getResources().getDrawable(R.drawable.threads_message_waiting);
                 if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }

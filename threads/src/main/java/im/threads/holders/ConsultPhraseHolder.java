@@ -62,14 +62,14 @@ public class ConsultPhraseHolder extends BaseHolder {
     public ConsultPhraseHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consultant_text_with_file, parent, false));
         fileRow = itemView.findViewById(R.id.right_text_row);
-        mCircularProgressButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
-        mImage = (ImageView) itemView.findViewById(R.id.image);
-        rightTextHeader = (TextView) itemView.findViewById(R.id.to);
-        mRightTextDescr = (TextView) itemView.findViewById(R.id.file_specs);
-        rightTextFileStamp = (TextView) itemView.findViewById(R.id.send_at);
-        mPhraseTextView = (TextView) itemView.findViewById(R.id.text);
-        mConsultAvatar = (ImageView) itemView.findViewById(R.id.consult_avatar);
-        mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
+        mCircularProgressButton = itemView.findViewById(R.id.button_download);
+        mImage = itemView.findViewById(R.id.image);
+        rightTextHeader = itemView.findViewById(R.id.to);
+        mRightTextDescr = itemView.findViewById(R.id.file_specs);
+        rightTextFileStamp = itemView.findViewById(R.id.send_at);
+        mPhraseTextView = itemView.findViewById(R.id.text);
+        mConsultAvatar = itemView.findViewById(R.id.consult_avatar);
+        mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mPhraseFrame = itemView.findViewById(R.id.phrase_frame);

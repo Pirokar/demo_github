@@ -1,8 +1,6 @@
 package im.threads.holders;
 
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,9 +32,6 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
     private View filter;
     private View filterSecond;
     private static ChatStyle style;
-    private static
-    @ColorInt
-    int messageColor;
 
     public ImageFromUserViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
@@ -111,24 +106,15 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         Drawable d;
         switch (sentState) {
             case STATE_WAS_READ:
-                d = itemView.getResources().getDrawable(R.drawable.threads_message_received);
-                if (messageColor != ChatStyle.INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d = itemView.getResources().getDrawable(R.drawable.threads_image_message_received);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.threads_message_sent);
-                if (messageColor != ChatStyle.INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d = itemView.getResources().getDrawable(R.drawable.threads_message_image_sent);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.ic_cached_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d = itemView.getResources().getDrawable(R.drawable.threads_message_image_waiting);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:

@@ -42,10 +42,10 @@
         android:layout_gravity="bottom|right"
         android:layout_marginBottom="@dimen/margin_big"
         android:layout_marginRight="@dimen/margin_half"
-        android:background="@drawable/timestamp_underlayer"
+        android:background="@drawable/timestamp_outgoing_underlayer"
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:text="10:19"
-        android:textColor="@color/threads_message_time" />
+        android:textColor="@color/threads_outgoing_message_time" />
 
 </RelativeLayout>

@@ -109,7 +109,7 @@ public class RatingStarsSentViewHolder extends BaseHolder {
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
-                d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_cached_white_18dp);
+                d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
                 if (messageColor != INVALID) {
                     d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
                 }
