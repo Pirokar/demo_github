@@ -28,4 +28,9 @@
     <dimen name="threads_welcome_screen_title">18sp</dimen>
     <dimen name="threads_welcome_screen_subtitle">14sp</dimen>
     <dimen name="threads_input_height">64dp</dimen>
+
+
+    <dimen name="threads_attachments_author_text_size">@dimen/text_regular</dimen>
+    <dimen name="threads_attachments_date_text_size">@dimen/text_regular</dimen>
+
 </resources>

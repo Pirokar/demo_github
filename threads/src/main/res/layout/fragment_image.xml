@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/threads_toolbar_gray">
+    android:background="@color/threads_attachments_background">
 
     <ImageView
 
@@ -22,8 +22,8 @@
         android:gravity="center_vertical|left"
         android:paddingLeft="@dimen/margin_material"
         android:paddingTop="@dimen/margin_quarter"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_regular"
+        android:textColor="@color/threads_attachments_author_text_color"
+        android:textSize="@dimen/threads_attachments_author_text_size"
         />
 
     <im.threads.widget.CustomFontTextView
@@ -34,6 +34,6 @@
         android:gravity="center_vertical|left"
         android:paddingBottom="@dimen/margin_quarter"
         android:paddingLeft="@dimen/margin_material"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_regular" />
+        android:textColor="@color/threads_attachments_date_text_color"
+        android:textSize="@dimen/threads_attachments_date_text_size" />
 </LinearLayout>

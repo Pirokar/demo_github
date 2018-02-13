@@ -45,11 +45,11 @@ public class ImageFragment extends Fragment {
                 sdf = new SimpleDateFormat("dd MMMM yyyy");
             }
         }
-        final ImageView imageView = (ImageView) v.findViewById(R.id.image);
+        final ImageView imageView = v.findViewById(R.id.image);
         FileDescription fd = getArguments().getParcelable("fd");
         if (fd == null) throw new IllegalStateException("you must provide filedescription");
-        TextView from = (TextView) v.findViewById(R.id.from);
-        TextView date = (TextView) v.findViewById(R.id.date);
+        TextView from = v.findViewById(R.id.from);
+        TextView date = v.findViewById(R.id.date);
         if (fd.getFrom() != null && !fd.getFrom().equals("null")) {
             from.setText(fd.getFrom());
         } else {
