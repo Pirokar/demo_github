@@ -131,11 +131,12 @@ public class OutgoingMessageCreator {
         return attachments;
     }
 
-    public static String createEnvironmentMessage(String clientName, String clientId, String data, Context ctx) {
+    public static String createEnvironmentMessage(String clientName, String clientId, boolean clientIdEncrypted, String data, Context ctx) {
         JSONObject object = new JSONObject();
         try {
             object.put("name", clientName);
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
+            object.put(PushMessageAttributes.CLIENT_ID_ENCRYPTED, clientIdEncrypted);
             object.put("data", data);
             object.put("platform", "Android");
             object.put("osVersion", DeviceInfoHelper.getOsVersion());

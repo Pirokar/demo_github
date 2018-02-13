@@ -251,6 +251,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId), true);
             final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                     finalClientId,
+                                                                                    PrefUtils.getClientIDEncrypted(ctx),
                                                                                     PrefUtils.getData(ctx),
                                                                                     ctx);
             Transport.sendMessageMFMSSync(ctx, environmentMessage, true);
@@ -474,6 +475,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext)), true, null, null);
                 final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
                                                                                     PrefUtils.getClientID(appContext),
+                                                                                    PrefUtils.getClientIDEncrypted(appContext),
                                                                                     PrefUtils.getData(appContext),
                                                                                     appContext);
                 Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
@@ -1270,6 +1272,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
                         Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                             PrefUtils.getNewClientID(ctx),
+                                                                                            PrefUtils.getClientIDEncrypted(ctx),
                                                                                             PrefUtils.getData(ctx),
                                                                                             ctx), true);
 

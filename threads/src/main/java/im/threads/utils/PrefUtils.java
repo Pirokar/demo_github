@@ -20,6 +20,7 @@ import im.threads.model.ChatStyle;
 public class PrefUtils {
     private static final String TAG = "PrefUtils ";
     public static final String TAG_CLIENT_ID = "TAG_CLIENT_ID";
+    public static final String TAG_CLIENT_ID_ENCRYPTED = "TAG_CLIENT_ID_ENCRYPTED";
     public static final String TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID";
     public static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
     public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
@@ -86,6 +87,15 @@ public class PrefUtils {
     public static String getClientID(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + TAG_CLIENT_ID, "");
     }
+
+    public static void setClientIdEncrypted(Context ctx) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putBoolean(PrefUtils.class + TAG_CLIENT_ID_ENCRYPTED, true).commit();
+    }
+
+    public static boolean getClientIDEncrypted(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(PrefUtils.class + TAG_CLIENT_ID_ENCRYPTED, false);
+    }
+
 
     public static void setThreadId(Context ctx, Long threadId) {
         if (threadId == null) throw new IllegalStateException("threadId is null");
