@@ -11,4 +11,7 @@ public class PushMessageAttributes {
     public static final String PROVIDER_ID = "providerId";
     public static final String BACKEND_ID = "backendId";
     public static final String HIDE_AFTER = "hideAfter";
+
+    public static final String ORIGIN = "origin";
+    public static final String THREADS = "threads";
 }
