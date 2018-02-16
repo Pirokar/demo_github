@@ -116,23 +116,17 @@ public class UserFileViewHolder extends BaseHolder {
         switch (sentState) {
             case STATE_WAS_READ:
                 d = itemView.getResources().getDrawable(R.drawable.threads_message_received);
-                if (messageColor != INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
                 d = itemView.getResources().getDrawable(R.drawable.threads_message_sent);
-                if (messageColor != INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
                 d = itemView.getResources().getDrawable(R.drawable.threads_message_waiting);
-                if (messageColor != INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:
