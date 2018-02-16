@@ -66,6 +66,7 @@ public class NotificationService extends Service {
     public static final String ACTION_ADD_UNSENT_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNSENT_MESSAGE";
     public static final String ACTION_REMOVE_NOTIFICATION = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_REMOVE_NOTIFICATION";
     public static final String ACTION_ADD_UNREAD_MESSAGE_TEXT = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE_TEXT";
+    public static final String EXTRA_OPERATOR_URL = "com.sequenia.threads.services.IncomingMessagesIntentService.EXTRA_OPERATOR_URL";
 
     private static final int UNREAD_MESSAGE_PUSH_ID = 0;
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
@@ -119,10 +120,10 @@ public class NotificationService extends Service {
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNREAD_MESSAGE_TEXT)) {
             final String message = intent.getStringExtra(ACTION_ADD_UNREAD_MESSAGE_TEXT);
             if (Build.VERSION.SDK_INT < 24) {
-                final Notification notification = getMstyleNotif(null, message);
+                final Notification notification = getMstyleNotif(intent, null, message);
                 notifyUnreadMessagesCountChanged(nm, notification);
             } else {
-                getNstyleNotif(null, new CompletionHandler<Notification>() {
+                getNstyleNotif(intent, null, new CompletionHandler<Notification>() {
                     @Override
                     public void onComplete(final Notification notification) {
                         notifyUnreadMessagesCountChanged(nm, notification);
@@ -137,10 +138,10 @@ public class NotificationService extends Service {
         } else if (il != null) {
             final List<ChatItem> items = IncomingMessageParser.formatMessages(il);
             if (Build.VERSION.SDK_INT < 24) {
-                final Notification notification = getMstyleNotif(items, null);
+                final Notification notification = getMstyleNotif(intent, items, null);
                 notifyUnreadMessagesCountChanged(nm, notification);
             } else {
-                getNstyleNotif(items, new CompletionHandler<Notification>() {
+                getNstyleNotif(intent, items, new CompletionHandler<Notification>() {
                     @Override
                     public void onComplete(final Notification notification) {
                         notifyUnreadMessagesCountChanged(nm, notification);
@@ -210,7 +211,7 @@ public class NotificationService extends Service {
         nm.cancel(UNREAD_MESSAGE_PUSH_ID);
     }
 
-    Notification getMstyleNotif(final List<ChatItem> items, final String message) {
+    Notification getMstyleNotif(final Intent intent, final List<ChatItem> items, final String message) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
 
         final RemoteViews pushSmall = new RemoteViews(getPackageName(), R.layout.remote_push_small);
@@ -255,27 +256,36 @@ public class NotificationService extends Service {
 
         final boolean unreadMessage = !TextUtils.isEmpty(message);
         if (unreadMessage) {
-            if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
-                final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
-                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
-                pushBig.setImageViewBitmap(R.id.icon_large, icon);
-                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
-                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
-            } else {
-                final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.default_push_icon);
-                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
-                pushBig.setImageViewBitmap(R.id.icon_large, icon);
-                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
-                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
+            final String operatorUrl = intent.getStringExtra(EXTRA_OPERATOR_URL);
+            if (!isEmpty(operatorUrl)) {
+                showMstyleOperatorAvatar(FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), operatorUrl), pushSmall, pushBig);
+                showMstyleSmallIcon(pushSmall, pushBig);
             }
-            pushSmall.setViewVisibility(R.id.consult_name, View.GONE);
-            pushSmall.setTextViewText(R.id.text, message);
 
-            pushBig.setViewVisibility(R.id.consult_name, View.GONE);
+            else {
+                if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
+                    final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
+                    pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                    pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                    pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
+                } else {
+                    final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.default_push_icon);
+                    pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                    pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                    pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
+                }
+                pushSmall.setViewVisibility(R.id.consult_name, View.GONE);
+                pushBig.setViewVisibility(R.id.consult_name, View.GONE);
+                pushSmall.setViewVisibility(R.id.attach_image, View.GONE);
+                pushBig.setViewVisibility(R.id.attach_image, View.GONE);
+            }
+
+            pushSmall.setTextViewText(R.id.text, message);
             pushBig.setTextViewText(R.id.text, message);
 
-            pushSmall.setViewVisibility(R.id.attach_image, View.GONE);
-            pushBig.setViewVisibility(R.id.attach_image, View.GONE);
+
         } else {
             final Tuple<Boolean, MarshmellowPushMessageFormatter.PushContents> pushText = new
                     MarshmellowPushMessageFormatter(this, unreadMessages, items)
@@ -289,63 +299,8 @@ public class NotificationService extends Service {
                 }
             }
             if (!isEmpty(avatarPath)) {
-                Picasso
-                        .with(this)
-                        .load(avatarPath)
-                        .transform(new CircleTransform())
-                        .into(new Target() {
-                            @Override
-                            public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {
-                                pushSmall.setImageViewBitmap(R.id.icon_large, bitmap);
-                                pushBig.setImageViewBitmap(R.id.icon_large, bitmap);
-                            }
-
-                            @Override
-                            public void onBitmapFailed(final Drawable errorDrawable) {
-                                final Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
-                                pushSmall.setImageViewBitmap(R.id.icon_large, big);
-                                pushBig.setImageViewBitmap(R.id.icon_large, big);
-                            }
-
-                            @Override
-                            public void onPrepareLoad(final Drawable placeHolderDrawable) {
-
-                            }
-                        });
-
-                final Target smallPicTarget = new Target() {
-                    @Override
-                    public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {//round icon in corner
-                        pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap);
-                        pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap);
-                    }
-
-                    @Override
-                    public void onBitmapFailed(final Drawable errorDrawable) {
-                        final Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
-                        pushSmall.setImageViewBitmap(R.id.icon_small_corner, big);
-                        pushBig.setImageViewBitmap(R.id.icon_small_corner, big);
-                    }
-
-                    @Override
-                    public void onPrepareLoad(final Drawable placeHolderDrawable) {
-
-                    }
-                };
-
-                if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
-                    Picasso
-                            .with(this)
-                            .load(style.defPushIconResId)
-                            .transform(new CircleTransform())
-                            .into(smallPicTarget);
-                } else {
-                    Picasso
-                            .with(this)
-                            .load(R.drawable.default_push_icon)
-                            .transform(new CircleTransform())
-                            .into(smallPicTarget);
-                }
+                showMstyleOperatorAvatar(FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), avatarPath), pushSmall, pushBig);
+                showMstyleSmallIcon(pushSmall, pushBig);
             } else {
                 if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
                     final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
@@ -406,7 +361,72 @@ public class NotificationService extends Service {
         return notification;
     }
 
-    void getNstyleNotif(final List<ChatItem> items, final CompletionHandler<Notification> completionHandler, final String message) {
+    private void showMstyleOperatorAvatar(final String operatorAvatarUrl, final RemoteViews pushSmall, final RemoteViews pushBig) {
+        final Target target = new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {
+                pushSmall.setImageViewBitmap(R.id.icon_large, bitmap);
+                pushBig.setImageViewBitmap(R.id.icon_large, bitmap);
+            }
+
+            @Override
+            public void onBitmapFailed(final Drawable errorDrawable) {
+                final Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
+                pushSmall.setImageViewBitmap(R.id.icon_large, big);
+                pushBig.setImageViewBitmap(R.id.icon_large, big);
+            }
+
+            @Override
+            public void onPrepareLoad(final Drawable placeHolderDrawable) {
+
+            }
+        };
+
+        Picasso.with(this)
+                .load(operatorAvatarUrl)
+                .transform(new CircleTransform())
+                .into(target);
+
+    }
+
+    private void showMstyleSmallIcon(final RemoteViews pushSmall, final RemoteViews pushBig) {
+        final Target smallPicTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {//round icon in corner
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap);
+            }
+
+            @Override
+            public void onBitmapFailed(final Drawable errorDrawable) {
+                final Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, big);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, big);
+            }
+
+            @Override
+            public void onPrepareLoad(final Drawable placeHolderDrawable) {
+
+            }
+        };
+
+        if (style != null && style.defPushIconResId != ChatStyle.INVALID) {
+            Picasso
+                    .with(this)
+                    .load(style.defPushIconResId)
+                    .transform(new CircleTransform())
+                    .into(smallPicTarget);
+        } else {
+            Picasso
+                    .with(this)
+                    .load(R.drawable.default_push_icon)
+                    .transform(new CircleTransform())
+                    .into(smallPicTarget);
+        }
+    }
+
+
+    void getNstyleNotif(final Intent intent, final List<ChatItem> items, final CompletionHandler<Notification> completionHandler, final String message) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
 
         builder.setShowWhen(true);
@@ -425,6 +445,22 @@ public class NotificationService extends Service {
                 builder.setSmallIcon(style.defPushIconResId);
             } else {
                 builder.setSmallIcon(R.drawable.default_push_icon);
+            }
+
+            final String operatorUrl = intent.getStringExtra(EXTRA_OPERATOR_URL);
+            if (!TextUtils.isEmpty(operatorUrl)) {
+                final TargetNoError avatarTarget = new TargetNoError() {
+                    @Override
+                    public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {
+                        builder.setLargeIcon(bitmap);
+                    }
+                };
+                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), operatorUrl);
+                Picasso
+                        .with(this)
+                        .load(avatarPath)
+                        .transform(new CircleTransform())
+                        .into(avatarTarget);
             }
             executor.execute(new Runnable() {
                 @Override

@@ -1,6 +1,5 @@
 package im.threads.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -148,17 +147,14 @@ public class PrefUtils {
     }
 
     public static String getServerUrlMetaInfo(Context context) {
-        if (context instanceof Activity) {
-            Activity activity = (Activity) context;
-            try {
-                ApplicationInfo ai = context.getPackageManager().getApplicationInfo(activity.getPackageName(), PackageManager.GET_META_DATA);
-                Bundle bundle = ai.metaData;
-                return bundle.getString(SERVER_URL_META_INFO);
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
-            } catch (NullPointerException e) {
-                Log.e(TAG, "Failed to load meta-data, NullPointer: " + e.getMessage());
-            }
+        try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            return bundle.getString(SERVER_URL_META_INFO);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Failed to load meta-data, NullPointer: " + e.getMessage());
         }
         return null;
     }

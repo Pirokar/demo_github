@@ -43,6 +43,7 @@ import im.threads.broadcastReceivers.ProgressReceiver;
 import im.threads.database.DatabaseHolder;
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.formatters.OutgoingMessageCreator;
+import im.threads.formatters.PushMessageAttributes;
 import im.threads.formatters.PushMessageTypes;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
@@ -1047,6 +1048,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 break;
             case UNREAD_MESSAGE_NOTIFICATION:
                 final Intent intent2 = new Intent(ctx, NotificationService.class);
+                if (bundle != null && bundle.getString(PushMessageAttributes.OPERATOR_URL) != null) {
+                    final String operatorPhotoUrl = bundle.getString(PushMessageAttributes.OPERATOR_URL);
+                    intent2.putExtra(NotificationService.EXTRA_OPERATOR_URL, operatorPhotoUrl);
+                }
                 intent2.putExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT, shortMessage);
                 intent2.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT);
                 ctx.startService(intent2);
