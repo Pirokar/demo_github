@@ -62,6 +62,10 @@ android {
             applicationId "com.threads.android.bobtail"
             resValue "string", "app_name1", "bobtail"
         }
+        beta {
+            applicationId "com.threads.android.beta"
+            resValue "string", "app_name1", "THR Beta"
+        }
     }
 
     lintOptions {
