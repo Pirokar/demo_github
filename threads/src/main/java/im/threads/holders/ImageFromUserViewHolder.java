@@ -2,7 +2,6 @@ package im.threads.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,17 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import im.threads.model.ChatStyle;
-import im.threads.model.FileDescription;
-import im.threads.picasso_url_connection_only.Callback;
-import im.threads.utils.MaskedTransformer;
-import im.threads.R;
-import im.threads.model.MessageState;
-import im.threads.picasso_url_connection_only.Picasso;
-import im.threads.utils.PrefUtils;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import im.threads.R;
+import im.threads.model.ChatStyle;
+import im.threads.model.FileDescription;
+import im.threads.model.MessageState;
+import im.threads.picasso_url_connection_only.Callback;
+import im.threads.picasso_url_connection_only.Picasso;
+import im.threads.utils.MaskedTransformer;
+import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 30.06.2016.
@@ -34,9 +33,6 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
     private View filter;
     private View filterSecond;
     private static ChatStyle style;
-    private static
-    @ColorInt
-    int messageColor;
 
     public ImageFromUserViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
@@ -48,10 +44,6 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             style = PrefUtils.getIncomingStyle(itemView.getContext());
         }
         if (null != style) {
-//            if (style.outgoingMessageTextColor != ChatStyle.INVALID) {
-//                messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-//                mTimeStampTextView.setTextColor(messageColor);
-//            }
             if (style.chatHighlightingColor != ChatStyle.INVALID) {
                 filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
                 filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
@@ -67,7 +59,6 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             , boolean isDownloadError
             , boolean isChosen
             , MessageState sentState) {
-        final Picasso p = Picasso.with(itemView.getContext());
         mTimeStampTextView.setOnLongClickListener(longListener);
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
@@ -78,7 +69,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
-            p
+            Picasso.with(itemView.getContext())
                     .load(fileDescription.getFilePath())
                     .fit()
                     .centerCrop()
@@ -94,7 +85,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
                             if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
                                 mImage.setImageResource(style.imagePlaceholder);
                             }else {
-                                mImage.setImageResource(R.drawable.no_image);
+                                mImage.setImageResource(R.drawable.threads_image_placeholder);
                             }
 
                         }
@@ -103,7 +94,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
                 mImage.setImageResource(style.imagePlaceholder);
             }else {
-                mImage.setImageResource(R.drawable.no_image);
+                mImage.setImageResource(R.drawable.threads_image_placeholder);
             }
         }
         if (isChosen) {
@@ -116,24 +107,18 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         Drawable d;
         switch (sentState) {
             case STATE_WAS_READ:
-                d = itemView.getResources().getDrawable(R.drawable.ic_done_all_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d = itemView.getResources().getDrawable(R.drawable.threads_image_message_received);
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_image_received_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.ic_done_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d = itemView.getResources().getDrawable(R.drawable.threads_message_image_sent);
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_image_sent_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.ic_cached_white_18dp);
-                if (messageColor != ChatStyle.INVALID) {
-                    d.setColorFilter(messageColor, PorterDuff.Mode.SRC_ATOP);
-                }
+                d = itemView.getResources().getDrawable(R.drawable.threads_message_image_waiting);
+                d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_image_not_send_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:

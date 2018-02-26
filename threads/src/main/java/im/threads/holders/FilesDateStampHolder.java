@@ -7,15 +7,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import im.threads.R;
-import im.threads.formatters.RussianFormatSymbols;
-import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import im.threads.R;
+import im.threads.formatters.RussianFormatSymbols;
+import im.threads.model.ChatStyle;
+import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -36,8 +36,8 @@ public class FilesDateStampHolder extends RecyclerView.ViewHolder {
         }
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
-            if (style.welcomeScreenTextColorResId != ChatStyle.INVALID) {
-                mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.welcomeScreenTextColorResId));
+            if (style.chatSystemMessageTextColor != ChatStyle.INVALID) {
+                mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.chatSystemMessageTextColor));
             }
             if (style.chatBackgroundColor != ChatStyle.INVALID) {
                 linearLayout.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatBackgroundColor));
@@ -50,9 +50,9 @@ public class FilesDateStampHolder extends RecyclerView.ViewHolder {
         Calendar current = Calendar.getInstance();
         date.setTimeInMillis(timeStamp);
         if (date.get(Calendar.DAY_OF_YEAR) == current.get(Calendar.DAY_OF_YEAR)) {
-            mDateTextView.setText(itemView.getResources().getString(R.string.recently));
+            mDateTextView.setText(itemView.getResources().getString(R.string.threads_recently));
         } else if ((current.get(Calendar.DAY_OF_YEAR) - date.get(Calendar.DAY_OF_YEAR) == 1)) {
-            mDateTextView.setText(itemView.getResources().getString(R.string.yesterday));
+            mDateTextView.setText(itemView.getResources().getString(R.string.threads_yesterday));
         } else {
             mDateTextView.setText(sdf.format(new Date(timeStamp)));
         }

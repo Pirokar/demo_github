@@ -6,8 +6,8 @@ package im.threads.model;
 
 public class PushMessageCheckResult {
 
-    private boolean detected;
-    private boolean needsShowIsStatusBar;
+    private boolean detected = false;
+    private boolean needsShowIsStatusBar = false;
 
     public boolean isDetected() {
         return detected;

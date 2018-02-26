@@ -3,11 +3,16 @@ package im.threads.holders;
 import android.graphics.PorterDuff;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
@@ -18,9 +23,6 @@ import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.views.CircularProgressButton;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static im.threads.model.ChatStyle.INVALID;
 
@@ -37,7 +39,7 @@ public class ConsultFileViewHolder extends BaseHolder {
     private View mFilterView;
     private View mFilterSecond;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-    private ImageView mBubble;
+    private View mBubble;
     private static ChatStyle style;
 
     public ConsultFileViewHolder(ViewGroup parent) {
@@ -49,23 +51,40 @@ public class ConsultFileViewHolder extends BaseHolder {
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterSecond = itemView.findViewById(R.id.filter_second);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.consult_avatar);
-        mBubble = (ImageView) itemView.findViewById(R.id.bubble_1);
+        mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
-            if (style.incomingMessageBubbleColor != INVALID)
-                mBubble.getDrawable().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+            if (style.incomingMessageBubbleColor != INVALID) {
+                mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+            }
+            else {
+                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_incoming_message_bubble), PorterDuff.Mode.SRC_ATOP);
+            }
+
+            if (style.incomingMessageBubbleBackground != INVALID) {
+                mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
+            }
             if (style.incomingMessageTextColor != INVALID) {
                 setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.incomingMessageTextColor);
             }
             if (style.outgoingMessageBubbleColor != INVALID) {
-                setTintToProgressButtonConsult(mCircularProgressButton, style.outgoingMessageBubbleColor);
+                setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
             }
-            if (style.chatHighlightingColor != ChatStyle.INVALID) {
+            else {
+                setTintToProgressButtonConsult(mCircularProgressButton, R.color.threads_chat_icons_tint);
+            }
+
+            if (style.chatHighlightingColor != INVALID) {
                 mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
                 mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
             }
-            if (style.chatBackgroundColor != ChatStyle.INVALID) {
+            if (style.chatBackgroundColor != INVALID) {
                 mCircularProgressButton.setBackgroundColor(style.chatBackgroundColor);
+            }
+
+            if (style.operatorAvatarSize != INVALID) {
+                mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+                mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
             }
         }
     }
@@ -99,12 +118,25 @@ public class ConsultFileViewHolder extends BaseHolder {
             mFilterSecond.setVisibility(View.INVISIBLE);
         }
         if (isAvatarVisible) {
+
+            float bubbleLeftMarginDp = itemView.getContext().getResources().getDimension(R.dimen.margin_quarter);
+            int bubbleLeftMarginPx = ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bubbleLeftMarginDp, itemView.getResources().getDisplayMetrics()));
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mBubble.getLayoutParams();
+            lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
+            mBubble.setLayoutParams(lp);
+
             mConsultAvatar.setVisibility(View.VISIBLE);
-            @DrawableRes int resiD = R.drawable.blank_avatar_round;
-            if (style!=null && style.defaultIncomingMessageAvatar!=INVALID)resiD = style.defaultIncomingMessageAvatar;
+            @DrawableRes int resID;
+            if (style!=null && style.defaultOperatorAvatar != INVALID) {
+                resID = style.defaultOperatorAvatar;
+            }
+            else {
+                resID = R.drawable.threads_operator_avatar_placeholder;
+            }
 
             if (avatarPath != null) {
-                final int finalResiD = resiD;
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);
+                final int finalResiD = resID;
                 Picasso
                         .with(itemView.getContext())
                         .load(avatarPath)
@@ -131,7 +163,7 @@ public class ConsultFileViewHolder extends BaseHolder {
             } else {
                 Picasso
                         .with(itemView.getContext())
-                        .load(resiD)
+                        .load(resID)
                         .fit()
                         .noPlaceholder()
                         .transform(new CircleTransform())
@@ -140,6 +172,14 @@ public class ConsultFileViewHolder extends BaseHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
             mFilterSecond.setVisibility(View.GONE);
+
+            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
+            int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
+            int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
+            int avatarLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mBubble.getLayoutParams();
+            lp.setMargins(avatarSizePx + bubbleLeftMarginPx + avatarLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
+            mBubble.setLayoutParams(lp);
         }
     }
 }

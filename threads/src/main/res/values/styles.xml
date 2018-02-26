@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@android:color/holo_green_light</item>
         <item name="colorPrimaryDark">@android:color/holo_green_dark</item>
-        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:windowBackground">@color/threads_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/menuItemTheme</item>
 
@@ -43,7 +43,7 @@
     <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <!--  <item name="colorPrimaryDark">@color/black_transparent</item>-->
-        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:windowBackground">@color/threads_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="windowActionBar">false</item>
 
@@ -55,7 +55,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimaryDark">#282828</item>
         <item name="windowActionBar">false</item>
-        <item name="android:windowBackground">@color/white_dark</item>
+        <item name="android:windowBackground">@color/threads_white_dark</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:itemTextAppearance">@style/menuItemThemeDark</item>
 
@@ -93,10 +93,13 @@
     </style>
 
     <style name="InputEditTextStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@android:color/white</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/threads_input_height</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/threads_chat_input_background</item>
         <item name="android:minHeight">64dp</item>
+        <item name="android:textColorHint">@color/threads_input_hint</item>
+        <item name="android:textColor">@color/threads_input_text</item>
         <item name="android:paddingBottom">@dimen/margin_quarter</item>
         <item name="android:paddingLeft">@dimen/margin_big</item>
         <item name="android:paddingRight">@dimen/margin_big</item>
@@ -134,23 +137,27 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="userBuble">
+    <style name="userBubble">
         <item name="android:layout_width">200dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_marginLeft">@dimen/user_margin_left</item>
         <item name="android:layout_marginRight">@dimen/user_margin_right</item>
         <item name="android:layout_marginTop">@dimen/margin_quarter</item>
-        <item name="android:paddingRight">@dimen/margin_half</item>
     </style>
 
     <style name="consultBubble">
         <item name="android:layout_width">200dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">@dimen/consultant_margin_left</item>
         <item name="android:layout_marginRight">@dimen/consultant_margin_right</item>
         <item name="android:layout_marginTop">@dimen/margin_quarter</item>
+        <item name="android:layout_marginBottom">@dimen/margin_quarter</item>
+    </style>
 
-        <item name="android:paddingRight">@dimen/margin_half</item>
+    <style name="FocusCatcher">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
     </style>
 </resources>

@@ -7,14 +7,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import im.threads.model.ChatStyle;
 
@@ -27,22 +23,16 @@ public class PrefUtils {
     public static final String TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID";
     public static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
     public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
+    public static final String EXTRA_DATA = "EXTRA_DATE";
     public static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
     public static final String GA_TRACKER_ID = "GA_TRACKER_ID";
     public static final String IS_UUID_SET = "IS_UUID_SET";
     public static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
     public static final String APP_STYLE = "APP_STYLE";
+    public static final String TAG_THREAD_ID = "THREAD_ID";
     public static final String SERVER_URL_META_INFO = "im.threads.getServerUrl";
 
     private PrefUtils() {
-    }
-
-    public static void setDeviceUUidWasSet(Context ctx, boolean isSet) {
-        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putBoolean(PrefUtils.class + IS_UUID_SET, isSet).apply();
-    }
-
-    public static boolean isDeviceUUidWasSet(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(PrefUtils.class + IS_UUID_SET, false);
     }
 
     public static String getGaTrackerId(Context ctx) {
@@ -71,6 +61,14 @@ public class PrefUtils {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + CLIENT_NAME, "");
     }
 
+    public static void setData(Context ctx, String data) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + EXTRA_DATA, data).commit();
+    }
+
+    public static String getData(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + EXTRA_DATA, "");
+    }
+
     public static void setNewClientId(Context ctx, String clientId) {
         if (clientId == null) throw new IllegalStateException("clientId is null");
         PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + TAG_NEW_CLIENT_ID, clientId).commit();
@@ -87,6 +85,15 @@ public class PrefUtils {
 
     public static String getClientID(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PrefUtils.class + TAG_CLIENT_ID, "");
+    }
+
+    public static void setThreadId(Context ctx, Long threadId) {
+        if (threadId == null) throw new IllegalStateException("threadId is null");
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putLong(PrefUtils.class + TAG_THREAD_ID, threadId).commit();
+    }
+
+    public static Long getThreadID(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getLong(PrefUtils.class + TAG_THREAD_ID, -1L);
     }
 
     public static void setClientIdWasSet(boolean isSet, Context ctx) {
@@ -108,30 +115,24 @@ public class PrefUtils {
             return;
         }
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            objectOutputStream.writeObject(style);
-            editor.putString(APP_STYLE, Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
-            editor.commit();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        editor.putString(APP_STYLE, new Gson().toJson(style));
+        editor.commit();
     }
 
     public static ChatStyle getIncomingStyle(Context ctx) {
         ChatStyle style = null;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-        if (sharedPreferences.getString(APP_STYLE, null) == null) return null;
-        else {
-            String base64String = sharedPreferences.getString(APP_STYLE, null);
-            byte[] object = Base64.decode(base64String, Base64.DEFAULT);
-            try {
-                ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(object));
-                style = (ChatStyle) inputStream.readObject();
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+            if (sharedPreferences.getString(APP_STYLE, null) != null) {
+                String sharedPreferencesString = sharedPreferences.getString(APP_STYLE, null);
+                style = new Gson().fromJson(sharedPreferencesString, ChatStyle.class);
             }
+        }
+        catch (IllegalStateException ex) {
+
+        }
+        catch (JsonSyntaxException ex) {
+
         }
         return style;
     }

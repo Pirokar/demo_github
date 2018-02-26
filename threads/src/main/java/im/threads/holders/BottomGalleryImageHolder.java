@@ -35,8 +35,12 @@ public class BottomGalleryImageHolder extends BaseHolder {
         Drawable d;
         if (item.isChosen()) {
             d = (itemView.getResources().getDrawable(R.drawable.ic_circle_done_blue_36dp));
-            if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID)
+            if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID) {
                 setTintToViews(new Drawable[]{d}, style.chatBodyIconsTint);
+            }
+            else {
+                setTintToViews(new Drawable[]{d}, R.color.threads_chat_icons_tint);
+            }
         } else {
             d = itemView.getResources().getDrawable(R.drawable.ic_panorama_fish_eye_white_36dp);
         }

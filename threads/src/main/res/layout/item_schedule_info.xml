@@ -16,10 +16,10 @@
         android:padding="14dp"
         android:layout_marginLeft="@dimen/margin_material">
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/schedule_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/schedule_icon" />
+            android:src="@drawable/threads_schedule_icon" />
     </FrameLayout>
 
     <im.threads.widget.text_view.ScheduleAlertTextView
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margin_half"
         android:layout_marginRight="@dimen/margin_material"
-        android:textColor="@color/black"
+        android:textColor="@color/threads_schedule_text"
         android:textSize="18sp"
         tools:text="Сегодня чат не работает. Все операторы отдыхают. Будем доступны завтра с 10:00 до 18:00."/>
 

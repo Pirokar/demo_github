@@ -16,14 +16,14 @@ repositories {
 }
 apply plugin: 'io.fabric'
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 25
-        versionCode 14
-        versionName "2.103_test"
+        targetSdkVersion 26
+        versionCode 64
+        versionName "2.32"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName);
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
@@ -43,20 +43,24 @@ android {
             resValue "string", "app_name1", "AppWithChat"
         }
         // АРМ = polarbear.threads.im
-        // if you need polarbear:
-        // 1. change flavor to polarbear
-        // 2. change package in the main/AndroidManifest.xml to "com.sequenia.appwithchat.polarbear"
         polarbear {
             applicationId "com.sequenia.appwithchat.polarbear"
             resValue "string", "app_name1", "Polarbear"
         }
         // АРМ = winlab.threads.im
-        // if you need winlab:
-        // 1. change flavor to winlab
-        // 2. change package in the main/AndroidManifest.xml to "com.sequenia.appwithchat.beta4"
         winlab {
             applicationId "com.sequenia.appwithchat.beta4"
             resValue "string", "app_name1", "Winlab"
+        }
+
+        winlab0 {
+            applicationId "com.threads.android.winlab0"
+            resValue "string", "app_name1", "Winlab0"
+        }
+
+        bobtail {
+            applicationId "com.threads.android.bobtail"
+            resValue "string", "app_name1", "bobtail"
         }
     }
 
@@ -65,6 +69,10 @@ android {
     }
     dexOptions {
         javaMaxHeapSize "12g"
+    }
+
+    dataBinding {
+        enabled = true
     }
 
     applicationVariants.all { variant ->
@@ -78,16 +86,21 @@ android {
 }
 
 dependencies {
+    def final supportVersion = "26.0.2"
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':threads')
 
-    compile 'com.google.firebase:firebase-messaging:10.2.0'
+    compile 'com.google.firebase:firebase-messaging:10.2.1'
 
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support:support-vector-drawable:25.1.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.6@aar') {
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:design:$supportVersion"
+    compile "com.android.support:support-vector-drawable:$supportVersion"
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
+
+    compile 'com.azoft.carousellayoutmanager:carousel:1.2.1'
 }
 apply plugin: 'com.google.gms.google-services'

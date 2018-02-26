@@ -9,14 +9,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import im.threads.R;
+import im.threads.formatters.RussianFormatSymbols;
 import im.threads.model.FileDescription;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
-import im.threads.formatters.RussianFormatSymbols;
-
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 /**
  * Created by yuri on 05.08.2016.
@@ -56,7 +56,7 @@ public class ImageFragment extends Fragment {
             from.setText("");
         }
         if (fd.getTimeStamp() != 0) {
-            date.setText(sdf.format(fd.getTimeStamp()) + " " + getString(R.string.in) + " " + hoursminutesSdf.format(fd.getTimeStamp()));
+            date.setText(sdf.format(fd.getTimeStamp()) + " " + getString(R.string.threads_in) + " " + hoursminutesSdf.format(fd.getTimeStamp()));
         } else {
             date.setText("");
         }
@@ -66,7 +66,7 @@ public class ImageFragment extends Fragment {
                     .load(fd.getFilePath())
                     .fit()
                     .centerInside()
-                    .error(R.drawable.no_image)
+                    .error(R.drawable.threads_image_placeholder)
                     .into(imageView);
         }
         return v;

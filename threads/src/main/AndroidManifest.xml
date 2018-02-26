@@ -22,28 +22,22 @@
         <activity
             android:name="im.threads.activities.ChatActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyle"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
         <activity
             android:name="im.threads.activities.ConsultActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyleConsultPage" />
         <activity
             android:name="im.threads.activities.FilesActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/ThreadsStyle" />
         <activity
             android:name="im.threads.activities.GalleryActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
         <activity
             android:name="im.threads.activities.CameraActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
         <activity
             android:name="im.threads.activities.ImagesActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/ThreadsGalleryStyle" />
         <activity
             android:name="im.threads.activities.TranslucentActivity"
@@ -53,7 +47,7 @@
             android:theme="@style/Translucent"/>
         <activity
             android:name=".permissions.PermissionsActivity"
-            android:label="@string/permissions_help"
+            android:label="@string/threads_permissions_help"
             android:screenOrientation="portrait"
             android:theme="@style/Transparent"/>
         <service

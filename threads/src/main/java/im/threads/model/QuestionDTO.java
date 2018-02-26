@@ -55,8 +55,12 @@ public class QuestionDTO implements ChatItem {
         this.simple = simple;
     }
 
-    public Integer getRate() {
-        return rate;
+    public int getRate() {
+        return hasRate() ? rate : 0;
+    }
+
+    public boolean hasRate() {
+        return rate != null;
     }
 
     public void setRate(Integer rate) {

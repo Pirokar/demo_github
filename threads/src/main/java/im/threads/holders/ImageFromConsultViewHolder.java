@@ -3,11 +3,16 @@ package im.threads.holders;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
@@ -15,11 +20,11 @@ import im.threads.model.FileDescription;
 import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
+import im.threads.utils.FileUtils;
 import im.threads.utils.MaskedTransformer;
 import im.threads.utils.PrefUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import static im.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 30.06.2016.
@@ -43,13 +48,19 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         if (null == style) {
             style = PrefUtils.getIncomingStyle(itemView.getContext());
         }
-//        if (null != style && style.incomingMessageTextColor!= ChatStyle.INVALID) {
-//            mTimeStampTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.incomingMessageTextColor));
-//        }
-        if (style != null && style.chatHighlightingColor != ChatStyle.INVALID) {
-            filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+
+        if (style != null) {
+            if (style.chatHighlightingColor != INVALID) {
+                filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+                filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+            }
+
+            if (style.operatorAvatarSize != INVALID) {
+                mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+                mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+            }
         }
+
     }
 
     public void onBind(String avatarPath
@@ -60,7 +71,6 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             , boolean isDownloadError
             , boolean isChosen
             , boolean isAvatarVisible) {
-        Picasso p = Picasso.with(itemView.getContext());
         mTimeStampTextView.setOnClickListener(listener);
         mTimeStampTextView.setOnLongClickListener(longListener);
         mImage.setOnClickListener(listener);
@@ -72,7 +82,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
-            p
+            Picasso.with(itemView.getContext())
                     .load(fileDescription.getFilePath())
                     .fit()
                     .centerCrop()
@@ -88,7 +98,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                             if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
                                 mImage.setImageResource(style.imagePlaceholder);
                             }else {
-                                mImage.setImageResource(R.drawable.no_image);
+                                mImage.setImageResource(R.drawable.threads_image_placeholder);
                             }
                         }
                     });
@@ -96,7 +106,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
                 mImage.setImageResource(style.imagePlaceholder);
             }else {
-                mImage.setImageResource(R.drawable.no_image);
+                mImage.setImageResource(R.drawable.threads_image_placeholder);
             }
         }
         if (isChosen) {
@@ -106,13 +116,20 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             filter.setVisibility(View.INVISIBLE);
             filterSecond.setVisibility(View.INVISIBLE);
         }
-        @DrawableRes int resId = R.drawable.blank_avatar_round;
-        if (style!=null && style.defaultIncomingMessageAvatar!= ChatStyle.INVALID)resId = style.defaultIncomingMessageAvatar;
+        @DrawableRes int resId = R.drawable.threads_operator_avatar_placeholder;
+        if (style!=null && style.defaultOperatorAvatar != ChatStyle.INVALID)resId = style.defaultOperatorAvatar;
         if (isAvatarVisible) {
+            float bubbleLeftMarginDp = itemView.getContext().getResources().getDimension(R.dimen.margin_quarter);
+            int bubbleLeftMarginPx = ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bubbleLeftMarginDp, itemView.getResources().getDisplayMetrics()));
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mImage.getLayoutParams();
+            lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
+            mImage.setLayoutParams(lp);
+
             mConsultAvatar.setVisibility(View.VISIBLE);
             if (avatarPath != null) {
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);
                 final int finalResId = resId;
-                p
+                Picasso.with(itemView.getContext())
                         .load(avatarPath)
                         .fit()
                         .transform(new CircleTransform())
@@ -126,8 +143,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
 
                             @Override
                             public void onError() {
-                                Picasso
-                                        .with(itemView.getContext())
+                                Picasso.with(itemView.getContext())
                                         .load(finalResId)
                                         .fit()
                                         .noPlaceholder()
@@ -136,7 +152,7 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
                             }
                         });
             } else {
-                p
+                Picasso.with(itemView.getContext())
                         .load(resId)
                         .fit()
                         .noPlaceholder()
@@ -146,6 +162,14 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
+
+            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
+            int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
+            int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
+            int avatarLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mImage.getLayoutParams();
+            lp.setMargins(avatarSizePx + bubbleLeftMarginPx + avatarLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
+            mImage.setLayoutParams(lp);
         }
     }
 }

@@ -27,7 +27,7 @@ public class ScheduleInfoViewHolder extends RecyclerView.ViewHolder {
     public ScheduleInfoViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_schedule_info, parent, false));
 
-        icon = (ImageView) itemView.findViewById(R.id.image);
+        icon = (ImageView) itemView.findViewById(R.id.schedule_icon);
         text = (TextView) itemView.findViewById(R.id.schedule_text);
 
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());

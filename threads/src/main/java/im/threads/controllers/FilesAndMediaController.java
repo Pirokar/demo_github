@@ -14,16 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import im.threads.activities.FilesActivity;
 import im.threads.activities.ImagesActivity;
 import im.threads.database.DatabaseHolder;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
 import im.threads.utils.FileUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -68,7 +68,7 @@ public class FilesAndMediaController extends Fragment {
                         if (null != activity) {
                             List<FileDescription> list = new ArrayList<>();
                             for (FileDescription fd : data) {
-                                if (fd.hasImage()) {
+                                if (FileUtils.isImage(fd)) {
                                     list.add(fd);
                                 }
                                 if (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PDF
@@ -91,7 +91,7 @@ public class FilesAndMediaController extends Fragment {
     }
 
     public void onFileClick(FileDescription fileDescription) {
-        if (fileDescription.hasImage()) {
+        if (FileUtils.isImage(fileDescription)) {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
         } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
             Intent target = new Intent(Intent.ACTION_VIEW);

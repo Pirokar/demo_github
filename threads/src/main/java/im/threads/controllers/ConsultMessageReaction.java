@@ -1,5 +1,6 @@
 package im.threads.controllers;
 
+import im.threads.formatters.PushMessageTypes;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
@@ -21,7 +22,7 @@ public class ConsultMessageReaction {
     public synchronized void onPushMessage(ChatItem chatItem) {
         if (chatItem instanceof ConsultConnectionMessage) {
             ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
-            if (ccm.getType().equalsIgnoreCase(ConsultConnectionMessage.TYPE_JOINED)) {
+            if (ccm.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
                 if(null != consultWriter) consultWriter.setSearchingConsult(false);
                 if (null != consultWriter) consultWriter.setCurrentConsultInfo(ccm);
                 if (null != reactions)

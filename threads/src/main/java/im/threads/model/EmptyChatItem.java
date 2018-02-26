@@ -7,8 +7,19 @@ package im.threads.model;
  */
 
 public class EmptyChatItem implements ChatItem {
+
+    private String mType;
+
+    public EmptyChatItem(final String type) {
+        mType = type;
+    }
+
     @Override
     public long getTimeStamp() {
         return 0;
+    }
+
+    public String getType() {
+        return mType;
     }
 }

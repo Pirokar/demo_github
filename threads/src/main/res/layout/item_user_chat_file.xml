@@ -9,31 +9,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:background="@color/threads_chat_highlighting"/>
 
     <View
         android:id="@+id/filter_second"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
-        android:layout_below="@+id/filter" />
-
-    <ImageView
-        android:id="@+id/bubble_1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignLeft="@+id/bubble"
-        android:layout_alignRight="@+id/bubble"
-        android:layout_alignTop="@+id/bubble"
-        android:scaleType="fitXY"
-        android:src="@drawable/a_user_bubble" />
+        android:layout_below="@+id/filter"
+        android:background="@color/threads_chat_highlighting"/>
 
     <RelativeLayout
-
         android:id="@+id/bubble"
-        style="@style/userBuble"
-        android:paddingRight="17dp">
-
+        style="@style/userBubble"
+        android:paddingRight="17dp"
+        android:background="@drawable/thread_outgoing_bubble">
 
         <im.threads.views.CircularProgressButton
             android:id="@+id/button_download"
@@ -54,8 +44,8 @@
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toRightOf="@+id/button_download"
-            android:text="счетddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.pdf"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/threads_outgoing_message_text"
+            android:text="счетddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.pdf"/>
 
 
         <im.threads.widget.text_view.BubbleMessageTextView
@@ -70,7 +60,7 @@
             android:layout_toRightOf="@+id/button_download"
             android:paddingBottom="@dimen/margin_half"
             android:text="1,2 mb"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/threads_outgoing_message_text"/>
 
         <im.threads.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
@@ -79,6 +69,7 @@
             android:layout_alignRight="@+id/header"
             android:layout_below="@+id/header"
             android:layout_marginTop="@dimen/margin_quarter"
+            android:textColor="@color/threads_user_message_timestamp"
             android:text="10:19" />
 
     </RelativeLayout>

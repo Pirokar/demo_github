@@ -9,15 +9,14 @@ import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 
+import java.util.List;
+import java.util.ListIterator;
+
 import im.threads.R;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.utils.Tuple;
-
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
 
 import static android.text.TextUtils.isEmpty;
 import static im.threads.utils.FileUtils.JPEG;
@@ -101,18 +100,12 @@ public class MarshmellowPushMessageFormatter {
             }
         }
         if (imagesCount != 0 && plainFilesCount == 0) {
-            ImagesPlurals plurals = new ImagesPlurals(Locale.getDefault());
             Drawable d = ctx.getResources().getDrawable(R.drawable.ic_images_12dp);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             ImageSpan imageSpan = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
             sp.setSpan(imageSpan, consultName.length() - 1, consultName.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            if (imagesCount == 1) sp.append(new SpannableString(" " + plurals.getForQuantity(1)));
-            else {
-                sp.append(new SpannableString(" " + imagesCount + " " + plurals.getForQuantity(imagesCount)));
-            }
+            sp.append(new SpannableString(" " + ctx.getResources().getQuantityString(R.plurals.threads_images, imagesCount, imagesCount)));
         } else if (plainFilesCount != 0) {
-            FilesPlurals filesPlurals = new FilesPlurals(Locale.getDefault());
-            ImagesPlurals plurals = new ImagesPlurals(Locale.getDefault());
             Drawable d = ctx.getResources().getDrawable(R.drawable.ic_attach_file_gray_12dp);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             ImageSpan imageSpan = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
@@ -133,11 +126,9 @@ public class MarshmellowPushMessageFormatter {
                 if (fileName == null) fileName = "";
                 sp.append(new SpannableString(" " + fileName));
             } else {
+                int total = plainFilesCount + imagesCount;
                 sp.append(new SpannableString(
-                        " " +
-                                (plainFilesCount
-                                        + imagesCount) + " "
-                                + filesPlurals.getForQuantity(plainFilesCount + imagesCount)));
+                        " " + ctx.getResources().getQuantityString(R.plurals.threads_files, total, total)));
             }
         }
         if (phrase.length() > 0) {
@@ -217,13 +208,8 @@ public class MarshmellowPushMessageFormatter {
             }
         }
         if (imagesCount != 0 && plainFilesCount == 0) {
-            ImagesPlurals plurals = new ImagesPlurals(Locale.getDefault());
-            if (imagesCount == 1) contentDesciprion = plurals.getForQuantity(1);
-            else {
-                contentDesciprion = imagesCount + " " + plurals.getForQuantity(imagesCount);
-            }
+            contentDesciprion = ctx.getResources().getQuantityString(R.plurals.threads_images, imagesCount, imagesCount);
         } else if (plainFilesCount != 0) {
-            FilesPlurals filesPlurals = new FilesPlurals(Locale.getDefault());
             if (plainFilesCount == 1 && imagesCount == 0) {
                 String fileName = null;
                 for (ChatItem ci : unreadMessages) {
@@ -238,7 +224,8 @@ public class MarshmellowPushMessageFormatter {
                 }
                 contentDesciprion = fileName;
             } else {
-                contentDesciprion = (plainFilesCount + imagesCount) + " " + filesPlurals.getForQuantity(plainFilesCount + imagesCount);
+                int total = plainFilesCount + imagesCount;
+                contentDesciprion = ctx.getResources().getQuantityString(R.plurals.threads_files, total, total);
             }
         }
         if (phrase.length() > 0) {

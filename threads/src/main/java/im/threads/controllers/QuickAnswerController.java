@@ -8,7 +8,6 @@ import im.threads.activities.TranslucentActivity;
 import im.threads.model.CompletionHandler;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.UpcomingUserMessage;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 19.09.2016.
@@ -27,7 +26,7 @@ public class QuickAnswerController extends Fragment {
         this.activity = activity;
         context = activity.getApplicationContext();
         ChatController
-                .getInstance(activity, PrefUtils.getClientID(activity))
+                .getInstance(activity)
                 .getLastUnreadConsultPhrase(new CompletionHandler<ConsultPhrase>() {
                     @Override
                     public void onComplete(ConsultPhrase data) {
@@ -53,8 +52,7 @@ public class QuickAnswerController extends Fragment {
             return;
         }
         final Context ctx = activity == null ? context : activity;
-        ChatController cc = ChatController
-                .getInstance(ctx, PrefUtils.getClientID(ctx));
+        ChatController cc = ChatController.getInstance(ctx);
         cc.onUserInput(upcomingUserMessage);
         cc.setAllMessagesWereRead();
     }

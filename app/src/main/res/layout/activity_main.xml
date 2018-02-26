@@ -1,83 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+    </data>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="com.sequenia.appwithchatdev.MainActivity"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Version №"/>
-
-            <TextView
-                android:id="@+id/test"
-                android:textColor="@android:color/black"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center_horizontal">
+
+            <View style="@style/FocusCatcher"/>
+
+            <TextView
+                android:id="@+id/version_name"
+                android:textColor="@color/threads_disabled_text_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="lib v.2.28"
+                android:layout_alignParentRight="true"/>
+
+            <RelativeLayout
+                android:id="@+id/content_container"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_below="@+id/version_name">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/cards_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:overScrollMode="never"/>
+
+                <ImageView
+                    android:id="@+id/add_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_above="@+id/add_card_hint"
+                    app:srcCompat="@drawable/ic_add_card"/>
+
+                <TextView
+                    android:id="@+id/add_card_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:textSize="14sp"
+                    android:paddingTop="8dp"
+                    android:layout_centerInParent="true"
+                    android:text="@string/no_cards"/>
+            </RelativeLayout>
 
             <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:onClick="onChatButtonClick"
-                android:text="В чат!"
-                android:textSize="25sp" />
+                android:id="@+id/chat_activity_button"
+                android:layout_below="@+id/content_container"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/anchor"
+                android:text="@string/chat_activity_button_label"
+                style="@style/ChatButtonStyle"/>
+
+            <View
+                android:id="@+id/anchor"
+                android:layout_width="@dimen/margin_material"
+                android:layout_height="0dp"
+                android:layout_below="@+id/content_container"
+                android:layout_centerHorizontal="true"/>
 
             <Button
-                android:id="@+id/fragment_button"
+                android:id="@+id/chat_fragment_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:onClick="onFragmentChatButtonClick"
-                android:text="В чат! (Версия с фрагментом)"
-                android:textSize="18sp" />
+                android:layout_below="@+id/content_container"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@+id/anchor"
+                android:text="@string/chat_fragmetn_button_label"
+                style="@style/ChatButtonStyle"/>
 
-            <EditText
-                android:id="@+id/client_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_half"
-                android:hint="Enter client id"
-                android:text="" />
-
-            <EditText
-                android:id="@+id/user_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_half"
-                android:hint="Enter client name"
-                android:inputType="text"
-                android:lines="1"
-                android:text="" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+        </RelativeLayout>
+    </ScrollView>
+</layout>

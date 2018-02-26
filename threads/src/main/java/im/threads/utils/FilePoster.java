@@ -1,16 +1,16 @@
 package im.threads.utils;
 
+import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import im.threads.formatters.MessageFormatter;
 import im.threads.model.FileDescription;
 import im.threads.model.FileUploadResponse;
-import im.threads.retrofit.RetrofitService;
 import im.threads.retrofit.ServiceGenerator;
+import im.threads.retrofit.ThreadsApi;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -41,7 +41,7 @@ public class FilePoster {
 
             if (file != null && file.exists() && file.isFile() && file.canRead()) {
                 ServiceGenerator.setUrl(UPLOAD_FILE_URL);
-                RetrofitService retrofitService = ServiceGenerator.getRetrofitService();
+                ThreadsApi threadsApi = ServiceGenerator.getThreadsApi();
                 String path = file.getPath();
                 String mimeType = null;
 
@@ -57,8 +57,7 @@ public class FilePoster {
                 RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
                 MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
-                Call<FileUploadResponse> call = retrofitService.upload(MessageFormatter.getUserAgent(context),
-                        body, token);
+                Call<FileUploadResponse> call = threadsApi.upload(body, token);
 
                 call.enqueue(new retrofit2.Callback<FileUploadResponse>() {
                     @Override
@@ -84,8 +83,8 @@ public class FilePoster {
                 callback.onSuccess(fileDescription.getDownloadPath());
             }
         }
-
+        else {
+            callback.onFail(new NetworkErrorException());
+        }
     }
-
-
 }

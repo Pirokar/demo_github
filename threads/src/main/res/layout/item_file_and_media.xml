@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:layout_marginTop="1dp"
-   >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="1dp">
 
     <ImageButton
         android:id="@+id/file_button"
@@ -25,7 +25,8 @@
         android:layout_toRightOf="@id/file_button"
         android:ellipsize="end"
         android:lines="1"
-        android:text="" />
+        tools:text="Название файла"
+        android:textColor="@color/threads_files_list"/>
 
     <im.threads.widget.LightCustomFontTextView
         android:id="@+id/file_size"
@@ -34,7 +35,8 @@
         android:layout_below="@+id/file_title"
         android:layout_marginTop="@dimen/margin_quarter"
         android:layout_toRightOf="@+id/file_button"
-        android:text="" />
+        tools:text="2.3 Мб"
+        android:textColor="@color/threads_files_list"/>
 
     <im.threads.widget.LightCustomFontTextView
         android:id="@+id/timestamp"
@@ -45,5 +47,6 @@
         android:layout_below="@+id/file_title"
         android:layout_marginRight="@dimen/margin_big"
         android:layout_marginTop="@dimen/margin_quarter"
-        android:text="" />
+        tools:text="20:15"
+        android:textColor="@color/threads_files_list"/>
 </RelativeLayout>

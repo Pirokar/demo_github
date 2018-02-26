@@ -1,60 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="green_dark">#00786c</color>
-    <color name="green_light">#009788</color>
-    <color name="white_dark">#eff2f7</color>
-    <color name="hint_color">#75cec8</color>
-    <color name="gray_text">#617d8b</color>
-    <color name="black">#000000</color>
-    <color name="black_transparent">#30000000</color>
-    <color name="blue">#3299de</color>
-    <color name="blue_transparent">#303299de</color>
-    <color name="orange">#ff9600</color>
-    <color name="disabled_text_color">#9a9a9a</color>
-    <color name="toolbar_gray">#333333</color>
-    <color name="white">#ffffff</color>
+    <color name="threads_green_dark">#00786c</color>
+    <color name="threads_green_light">#009788</color>
+    <color name="threads_white_dark">#eff2f7</color>
+    <color name="threads_gray_text">#617d8b</color>
+    <color name="threads_black">#000000</color>
+    <color name="threads_black_transparent">#30000000</color>
+    <color name="threads_blue">#3299de</color>
+    <color name="threads_blue_transparent">#303299de</color>
+    <color name="threads_orange">#ff9600</color>
+    <color name="threads_disabled_text_color">#9a9a9a</color>
+    <color name="threads_toolbar_gray">#333333</color>
+    <color name="threads_white">#ffffff</color>
 
     <!-- значения по умолчанию в ChatStyle-->
 
-    <color name="teal_009688">#009688</color>
-    <color name="teal_004D40">#004D40</color>
-    <color name="blue_eff3f8">#eff3f8</color>
-    <color name="grey_aaa">#AAAAAA</color>
-    <color name="grey_555">#555555</color>
-    <color name="blue_0F87FF">#0F87FF</color>
-    <color name="blue_transparent_700F87FF">#700F87FF</color>
-    <color name="blue_3598dc">#3598DC</color>
-    <color name="blue_grey_607d8b">#607d8b</color>
-    <color name="orange_ff9800">#ff9800</color>
-    <color name="cian_b2dfdb">#b2dfdb</color>
-    <color name="blue_e6e6ec">#e6e6ec</color>
-    <color name="red_f44336">#f44336</color>
+    <color name="threads_teal_009688">#009688</color>
+    <color name="threads_teal_004D40">#004D40</color>
+    <color name="threads_blue_eff3f8">#eff3f8</color>
+    <color name="threads_grey_aaa">#AAAAAA</color>
+    <color name="threads_grey_555">#555555</color>
+    <color name="threads_blue_0F87FF">#0F87FF</color>
+    <color name="threads_blue_transparent_700F87FF">#700F87FF</color>
+    <color name="threads_blue_3598dc">#3598DC</color>
+    <color name="threads_blue_grey_607d8b">#607d8b</color>
+    <color name="threads_orange_ff9800">#ff9800</color>
+    <color name="threads_cian_b2dfdb">#b2dfdb</color>
+    <color name="threads_blue_e6e6ec">#e6e6ec</color>
+    <color name="threads_red_f44336">#f44336</color>
+
+    <!-- Цвета для кастомизации -->
+
+    <!-- Приветственный экран -->
+    <color name="threads_welcome_screen_title">@color/threads_gray_text</color>
+    <color name="threads_welcome_screen_subtitle">@color/threads_gray_text</color>
+
+    <!-- Заголовок экрана чата -->
+    <color name="threads_chat_status_bar">@color/threads_teal_004D40</color>
+    <color name="threads_chat_toolbar">@color/threads_teal_009688</color>
+    <color name="threads_chat_toolbar_text">@color/threads_white</color>
+    <color name="threads_chat_toolbar_menu_item">@color/threads_teal_009688</color>
+    <color name="threads_chat_toolbar_hint">@color/threads_cian_b2dfdb</color>
+
+    <!-- Основная область чата -->
+    <color name="threads_chat_background">@color/threads_blue_eff3f8</color>
+    <color name="threads_chat_highlighting">@color/threads_blue_transparent_700F87FF</color>
+
+    <color name="threads_chat_incoming_message_bubble">@color/threads_white</color>
+    <color name="threads_chat_outgoing_message_bubble">@color/threads_blue_3598dc</color>
+    <color name="threads_incoming_message_text">@color/threads_black</color>
+    <color name="threads_outgoing_message_text">@color/threads_white</color>
+    <color name="threads_user_message_timestamp">@color/threads_white</color>
+    <color name="threads_operator_message_timestamp">@color/threads_black</color>
+
+    <color name="threads_chat_icons_tint">@color/threads_black</color>
+    <color name="threads_chat_system_message">@color/threads_gray_text</color>
+    <color name="threads_chat_connection_message">@color/threads_black</color>
+
+    <color name="threads_icon_and_separators_color">@color/threads_disabled_text_color</color>
+    <color name="threads_outgoing_time_underlay">#80000000</color>
+    <color name="threads_outgoing_message_time">@color/threads_white</color>
+    <color name="threads_incoming_time_underlay">#80000000</color>
+    <color name="threads_incoming_message_time">@color/threads_white</color>
+
+    <!-- Цвет иконок статусов доставки сообщений пользователя -->
+    <color name="threads_outgoing_message_sent_icon">@color/threads_white</color>
+    <color name="threads_outgoing_message_received_icon">@color/threads_white</color>
+    <color name="threads_outgoing_message_not_send_icon">@color/threads_white</color>
+
+    <!-- Цвет иконок статусов доставки изображений пользователя -->
+    <color name="threads_outgoing_message_image_sent_icon">@color/threads_white</color>
+    <color name="threads_outgoing_message_image_received_icon">@color/threads_white</color>
+    <color name="threads_outgoing_message_image_not_send_icon">@color/threads_white</color>
 
 
-    <!--<color name="toolbar_background">#83B144</color>-->
-    <!--<color name="toolbar_widget">#ffffff</color>-->
-    <!--<color name="status_bar">#698D35</color>-->
+    <!-- Экран истории файлов -->
+    <color name="threads_files_medias_screen_background">@color/threads_blue_eff3f8</color>
+    <color name="threads_files_list">@color/threads_black</color>
 
-    <!--<color name="chat_background">#EAF0F0</color>-->
-    <!--<color name="chat_message_hint_input_text">#999999</color>-->
-    <!--<color name="chat_message_input_background">#ffffff</color>-->
-    <!--<color name="incoming_message_bubble_background">#ffffff</color>-->
-    <!--<color name="outgoing_message_bubble_background">#83B144</color>-->
-    <!--<color name="incoming_message_text">#333333</color>-->
-    <!--<color name="outgoing_message_text">#ffffff</color>-->
-    <!--<color name="chatbody_icons_tint">#83B144</color>-->
-    <!--<color name="connection_message_text_color">#333333</color>-->
+    <!-- Индикатор непрочитанных сообщений -->
+    <color name="threads_chat_unread_msg_sticker_background">@color/threads_red_f44336</color>
+    <color name="threads_chat_unread_msg_count_text">@color/threads_white</color>
 
-    <!--<color name="file_browser_dialog_text">#83B144</color>-->
-    <!--<color name="file_browser_window_background">#ffffff</color>-->
-    <!--<color name="welcome_screen_text">#707070</color>-->
+    <!-- Поле ввода сообщения -->
+    <color name="threads_input_background">@color/threads_white</color>
+    <color name="threads_input_text">@color/threads_black</color>
+    <color name="threads_input_hint">@color/threads_grey_aaa</color>
 
-    <!--<color name="menu_item_text">#83B144</color>-->
-    <!--<color name="toolbar_edit_text_hint">#B5D18F</color>-->
-    <!--<color name="toolbar_background_transparent">#3083B144</color>-->
-    <!---->
-    <!--<color name="push_background">#3083B144</color>-->
-    <!--<color name="nugat_push_accent">#83B144</color>-->
+    <!-- Сообщения о расписании -->
+    <color name="threads_schedule_text">@color/threads_black</color>
 
+    <!-- Пуш нотификации -->
+    <color name="threads_push_background">@color/threads_green_dark</color>
+    <color name="threads_nougat_push_accent">@color/threads_green_dark</color>
+
+    <!-- Опросы -->
+    <color name="threads_survey_selected_icon_tint">@color/threads_green_dark</color>
+    <color name="threads_survey_unselected_icon_tint">@color/threads_green_dark</color>
 
 </resources>

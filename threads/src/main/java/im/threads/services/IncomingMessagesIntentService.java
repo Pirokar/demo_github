@@ -3,15 +3,14 @@ package im.threads.services;
 import android.content.Intent;
 import android.util.Log;
 
-import com.pushserver.android.model.PushMessage;
 import com.pushserver.android.PushServerIntentService;
+import com.pushserver.android.model.PushMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.controllers.ChatController;
 import im.threads.model.PushMessageCheckResult;
-import im.threads.utils.PrefUtils;
 
 /**
  *
@@ -30,7 +29,7 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
 
         for (int i = 0; i < list.size(); i++) {
             PushMessage pushMessage = list.get(i);
-            ChatController chatController = ChatController.getInstance(getApplication(), PrefUtils.getClientID(getApplication()));
+            ChatController chatController = ChatController.getInstance(getApplication());
             PushMessageCheckResult result = chatController.onFullMessage(pushMessage, getApplication());
 
             if(result.isDetected()) {

@@ -28,7 +28,7 @@
             android:layout_marginBottom="2dp"
             android:layout_marginRight="@dimen/margin_half"
             android:layout_toStartOf="@+id/p"
-            android:text="@string/press"
+            android:text="@string/threads_press"
             android:textColor="@android:color/white" />
 
         <ImageView
@@ -45,7 +45,7 @@
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_toEndOf="@+id/p"
-            android:text="@string/to_photo"
+            android:text="@string/threads_to_photo"
             android:textColor="@android:color/white" />
     </RelativeLayout>
 
@@ -93,7 +93,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_gray"
+        android:background="@color/threads_chat_toolbar"
         android:visibility="gone"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp" />
 
@@ -102,13 +102,13 @@
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_gravity="bottom"
-        android:background="@color/toolbar_gray"
+        android:background="@color/threads_toolbar_gray"
         android:visibility="gone">
 
         <im.threads.widget.CustomFontButton
             android:id="@+id/retake"
             android:layout_gravity="left"
-            android:text="@string/retake"
+            android:text="@string/threads_retake"
             style="@style/bottomButtonTransparent"
             />
 
@@ -116,7 +116,7 @@
             style="@style/bottomButtonTransparent"
             android:id="@+id/send"
             android:layout_gravity="right"
-            android:text="@string/send"
+            android:text="@string/threads_send"
            />
     </FrameLayout>
 </FrameLayout>

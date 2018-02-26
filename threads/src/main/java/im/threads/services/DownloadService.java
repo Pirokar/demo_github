@@ -7,17 +7,15 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import im.threads.AnalyticsTracker;
-import im.threads.controllers.ChatController;
-import im.threads.database.DatabaseHolder;
-import im.threads.model.FileDescription;
-import im.threads.utils.FileDownloader;
-import im.threads.utils.PrefUtils;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import im.threads.broadcastReceivers.ProgressReceiver;
+import im.threads.database.DatabaseHolder;
+import im.threads.model.FileDescription;
+import im.threads.utils.FileDownloader;
 
 /**
  * Created by yuri on 01.08.2016.
@@ -60,7 +58,6 @@ public class DownloadService extends Service {
                 DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
                 runningDownloads.remove(fileDescription);
                 sendFinishBroadcast(fileDescription);
-                AnalyticsTracker.getInstance(context, PrefUtils.getGaTrackerId(context)).setUserUploadedFile(file.length() / 1024);
                 if (runningDownloads.size() == 0) stopSelf();
             }
 
@@ -117,23 +114,23 @@ public class DownloadService extends Service {
 
     private void sendDownloadProgressBroadcast(FileDescription filedescription) {
         Intent i = new Intent();
-        i.setAction(ChatController.PROGRESS_BROADCAST);
+        i.setAction(ProgressReceiver.PROGRESS_BROADCAST);
         i.putExtra(FD_TAG, filedescription);
         sendBroadcast(i);
     }
 
     private void sendFinishBroadcast(FileDescription filedescription) {
         Intent i = new Intent();
-        i.setAction(ChatController.DOWNLOADED_SUCCESSFULLY_BROADCAST);
+        i.setAction(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST);
         i.putExtra(FD_TAG, filedescription);
         sendBroadcast(i);
     }
 
     private void sendDownloadErrorBroadcast(FileDescription fileDescription, Throwable throwable) {
         Intent i = new Intent();
-        i.setAction(ChatController.DOWNLOAD_ERROR_BROADCAST);
+        i.setAction(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST);
         i.putExtra(FD_TAG, fileDescription);
-        i.putExtra(ChatController.DOWNLOAD_ERROR_BROADCAST, throwable);
+        i.putExtra(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST, throwable);
         sendBroadcast(i);
     }
 }

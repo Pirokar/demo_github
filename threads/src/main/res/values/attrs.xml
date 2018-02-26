@@ -5,14 +5,6 @@
         <attr name="start_download_label" format="reference"/>
         <attr name="in_progress_label" format="reference"/>
     </declare-styleable>
-    <declare-styleable name="WelcomeScreen">
-        <attr name="image_src" format="reference"/>
-        <attr name="text_size_title" format="dimension"/>
-        <attr name="text_size_subtitle" format="dimension"/>
-        <attr name="text_color" format="color"/>
-        <attr name="title_text" format="string"/>
-        <attr name="subtitle_text" format="string"/>
-    </declare-styleable>
     <declare-styleable name="MyTextView">
         <attr name="textSize" format="integer"/>
         <attr name="textColor" format="color"/>

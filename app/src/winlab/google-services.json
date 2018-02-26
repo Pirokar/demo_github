@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "424621565517",
+    "firebase_url": "https://brooma-mfms-push-server-gcm.firebaseio.com",
+    "project_id": "brooma-mfms-push-server-gcm",
+    "storage_bucket": "brooma-mfms-push-server-gcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:4a547c7704270ef4",
+        "android_client_info": {
+          "package_name": "com.sequenia.appwithchat.beta4"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

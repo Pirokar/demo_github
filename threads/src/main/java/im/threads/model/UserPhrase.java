@@ -2,11 +2,9 @@ package im.threads.model;
 
 import android.text.TextUtils;
 
-import im.threads.utils.FileUtils;
-
 import java.util.UUID;
 
-import static im.threads.utils.FileUtils.getExtensionFromPath;
+import im.threads.utils.FileUtils;
 
 /**
  * Created by yuri on 10.06.2016.
@@ -105,14 +103,19 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
         UserPhrase that = (UserPhrase) o;
 
-        if (backendId != null && that.backendId != null && backendId.equals(that.backendId)) {
-            return true;
+        if (backendId != null && that.backendId != null) {
+            return backendId.equals(that.backendId);
         }
 
-        if (messageId != null ? !messageId.equals(that.messageId) : that.messageId != null)
-            return false;
-        return phrase != null ? phrase.equals(that.phrase) : that.phrase == null;
+        if (messageId != null && that.messageId != null) {
+            return messageId.equals(that.messageId);
+        }
 
+        if (fileDescription != null && that.fileDescription != null) {
+            return fileDescription.equals(that.fileDescription);
+        }
+
+        return !TextUtils.isEmpty(phrase) ? phrase.equals(that.phrase) : TextUtils.isEmpty(that.phrase);
     }
 
     @Override
@@ -190,10 +193,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         return fileDescription != null
                 && TextUtils.isEmpty(phrase)
                 && mQuote == null
-                && (getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.JPEG
-                || getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PNG
-                || getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.PNG
-                || getExtensionFromPath(fileDescription.getIncomingName()) == FileUtils.JPEG);
+                && FileUtils.isImage(fileDescription);
     }
 
     @Override

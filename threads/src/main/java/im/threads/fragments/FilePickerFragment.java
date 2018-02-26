@@ -16,15 +16,13 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import im.threads.R;
-
-import im.threads.activities.ChatActivity;
-import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
+
+import im.threads.R;
+import im.threads.model.ChatStyle;
+import im.threads.utils.PrefUtils;
 
 import static im.threads.model.ChatStyle.INVALID;
 
@@ -81,9 +79,9 @@ public class FilePickerFragment extends DialogFragment
         } else {
             builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyleTransparent);
         }
-        builder.setTitle(getString(R.string.choose_file));
-        builder.setNeutralButton(getString(R.string.folder_up), this);
-        builder.setNegativeButton(getString(R.string.cancel), this);
+        builder.setTitle(getString(R.string.threads_choose_file));
+        builder.setNeutralButton(getString(R.string.threads_folder_up), this);
+        builder.setNegativeButton(getString(R.string.threads_cancel), this);
         dialog = builder.create();
         v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_directory_picker, null);
 
@@ -140,7 +138,7 @@ public class FilePickerFragment extends DialogFragment
         adapter.clear();
         adapter.addAll(Arrays.asList(folders));
         if (absolutePathDir != null && getDialog() != null) {
-            getDialog().setTitle(getString(R.string.now_you_are_in_directory) + "\r\n" + absolutePathDir.getAbsolutePath());
+            getDialog().setTitle(getString(R.string.threads_now_you_are_in_directory) + "\r\n" + absolutePathDir.getAbsolutePath());
         }
         adapter.notifyDataSetChanged();
         return adapter;
@@ -229,6 +227,10 @@ public class FilePickerFragment extends DialogFragment
             if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                 ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
                 ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
+            }
+            else {
+                ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), R.color.threads_chat_toolbar));
+                ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), R.color.threads_chat_toolbar));
             }
         }
     }

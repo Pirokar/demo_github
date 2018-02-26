@@ -9,16 +9,17 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import im.threads.R;
 import im.threads.adapters.ImagesAdapter;
 import im.threads.database.DatabaseHolder;
 import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
+import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yuri on 05.08.2016.
@@ -48,7 +49,7 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
             public void onComplete(List<FileDescription> data) {
                 List<FileDescription> output = new ArrayList<>();
                 for (FileDescription fd : data) {
-                    if (fd.hasImage()) {
+                    if (FileUtils.isImage(fd)) {
                         Log.e(TAG, "hasImage()");
                         output.add(fd);
                     }
@@ -100,7 +101,7 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
 
     @Override
     public void onPageSelected(int position) {
-        mToolbar.setTitle(position+1 + " " + getString(R.string.from) + " " + collectionSize);
+        mToolbar.setTitle(position+1 + " " + getString(R.string.threads_from) + " " + collectionSize);
     }
 
     @Override

@@ -2,7 +2,6 @@ package im.threads.widget;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -16,18 +15,15 @@ import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.utils.PrefUtils;
 
-
 /**
- * Блок для показа рейтинга и отмечания его
+ * Контрол для показа и изменения рейтинга
  */
 public class Rating extends LinearLayout {
 
-    private static final int DEFAULT_RATING_STARS_COUNT = 3;
     private ChatStyle style;
-    private Integer ratingCount;
+    private int ratingCount;
     private Integer countStars;
     private Context context;
-    Boolean hasListener = false;
     private ArrayList<View> viewsStar;
 
     public Rating(Context context) {
@@ -38,16 +34,17 @@ public class Rating extends LinearLayout {
         super(context, attrs);
     }
 
-    public void initRating(Context context, Integer ratingCount) {
+    public void initRating(Context context, int ratingCount, int starsCount) {
         this.context = context;
         this.ratingCount = ratingCount;
         style = PrefUtils.getIncomingStyle(context);
 
-        countStars = DEFAULT_RATING_STARS_COUNT; //TODO: 07.06.2017 заглушка, нужно брать из пуша
+        countStars = starsCount;
 
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        removeAllViews();                   // Чтобы при повторном ините не было в 2 раза больше звезд
+        // Чтобы при повторной инициализации не было в 2 раза больше звезд
+        removeAllViews();
         viewsStar = new ArrayList<>();
 
         for (int i = 0; i < countStars; i++) {
@@ -64,19 +61,18 @@ public class Rating extends LinearLayout {
      * Вешаем слушатель на клики
      * звездочек и реакцию
      */
-    public void setListenerClick(Boolean listener, CallBackListener callBackListener) {
-        this.hasListener = listener;
-        if (listener) {
-            clickStarts(callBackListener);
+    public void setListenerClick(CallBackListener callBackListener) {
+        if (callBackListener != null) {
+            setClickListeners(callBackListener);
         } else {
-            noClickStats();
+            deleteClickListeners();
         }
     }
 
     /**
      * клик по звезде задает рейтинг
      */
-    public void clickStarts(final CallBackListener callBackListener) {
+    public void setClickListeners(final CallBackListener callBackListener) {
         for (int i = 0; i < countStars; i++) {
             final int index = i + 1;
             viewsStar.get(i).setOnClickListener(new View.OnClickListener() {
@@ -98,49 +94,50 @@ public class Rating extends LinearLayout {
     /**
      * убираем слушатель с рейтинга
      */
-    public void noClickStats() {
+    public void deleteClickListeners() {
         for (int i = 0; i < countStars; i++) {
             viewsStar.get(i).setOnClickListener(null);
         }
     }
 
     /**
-     * устанавливаем кратинку в соотвесвие с рейтингом
+     * устанавливаем картинку в соответствие с рейтингом
      */
     public void setImage(View view, Boolean ratingState) {
 
         ImageView star = (ImageView) view.findViewById(R.id.star);
 
-        if (ratingState) {
-            if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-                star.setImageDrawable(icon);
+        if (style != null) {
+            if (ratingState) {
+                if (style.optionsSurveySelectedIconResId != ChatStyle.INVALID) {
+                    star.setImageResource(style.optionsSurveySelectedIconResId);
+                }
+                else {
+                    star.setImageResource(R.drawable.threads_options_survey_selected);
+                }
+
+                if (style.surveySelectedColorFilterResId != ChatStyle.INVALID) {
+                    star.setColorFilter(ContextCompat.getColor(context, style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+                }
+                else {
+                    star.setColorFilter(ContextCompat.getColor(context, R.color.threads_survey_selected_icon_tint), PorterDuff.Mode.SRC_ATOP);
+                }
             } else {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
-                star.setImageDrawable(icon);
-            }
-        } else if (ratingCount == 0) {
-            if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-                star.setImageDrawable(icon);
-            } else {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                icon.setColorFilter(ContextCompat.getColor(context, android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
-                star.setImageDrawable(icon);
-            }
-        } else {
-            if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                star.setImageDrawable(icon);
-            } else {
-                Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_star_outline_grey600_24dp);
-                star.setImageDrawable(icon);
+                if (style.optionsSurveyUnselectedIconResId != ChatStyle.INVALID) {
+                    star.setImageResource(style.optionsSurveyUnselectedIconResId );
+                }
+                else {
+                    star.setImageResource(R.drawable.threads_options_survey_unselected);
+                }
+
+                if (ratingCount == 0 && style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
+                    star.setColorFilter(ContextCompat.getColor(context, style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+                }
+                else {
+                    star.setColorFilter(ContextCompat.getColor(context, R.color.threads_survey_unselected_icon_tint), PorterDuff.Mode.SRC_ATOP);
+                }
             }
         }
-
     }
 
     public int getRating() {
@@ -149,9 +146,5 @@ public class Rating extends LinearLayout {
 
     public interface CallBackListener {
         void onStarClick(int ratingCount);
-    }
-
-    public Boolean getHasListener() {
-        return hasListener;
     }
 }

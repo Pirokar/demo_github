@@ -1,5 +1,6 @@
 package im.threads.utils;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import im.threads.model.FileDescription;
@@ -67,5 +68,18 @@ public class FileUtils {
         return path.substring(path.lastIndexOf("/") + 1);
     }
 
+    public static String convertRelativeUrlToAbsolute(Context context, String relativeUrl) {
+        if (TextUtils.isEmpty(relativeUrl) || relativeUrl.startsWith("http")) {
+            return relativeUrl;
+        }
+        return PrefUtils.getServerUrlMetaInfo(context) + "files/" + relativeUrl;
+    }
 
+    public static boolean isImage(final FileDescription fileDescription) {
+        return fileDescription != null
+                && (getExtensionFromPath(fileDescription.getFilePath()) == JPEG
+                || getExtensionFromPath(fileDescription.getFilePath()) == PNG
+                || getExtensionFromPath(fileDescription.getIncomingName()) == PNG
+                || getExtensionFromPath(fileDescription.getIncomingName()) == JPEG);
+    }
 }

@@ -1,7 +1,15 @@
 package im.threads.database;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import im.threads.controllers.ChatController;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.CompletionHandler;
@@ -10,11 +18,7 @@ import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import im.threads.model.UserPhrase;
 
 /**
  * Created by yuri on 23.06.2016.
@@ -38,6 +42,19 @@ public class DatabaseHolder {
 
     public List<ChatItem> getChatItems(int offset, int limit) {
         return mMyOpenHelper.getChatItems(offset, limit);
+    }
+
+    public List<UserPhrase> getUnsendUserPhrase(int count) {
+        List<UserPhrase> userPhrases = new ArrayList<>();
+        List<ChatItem> chatItems = mMyOpenHelper.getChatItems(0, count);
+        for (ChatItem chatItem : chatItems) {
+            if (chatItem instanceof UserPhrase) {
+                if (((UserPhrase) chatItem).getSentState() == MessageState.STATE_NOT_SENT) {
+                    userPhrases.add((UserPhrase) chatItem);
+                }
+            }
+        }
+        return userPhrases;
     }
 
     public void getChatItemsAsync(final int offset, final int limit, final CompletionHandler<List<ChatItem>> completionHandler) {
@@ -215,8 +232,31 @@ public class DatabaseHolder {
         });
     }
 
-    public List<String> getUnreaMessagesId() {
+    public List<String> getUnreadMessagesId() {
         return mMyOpenHelper.getUnreadMessagesId();
+    }
+
+    // let the DB time to write the incoming message
+    public void getUnreadMessagesCount(boolean immediate, final ChatController.UnreadMessagesCountListener unreadMessagesCountListener) {
+        if (immediate) {
+            getUnreadMessagesCount(unreadMessagesCountListener);
+        }
+        else {
+            final Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getUnreadMessagesCount(unreadMessagesCountListener);
+                }
+            }, 1000);
+        }
+    }
+
+    private void getUnreadMessagesCount(final ChatController.UnreadMessagesCountListener unreadMessagesCountListener) {
+        if (unreadMessagesCountListener != null) {
+            final int unreadMessagesCount = mMyOpenHelper.getUnreadMessagesId().size();
+            unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadMessagesCount);
+        }
     }
 
     public void setMessageWereRead(String messageId) {

@@ -142,9 +142,9 @@ public class PermissionsActivity extends AppCompatActivity {
 
     private void showMissingPermissionDialog() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(PermissionsActivity.this);
-        dialogBuilder.setTitle(R.string.permissions_help);
+        dialogBuilder.setTitle(R.string.threads_permissions_help);
         dialogBuilder.setMessage(getPermissionText());
-        dialogBuilder.setNegativeButton(R.string.permissions_quit, new DialogInterface.OnClickListener() {
+        dialogBuilder.setNegativeButton(R.string.threads_permissions_quit, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(checker.clickedNeverAskAgain(PermissionsActivity.this, getPermissions())) {
@@ -156,7 +156,7 @@ public class PermissionsActivity extends AppCompatActivity {
                 }
             }
         });
-        dialogBuilder.setPositiveButton(R.string.permissions_settings, new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton(R.string.threads_permissions_settings, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startAppSettings();
@@ -183,7 +183,7 @@ public class PermissionsActivity extends AppCompatActivity {
         int textId = getIntent().getIntExtra(EXTRA_PERMISSION_TEXT, TEXT_DEFAULT);
 
         if(textId == TEXT_DEFAULT) {
-            textId = R.string.permissions_string_help_text;
+            textId = R.string.threads_permissions_string_help_text;
         }
 
         return textId;
