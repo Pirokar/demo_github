@@ -40,27 +40,27 @@ android {
         // АРМ = threads.brooma.ru
         brooma {
             applicationId "com.sequenia.appwithchatdev"
-            resValue "string", "app_name1", "AppWithChat"
+            resValue "string", "app_name1", "THR Dev"
         }
         // АРМ = polarbear.threads.im
         polarbear {
             applicationId "com.sequenia.appwithchat.polarbear"
-            resValue "string", "app_name1", "Polarbear"
+            resValue "string", "app_name1", "THR Polarbear"
         }
         // АРМ = winlab.threads.im
         winlab {
             applicationId "com.sequenia.appwithchat.beta4"
-            resValue "string", "app_name1", "Winlab"
+            resValue "string", "app_name1", "THR Winlab (Beta4)"
         }
 
         winlab0 {
             applicationId "com.threads.android.winlab0"
-            resValue "string", "app_name1", "Winlab0"
+            resValue "string", "app_name1", "THR Winlab0"
         }
 
         bobtail {
             applicationId "com.threads.android.bobtail"
-            resValue "string", "app_name1", "bobtail"
+            resValue "string", "app_name1", "THR Bobtail"
         }
         beta {
             applicationId "com.threads.android.beta"
