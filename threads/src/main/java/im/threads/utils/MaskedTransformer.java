@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.NinePatchDrawable;
 
 import im.threads.R;
 import im.threads.picasso_url_connection_only.Transformation;
@@ -34,9 +35,13 @@ public class MaskedTransformer implements Transformation {
         Canvas mCanvas = new Canvas(result);
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inSampleSize = 2;
-        Bitmap maskRaw = BitmapFactory.decodeResource(ctx.getResources(), type == TYPE_USER ? R.drawable.bubble_user_big : R.drawable.bubble_consult_big, o);
-        Bitmap mask = Bitmap.createScaledBitmap(maskRaw, source.getWidth(), source.getHeight(), false);
-        maskRaw.recycle();
+
+        Bitmap mask = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas tmpCanvas = new Canvas(mask);
+        NinePatchDrawable maskRaw9Patch = (NinePatchDrawable)ctx.getResources().getDrawable(type == TYPE_USER ? R.drawable.thread_outgoing_bubble : R.drawable.thread_incoming_bubble);
+        maskRaw9Patch.setBounds(0, 0, tmpCanvas.getWidth(), tmpCanvas.getHeight());
+        maskRaw9Patch.draw(tmpCanvas);
+        
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
         mCanvas.drawBitmap(original, 0, 0, null);
