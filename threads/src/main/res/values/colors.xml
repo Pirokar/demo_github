@@ -78,6 +78,12 @@
     <color name="threads_files_medias_screen_background">@color/threads_blue_eff3f8</color>
     <color name="threads_files_list">@color/threads_black</color>
 
+    <!-- Экран просмотра файлов -->
+    <color name="threads_attachments_toolbar">@color/threads_teal_009688</color>
+    <color name="threads_attachments_background">@color/threads_toolbar_gray</color>
+    <color name="threads_attachments_author_text_color">@color/threads_white</color>
+    <color name="threads_attachments_date_text_color">@color/threads_white</color>
+
     <!-- Индикатор непрочитанных сообщений -->
     <color name="threads_chat_unread_msg_sticker_background">@color/threads_red_f44336</color>
     <color name="threads_chat_unread_msg_count_text">@color/threads_white</color>

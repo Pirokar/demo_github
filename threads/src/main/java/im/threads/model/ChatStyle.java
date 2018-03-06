@@ -168,6 +168,10 @@ public class ChatStyle implements Serializable {
     // set can show specialist onfo
     public boolean canShowSpecialistInfo = true;
 
+    // set if client id encrypted
+    public boolean isClientIdEncrypted = false;
+
+
     // specify fonts
     public String defaultFontBold;
     public String defaultFontLight;
@@ -217,12 +221,12 @@ public class ChatStyle implements Serializable {
         private ChatStyleBuilder() {
         }
 
-        public static ChatStyleBuilder getBuilder(Context ctx, String clientId, String userName) {
+        public static ChatStyleBuilder getBuilder(final Context ctx, final String clientId, final String userName) {
             return getBuilder(ctx, clientId, userName, "");
         }
 
-        public static ChatStyleBuilder getBuilder(Context ctx, String clientId, String userName, String data) {
-            ChatStyleBuilder builder = new ChatStyleBuilder();
+        public static ChatStyleBuilder getBuilder(final Context ctx, final String clientId, final String userName, final String data) {
+            final ChatStyleBuilder builder = new ChatStyleBuilder();
             builder.clientId = clientId;
             builder.userName = userName;
             builder.data = data;
@@ -231,133 +235,140 @@ public class ChatStyle implements Serializable {
             return builder;
         }
 
-        public ChatStyleBuilder showChatBackButton(boolean showBackButton) {
+        public ChatStyleBuilder showChatBackButton(final boolean showBackButton) {
             chatStyle.showBackButton = showBackButton;
             return this;
         }
 
-        public ChatStyleBuilder setShowConsultSearching(boolean show) {
+        public ChatStyleBuilder setShowConsultSearching(final boolean show) {
             chatStyle.showConsultSearching = show;
             return this;
         }
 
+        public ChatStyleBuilder setIsClientIdEncrypted(final boolean encrypted) {
+            chatStyle.isClientIdEncrypted = encrypted;
+            if (encrypted) {
+                PrefUtils.setClientIdEncrypted(ctx);
+            }
+            return this;
+        }
 
-        public ChatStyleBuilder setScrollChatToEndIfUserTyping(boolean scroll) {
+        public ChatStyleBuilder setScrollChatToEndIfUserTyping(final boolean scroll) {
             chatStyle.scrollChatToEndIfUserTyping = scroll;
             return this;
         }
 
 
-        public ChatStyleBuilder setHistoryLoadingCount(int count) {
+        public ChatStyleBuilder setHistoryLoadingCount(final int count) {
             if (count > 0) {
                 chatStyle.historyLoadingCount = count;
             }
             return this;
         }
 
-        public ChatStyleBuilder setCanShowSpecialistInfo(boolean show) {
+        public ChatStyleBuilder setCanShowSpecialistInfo(final boolean show) {
             chatStyle.canShowSpecialistInfo = show;
             return this;
         }
 
         // set fonts
 
-        public ChatStyleBuilder setDefaultFontBold(String path) {
+        public ChatStyleBuilder setDefaultFontBold(final String path) {
             chatStyle.defaultFontBold = path;
             return this;
         }
 
-        public ChatStyleBuilder setDefaultFontLight(String path) {
+        public ChatStyleBuilder setDefaultFontLight(final String path) {
             chatStyle.defaultFontLight = path;
             return this;
         }
 
-        public ChatStyleBuilder setDefaultFontRegular(String path) {
+        public ChatStyleBuilder setDefaultFontRegular(final String path) {
             chatStyle.defaultFontRegular = path;
             return this;
         }
 
-        public ChatStyleBuilder setToolbarTitleFont(String path) {
+        public ChatStyleBuilder setToolbarTitleFont(final String path) {
             chatStyle.toolbarTitleFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setToolbarSubtitleFont(String path) {
+        public ChatStyleBuilder setToolbarSubtitleFont(final String path) {
             chatStyle.toolbarSubtitleFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setPlaceholderTitleFont(String path) {
+        public ChatStyleBuilder setPlaceholderTitleFont(final String path) {
             chatStyle.placeholderTitleFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setPlaceholderSubtitleFont(String path) {
+        public ChatStyleBuilder setPlaceholderSubtitleFont(final String path) {
             chatStyle.placeholderSubtitleFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setInputQuotedMessageAuthorFont(String path) {
+        public ChatStyleBuilder setInputQuotedMessageAuthorFont(final String path) {
             chatStyle.inputQuotedMessageAuthorFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setInputQuotedMessageFont(String path) {
+        public ChatStyleBuilder setInputQuotedMessageFont(final String path) {
             chatStyle.inputQuotedMessageFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setBubbleMessageFont(String path) {
+        public ChatStyleBuilder setBubbleMessageFont(final String path) {
             chatStyle.bubbleMessageFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setInputTextFont(String path) {
+        public ChatStyleBuilder setInputTextFont(final String path) {
             chatStyle.inputTextFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setBubbleTimeFont(String path) {
+        public ChatStyleBuilder setBubbleTimeFont(final String path) {
             chatStyle.bubbleTimeFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setQuoteAuthorFont(String path) {
+        public ChatStyleBuilder setQuoteAuthorFont(final String path) {
             chatStyle.quoteAuthorFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setQuoteMessageFont(String path) {
+        public ChatStyleBuilder setQuoteMessageFont(final String path) {
             chatStyle.quoteMessageFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setQuoteTimeFont(String path) {
+        public ChatStyleBuilder setQuoteTimeFont(final String path) {
             chatStyle.quoteTimeFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setMessageHeaderFont(String path) {
+        public ChatStyleBuilder setMessageHeaderFont(final String path) {
             chatStyle.messageHeaderFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setSpecialistConnectTitleFont(String path) {
+        public ChatStyleBuilder setSpecialistConnectTitleFont(final String path) {
             chatStyle.specialistConnectTitleFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setSpecialistConnectSubtitleFont(String path) {
+        public ChatStyleBuilder setSpecialistConnectSubtitleFont(final String path) {
             chatStyle.specialistConnectSubtitleFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setTypingFont(String path) {
+        public ChatStyleBuilder setTypingFont(final String path) {
             chatStyle.typingFont = path;
             return this;
         }
 
-        public ChatStyleBuilder setScheduleAlertFont(String path) {
+        public ChatStyleBuilder setScheduleAlertFont(final String path) {
             chatStyle.scheduleAlerFont = path;
             return this;
         }
@@ -391,13 +402,13 @@ public class ChatStyle implements Serializable {
          */
         @Deprecated
         public ChatStyleBuilder setChatTitleStyle(
-                @StringRes int chatTitleTextResId,
-                @ColorRes int chatToolbarColorResId,
-                @ColorRes int chatToolbarTextColorResId,
-                @ColorRes int chatStatusBarColorResId,
-                @ColorRes int menuItemTextColorResId,
-                @ColorRes int chatToolbarHintTextColor,
-                boolean showBackButton) {
+                @StringRes final int chatTitleTextResId,
+                @ColorRes final int chatToolbarColorResId,
+                @ColorRes final int chatToolbarTextColorResId,
+                @ColorRes final int chatStatusBarColorResId,
+                @ColorRes final int menuItemTextColorResId,
+                @ColorRes final int chatToolbarHintTextColor,
+                final boolean showBackButton) {
             chatStyle.chatTitleTextResId = chatTitleTextResId;
             chatStyle.chatToolbarColorResId = chatToolbarColorResId;
             chatStyle.chatToolbarTextColorResId = chatToolbarTextColorResId;
@@ -437,28 +448,28 @@ public class ChatStyle implements Serializable {
          */
         @Deprecated
         public ChatStyleBuilder setChatBodyStyle(
-                @ColorRes int chatBackgroundColor,
-                @ColorRes int chatHighlightingColor,
-                @ColorRes int incomingMessageBubbleColor,
-                @ColorRes int outgoingMessageBubbleColor,
-                @DrawableRes int incomingMessageBubbleBackground,
-                @DrawableRes int outgoingMessageBubbleBackground,
-                @ColorRes int incomingMessageTextColor,
-                @ColorRes int outgoingMessageTextColor,
-                @ColorRes int chatBodyIconsTint,
-                @ColorRes int connectionMessageTextColor,
-                @ColorRes int filesAndMediaScreenBackgroundColor,
-                @ColorRes int iconsAndSeparatorsColor,
-                @DrawableRes int defaultIncomingMessageAvatar,
-                @DimenRes int operatorAvatarSize,
-                @DimenRes int operatorSystemAvatarSize,
-                @DrawableRes int imagePlaceholder,
-                @StyleRes int fileBrowserDialogStyleResId,
-                boolean showConsultSearching,
-                boolean alwaysScrollToEnd,
-                @DrawableRes int scrollDownButtonResId,
-                @ColorRes int unreadMsgStickerColorResId,
-                @ColorRes int unreadMsgCountTextColorResId) {
+                @ColorRes final int chatBackgroundColor,
+                @ColorRes final int chatHighlightingColor,
+                @ColorRes final int incomingMessageBubbleColor,
+                @ColorRes final int outgoingMessageBubbleColor,
+                @DrawableRes final int incomingMessageBubbleBackground,
+                @DrawableRes final int outgoingMessageBubbleBackground,
+                @ColorRes final int incomingMessageTextColor,
+                @ColorRes final int outgoingMessageTextColor,
+                @ColorRes final int chatBodyIconsTint,
+                @ColorRes final int connectionMessageTextColor,
+                @ColorRes final int filesAndMediaScreenBackgroundColor,
+                @ColorRes final int iconsAndSeparatorsColor,
+                @DrawableRes final int defaultIncomingMessageAvatar,
+                @DimenRes final int operatorAvatarSize,
+                @DimenRes final int operatorSystemAvatarSize,
+                @DrawableRes final int imagePlaceholder,
+                @StyleRes final int fileBrowserDialogStyleResId,
+                final boolean showConsultSearching,
+                final boolean alwaysScrollToEnd,
+                @DrawableRes final int scrollDownButtonResId,
+                @ColorRes final int unreadMsgStickerColorResId,
+                @ColorRes final int unreadMsgCountTextColorResId) {
             chatStyle.chatBackgroundColor = chatBackgroundColor;
             chatStyle.chatHighlightingColor = chatHighlightingColor;
             chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor;
@@ -501,15 +512,15 @@ public class ChatStyle implements Serializable {
          */
         @Deprecated
         public ChatStyleBuilder setChatInputStyle(
-                @ColorRes int chatMessageInputHintTextColor,
-                @ColorRes int chatMessageInputColor,
-                @ColorRes int inputTextColor,
-                String inputTextFont,
-                @DrawableRes int attachmentsIconResId,
-                @DrawableRes int sendMessageIconResId,
-                @StringRes int inputHint,
-                @DimenRes int inputHeight,
-                @DrawableRes int inputBackground) {
+                @ColorRes final int chatMessageInputHintTextColor,
+                @ColorRes final int chatMessageInputColor,
+                @ColorRes final int inputTextColor,
+                final String inputTextFont,
+                @DrawableRes final int attachmentsIconResId,
+                @DrawableRes final int sendMessageIconResId,
+                @StringRes final int inputHint,
+                @DimenRes final int inputHeight,
+                @DrawableRes final int inputBackground) {
 
             chatStyle.chatMessageInputColor = chatMessageInputColor;
             chatStyle.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
@@ -533,10 +544,10 @@ public class ChatStyle implements Serializable {
          * @return
          */
         @Deprecated
-        public ChatStyleBuilder setPushNotificationStyle(@DrawableRes int defIconResId,
-                                                         @StringRes int defTitleResId,
-                                                         @ColorRes int pushBackgroundColorResId,
-                                                         @ColorRes int nougatPushAccentColorResId) {
+        public ChatStyleBuilder setPushNotificationStyle(@DrawableRes final int defIconResId,
+                                                         @StringRes final int defTitleResId,
+                                                         @ColorRes final int pushBackgroundColorResId,
+                                                         @ColorRes final int nougatPushAccentColorResId) {
 
             chatStyle.defPushIconResId = defIconResId;
             chatStyle.defTitleResId = defTitleResId;
@@ -553,9 +564,9 @@ public class ChatStyle implements Serializable {
          * @param denyRequestToResolveThreadTextResId - R.string.threads_request_to_resolve_thread_open
          */
         @Deprecated
-        public ChatStyleBuilder setRequestResolveThreadStyle(@StringRes int requestToResolveThreadTextResId,
-                                                             @StringRes int approveRequestToResolveThreadTextResId,
-                                                             @StringRes int denyRequestToResolveThreadTextResId) {
+        public ChatStyleBuilder setRequestResolveThreadStyle(@StringRes final int requestToResolveThreadTextResId,
+                                                             @StringRes final int approveRequestToResolveThreadTextResId,
+                                                             @StringRes final int denyRequestToResolveThreadTextResId) {
             chatStyle.requestToResolveThreadTextResId = requestToResolveThreadTextResId;
             chatStyle.approveRequestToResolveThreadTextResId = approveRequestToResolveThreadTextResId;
             chatStyle.denyRequestToResolveThreadTextResId = denyRequestToResolveThreadTextResId;
@@ -576,15 +587,15 @@ public class ChatStyle implements Serializable {
          * @param surveyTextColorResId - R.color.threads_chat_system_message
          */
         @Deprecated
-        public ChatStyleBuilder setSurveyStyle(@DrawableRes int binarySurveyLikeUnselectedIconResId,
-                                               @DrawableRes int binarySurveyLikeSelectedIconResId,
-                                               @DrawableRes int binarySurveyDislikeUnselectedIconResId,
-                                               @DrawableRes int binarySurveyDislikeSelectedIconResId,
-                                               @DrawableRes int optionsSurveyUnselectedIconResId,
-                                               @DrawableRes int optionsSurveySelectedIconResId,
-                                               @ColorRes int surveySelectedColorFilterResId,
-                                               @ColorRes int surveyUnselectedColorFilterResId,
-                                               @ColorRes int surveyTextColorResId) {
+        public ChatStyleBuilder setSurveyStyle(@DrawableRes final int binarySurveyLikeUnselectedIconResId,
+                                               @DrawableRes final int binarySurveyLikeSelectedIconResId,
+                                               @DrawableRes final int binarySurveyDislikeUnselectedIconResId,
+                                               @DrawableRes final int binarySurveyDislikeSelectedIconResId,
+                                               @DrawableRes final int optionsSurveyUnselectedIconResId,
+                                               @DrawableRes final int optionsSurveySelectedIconResId,
+                                               @ColorRes final int surveySelectedColorFilterResId,
+                                               @ColorRes final int surveyUnselectedColorFilterResId,
+                                               @ColorRes final int surveyTextColorResId) {
             chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
             chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
             chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
@@ -607,8 +618,8 @@ public class ChatStyle implements Serializable {
          */
         @Deprecated
         public ChatStyleBuilder setScheduleMessageStyle(
-                @DrawableRes int scheduleMessageIconResId,
-                @ColorRes int scheduleMessageTextColor) {
+                @DrawableRes final int scheduleMessageIconResId,
+                @ColorRes final int scheduleMessageTextColor) {
             chatStyle.scheduleMessageIconResId = scheduleMessageIconResId;
             chatStyle.scheduleMessageTextColorResId = scheduleMessageTextColor;
 
@@ -629,13 +640,13 @@ public class ChatStyle implements Serializable {
          */
         @Deprecated
         public ChatStyleBuilder setWelcomeScreenStyle(
-                @DrawableRes int welcomeScreenLogoResId
-                , @StringRes int welcomeScreenTitleTextResId
-                , @StringRes int welcomeScreenSubtitleTextResId
-                , @ColorRes int welcomeScreenTextColorResId
-                , @ColorRes int welcomeScreenSubtitleTextColorResId
-                , int welcomeScreenTitleSizeInSp
-                , int welcomeScreenSubtitleSizeInSp) {
+                @DrawableRes final int welcomeScreenLogoResId
+                , @StringRes final int welcomeScreenTitleTextResId
+                , @StringRes final int welcomeScreenSubtitleTextResId
+                , @ColorRes final int welcomeScreenTextColorResId
+                , @ColorRes final int welcomeScreenSubtitleTextColorResId
+                , final int welcomeScreenTitleSizeInSp
+                , final int welcomeScreenSubtitleSizeInSp) {
 
             chatStyle.welcomeScreenLogoResId = welcomeScreenLogoResId;
             chatStyle.welcomeScreenTitleTextColorResId = welcomeScreenTextColorResId;

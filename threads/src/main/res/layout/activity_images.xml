@@ -23,6 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@color/threads_chat_toolbar"
+        android:background="@color/threads_attachments_toolbar"
         app:titleTextColor="@android:color/white" />
 </RelativeLayout>

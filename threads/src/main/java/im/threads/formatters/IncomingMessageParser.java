@@ -70,6 +70,18 @@ public class IncomingMessageParser {
         return type;
     }
 
+    private static boolean isOrigin(final JSONObject fullMessage) {
+        String origin = "";
+
+        try {
+            origin = fullMessage.getString(PushMessageAttributes.ORIGIN);
+        } catch (final JSONException e) {
+            e.printStackTrace();
+        }
+
+        return PushMessageAttributes.THREADS.equalsIgnoreCase(origin);
+    }
+
     private static String getClientId(final JSONObject fullMessage) {
         String type = "";
 
@@ -222,6 +234,9 @@ public class IncomingMessageParser {
 
         // В пуше для чата должен быть fullMessage, и он должен соответствовать формату JSON.
         if (fullMessage == null) {
+            return null;
+        }
+        if (!isOrigin(fullMessage)) {
             return null;
         }
 

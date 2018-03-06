@@ -35,7 +35,7 @@ public enum PushMessageTypes {
 
     UNKNOWN;
 
-    public static PushMessageTypes getKnownType(Bundle bundle) {
+    public static PushMessageTypes getKnownType(final Bundle bundle) {
         if (bundle == null) {
             return UNKNOWN;
         }
@@ -43,10 +43,10 @@ public enum PushMessageTypes {
             return MESSAGES_READ;
         }
 
-        String pushType = bundle.getString(PushMessageAttributes.TYPE);
+        final String pushType = bundle.getString(PushMessageAttributes.TYPE);
 
         if (!TextUtils.isEmpty(pushType)) {
-            PushMessageTypes pushMessageTypes = valueOf(pushType);
+            final PushMessageTypes pushMessageTypes = valueOf(pushType);
 
             if (pushMessageTypes == OPERATOR_JOINED ||
                     pushMessageTypes == OPERATOR_LEFT ||
@@ -64,11 +64,15 @@ public enum PushMessageTypes {
         if (pushType == null && bundle.getString("alert") != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null) {
             return MESSAGE;
         }
-        if (bundle.getString("origin") != null && "threads".equalsIgnoreCase(bundle.getString("origin"))){
+        if (isOrigin(bundle)){
             return CHAT_PUSH;
         }
 
         return UNKNOWN;
+    }
+
+    public static boolean isOrigin(final Bundle bundle) {
+        return bundle != null && bundle.getString(PushMessageAttributes.ORIGIN) != null && PushMessageAttributes.THREADS.equalsIgnoreCase(bundle.getString(PushMessageAttributes.ORIGIN));
     }
 }
 
