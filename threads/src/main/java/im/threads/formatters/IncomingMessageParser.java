@@ -145,7 +145,7 @@ public class IncomingMessageParser {
                 backendId = "0";
             }
             String receivedDateString = fullMessage.getString(PushMessageAttributes.RECEIVED_DATE);
-            long timeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestamp(receivedDateString);
+            long timeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
             final JSONObject operatorInfo = fullMessage.getJSONObject("operator");
             final String name = operatorInfo.getString("name");
             final String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
@@ -198,7 +198,7 @@ public class IncomingMessageParser {
                 backendId = "0";
             }
             String receivedDateString = fullMessage.getString(PushMessageAttributes.RECEIVED_DATE);
-            long phraseTimeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestamp(receivedDateString);
+            long phraseTimeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
             final JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
             FileDescription fileDescription = null;
             if (null != attachmentsArray)
@@ -385,7 +385,7 @@ public class IncomingMessageParser {
 
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null) {
             String receivedDateString = quotes.getJSONObject(0).getString(PushMessageAttributes.RECEIVED_DATE);
-            timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestamp(receivedDateString);
+            timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
         }
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && (quotes.getJSONObject(0).has(PushMessageAttributes.TEXT))) {
             quoteString = quotes.getJSONObject(0).getString(PushMessageAttributes.TEXT);

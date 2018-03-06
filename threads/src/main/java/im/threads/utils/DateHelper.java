@@ -15,10 +15,14 @@ public class DateHelper {
     public static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     public static String SERVER_DATE_TIMEZONE = "UTC";
 
+    private static SimpleDateFormat sdf = new SimpleDateFormat(SERVER_DATE_FORMAT, Locale.getDefault());
 
-    public static long getMessageTimestamp (String dateString) {
-        SimpleDateFormat sdf = new SimpleDateFormat(SERVER_DATE_FORMAT, Locale.getDefault());
+    static {
         sdf.setTimeZone(TimeZone.getTimeZone(SERVER_DATE_TIMEZONE));
+    }
+
+    public static long getMessageTimestampFromDateString(String dateString) {
+
         Date date = new Date();
         try {
             date = sdf.parse(dateString);
@@ -26,6 +30,10 @@ public class DateHelper {
             e.printStackTrace();
         }
         return date.getTime();
+    }
+
+    public static String getMessageDateStringFromTimestamp(long timestamp) {
+        return sdf.format(new Date(timestamp));
     }
 
 }

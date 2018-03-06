@@ -16,6 +16,7 @@ import im.threads.model.FileDescription;
 import im.threads.model.Quote;
 import im.threads.model.UserPhrase;
 import im.threads.utils.AppInfoHelper;
+import im.threads.utils.DateHelper;
 import im.threads.utils.DeviceInfoHelper;
 
 public class OutgoingMessageCreator {
@@ -28,13 +29,9 @@ public class OutgoingMessageCreator {
     private OutgoingMessageCreator() {
     }
 
-    public static String createUserPhraseMessage(
-            UserPhrase upcomingUserMessage
-            , ConsultInfo consultInfo
-            , String quoteMfmsFilePath
-            , String mfmsFilePath
-            , String clientId
-            , Long threadId) {
+    public static String createUserPhraseMessage(UserPhrase upcomingUserMessage, ConsultInfo consultInfo,
+                                                 String quoteMfmsFilePath, String mfmsFilePath,
+                                                 String clientId, Long threadId) {
         try {
             Quote quote = upcomingUserMessage.getQuote();
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
@@ -42,6 +39,7 @@ public class OutgoingMessageCreator {
             formattedMessage.put(PushMessageAttributes.CLIENT_ID, clientId);
             final String phrase = upcomingUserMessage.getPhrase();
             formattedMessage.put(PushMessageAttributes.TEXT, phrase == null ? "" : phrase);
+            formattedMessage.put(PushMessageAttributes.RECEIVED_DATE, DateHelper.getMessageDateStringFromTimestamp(upcomingUserMessage.getTimeStamp()));
 
             if (threadId != null && threadId != -1) {
                 formattedMessage.put(PushMessageAttributes.THREAD_ID, String.valueOf(threadId));

@@ -5,13 +5,8 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import im.threads.utils.DateHelper;
 
@@ -146,6 +141,6 @@ public class MessgeFromHistory implements ChatItem {
 
     @Override
     public long getTimeStamp() {
-        return DateHelper.getMessageTimestamp(receivedDate);
+        return DateHelper.getMessageTimestampFromDateString(receivedDate);
     }
 }
