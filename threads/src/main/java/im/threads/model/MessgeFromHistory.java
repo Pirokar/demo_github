@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import im.threads.utils.DateHelper;
+
 /**
  * Created by Admin on 25.05.2017.
  */
@@ -144,14 +146,6 @@ public class MessgeFromHistory implements ChatItem {
 
     @Override
     public long getTimeStamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date date = new Date();
-        try {
-            date = sdf.parse(receivedDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date.getTime();
+        return DateHelper.getMessageTimestamp(receivedDate);
     }
 }
