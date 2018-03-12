@@ -133,6 +133,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private boolean isDownloadingMessages;
     private List<UserPhrase> unsendMessages = new ArrayList<>();
     private int resendTimeInterval;
+    private List<UserPhrase> sendQueue = new ArrayList<>();
 
     private Handler mUnsendMessageHandler;
     // Используется для создания PendingIntent при открытии чата из пуш уведомления.
@@ -622,7 +623,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             }
             mConsultWriter.setSearchingConsult(true);
         }
-        sendMessage(um);
+
+        queueMessageSending(um);
     }
 
     private void sendMessage(final UserPhrase userPhrase) {
@@ -641,6 +643,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             }
         } catch (final Exception e) {
             onSentMessageException(userPhrase, e);
+            proceedSendingQueue();
         }
 
         h.postDelayed(new Runnable() {
@@ -732,6 +735,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (fragment != null) {
             fragment.setUserPhraseMessageId(userPhrase.getId(), newId);
         }
+        proceedSendingQueue();
     }
 
     private void onMessageSentError(final UserPhrase userPhrase) {
@@ -747,6 +751,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
             if (!isActive) appContext.startService(i);
         }
+        proceedSendingQueue();
     }
 
     private void addMsgToResendQueue(final UserPhrase userPhrase) {
@@ -930,7 +935,21 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             if (fragment != null) {
                 fragment.setMessageState(userPhrase.getMessageId(), MessageState.STATE_SENDING);
             }
+            queueMessageSending(userPhrase);
+        }
+    }
+
+    private void queueMessageSending(UserPhrase userPhrase) {
+        sendQueue.add(userPhrase);
+        if (sendQueue.size() == 1) {
             sendMessage(userPhrase);
+        }
+    }
+
+    private void proceedSendingQueue() {
+        sendQueue.remove(0);
+        if (sendQueue.size() > 0) {
+            sendMessage(sendQueue.get(0));
         }
     }
 

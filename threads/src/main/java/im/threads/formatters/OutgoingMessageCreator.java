@@ -39,7 +39,6 @@ public class OutgoingMessageCreator {
             formattedMessage.put(PushMessageAttributes.CLIENT_ID, clientId);
             final String phrase = upcomingUserMessage.getPhrase();
             formattedMessage.put(PushMessageAttributes.TEXT, phrase == null ? "" : phrase);
-            formattedMessage.put(PushMessageAttributes.RECEIVED_DATE, DateHelper.getMessageDateStringFromTimestamp(upcomingUserMessage.getTimeStamp()));
 
             if (threadId != null && threadId != -1) {
                 formattedMessage.put(PushMessageAttributes.THREAD_ID, String.valueOf(threadId));
