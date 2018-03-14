@@ -13,7 +13,7 @@ import java.util.List;
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
-import im.threads.model.HistoryResponseV2;
+import im.threads.model.HistoryResponse;
 import im.threads.model.MessgeFromHistory;
 import im.threads.retrofit.ServiceGenerator;
 import im.threads.retrofit.ThreadsApi;
@@ -94,7 +94,7 @@ public final class Transport {
      * @param start id сообщения от которого грузить, null если с начала
      * @param count количество сообщений для загрузки
      */
-    public static HistoryResponseV2 getHistorySync(Context ctx, Long start, Long count) throws Exception {
+    public static HistoryResponse getHistorySync(Context ctx, Long start, Long count) throws Exception {
         String token = getPushControllerInstance(ctx).getDeviceAddress() + ":" + PrefUtils.getClientID(ctx);
         String url = PrefUtils.getServerUrlMetaInfo(ctx);
         if (count == null) {
@@ -103,14 +103,9 @@ public final class Transport {
         if (url != null && !url.isEmpty() && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
             ThreadsApi threadsApi = ServiceGenerator.getThreadsApi();
-            Call<HistoryResponseV2> call = threadsApi.historyV2(token, start, count, AppInfoHelper.getLibVersion());
-            Response<HistoryResponseV2> response = call.execute();
-            if (response.isSuccessful()) {
-                return response.body();
-            } else {
-                Call<List<MessgeFromHistory>> call2 = threadsApi.history(token, start, count, AppInfoHelper.getLibVersion());
-                return new HistoryResponseV2(call2.execute().body());
-            }
+            Call<HistoryResponse> call = threadsApi.history(token, start, count, AppInfoHelper.getLibVersion());
+            Response<HistoryResponse> response = call.execute();
+            return response.body();
         } else {
             throw new IOException();
         }
@@ -123,7 +118,7 @@ public final class Transport {
      * @param count количество сообщений для загрузки
      * @param fromBeginning загружать ли историю с начала или с последнего полученного сообщения
      */
-    public static HistoryResponseV2 getHistorySync(Context ctx, Long count, boolean fromBeginning) throws Exception {
+    public static HistoryResponse getHistorySync(Context ctx, Long count, boolean fromBeginning) throws Exception {
         return getHistorySync(ctx, fromBeginning ? null : lastLoadId, count);
     }
 
@@ -132,7 +127,7 @@ public final class Transport {
         return style != null ? style.historyLoadingCount : ChatStyle.DEFAULT_HISTORY_LOADING_COUNT;
     }
 
-    public static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponseV2 response) {
+    public static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponse response) {
         List<ChatItem> list = new ArrayList<>();
         if (response != null) {
             List<MessgeFromHistory> responseList = response.getMessages();

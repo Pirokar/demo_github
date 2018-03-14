@@ -57,7 +57,7 @@ import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
-import im.threads.model.HistoryResponseV2;
+import im.threads.model.HistoryResponse;
 import im.threads.model.MessageState;
 import im.threads.model.MessgeFromHistory;
 import im.threads.model.PushMessageCheckResult;
@@ -259,7 +259,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             Transport.sendMessageMFMSSync(ctx, environmentMessage, true);
             Transport.getPushControllerInstance(ctx).resetCounterSync();
 
-            final HistoryResponseV2 response = Transport.getHistorySync(ctx, null, true);
+            final HistoryResponse response = Transport.getHistorySync(ctx, null, true);
             final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
             instance.mDatabaseHolder.putMessagesSync(serverItems);
             final ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
@@ -540,7 +540,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private void updateChatHistoryOnBind() {
         if (fragment != null) {
             try {
-                final HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
+                final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
                 final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                 final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                 final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
@@ -828,7 +828,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     isDownloadingMessages = true;
                     final Long chunk = 100L;
                     final Long start = lastMessageId == null ? null : lastMessageId;
-                    final HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
+                    final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
                     final List<MessgeFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
                     lastMessageId = items.get(items.size() - 1).getId();
@@ -1091,7 +1091,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
                     final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
                     try {
-                        final HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), null, false);
+                        final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, false);
                         final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                         mDatabaseHolder.putMessagesSync(serverItems);
                         final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
@@ -1300,7 +1300,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                                                                                             PrefUtils.getData(ctx),
                                                                                             ctx), true);
 
-                        final HistoryResponseV2 response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
+                        final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
                         final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                         mDatabaseHolder.putMessagesSync(serverItems);
                         if (fragment != null) {
