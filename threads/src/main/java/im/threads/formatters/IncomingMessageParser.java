@@ -37,6 +37,7 @@ import im.threads.model.RequestResolveThread;
 import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UserPhrase;
+import im.threads.utils.DateHelper;
 
 public class IncomingMessageParser {
     private static final String TAG = "MessageFormatter ";
@@ -143,7 +144,8 @@ public class IncomingMessageParser {
             } catch (final Exception e) {
                 backendId = "0";
             }
-            final long timeStamp = pushMessage.sentAt;
+            String receivedDateString = fullMessage.getString(PushMessageAttributes.RECEIVED_DATE);
+            long timeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
             final JSONObject operatorInfo = fullMessage.getJSONObject("operator");
             final String name = operatorInfo.getString("name");
             final String photoUrl = operatorInfo.isNull("photoUrl") ? null : operatorInfo.getString("photoUrl");
@@ -170,7 +172,7 @@ public class IncomingMessageParser {
                     name,
                     messageId,
                     message,
-                    System.currentTimeMillis(),
+                    timeStamp,
                     String.valueOf(operatorInfo.getLong("id")),
                     photoUrl,
                     false,
@@ -195,7 +197,8 @@ public class IncomingMessageParser {
             } catch (final Exception e) {
                 backendId = "0";
             }
-            final long phraseTimeStamp = pushMessage.sentAt;
+            String receivedDateString = fullMessage.getString(PushMessageAttributes.RECEIVED_DATE);
+            long phraseTimeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
             final JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
             FileDescription fileDescription = null;
             if (null != attachmentsArray)
@@ -378,6 +381,12 @@ public class IncomingMessageParser {
         FileDescription quoteFileDescription = null;
         String quoteString = null;
         String consultName = "";
+        long timestamp = System.currentTimeMillis();
+
+        if (quotes.length() > 0 && quotes.getJSONObject(0) != null) {
+            String receivedDateString = quotes.getJSONObject(0).getString(PushMessageAttributes.RECEIVED_DATE);
+            timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
+        }
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null && (quotes.getJSONObject(0).has(PushMessageAttributes.TEXT))) {
             quoteString = quotes.getJSONObject(0).getString(PushMessageAttributes.TEXT);
         }
@@ -400,8 +409,9 @@ public class IncomingMessageParser {
                 e.printStackTrace();
             }
         }
+
         if (quoteString != null || quoteFileDescription != null) {
-            quote = new Quote(consultName, quoteString, quoteFileDescription, System.currentTimeMillis());
+            quote = new Quote(consultName, quoteString, quoteFileDescription, timestamp);
         }
         if (quoteFileDescription != null) {
             quoteFileDescription.setFrom(consultName);
