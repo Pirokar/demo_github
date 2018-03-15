@@ -80,8 +80,12 @@ public class UserPhraseViewHolder extends BaseHolder {
         mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
-            if (style.outgoingMessageBubbleColor != INVALID)
+            if (style.outgoingMessageBubbleColor != INVALID) {
                 mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+            } else {
+                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_outgoing_message_bubble), PorterDuff.Mode.SRC_ATOP);
+            }
+
             if (style.outgoingMessageBubbleBackground != INVALID) {
                 mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
             }
