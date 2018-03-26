@@ -16,8 +16,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 26
-        versionCode 67
-        versionName "2.33.0"
+        versionCode 69
+        versionName "2.34.0"
     }
 
     buildTypes {
@@ -33,7 +33,7 @@ android {
 dependencies {
     def final supportVersion = "26.0.2"
 
-    compile project(':push-api-release-2.0.110')
+    compile project(':push-api-release-2.0.114')
 
     compile "com.android.support:appcompat-v7:$supportVersion"
     compile "com.android.support:recyclerview-v7:$supportVersion"

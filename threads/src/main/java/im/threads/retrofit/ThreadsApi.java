@@ -1,10 +1,7 @@
 package im.threads.retrofit;
 
-import java.util.List;
-
 import im.threads.model.FileUploadResponse;
-import im.threads.model.HistoryResponseV2;
-import im.threads.model.MessgeFromHistory;
+import im.threads.model.HistoryResponse;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -20,6 +17,9 @@ import retrofit2.http.Query;
  */
 
 public interface ThreadsApi {
+
+    public static String API_VERSION = "v3";
+
     @Multipart
     @PUT("files")
     Call<FileUploadResponse> upload(
@@ -27,16 +27,8 @@ public interface ThreadsApi {
             @Header("X-Client-Token") String token
     );
 
-    @GET("history")
-    Call<List<MessgeFromHistory>> history(
-            @Header("X-Client-Token") String token,
-            @Query("start") Long start,
-            @Query("count") Long count,
-            @Query("libVersion") String version
-    );
-
-    @GET("history/v2")
-    Call<HistoryResponseV2> historyV2(
+    @GET("history/" + API_VERSION)
+    Call<HistoryResponse> history(
             @Header("X-Client-Token") String token,
             @Query("start") Long start,
             @Query("count") Long count,

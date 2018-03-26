@@ -11,12 +11,12 @@ import java.util.List;
  * в структуре появилась информация об операторе
  */
 
-public class HistoryResponseV2 {
+public class HistoryResponse {
 
     private List<MessgeFromHistory> messages;
     private AgentInfo agentInfo;
 
-    public HistoryResponseV2(List<MessgeFromHistory> messages) {
+    public HistoryResponse(List<MessgeFromHistory> messages) {
         this.messages = messages;
     }
 
@@ -28,17 +28,17 @@ public class HistoryResponseV2 {
         return messages;
     }
 
-    public static HistoryResponseV2 getHistoryFromServerResponse(String response) {
-        HistoryResponseV2 historyResponseV2 = null;
+    public static HistoryResponse getHistoryFromServerResponse(String response) {
+        HistoryResponse historyResponse = null;
         try {
             if (response != null) {
-                historyResponseV2 = new Gson().fromJson(response, HistoryResponseV2.class);
+                historyResponse = new Gson().fromJson(response, HistoryResponse.class);
             }
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
         }
 
-        return historyResponseV2;
+        return historyResponse;
     }
 
     private class AgentInfo {

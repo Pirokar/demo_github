@@ -54,6 +54,8 @@ public class UserFileViewHolder extends BaseHolder {
         if (style != null) {
             if (style.outgoingMessageBubbleColor != INVALID) {
                 mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+            } else {
+                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_outgoing_message_bubble), PorterDuff.Mode.SRC_ATOP);
             }
             if (style.outgoingMessageTextColor != INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
