@@ -250,7 +250,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             }
             instance.mConsultWriter.setCurrentConsultLeft();
             PrefUtils.setClientId(ctx, finalClientId);
-            Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId), true);
+            Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId, ctx), true);
             final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                                                                                     finalClientId,
                                                                                     PrefUtils.getClientIDEncrypted(ctx),
@@ -279,7 +279,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     // send CLIENT_OFFLINE message
     public static void logoutClient(final Context ctx, final String clientId) {
         if (!TextUtils.isEmpty(clientId)) {
-            Transport.sendMessageMFMSAsync(ctx, OutgoingMessageCreator.createMessageClientOffline(clientId), true, null, null);
+            Transport.sendMessageMFMSAsync(ctx, OutgoingMessageCreator.createMessageClientOffline(clientId, ctx), true, null, null);
         }
     }
 
@@ -292,7 +292,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 survey.getSendingId(),
                 survey.getQuestions().get(0).getId(),
                 survey.getQuestions().get(0).getRate(),
-                PrefUtils.getClientID(appContext)
+                PrefUtils.getClientID(appContext),
+                appContext
         );
 
         Transport.sendMessageMFMSAsync(context, ratingDoneMessage, false,
@@ -325,8 +326,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         // and then delete the request from the chat history
         final String clientID = PrefUtils.getClientID(appContext);
         final String resolveThreadMessage = approveResolve ?
-                OutgoingMessageCreator.createResolveThreadMessage(clientID) :
-                OutgoingMessageCreator.createReopenThreadMessage(clientID);
+                OutgoingMessageCreator.createResolveThreadMessage(clientID, appContext) :
+                OutgoingMessageCreator.createReopenThreadMessage(clientID, appContext);
 
         Transport.sendMessageMFMSAsync(context, resolveThreadMessage, true,
                 new RequestCallback<String, PushServerErrorException>() {
@@ -438,7 +439,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if ((currentTime - lastUserTypingSend) >= 3000) {
             lastUserTypingSend = currentTime;
             Transport.sendMessageMFMSAsync(appContext,
-                    OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext)),
+                    OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), appContext),
                     true, new RequestCallback<String, PushServerErrorException>() {
                         @Override
                         public void onResult(final String aVoid) {
@@ -474,7 +475,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext)), true, null, null);
+                Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext), appContext), true, null, null);
                 final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
                                                                                     PrefUtils.getClientID(appContext),
                                                                                     PrefUtils.getClientIDEncrypted(appContext),
@@ -667,7 +668,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
         final String message = OutgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, null, null,
                 PrefUtils.getClientID(appContext),
-                PrefUtils.getThreadID(appContext));
+                PrefUtils.getThreadID(appContext),
+                appContext);
 
         Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
             @Override
@@ -711,7 +713,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
         final String message = OutgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath,
                 PrefUtils.getClientID(appContext),
-                PrefUtils.getThreadID(appContext));
+                PrefUtils.getThreadID(appContext),
+                appContext);
 
         Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
             @Override
@@ -1179,7 +1182,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             final Survey survey = (Survey) chatItem;
             final String ratingDoneMessage = OutgoingMessageCreator.createRatingReceivedMessage(
                     survey.getSendingId(),
-                    PrefUtils.getClientID(appContext)
+                    PrefUtils.getClientID(appContext),
+                    appContext
             );
 
             Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
