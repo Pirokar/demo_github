@@ -3,6 +3,7 @@ package im.threads.utils;
 import android.content.Context;
 import android.util.Log;
 
+import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 
 /**
@@ -16,7 +17,11 @@ public abstract class DualFilePoster {
     public DualFilePoster(final FileDescription fileDescription, final FileDescription quoteFileDescription, final Context ctx) {
         this.fileDescription = fileDescription;
         this.qoteFileDescription = quoteFileDescription;
-        Log.i(TAG, "filePath = " + fileDescription + " quoteFilePath = " + quoteFileDescription);
+
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "filePath = " + fileDescription + " quoteFilePath = " + quoteFileDescription);
+        }
+
         final DualFilePoster poster = this;
         if (fileDescription != null) {
             new FilePoster(fileDescription, ctx).post(new Callback<String, Throwable>() {

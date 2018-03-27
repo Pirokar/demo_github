@@ -171,6 +171,8 @@ public class ChatStyle implements Serializable {
     // set if client id encrypted
     public boolean isClientIdEncrypted = false;
 
+    public boolean isDebugLoggingEnabled = false;
+
 
     // specify fonts
     public String defaultFontBold;
@@ -250,6 +252,11 @@ public class ChatStyle implements Serializable {
             if (encrypted) {
                 PrefUtils.setClientIdEncrypted(ctx);
             }
+            return this;
+        }
+
+        public ChatStyleBuilder setDebugLoggingEnabled(boolean enabled) {
+            chatStyle.isDebugLoggingEnabled = enabled;
             return this;
         }
 

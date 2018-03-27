@@ -9,6 +9,8 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import im.threads.model.ChatStyle;
+
 /**
  * Created by yuri on 01.06.2016.
  * view that recognize right swipe
@@ -67,7 +69,11 @@ public class SwipeAwareView extends View {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.e(TAG, "onFling");
+
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                Log.e(TAG, "onFling");
+            }
+
             boolean answer;
             final float xDistance = Math.abs(e1.getX() - e2.getX());
             final float yDistance = Math.abs(e1.getY() - e2.getY());

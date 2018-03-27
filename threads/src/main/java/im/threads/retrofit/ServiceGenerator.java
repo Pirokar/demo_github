@@ -3,6 +3,7 @@ package im.threads.retrofit;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import im.threads.model.ChatStyle;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,10 +39,6 @@ public class ServiceGenerator {
                         .baseUrl(apiBaseUrl)
                         .addConverterFactory(GsonConverterFactory.create());
 
-        HttpLoggingInterceptor logging =
-                new HttpLoggingInterceptor()
-                        .setLevel(HttpLoggingInterceptor.Level.BODY);
-
         Interceptor userAgentInterceptor = new Interceptor() {
             @Override
             public Response intercept(final Chain chain) throws IOException {
@@ -55,7 +52,12 @@ public class ServiceGenerator {
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(userAgentInterceptor);
-        httpClient.addInterceptor(logging);
+
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            httpClient.addInterceptor(new HttpLoggingInterceptor()
+                    .setLevel(HttpLoggingInterceptor.Level.BODY));
+        }
+
         httpClient.connectTimeout(60, TimeUnit.SECONDS);
         builder.client(httpClient.build());
         Retrofit retrofit = builder.build();

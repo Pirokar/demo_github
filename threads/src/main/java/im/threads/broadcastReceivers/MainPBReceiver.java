@@ -9,6 +9,7 @@ import com.pushserver.android.PushBroadcastReceiver;
 
 import im.threads.controllers.ChatController;
 import im.threads.formatters.PushMessageTypes;
+import im.threads.model.ChatStyle;
 
 /**
  * Приемщик всех коротких пуш уведомлений,
@@ -22,7 +23,9 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(final Context context, final String s, final Bundle bundle) {
-        Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
+        }
         if (isChatSystemPush(bundle)) {
             ChatController.getInstance(context).onSystemMessageFromServer(context, bundle, s);
         } else {
@@ -51,7 +54,10 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressChanged(final Context context, final String s) {
-        Log.i(TAG, "onDeviceAddressChanged " + s);
+
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "onDeviceAddressChanged " + s);
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -62,7 +68,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressProblems(final Context context, final String s) {
-        Log.i(TAG, "onDeviceAddressProblems " + s);
+        Log.w(TAG, "onDeviceAddressProblems " + s);
     }
 
     @Override

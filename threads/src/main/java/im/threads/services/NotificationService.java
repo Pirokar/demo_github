@@ -90,7 +90,7 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
-        Log.i(TAG, "onStartCommand");
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onStartCommand");
 
         if (style == null) {
             style = PrefUtils.getIncomingStyle(this);

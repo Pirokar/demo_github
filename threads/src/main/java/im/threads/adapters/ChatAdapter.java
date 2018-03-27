@@ -870,7 +870,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
                 if (up.getMessageId().equals(id) || (up.getBackendId() != null && up.getBackendId().equals(id))) {
-                    Log.i(TAG, "changeStateOfMessage: changing read state");
+                    if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                        Log.i(TAG, "changeStateOfMessage: changing read state");
+                    }
                     ((UserPhrase) cm).setSentState(state);
                 }
             }

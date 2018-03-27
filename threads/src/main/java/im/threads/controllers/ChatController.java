@@ -48,6 +48,7 @@ import im.threads.formatters.PushMessageTypes;
 import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
+import im.threads.model.ChatStyle;
 import im.threads.model.ClearThreadIdChatItem;
 import im.threads.model.CompletionHandler;
 import im.threads.model.ConsultChatPhrase;
@@ -164,7 +165,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     public static ChatController getInstance(final Context ctx) {
         String clientId = PrefUtils.getNewClientID(ctx); //clientId заданный в настройках чата
 
-        if (BuildConfig.DEBUG) Log.i(TAG, "getInstance clientId = " + clientId);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "getInstance clientId = " + clientId);
+        }
         if (instance == null) {
             instance = new ChatController(ctx);
         }
@@ -173,9 +176,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         }
         if ((TextUtils.isEmpty(PrefUtils.getClientID(ctx)) && !TextUtils.isEmpty(clientId))
                 || !clientId.equals(PrefUtils.getClientID(ctx))) {
-            Log.i(TAG, "setting new client id");
-            Log.i(TAG, "clientId = " + clientId);
-            Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                Log.i(TAG, "setting new client id");
+                Log.i(TAG, "clientId = " + clientId);
+                Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
+            }
 
             final String finalClientId = clientId;
             // Начальная инициализация чата.
@@ -239,7 +244,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         try {
             Transport.getPushControllerInstance(ctx);
         } catch (final PushServerErrorException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "device address was not set, returning");
+            Log.e(TAG, "device address was not set, returning");
             return;
         }
         try {
@@ -455,7 +460,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void bindFragment(final ChatFragment f) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "bindFragment:");
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "bindFragment:");
+        }
         fragment = f;
         final Activity activity = f.getActivity();
         appContext = activity.getApplicationContext();
@@ -546,7 +553,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 final List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, count);
                 if (dbItems.size() != serverItems.size()
                         || !dbItems.containsAll(serverItems)) {
-                    Log.i(TAG, "not same!");
+                    if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "not same!");
                     mDatabaseHolder.putMessagesSync(serverItems);
                     h.post(new Runnable() {
                         @Override
@@ -596,13 +603,13 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void onUserInput(final UpcomingUserMessage upcomingUserMessage) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "onUserInput: " + upcomingUserMessage);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onUserInput: " + upcomingUserMessage);
         if (upcomingUserMessage == null) return;
         if (appContext == null && fragment == null) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "(appContext == null && fragment == null");
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "(appContext == null && fragment == null");
             return;
         }
-        if (BuildConfig.DEBUG) Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "upcomingUserMessage = " + upcomingUserMessage);
 
         // If user has written a message while the request to resolve the thread is visible
         // we should make invisible the resolve request
@@ -702,7 +709,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void onFileSent(final UserPhrase userPhrase, final ConsultInfo consultInfo, final String mfmsFilePath, final String mfmsQuoteFilePath) {
-        if (BuildConfig.DEBUG) {
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
         }
 
@@ -724,7 +731,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void onMessageSent(final UserPhrase userPhrase, final String newId) {
-        if (BuildConfig.DEBUG) {
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.d(TAG, "server answer on pharse sent with id " + newId);
         }
         setMessageState(userPhrase, MessageState.STATE_SENT);
@@ -897,7 +904,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void onFileClick(final FileDescription fileDescription) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "onFileClick " + fileDescription);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "onFileClick " + fileDescription);
+        }
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
@@ -935,7 +944,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     void cleanAll() throws PushServerErrorException {
-        if (BuildConfig.DEBUG) Log.i(TAG, "cleanAll: ");
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "cleanAll: ");
+        }
         mDatabaseHolder.cleanDatabase();
         if (fragment != null) fragment.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
@@ -1022,7 +1033,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void onSystemMessageFromServer(final Context ctx, final Bundle bundle, final String shortMessage) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "onSystemMessageFromServer:");
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "onSystemMessageFromServer:");
+        }
         final long currentTimeMillis = System.currentTimeMillis();
         final PushMessageTypes pushMessageTypes = PushMessageTypes.getKnownType(bundle);
         switch (pushMessageTypes) {
@@ -1031,8 +1044,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 break;
             case MESSAGES_READ:
                 final List<String> list = IncomingMessageParser.getReadIds(bundle);
-                if (BuildConfig.DEBUG)
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
                     Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
+                }
                 for (final String s : list) {
                     if (fragment != null) {
                         fragment.setPhraseSentStatus(s, MessageState.STATE_WAS_READ);
@@ -1060,7 +1074,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(appContext));
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(appContext));
         if (!PrefUtils.isClientIdNotEmpty(appContext)) {
             callback.onSuccess(new ArrayList<ChatItem>());
             return;
@@ -1117,7 +1131,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
      * false, если push уведомление не относится к чату и никак им не обработано.
      */
     public synchronized PushMessageCheckResult onFullMessage(final PushMessage pushMessage, final Context ctx) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "onFullMessage: " + pushMessage);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "onFullMessage: " + pushMessage);
+        }
         final ChatItem chatItem = IncomingMessageParser.format(pushMessage);
         final PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
 
@@ -1262,7 +1278,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void onSettingClientId(final Context ctx) {
-        if (BuildConfig.DEBUG) Log.i(TAG, "onSettingClientId:");
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "onSettingClientId:");
+        }
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {

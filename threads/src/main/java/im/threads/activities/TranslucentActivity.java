@@ -86,11 +86,16 @@ public class TranslucentActivity
     private class QuickAnswerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive: " + intent);
+
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                Log.d(TAG, "onReceive: " + intent);
+            }
             if (intent.getAction().equalsIgnoreCase(ACTION_CANCEL)) {
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
-                Log.i(TAG, "onReceive: ACTION_ANSWER");
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                    Log.i(TAG, "onReceive: ACTION_ANSWER");
+                }
                 controller.onUserAnswer(new UpcomingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER), false));
                 finish();
             }
