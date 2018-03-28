@@ -6,6 +6,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import im.threads.model.ChatStyle;
+
 /**
  * Created by yuri on 25.08.2016.
  */
@@ -35,7 +37,11 @@ public class SwipeListener implements View.OnTouchListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (e1 == null || e2 == null) return false;
-            Log.e(TAG, "onFling");
+
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                Log.e(TAG, "onFling");
+            }
+
             final float xDistance = Math.abs(e1.getX() - e2.getX());
             final float yDistance = Math.abs(e1.getY() - e2.getY());
             if (xDistance < SWIPE_X_MIN_DISTANCE || yDistance > SWIPE_Y_MAX_DISTANCE) {

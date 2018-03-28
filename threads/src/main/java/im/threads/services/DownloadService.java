@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 
 import im.threads.broadcastReceivers.ProgressReceiver;
 import im.threads.database.DatabaseHolder;
+import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.utils.FileDownloader;
 
@@ -33,7 +34,7 @@ public class DownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "onStartCommand");
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onStartCommand");
         if (intent == null) return START_STICKY;
         final FileDescription fileDescription = intent.getParcelableExtra(FD_TAG);
         if (fileDescription == null) return START_STICKY;

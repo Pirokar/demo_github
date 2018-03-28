@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.controllers.ChatController;
+import im.threads.model.ChatStyle;
 import im.threads.model.PushMessageCheckResult;
 
 /**
@@ -21,7 +22,9 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
 
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
-        Log.i(TAG, "saveMessages " + list);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "saveMessages " + list);
+        }
         if (list == null) return false;
         // В контроллер чата уходят только распознанные по формату чата сообщения.
         // Остальные уходят на обработку пользователям библиотеки.
@@ -54,6 +57,6 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
 
     @Override
     protected void messagesWereRead(List<String> list) {
-        Log.e(TAG, "messagesWereRead " + list);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "messagesWereRead " + list);
     }
 }

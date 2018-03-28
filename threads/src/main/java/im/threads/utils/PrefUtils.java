@@ -120,7 +120,7 @@ public class PrefUtils {
 
     public static void setIncomingStyle(Context ctx, ChatStyle style) {
         if (ctx == null || style == null) {
-            Log.i(TAG, "setIncomingStyle: ctx or bundle is null");
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "setIncomingStyle: ctx or bundle is null");
             return;
         }
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();

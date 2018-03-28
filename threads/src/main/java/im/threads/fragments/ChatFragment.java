@@ -580,7 +580,7 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         boolean isCameraGranted = PermissionChecker.isCameraPermissionGranted(activity);
         boolean isWriteGranted = PermissionChecker.isWriteExternalPermissionGranted(activity);
-        Log.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             setBottomStateDefault();
             binding.bottomGallery.setVisibility(View.GONE);
@@ -887,7 +887,7 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onFileSelected(File fileOrDirectory) {
-        Log.i(TAG, "onFileSelected: " + fileOrDirectory);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onFileSelected: " + fileOrDirectory);
 
         mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
         mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
@@ -1041,7 +1041,7 @@ public class ChatFragment extends Fragment implements
     }
 
     private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
-        Log.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) return;
         for (UpcomingUserMessage message : messages) {
             mChatController.onUserInput(message);
@@ -1732,7 +1732,7 @@ public class ChatFragment extends Fragment implements
     }
 
     private void search(final boolean searchInFiles) {
-        Log.i(TAG, "searchInFiles: " + searchInFiles);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "searchInFiles: " + searchInFiles);
         isInMessageSearchMode = true;
         setBottomStateDefault();
         setTitleStateSearchingMessage();

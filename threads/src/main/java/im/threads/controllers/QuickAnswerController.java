@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import im.threads.activities.TranslucentActivity;
+import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.UpcomingUserMessage;
@@ -46,7 +47,9 @@ public class QuickAnswerController extends Fragment {
     }
 
     public void onUserAnswer(UpcomingUserMessage upcomingUserMessage) {
-        Log.i(TAG, "onUserAnswer");
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "onUserAnswer");
+        }
         if (activity == null && context == null) {
             Log.e(TAG, "onUserAnswer context is null");
             return;

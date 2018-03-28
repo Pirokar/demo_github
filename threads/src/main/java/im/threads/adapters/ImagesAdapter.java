@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import im.threads.fragments.ImageFragment;
+import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ public class ImagesAdapter extends PagerAdapter {
     private List<FileDescription> fileDescriptions;
 
     private static final String TAG = "ImagesAdapter";
-    private static final boolean DEBUG = false;
 
     private final FragmentManager mFragmentManager;
     private FragmentTransaction mCurTransaction = null;
@@ -63,7 +63,9 @@ public class ImagesAdapter extends PagerAdapter {
         }
 
         Fragment fragment = getItem(position);
-        if (DEBUG) Log.v(TAG, "Adding item #" + position + ": f=" + fragment);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.v(TAG, "Adding item #" + position + ": f=" + fragment);
+        }
         if (mSavedState.size() > position) {
             Fragment.SavedState fss = mSavedState.get(position);
             if (fss != null) {
@@ -87,8 +89,10 @@ public class ImagesAdapter extends PagerAdapter {
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
-        if (DEBUG) Log.v(TAG, "Removing item #" + position + ": f=" + object
-                + " v=" + ((android.support.v4.app.Fragment) object).getView());
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.v(TAG, "Removing item #" + position + ": f=" + object
+                    + " v=" + ((android.support.v4.app.Fragment) object).getView());
+        }
         while (mSavedState.size() <= position) {
             mSavedState.add(null);
         }
