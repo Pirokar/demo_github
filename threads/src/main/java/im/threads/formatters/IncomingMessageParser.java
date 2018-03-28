@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
+import im.threads.model.ChatStyle;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.EmptyChatItem;
@@ -405,7 +406,7 @@ public class IncomingMessageParser {
             try {
                 consultName = quotes.getJSONObject(0).getJSONObject("operator").getString("name");
             } catch (final JSONException e) {
-                Log.e(TAG, "" + quotes);
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "" + quotes);
                 e.printStackTrace();
             }
         }
@@ -571,7 +572,7 @@ public class IncomingMessageParser {
         } catch (final Exception e) {
             e.printStackTrace();
             Log.e(TAG, "error while formatting");
-            Log.e(TAG, "" + messages);
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "" + messages);
             e.printStackTrace();
         }
         return out;
@@ -584,16 +585,16 @@ public class IncomingMessageParser {
             final Object o = b.get("readInMessageIds");
 
             if (o instanceof ArrayList) {
-                Log.i(TAG, "getReadIds o instanceof ArrayList");
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "getReadIds o instanceof ArrayList");
                 final Collection<? extends String> readInMessageIds = (Collection<? extends String>) b.get("readInMessageIds");
                 if (readInMessageIds != null) {
                     ids.addAll(readInMessageIds);
                 }
 
-                Log.e(TAG, "getReadIds = ");
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "getReadIds = ");
             }
             if (o instanceof String) {
-                Log.i(TAG, "getReadIds o instanceof String " + o);
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "getReadIds o instanceof String " + o);
                 final String contents = (String) o;
                 if (!contents.contains(",")) {
                     ids.add((String) o);

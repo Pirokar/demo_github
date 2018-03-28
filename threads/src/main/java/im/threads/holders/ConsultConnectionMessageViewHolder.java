@@ -65,7 +65,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
             , View.OnClickListener listener) {
         if (null == consultConnectionMessage.getName()
                 || consultConnectionMessage.getName().equals("null")) {
-            Log.d(TAG, "consultName is null");
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.d(TAG, "consultName is null");
             headerTextView.setText(itemView.getContext().getString(R.string.threads_unknown_operator));
         } else {
             headerTextView.setText(consultConnectionMessage.getName());
