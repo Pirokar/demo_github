@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatdev.ui;
+package im.threads.android.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,11 +21,11 @@ import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.model.PushMessage;
-import com.sequenia.appwithchatdev.R;
-import com.sequenia.appwithchatdev.data.Card;
-import com.sequenia.appwithchatdev.databinding.ActivityMainBinding;
-import com.sequenia.appwithchatdev.utils.ChatBuilderHelper;
-import com.sequenia.appwithchatdev.utils.PrefUtils;
+import im.threads.android.R;
+import im.threads.android.data.Card;
+import im.threads.android.databinding.ActivityMainBinding;
+import im.threads.android.utils.ChatBuilderHelper;
+import im.threads.android.utils.PrefUtils;
 
 import java.util.List;
 
