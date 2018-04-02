@@ -104,4 +104,8 @@
     <color name="threads_survey_selected_icon_tint">@color/threads_green_dark</color>
     <color name="threads_survey_unselected_icon_tint">@color/threads_green_dark</color>
 
+    <!-- Notification Quick Reply -->
+    <color name="threads_quick_reply_message_background">@color/threads_chat_incoming_message_bubble</color>
+    <color name="threads_quick_reply_message_text_color">@color/threads_incoming_message_text</color>
+
 </resources>
