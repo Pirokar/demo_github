@@ -47,10 +47,19 @@ android {
             applicationId "com.sequenia.appwithchat.polarbear"
             resValue "string", "app_name1", "THR Polarbear"
         }
+        polarbearChannel2 {
+            applicationId "com.sequenia.appwithchat.polarbear.channel2"
+            resValue "string", "app_name1", "THR Polarbear Channel 2"
+        }
         // АРМ = winlab.threads.im
         winlab {
             applicationId "com.sequenia.appwithchat.beta4"
             resValue "string", "app_name1", "THR Winlab (Beta4)"
+        }
+
+        winlabChannel2 {
+            applicationId "com.sequenia.appwithchat.beta4.channel2"
+            resValue "string", "app_name1", "THR Winlab (Beta4) Channel 2"
         }
 
         winlab0 {
