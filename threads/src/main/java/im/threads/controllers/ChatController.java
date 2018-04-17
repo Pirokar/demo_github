@@ -709,6 +709,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             @Override
             public void onError(final Throwable e) {
                 onMessageSentError(userPhrase);
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                    Log.w(TAG, "File send failed", e);
+                }
             }
         };
     }
