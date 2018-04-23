@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatdev.data;
+package im.threads.android.data;
 
 import java.io.Serializable;
 

@@ -1,6 +1,7 @@
 package im.threads.formatters;
 
 public class PushMessageAttributes {
+    public static final String APP_BUNDLE_KEY = "appBundle";
     public static final String CLIENT_ID = "clientId";
     public static final String CLIENT_ID_ENCRYPTED = "clientIdIsEncrypted";
     public static final String TYPE = "type";

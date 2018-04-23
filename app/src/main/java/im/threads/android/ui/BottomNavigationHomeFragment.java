@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatdev.ui;
+package im.threads.android.ui;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sequenia.appwithchatdev.R;
+import im.threads.android.R;
 
 import im.threads.controllers.ChatController;
 

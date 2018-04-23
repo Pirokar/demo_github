@@ -36,11 +36,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/header"
-        android:background="@color/threads_white_dark"
+        android:background="@color/threads_quick_reply_message_background"
         android:gravity="center"
         android:minHeight="120dp"
         android:padding="@dimen/margin_material"
-        android:textColor="@color/threads_incoming_message_text"
+        android:textColor="@color/threads_quick_reply_message_text_color"
         android:textSize="@dimen/text_medium" />
 
     <LinearLayout
