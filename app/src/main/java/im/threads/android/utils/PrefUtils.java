@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatdev.utils;
+package im.threads.android.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sequenia.appwithchatdev.data.Card;
+import im.threads.android.data.Card;
 
 import java.util.ArrayList;
 import java.util.List;
