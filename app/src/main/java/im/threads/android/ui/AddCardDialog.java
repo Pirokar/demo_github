@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatdev.ui;
+package im.threads.android.ui;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
@@ -13,8 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.sequenia.appwithchatdev.data.Card;
-import com.sequenia.appwithchatdev.databinding.DialogAddCardBinding;
+import im.threads.android.data.Card;
+import im.threads.android.databinding.DialogAddCardBinding;
+
 
 /**
  * Диалог добавления пользователя

@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatdev.ui;
+package im.threads.android.ui;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -17,9 +17,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.pushserver.android.PushController;
-import com.sequenia.appwithchatdev.R;
-import com.sequenia.appwithchatdev.utils.ChatBuilderHelper;
 
+import im.threads.android.R;
+import im.threads.android.utils.ChatBuilderHelper;
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
 import im.threads.utils.PermissionChecker;

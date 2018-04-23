@@ -1,4 +1,4 @@
-package com.sequenia.appwithchatdev.ui;
+package im.threads.android.ui;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
@@ -15,7 +15,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.sequenia.appwithchatdev.R;
+import im.threads.android.R;
 
 
 /**

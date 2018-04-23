@@ -1,15 +1,15 @@
-package com.sequenia.appwithchatdev.ui;
+package im.threads.android.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sequenia.appwithchatdev.data.Card;
-import com.sequenia.appwithchatdev.databinding.ItemCardBinding;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import im.threads.android.data.Card;
+import im.threads.android.databinding.ItemCardBinding;
 
 public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder>{
 
