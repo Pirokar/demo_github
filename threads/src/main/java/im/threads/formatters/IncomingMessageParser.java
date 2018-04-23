@@ -378,75 +378,96 @@ public class IncomingMessageParser {
     }
 
     public static Quote quoteFromJson(final JSONArray quotes) throws JSONException {
+
         Quote quote = null;
-        FileDescription quoteFileDescription = null;
-        String quoteString = null;
-        String consultName = "";
-        long timestamp = System.currentTimeMillis();
-
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null) {
-            String receivedDateString = quotes.getJSONObject(0).getString(PushMessageAttributes.RECEIVED_DATE);
-            timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
-        }
-        if (quotes.length() > 0 && quotes.getJSONObject(0) != null && (quotes.getJSONObject(0).has(PushMessageAttributes.TEXT))) {
-            quoteString = quotes.getJSONObject(0).getString(PushMessageAttributes.TEXT);
-        }
-        if (quotes.length() > 0
-                && quotes.getJSONObject(0) != null
-                && (quotes.getJSONObject(0).has(PushMessageAttributes.ATTACHMENTS))
-                && (quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS).length() > 0
-                && (quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).has("result")))) {
-            String header = null;
-            if (quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).has("optional")) {
-                header = quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).getJSONObject("optional").getString("name");
-            }
-            quoteFileDescription = fileDescriptionFromJson(quotes.getJSONObject(0).getJSONArray(PushMessageAttributes.ATTACHMENTS));
-        }
-        if (quotes.length() > 0 && quotes.getJSONObject(0) != null && quotes.getJSONObject(0).has("operator")) {
-            try {
-                consultName = quotes.getJSONObject(0).getJSONObject("operator").getString("name");
-            } catch (final JSONException e) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "" + quotes);
-                e.printStackTrace();
-            }
-        }
+            JSONObject quoteJson = quotes.getJSONObject(0);
 
-        if (quoteString != null || quoteFileDescription != null) {
-            quote = new Quote(consultName, quoteString, quoteFileDescription, timestamp);
-        }
-        if (quoteFileDescription != null) {
-            quoteFileDescription.setFrom(consultName);
+            FileDescription quoteFileDescription = null;
+            String quoteString = null;
+            String authorName = "";
+
+            String receivedDateString = quoteJson.getString(PushMessageAttributes.RECEIVED_DATE);
+            long timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
+
+            if ((quoteJson.has(PushMessageAttributes.TEXT))) {
+                quoteString = quoteJson.getString(PushMessageAttributes.TEXT);
+            }
+            if ((quoteJson.has(PushMessageAttributes.ATTACHMENTS))
+                    && (quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS).length() > 0
+                    && (quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).has("result")))) {
+                String header = null;
+                if (quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).has("optional")) {
+                    header = quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).getJSONObject("optional").getString("name");
+                }
+                quoteFileDescription = fileDescriptionFromJson(quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS));
+            }
+
+            if (quoteJson.has("operator")) {
+                try {
+                    authorName = quoteJson.getJSONObject("operator").getString("name");
+                } catch (final JSONException e) {
+                    if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "" + quotes);
+                    e.printStackTrace();
+                }
+            } else {
+                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+                    authorName = "Я";
+                } else {
+                    authorName = "I";
+                }
+            }
+
+            if (quoteString != null || quoteFileDescription != null) {
+                quote = new Quote(authorName, quoteString, quoteFileDescription, timestamp);
+            }
+            if (quoteFileDescription != null) {
+                quoteFileDescription.setFrom(authorName);
+            }
+
         }
         return quote;
     }
 
     public static Quote quoteFromList(final List<MessgeFromHistory> quotes) {
+
         Quote quote = null;
-        FileDescription quoteFileDescription = null;
-        String quoteString = null;
-        String consultName = "";
-        if (quotes.size() > 0 && quotes.get(0) != null && (quotes.get(0).getText() != null)) {
-            quoteString = quotes.get(0).getText();
-        }
-        if (quotes.size() > 0
-                && quotes.get(0) != null
-                && (quotes.get(0).getAttachments() != null)
-                && (quotes.get(0).getAttachments().size() > 0
-                && (quotes.get(0).getAttachments().get(0).getResult() != null))) {
-            String header = null;
-            if (quotes.get(0).getAttachments().get(0).getOptional() != null) {
-                header = quotes.get(0).getAttachments().get(0).getOptional().getName();
+        if (quotes.size() > 0 && quotes.get(0) != null) {
+            MessgeFromHistory quoteFromHistory = quotes.get(0);
+            FileDescription quoteFileDescription = null;
+            String quoteString = null;
+            String authorName = "";
+
+            String receivedDateString = quoteFromHistory.getReceivedDate();
+            long timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
+
+            if (quoteFromHistory.getText() != null) {
+                quoteString = quoteFromHistory.getText();
             }
-            quoteFileDescription = fileDescriptionFromList(quotes.get(0).getAttachments());
-        }
-        if (quotes.size() > 0 && quotes.get(0) != null && quotes.get(0).getOperator() != null) {
-            consultName = quotes.get(0).getOperator().getName();
-        }
-        if (quoteString != null || quoteFileDescription != null) {
-            quote = new Quote(consultName, quoteString, quoteFileDescription, System.currentTimeMillis());
-        }
-        if (quoteFileDescription != null) {
-            quoteFileDescription.setFrom(consultName);
+            if ((quoteFromHistory.getAttachments() != null)
+                    && (quoteFromHistory.getAttachments().size() > 0
+                    && (quoteFromHistory.getAttachments().get(0).getResult() != null))) {
+                String header = null;
+                if (quotes.get(0).getAttachments().get(0).getOptional() != null) {
+                    header = quoteFromHistory.getAttachments().get(0).getOptional().getName();
+                }
+                quoteFileDescription = fileDescriptionFromList(quoteFromHistory.getAttachments());
+            }
+            if (quoteFromHistory.getOperator() != null) {
+                authorName = quoteFromHistory.getOperator().getName();
+            } else {
+                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+                    authorName = "Я";
+                } else {
+                    authorName = "I";
+                }
+            }
+            if (quoteString != null || quoteFileDescription != null) {
+                quote = new Quote(authorName, quoteString, quoteFileDescription, timestamp);
+            }
+            if (quoteFileDescription != null) {
+                quoteFileDescription.setFrom(authorName);
+            }
         }
         return quote;
     }
