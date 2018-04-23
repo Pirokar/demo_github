@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.azoft.carousellayoutmanager.CarouselLayoutManager;
 import com.azoft.carousellayoutmanager.CarouselZoomPostLayoutListener;
 import com.azoft.carousellayoutmanager.CenterScrollListener;
-import com.crashlytics.android.Crashlytics;
 import com.pushserver.android.PushBroadcastReceiver;
 import com.pushserver.android.PushController;
 import com.pushserver.android.PushServerIntentService;
@@ -33,7 +32,6 @@ import im.threads.activities.ChatActivity;
 import im.threads.controllers.ChatController;
 import im.threads.utils.AppInfoHelper;
 import im.threads.utils.PermissionChecker;
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Активность с примерами открытия чата:
@@ -86,8 +84,6 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         // Отслеживание Push-уведомлений, нераспознанных чатом.
         ChatController.setFullPushListener(new CustomFullPushListener());
         ChatController.setShortPushListener(new CustomShortPushListener());
-
-        Fabric.with(this, new Crashlytics());
 
         binding.chatActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,25 +1,11 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
-}
 apply plugin: 'com.android.application'
 
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-
-}
-apply plugin: 'io.fabric'
 android {
     compileSdkVersion 26
     buildToolsVersion '26.0.3'
 
     defaultConfig {
+        applicationId "com.sequenia.appwithchat.polarbear"
         minSdkVersion 17
         targetSdkVersion 26
         versionCode 69
@@ -36,38 +22,6 @@ android {
 
     }
 
-    productFlavors {
-        // АРМ = threads.brooma.ru
-        brooma {
-            applicationId "com.sequenia.appwithchatdev"
-            resValue "string", "app_name1", "THR Dev"
-        }
-        // АРМ = polarbear.threads.im
-        polarbear {
-            applicationId "com.sequenia.appwithchat.polarbear"
-            resValue "string", "app_name1", "THR Polarbear"
-        }
-        // АРМ = winlab.threads.im
-        winlab {
-            applicationId "com.sequenia.appwithchat.beta4"
-            resValue "string", "app_name1", "THR Winlab (Beta4)"
-        }
-
-        winlab0 {
-            applicationId "com.threads.android.winlab0"
-            resValue "string", "app_name1", "THR Winlab0"
-        }
-
-        bobtail {
-            applicationId "com.threads.android.bobtail"
-            resValue "string", "app_name1", "THR Bobtail"
-        }
-        beta {
-            applicationId "com.threads.android.beta"
-            resValue "string", "app_name1", "THR Beta"
-        }
-    }
-
     lintOptions {
         abortOnError false
     }
@@ -78,21 +32,13 @@ android {
     dataBinding {
         enabled = true
     }
-
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def file = output.outputFile
-            def appName = "AppWithChat"
-            def fileName = appName + "_" + variant.flavorName + "-" + variant.buildType.name + ".apk"
-            output.outputFile = new File(file.parent, fileName)
-        }
-    }
 }
 
 dependencies {
     def final supportVersion = "26.1.0"
 
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':push-api-release-2.0.114')
     compile project(':threads')
 
     compile 'com.google.firebase:firebase-messaging:10.2.1'
@@ -101,9 +47,9 @@ dependencies {
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:support-vector-drawable:$supportVersion"
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
-        transitive = true;
-    }
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
 
     compile 'com.azoft.carousellayoutmanager:carousel:1.2.1'
 }
