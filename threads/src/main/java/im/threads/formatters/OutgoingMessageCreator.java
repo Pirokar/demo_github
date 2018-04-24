@@ -18,6 +18,7 @@ import im.threads.model.UserPhrase;
 import im.threads.utils.AppInfoHelper;
 import im.threads.utils.DateHelper;
 import im.threads.utils.DeviceInfoHelper;
+import im.threads.utils.PrefUtils;
 
 public class OutgoingMessageCreator {
     private static final String TAG = "MessageFormatter ";
@@ -44,7 +45,7 @@ public class OutgoingMessageCreator {
                 formattedMessage.put(PushMessageAttributes.THREAD_ID, String.valueOf(threadId));
             }
 
-            formattedMessage.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            formattedMessage.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
 
             if (quote != null) {
                 JSONArray quotes = new JSONArray();
@@ -144,6 +145,7 @@ public class OutgoingMessageCreator {
             object.put("appVersion", AppInfoHelper.getAppVersion(ctx));
             object.put("appName", AppInfoHelper.getAppName(ctx));
             object.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
             object.put("libVersion", AppInfoHelper.getLibVersion());
             object.put("clientLocale", DeviceInfoHelper.getLocale(ctx));
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.CLIENT_INFO.name());
@@ -161,7 +163,7 @@ public class OutgoingMessageCreator {
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.SURVEY_QUESTION_ANSWER.name());
             object.put("sendingId", sendingId);
             object.put("questionId", questionId);
-            object.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
             object.put("rate", rate);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -174,7 +176,7 @@ public class OutgoingMessageCreator {
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.SURVEY_PASSED.name());
-            object.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
             object.put("sendingId", sendingId);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -187,7 +189,7 @@ public class OutgoingMessageCreator {
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.CLOSE_THREAD.name());
-            object.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -200,7 +202,7 @@ public class OutgoingMessageCreator {
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.REOPEN_THREAD.name());
-            object.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -213,7 +215,7 @@ public class OutgoingMessageCreator {
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
             jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPING.name());
-            jsonObject.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -226,7 +228,7 @@ public class OutgoingMessageCreator {
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
             jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.CLIENT_OFFLINE.name());
-            jsonObject.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -252,7 +254,7 @@ public class OutgoingMessageCreator {
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.INIT_CHAT.name());
-            object.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
         } catch (JSONException e) {
             e.printStackTrace();
         }

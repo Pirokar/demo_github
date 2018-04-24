@@ -16,5 +16,6 @@ public class PushMessageAttributes {
 
     public static final String ORIGIN = "origin";
     public static final String THREADS = "threads";
+    public static final String APP_MARKER_KEY = "appMarker";
     public static final String OPERATOR_URL = "operatorPhotoUrl";
 }
