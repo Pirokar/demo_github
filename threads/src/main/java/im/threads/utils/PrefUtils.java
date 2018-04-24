@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -31,6 +32,7 @@ public class PrefUtils {
     public static final String APP_STYLE = "APP_STYLE";
     public static final String TAG_THREAD_ID = "THREAD_ID";
     public static final String SERVER_URL_META_INFO = "im.threads.getServerUrl";
+    public static final String APP_MARKER_META_KEY = "im.threads.appMarker";
 
     private PrefUtils() {
     }
@@ -147,15 +149,25 @@ public class PrefUtils {
     }
 
     public static String getServerUrlMetaInfo(Context context) {
+        return getMetaData(context, SERVER_URL_META_INFO);
+    }
+
+    public static String getAppMarker(Context context) {
+        return getMetaData(context, APP_MARKER_META_KEY);
+    }
+
+    @Nullable
+    public static String getMetaData(Context context, String key) {
+
         try {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            return bundle.getString(SERVER_URL_META_INFO);
+
+            return bundle.getString(key);
+
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Failed to load meta-data, NullPointer: " + e.getMessage());
+            Log.e(TAG, "Failed to load self applicationInfo - that's really weird. ", e);
+            return null;
         }
-        return null;
     }
 }
