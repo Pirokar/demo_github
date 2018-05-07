@@ -653,7 +653,7 @@ public class ChatFragment extends Fragment implements
     }
 
     public void updateUi() {
-        mChatAdapter.notifyDataSetChanged();
+        mChatAdapter.notifyDataSetChangedOnUi();
     }
 
     private void showPopup() {
