@@ -64,15 +64,19 @@ public enum PushMessageTypes {
         if (pushType == null && bundle.getString("alert") != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null) {
             return MESSAGE;
         }
-        if (isOrigin(bundle)){
+        if (IncomingMessageParser.isThreadsOriginPush(bundle)){
             return CHAT_PUSH;
         }
 
         return UNKNOWN;
     }
 
-    public static boolean isOrigin(final Bundle bundle) {
-        return bundle != null && bundle.getString(PushMessageAttributes.ORIGIN) != null && PushMessageAttributes.THREADS.equalsIgnoreCase(bundle.getString(PushMessageAttributes.ORIGIN));
+    public static PushMessageTypes fromString(String name) {
+        try {
+            return valueOf(name);
+        } catch (IllegalArgumentException ex) {
+            return PushMessageTypes.UNKNOWN;
+        }
     }
 }
 
