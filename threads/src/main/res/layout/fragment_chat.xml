@@ -308,6 +308,8 @@
                             android:background="@null"
                             android:hint="@string/threads_search_messages"
                             android:lines="1"
+                            android:imeOptions="actionSearch"
+                            android:inputType="text"
                             android:textCursorDrawable="@null"
                             android:textColor="@color/threads_chat_toolbar_text"
                             android:textColorHint="@color/threads_chat_toolbar_hint"

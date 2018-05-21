@@ -72,7 +72,7 @@ public class IncomingMessageParser {
         return type;
     }
 
-    private static boolean isOrigin(final JSONObject fullMessage) {
+    public static boolean isThreadsOriginPush(final JSONObject fullMessage) {
         String origin = "";
 
         try {
@@ -82,6 +82,15 @@ public class IncomingMessageParser {
         }
 
         return PushMessageAttributes.THREADS.equalsIgnoreCase(origin);
+    }
+
+    public static boolean isThreadsOriginPush(PushMessage pushMessage) {
+        final JSONObject fullMessage = getFullMessage(pushMessage);
+        return fullMessage != null && isThreadsOriginPush(fullMessage);
+    }
+
+    public static boolean isThreadsOriginPush(final Bundle bundle) {
+        return bundle != null && PushMessageAttributes.THREADS.equalsIgnoreCase(bundle.getString(PushMessageAttributes.ORIGIN));
     }
 
     private static String getClientId(final JSONObject fullMessage) {
@@ -238,9 +247,6 @@ public class IncomingMessageParser {
 
         // В пуше для чата должен быть fullMessage, и он должен соответствовать формату JSON.
         if (fullMessage == null) {
-            return null;
-        }
-        if (!isOrigin(fullMessage)) {
             return null;
         }
 

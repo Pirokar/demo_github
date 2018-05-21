@@ -32,13 +32,16 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -298,6 +301,19 @@ public class ChatFragment extends Fragment implements
             public void afterTextChanged(Editable s) {
                 if (!isInMessageSearchMode) return;
                 doFancySearch(s.toString(), true);
+            }
+        });
+
+        binding.search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if (isInMessageSearchMode && actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    doFancySearch(v.getText().toString(), false);
+                    return true;
+                } else {
+                    return false;
+                }
             }
         });
 
@@ -653,7 +669,7 @@ public class ChatFragment extends Fragment implements
     }
 
     public void updateUi() {
-        mChatAdapter.notifyDataSetChanged();
+        mChatAdapter.notifyDataSetChangedOnUi();
     }
 
     private void showPopup() {

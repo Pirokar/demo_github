@@ -8,6 +8,7 @@ import android.util.Log;
 import com.pushserver.android.PushBroadcastReceiver;
 
 import im.threads.controllers.ChatController;
+import im.threads.formatters.IncomingMessageParser;
 import im.threads.formatters.PushMessageTypes;
 import im.threads.model.ChatStyle;
 
@@ -26,12 +27,15 @@ public class MainPBReceiver extends PushBroadcastReceiver {
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
         }
-        if (isChatSystemPush(bundle)) {
-            ChatController.getInstance(context).onSystemMessageFromServer(context, bundle, s);
-        } else {
-            if (!isChatPush(bundle) && ChatController.getShortPushListener() != null) {
-                ChatController.getShortPushListener().onNewShortPushNotification(this, context, s, bundle);
+
+        if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
+
+            if (isChatSystemPush(bundle)) {
+                ChatController.getInstance(context).onSystemMessageFromServer(context, bundle, s);
             }
+
+        } else if (ChatController.getShortPushListener() != null) {
+            ChatController.getShortPushListener().onNewShortPushNotification(this, context, s, bundle);
         }
     }
 
@@ -41,10 +45,6 @@ public class MainPBReceiver extends PushBroadcastReceiver {
                 || messageType == PushMessageTypes.MESSAGES_READ
                 || messageType == PushMessageTypes.REMOVE_PUSHES
                 || messageType == PushMessageTypes.UNREAD_MESSAGE_NOTIFICATION;
-    }
-
-    private boolean isChatPush(final Bundle bundle) {
-        return PushMessageTypes.getKnownType(bundle) != PushMessageTypes.UNKNOWN && PushMessageTypes.isOrigin(bundle);
     }
 
     @Override

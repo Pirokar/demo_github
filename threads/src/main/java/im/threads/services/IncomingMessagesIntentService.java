@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.controllers.ChatController;
+import im.threads.formatters.IncomingMessageParser;
 import im.threads.model.ChatStyle;
 import im.threads.model.PushMessageCheckResult;
 
@@ -32,13 +33,17 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
 
         for (int i = 0; i < list.size(); i++) {
             PushMessage pushMessage = list.get(i);
-            ChatController chatController = ChatController.getInstance(getApplication());
-            PushMessageCheckResult result = chatController.onFullMessage(pushMessage, getApplication());
 
-            if(result.isDetected()) {
-                if(result.isNeedsShowIsStatusBar()) {
-                    toShow.add(pushMessage);
+            if (IncomingMessageParser.isThreadsOriginPush(pushMessage)) {
+                ChatController chatController = ChatController.getInstance(getApplication());
+                PushMessageCheckResult result = chatController.onFullMessage(pushMessage, getApplication());
+
+                if(result.isDetected()) {
+                    if(result.isNeedsShowIsStatusBar()) {
+                        toShow.add(pushMessage);
+                    }
                 }
+
             } else if(ChatController.getFullPushListener() != null) {
                 ChatController.getFullPushListener().onNewFullPushNotification(this, pushMessage);
             }

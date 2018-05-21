@@ -64,6 +64,7 @@ import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
+import im.threads.utils.ThreadUtils;
 import im.threads.widget.Rating;
 
 import static android.text.TextUtils.isEmpty;
@@ -698,7 +699,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             removeConsultIsTyping();
         }
         new ChatMessagesOrderer().addAndOrder(getOriginalList(), items);
-        if (!isInSearchMode) notifyDataSetChanged();
+        if (!isInSearchMode) notifyDataSetChangedOnUi();
     }
 
     public int getUnreadCount() {
@@ -768,7 +769,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         if (scheduleRemoved && !isInSearchMode) {
-            notifyDataSetChanged();
+            notifyDataSetChangedOnUi();
         }
     }
 
@@ -877,7 +878,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         }
-        notifyDataSetChanged();
+        notifyDataSetChangedOnUi();
     }
 
     public void setUserPhraseMessageId(final String oldId, final String newId) {
@@ -1077,6 +1078,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public ArrayList<ChatItem> getList() {
         return list;
+    }
+
+    public void notifyDataSetChangedOnUi() {
+        ThreadUtils.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     public static class ChatMessagesOrderer {
