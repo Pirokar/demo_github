@@ -57,10 +57,6 @@
             android:value="https://polarbearstore.threads.im/" />
 
         <meta-data
-            android:name="im.threads.appMarker"
-            android:value="@string/app_marker" />
-
-        <meta-data
             android:name="com.pushserver.android.service"
             android:value="im.threads.services.IncomingMessagesIntentService" />
         <meta-data
