@@ -84,6 +84,7 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
             thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
         }
 
+        mHeader.setText(survey.getQuestions().get(0).getText());
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
         Drawable d;
         switch (survey.getSentState()) {
