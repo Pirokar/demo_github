@@ -93,8 +93,11 @@ public class UserPhraseViewHolder extends BaseHolder {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
                 itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
-                mFileImageButton.setBackgroundColor(style.outgoingMessageTextColor);
+                mFileImageButton.setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
             }
+
+            mPhraseTextView.setLinkTextColor(getColorInt(style.outgoingMessageLinkColor));
+
             if (style.outgoingMessageTextColor != INVALID && style.outgoingMessageBubbleColor != INVALID) {
                 setTintToProgressButtonUser(mFileImageButton, style.outgoingMessageTextColor, style.chatBodyIconsTint);
             } else {
