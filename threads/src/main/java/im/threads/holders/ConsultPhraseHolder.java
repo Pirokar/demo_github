@@ -98,6 +98,9 @@ public class ConsultPhraseHolder extends BaseHolder {
                         mRightTextDescr,
                         rightTextFileStamp}, style.incomingMessageTextColor);
             }
+
+            mPhraseTextView.setLinkTextColor(getColorInt(style.incomingMessageLinkColor));
+
             defIcon = style.defaultOperatorAvatar == INVALID ? R.drawable.threads_operator_avatar_placeholder : style.defaultOperatorAvatar;
             if (style.chatToolbarColorResId != INVALID) {
                 setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
@@ -111,7 +114,7 @@ public class ConsultPhraseHolder extends BaseHolder {
                 mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
             }
             if (style.chatBackgroundColor != INVALID) {
-                mCircularProgressButton.setBackgroundColor(style.chatBackgroundColor);
+                mCircularProgressButton.setBackgroundColor(getColorInt(style.chatBackgroundColor));
             }
 
             if (style.operatorAvatarSize != INVALID) {

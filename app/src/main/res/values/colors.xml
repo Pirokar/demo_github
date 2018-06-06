@@ -40,4 +40,7 @@
 
     <color name="threads_survey_selected_icon_tint">@color/colorAccent</color>
     <color name="threads_survey_unselected_icon_tint">@color/colorAccent</color>
+
+    <color name="threads_outgoing_message_link">#aff0ff</color>
+    <color name="threads_incoming_message_link">@color/threads_blue_0F87FF</color>
 </resources>

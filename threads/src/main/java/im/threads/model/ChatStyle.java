@@ -58,6 +58,12 @@ public class ChatStyle implements Serializable {
     public int incomingMessageTextColor = INVALID;
     @ColorRes
     public int outgoingMessageTextColor = INVALID;
+
+    @ColorRes
+    public int incomingMessageLinkColor = R.color.threads_incoming_message_link;
+    @ColorRes
+    public int outgoingMessageLinkColor = R.color.threads_outgoing_message_link;
+
     @ColorRes
     public int chatBodyIconsTint = INVALID;
     @ColorRes

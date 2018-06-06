@@ -53,6 +53,9 @@
     <color name="threads_user_message_timestamp">@color/threads_white</color>
     <color name="threads_operator_message_timestamp">@color/threads_black</color>
 
+    <color name="threads_outgoing_message_link">@color/threads_cian_b2dfdb</color>
+    <color name="threads_incoming_message_link">@color/threads_blue_0F87FF</color>
+
     <color name="threads_chat_icons_tint">@color/threads_black</color>
     <color name="threads_chat_system_message">@color/threads_gray_text</color>
     <color name="threads_chat_connection_message">@color/threads_black</color>
