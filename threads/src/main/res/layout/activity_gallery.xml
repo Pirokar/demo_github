@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/black"
-    android:orientation="vertical"
-    android:id="@+id/activity_root">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/activity_root"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/black"
+                android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -31,11 +31,13 @@
                 android:background="@null"
                 android:ellipsize="end"
                 android:hint="@string/threads_search_photos"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
                 android:lines="1"
                 android:paddingLeft="12dp"
                 android:textColor="@color/threads_chat_toolbar_text"
                 android:textColorHint="@color/threads_chat_toolbar_hint"
-                android:textSize="@dimen/text_big" />
+                android:textSize="@dimen/text_big"/>
 
             <ImageButton
                 android:id="@+id/clear_search_button"
@@ -43,7 +45,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.15"
                 android:background="@null"
-                android:src="@drawable/ic_clear_gray_30dp" />
+                android:src="@drawable/ic_clear_gray_30dp"/>
         </LinearLayout>
 
     </android.support.v7.widget.Toolbar>
@@ -62,7 +64,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_search_white_24dp" />
+            android:src="@drawable/ic_search_white_24dp"/>
 
         <im.threads.widget.CustomFontTextView
             android:id="@+id/search_photo_title"
@@ -73,7 +75,7 @@
             android:layout_toRightOf="@+id/search_photo"
             android:text="@string/threads_find_photos"
             android:textAllCaps="true"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"/>
 
         <im.threads.widget.CustomFontTextView
             android:layout_width="match_parent"
@@ -83,7 +85,7 @@
             android:text="@string/threads_on_your_device"
 
             android:textColor="#8b8b8b"
-            android:textSize="12sp" />
+            android:textSize="12sp"/>
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -91,10 +93,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_buttons"
-        android:layout_below="@+id/search_label_layout" />
+        android:layout_below="@+id/search_label_layout"/>
 
     <im.threads.widget.CustomFontTextView
-        android:paddingTop="84dp"
         android:id="@+id/nothing_found_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -102,10 +103,11 @@
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:gravity="center_vertical"
+        android:paddingTop="84dp"
         android:text="@string/threads_nothing_found"
         android:textColor="#808080"
         android:textSize="@dimen/text_big"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <FrameLayout
         android:id="@+id/bottom_buttons"
@@ -118,15 +120,15 @@
         <im.threads.widget.CustomFontButton
 
             android:id="@+id/cancel"
+            style="@style/bottomButtonTransparent"
             android:layout_gravity="left"
-            android:text="@string/threads_cancel"
-            style="@style/bottomButtonTransparent" />
+            android:text="@string/threads_cancel"/>
 
         <im.threads.widget.CustomFontButton
             android:id="@+id/send"
 
+            style="@style/bottomButtonTransparent"
             android:layout_gravity="right"
-            android:text="@string/threads_send"
-            style="@style/bottomButtonTransparent" />
+            android:text="@string/threads_send"/>
     </FrameLayout>
 </RelativeLayout>
