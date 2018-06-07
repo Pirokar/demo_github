@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import im.threads.fragments.ImageFragment;
 import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
+import im.threads.utils.ThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +92,7 @@ public class ImagesAdapter extends PagerAdapter {
         }
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.v(TAG, "Removing item #" + position + ": f=" + object
-                    + " v=" + ((android.support.v4.app.Fragment) object).getView());
+                    + " v=" + fragment.getView());
         }
         while (mSavedState.size() <= position) {
             mSavedState.add(null);
@@ -121,11 +122,16 @@ public class ImagesAdapter extends PagerAdapter {
 
     @Override
     public void finishUpdate(ViewGroup container) {
-        if (mCurTransaction != null) {
-            mCurTransaction.commitAllowingStateLoss();
-            mCurTransaction = null;
-            mFragmentManager.executePendingTransactions();
-        }
+        ThreadUtils.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mCurTransaction != null) {
+                    mCurTransaction.commitAllowingStateLoss();
+                    mCurTransaction = null;
+                    mFragmentManager.executePendingTransactions();
+                }
+            }
+        });
     }
 
     @Override
