@@ -35,6 +35,7 @@ import im.threads.model.FileDescription;
 import im.threads.permissions.PermissionsActivity;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
+import im.threads.utils.ThreadUtils;
 
 /**
  * Created by yuri on 05.08.2016.
@@ -122,7 +123,8 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
     private void downloadImage() {
         if (files.get(mViewPager.getCurrentItem()).getFilePath() == null) return;
         if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_DENIED) {
-            PermissionsActivity.startActivityForResult(this, CODE_REQUQEST_DOWNLOAD, R.string.threads_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            PermissionsActivity.startActivityForResult(this, CODE_REQUQEST_DOWNLOAD,
+                    R.string.threads_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
         String path = files.get(mViewPager.getCurrentItem()).getFilePath().replaceAll("file://", "");
@@ -184,7 +186,13 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
 
     @Override
     public void onPageSelected(int position) {
-        getSupportActionBar().setTitle(mViewPager.getCurrentItem() + 1 + " " + getString(R.string.threads_from) + " " + collectionSize);
+
+        ThreadUtils.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getSupportActionBar().setTitle(mViewPager.getCurrentItem() + 1 + " " + getString(R.string.threads_from) + " " + collectionSize);
+            }
+        });
     }
 
     @Override
