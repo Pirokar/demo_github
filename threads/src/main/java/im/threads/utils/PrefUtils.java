@@ -32,7 +32,7 @@ public class PrefUtils {
     public static final String APP_STYLE = "APP_STYLE";
     public static final String TAG_THREAD_ID = "THREAD_ID";
     public static final String SERVER_URL_META_INFO = "im.threads.getServerUrl";
-    public static final String APP_MARKER_META_KEY = "im.threads.appMarker";
+    public static final String APP_MARKER_KEY = "APP_MARKER";
 
     private PrefUtils() {
     }
@@ -152,8 +152,16 @@ public class PrefUtils {
         return getMetaData(context, SERVER_URL_META_INFO);
     }
 
+
+    public static void setAppMarker(Context ctx, String appMarker) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + APP_MARKER_KEY, appMarker).commit();
+    }
+
     public static String getAppMarker(Context context) {
-        return getMetaData(context, APP_MARKER_META_KEY);
+
+        String appMarker = PreferenceManager.getDefaultSharedPreferences(context).getString(PrefUtils.class + APP_MARKER_KEY, "");
+
+        return appMarker.length() > 0 ? appMarker : null;
     }
 
     @Nullable

@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         if (!PermissionChecker.checkPermissions(this)) {
             PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
         } else {
-            ChatBuilderHelper.buildChatStyle(this, currentCard.getUserId(), currentCard.getUserName(), "");
+            ChatBuilderHelper.buildChatStyle(this, getString(R.string.app_marker), currentCard.getUserId(), currentCard.getUserName(), "");
             startActivity(new Intent(this, ChatActivity.class));
         }
     }

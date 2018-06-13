@@ -222,6 +222,7 @@ public class ChatStyle implements Serializable {
         private ChatStyle chatStyle;
         private Context ctx;
 
+        private String appMarker;
         private String clientId;
         private String userName;
         private String data;
@@ -241,6 +242,11 @@ public class ChatStyle implements Serializable {
             builder.chatStyle = getInstance();
             builder.ctx = ctx.getApplicationContext();
             return builder;
+        }
+
+        public ChatStyleBuilder setAppMarker(String appMarker) {
+            this.appMarker = appMarker;
+            return this;
         }
 
         public ChatStyleBuilder showChatBackButton(final boolean showBackButton) {
@@ -393,6 +399,7 @@ public class ChatStyle implements Serializable {
 
             PrefUtils.setIncomingStyle(ctx, chatStyle);
 
+            PrefUtils.setAppMarker(ctx, appMarker);
             PrefUtils.setNewClientId(ctx, clientId);
             PrefUtils.setUserName(ctx, userName);
             PrefUtils.setData(ctx, data);
