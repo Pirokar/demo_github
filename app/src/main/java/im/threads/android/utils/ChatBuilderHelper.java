@@ -6,9 +6,10 @@ import im.threads.model.ChatStyle;
 
 public class ChatBuilderHelper {
 
-    public static ChatStyle buildChatStyle(Activity activity, String clientId, String userName, String data) {
+    public static ChatStyle buildChatStyle(Activity activity, String appMarker, String clientId, String userName, String data) {
         return ChatStyle.ChatStyleBuilder
                 .getBuilder(activity, clientId, userName, data) // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+                .setAppMarker(appMarker)
                 .setDefaultFontBold("fonts/lato-bold.ttf")
                 .setDefaultFontLight("fonts/lato-light.ttf")
                 .setDefaultFontRegular("fonts/lato-regular.ttf")
