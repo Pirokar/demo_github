@@ -14,7 +14,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -52,6 +54,9 @@ public class GalleryActivity extends BaseActivity
     public static final String PHOTOS_REQUEST_CODE_TAG = "PHOTOS_REQUEST_CODE_TAG";
     public static final String PHOTOS_TAG = "PHOTOS_TAG";
     private Toolbar mToolbar;
+    private TextView mNothingFoundLabel;
+    private ImageButton mClearButton;
+    private View mBottomButton;
 
 
     @Override
@@ -105,6 +110,10 @@ public class GalleryActivity extends BaseActivity
         }
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mSendButton = (Button) findViewById(R.id.send);
+
+        mNothingFoundLabel = (TextView) findViewById(R.id.nothing_found_label);
+        mClearButton = (ImageButton) findViewById(R.id.clear_search_button);
+        mBottomButton = findViewById(R.id.bottom_buttons);
 
         mBucketsGalleryDecorator = new BucketsGalleryDecorator(4);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -227,23 +236,19 @@ public class GalleryActivity extends BaseActivity
         findViewById(R.id.search_label_layout).setVisibility(View.GONE);
         findViewById(R.id.search_layout).setVisibility(View.VISIBLE);
         mSearchEdiText.requestFocus();
-        ImageButton clearButton = (ImageButton) findViewById(R.id.clear_search_button);
-        final TextView nothingFoundLabel = (TextView) findViewById(R.id.nothing_found_label);
-        nothingFoundLabel.setVisibility(View.VISIBLE);
+        mNothingFoundLabel.setVisibility(View.VISIBLE);
         mRecyclerView.removeItemDecoration(mBucketsGalleryDecorator);
         mRecyclerView.addItemDecoration(mGalleryDecorator);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mRecyclerView.setAdapter(null);
-        final View bottomButton = findViewById(R.id.bottom_buttons);
-        clearButton.setOnClickListener(new View.OnClickListener() {
+        mClearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mSearchEdiText.setText("");
             }
         });
-        final GalleryAdaper.OnGalleryItemClick listener = this;
-        bottomButton.setVisibility(View.GONE);
-        ((Toolbar) findViewById(R.id.toolbar)).hideOverflowMenu();
+        mBottomButton.setVisibility(View.GONE);
+        mToolbar.hideOverflowMenu();
         mSearchEdiText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -257,32 +262,54 @@ public class GalleryActivity extends BaseActivity
 
             @Override
             public void afterTextChanged(Editable s) {
-                clearCheckedStateOfItems();
-                chosentItems = null;
-                checkSendButtonState();
-                if (s.length() == 0) {
-                    nothingFoundLabel.setVisibility(View.VISIBLE);
-                    mRecyclerView.setAdapter(null);
-                    bottomButton.setVisibility(View.GONE);
+                String searchString = "";
+                if (s != null) {
+                    searchString = s.toString();
+                }
+                search(searchString);
+            }
+        });
+
+        mSearchEdiText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    search(v.getText().toString());
+                    return true;
                 } else {
-                    nothingFoundLabel.setVisibility(View.GONE);
-                    List<MediaPhoto> list = new ArrayList<>();
-                    for (List<MediaPhoto> photoes : lists) {
-                        for (MediaPhoto mp : photoes) {
-                            if (mp.getImagePath().contains(s.toString())) {
-                                list.add(mp);
-                            }
-                        }
-                    }
-                    mRecyclerView.setAdapter(new GalleryAdaper(list, listener));
-                    if (list.size() == 0) {
-                        bottomButton.setVisibility(View.GONE);
-                    } else {
-                        bottomButton.setVisibility(View.VISIBLE);
-                    }
+                    return false;
                 }
             }
         });
+
+    }
+
+    protected void search(String searchString) {
+        clearCheckedStateOfItems();
+        chosentItems = null;
+        checkSendButtonState();
+        if (searchString.trim().length() == 0) {
+            mNothingFoundLabel.setVisibility(View.VISIBLE);
+            mRecyclerView.setAdapter(null);
+            mBottomButton.setVisibility(View.GONE);
+        } else {
+            mNothingFoundLabel.setVisibility(View.GONE);
+            List<MediaPhoto> list = new ArrayList<>();
+            for (List<MediaPhoto> photoes : lists) {
+                for (MediaPhoto mp : photoes) {
+                    if (mp.getImagePath().contains(searchString)) {
+                        list.add(mp);
+                    }
+                }
+            }
+            mRecyclerView.setAdapter(new GalleryAdaper(list, this));
+            if (list.size() == 0) {
+                mBottomButton.setVisibility(View.GONE);
+            } else {
+                mBottomButton.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override

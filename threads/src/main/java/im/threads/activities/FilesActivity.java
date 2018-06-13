@@ -15,12 +15,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.util.Iterator;
 import java.util.List;
@@ -120,10 +123,31 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
                 } else {
                     str = s.toString();
                 }
-                if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.filter(str);
+                search(str);
             }
         });
+
+        mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if ((mSearchEditText.getVisibility() == View.VISIBLE) && actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    search(v.getText().toString());
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+
         setActivityStyle(PrefUtils.getIncomingStyle(this));
+    }
+
+    protected void search(String searchString) {
+        if (mFilesAndMediaAdapter != null) {
+            mFilesAndMediaAdapter.filter(searchString);
+        }
     }
 
     @Override

@@ -157,6 +157,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         if (holder instanceof ConsultPhraseHolder) {
             final ConsultPhrase cp = (ConsultPhrase) list.get(position);
+            if (mAdapterInterface != null && cp.getFileDescription() != null && cp.getFileDescription().getFilePath() == null) {
+                mAdapterInterface.onImageDownloadRequest(cp.getFileDescription());
+            }
+
             ((ConsultPhraseHolder) holder)
                     .onBind(cp.getPhrase()
                             , cp.getAvatarPath()
@@ -211,6 +215,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (holder instanceof UserPhraseViewHolder) {
             final UserPhrase up = (UserPhrase) list.get(position);
+            if (mAdapterInterface != null && up.getFileDescription() != null && up.getFileDescription().getFilePath() == null) {
+                mAdapterInterface.onImageDownloadRequest(up.getFileDescription());
+            }
+
             ((UserPhraseViewHolder) holder).onBind(
                     up.getPhrase()
                     , up.getTimeStamp()
