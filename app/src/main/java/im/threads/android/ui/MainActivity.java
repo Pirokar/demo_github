@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         if (!PermissionChecker.checkPermissions(this)) {
             PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
         } else {
-            ChatBuilderHelper.buildChatStyle(this, getString(R.string.app_marker), currentCard.getUserId(), currentCard.getUserName(), "");
+            ChatBuilderHelper.buildChatStyle(this, currentCard.getAppMarker(), currentCard.getUserId(), currentCard.getUserName(), "");
             startActivity(new Intent(this, ChatActivity.class));
         }
     }
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
      */
     private void showChatAsFragment() {
         Card currentCard = getCurrentCard();
-        Intent i = BottomNavigationActivity.createIntent(this, currentCard.getUserId(), currentCard.getUserName());
+        Intent i = BottomNavigationActivity.createIntent(this, currentCard.getAppMarker(), currentCard.getUserId(), currentCard.getUserName());
         startActivity(i);
     }
 
