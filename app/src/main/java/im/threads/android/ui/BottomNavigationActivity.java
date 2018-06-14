@@ -43,12 +43,14 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
     public static final String ARG_CLIENT_ID = "clientId";
     public static final String ARG_USER_NAME = "userName";
+    public static final String ARG_APP_MARKER = "appMarker";
     public static final String ARG_NEEDS_SHOW_CHAT = "needsShowChat";
 
     private static final int PERM_REQUEST_CODE_CLICK = 1;
 
     private String clientId;
     private String userName;
+    private String appMarker;
 
     private BottomNavigationView bottomNavigationView;
     private TabItem selectedTab;
@@ -74,8 +76,9 @@ public class BottomNavigationActivity extends AppCompatActivity {
      * @return intent для открытия BottomNavigationActivity
      * с передачей clientId и userName.
      */
-    public static Intent createIntent(Activity activity, String clientId, String userName) {
+    public static Intent createIntent(Activity activity, String appMarker, String clientId, String userName) {
         Intent intent = new Intent(activity, BottomNavigationActivity.class);
+        intent.putExtra(ARG_APP_MARKER, appMarker);
         intent.putExtra(ARG_CLIENT_ID, clientId);
         intent.putExtra(ARG_USER_NAME, userName);
         return intent;
@@ -119,6 +122,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         Intent intent = getIntent();
         clientId = intent.getStringExtra(ARG_CLIENT_ID);
         userName = intent.getStringExtra(ARG_USER_NAME);
+        appMarker = intent.getStringExtra(ARG_APP_MARKER);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -177,7 +181,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 break;
             case TAB_CHAT:
                 // генерируем настройки стилей чата
-                ChatBuilderHelper.buildChatStyle(this, getString(R.string.app_marker), clientId, userName, "");
+                ChatBuilderHelper.buildChatStyle(this, appMarker, clientId, userName, "");
                 // создаем фрагмент чата
                 fragment = ChatFragment.newInstance();
                 break;
