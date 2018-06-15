@@ -20,6 +20,7 @@ import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
+import im.threads.utils.ThreadUtils;
 
 /**
  * Created by yuri on 05.08.2016.
@@ -100,8 +101,13 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
     }
 
     @Override
-    public void onPageSelected(int position) {
-        mToolbar.setTitle(position+1 + " " + getString(R.string.threads_from) + " " + collectionSize);
+    public void onPageSelected(final int position) {
+        ThreadUtils.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mToolbar.setTitle(position+1 + " " + getString(R.string.threads_from) + " " + collectionSize);
+            }
+        });
     }
 
     @Override

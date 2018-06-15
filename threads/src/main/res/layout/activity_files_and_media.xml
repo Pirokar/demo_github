@@ -37,6 +37,8 @@
             android:textColorHint="@color/threads_chat_toolbar_hint"
             android:lines="1"
             android:textCursorDrawable="@null"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
             android:textSize="@dimen/text_big"
             android:textColor="@color/threads_chat_toolbar_text"
             android:layout_marginRight="40dp"

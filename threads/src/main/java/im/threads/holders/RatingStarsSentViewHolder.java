@@ -92,6 +92,7 @@ public class RatingStarsSentViewHolder extends BaseHolder {
         rateStarsCount.setText(String.valueOf(rate));
         totalStarsCount.setText(String.valueOf(scale));
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));
+        mHeader.setText(survey.getQuestions().get(0).getText());
         Drawable d;
         switch (survey.getSentState()) {
             case STATE_WAS_READ:

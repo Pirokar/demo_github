@@ -11,6 +11,7 @@
         android:layout_width="@dimen/threads_system_operator_photo_size"
         android:layout_height="@dimen/threads_system_operator_photo_size"
         android:layout_marginLeft="@dimen/margin_half"
+        tools:src="@drawable/threads_operator_avatar_placeholder"
         android:layout_centerVertical="true"/>
 
     <im.threads.widget.text_view.SpecialistConnectTitleTextView
