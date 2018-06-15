@@ -51,10 +51,8 @@ public class MyCircleProgress extends View {
 
         style = PrefUtils.getIncomingStyle(getContext());
 
-        if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
+        if (style != null) {
             finishedPaint.setColor(ContextCompat.getColor(getContext(), style.chatToolbarColorResId));
-        } else {
-            finishedPaint.setColor(getContext().getResources().getColor(R.color.threads_chat_toolbar));
         }
 
         finishedPaint.setStyle(Paint.Style.STROKE);

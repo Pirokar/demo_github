@@ -49,29 +49,11 @@ public class WelcomeScreen extends LinearLayout {
             ColorsHelper.setTextColor(context, title, style.welcomeScreenTitleTextColorResId);
             ColorsHelper.setTextColor(context, subTitle, style.welcomeScreenSubtitleTextColorResId);
 
-            if (style.welcomeScreenLogoResId != ChatStyle.INVALID) {
-                logoView.setImageResource(style.welcomeScreenLogoResId);
-            }
-
-            float titleSize;
-            if (style.welcomeScreenTitleSizeInSp != ChatStyle.INVALID) {
-                titleSize = style.welcomeScreenTitleSizeInSp;
-                title.setTextSize(titleSize);
-            }
-
-            float subtitleSize;
-            if (style.welcomeScreenSubtitleSizeInSp != ChatStyle.INVALID) {
-                subtitleSize = style.welcomeScreenSubtitleSizeInSp;
-                subTitle.setTextSize(subtitleSize);
-            }
-
-            if (style.welcomeScreenTitleTextResId != ChatStyle.INVALID) {
-                title.setText(style.welcomeScreenTitleTextResId);
-            }
-
-            if (style.welcomeScreenSubtitleTextResId != ChatStyle.INVALID) {
-                subTitle.setText(style.welcomeScreenSubtitleTextResId);
-            }
+            logoView.setImageResource(style.welcomeScreenLogoResId);
+            title.setTextSize(style.welcomeScreenTitleSizeInSp);
+            subTitle.setTextSize(style.welcomeScreenSubtitleSizeInSp);
+            title.setText(style.welcomeScreenTitleTextResId);
+            subTitle.setText(style.welcomeScreenSubtitleTextResId);
         }
     }
 }
