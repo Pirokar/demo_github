@@ -122,7 +122,7 @@ public class PrefUtils {
 
     public static void setIncomingStyle(Context ctx, ChatStyle style) {
         if (ctx == null || style == null) {
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "setIncomingStyle: ctx or bundle is null");
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "setIncomingStyle: ctx or style is null");
             return;
         }
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
@@ -139,12 +139,10 @@ public class PrefUtils {
                 style = new Gson().fromJson(sharedPreferencesString, ChatStyle.class);
             }
         }
-        catch (IllegalStateException ex) {
+        catch (IllegalStateException|JsonSyntaxException ex) {
 
         }
-        catch (JsonSyntaxException ex) {
 
-        }
         return style;
     }
 

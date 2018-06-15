@@ -404,6 +404,8 @@ public class ChatStyle implements Serializable {
             PrefUtils.setUserName(ctx, userName);
             PrefUtils.setData(ctx, data);
 
+            ChatStyle.instance = chatStyle;
+
             return chatStyle;
         }
 

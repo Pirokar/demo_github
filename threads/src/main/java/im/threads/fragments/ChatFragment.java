@@ -154,16 +154,11 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         appContext = activity.getApplicationContext();
 
-        style = ChatStyle.getInstance();
+        style = PrefUtils.getIncomingStyle(activity);
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 
-        if (activity instanceof ChatActivity) {
-            if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
-                ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
-            }
-            else {
-                ColorsHelper.setStatusBarColor(activity, R.color.threads_chat_status_bar);
-            }
+        if (activity instanceof ChatActivity && style != null) {
+            ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
         }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
@@ -173,7 +168,7 @@ public class ChatFragment extends Fragment implements
         initToolbar();
         setHasOptionsMenu(true);
         initController();
-        setFragmentStyle(PrefUtils.getIncomingStyle(activity));
+        setFragmentStyle(style);
 
         updateInputEnable(true);
         chatIsShown = true;
