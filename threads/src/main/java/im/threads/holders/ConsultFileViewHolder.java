@@ -79,7 +79,7 @@ public class ConsultFileViewHolder extends BaseHolder {
                 mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
             }
             if (style.chatBackgroundColor != INVALID) {
-                mCircularProgressButton.setBackgroundColor(style.chatBackgroundColor);
+                mCircularProgressButton.setBackgroundColorResId(style.chatBackgroundColor);
             }
 
             if (style.operatorAvatarSize != INVALID) {

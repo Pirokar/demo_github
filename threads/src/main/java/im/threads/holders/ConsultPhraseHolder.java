@@ -114,7 +114,7 @@ public class ConsultPhraseHolder extends BaseHolder {
                 mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
             }
             if (style.chatBackgroundColor != INVALID) {
-                mCircularProgressButton.setBackgroundColor(getColorInt(style.chatBackgroundColor));
+                mCircularProgressButton.setBackgroundColorResId(style.chatBackgroundColor);
             }
 
             if (style.operatorAvatarSize != INVALID) {

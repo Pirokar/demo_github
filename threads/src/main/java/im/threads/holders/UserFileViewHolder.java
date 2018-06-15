@@ -60,7 +60,7 @@ public class UserFileViewHolder extends BaseHolder {
             if (style.outgoingMessageTextColor != INVALID) {
                 messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
                 setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.outgoingMessageTextColor);
-                mCircularProgressButton.setBackgroundColor(style.outgoingMessageTextColor);
+                mCircularProgressButton.setBackgroundColorResId(style.outgoingMessageTextColor);
             }
             if (style.outgoingMessageBubbleBackground != INVALID) {
                 mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));

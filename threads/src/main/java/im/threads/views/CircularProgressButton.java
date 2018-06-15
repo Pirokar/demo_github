@@ -133,7 +133,7 @@ public class CircularProgressButton extends FrameLayout {
         ViewUtils.setClickListener((ViewGroup) findViewById(R.id.frame), ocl);
     }
 
-    public void setBackgroundColor(@ColorRes int colorResourceIntId) {
+    public void setBackgroundColorResId(@ColorRes int colorResourceIntId) {
         progressBackgroundDrawable.setColorFilter(ContextCompat.getColor(this.getContext(), colorResourceIntId), PorterDuff.Mode.SRC_ATOP);
     }
 }
