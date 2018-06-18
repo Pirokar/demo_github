@@ -41,11 +41,8 @@ public class TranslucentActivity
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
+            if (style != null) {
                 window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
-            }
-            else {
-                window.setStatusBarColor(getResources().getColor(R.color.threads_chat_status_bar));
             }
         }
         mQuickAnswerReceiver = new QuickAnswerReceiver();
