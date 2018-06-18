@@ -104,7 +104,8 @@ public class QuickAnswerFragment extends DialogFragment {
         v.findViewById(R.id.header).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
 
         consultNameTextView.setTextColor(getColorInt(style.chatToolbarTextColorResId));
-        ((TextView) v.findViewById(R.id.question)).setTextColor(getColorInt(style.incomingMessageTextColor));
+        textView.setTextColor(getColorInt(style.quickReplyMessageTextColor));
+        textView.setBackgroundColor(getColorInt(style.quickReplyMessageBackgroundColor));
         mEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
         v.findViewById(R.id.answer_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
 

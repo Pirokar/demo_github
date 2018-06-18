@@ -132,6 +132,7 @@ public class ChatStyle implements Serializable {
 //    R.drawable.timestamp_outgoing_underlayer - бэкграунд подложки под временем на исходящем сообщении с изображением
 
 
+    //images history
 //TODO #THREADS-2853
 //    Экран просмотра изображений
 //    R.color.threads_attachments_toolbar - цвет тулбара
@@ -169,10 +170,10 @@ public class ChatStyle implements Serializable {
     public int pushBackgroundColorResId = R.color.threads_push_background;
     @ColorRes
     public int nougatPushAccentColorResId = R.color.threads_nougat_push_accent;
-
-    //TODO #THREADS-2853
-//    R.color.threads_quick_reply_message_background - цвет фона входящего сообщения в быстром ответе, по умолчанию = R.color.threads_chat_incoming_message_bubble
-//    R.color.threads_quick_reply_message_text_color - цвет текста входящего сообщения в быстром ответе , по умолчанию = R.color.threads_incoming_message_text
+    @ColorRes
+    public int quickReplyMessageBackgroundColor = R.color.threads_quick_reply_message_background;
+    @ColorRes
+    public int quickReplyMessageTextColor = R.color.threads_quick_reply_message_text_color;
 
     // resolve thread request style
     @StringRes
@@ -649,21 +650,27 @@ public class ChatStyle implements Serializable {
         /**
          * Default values:
          *
-         * @param defPushIconResId           - R.drawable.default_push_icon
-         * @param defTitleResId              - R.string.threads_push_title
-         * @param pushBackgroundColorResId   - R.color.threads_push_background
-         * @param nougatPushAccentColorResId - R.color.threads_nougat_push_accent
+         * @param defPushIconResId                 - R.drawable.default_push_icon
+         * @param defTitleResId                    - R.string.threads_push_title
+         * @param pushBackgroundColorResId         - R.color.threads_push_background
+         * @param nougatPushAccentColorResId       - R.color.threads_nougat_push_accent
+         * @param quickReplyMessageBackgroundColor = R.color.threads_quick_reply_message_background;
+         * @param quickReplyMessageTextColor       = R.color.threads_quick_reply_message_text_color;
          * @return ChatStyleBuilder
          */
         public ChatStyleBuilder setPushNotificationStyle(@DrawableRes final int defPushIconResId,
                                                          @StringRes final int defTitleResId,
                                                          @ColorRes final int pushBackgroundColorResId,
-                                                         @ColorRes final int nougatPushAccentColorResId) {
+                                                         @ColorRes final int nougatPushAccentColorResId,
+                                                         @ColorRes int quickReplyMessageBackgroundColor,
+                                                         @ColorRes int quickReplyMessageTextColor) {
 
             chatStyle.defPushIconResId = defPushIconResId;
             chatStyle.defTitleResId = defTitleResId;
             chatStyle.pushBackgroundColorResId = pushBackgroundColorResId;
             chatStyle.nougatPushAccentColorResId = nougatPushAccentColorResId;
+            chatStyle.quickReplyMessageBackgroundColor = quickReplyMessageBackgroundColor;
+            chatStyle.quickReplyMessageTextColor = quickReplyMessageTextColor;
             return this;
         }
 
