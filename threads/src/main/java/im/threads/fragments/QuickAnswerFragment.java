@@ -29,14 +29,13 @@ import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 
-import static im.threads.model.ChatStyle.INVALID;
-
 /**
  * Created by yuri on 02.09.2016.
  */
 public class QuickAnswerFragment extends DialogFragment {
     private EditText mEditText;
     private static final String TAG = "QuickAnswerFragment ";
+    //TODO #THREADS-2853 Make style @NonNull
     private ChatStyle style;
 
     public static QuickAnswerFragment getInstance(
@@ -102,43 +101,28 @@ public class QuickAnswerFragment extends DialogFragment {
                 dismiss();
             }
         });
-        if (style!=null){
-            if (style.chatBackgroundColor!= INVALID){
-                v.findViewById(R.id.layout_root).setBackgroundColor(getColorInt(style.chatBackgroundColor));
-            }
-            if (style.chatToolbarColorResId!= INVALID){
-                v.findViewById(R.id.header).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
-            }
-            if (style.chatToolbarTextColorResId!= INVALID){
-                consultNameTextView.setTextColor(getColorInt(style.chatToolbarTextColorResId));
-            }
-            if (style.incomingMessageTextColor!= INVALID){
-                ((TextView) v.findViewById(R.id.question)).setTextColor(getColorInt(style.incomingMessageTextColor));
-                mEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
-            }
-            if (style.chatMessageInputColor!= INVALID){
-                v.findViewById(R.id.answer_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
-            }
+        if (style != null) {
+            v.findViewById(R.id.layout_root).setBackgroundColor(getColorInt(style.chatBackgroundColor));
+            v.findViewById(R.id.header).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
 
-            Drawable d =imageButton.getDrawable();
-            d.setColorFilter(getColorInt(style.chatBodyIconsTint!= INVALID ? style.chatBodyIconsTint : R.color.threads_chat_icons_tint), PorterDuff.Mode.SRC_ATOP);
+            consultNameTextView.setTextColor(getColorInt(style.chatToolbarTextColorResId));
+            ((TextView) v.findViewById(R.id.question)).setTextColor(getColorInt(style.incomingMessageTextColor));
+            mEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
+            v.findViewById(R.id.answer_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
+
+            Drawable d = imageButton.getDrawable();
+            d.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
             imageButton.setImageDrawable(d);
 
-            if (style.chatMessageInputHintTextColor!= INVALID){
-                mEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
-            }
-
-            if (style.inputHeight != INVALID) {
-                mEditText.getLayoutParams().height = (int) getActivity().getResources().getDimension(style.inputHeight);
-            }
-
-            if (style.inputBackground != INVALID) {
-                mEditText.setBackground(ContextCompat.getDrawable(getActivity(), style.inputBackground));
-            }
+            mEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
+            mEditText.getLayoutParams().height = (int) getActivity().getResources().getDimension(style.inputHeight);
+            mEditText.setBackground(ContextCompat.getDrawable(getActivity(), style.inputBackground));
         }
         return v;
     }
-    private @ColorInt int  getColorInt(@ColorRes int colorResId){
+
+    private @ColorInt
+    int getColorInt(@ColorRes int colorResId) {
         return ContextCompat.getColor(getActivity(), colorResId);
     }
 

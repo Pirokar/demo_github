@@ -26,6 +26,10 @@ public class ChatStyle implements Serializable {
 
     public static final int DEFAULT_HISTORY_LOADING_COUNT = 50;
 
+    //common styles
+    @ColorRes
+    public int chatDisabledTextColor = R.color.threads_disabled_text_color;
+
     // chat title style
     @StringRes
     public int chatTitleTextResId = R.string.threads_contact_center;
@@ -203,6 +207,7 @@ public class ChatStyle implements Serializable {
 
     private static volatile ChatStyle instance;
 
+    //TODO #THREADS-2853 get from PrefUtils, return @NonNull, fill with defaults
     public static ChatStyle getInstance() {
         ChatStyle localInstance = instance;
         if (localInstance == null) {
