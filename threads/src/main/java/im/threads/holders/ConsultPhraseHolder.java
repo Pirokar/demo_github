@@ -82,10 +82,11 @@ public class ConsultPhraseHolder extends BaseHolder {
 
         mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
         setTextColorToViews(new TextView[]{mPhraseTextView,
-                mTimeStampTextView,
                 rightTextHeader,
                 mRightTextDescr,
                 rightTextFileStamp}, style.incomingMessageTextColor);
+
+        mTimeStampTextView.setTextColor(getColorInt(style.incomingMessageTimeColor));
 
         mPhraseTextView.setLinkTextColor(getColorInt(style.incomingMessageLinkColor));
 

@@ -53,7 +53,8 @@ public class ConsultFileViewHolder extends BaseHolder {
         mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
 
         mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
-        setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.incomingMessageTextColor);
+        setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView}, style.incomingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(style.incomingMessageTimeColor));
         setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
 
         mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

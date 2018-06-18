@@ -1,8 +1,8 @@
 package im.threads.holders;
 
+import android.graphics.PorterDuff;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +26,7 @@ import im.threads.utils.MaskedTransformer;
 /**
  * Created by yuri on 30.06.2016.
  */
-public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
+public class ImageFromConsultViewHolder extends BaseHolder {
     private TextView mTimeStampTextView;
     private ImageView mImage;
     private ImageView mConsultAvatar;
@@ -49,7 +49,8 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
 
         mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
         mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
-
+        mTimeStampTextView.setTextColor(getColorInt(style.incomingImageTimeColor));
+        mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.incomingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
     }
 
     public void onBind(String avatarPath

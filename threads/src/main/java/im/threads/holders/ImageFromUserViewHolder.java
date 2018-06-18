@@ -3,7 +3,6 @@ package im.threads.holders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ import im.threads.utils.MaskedTransformer;
 /**
  * Created by yuri on 30.06.2016.
  */
-public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
+public class ImageFromUserViewHolder extends BaseHolder {
     private static final String TAG = "ImageFromUserViewHolde ";
     private TextView mTimeStampTextView;
     private ImageView mImage;
@@ -43,6 +42,8 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         }
         filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        mTimeStampTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
+        mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.outgoingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
     }
 
     public void onBind(

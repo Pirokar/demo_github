@@ -49,7 +49,8 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
         messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-        setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView}, style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mHeader}, style.outgoingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
     }
 
     public void bind(Survey survey) {

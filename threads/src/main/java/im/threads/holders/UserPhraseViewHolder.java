@@ -80,7 +80,8 @@ public class UserPhraseViewHolder extends BaseHolder {
 
         mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
         messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-        setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp}, style.outgoingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mFileImageButton.setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
 

@@ -1113,7 +1113,7 @@ public class ChatFragment extends Fragment implements
                     binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
                 }
 
-                binding.subtitle.setText(getString(R.string.threads_operator_subtitle));
+                binding.subtitle.setText(getString(style.chatSubtitleTextResId));
                 f.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();

@@ -50,7 +50,8 @@ public class RatingStarsSentViewHolder extends BaseHolder {
         rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
-        setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mHeader, from, totalStarsCount}, style.outgoingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         star.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
         star.setImageResource(style.optionsSurveySelectedIconResId);
     }

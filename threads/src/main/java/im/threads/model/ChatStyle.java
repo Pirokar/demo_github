@@ -35,6 +35,8 @@ public class ChatStyle implements Serializable {
     // chat title style
     @StringRes
     public int chatTitleTextResId = R.string.threads_contact_center;
+    @StringRes
+    public int chatSubtitleTextResId = R.string.threads_operator_subtitle;
     @ColorRes
     public int chatToolbarColorResId = R.color.threads_chat_toolbar;
     @ColorRes
@@ -64,6 +66,20 @@ public class ChatStyle implements Serializable {
     public int incomingMessageTextColor = R.color.threads_incoming_message_text;
     @ColorRes
     public int outgoingMessageTextColor = R.color.threads_outgoing_message_text;
+
+    @ColorRes
+    public int incomingMessageTimeColor = R.color.threads_operator_message_timestamp;
+    @ColorRes
+    public int outgoingMessageTimeColor = R.color.threads_user_message_timestamp;
+
+    @ColorRes
+    public int outgoingImageTimeColor = R.color.threads_outgoing_message_time;
+    @ColorRes
+    public int outgoingImageTimeBackgroundColor = R.color.threads_outgoing_time_underlay;
+    @ColorRes
+    public int incomingImageTimeColor = R.color.threads_incoming_message_time;
+    @ColorRes
+    public int incomingImageTimeBackgroundColor = R.color.threads_incoming_time_underlay;
 
     @ColorRes
     public int incomingMessageLinkColor = R.color.threads_incoming_message_link;
@@ -229,7 +245,8 @@ public class ChatStyle implements Serializable {
         return localInstance;
     }
 
-    private ChatStyle() {}
+    private ChatStyle() {
+    }
 
     public static class ChatStyleBuilder {
         private ChatStyle chatStyle;
@@ -427,16 +444,19 @@ public class ChatStyle implements Serializable {
 
         /**
          * Default values:
-         * @param chatTitleTextResId - R.string.threads_contact_center
-         * @param chatToolbarColorResId - R.color.threads_chat_toolbar
+         *
+         * @param chatTitleTextResId        - R.string.threads_contact_center
+         * @param chatSubtitleTextResId     - R.string.threads_operator_subtitle
+         * @param chatToolbarColorResId     - R.color.threads_chat_toolbar
          * @param chatToolbarTextColorResId - R.color.threads_chat_toolbar_text
-         * @param chatStatusBarColorResId - R.color.threads_chat_status_bar
-         * @param menuItemTextColorResId - R.color.threads_chat_toolbar_menu_item
-         * @param chatToolbarHintTextColor - R.color.threads_chat_toolbar_hint
-         * @param showBackButton - showChatBackButton(boolean showBackButton)
+         * @param chatStatusBarColorResId   - R.color.threads_chat_status_bar
+         * @param menuItemTextColorResId    - R.color.threads_chat_toolbar_menu_item
+         * @param chatToolbarHintTextColor  - R.color.threads_chat_toolbar_hint
+         * @param showBackButton            - showChatBackButton(boolean showBackButton)
          */
         public ChatStyleBuilder setChatTitleStyle(
                 @StringRes final int chatTitleTextResId,
+                @StringRes final int chatSubtitleTextResId,
                 @ColorRes final int chatToolbarColorResId,
                 @ColorRes final int chatToolbarTextColorResId,
                 @ColorRes final int chatStatusBarColorResId,
@@ -444,6 +464,7 @@ public class ChatStyle implements Serializable {
                 @ColorRes final int chatToolbarHintTextColor,
                 final boolean showBackButton) {
             chatStyle.chatTitleTextResId = chatTitleTextResId;
+            chatStyle.chatSubtitleTextResId = chatSubtitleTextResId;
             chatStyle.chatToolbarColorResId = chatToolbarColorResId;
             chatStyle.chatToolbarTextColorResId = chatToolbarTextColorResId;
             chatStyle.chatStatusBarColorResId = chatStatusBarColorResId;
@@ -455,28 +476,37 @@ public class ChatStyle implements Serializable {
 
         /**
          * Default values:
-         * @param chatBackgroundColor - R.color.threads_chat_background
-         * @param chatHighlightingColor - R.color.threads_chat_highlighting
-         * @param incomingMessageBubbleColor - R.color.threads_chat_incoming_message_bubble
-         * @param outgoingMessageBubbleColor- R.color.threads_chat_outgoing_message_bubble
-         * @param incomingMessageBubbleBackground - R.drawable.thread_incoming_bubble
-         * @param outgoingMessageBubbleBackground - R.drawable.thread_outgoing_bubble
-         * @param incomingMessageTextColor - R.color.threads_incoming_message_text
-         * @param outgoingMessageTextColor - R.color.threads_outgoing_message_text
-         * @param chatBodyIconsTint - R.color.threads_chat_icons_tint
-         * @param chatSystemMessageTextColor - R.color.threads_chat_connection_message
+         *
+         * @param chatBackgroundColor                - R.color.threads_chat_background
+         * @param chatHighlightingColor              - R.color.threads_chat_highlighting
+         * @param incomingMessageBubbleColor         - R.color.threads_chat_incoming_message_bubble
+         * @param outgoingMessageBubbleColor         - R.color.threads_chat_outgoing_message_bubble
+         * @param incomingMessageBubbleBackground    - R.drawable.thread_incoming_bubble
+         * @param outgoingMessageBubbleBackground    - R.drawable.thread_outgoing_bubble
+         * @param incomingMessageTextColor           - R.color.threads_incoming_message_text
+         * @param outgoingMessageTextColor           - R.color.threads_outgoing_message_text
+         * @param incomingMessageTimeColor           - R.color.threads_operator_message_timestamp;
+         * @param outgoingMessageTimeColor           - R.color.threads_user_message_timestamp;
+         * @param outgoingImageTimeColor             = R.color.threads_outgoing_message_time;
+         * @param outgoingImageTimeBackgroundColor   = R.color.threads_outgoing_time_underlay;
+         * @param incomingImageTimeColor             = R.color.threads_incoming_message_time;
+         * @param incomingImageTimeBackgroundColor   = R.color.threads_incoming_time_underlay;
+         * @param incomingMessageLinkColor           - R.color.threads_incoming_message_link;
+         * @param outgoingMessageLinkColor           - R.color.threads_outgoing_message_link;
+         * @param chatBodyIconsTint                  - R.color.threads_chat_icons_tint
+         * @param chatSystemMessageTextColor         - R.color.threads_chat_connection_message
          * @param filesAndMediaScreenBackgroundColor - R.color.threads_files_medias_screen_background
-         * @param iconsAndSeparatorsColor - R.color.threads_icon_and_separators_color
-         * @param defaultOperatorAvatar - R.drawable.threads_operator_avatar_placeholder
-         * @param operatorAvatarSize - R.dimen.threads_operator_photo_size
-         * @param operatorSystemAvatarSize - R.dimen.threads_system_operator_photo_size
-         * @param imagePlaceholder - R.drawable.threads_image_placeholder
-         * @param fileBrowserDialogStyleResId - R.style.FileDialogStyleTransparent
-         * @param showConsultSearching - setShowConsultSearching(boolean show)
-         * @param scrollChatToEndIfUserTyping - setScrollChatToEndIfUserTyping(boolean scroll)
-         * @param scrollDownButtonResId - R.drawable.threads_scroll_down_btn_back
-         * @param unreadMsgStickerColorResId - R.color.threads_chat_unread_msg_sticker_background
-         * @param unreadMsgCountTextColorResId - R.color.threads_chat_unread_msg_count_text
+         * @param iconsAndSeparatorsColor            - R.color.threads_icon_and_separators_color
+         * @param defaultOperatorAvatar              - R.drawable.threads_operator_avatar_placeholder
+         * @param operatorAvatarSize                 - R.dimen.threads_operator_photo_size
+         * @param operatorSystemAvatarSize           - R.dimen.threads_system_operator_photo_size
+         * @param imagePlaceholder                   - R.drawable.threads_image_placeholder
+         * @param fileBrowserDialogStyleResId        - R.style.FileDialogStyleTransparent
+         * @param showConsultSearching               - setShowConsultSearching(boolean show)
+         * @param scrollChatToEndIfUserTyping        - setScrollChatToEndIfUserTyping(boolean scroll)
+         * @param scrollDownButtonResId              - R.drawable.threads_scroll_down_btn_back
+         * @param unreadMsgStickerColorResId         - R.color.threads_chat_unread_msg_sticker_background
+         * @param unreadMsgCountTextColorResId       - R.color.threads_chat_unread_msg_count_text
          * @return ChatStyleBuilder
          */
         public ChatStyleBuilder setChatBodyStyle(
@@ -488,6 +518,14 @@ public class ChatStyle implements Serializable {
                 @DrawableRes final int outgoingMessageBubbleBackground,
                 @ColorRes final int incomingMessageTextColor,
                 @ColorRes final int outgoingMessageTextColor,
+                @ColorRes int incomingMessageTimeColor,
+                @ColorRes int outgoingMessageTimeColor,
+                @ColorRes int outgoingImageTimeColor,
+                @ColorRes int outgoingImageTimeBackgroundColor,
+                @ColorRes int incomingImageTimeColor,
+                @ColorRes int incomingImageTimeBackgroundColor,
+                @ColorRes int incomingMessageLinkColor,
+                @ColorRes int outgoingMessageLinkColor,
                 @ColorRes final int chatBodyIconsTint,
                 @ColorRes final int chatSystemMessageTextColor,
                 @ColorRes final int filesAndMediaScreenBackgroundColor,
@@ -510,6 +548,14 @@ public class ChatStyle implements Serializable {
             chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
             chatStyle.incomingMessageTextColor = incomingMessageTextColor;
             chatStyle.outgoingMessageTextColor = outgoingMessageTextColor;
+            chatStyle.incomingMessageTimeColor = incomingMessageTimeColor;
+            chatStyle.outgoingMessageTimeColor = outgoingMessageTimeColor;
+            chatStyle.outgoingImageTimeColor = outgoingImageTimeColor;
+            chatStyle.outgoingImageTimeBackgroundColor = outgoingImageTimeBackgroundColor;
+            chatStyle.incomingImageTimeColor = incomingImageTimeColor;
+            chatStyle.incomingImageTimeBackgroundColor = incomingImageTimeBackgroundColor;
+            chatStyle.incomingMessageLinkColor = incomingMessageLinkColor;
+            chatStyle.outgoingMessageLinkColor = outgoingMessageLinkColor;
             chatStyle.defaultOperatorAvatar = defaultOperatorAvatar;
             chatStyle.operatorAvatarSize = operatorAvatarSize;
             chatStyle.operatorSystemAvatarSize = operatorSystemAvatarSize;
@@ -530,15 +576,16 @@ public class ChatStyle implements Serializable {
 
         /**
          * Default values:
+         *
          * @param chatMessageInputHintTextColor - R.color.threads_input_hint
-         * @param chatMessageInputColor - R.color.threads_input_background
-         * @param inputTextColor - R.color.threads_input_text
-         * @param inputTextFont - setInputTextFont(String path)
-         * @param attachmentsIconResId - R.drawable.threads_ic_attachment_button
-         * @param sendMessageIconResId - R.drawable.threads_ic_send_button
-         * @param inputHint - R.string.threads_input_hint
-         * @param inputHeight - R.dimen.threads_input_height
-         * @param inputBackground - R.drawable.threads_chat_input_background
+         * @param chatMessageInputColor         - R.color.threads_input_background
+         * @param inputTextColor                - R.color.threads_input_text
+         * @param inputTextFont                 - setInputTextFont(String path)
+         * @param attachmentsIconResId          - R.drawable.threads_ic_attachment_button
+         * @param sendMessageIconResId          - R.drawable.threads_ic_send_button
+         * @param inputHint                     - R.string.threads_input_hint
+         * @param inputHeight                   - R.dimen.threads_input_height
+         * @param inputBackground               - R.drawable.threads_chat_input_background
          * @return ChatStyleBuilder
          */
         public ChatStyleBuilder setChatInputStyle(
@@ -566,9 +613,10 @@ public class ChatStyle implements Serializable {
 
         /**
          * Default values:
-         * @param defPushIconResId - R.drawable.default_push_icon
-         * @param defTitleResId - R.string.threads_push_title
-         * @param pushBackgroundColorResId - R.color.threads_push_background
+         *
+         * @param defPushIconResId           - R.drawable.default_push_icon
+         * @param defTitleResId              - R.string.threads_push_title
+         * @param pushBackgroundColorResId   - R.color.threads_push_background
          * @param nougatPushAccentColorResId - R.color.threads_nougat_push_accent
          * @return ChatStyleBuilder
          */
@@ -586,9 +634,10 @@ public class ChatStyle implements Serializable {
 
         /**
          * Default values:
-         * @param requestToResolveThreadTextResId - R.string.threads_request_to_resolve_thread
+         *
+         * @param requestToResolveThreadTextResId        - R.string.threads_request_to_resolve_thread
          * @param approveRequestToResolveThreadTextResId - R.string.threads_request_to_resolve_thread_close
-         * @param denyRequestToResolveThreadTextResId - R.string.threads_request_to_resolve_thread_open
+         * @param denyRequestToResolveThreadTextResId    - R.string.threads_request_to_resolve_thread_open
          */
         public ChatStyleBuilder setRequestResolveThreadStyle(@StringRes final int requestToResolveThreadTextResId,
                                                              @StringRes final int approveRequestToResolveThreadTextResId,
@@ -601,15 +650,16 @@ public class ChatStyle implements Serializable {
 
         /**
          * Default values:
-         * @param binarySurveyLikeUnselectedIconResId - R.drawable.threads_binary_survey_like_unselected
-         * @param binarySurveyLikeSelectedIconResId - R.drawable.threads_binary_survey_like_selected
+         *
+         * @param binarySurveyLikeUnselectedIconResId    - R.drawable.threads_binary_survey_like_unselected
+         * @param binarySurveyLikeSelectedIconResId      - R.drawable.threads_binary_survey_like_selected
          * @param binarySurveyDislikeUnselectedIconResId - R.drawable.threads_binary_survey_dislike_unselected
-         * @param binarySurveyDislikeSelectedIconResId - R.drawable.threads_binary_survey_dislike_selected
-         * @param optionsSurveyUnselectedIconResId - R.drawable.threads_options_survey_unselected
-         * @param optionsSurveySelectedIconResId - R.drawable.threads_options_survey_selected
-         * @param surveySelectedColorFilterResId - R.color.threads_survey_selected_icon_tint
-         * @param surveyUnselectedColorFilterResId - R.color.threads_survey_unselected_icon_tint
-         * @param surveyTextColorResId - R.color.threads_chat_system_message
+         * @param binarySurveyDislikeSelectedIconResId   - R.drawable.threads_binary_survey_dislike_selected
+         * @param optionsSurveyUnselectedIconResId       - R.drawable.threads_options_survey_unselected
+         * @param optionsSurveySelectedIconResId         - R.drawable.threads_options_survey_selected
+         * @param surveySelectedColorFilterResId         - R.color.threads_survey_selected_icon_tint
+         * @param surveyUnselectedColorFilterResId       - R.color.threads_survey_unselected_icon_tint
+         * @param surveyTextColorResId                   - R.color.threads_chat_system_message
          */
         public ChatStyleBuilder setSurveyStyle(@DrawableRes final int binarySurveyLikeUnselectedIconResId,
                                                @DrawableRes final int binarySurveyLikeSelectedIconResId,
@@ -635,7 +685,8 @@ public class ChatStyle implements Serializable {
 
         /**
          * Default values:
-         * @param scheduleMessageIconResId - R.drawable.threads_schedule_icon
+         *
+         * @param scheduleMessageIconResId      - R.drawable.threads_schedule_icon
          * @param scheduleMessageTextColorResId - R.color.threads_schedule_text
          * @return ChatStyleBuilder
          */
@@ -650,13 +701,14 @@ public class ChatStyle implements Serializable {
 
         /**
          * Default values:
-         * @param welcomeScreenLogoResId  - R.drawable.threads_welcome_logo
-         * @param welcomeScreenTitleTextResId - R.string.threads_welcome_screen_title_text
-         * @param welcomeScreenSubtitleTextResId - R.string.threads_welcome_screen_subtitle_text
-         * @param welcomeScreenTitleTextColorResId - R.color.threads_welcome_screen_title
+         *
+         * @param welcomeScreenLogoResId              - R.drawable.threads_welcome_logo
+         * @param welcomeScreenTitleTextResId         - R.string.threads_welcome_screen_title_text
+         * @param welcomeScreenSubtitleTextResId      - R.string.threads_welcome_screen_subtitle_text
+         * @param welcomeScreenTitleTextColorResId    - R.color.threads_welcome_screen_title
          * @param welcomeScreenSubtitleTextColorResId - R.color.threads_welcome_screen_subtitle
-         * @param welcomeScreenTitleSizeInSp - R.dimen.threads_welcome_screen_title
-         * @param welcomeScreenSubtitleSizeInSp - R.dimen.threads_welcome_screen_subtitle
+         * @param welcomeScreenTitleSizeInSp          - R.dimen.threads_welcome_screen_title
+         * @param welcomeScreenSubtitleSizeInSp       - R.dimen.threads_welcome_screen_subtitle
          * @return ChatStyleBuilder
          */
         public ChatStyleBuilder setWelcomeScreenStyle(
