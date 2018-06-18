@@ -1,9 +1,11 @@
 package im.threads.model;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.text.TextUtils;
@@ -23,6 +25,8 @@ import im.threads.utils.PrefUtils;
 public class ChatStyle implements Serializable {
 
     public static final int DEFAULT_HISTORY_LOADING_COUNT = 50;
+
+    public static Context appContext;
 
     //common styles
     @ColorRes
@@ -201,29 +205,35 @@ public class ChatStyle implements Serializable {
     public String specialistConnectTitleFont;
     public String specialistConnectSubtitleFont;
     public String typingFont;
-    public String scheduleAlerFont;
+    public String scheduleAlertFont;
 
+    @SuppressLint("StaticFieldLeak")
     private static volatile ChatStyle instance;
 
-    //TODO #THREADS-2853 get from PrefUtils, return @NonNull, fill with defaults
+    @NonNull
     public static ChatStyle getInstance() {
         ChatStyle localInstance = instance;
         if (localInstance == null) {
             synchronized (ChatStyle.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    instance = localInstance = new ChatStyle();
+                    localInstance = PrefUtils.getIncomingStyle(appContext);
+                    if (localInstance == null) {
+                        localInstance = new ChatStyle();
+                    }
+                    instance = localInstance;
                 }
+
             }
         }
         return localInstance;
     }
-    
+
     private ChatStyle() {}
 
     public static class ChatStyleBuilder {
         private ChatStyle chatStyle;
-        private Context ctx;
+        private Context appContext;
 
         private String appMarker;
         private String clientId;
@@ -242,8 +252,8 @@ public class ChatStyle implements Serializable {
             builder.clientId = clientId;
             builder.userName = userName;
             builder.data = data;
-            builder.chatStyle = getInstance();
-            builder.ctx = ctx.getApplicationContext();
+            builder.chatStyle = new ChatStyle();
+            builder.appContext = ctx.getApplicationContext();
             return builder;
         }
 
@@ -265,7 +275,7 @@ public class ChatStyle implements Serializable {
         public ChatStyleBuilder setIsClientIdEncrypted(final boolean encrypted) {
             chatStyle.isClientIdEncrypted = encrypted;
             if (encrypted) {
-                PrefUtils.setClientIdEncrypted(ctx);
+                PrefUtils.setClientIdEncrypted(appContext);
             }
             return this;
         }
@@ -391,21 +401,22 @@ public class ChatStyle implements Serializable {
         }
 
         public ChatStyleBuilder setScheduleAlertFont(final String path) {
-            chatStyle.scheduleAlerFont = path;
+            chatStyle.scheduleAlertFont = path;
             return this;
         }
 
         public ChatStyle build() {
-            if (TextUtils.isEmpty(clientId) && PrefUtils.getClientID(ctx).equals("")) {
-                throw new IllegalStateException(ctx.getString(R.string.threads_invalid_client_id));
+            if (TextUtils.isEmpty(clientId)) {
+                throw new IllegalStateException(appContext.getString(R.string.threads_invalid_client_id));
             }
 
-            PrefUtils.setIncomingStyle(ctx, chatStyle);
+            ChatStyle.appContext = appContext;
+            PrefUtils.setIncomingStyle(appContext, chatStyle);
 
-            PrefUtils.setAppMarker(ctx, appMarker);
-            PrefUtils.setNewClientId(ctx, clientId);
-            PrefUtils.setUserName(ctx, userName);
-            PrefUtils.setData(ctx, data);
+            PrefUtils.setAppMarker(appContext, appMarker);
+            PrefUtils.setNewClientId(appContext, clientId);
+            PrefUtils.setUserName(appContext, userName);
+            PrefUtils.setData(appContext, data);
 
             ChatStyle.instance = chatStyle;
 

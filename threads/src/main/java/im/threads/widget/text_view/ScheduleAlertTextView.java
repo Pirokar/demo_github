@@ -27,8 +27,8 @@ public class ScheduleAlertTextView extends CustomFontTextView {
     public void setTypefaceView(Context context) {
         ChatStyle style = PrefUtils.getIncomingStyle(context);
         if (style != null) {
-            if (!TextUtils.isEmpty(style.scheduleAlerFont)) {
-                setTypeface(Typeface.createFromAsset(context.getAssets(), style.scheduleAlerFont));
+            if (!TextUtils.isEmpty(style.scheduleAlertFont)) {
+                setTypeface(Typeface.createFromAsset(context.getAssets(), style.scheduleAlertFont));
             } else {
                 super.setTypefaceView(context);
             }

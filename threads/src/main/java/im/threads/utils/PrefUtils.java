@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -120,11 +121,7 @@ public class PrefUtils {
         return !clientId.isEmpty();
     }
 
-    public static void setIncomingStyle(Context ctx, ChatStyle style) {
-        if (ctx == null || style == null) {
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "setIncomingStyle: ctx or style is null");
-            return;
-        }
+    public static void setIncomingStyle(@NonNull Context ctx, @NonNull ChatStyle style) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.putString(APP_STYLE, new Gson().toJson(style));
         editor.commit();
