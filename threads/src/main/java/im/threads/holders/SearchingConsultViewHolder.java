@@ -27,12 +27,7 @@ public class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
 
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-            }
-            else {
-                progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_chat_toolbar), PorterDuff.Mode.SRC_ATOP);
-            }
+            progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
             if (style.showConsultSearching) {
                 itemView.setVisibility(View.VISIBLE);
             } else {

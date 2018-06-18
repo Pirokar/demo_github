@@ -22,8 +22,6 @@ import im.threads.utils.PrefUtils;
 
 public class ChatStyle implements Serializable {
 
-    public static final int INVALID = -1;
-
     public static final int DEFAULT_HISTORY_LOADING_COUNT = 50;
 
     //common styles

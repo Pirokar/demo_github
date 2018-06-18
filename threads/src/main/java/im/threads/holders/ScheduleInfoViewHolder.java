@@ -32,12 +32,8 @@ public class ScheduleInfoViewHolder extends RecyclerView.ViewHolder {
 
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
-            if(style.scheduleMessageTextColorResId != ChatStyle.INVALID) {
-                text.setTextColor(ContextCompat.getColor(itemView.getContext(), style.scheduleMessageTextColorResId));
-            }
-            if(style.scheduleMessageIconResId != ChatStyle.INVALID) {
-                icon.setImageResource(style.scheduleMessageIconResId);
-            }
+            text.setTextColor(ContextCompat.getColor(itemView.getContext(), style.scheduleMessageTextColorResId));
+            icon.setImageResource(style.scheduleMessageIconResId);
         }
     }
 
