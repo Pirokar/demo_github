@@ -19,8 +19,6 @@ import im.threads.model.ChatStyle;
 import im.threads.model.Survey;
 import im.threads.utils.PrefUtils;
 
-import static im.threads.model.ChatStyle.INVALID;
-
 /**
  * ViewHolder для результатов опроса с рейтингом
  * Created by chybakut2004 on 17.04.17.
@@ -56,33 +54,14 @@ public class RatingStarsSentViewHolder extends BaseHolder {
 
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
-            if (style.outgoingMessageBubbleColor != INVALID) {
-                rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
-                mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-            }
-            else {
-                rateStarsCount.setTextColor(getColorInt(R.color.threads_chat_outgoing_message_bubble));
-                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_outgoing_message_bubble), PorterDuff.Mode.SRC_ATOP);
+            rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
+            mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+            mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+            messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
+            setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
+            star.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
 
-            }
-            if (style.outgoingMessageBubbleBackground != INVALID) {
-                mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
-            }
-            if (style.outgoingMessageTextColor != INVALID) {
-                messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-                setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
-                star.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),PorterDuff.Mode.SRC_ATOP);
-            }
-            else {
-                star.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_text),PorterDuff.Mode.SRC_ATOP);
-            }
-
-            if (style.optionsSurveySelectedIconResId != INVALID) {
-                star.setImageResource(style.optionsSurveySelectedIconResId);
-            }
-            else {
-                star.setImageResource(R.drawable.threads_options_survey_selected);
-            }
+            star.setImageResource(style.optionsSurveySelectedIconResId);
         }
     }
 

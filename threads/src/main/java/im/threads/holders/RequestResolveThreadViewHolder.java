@@ -40,31 +40,16 @@ public class RequestResolveThreadViewHolder extends BaseHolder {
         }
 
         if (style != null) {
-            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
                 topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
                 bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-            }
 
-            if (style.chatSystemMessageTextColor != ChatStyle.INVALID) {
                 requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-            }
-
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
                 approveRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId));
                 denyRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId));
-            }
 
-            if (style.requestToResolveThreadTextResId != ChatStyle.INVALID) {
                 requestToResolveThread.setText(style.requestToResolveThreadTextResId);
-            }
-
-            if (style.approveRequestToResolveThreadTextResId != ChatStyle.INVALID) {
                 approveRequest.setText(style.approveRequestToResolveThreadTextResId);
-            }
-
-            if (style.denyRequestToResolveThreadTextResId != ChatStyle.INVALID) {
                 denyRequest.setText(style.denyRequestToResolveThreadTextResId);
-            }
         }
     }
 
