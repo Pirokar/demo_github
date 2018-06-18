@@ -131,16 +131,19 @@ public class ChatStyle implements Serializable {
 //    R.drawable.timestamp_incoming_underlayer - бэкграунд подложки под временем на входящем сообщении с изображением
 //    R.drawable.timestamp_outgoing_underlayer - бэкграунд подложки под временем на исходящем сообщении с изображением
 
-
-    //images history
-//TODO #THREADS-2853
-//    Экран просмотра изображений
-//    R.color.threads_attachments_toolbar - цвет тулбара
-//    R.color.threads_attachments_background - цвет фон
-//    R.color.threads_attachments_author_text_color - цвет автора
-//    R.color.threads_attachments_date_text_color - цвет даты
-//    R.dimen.threads_attachments_author_text_size - размерш шрифта автора
-//    R.dimen.threads_attachments_date_text_size - размер шрифта даты
+    //images history & gallery screens
+    @ColorRes
+    public int imagesScreenToolbarColor = R.color.threads_attachments_toolbar;
+    @ColorRes
+    public int imagesScreenBackgroundColor = R.color.threads_attachments_background;
+    @ColorRes
+    public int imagesScreenAuthorTextColor = R.color.threads_attachments_author_text_color;
+    @ColorRes
+    public int imagesScreenDateTextColor = R.color.threads_attachments_date_text_color;
+    @DimenRes
+    public int imagesScreenAuthorTextSize = R.dimen.threads_attachments_author_text_size;
+    @DimenRes
+    public int imagesScreenDateTextSize = R.dimen.threads_attachments_date_text_size;
 
     // chat input style
     @ColorRes
@@ -671,6 +674,35 @@ public class ChatStyle implements Serializable {
             chatStyle.nougatPushAccentColorResId = nougatPushAccentColorResId;
             chatStyle.quickReplyMessageBackgroundColor = quickReplyMessageBackgroundColor;
             chatStyle.quickReplyMessageTextColor = quickReplyMessageTextColor;
+            return this;
+        }
+
+        //images history screen
+
+
+        /**
+         * Default values:
+         *
+         * @param imagesScreenToolbarColor    = R.color.threads_attachments_toolbar;
+         * @param imagesScreenBackgroundColor = R.color.threads_attachments_background;
+         * @param imagesScreenAuthorTextColor = R.color.threads_attachments_author_text_color;
+         * @param imagesScreenDateTextColor   = R.color.threads_attachments_date_text_color;
+         * @param imagesScreenAuthorTextSize  = R.dimen.threads_attachments_author_text_size;
+         * @param imagesScreenDateTextSize    = R.dimen.threads_attachments_date_text_size;
+         */
+        public ChatStyleBuilder setRequestResolveThreadStyle(@ColorRes int imagesScreenToolbarColor,
+                                                             @ColorRes int imagesScreenBackgroundColor,
+                                                             @ColorRes int imagesScreenAuthorTextColor,
+                                                             @ColorRes int imagesScreenDateTextColor,
+                                                             @DimenRes int imagesScreenAuthorTextSize,
+                                                             @DimenRes int imagesScreenDateTextSize) {
+
+            chatStyle.imagesScreenToolbarColor = imagesScreenToolbarColor;
+            chatStyle.imagesScreenBackgroundColor = imagesScreenBackgroundColor ;
+            chatStyle.imagesScreenAuthorTextColor = imagesScreenAuthorTextColor;
+            chatStyle.imagesScreenDateTextColor = imagesScreenDateTextColor;
+            chatStyle.imagesScreenAuthorTextSize = imagesScreenAuthorTextSize;
+            chatStyle.imagesScreenDateTextSize = imagesScreenDateTextSize;
             return this;
         }
 
