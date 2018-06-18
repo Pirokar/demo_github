@@ -23,8 +23,6 @@ import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 
-import static im.threads.model.ChatStyle.INVALID;
-
 /**
  * Created by yuri on 09.06.2016.
  * layout/item_consult_connected.xml
@@ -36,7 +34,9 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
     private TextView connectedMessage;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     private static ChatStyle style;
-    private @DrawableRes int defIcon;
+
+    @DrawableRes
+    private int defIcon;
 
     public ConsultConnectionMessageViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consult_connected, parent, false));
@@ -45,19 +45,14 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         connectedMessage = (TextView) itemView.findViewById(R.id.text);
         if (null == style) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
-            if (INVALID != style.chatSystemMessageTextColor) {
-                headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-                connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-            }
+            headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+            connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
 
-            if (INVALID != style.operatorSystemAvatarSize) {
-                mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
-                mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
-            }
+            mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
+            mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
+
+            defIcon = style.defaultOperatorAvatar;
         }
-        defIcon = null != style && INVALID != style.defaultOperatorAvatar ?
-                style.defaultOperatorAvatar :
-                R.drawable.threads_operator_avatar_placeholder;
     }
 
     public void onBind(

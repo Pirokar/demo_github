@@ -12,8 +12,6 @@ import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.utils.PrefUtils;
 
-import static im.threads.model.ChatStyle.INVALID;
-
 /**
  * Created by yuri on 09.06.2016.
  * layout/item_consult_typing.xml
@@ -29,15 +27,9 @@ public class ConsultIsTypingViewHolderNew extends RecyclerView.ViewHolder {
         mViewTypingInProgress = (TextView) itemView.findViewById(R.id.typing_in_progress);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (null != style) {
-            if (style.chatSystemMessageTextColor != ChatStyle.INVALID){
-                mViewTypingInProgress.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-            }
-
-            if (style.operatorSystemAvatarSize != INVALID) {
-                mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
-                mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
-            }
-
+            mViewTypingInProgress.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+            mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
+            mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
         }
     }
 

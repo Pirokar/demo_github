@@ -140,7 +140,9 @@ public class PrefUtils {
             }
         }
         catch (IllegalStateException|JsonSyntaxException ex) {
-
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                Log.w(TAG, "getIncomingStyle failed: ", ex);
+            }
         }
 
         return style;
