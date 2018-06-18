@@ -31,8 +31,6 @@ import im.threads.utils.PrefUtils;
 import im.threads.utils.ViewUtils;
 import im.threads.views.CircularProgressButton;
 
-import static im.threads.model.ChatStyle.INVALID;
-
 /**
  * Created by yuri on 08.06.2016.
  * layout/item_user_text_with_file.xml
@@ -80,33 +78,19 @@ public class UserPhraseViewHolder extends BaseHolder {
         mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
         if (style != null) {
-            if (style.outgoingMessageBubbleColor != INVALID) {
-                mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-            } else {
-                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_outgoing_message_bubble), PorterDuff.Mode.SRC_ATOP);
-            }
+            mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
 
-            if (style.outgoingMessageBubbleBackground != INVALID) {
-                mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
-            }
-            if (style.outgoingMessageTextColor != INVALID) {
-                messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-                setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
-                itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
-                mFileImageButton.setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
-            }
+            mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+            messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
+            setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
+            itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
+            mFileImageButton.setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
 
             mPhraseTextView.setLinkTextColor(getColorInt(style.outgoingMessageLinkColor));
 
-            if (style.outgoingMessageTextColor != INVALID && style.outgoingMessageBubbleColor != INVALID) {
-                setTintToProgressButtonUser(mFileImageButton, style.outgoingMessageTextColor, style.chatBodyIconsTint);
-            } else {
-                setTintToProgressButtonUser(mFileImageButton, android.R.color.white, R.color.threads_chat_icons_tint);
-            }
-            if (style.chatHighlightingColor != INVALID) {
-                mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-                mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            }
+            setTintToProgressButtonUser(mFileImageButton, style.outgoingMessageTextColor, style.chatBodyIconsTint);
+            mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+            mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         }
     }
 
@@ -174,16 +158,15 @@ public class UserPhraseViewHolder extends BaseHolder {
 
                             @Override
                             public void onError() {
-                                if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
+                                if (style != null) {
                                     mImage.setImageResource(style.imagePlaceholder);
-                                }else {
+                                } else {
                                     mImage.setImageResource(R.drawable.threads_image_placeholder);
                                 }
 
                             }
                         });
-            }
-            else {
+            } else {
                 if (fileDescription.getFilePath() != null) fileDescription.setDownloadProgress(100);
                 mRightTextRow.setVisibility(View.VISIBLE);
                 mFileImageButton.setVisibility(View.VISIBLE);

@@ -24,8 +24,6 @@ import im.threads.utils.FileUtils;
 import im.threads.utils.MaskedTransformer;
 import im.threads.utils.PrefUtils;
 
-import static im.threads.model.ChatStyle.INVALID;
-
 /**
  * Created by yuri on 30.06.2016.
  */
@@ -50,15 +48,11 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (style != null) {
-            if (style.chatHighlightingColor != INVALID) {
-                filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-                filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            }
+            filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+            filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
 
-            if (style.operatorAvatarSize != INVALID) {
-                mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
-                mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
-            }
+            mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+            mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
         }
 
     }
@@ -95,17 +89,17 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
 
                         @Override
                         public void onError() {
-                            if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
+                            if (style != null) {
                                 mImage.setImageResource(style.imagePlaceholder);
-                            }else {
+                            } else {
                                 mImage.setImageResource(R.drawable.threads_image_placeholder);
                             }
                         }
                     });
         } else if (isDownloadError) {
-            if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
+            if (style != null) {
                 mImage.setImageResource(style.imagePlaceholder);
-            }else {
+            } else {
                 mImage.setImageResource(R.drawable.threads_image_placeholder);
             }
         }
@@ -117,11 +111,11 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
             filterSecond.setVisibility(View.INVISIBLE);
         }
         @DrawableRes int resId = R.drawable.threads_operator_avatar_placeholder;
-        if (style!=null && style.defaultOperatorAvatar != ChatStyle.INVALID)resId = style.defaultOperatorAvatar;
+        if (style != null) resId = style.defaultOperatorAvatar;
         if (isAvatarVisible) {
             float bubbleLeftMarginDp = itemView.getContext().getResources().getDimension(R.dimen.margin_quarter);
             int bubbleLeftMarginPx = ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bubbleLeftMarginDp, itemView.getResources().getDisplayMetrics()));
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mImage.getLayoutParams();
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mImage.getLayoutParams();
             lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
             mImage.setLayoutParams(lp);
 
@@ -163,11 +157,11 @@ public class ImageFromConsultViewHolder extends RecyclerView.ViewHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
 
-            int avatarSizeRes =  style != null && style.operatorAvatarSize != INVALID ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
+            int avatarSizeRes = style != null ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
             int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
             int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
             int avatarLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mImage.getLayoutParams();
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mImage.getLayoutParams();
             lp.setMargins(avatarSizePx + bubbleLeftMarginPx + avatarLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
             mImage.setLayoutParams(lp);
         }

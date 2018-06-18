@@ -44,10 +44,8 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
             style = PrefUtils.getIncomingStyle(itemView.getContext());
         }
         if (null != style) {
-            if (style.chatHighlightingColor != ChatStyle.INVALID) {
-                filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-                filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            }
+            filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+            filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         }
     }
 
@@ -82,18 +80,18 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
 
                         @Override
                         public void onError() {
-                            if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
+                            if (style != null) {
                                 mImage.setImageResource(style.imagePlaceholder);
-                            }else {
+                            } else {
                                 mImage.setImageResource(R.drawable.threads_image_placeholder);
                             }
 
                         }
                     });
         } else if (isDownloadError) {
-            if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
+            if (style != null) {
                 mImage.setImageResource(style.imagePlaceholder);
-            }else {
+            } else {
                 mImage.setImageResource(R.drawable.threads_image_placeholder);
             }
         }
