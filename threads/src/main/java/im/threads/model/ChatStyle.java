@@ -24,8 +24,6 @@ import im.threads.utils.PrefUtils;
 
 public class ChatStyle implements Serializable {
 
-    public static final int DEFAULT_HISTORY_LOADING_COUNT = 50;
-
     public static Context appContext;
 
     //common styles
@@ -93,6 +91,9 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int filesAndMediaScreenBackgroundColor = R.color.threads_files_medias_screen_background;
     @ColorRes
+    public int filesAndMediaTextColor = R.color.threads_files_list;
+
+    @ColorRes
     public int iconsAndSeparatorsColor = R.color.threads_icon_and_separators_color;
     @DrawableRes
     public int defaultOperatorAvatar = R.drawable.threads_operator_avatar_placeholder;
@@ -112,6 +113,33 @@ public class ChatStyle implements Serializable {
     public int unreadMsgStickerColorResId = R.color.threads_chat_unread_msg_sticker_background;
     @ColorRes
     public int unreadMsgCountTextColorResId = R.color.threads_chat_unread_msg_count_text;
+
+    //TODO #THREADS-2853
+    //chat message statuses
+//    R.color.threads_outgoing_message_sent_icon - цвет иконки статуса "Отправлено" (галочка) на сообщении клиента
+//    R.color.threads_outgoing_message_received_icon - цвет иконки статуса "Прочитано" (двойная галочка) на сообщении клиента
+//    R.color.threads_outgoing_message_not_send_icon - цвет иконки статуса "Не отправлено" на сообщении клиента
+//    R.color.threads_outgoing_message_image_sent_icon - цвет иконки статуса "Отправлено" (галочка) на сообщении с изображением
+//    R.color.threads_outgoing_message_image_received_icon - цвет иконки статуса "Прочитано" (двойная галочка) на сообщении с изображением
+//    R.color.threads_outgoing_message_image_not_send_icon - цвет иконки статуса "Не отправлено" на сообщении с изображением
+//    R.drawable.threads_message_sent - иконка статуса "Отправлено" (галочка) на сообщении клиента
+//    R.drawable.threads_message_received - иконка статуса "Прочитано" (двойная галочка) на сообщении клиента
+//    R.drawable.threads_message_waiting - иконка статуса "Не отправлено" на сообщении клиента
+//    R.drawable.threads_message_image_sent - иконка статуса "Отправлено" (галочка) на сообщении с изображением
+//    R.drawable.threads_image_message_received - иконка статуса "Прочитано" (двойная галочка) на сообщении с изображением
+//    R.drawable.threads_message_image_waiting - иконка статуса "Не отправлено" на сообщении с изображением
+//    R.drawable.timestamp_incoming_underlayer - бэкграунд подложки под временем на входящем сообщении с изображением
+//    R.drawable.timestamp_outgoing_underlayer - бэкграунд подложки под временем на исходящем сообщении с изображением
+
+
+//TODO #THREADS-2853
+//    Экран просмотра изображений
+//    R.color.threads_attachments_toolbar - цвет тулбара
+//    R.color.threads_attachments_background - цвет фон
+//    R.color.threads_attachments_author_text_color - цвет автора
+//    R.color.threads_attachments_date_text_color - цвет даты
+//    R.dimen.threads_attachments_author_text_size - размерш шрифта автора
+//    R.dimen.threads_attachments_date_text_size - размер шрифта даты
 
     // chat input style
     @ColorRes
@@ -141,6 +169,10 @@ public class ChatStyle implements Serializable {
     public int pushBackgroundColorResId = R.color.threads_push_background;
     @ColorRes
     public int nougatPushAccentColorResId = R.color.threads_nougat_push_accent;
+
+    //TODO #THREADS-2853
+//    R.color.threads_quick_reply_message_background - цвет фона входящего сообщения в быстром ответе, по умолчанию = R.color.threads_chat_incoming_message_bubble
+//    R.color.threads_quick_reply_message_text_color - цвет текста входящего сообщения в быстром ответе , по умолчанию = R.color.threads_incoming_message_text
 
     // resolve thread request style
     @StringRes
@@ -496,6 +528,7 @@ public class ChatStyle implements Serializable {
          * @param chatBodyIconsTint                  - R.color.threads_chat_icons_tint
          * @param chatSystemMessageTextColor         - R.color.threads_chat_connection_message
          * @param filesAndMediaScreenBackgroundColor - R.color.threads_files_medias_screen_background
+         * @param filesAndMediaTextColor             = R.color.threads_files_list
          * @param iconsAndSeparatorsColor            - R.color.threads_icon_and_separators_color
          * @param defaultOperatorAvatar              - R.drawable.threads_operator_avatar_placeholder
          * @param operatorAvatarSize                 - R.dimen.threads_operator_photo_size
@@ -529,6 +562,7 @@ public class ChatStyle implements Serializable {
                 @ColorRes final int chatBodyIconsTint,
                 @ColorRes final int chatSystemMessageTextColor,
                 @ColorRes final int filesAndMediaScreenBackgroundColor,
+                @ColorRes int filesAndMediaTextColor,
                 @ColorRes final int iconsAndSeparatorsColor,
                 @DrawableRes final int defaultOperatorAvatar,
                 @DimenRes final int operatorAvatarSize,
@@ -563,6 +597,7 @@ public class ChatStyle implements Serializable {
             chatStyle.chatBodyIconsTint = chatBodyIconsTint;
             chatStyle.chatSystemMessageTextColor = chatSystemMessageTextColor;
             chatStyle.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
+            chatStyle.filesAndMediaTextColor = filesAndMediaTextColor;
             chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor;
             chatStyle.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
             chatStyle.showConsultSearching = showConsultSearching;

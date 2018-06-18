@@ -40,6 +40,10 @@ public class FileAndMediaViewHolder extends BaseHolder {
         tintedDrawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
         style = ChatStyle.getInstance();
         tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+
+        fileSizeTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
+        fileHeaderTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
+        timeStampTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
     }
 
     public void onBind(
