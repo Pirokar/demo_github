@@ -9,7 +9,6 @@ import android.widget.TextView;
 import im.threads.R;
 import im.threads.adapters.ChatAdapter;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  * ViewHolder для запроса о завершении чата
@@ -36,21 +35,19 @@ public class RequestResolveThreadViewHolder extends BaseHolder {
         denyRequest = (TextView) itemView.findViewById(R.id.deny_request);
 
         if (style == null) {
-            style = PrefUtils.getIncomingStyle(itemView.getContext());
+            style = ChatStyle.getInstance();
         }
 
-        if (style != null) {
-                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
+        topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
+        bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
 
-                requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-                approveRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId));
-                denyRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId));
+        requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+        approveRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId));
+        denyRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId));
 
-                requestToResolveThread.setText(style.requestToResolveThreadTextResId);
-                approveRequest.setText(style.approveRequestToResolveThreadTextResId);
-                denyRequest.setText(style.denyRequestToResolveThreadTextResId);
-        }
+        requestToResolveThread.setText(style.requestToResolveThreadTextResId);
+        approveRequest.setText(style.approveRequestToResolveThreadTextResId);
+        denyRequest.setText(style.denyRequestToResolveThreadTextResId);
     }
 
     public void bind(final ChatAdapter.AdapterInterface adapterInterface) {

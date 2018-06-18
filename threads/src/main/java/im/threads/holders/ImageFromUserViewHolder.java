@@ -17,10 +17,8 @@ import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
-import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.MaskedTransformer;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 30.06.2016.
@@ -32,7 +30,7 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     private View filter;
     private View filterSecond;
-    private static ChatStyle style;
+    private ChatStyle style;
 
     public ImageFromUserViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
@@ -41,12 +39,10 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         filter = itemView.findViewById(R.id.filter);
         filterSecond = itemView.findViewById(R.id.filter_second);
         if (null == style) {
-            style = PrefUtils.getIncomingStyle(itemView.getContext());
+            style = ChatStyle.getInstance();
         }
-        if (null != style) {
-            filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-        }
+        filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
     }
 
     public void onBind(
@@ -69,31 +65,13 @@ public class ImageFromUserViewHolder extends RecyclerView.ViewHolder {
         if (fileDescription.getFilePath() != null && !isDownloadError) {
             Picasso.with(itemView.getContext())
                     .load(fileDescription.getFilePath())
+                    .error(style.imagePlaceholder)
                     .fit()
                     .centerCrop()
                     .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_USER))
-                    .into(mImage, new Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-                            if (style != null) {
-                                mImage.setImageResource(style.imagePlaceholder);
-                            } else {
-                                mImage.setImageResource(R.drawable.threads_image_placeholder);
-                            }
-
-                        }
-                    });
+                    .into(mImage);
         } else if (isDownloadError) {
-            if (style != null) {
-                mImage.setImageResource(style.imagePlaceholder);
-            } else {
-                mImage.setImageResource(R.drawable.threads_image_placeholder);
-            }
+            mImage.setImageResource(style.imagePlaceholder);
         }
         if (isChosen) {
             filter.setVisibility(View.VISIBLE);

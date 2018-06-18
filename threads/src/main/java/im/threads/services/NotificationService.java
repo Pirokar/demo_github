@@ -46,7 +46,6 @@ import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.picasso_url_connection_only.Target;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.utils.TargetNoError;
 import im.threads.utils.Tuple;
 
@@ -93,7 +92,7 @@ public class NotificationService extends Service {
         if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onStartCommand");
 
         if (style == null) {
-            style = PrefUtils.getIncomingStyle(this);
+            style = ChatStyle.getInstance();
         }
 
         if (mBroadcastReceiver == null) {
@@ -213,25 +212,21 @@ public class NotificationService extends Service {
         final RemoteViews pushSmall = new RemoteViews(getPackageName(), R.layout.remote_push_small);
         final RemoteViews pushBig = new RemoteViews(getPackageName(), R.layout.remote_push_expanded);
 
-        if (style != null) {
-            builder.setContentTitle(getString(style.defTitleResId));
-            pushSmall.setTextViewText(R.id.title, getString(style.defTitleResId));
-            pushBig.setTextViewText(R.id.title, getString(style.defTitleResId));
-        }
+        builder.setContentTitle(getString(style.defTitleResId));
+        pushSmall.setTextViewText(R.id.title, getString(style.defTitleResId));
+        pushBig.setTextViewText(R.id.title, getString(style.defTitleResId));
 
         pushSmall.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
         pushBig.setImageViewResource(R.id.icon_large_bg, R.drawable.ic_circle_40dp);
 
-        if (style != null) {
-            builder.setColor(getResources().getColor(style.pushBackgroundColorResId));
-            pushSmall.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(style.pushBackgroundColorResId));
-            pushBig.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(style.pushBackgroundColorResId));
+        builder.setColor(getResources().getColor(style.pushBackgroundColorResId));
+        pushSmall.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(style.pushBackgroundColorResId));
+        pushBig.setInt(R.id.icon_large_bg, "setColorFilter", getResources().getColor(style.pushBackgroundColorResId));
 
-            pushSmall.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
-            pushBig.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
+        pushSmall.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
+        pushBig.setInt(R.id.text, "setTextColor", getResources().getColor(style.incomingMessageTextColor));
 
-            builder.setSmallIcon(style.defPushIconResId);
-        }
+        builder.setSmallIcon(style.defPushIconResId);
 
         final boolean unreadMessage = !TextUtils.isEmpty(message);
         if (unreadMessage) {
@@ -240,13 +235,11 @@ public class NotificationService extends Service {
                 showMstyleOperatorAvatar(FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), operatorUrl), pushSmall, pushBig);
                 showMstyleSmallIcon(pushSmall, pushBig);
             } else {
-                if (style != null) {
-                    final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
-                    pushSmall.setImageViewBitmap(R.id.icon_large, icon);
-                    pushBig.setImageViewBitmap(R.id.icon_large, icon);
-                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
-                    pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
-                }
+                final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
+                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
                 pushSmall.setViewVisibility(R.id.consult_name, View.GONE);
                 pushBig.setViewVisibility(R.id.consult_name, View.GONE);
                 pushSmall.setViewVisibility(R.id.attach_image, View.GONE);
@@ -273,13 +266,11 @@ public class NotificationService extends Service {
                 showMstyleOperatorAvatar(FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), avatarPath), pushSmall, pushBig);
                 showMstyleSmallIcon(pushSmall, pushBig);
             } else {
-                if (style != null) {
-                    final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
-                    pushSmall.setImageViewBitmap(R.id.icon_large, icon);
-                    pushBig.setImageViewBitmap(R.id.icon_large, icon);
-                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
-                    pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
-                }
+                final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
+                pushSmall.setImageViewBitmap(R.id.icon_large, icon);
+                pushBig.setImageViewBitmap(R.id.icon_large, icon);
+                pushSmall.setImageViewBitmap(R.id.icon_small_corner, null);
+                pushBig.setImageViewBitmap(R.id.icon_small_corner, null);
             }
             pushSmall.setTextViewText(R.id.consult_name, pushText.second.consultName + ":");
             pushSmall.setTextViewText(R.id.text, pushText.second.contentDescription.trim());
@@ -375,17 +366,10 @@ public class NotificationService extends Service {
             }
         };
 
-        if (style != null) {
-            Picasso.with(this)
-                    .load(style.defPushIconResId)
-                    .transform(new CircleTransform())
-                    .into(smallPicTarget);
-        } else {
-            Picasso.with(this)
-                    .load(R.drawable.default_push_icon)
-                    .transform(new CircleTransform())
-                    .into(smallPicTarget);
-        }
+        Picasso.with(this)
+                .load(style.defPushIconResId)
+                .transform(new CircleTransform())
+                .into(smallPicTarget);
     }
 
 
@@ -394,16 +378,12 @@ public class NotificationService extends Service {
 
         builder.setShowWhen(true);
         if (Build.VERSION.SDK_INT > 23) {
-            if (style != null) {
-                builder.setColor(getColor(style.nougatPushAccentColorResId));
-            }
+            builder.setColor(getColor(style.nougatPushAccentColorResId));
         }
         final boolean unreadMessage = !TextUtils.isEmpty(message);
         if (unreadMessage) {
             builder.setContentText(message);
-            if (style != null) {
-                builder.setSmallIcon(style.defPushIconResId);
-            }
+            builder.setSmallIcon(style.defPushIconResId);
 
             final String operatorUrl = intent.getStringExtra(EXTRA_OPERATOR_URL);
             if (!TextUtils.isEmpty(operatorUrl)) {
@@ -454,9 +434,7 @@ public class NotificationService extends Service {
                         .into(avatarTarget);
             }
             if (!pushContents.hasImage && !pushContents.hasPlainFiles) {
-                if (style != null) {
-                    builder.setSmallIcon(style.defPushIconResId);
-                }
+                builder.setSmallIcon(style.defPushIconResId);
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {

@@ -17,7 +17,6 @@ import java.util.Locale;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.Survey;
-import im.threads.utils.PrefUtils;
 
 /**
  * ViewHolder для результатов бинарного опроса
@@ -46,14 +45,11 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
         mBubble = itemView.findViewById(R.id.bubble);
 
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-            mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
-            messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-            setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView}, style.outgoingMessageTextColor);
-        }
-
+        if (style == null) style = ChatStyle.getInstance();
+        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView}, style.outgoingMessageTextColor);
     }
 
     public void bind(Survey survey) {

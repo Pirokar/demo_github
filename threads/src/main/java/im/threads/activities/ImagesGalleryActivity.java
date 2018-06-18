@@ -15,11 +15,9 @@ import java.util.List;
 import im.threads.R;
 import im.threads.adapters.ImagesAdapter;
 import im.threads.database.DatabaseHolder;
-import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.utils.ThreadUtils;
 
 /**
@@ -55,7 +53,7 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
                         output.add(fd);
                     }
                 }
-                Log.e(TAG, "output = "+output);
+                Log.e(TAG, "output = " + output);
                 collectionSize = output.size();
                 viewPager.setAdapter(new ImagesAdapter(output, getFragmentManager()));
                 FileDescription fd = getIntent().getParcelableExtra("FileDescription");
@@ -74,19 +72,13 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
                 finish();
             }
         });
-        ChatStyle style = PrefUtils.getIncomingStyle(this);
-       /* if (null != style) {
-            if (style.chatBackgroundColor != INVALID)     findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
-            if (style.chatToolbarColorResId != INVALID)    mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarColorResId != INVALID)    mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarTextColorResId != INVALID)     ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
-            if (style.chatToolbarTextColorResId != INVALID)     mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
-        }*/
-    }
-
-    @Override
-    protected void setActivityStyle(ChatStyle style) {
-
+        /*ChatStyle style = ChatStyle.getInstance();
+        findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+        mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+        ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
+        mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
+        */
     }
 
     public static Intent getStartIntent(Context context, FileDescription fileDescription) {
@@ -105,7 +97,7 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
         ThreadUtils.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mToolbar.setTitle(position+1 + " " + getString(R.string.threads_from) + " " + collectionSize);
+                mToolbar.setTitle(position + 1 + " " + getString(R.string.threads_from) + " " + collectionSize);
             }
         });
     }

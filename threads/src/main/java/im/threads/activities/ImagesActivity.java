@@ -29,12 +29,10 @@ import java.util.List;
 import im.threads.R;
 import im.threads.adapters.ImagesAdapter;
 import im.threads.database.DatabaseHolder;
-import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
 import im.threads.permissions.PermissionsActivity;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.utils.ThreadUtils;
 
 /**
@@ -93,22 +91,12 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
                 finish();
             }
         });
-        ChatStyle style = PrefUtils.getIncomingStyle(this);
-       /* if (null != style) {
-            if (style.chatBackgroundColor != INVALID)
-                findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
-            if (style.chatToolbarColorResId != INVALID)
-                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarColorResId != INVALID)
-                mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarTextColorResId != INVALID)
-                mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
-        }*/
-    }
-
-    @Override
-    protected void setActivityStyle(ChatStyle style) {
-
+        /*ChatStyle style = ChatStyle.getInstance();
+        findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+        mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+        mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
+        */
     }
 
     @Override

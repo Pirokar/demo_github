@@ -21,7 +21,6 @@ import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 09.06.2016.
@@ -33,7 +32,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
     private TextView headerTextView;
     private TextView connectedMessage;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-    private static ChatStyle style;
+    private ChatStyle style;
 
     @DrawableRes
     private int defIcon;
@@ -43,16 +42,14 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
         headerTextView = (TextView) itemView.findViewById(R.id.quote_header);
         connectedMessage = (TextView) itemView.findViewById(R.id.text);
-        if (null == style) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (null != style) {
-            headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-            connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+        if (null == style) style = ChatStyle.getInstance();
+        headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+        connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
 
-            mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
-            mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
+        mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
+        mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
 
-            defIcon = style.defaultOperatorAvatar;
-        }
+        defIcon = style.defaultOperatorAvatar;
     }
 
     public void onBind(

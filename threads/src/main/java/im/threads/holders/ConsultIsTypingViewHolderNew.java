@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 09.06.2016.
@@ -25,12 +24,10 @@ public class ConsultIsTypingViewHolderNew extends RecyclerView.ViewHolder {
         super((LayoutInflater.from(parent.getContext())).inflate(R.layout.item_consult_typing, parent, false));
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
         mViewTypingInProgress = (TextView) itemView.findViewById(R.id.typing_in_progress);
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (null != style) {
-            mViewTypingInProgress.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-            mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
-            mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
-        }
+        if (style == null) style = ChatStyle.getInstance();
+        mViewTypingInProgress.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+        mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
+        mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorSystemAvatarSize);
     }
 
     public void onBind(View.OnClickListener consultClickListener) {

@@ -18,7 +18,6 @@ import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.views.CircularProgressButton;
 
 /**
@@ -33,7 +32,7 @@ public class UserFileViewHolder extends BaseHolder {
     private View mFilterView;
     private View mFilterSecond;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-    private static ChatStyle style;
+    private ChatStyle style;
     private View mBubble;
     private static
     @ColorInt
@@ -48,18 +47,16 @@ public class UserFileViewHolder extends BaseHolder {
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterSecond = itemView.findViewById(R.id.filter_second);
         mBubble = itemView.findViewById(R.id.bubble);
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-            messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-            setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.outgoingMessageTextColor);
-            mCircularProgressButton.setBackgroundColorResId(style.outgoingMessageTextColor);
-            mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
-            setTintToProgressButtonUser(mCircularProgressButton, style.incomingMessageBubbleColor, style.chatBodyIconsTint);
+        if (style == null) style = ChatStyle.getInstance();
+        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.outgoingMessageTextColor);
+        mCircularProgressButton.setBackgroundColorResId(style.outgoingMessageTextColor);
+        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        setTintToProgressButtonUser(mCircularProgressButton, style.incomingMessageBubbleColor, style.chatBodyIconsTint);
 
-            mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-        }
+        mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
     }
 
     public void onBind(

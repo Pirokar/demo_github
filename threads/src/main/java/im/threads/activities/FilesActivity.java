@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,7 +34,6 @@ import im.threads.adapters.FilesAndMediaAdapter;
 import im.threads.controllers.FilesAndMediaController;
 import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -50,14 +50,12 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         final Context ctx = this;
         super.onCreate(savedInstanceState);
-        ChatStyle style = PrefUtils.getIncomingStyle(this);
+        ChatStyle style = ChatStyle.getInstance();
         if (Build.VERSION.SDK_INT > 20) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            if (style != null) {
-                window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
-            }
+            window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
         }
         setContentView(R.layout.activity_files_and_media);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -137,8 +135,7 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
             }
         });
 
-
-        setActivityStyle(PrefUtils.getIncomingStyle(this));
+        setActivityStyle(ChatStyle.getInstance());
     }
 
     protected void search(String searchString) {
@@ -147,19 +144,16 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
         }
     }
 
-    @Override
-    protected void setActivityStyle(ChatStyle style) {
-        if (null != style) {
-            findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.filesAndMediaScreenBackgroundColor));
+    protected void setActivityStyle(@NonNull ChatStyle style) {
+        findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.filesAndMediaScreenBackgroundColor));
 
-            mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
 
-            ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-            mSearchEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
-            mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+        ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+        mSearchEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
+        mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
 
-            mSearchEditText.setHintTextColor(getColorInt(style.chatToolbarHintTextColor));
-        }
+        mSearchEditText.setHintTextColor(getColorInt(style.chatToolbarHintTextColor));
     }
 
     public void onFileReceive(List<FileDescription> descriptions) {

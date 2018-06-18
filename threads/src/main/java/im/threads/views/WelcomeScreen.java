@@ -12,7 +12,6 @@ import android.widget.TextView;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.utils.ColorsHelper;
-import im.threads.utils.PrefUtils;
 
 public class WelcomeScreen extends LinearLayout {
     ImageView logoView;
@@ -42,18 +41,16 @@ public class WelcomeScreen extends LinearLayout {
         logoView = (ImageView) findViewById(R.id.welcome_logo);
         back = findViewById(R.id.welcome_back);
 
-        ChatStyle style = PrefUtils.getIncomingStyle(context);
+        ChatStyle style = ChatStyle.getInstance();
 
-        if (style != null) {
-            ColorsHelper.setBackgroundColor(context, this, style.chatBackgroundColor);
-            ColorsHelper.setTextColor(context, title, style.welcomeScreenTitleTextColorResId);
-            ColorsHelper.setTextColor(context, subTitle, style.welcomeScreenSubtitleTextColorResId);
+        ColorsHelper.setBackgroundColor(context, this, style.chatBackgroundColor);
+        ColorsHelper.setTextColor(context, title, style.welcomeScreenTitleTextColorResId);
+        ColorsHelper.setTextColor(context, subTitle, style.welcomeScreenSubtitleTextColorResId);
 
-            logoView.setImageResource(style.welcomeScreenLogoResId);
-            title.setTextSize(style.welcomeScreenTitleSizeInSp);
-            subTitle.setTextSize(style.welcomeScreenSubtitleSizeInSp);
-            title.setText(style.welcomeScreenTitleTextResId);
-            subTitle.setText(style.welcomeScreenSubtitleTextResId);
-        }
+        logoView.setImageResource(style.welcomeScreenLogoResId);
+        title.setTextSize(style.welcomeScreenTitleSizeInSp);
+        subTitle.setTextSize(style.welcomeScreenSubtitleSizeInSp);
+        title.setText(style.welcomeScreenTitleTextResId);
+        subTitle.setText(style.welcomeScreenSubtitleTextResId);
     }
 }

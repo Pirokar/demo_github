@@ -8,6 +8,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -25,7 +26,6 @@ import im.threads.fragments.ChatFragment;
 import im.threads.model.ChatStyle;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -49,14 +49,12 @@ public class ConsultActivity extends BaseActivity {
         }
         setContentView(R.layout.activity_consult_page);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        style = PrefUtils.getIncomingStyle(this);
+        style = ChatStyle.getInstance();
         mConsulHeaderTextView = (TextView) findViewById(R.id.consult_title);
         mConsultMotoTextView = (TextView) findViewById(R.id.consult_moto);
         mConsultImageView = (ImageView) findViewById(R.id.image);
 
-        if (style != null) {
-            mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.defaultOperatorAvatar));
-        }
+        mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.defaultOperatorAvatar));
 
         Intent i = getIntent();
         String imagePath = i.getStringExtra("imagePath");
@@ -96,32 +94,25 @@ public class ConsultActivity extends BaseActivity {
 
     }
 
-    @Override
-    protected void setActivityStyle(ChatStyle style) {
-        if (style != null) {
-            findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
-            mConsulHeaderTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
-            mConsultMotoTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
-            mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
-            mToolbar.getOverflowIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-            mToolbar.getNavigationIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-        }
+    protected void setActivityStyle(@NonNull ChatStyle style) {
+        findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+        mConsulHeaderTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
+        mConsultMotoTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
+        mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+        mToolbar.getOverflowIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+        mToolbar.getNavigationIcon().setColorFilter(getColorInt(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem searchMenuItem = menu.getItem(0);
         SpannableString s = new SpannableString(searchMenuItem.getTitle());
-        if (style != null) {
-            s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s.length(), 0);
-        }
+        s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s.length(), 0);
         searchMenuItem.setTitle(s);
 
         MenuItem filesAndMedia = menu.getItem(1);
         SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
-        if (style != null) {
-            s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s2.length(), 0);
-        }
+        s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s2.length(), 0);
         filesAndMedia.setTitle(s2);
 
         return super.onPrepareOptionsMenu(menu);

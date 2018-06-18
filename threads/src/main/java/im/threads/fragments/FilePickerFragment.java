@@ -22,7 +22,6 @@ import java.util.Arrays;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  * Dialog fragment for picking folder
@@ -69,13 +68,9 @@ public class FilePickerFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v;
         AlertDialog dialog;
-        ChatStyle style = PrefUtils.getIncomingStyle(this.getActivity());
+        ChatStyle style = ChatStyle.getInstance();
         AlertDialog.Builder builder;
-        if (style != null) {
-            builder = new AlertDialog.Builder(getActivity(), style.fileBrowserDialogStyleResId);
-        } else {
-            builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyleTransparent);
-        }
+        builder = new AlertDialog.Builder(getActivity(), style.fileBrowserDialogStyleResId);
         builder.setTitle(getString(R.string.threads_choose_file));
         builder.setNeutralButton(getString(R.string.threads_folder_up), this);
         builder.setNegativeButton(getString(R.string.threads_cancel), this);
@@ -219,10 +214,8 @@ public class FilePickerFragment extends DialogFragment
     @Override
     public void onStart() {
         super.onStart();
-        ChatStyle style = PrefUtils.getIncomingStyle(getActivity());
-        if (style != null) {
-            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
-            ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
-        }
+        ChatStyle style = ChatStyle.getInstance();
+        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
+        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
     }
 }

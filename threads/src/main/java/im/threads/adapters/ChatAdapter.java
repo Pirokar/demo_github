@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import im.threads.R;
 import im.threads.holders.ConsultConnectionMessageViewHolder;
 import im.threads.holders.ConsultFileViewHolder;
 import im.threads.holders.ConsultIsTypingViewHolderNew;
@@ -59,11 +58,9 @@ import im.threads.model.Space;
 import im.threads.model.Survey;
 import im.threads.model.UnreadMessages;
 import im.threads.model.UserPhrase;
-import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.utils.ThreadUtils;
 import im.threads.widget.Rating;
 
@@ -273,7 +270,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((DateViewHolder) holder).onBind(dr.getDate());
         }
         if (holder instanceof ConsultIsTypingViewHolderNew) {
-            final ChatStyle style = PrefUtils.getIncomingStyle(ctx);
+            final ChatStyle style = ChatStyle.getInstance();
 
             final ConsultTyping ct = (ConsultTyping) list.get(holder.getAdapterPosition());
             ((ConsultIsTypingViewHolderNew) holder).onBind(new View.OnClickListener() {

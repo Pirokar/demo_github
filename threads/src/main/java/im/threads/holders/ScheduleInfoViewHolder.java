@@ -10,7 +10,6 @@ import android.widget.TextView;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.ScheduleInfo;
-import im.threads.utils.PrefUtils;
 
 /**
  * ViewHolder для расписания
@@ -30,11 +29,9 @@ public class ScheduleInfoViewHolder extends RecyclerView.ViewHolder {
         icon = (ImageView) itemView.findViewById(R.id.schedule_icon);
         text = (TextView) itemView.findViewById(R.id.schedule_text);
 
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            text.setTextColor(ContextCompat.getColor(itemView.getContext(), style.scheduleMessageTextColorResId));
-            icon.setImageResource(style.scheduleMessageIconResId);
-        }
+        if (style == null) style = ChatStyle.getInstance();
+        text.setTextColor(ContextCompat.getColor(itemView.getContext(), style.scheduleMessageTextColorResId));
+        icon.setImageResource(style.scheduleMessageIconResId);
     }
 
     public void bind(ScheduleInfo scheduleInfo) {

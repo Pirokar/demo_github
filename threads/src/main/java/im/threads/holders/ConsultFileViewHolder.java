@@ -21,7 +21,6 @@ import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.views.CircularProgressButton;
 
 /**
@@ -38,7 +37,7 @@ public class ConsultFileViewHolder extends BaseHolder {
     private View mFilterSecond;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     private View mBubble;
-    private static ChatStyle style;
+    private ChatStyle style;
 
     public ConsultFileViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consult_chat_file, parent, false));
@@ -50,21 +49,19 @@ public class ConsultFileViewHolder extends BaseHolder {
         mFilterSecond = itemView.findViewById(R.id.filter_second);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.consult_avatar);
         mBubble = itemView.findViewById(R.id.bubble);
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        if (style == null) style = ChatStyle.getInstance();
+        mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
 
-            mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
-            setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.incomingMessageTextColor);
-            setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
+        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
+        setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView, mTimeStampTextView}, style.incomingMessageTextColor);
+        setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
 
-            mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            mCircularProgressButton.setBackgroundColorResId(style.chatBackgroundColor);
+        mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        mCircularProgressButton.setBackgroundColorResId(style.chatBackgroundColor);
 
-            mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
-            mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
-        }
+        mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+        mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
     }
 
     public void onBind(
@@ -105,12 +102,7 @@ public class ConsultFileViewHolder extends BaseHolder {
 
             mConsultAvatar.setVisibility(View.VISIBLE);
             @DrawableRes int resID;
-            if (style != null) {
-                resID = style.defaultOperatorAvatar;
-            }
-            else {
-                resID = R.drawable.threads_operator_avatar_placeholder;
-            }
+            resID = style.defaultOperatorAvatar;
 
             if (avatarPath != null) {
                 avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);
@@ -151,7 +143,7 @@ public class ConsultFileViewHolder extends BaseHolder {
             mConsultAvatar.setVisibility(View.GONE);
             mFilterSecond.setVisibility(View.GONE);
 
-            int avatarSizeRes = style != null ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
+            int avatarSizeRes = style.operatorAvatarSize;
             int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
             int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);
             int avatarLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);

@@ -10,7 +10,6 @@ import android.widget.ProgressBar;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  *
@@ -25,16 +24,12 @@ public class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_searching_consult, parent, false));
         ProgressBar progressBar = (ProgressBar) itemView.findViewById(R.id.progress);
 
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (null != style) {
-            progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
-            if (style.showConsultSearching) {
-                itemView.setVisibility(View.VISIBLE);
-            } else {
-                itemView.setVisibility(View.GONE);
-            }
+        if (style == null) style = ChatStyle.getInstance();
+        progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
+        if (style.showConsultSearching) {
+            itemView.setVisibility(View.VISIBLE);
+        } else {
+            itemView.setVisibility(View.GONE);
         }
-
-
     }
 }

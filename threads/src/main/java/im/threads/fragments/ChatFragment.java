@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -156,10 +157,10 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         appContext = activity.getApplicationContext();
 
-        style = PrefUtils.getIncomingStyle(activity);
+        style = ChatStyle.getInstance();
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 
-        if (activity instanceof ChatActivity && style != null) {
+        if (activity instanceof ChatActivity) {
             ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
         }
 
@@ -323,7 +324,7 @@ public class ChatFragment extends Fragment implements
                     binding.recycler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (style != null && style.scrollChatToEndIfUserTyping) {
+                            if (style.scrollChatToEndIfUserTyping) {
                                 scrollToPosition(binding.recycler.getAdapter().getItemCount() - 1);
                             } else {
                                 binding.recycler.smoothScrollBy(0, oldBottom - bottom);
@@ -437,81 +438,79 @@ public class ChatFragment extends Fragment implements
         }
     }
 
-    protected void setFragmentStyle(ChatStyle style) {
+    protected void setFragmentStyle(@NonNull ChatStyle style) {
         Activity activity = getActivity();
 
-        if (style != null) {
-            ColorsHelper.setBackgroundColor(activity, binding.chatRoot, style.chatBackgroundColor);
+        ColorsHelper.setBackgroundColor(activity, binding.chatRoot, style.chatBackgroundColor);
 
-            ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
-            ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
-            ColorsHelper.setBackgroundColor(activity, binding.copyControls, style.chatMessageInputColor);
-            ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
-            ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.copyControls, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
 
-            ColorsHelper.setDrawableColor(activity, binding.searchUpIb.getDrawable(), style.chatToolbarTextColorResId);
-            ColorsHelper.setDrawableColor(activity, binding.searchDownIb.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setDrawableColor(activity, binding.searchUpIb.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setDrawableColor(activity, binding.searchDownIb.getDrawable(), style.chatToolbarTextColorResId);
 
-            binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
-            binding.searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
+        binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
+        binding.searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
 
-            binding.swipeRefresh.setColorSchemeResources(style.chatToolbarColorResId);
+        binding.swipeRefresh.setColorSchemeResources(style.chatToolbarColorResId);
 
-            binding.scrollDownButton.setImageResource(style.scrollDownButtonResId);
+        binding.scrollDownButton.setImageResource(style.scrollDownButtonResId);
 
-            binding.unreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
+        binding.unreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
 
-            binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
+        binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
 
-            binding.input.getLayoutParams().height = (int) activity.getResources().getDimension(style.inputHeight);
+        binding.input.getLayoutParams().height = (int) activity.getResources().getDimension(style.inputHeight);
 
-            binding.input.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
+        binding.input.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
 
-            binding.input.setHint(style.inputHint);
+        binding.input.setHint(style.inputHint);
 
-            binding.addAttachment.setImageResource(style.attachmentsIconResId);
+        binding.addAttachment.setImageResource(style.attachmentsIconResId);
 
-            binding.sendMessage.setImageResource(style.sendMessageIconResId);
+        binding.sendMessage.setImageResource(style.sendMessageIconResId);
 
-            ColorsHelper.setTextColor(activity, binding.search, style.chatToolbarTextColorResId);
-            ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
-            ColorsHelper.setDrawableColor(activity, binding.chatBackButton.getDrawable(), style.chatToolbarTextColorResId);
-            ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
-            ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
+        ColorsHelper.setTextColor(activity, binding.search, style.chatToolbarTextColorResId);
+        ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setDrawableColor(activity, binding.chatBackButton.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
+        ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
 
-            ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
-            ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
+        ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
+        ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
 
-            ColorsHelper.setHintTextColor(activity, binding.input, style.chatMessageInputHintTextColor);
+        ColorsHelper.setHintTextColor(activity, binding.input, style.chatMessageInputHintTextColor);
 
-            ColorsHelper.setHintTextColor(activity, binding.search, style.chatToolbarHintTextColor);
+        ColorsHelper.setHintTextColor(activity, binding.search, style.chatToolbarHintTextColor);
 
-            ColorsHelper.setTextColor(activity, binding.input, style.inputTextColor);
+        ColorsHelper.setTextColor(activity, binding.input, style.inputTextColor);
 
-            if (!TextUtils.isEmpty(style.inputTextFont)) {
-                try {
-                    Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
-                    this.binding.input.setTypeface(custom_font);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            ColorsHelper.setTint(activity, binding.contentCopy, style.chatBodyIconsTint);
-            ColorsHelper.setTint(activity, binding.reply, style.chatBodyIconsTint);
-            ColorsHelper.setTint(activity, binding.sendMessage, style.chatBodyIconsTint);
-            ColorsHelper.setTint(activity, binding.addAttachment, style.chatBodyIconsTint);
-            ColorsHelper.setTint(activity, binding.quoteClear, style.chatBodyIconsTint);
-            binding.fileInputSheet.setButtonsTint(style.chatBodyIconsTint);
-
-            ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
-
+        if (!TextUtils.isEmpty(style.inputTextFont)) {
             try {
-                Drawable overflowDrawable = binding.popupMenuButton.getDrawable();
-                ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
-            } catch (Resources.NotFoundException e) {
+                Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
+                this.binding.input.setTypeface(custom_font);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        ColorsHelper.setTint(activity, binding.contentCopy, style.chatBodyIconsTint);
+        ColorsHelper.setTint(activity, binding.reply, style.chatBodyIconsTint);
+        ColorsHelper.setTint(activity, binding.sendMessage, style.chatBodyIconsTint);
+        ColorsHelper.setTint(activity, binding.addAttachment, style.chatBodyIconsTint);
+        ColorsHelper.setTint(activity, binding.quoteClear, style.chatBodyIconsTint);
+        binding.fileInputSheet.setButtonsTint(style.chatBodyIconsTint);
+
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
+
+        try {
+            Drawable overflowDrawable = binding.popupMenuButton.getDrawable();
+            ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -547,7 +546,7 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
-        if (canShowSpecialistInfo(getActivity())) {
+        if (ChatStyle.getInstance().canShowSpecialistInfo) {
             mChatController.onConsultChoose(getActivity(), consultConnectionMessage.getConsultId());
         }
     }
@@ -606,16 +605,12 @@ public class ChatFragment extends Fragment implements
         Menu menu = popup.getMenu();
         MenuItem searchMenuItem = menu.getItem(0);
         SpannableString s = new SpannableString(searchMenuItem.getTitle());
-        if (style != null) {
-            s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s.length(), 0);
-        }
+        s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s.length(), 0);
         searchMenuItem.setTitle(s);
 
         MenuItem filesAndMedia = menu.getItem(1);
         SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
-        if (style != null) {
-            s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s2.length(), 0);
-        }
+        s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s2.length(), 0);
         filesAndMedia.setTitle(s2);
 
         popup.show();
@@ -655,10 +650,8 @@ public class ChatFragment extends Fragment implements
 
         Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
 
-        if (style != null) {
-            ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
-            ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
-        }
+        ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
+        ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
         binding.chatBackButton.setImageDrawable(d);
 
         ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
@@ -754,7 +747,7 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onConsultAvatarClick(String consultId) {
-        if (canShowSpecialistInfo(getActivity())) {
+        if (ChatStyle.getInstance().canShowSpecialistInfo) {
             mChatController.onConsultChoose(getActivity(), consultId);
         }
     }
@@ -1137,9 +1130,7 @@ public class ChatFragment extends Fragment implements
                     binding.consultName.setVisibility(View.VISIBLE);
                     binding.searchLo.setVisibility(View.GONE);
                     binding.search.setText("");
-                    if (style != null) {
-                        binding.consultName.setText(style.chatTitleTextResId);
-                    }
+                    binding.consultName.setText(style.chatTitleTextResId);
                 }
                 connectedConsultId = String.valueOf(-1);
             }
@@ -1176,13 +1167,11 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         Context context = activity.getApplicationContext();
         setTitleStateCurrentOperatorConnected();
-        if (style != null) {
-            Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
-            ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
-            binding.chatBackButton.setImageDrawable(d);
-            ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
-            ColorsHelper.setBackgroundColor(context, binding.toolbar, style.chatToolbarColorResId);
-        }
+        Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
+        ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
+        binding.chatBackButton.setImageDrawable(d);
+        ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setBackgroundColor(context, binding.toolbar, style.chatToolbarColorResId);
 
         binding.copyControls.setVisibility(View.GONE);
         if (!isInMessageSearchMode) binding.consultName.setVisibility(View.VISIBLE);
@@ -1380,10 +1369,8 @@ public class ChatFragment extends Fragment implements
         binding.addAttachment.setEnabled(enabled);
         binding.sendMessage.setEnabled(enabled);
 
-        if (style != null) {
-            ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
-            ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
-        }
+        ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
+        ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
     }
 
     @Override
@@ -1507,11 +1494,7 @@ public class ChatFragment extends Fragment implements
         if (activity instanceof ChatActivity) {
             binding.chatBackButton.setVisibility(View.VISIBLE);
         } else {
-            if (style != null && style.showBackButton) {
-                binding.chatBackButton.setVisibility(View.VISIBLE);
-            } else {
-                binding.chatBackButton.setVisibility(View.GONE);
-            }
+            binding.chatBackButton.setVisibility(style.showBackButton ? View.VISIBLE : View.GONE);
         }
         binding.chatBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1638,7 +1621,7 @@ public class ChatFragment extends Fragment implements
     private void hideBackButton() {
         Activity activity = getActivity();
         if (!(activity instanceof ChatActivity)) {
-            if (style != null && !style.showBackButton) {
+            if (!style.showBackButton) {
                 binding.chatBackButton.setVisibility(View.GONE);
             }
         }
@@ -1674,9 +1657,7 @@ public class ChatFragment extends Fragment implements
 
     private class QuoteLayoutHolder {
         public QuoteLayoutHolder() {
-            if (style != null) {
-                binding.quoteHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
-            }
+            binding.quoteHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
             binding.quoteClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1744,8 +1725,4 @@ public class ChatFragment extends Fragment implements
         }
     }
 
-    private boolean canShowSpecialistInfo(Context ctx) {
-        ChatStyle style = PrefUtils.getIncomingStyle(ctx);
-        return style != null ? style.canShowSpecialistInfo : true;
-    }
 }

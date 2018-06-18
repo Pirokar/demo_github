@@ -27,7 +27,6 @@ import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.utils.ViewUtils;
 import im.threads.views.CircularProgressButton;
 
@@ -52,7 +51,7 @@ public class ConsultPhraseHolder extends BaseHolder {
     public ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterViewSecond;
-    private static ChatStyle style;
+    private ChatStyle style;
     private View mBubble;
     private View mPhraseFrame;
     @DrawableRes
@@ -78,30 +77,28 @@ public class ConsultPhraseHolder extends BaseHolder {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy");
         }
         mBubble = itemView.findViewById(R.id.bubble);
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        if (style == null) style = ChatStyle.getInstance();
+        mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
 
-            mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
-            setTextColorToViews(new TextView[]{mPhraseTextView,
-                    mTimeStampTextView,
-                    rightTextHeader,
-                    mRightTextDescr,
-                    rightTextFileStamp}, style.incomingMessageTextColor);
+        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
+        setTextColorToViews(new TextView[]{mPhraseTextView,
+                mTimeStampTextView,
+                rightTextHeader,
+                mRightTextDescr,
+                rightTextFileStamp}, style.incomingMessageTextColor);
 
-            mPhraseTextView.setLinkTextColor(getColorInt(style.incomingMessageLinkColor));
+        mPhraseTextView.setLinkTextColor(getColorInt(style.incomingMessageLinkColor));
 
-            defIcon = style.defaultOperatorAvatar;
-            setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
-            itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
+        defIcon = style.defaultOperatorAvatar;
+        setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
+        itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
 
-            mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            mCircularProgressButton.setBackgroundColorResId(style.chatBackgroundColor);
+        mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        mCircularProgressButton.setBackgroundColorResId(style.chatBackgroundColor);
 
-            mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
-            mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
-        }
+        mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+        mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
     }
 
 
@@ -160,21 +157,10 @@ public class ConsultPhraseHolder extends BaseHolder {
 
                 Picasso.with(itemView.getContext())
                         .load(fileDescription.getDownloadPath())
+                        .error(style.imagePlaceholder)
                         .fit()
                         .centerCrop()
-                        .into(mImage, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                if (style != null) {
-                                    mImage.setImageResource(style.imagePlaceholder);
-                                }
-                            }
-                        });
+                        .into(mImage);
             } else {
                 fileRow.setVisibility(View.VISIBLE);
                 mCircularProgressButton.setVisibility(View.VISIBLE);
@@ -239,7 +225,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         } else {
             mConsultAvatar.setVisibility(View.GONE);
 
-            int avatarSizeRes = style != null ? style.operatorAvatarSize : R.dimen.threads_operator_photo_size;
+            int avatarSizeRes = style.operatorAvatarSize;
             int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
 
             int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);

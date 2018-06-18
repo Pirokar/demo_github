@@ -217,7 +217,7 @@ public class ChatStyle implements Serializable {
             synchronized (ChatStyle.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    localInstance = PrefUtils.getIncomingStyle(appContext);
+                    localInstance = ChatStyle.getInstance();
                     if (localInstance == null) {
                         localInstance = new ChatStyle();
                     }

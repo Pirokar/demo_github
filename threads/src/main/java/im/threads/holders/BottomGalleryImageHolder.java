@@ -10,7 +10,6 @@ import im.threads.R;
 import im.threads.model.BottomGalleryItem;
 import im.threads.model.ChatStyle;
 import im.threads.picasso_url_connection_only.Picasso;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 30.06.2016.
@@ -18,13 +17,13 @@ import im.threads.utils.PrefUtils;
 public class BottomGalleryImageHolder extends BaseHolder {
     private ImageView image;
     private ImageView chosenMark;
-    private static ChatStyle style;
+    private ChatStyle style;
 
     public BottomGalleryImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_bottom, parent, false));
         image = (ImageView) itemView.findViewById(R.id.image);
         chosenMark = (ImageView) itemView.findViewById(R.id.mark);
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
+        if (style == null) style = ChatStyle.getInstance();
     }
 
     public void onBind(BottomGalleryItem item, View.OnClickListener listener) {
@@ -35,9 +34,7 @@ public class BottomGalleryImageHolder extends BaseHolder {
         Drawable d;
         if (item.isChosen()) {
             d = (itemView.getResources().getDrawable(R.drawable.ic_circle_done_blue_36dp));
-            if (style != null) {
-                setTintToViews(new Drawable[]{d}, style.chatBodyIconsTint);
-            }
+            setTintToViews(new Drawable[]{d}, style.chatBodyIconsTint);
         } else {
             d = itemView.getResources().getDrawable(R.drawable.ic_panorama_fish_eye_white_36dp);
         }

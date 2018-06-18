@@ -8,8 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
-import im.threads.model.ChatStyle;
-
 /**
  * Родитель для всех Activity библиотеки
  * Created by yuri on 27.09.2016.
@@ -27,8 +25,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onStart();
         invalidateOptionsMenu();
     }
-
-    protected abstract void setActivityStyle(ChatStyle style);
 
     protected
     @ColorInt
