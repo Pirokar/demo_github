@@ -269,7 +269,7 @@ public class ChatStyle implements Serializable {
             synchronized (ChatStyle.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    localInstance = ChatStyle.getInstance();
+                    localInstance = PrefUtils.getIncomingStyle(appContext);
                     if (localInstance == null) {
                         localInstance = new ChatStyle();
                     }
@@ -698,7 +698,7 @@ public class ChatStyle implements Serializable {
                                                              @DimenRes int imagesScreenDateTextSize) {
 
             chatStyle.imagesScreenToolbarColor = imagesScreenToolbarColor;
-            chatStyle.imagesScreenBackgroundColor = imagesScreenBackgroundColor ;
+            chatStyle.imagesScreenBackgroundColor = imagesScreenBackgroundColor;
             chatStyle.imagesScreenAuthorTextColor = imagesScreenAuthorTextColor;
             chatStyle.imagesScreenDateTextColor = imagesScreenDateTextColor;
             chatStyle.imagesScreenAuthorTextSize = imagesScreenAuthorTextSize;
