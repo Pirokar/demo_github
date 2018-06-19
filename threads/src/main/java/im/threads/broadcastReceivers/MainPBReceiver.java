@@ -24,6 +24,11 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(final Context context, final String s, final Bundle bundle) {
+
+        if (ChatStyle.appContext == null) {
+            ChatStyle.appContext = context.getApplicationContext();
+        }
+
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
         }
