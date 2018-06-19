@@ -34,7 +34,6 @@ import im.threads.utils.FileUtils;
 public class QuickAnswerFragment extends DialogFragment {
     private EditText mEditText;
     private static final String TAG = "QuickAnswerFragment ";
-    //TODO #THREADS-2853 Make style @NonNull
     private ChatStyle style;
 
     public static QuickAnswerFragment getInstance(

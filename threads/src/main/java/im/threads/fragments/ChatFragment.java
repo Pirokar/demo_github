@@ -140,7 +140,6 @@ public class ChatFragment extends Fragment implements
     private boolean isInMessageSearchMode;
     private boolean isResumed;
 
-    //TODO #THREADS-2853 Make style @NonNull
     private ChatStyle style;
 
     private FragmentChatBinding binding;
