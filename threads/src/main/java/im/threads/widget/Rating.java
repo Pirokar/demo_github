@@ -13,7 +13,6 @@ import java.util.ArrayList;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  * Контрол для показа и изменения рейтинга
@@ -37,7 +36,7 @@ public class Rating extends LinearLayout {
     public void initRating(Context context, int ratingCount, int starsCount) {
         this.context = context;
         this.ratingCount = ratingCount;
-        style = PrefUtils.getIncomingStyle(context);
+        style = ChatStyle.getInstance();
 
         countStars = starsCount;
 
@@ -107,35 +106,15 @@ public class Rating extends LinearLayout {
 
         ImageView star = (ImageView) view.findViewById(R.id.star);
 
-        if (style != null) {
-            if (ratingState) {
-                if (style.optionsSurveySelectedIconResId != ChatStyle.INVALID) {
-                    star.setImageResource(style.optionsSurveySelectedIconResId);
-                }
-                else {
-                    star.setImageResource(R.drawable.threads_options_survey_selected);
-                }
+        if (ratingState) {
+            star.setImageResource(style.optionsSurveySelectedIconResId);
+            star.setColorFilter(ContextCompat.getColor(context, style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
 
-                if (style.surveySelectedColorFilterResId != ChatStyle.INVALID) {
-                    star.setColorFilter(ContextCompat.getColor(context, style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
-                }
-                else {
-                    star.setColorFilter(ContextCompat.getColor(context, R.color.threads_survey_selected_icon_tint), PorterDuff.Mode.SRC_ATOP);
-                }
-            } else {
-                if (style.optionsSurveyUnselectedIconResId != ChatStyle.INVALID) {
-                    star.setImageResource(style.optionsSurveyUnselectedIconResId );
-                }
-                else {
-                    star.setImageResource(R.drawable.threads_options_survey_unselected);
-                }
+        } else {
+            star.setImageResource(style.optionsSurveyUnselectedIconResId);
 
-                if (ratingCount == 0 && style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
-                    star.setColorFilter(ContextCompat.getColor(context, style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
-                }
-                else {
-                    star.setColorFilter(ContextCompat.getColor(context, R.color.threads_survey_unselected_icon_tint), PorterDuff.Mode.SRC_ATOP);
-                }
+            if (ratingCount == 0) {
+                star.setColorFilter(ContextCompat.getColor(context, style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
             }
         }
     }

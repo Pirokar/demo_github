@@ -123,8 +123,7 @@ public final class Transport {
     }
 
     public static long getHistoryLoadingCount(Context ctx) {
-        ChatStyle style = PrefUtils.getIncomingStyle(ctx);
-        return style != null ? style.historyLoadingCount : ChatStyle.DEFAULT_HISTORY_LOADING_COUNT;
+        return ChatStyle.getInstance().historyLoadingCount;
     }
 
     public static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponse response) {

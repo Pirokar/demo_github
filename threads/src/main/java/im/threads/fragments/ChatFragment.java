@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -138,6 +139,7 @@ public class ChatFragment extends Fragment implements
 
     private boolean isInMessageSearchMode;
     private boolean isResumed;
+
     private ChatStyle style;
 
     private FragmentChatBinding binding;
@@ -158,12 +160,7 @@ public class ChatFragment extends Fragment implements
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 
         if (activity instanceof ChatActivity) {
-            if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
-                ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
-            }
-            else {
-                ColorsHelper.setStatusBarColor(activity, R.color.threads_chat_status_bar);
-            }
+            ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
         }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
@@ -173,7 +170,7 @@ public class ChatFragment extends Fragment implements
         initToolbar();
         setHasOptionsMenu(true);
         initController();
-        setFragmentStyle(PrefUtils.getIncomingStyle(activity));
+        setFragmentStyle(style);
 
         updateInputEnable(true);
         chatIsShown = true;
@@ -209,7 +206,7 @@ public class ChatFragment extends Fragment implements
 
         mQuoteLayoutHolder = new QuoteLayoutHolder();
         binding.fileInputSheet.setButtonsListener(this);
-        
+
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         binding.recycler.setLayoutManager(mLayoutManager);
         mChatAdapter = new ChatAdapter(new ArrayList<ChatItem>(), activity, this);
@@ -326,10 +323,9 @@ public class ChatFragment extends Fragment implements
                     binding.recycler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (style != null && style.scrollChatToEndIfUserTyping) {
+                            if (style.scrollChatToEndIfUserTyping) {
                                 scrollToPosition(binding.recycler.getAdapter().getItemCount() - 1);
-                            }
-                            else {
+                            } else {
                                 binding.recycler.smoothScrollBy(0, oldBottom - bottom);
                             }
                         }
@@ -345,13 +341,12 @@ public class ChatFragment extends Fragment implements
 
                 int lastVisibleItemPosition = ((LinearLayoutManager) binding.recycler.getLayoutManager()).findLastVisibleItemPosition();
                 int itemCount = mChatAdapter.getItemCount();
-                if ( itemCount - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
+                if (itemCount - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
                     if (binding.scrollDownButtonContainer.getVisibility() != View.VISIBLE) {
                         binding.scrollDownButtonContainer.setVisibility(View.VISIBLE);
                         showUnreadMsgsCount(mChatAdapter.getUnreadCount());
                     }
-                }
-                else {
+                } else {
                     binding.scrollDownButtonContainer.setVisibility(View.GONE);
                     mChatAdapter.setAllMessagesRead();
                 }
@@ -363,10 +358,9 @@ public class ChatFragment extends Fragment implements
             public void onClick(final View v) {
                 showUnreadMsgsCount(0);
                 int unreadCount = mChatAdapter.getUnreadCount();
-                if (unreadCount > 0 ) {
+                if (unreadCount > 0) {
                     scrollToNewMessages();
-                }
-                else {
+                } else {
                     scrollToPosition(binding.recycler.getAdapter().getItemCount() - 1);
                 }
                 mChatAdapter.setAllMessagesRead();
@@ -443,149 +437,77 @@ public class ChatFragment extends Fragment implements
         }
     }
 
-    protected void setFragmentStyle(ChatStyle style) {
+    protected void setFragmentStyle(@NonNull ChatStyle style) {
         Activity activity = getActivity();
 
-        if (style != null) {
-            if (style.chatBackgroundColor != ChatStyle.INVALID) {
-                ColorsHelper.setBackgroundColor(activity, binding.chatRoot, style.chatBackgroundColor);
-            }
+        ColorsHelper.setBackgroundColor(activity, binding.chatRoot, style.chatBackgroundColor);
 
-            if (style.chatMessageInputColor != ChatStyle.INVALID) {
-                ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, binding.copyControls, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
-                ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
-            }
+        ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.copyControls, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
+        ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
 
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-                ColorsHelper.setDrawableColor(activity, binding.searchUpIb.getDrawable(), style.chatToolbarTextColorResId);
-                ColorsHelper.setDrawableColor(activity, binding.searchDownIb.getDrawable(), style.chatToolbarTextColorResId);
-            }
-            else {
-                ColorsHelper.setDrawableColor(activity, binding.searchUpIb.getDrawable(), R.color.threads_chat_toolbar_text);
-                ColorsHelper.setDrawableColor(activity, binding.searchDownIb.getDrawable(), R.color.threads_chat_toolbar_text);
-            }
+        ColorsHelper.setDrawableColor(activity, binding.searchUpIb.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setDrawableColor(activity, binding.searchDownIb.getDrawable(), style.chatToolbarTextColorResId);
 
-            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
-                binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
-                binding.searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
-            }
-            else {
-                binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, R.color.threads_icon_and_separators_color));
-                binding.searchMore.setTextColor(ContextCompat.getColor(activity, R.color.threads_icon_and_separators_color));
-            }
+        binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
+        binding.searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
 
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                binding.swipeRefresh.setColorSchemeResources(style.chatToolbarColorResId);
-            }
-            else {
-                binding.swipeRefresh.setColorSchemeResources(R.color.threads_chat_toolbar);
-            }
+        binding.swipeRefresh.setColorSchemeResources(style.chatToolbarColorResId);
 
-            if (style.scrollDownButtonResId != ChatStyle.INVALID) {
-                binding.scrollDownButton.setImageResource(style.scrollDownButtonResId);
-            }
+        binding.scrollDownButton.setImageResource(style.scrollDownButtonResId);
 
-            if (style.unreadMsgStickerColorResId != ChatStyle.INVALID) {
-                binding.unreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
-            }
+        binding.unreadMsgSticker.getBackground().setColorFilter(getColorInt(style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
 
-            if (style.unreadMsgCountTextColorResId != ChatStyle.INVALID) {
-                binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
-            }
+        binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
 
-            if (style.inputHeight != ChatStyle.INVALID) {
-                binding.input.getLayoutParams().height = (int) activity.getResources().getDimension(style.inputHeight);
-            }
-            else {
+        binding.input.getLayoutParams().height = (int) activity.getResources().getDimension(style.inputHeight);
 
-            }
+        binding.input.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
 
-            if (style.inputBackground != ChatStyle.INVALID) {
-                binding.input.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
-            }
+        binding.input.setHint(style.inputHint);
 
-            if (style.inputHint != ChatStyle.INVALID) {
-                binding.input.setHint(style.inputHint);
-            }
+        binding.addAttachment.setImageResource(style.attachmentsIconResId);
 
-            if (style.attachmentsIconResId != ChatStyle.INVALID) {
-                binding.addAttachment.setImageResource(style.attachmentsIconResId);
-            }
+        binding.sendMessage.setImageResource(style.sendMessageIconResId);
 
-            if (style.sendMessageIconResId != ChatStyle.INVALID) {
-                binding.sendMessage.setImageResource(style.sendMessageIconResId);
-            }
+        ColorsHelper.setTextColor(activity, binding.search, style.chatToolbarTextColorResId);
+        ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setDrawableColor(activity, binding.chatBackButton.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
+        ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
 
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-                ColorsHelper.setTextColor(activity, binding.search, style.chatToolbarTextColorResId);
-                ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
-                ColorsHelper.setDrawableColor(activity, binding.chatBackButton.getDrawable(), style.chatToolbarTextColorResId);
-                ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
-                ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
-            }
-            else {
-                ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), R.color.threads_chat_toolbar_text);
-                ColorsHelper.setDrawableColor(activity, binding.chatBackButton.getDrawable(), R.color.threads_chat_toolbar_text);
-            }
+        ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
+        ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
 
-            if (style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-                ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
-                ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
-            }
+        ColorsHelper.setHintTextColor(activity, binding.input, style.chatMessageInputHintTextColor);
 
-            if (style.chatMessageInputHintTextColor != ChatStyle.INVALID) {
-                ColorsHelper.setHintTextColor(activity, binding.input, style.chatMessageInputHintTextColor);
-            }
+        ColorsHelper.setHintTextColor(activity, binding.search, style.chatToolbarHintTextColor);
 
-            if (style.chatToolbarHintTextColor != ChatStyle.INVALID) {
-                ColorsHelper.setHintTextColor(activity, binding.search, style.chatToolbarHintTextColor);
-            }
+        ColorsHelper.setTextColor(activity, binding.input, style.inputTextColor);
 
-            if (style.inputTextColor != ChatStyle.INVALID) {
-                ColorsHelper.setTextColor(activity, binding.input, style.inputTextColor);
-            }
-
-            if (!TextUtils.isEmpty(style.inputTextFont)) {
-                try {
-                    Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
-                    this.binding.input.setTypeface(custom_font);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (style.chatBodyIconsTint != ChatStyle.INVALID) {
-                ColorsHelper.setTint(activity, binding.contentCopy, style.chatBodyIconsTint);
-                ColorsHelper.setTint(activity, binding.reply, style.chatBodyIconsTint);
-                ColorsHelper.setTint(activity, binding.sendMessage, style.chatBodyIconsTint);
-                ColorsHelper.setTint(activity, binding.addAttachment, style.chatBodyIconsTint);
-                ColorsHelper.setTint(activity, binding.quoteClear, style.chatBodyIconsTint);
-                binding.fileInputSheet.setButtonsTint(style.chatBodyIconsTint);
-            }
-            else {
-                ColorsHelper.setTint(activity, binding.contentCopy, R.color.threads_chat_icons_tint);
-                ColorsHelper.setTint(activity, binding.reply, R.color.threads_chat_icons_tint);
-                ColorsHelper.setTint(activity, binding.sendMessage, R.color.threads_chat_icons_tint);
-                ColorsHelper.setTint(activity, binding.addAttachment, R.color.threads_chat_icons_tint);
-                ColorsHelper.setTint(activity, binding.quoteClear, R.color.threads_chat_icons_tint);
-                binding.fileInputSheet.setButtonsTint(R.color.threads_chat_icons_tint);
-            }
-
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
+        if (!TextUtils.isEmpty(style.inputTextFont)) {
+            try {
+                Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
+                this.binding.input.setTypeface(custom_font);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
+        ColorsHelper.setTint(activity, binding.contentCopy, style.chatBodyIconsTint);
+        ColorsHelper.setTint(activity, binding.reply, style.chatBodyIconsTint);
+        ColorsHelper.setTint(activity, binding.sendMessage, style.chatBodyIconsTint);
+        ColorsHelper.setTint(activity, binding.addAttachment, style.chatBodyIconsTint);
+        ColorsHelper.setTint(activity, binding.quoteClear, style.chatBodyIconsTint);
+        binding.fileInputSheet.setButtonsTint(style.chatBodyIconsTint);
+
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
+
         try {
             Drawable overflowDrawable = binding.popupMenuButton.getDrawable();
-            if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-                ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
-            } else {
-                ColorsHelper.setDrawableColor(activity, overflowDrawable, R.color.threads_chat_toolbar_text);
-            }
+            ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
@@ -596,7 +518,8 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         boolean isCameraGranted = PermissionChecker.isCameraPermissionGranted(activity);
         boolean isWriteGranted = PermissionChecker.isWriteExternalPermissionGranted(activity);
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled)
+            Log.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             setBottomStateDefault();
             binding.bottomGallery.setVisibility(View.GONE);
@@ -622,7 +545,7 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
-        if (canShowSpecialistInfo(getActivity())) {
+        if (ChatStyle.getInstance().canShowSpecialistInfo) {
             mChatController.onConsultChoose(getActivity(), consultConnectionMessage.getConsultId());
         }
     }
@@ -681,22 +604,12 @@ public class ChatFragment extends Fragment implements
         Menu menu = popup.getMenu();
         MenuItem searchMenuItem = menu.getItem(0);
         SpannableString s = new SpannableString(searchMenuItem.getTitle());
-        if (style != null && style.menuItemTextColorResId != ChatStyle.INVALID) {
-            s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s.length(), 0);
-        }
-        else {
-            s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.threads_chat_toolbar_menu_item)), 0, s.length(), 0);
-        }
+        s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s.length(), 0);
         searchMenuItem.setTitle(s);
 
         MenuItem filesAndMedia = menu.getItem(1);
         SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
-        if (style != null && style.menuItemTextColorResId != ChatStyle.INVALID) {
-            s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s2.length(), 0);
-        }
-        else {
-            s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.threads_chat_toolbar_menu_item)), 0, s2.length(), 0);
-        }
+        s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), style.menuItemTextColorResId)), 0, s2.length(), 0);
         filesAndMedia.setTitle(s2);
 
         popup.show();
@@ -736,13 +649,8 @@ public class ChatFragment extends Fragment implements
 
         Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
 
-        if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID) {
-            ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
-            ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
-        } else {
-            ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
-            ColorsHelper.setDrawableColor(ctx, d, R.color.threads_chat_icons_tint);
-        }
+        ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
+        ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
         binding.chatBackButton.setImageDrawable(d);
 
         ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
@@ -838,7 +746,7 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onConsultAvatarClick(String consultId) {
-        if (canShowSpecialistInfo(getActivity())) {
+        if (ChatStyle.getInstance().canShowSpecialistInfo) {
             mChatController.onConsultChoose(getActivity(), consultId);
         }
     }
@@ -1057,7 +965,8 @@ public class ChatFragment extends Fragment implements
     }
 
     private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled)
+            Log.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) return;
         for (UpcomingUserMessage message : messages) {
             mChatController.onUserInput(message);
@@ -1097,7 +1006,7 @@ public class ChatFragment extends Fragment implements
         if (needsAddMessage(item)) {
             mChatAdapter.addItems(Arrays.asList(item));
 
-            if (!isUserSeesMessage ) {
+            if (!isUserSeesMessage) {
                 showUnreadMsgsCount(mChatAdapter.getUnreadCount());
             }
         }
@@ -1203,7 +1112,7 @@ public class ChatFragment extends Fragment implements
                     binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
                 }
 
-                binding.subtitle.setText(getString(R.string.threads_operator_subtitle));
+                binding.subtitle.setText(getString(style.chatSubtitleTextResId));
                 f.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();
@@ -1220,11 +1129,7 @@ public class ChatFragment extends Fragment implements
                     binding.consultName.setVisibility(View.VISIBLE);
                     binding.searchLo.setVisibility(View.GONE);
                     binding.search.setText("");
-                    if (style != null && style.chatTitleTextResId != ChatStyle.INVALID) {
-                        binding.consultName.setText(style.chatTitleTextResId);
-                    } else {
-                        binding.consultName.setText(appContext.getString(R.string.threads_contact_center));
-                    }
+                    binding.consultName.setText(style.chatTitleTextResId);
                 }
                 connectedConsultId = String.valueOf(-1);
             }
@@ -1261,23 +1166,11 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         Context context = activity.getApplicationContext();
         setTitleStateCurrentOperatorConnected();
-        if (style != null && style.chatToolbarTextColorResId != ChatStyle.INVALID) {
-            Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
-            ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
-            binding.chatBackButton.setImageDrawable(d);
-            ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
-        } else {
-            Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
-            ColorsHelper.setDrawableColor(context, d, R.color.threads_chat_toolbar_text);
-            binding.chatBackButton.setImageDrawable(d);
-            ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), R.color.threads_chat_toolbar_text);
-        }
-        if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-            ColorsHelper.setBackgroundColor(context, binding.toolbar, style.chatToolbarColorResId);
-        }
-        else {
-            ColorsHelper.setBackgroundColor(context, binding.toolbar, R.color.threads_chat_toolbar);
-        }
+        Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
+        ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
+        binding.chatBackButton.setImageDrawable(d);
+        ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setBackgroundColor(context, binding.toolbar, style.chatToolbarColorResId);
 
         binding.copyControls.setVisibility(View.GONE);
         if (!isInMessageSearchMode) binding.consultName.setVisibility(View.VISIBLE);
@@ -1339,6 +1232,7 @@ public class ChatFragment extends Fragment implements
 
     /**
      * Remove close request from the thread history
+     *
      * @return true - if deletion occurred, false - if there was no resolve request in the history
      */
     public boolean removeResolveRequest() {
@@ -1347,6 +1241,7 @@ public class ChatFragment extends Fragment implements
 
     /**
      * Remove survey from the thread history
+     *
      * @return true - if deletion occurred, false - if there was no survey in the history
      */
     public boolean removeSurvey(String messageId) {
@@ -1473,16 +1368,8 @@ public class ChatFragment extends Fragment implements
         binding.addAttachment.setEnabled(enabled);
         binding.sendMessage.setEnabled(enabled);
 
-        if (style != null) {
-            if (style.chatBodyIconsTint != ChatStyle.INVALID) {
-                ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
-                ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? style.chatBodyIconsTint : R.color.threads_disabled_text_color);
-            }
-            else {
-                ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? R.color.threads_chat_icons_tint : R.color.threads_disabled_text_color);
-                ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? R.color.threads_chat_icons_tint : R.color.threads_disabled_text_color);
-            }
-        }
+        ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
+        ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
     }
 
     @Override
@@ -1606,11 +1493,7 @@ public class ChatFragment extends Fragment implements
         if (activity instanceof ChatActivity) {
             binding.chatBackButton.setVisibility(View.VISIBLE);
         } else {
-            if (style != null && style.showBackButton) {
-                binding.chatBackButton.setVisibility(View.VISIBLE);
-            } else {
-                binding.chatBackButton.setVisibility(View.GONE);
-            }
+            binding.chatBackButton.setVisibility(style.showBackButton ? View.VISIBLE : View.GONE);
         }
         binding.chatBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1737,7 +1620,7 @@ public class ChatFragment extends Fragment implements
     private void hideBackButton() {
         Activity activity = getActivity();
         if (!(activity instanceof ChatActivity)) {
-            if (style != null && !style.showBackButton) {
+            if (!style.showBackButton) {
                 binding.chatBackButton.setVisibility(View.GONE);
             }
         }
@@ -1773,9 +1656,7 @@ public class ChatFragment extends Fragment implements
 
     private class QuoteLayoutHolder {
         public QuoteLayoutHolder() {
-            if (style != null && style.incomingMessageTextColor != ChatStyle.INVALID) {
-                binding.quoteHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
-            }
+            binding.quoteHeader.setTextColor(ContextCompat.getColor(getActivity(), style.incomingMessageTextColor));
             binding.quoteClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1843,8 +1724,4 @@ public class ChatFragment extends Fragment implements
         }
     }
 
-    private boolean canShowSpecialistInfo(Context ctx) {
-        ChatStyle style = PrefUtils.getIncomingStyle(ctx);
-        return style != null ? style.canShowSpecialistInfo : true;
-    }
 }

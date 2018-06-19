@@ -31,9 +31,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import im.threads.R;
-import im.threads.model.ChatStyle;
 import im.threads.picasso_url_connection_only.Picasso;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 08.07.2016.
@@ -56,7 +54,6 @@ public class CameraActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        setActivityStyle(PrefUtils.getIncomingStyle(this));
         Toolbar t = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(t);
         t.setNavigationOnClickListener(new View.OnClickListener() {
@@ -67,12 +64,6 @@ public class CameraActivity extends BaseActivity {
         });
         t.setTitle("");
         initPreview();
-    }
-
-
-    @Override
-    protected void setActivityStyle(ChatStyle style) {
-
     }
 
     private void initPreview() {

@@ -28,7 +28,6 @@ import java.util.List;
 import im.threads.R;
 import im.threads.adapters.GalleryAdaper;
 import im.threads.adapters.PhotoBucketsGalleryAdapter;
-import im.threads.model.ChatStyle;
 import im.threads.model.MediaPhoto;
 import im.threads.model.PhotoBucketItem;
 import im.threads.utils.BucketsGalleryDecorator;
@@ -64,24 +63,13 @@ public class GalleryActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
         initViews();
-       /* ChatStyle style = PrefUtils.getIncomingStyle(this);
-        if (null != style) {
-            if (style.chatBackgroundColor != INVALID)
-                findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
-            if (style.chatToolbarColorResId != INVALID)
-                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarTextColorResId != INVALID)
-                mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
-            if (style.chatToolbarTextColorResId != INVALID)
-                mToolbar.getOverflowIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
-            if (style.chatToolbarTextColorResId != INVALID)
-                mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
-        }*/
-    }
-
-    @Override
-    protected void setActivityStyle(ChatStyle style) {
-
+        /*ChatStyle style = ChatStyle.getInstance();
+        findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
+        mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
+        mToolbar.getOverflowIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+        mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
+        */
     }
 
     private void initViews() {

@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 
 import im.threads.R;
 import im.threads.fragments.ChatFragment;
-import im.threads.model.ChatStyle;
 
 
 /**
@@ -26,11 +25,6 @@ public class ChatActivity extends BaseActivity {
         fragmentManager.beginTransaction()
                 .add(R.id.chat_frame_layout, chatFragment, "chatFragment")
                 .commit();
-    }
-
-    @Override
-    protected void setActivityStyle(ChatStyle style) {
-
     }
 
     @Override

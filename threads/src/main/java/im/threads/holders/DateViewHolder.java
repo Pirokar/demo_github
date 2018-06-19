@@ -13,7 +13,6 @@ import java.util.Locale;
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -22,20 +21,17 @@ import im.threads.utils.PrefUtils;
 public class DateViewHolder extends RecyclerView.ViewHolder {
     private TextView mTextView;
     private SimpleDateFormat sdf;
-    private static ChatStyle style;
 
     public DateViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_date, parent, false));
         mTextView = (TextView) itemView.findViewById(R.id.text);
-        style = PrefUtils.getIncomingStyle(itemView.getContext());
+        ChatStyle style = ChatStyle.getInstance();
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             sdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {
             sdf = new SimpleDateFormat("dd MMMM yyyy");
         }
-        if (style != null && style.chatSystemMessageTextColor != ChatStyle.INVALID) {
-            mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-        }
+        mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
     }
 
     public void onBind(long timeStamp) {

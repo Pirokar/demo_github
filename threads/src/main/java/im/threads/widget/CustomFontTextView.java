@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by Admin on 20.03.2017.
@@ -35,8 +34,8 @@ public class CustomFontTextView extends android.support.v7.widget.AppCompatTextV
     }
 
     public void setTypefaceView(Context context){
-        ChatStyle style = PrefUtils.getIncomingStyle(context);
-        if (style != null && !TextUtils.isEmpty(style.defaultFontRegular)) {
+        ChatStyle style = ChatStyle.getInstance();
+        if (!TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));
         }
     }

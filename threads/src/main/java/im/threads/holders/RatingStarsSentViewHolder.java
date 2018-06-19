@@ -2,7 +2,6 @@ package im.threads.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +16,6 @@ import java.util.Locale;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.Survey;
-import im.threads.utils.PrefUtils;
-
-import static im.threads.model.ChatStyle.INVALID;
 
 /**
  * ViewHolder для результатов опроса с рейтингом
@@ -38,10 +34,6 @@ public class RatingStarsSentViewHolder extends BaseHolder {
     private ChatStyle style;
     private View mBubble;
 
-    private static
-    @ColorInt
-    int messageColor;
-
     public RatingStarsSentViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars_sent, parent, false));
 
@@ -54,36 +46,14 @@ public class RatingStarsSentViewHolder extends BaseHolder {
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
         mBubble = itemView.findViewById(R.id.bubble);
 
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            if (style.outgoingMessageBubbleColor != INVALID) {
-                rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
-                mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-            }
-            else {
-                rateStarsCount.setTextColor(getColorInt(R.color.threads_chat_outgoing_message_bubble));
-                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_outgoing_message_bubble), PorterDuff.Mode.SRC_ATOP);
-
-            }
-            if (style.outgoingMessageBubbleBackground != INVALID) {
-                mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
-            }
-            if (style.outgoingMessageTextColor != INVALID) {
-                messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-                setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView, from, totalStarsCount}, style.outgoingMessageTextColor);
-                star.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor),PorterDuff.Mode.SRC_ATOP);
-            }
-            else {
-                star.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_text),PorterDuff.Mode.SRC_ATOP);
-            }
-
-            if (style.optionsSurveySelectedIconResId != INVALID) {
-                star.setImageResource(style.optionsSurveySelectedIconResId);
-            }
-            else {
-                star.setImageResource(R.drawable.threads_options_survey_selected);
-            }
-        }
+        if (style == null) style = ChatStyle.getInstance();
+        rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
+        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        setTextColorToViews(new TextView[]{mHeader, from, totalStarsCount}, style.outgoingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
+        star.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
+        star.setImageResource(style.optionsSurveySelectedIconResId);
     }
 
     public void bind(Survey survey) {

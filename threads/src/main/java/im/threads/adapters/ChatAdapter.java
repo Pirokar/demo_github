@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import im.threads.R;
 import im.threads.holders.ConsultConnectionMessageViewHolder;
 import im.threads.holders.ConsultFileViewHolder;
 import im.threads.holders.ConsultIsTypingViewHolderNew;
@@ -59,11 +58,9 @@ import im.threads.model.Space;
 import im.threads.model.Survey;
 import im.threads.model.UnreadMessages;
 import im.threads.model.UserPhrase;
-import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.utils.ThreadUtils;
 import im.threads.widget.Rating;
 
@@ -273,13 +270,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((DateViewHolder) holder).onBind(dr.getDate());
         }
         if (holder instanceof ConsultIsTypingViewHolderNew) {
-            final ChatStyle style = PrefUtils.getIncomingStyle(ctx);
-            final int defaultImageResId;
-            if (style != null && style.defaultOperatorAvatar != ChatStyle.INVALID) {
-                defaultImageResId = style.defaultOperatorAvatar;
-            } else {
-                defaultImageResId = R.drawable.threads_operator_avatar_placeholder;
-            }
+            final ChatStyle style = ChatStyle.getInstance();
+
             final ConsultTyping ct = (ConsultTyping) list.get(holder.getAdapterPosition());
             ((ConsultIsTypingViewHolderNew) holder).onBind(new View.OnClickListener() {
                 @Override
@@ -290,40 +282,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             });
-            if (ct.hasAvatar()) {
-                final int finalDefaultImageRes = defaultImageResId;
-                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(ctx, ct.getAvatarPath());
-                Picasso.with(ctx)
-                        .load(avatarPath)
-                        .fit()
-                        .noPlaceholder()
-                        .centerCrop()
-                        .transform(new CircleTransform())
-                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                Picasso.with(ctx)
-                                        .load(finalDefaultImageRes)
-                                        .fit()
-                                        .noPlaceholder()
-                                        .centerCrop()
-                                        .transform(new CircleTransform())
-                                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar);
-                            }
-                        });
-            } else {
-                Picasso.with(ctx)
-                        .load(defaultImageResId)
-                        .fit()
-                        .noPlaceholder()
-                        .transform(new CircleTransform())
-                        .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar);
-            }
+            final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(ctx, ct.getAvatarPath());
+            Picasso.with(ctx)
+                    .load(avatarPath)
+                    .fit()
+                    .error(style.defaultOperatorAvatar)
+                    .placeholder(style.defaultOperatorAvatar)
+                    .centerCrop()
+                    .transform(new CircleTransform())
+                    .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar);
         }
         if (holder instanceof SpaceViewHolder) {
             final Space space = (Space) list.get(position);
