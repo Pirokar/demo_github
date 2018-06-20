@@ -47,17 +47,17 @@
 
     <!--Alternative Design -->
 
-    <string name="alt_threads_push_title">@string/threads_push_title</string>
+    <string name="alt_threads_push_title">Тредс</string>
 
-    <string name="alt_threads_contact_center">@string/threads_contact_center</string>
-    <string name="alt_threads_operator_subtitle">@string/threads_operator_subtitle</string>
+    <string name="alt_threads_contact_center">VIP Чат</string>
+    <string name="alt_threads_operator_subtitle">Ваш персональный менеджер</string>
 
-    <string name="alt_threads_request_to_resolve_thread">@string/threads_request_to_resolve_thread</string>
-    <string name="alt_threads_request_to_resolve_thread_close">@string/threads_request_to_resolve_thread_close</string>
-    <string name="alt_threads_request_to_resolve_thread_open">@string/threads_request_to_resolve_thread_open</string>
+    <string name="alt_threads_request_to_resolve_thread">У вас еще остались вопросы?</string>
+    <string name="alt_threads_request_to_resolve_thread_close">Все решено</string>
+    <string name="alt_threads_request_to_resolve_thread_open">Еще вопрос</string>
 
-    <string name="alt_threads_welcome_screen_title_text">@string/threads_welcome_screen_title_text</string>
-    <string name="alt_threads_welcome_screen_subtitle_text">@string/threads_welcome_screen_subtitle_text</string>
-    <string name="alt_threads_input_hint">@string/threads_input_hint</string>
+    <string name="alt_threads_welcome_screen_title_text">Рады помочь Вам в VIP Чат</string>
+    <string name="alt_threads_welcome_screen_subtitle_text">Отправьте ваш вопрос, и ваш персональный менеджер на него сразу ответит</string>
+    <string name="alt_threads_input_hint">Введите Ваше сообщение</string>
 
 </resources>
