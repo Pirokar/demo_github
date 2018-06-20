@@ -44,4 +44,20 @@
     <string name="design_green_enum">Green</string>
     <string name="design_blue_enum">Blue</string>
 
+
+    <!--Alternative Design -->
+
+    <string name="alt_threads_push_title">@string/threads_push_title</string>
+
+    <string name="alt_threads_contact_center">@string/threads_contact_center</string>
+    <string name="alt_threads_operator_subtitle">@string/threads_operator_subtitle</string>
+
+    <string name="alt_threads_request_to_resolve_thread">@string/threads_request_to_resolve_thread</string>
+    <string name="alt_threads_request_to_resolve_thread_close">@string/threads_request_to_resolve_thread_close</string>
+    <string name="alt_threads_request_to_resolve_thread_open">@string/threads_request_to_resolve_thread_open</string>
+
+    <string name="alt_threads_welcome_screen_title_text">@string/threads_welcome_screen_title_text</string>
+    <string name="alt_threads_welcome_screen_subtitle_text">@string/threads_welcome_screen_subtitle_text</string>
+    <string name="alt_threads_input_hint">@string/threads_input_hint</string>
+
 </resources>
