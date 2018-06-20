@@ -48,12 +48,12 @@ public class UserFileViewHolder extends BaseHolder {
         mFilterSecond = itemView.findViewById(R.id.filter_second);
         mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = ChatStyle.getInstance();
-        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
         setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         mCircularProgressButton.setBackgroundColorResId(style.outgoingMessageTextColor);
         mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTintToProgressButtonUser(mCircularProgressButton, style.incomingMessageBubbleColor, style.chatBodyIconsTint);
 
         mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));

@@ -78,9 +78,9 @@ public class ConsultPhraseHolder extends BaseHolder {
         }
         mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = ChatStyle.getInstance();
-        mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
 
         mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
+        mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTextColorToViews(new TextView[]{mPhraseTextView,
                 rightTextHeader,
                 mRightTextDescr,
