@@ -36,4 +36,12 @@
     <string name="threads_request_to_resolve_thread_open">Да</string>
 
     <string name="threads_push_title">@string/app_name1</string>
+
+    <string-array name="designs">
+        <item>@string/design_green_enum</item>
+        <item>@string/design_blue_enum</item>
+    </string-array>
+    <string name="design_green_enum">Green</string>
+    <string name="design_blue_enum">Blue</string>
+
 </resources>

@@ -85,6 +85,16 @@
                 android:text="@string/chat_fragmetn_button_label"
                 style="@style/ChatButtonStyle"/>
 
+            <Spinner
+                android:id="@+id/design_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/threads_welcome_screen_title"
+                android:layout_marginTop="@dimen/margin_big"
+                android:layout_below="@+id/chat_activity_button"
+                android:entries="@array/designs"
+                android:layout_centerHorizontal="true"/>
+
         </RelativeLayout>
     </ScrollView>
 </layout>

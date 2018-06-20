@@ -8,6 +8,7 @@
     <color name="shadow">#30000000</color>
     <color name="gray">#707070</color>
     <color name="light_green">#B5D18F</color>
+    <color name="lighter_blue">#aff0ff</color>
 
     <!-- цвета для кастомизации -->
     <color name="threads_welcome_screen_title">@color/gray</color>
@@ -41,6 +42,6 @@
     <color name="threads_survey_selected_icon_tint">@color/colorAccent</color>
     <color name="threads_survey_unselected_icon_tint">@color/colorAccent</color>
 
-    <color name="threads_outgoing_message_link">#aff0ff</color>
+    <color name="threads_outgoing_message_link">@color/lighter_blue</color>
     <color name="threads_incoming_message_link">@color/threads_blue_0F87FF</color>
 </resources>
