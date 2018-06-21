@@ -17,9 +17,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.pushserver.android.PushController;
+
 import im.threads.android.R;
 import im.threads.android.utils.ChatBuilderHelper;
-
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
 import im.threads.utils.PermissionChecker;
@@ -45,12 +45,14 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public static final String ARG_USER_NAME = "userName";
     public static final String ARG_APP_MARKER = "appMarker";
     public static final String ARG_NEEDS_SHOW_CHAT = "needsShowChat";
+    private static final String ARG_CHAT_DESIGN = "chatDesign";
 
     private static final int PERM_REQUEST_CODE_CLICK = 1;
 
     private String clientId;
     private String userName;
     private String appMarker;
+    private ChatBuilderHelper.ChatDesign chatDesign;
 
     private BottomNavigationView bottomNavigationView;
     private TabItem selectedTab;
@@ -76,11 +78,14 @@ public class BottomNavigationActivity extends AppCompatActivity {
      * @return intent для открытия BottomNavigationActivity
      * с передачей clientId и userName.
      */
-    public static Intent createIntent(Activity activity, String appMarker, String clientId, String userName) {
+    public static Intent createIntent(Activity activity, String appMarker, String clientId,
+                                      String userName, ChatBuilderHelper.ChatDesign chatDesign) {
+
         Intent intent = new Intent(activity, BottomNavigationActivity.class);
         intent.putExtra(ARG_APP_MARKER, appMarker);
         intent.putExtra(ARG_CLIENT_ID, clientId);
         intent.putExtra(ARG_USER_NAME, userName);
+        intent.putExtra(ARG_CHAT_DESIGN, chatDesign);
         return intent;
     }
 
@@ -123,6 +128,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         clientId = intent.getStringExtra(ARG_CLIENT_ID);
         userName = intent.getStringExtra(ARG_USER_NAME);
         appMarker = intent.getStringExtra(ARG_APP_MARKER);
+        chatDesign = (ChatBuilderHelper.ChatDesign) intent.getSerializableExtra(ARG_CHAT_DESIGN);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -181,7 +187,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 break;
             case TAB_CHAT:
                 // генерируем настройки стилей чата
-                ChatBuilderHelper.buildChatStyle(this, appMarker, clientId, userName, "");
+                ChatBuilderHelper.buildChatStyle(this, appMarker, clientId, userName, "", chatDesign);
                 // создаем фрагмент чата
                 fragment = ChatFragment.newInstance();
                 break;

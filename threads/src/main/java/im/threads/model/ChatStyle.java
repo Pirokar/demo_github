@@ -690,7 +690,7 @@ public class ChatStyle implements Serializable {
          * @param imagesScreenAuthorTextSize  = R.dimen.threads_attachments_author_text_size;
          * @param imagesScreenDateTextSize    = R.dimen.threads_attachments_date_text_size;
          */
-        public ChatStyleBuilder setRequestResolveThreadStyle(@ColorRes int imagesScreenToolbarColor,
+        public ChatStyleBuilder setImagesGalleryStyle(@ColorRes int imagesScreenToolbarColor,
                                                              @ColorRes int imagesScreenBackgroundColor,
                                                              @ColorRes int imagesScreenAuthorTextColor,
                                                              @ColorRes int imagesScreenDateTextColor,

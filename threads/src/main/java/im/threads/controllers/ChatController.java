@@ -34,7 +34,6 @@ import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import im.threads.BuildConfig;
 import im.threads.R;
 import im.threads.activities.ChatActivity;
 import im.threads.activities.ConsultActivity;
@@ -165,6 +164,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     public static ChatController getInstance(final Context ctx) {
         String clientId = PrefUtils.getNewClientID(ctx); //clientId заданный в настройках чата
+
+        if (ChatStyle.appContext == null) {
+            ChatStyle.appContext = ctx.getApplicationContext();
+        }
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "getInstance clientId = " + clientId);
