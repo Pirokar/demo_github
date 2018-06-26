@@ -267,6 +267,10 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 Intent i = new Intent(context, BottomNavigationActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.putExtra(ARG_NEEDS_SHOW_CHAT, true);
+                i.putExtra(ARG_CLIENT_ID, clientId);
+                i.putExtra(ARG_USER_NAME, userName);
+                i.putExtra(ARG_APP_MARKER, appMarker);
+                i.putExtra(ARG_CHAT_DESIGN, chatDesign);
                 return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
             }
         };
