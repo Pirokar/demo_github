@@ -462,10 +462,8 @@ public class ChatFragment extends Fragment implements
 
         binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
 
-        binding.input.getLayoutParams().height = (int) activity.getResources().getDimension(style.inputHeight);
-
+        binding.input.setMinHeight((int) activity.getResources().getDimension(style.inputHeight));
         binding.input.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
-
         binding.input.setHint(style.inputHint);
 
         binding.addAttachment.setImageResource(style.attachmentsIconResId);

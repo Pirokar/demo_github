@@ -94,10 +94,10 @@
 
     <style name="InputEditTextStyle">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">@dimen/threads_input_height</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
         <item name="android:background">@drawable/threads_chat_input_background</item>
-        <item name="android:minHeight">64dp</item>
+        <item name="android:minHeight">@dimen/threads_input_height</item>
         <item name="android:textColorHint">@color/threads_input_hint</item>
         <item name="android:textColor">@color/threads_input_text</item>
         <item name="android:paddingBottom">@dimen/margin_quarter</item>
