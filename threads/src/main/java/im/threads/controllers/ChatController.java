@@ -1064,11 +1064,14 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onSystemMessageFromServer:");
         }
+        boolean isCurrentClientId = IncomingMessageParser.checkId(bundle, PrefUtils.getClientID(ctx));
         final long currentTimeMillis = System.currentTimeMillis();
         final PushMessageTypes pushMessageTypes = PushMessageTypes.getKnownType(bundle);
         switch (pushMessageTypes) {
             case TYPING:
-                addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentAvatarPath()), ctx);
+                if (isCurrentClientId) {
+                    addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentAvatarPath()), ctx);
+                }
                 break;
             case MESSAGES_READ:
                 final List<String> list = IncomingMessageParser.getReadIds(bundle);
@@ -1194,84 +1197,82 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             PrefUtils.setThreadId(ctx, -1L);
         }
 
-        if (!IncomingMessageParser.checkId(pushMessage, PrefUtils.getClientID(ctx))
-                || chatItem instanceof EmptyChatItem) {
-            pushMessageCheckResult.setNeedsShowIsStatusBar(false);
-            return pushMessageCheckResult;
-        }
+        boolean isCurrentClientId = IncomingMessageParser.checkId(pushMessage, PrefUtils.getClientID(ctx));
 
-        if (chatItem instanceof Survey) {
-            final Survey survey = (Survey) chatItem;
-            final String ratingDoneMessage = OutgoingMessageCreator.createRatingReceivedMessage(
-                    survey.getSendingId(),
-                    PrefUtils.getClientID(appContext),
-                    appContext
-            );
+        if (isCurrentClientId) {
+            if (chatItem instanceof Survey) {
+                final Survey survey = (Survey) chatItem;
+                final String ratingDoneMessage = OutgoingMessageCreator.createRatingReceivedMessage(
+                        survey.getSendingId(),
+                        PrefUtils.getClientID(appContext),
+                        appContext
+                );
 
-            Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
-                @Override
-                public void onResult(final String s) {
-                    survey.setMessageId(s);
-                    setSurveyLifetime(survey);
-                }
-
-                @Override
-                public void onError(final PushServerErrorException e) {
-
-                }
-            }, null);
-        }
-
-        if (chatItem instanceof RequestResolveThread) {
-            isResolveRequestVisible = true;
-            final RequestResolveThread resolveThread = (RequestResolveThread) chatItem;
-            // if thread is closed by timeout
-            // remove close request from the history
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (isResolveRequestVisible) {
-                        removeResolveRequest();
-                    }
-                }
-            }, resolveThread.getHideAfter() * 1000);
-        }
-
-        if (chatItem instanceof ScheduleInfo) {
-            final ScheduleInfo schedule = (ScheduleInfo) chatItem;
-            updateInputEnable(schedule.isSendDuringInactive());
-            isScheduleInfoReceived = true;
-            if(null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
-            h.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (null != fragment) {
-                        fragment.removeSearching();
-                        fragment.setTitleStateDefault();
-                    }
-                }
-            });
-        }
-
-        final ConsultMessageReaction consultReactor = new ConsultMessageReaction(
-                mConsultWriter,
-                new ConsultMessageReactions() {
+                Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
                     @Override
-                    public void consultConnected(final String id, final String name, final String title) {
-                        if (fragment != null) {
-                            fragment.setStateConsultConnected(id, name);
+                    public void onResult(final String s) {
+                        survey.setMessageId(s);
+                        setSurveyLifetime(survey);
+                    }
+
+                    @Override
+                    public void onError(final PushServerErrorException e) {
+
+                    }
+                }, null);
+            }
+
+            if (chatItem instanceof RequestResolveThread) {
+                isResolveRequestVisible = true;
+                final RequestResolveThread resolveThread = (RequestResolveThread) chatItem;
+                // if thread is closed by timeout
+                // remove close request from the history
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isResolveRequestVisible) {
+                            removeResolveRequest();
                         }
                     }
+                }, resolveThread.getHideAfter() * 1000);
+            }
 
+            if (chatItem instanceof ScheduleInfo) {
+                final ScheduleInfo schedule = (ScheduleInfo) chatItem;
+                updateInputEnable(schedule.isSendDuringInactive());
+                isScheduleInfoReceived = true;
+                if(null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
+                h.post(new Runnable() {
                     @Override
-                    public void onConsultLeft() {
-                        if (null != fragment) fragment.setTitleStateDefault();
+                    public void run() {
+                        if (null != fragment) {
+                            fragment.removeSearching();
+                            fragment.setTitleStateDefault();
+                        }
                     }
                 });
-        consultReactor.onPushMessage(chatItem);
-        addMessage(chatItem, ctx);
+            }
 
-        if ((chatItem instanceof ScheduleInfo || chatItem instanceof UserPhrase)) {
+            final ConsultMessageReaction consultReactor = new ConsultMessageReaction(
+                    mConsultWriter,
+                    new ConsultMessageReactions() {
+                        @Override
+                        public void consultConnected(final String id, final String name, final String title) {
+                            if (fragment != null) {
+                                fragment.setStateConsultConnected(id, name);
+                            }
+                        }
+
+                        @Override
+                        public void onConsultLeft() {
+                            if (null != fragment) fragment.setTitleStateDefault();
+                        }
+                    });
+            consultReactor.onPushMessage(chatItem);
+            addMessage(chatItem, ctx);
+        }
+
+        if (chatItem instanceof ScheduleInfo || chatItem instanceof UserPhrase || chatItem instanceof EmptyChatItem) {
             // не показывать уведомление для расписания и сообщений пользователя
             pushMessageCheckResult.setNeedsShowIsStatusBar(false);
         } else {
