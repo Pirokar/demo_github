@@ -666,4 +666,18 @@ public class IncomingMessageParser {
                 && pushBundle.containsKey(PushMessageAttributes.CLIENT_ID)
                 && currentClientId.equalsIgnoreCase(pushBundle.getString(PushMessageAttributes.CLIENT_ID));
     }
+
+    public static String getAppMarker(PushMessage pushMessage) {
+        String appMarker = null;
+        final JSONObject fullMessage = getFullMessage(pushMessage);
+
+        if (fullMessage != null && fullMessage.has(PushMessageAttributes.APP_MARKER_KEY)) {
+            try {
+                appMarker = fullMessage.getString(PushMessageAttributes.APP_MARKER_KEY);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return appMarker;
+    }
 }

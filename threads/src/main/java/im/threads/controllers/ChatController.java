@@ -389,7 +389,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (pendingIntentCreator == null) {
             pendingIntentCreator = new PendingIntentCreator() {
                 @Override
-                public PendingIntent createPendingIntent(final Context context) {
+                public PendingIntent createPendingIntent(final Context context, String appMarker) {
                     final Intent i = new Intent(context, ChatActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -765,6 +765,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (appContext != null) {
             final Intent i = new Intent(appContext, NotificationService.class);
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
+            i.putExtra(NotificationService.EXTRA_APP_MARKER, PrefUtils.getAppMarker(appContext));
             if (!isActive) appContext.startService(i);
         }
         proceedSendingQueue();
@@ -1065,6 +1066,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             Log.i(TAG, "onSystemMessageFromServer:");
         }
         boolean isCurrentClientId = IncomingMessageParser.checkId(bundle, PrefUtils.getClientID(ctx));
+        String appMarker = bundle.getString(PushMessageAttributes.APP_MARKER_KEY);
         final long currentTimeMillis = System.currentTimeMillis();
         final PushMessageTypes pushMessageTypes = PushMessageTypes.getKnownType(bundle);
         switch (pushMessageTypes) {
@@ -1099,6 +1101,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 }
                 intent2.putExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT, shortMessage);
                 intent2.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT);
+                intent2.putExtra(NotificationService.EXTRA_APP_MARKER, appMarker);
                 ctx.startService(intent2);
                 break;
         }
@@ -1428,7 +1431,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public interface PendingIntentCreator {
-        PendingIntent createPendingIntent(Context context);
+        PendingIntent createPendingIntent(Context context, String appMarker);
     }
 
     public interface UnreadMessagesCountListener {

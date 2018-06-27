@@ -66,6 +66,7 @@ public class NotificationService extends Service {
     public static final String ACTION_REMOVE_NOTIFICATION = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_REMOVE_NOTIFICATION";
     public static final String ACTION_ADD_UNREAD_MESSAGE_TEXT = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE_TEXT";
     public static final String EXTRA_OPERATOR_URL = "com.sequenia.threads.services.IncomingMessagesIntentService.EXTRA_OPERATOR_URL";
+    public static final String EXTRA_APP_MARKER = "appMarker";
 
     private static final int UNREAD_MESSAGE_PUSH_ID = 0;
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
@@ -160,7 +161,7 @@ public class NotificationService extends Service {
         } else if (intent.getAction() != null && intent.getAction().equals(ACTION_ADD_UNSENT_MESSAGE)) {
             final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
             notificationBuilder.setContentTitle(getString(R.string.threads_message_were_unsent));
-            final PendingIntent pend = getChatIntent();
+            final PendingIntent pend = getChatIntent(intent.getStringExtra(EXTRA_APP_MARKER));
             final int iconResId = style.defPushIconResId;
             notificationBuilder.setSmallIcon(iconResId);
             notificationBuilder.setContentIntent(pend);
@@ -307,7 +308,7 @@ public class NotificationService extends Service {
         }
         pushBig.setTextViewText(R.id.reply, getString(R.string.threads_reply));
         builder.setContent(pushSmall);
-        final PendingIntent pend = getChatIntent();
+        final PendingIntent pend = getChatIntent(intent.getStringExtra(EXTRA_APP_MARKER));
         builder.setContentIntent(pend);
         builder.setAutoCancel(true);
         builder.setContentIntent(pend);
@@ -381,6 +382,7 @@ public class NotificationService extends Service {
     void getNstyleNotif(final Intent intent, final List<ChatItem> items, final CompletionHandler<Notification> completionHandler, final String message) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
 
+        final String appMarker = intent.getStringExtra(EXTRA_APP_MARKER);
         builder.setShowWhen(true);
         if (Build.VERSION.SDK_INT > 23) {
             builder.setColor(getColor(style.nougatPushAccentColorResId));
@@ -408,7 +410,7 @@ public class NotificationService extends Service {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    builder.setContentIntent(getChatIntent());
+                    builder.setContentIntent(getChatIntent(appMarker));
                     builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
                     completionHandler.onComplete(builder.build());
 
@@ -443,7 +445,7 @@ public class NotificationService extends Service {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        builder.setContentIntent(getChatIntent());
+                        builder.setContentIntent(getChatIntent(appMarker));
                         if (out.first) {
                             builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
                         }
@@ -466,11 +468,9 @@ public class NotificationService extends Service {
                             final URLConnection url = new URL(pushContents.lastImagePath).openConnection();
                             final Bitmap b = BitmapFactory.decodeStream(url.getInputStream());
                             pictureStyle.bigPicture(b);
-                            builder.setContentIntent(getChatIntent());
                             builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
                             builder.setStyle(pictureStyle);
-                            builder.setContentIntent(getChatIntent());
-                            builder.setContentIntent(getChatIntent());
+                            builder.setContentIntent(getChatIntent(appMarker));
                             if (out.first) {
                                 builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
                             }
@@ -493,7 +493,7 @@ public class NotificationService extends Service {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    builder.setContentIntent(getChatIntent());
+                    builder.setContentIntent(getChatIntent(appMarker));
                     if (out.first) {
                         builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
                     }
@@ -516,8 +516,8 @@ public class NotificationService extends Service {
     }
 
 
-    private PendingIntent getChatIntent() {
-        return ChatController.getPendingIntentCreator().createPendingIntent(this);
+    private PendingIntent getChatIntent(String appMarker) {
+        return ChatController.getPendingIntentCreator().createPendingIntent(this, appMarker);
     }
 
 

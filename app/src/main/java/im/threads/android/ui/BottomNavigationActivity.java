@@ -12,14 +12,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.pushserver.android.PushController;
 
+import java.util.List;
+
 import im.threads.android.R;
+import im.threads.android.data.Card;
 import im.threads.android.utils.ChatBuilderHelper;
+import im.threads.android.utils.PrefUtils;
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
 import im.threads.utils.PermissionChecker;
@@ -263,17 +268,53 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public ChatController.PendingIntentCreator chatWithFragmentPendingIntentCreator() {
         return new ChatController.PendingIntentCreator() {
             @Override
-            public PendingIntent createPendingIntent(Context context) {
-                Intent i = new Intent(context, BottomNavigationActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.putExtra(ARG_NEEDS_SHOW_CHAT, true);
-                i.putExtra(ARG_CLIENT_ID, clientId);
-                i.putExtra(ARG_USER_NAME, userName);
-                i.putExtra(ARG_APP_MARKER, appMarker);
-                i.putExtra(ARG_CHAT_DESIGN, chatDesign);
-                return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+            public PendingIntent createPendingIntent(Context context, String appMarker) {
+
+                if (!TextUtils.isEmpty(appMarker)) {
+                    //This is an exaple of creating pending intent for multichat app
+
+                    List<Card> clientCards = PrefUtils.getCards(context);
+                    Card pushClientCard = null;
+
+                    for (Card clientCard : clientCards) {
+                        if (appMarker.equalsIgnoreCase(clientCard.getAppMarker())) {
+                            pushClientCard = clientCard;
+                        }
+                    }
+
+                    if (pushClientCard != null) {
+
+                        ChatBuilderHelper.ChatDesign chatDesign = ChatBuilderHelper.ChatDesign.BLUE;
+                        if (appMarker.endsWith("CRG")) {
+                            chatDesign = ChatBuilderHelper.ChatDesign.GREEN;
+                        }
+
+                        return BottomNavigationActivity.createPendingIntent(context, true,
+                                pushClientCard.getUserId(), pushClientCard.getUserName(),
+                                pushClientCard.getAppMarker(), chatDesign);
+                    }
+                }
+
+                //This is an exaple of creating pending intent for single chat app
+                return BottomNavigationActivity.createPendingIntent(context, true,
+                        clientId, userName,
+                        BottomNavigationActivity.this.appMarker, chatDesign);
+
             }
         };
+    }
+
+    public static PendingIntent createPendingIntent (Context context, boolean needsShowChat, String clientId,
+                                                 String userName, String appMarker, ChatBuilderHelper.ChatDesign chatDesign) {
+
+        Intent i = new Intent(context, BottomNavigationActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.putExtra(ARG_NEEDS_SHOW_CHAT, true);
+        i.putExtra(ARG_CLIENT_ID, clientId);
+        i.putExtra(ARG_USER_NAME, userName);
+        i.putExtra(ARG_APP_MARKER, appMarker);
+        i.putExtra(ARG_CHAT_DESIGN, chatDesign);
+        return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     @Override
