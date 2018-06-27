@@ -7,6 +7,7 @@ import com.pushserver.android.PushServerIntentService;
 import com.pushserver.android.model.PushMessage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import im.threads.controllers.ChatController;
@@ -23,6 +24,11 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
 
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
+
+        if (ChatStyle.appContext == null) {
+            ChatStyle.appContext = this.getApplicationContext();
+        }
+
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "saveMessages " + list);
         }
@@ -50,11 +56,26 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
         }
 
         if(toShow.size() > 0) {
-            Intent intent = new Intent(getApplicationContext(), NotificationService.class);
-            ArrayList<PushMessage> al = new ArrayList<>(toShow);
-            intent.putParcelableArrayListExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE, al);
-            intent.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE);
-            startService(intent);
+
+            HashMap<String, ArrayList<PushMessage>> appMarkerMessagesMap = new HashMap<>();
+
+            for (PushMessage pushMessage : toShow) {
+                String appMarker = IncomingMessageParser.getAppMarker(pushMessage);
+
+                if (!appMarkerMessagesMap.containsKey(appMarker)) {
+                    appMarkerMessagesMap.put(appMarker, new ArrayList<PushMessage>());
+                }
+                appMarkerMessagesMap.get(appMarker).add(pushMessage);
+            }
+
+            for (String appMarker : appMarkerMessagesMap.keySet()) {
+                Intent intent = new Intent(getApplicationContext(), NotificationService.class);
+                ArrayList<PushMessage> al = new ArrayList<>(appMarkerMessagesMap.get(appMarker));
+                intent.putParcelableArrayListExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE, al);
+                intent.putExtra(NotificationService.EXTRA_APP_MARKER, appMarker);
+                intent.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE);
+                startService(intent);
+            }
         }
 
         return true;
