@@ -40,7 +40,7 @@ android {
         // АРМ = threads.brooma.ru
         brooma {
             applicationId "com.sequenia.appwithchatdev"
-            resValue "string", "app_name1", "THR Dev"
+            resValue "string", "app_name1", "THR Test"
         }
         // АРМ = polarbear.threads.im
         polarbear {
