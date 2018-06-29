@@ -383,7 +383,7 @@ public class ChatFragment extends Fragment implements
     }
 
     private void onSendButtonClick() {
-        if (binding.input.getText().toString().trim().length() == 0 && ((mQuote == null) && (mFileDescription == null))) {
+        if (binding.input.getText().toString().trim().length() == 0 && mFileDescription == null) {
             return;
         }
 
