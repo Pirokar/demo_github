@@ -9,9 +9,7 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
-import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  *
@@ -40,7 +38,7 @@ public class MyCircleProgress extends View {
 
     public MyCircleProgress(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        finishedStrokeWidth=getContext().getResources().getDisplayMetrics().density;
+        finishedStrokeWidth = getContext().getResources().getDisplayMetrics().density;
         min_size = 100;
         initPainters();
     }
@@ -49,14 +47,9 @@ public class MyCircleProgress extends View {
         textPaint = new TextPaint();
         finishedPaint = new Paint();
 
-        style = PrefUtils.getIncomingStyle(getContext());
+        style = ChatStyle.getInstance();
 
-        if (style != null && style.chatToolbarColorResId != ChatStyle.INVALID) {
-            finishedPaint.setColor(ContextCompat.getColor(getContext(), style.chatToolbarColorResId));
-        } else {
-            finishedPaint.setColor(getContext().getResources().getColor(R.color.threads_chat_toolbar));
-        }
-
+        finishedPaint.setColor(ContextCompat.getColor(getContext(), style.chatToolbarColorResId));
         finishedPaint.setStyle(Paint.Style.STROKE);
         finishedPaint.setAntiAlias(true);
         finishedPaint.setStrokeWidth(finishedStrokeWidth);

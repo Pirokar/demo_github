@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 import im.threads.widget.BoldCustomFontTextView;
 
 /**
@@ -24,13 +23,11 @@ public class MessageHeaderTextView extends BoldCustomFontTextView {
 
     @Override
     public void setTypefaceView(Context context) {
-        ChatStyle style = PrefUtils.getIncomingStyle(context);
-        if (style != null) {
-            if (!TextUtils.isEmpty(style.messageHeaderFont)) {
-                setTypeface(Typeface.createFromAsset(context.getAssets(), style.messageHeaderFont));
-            } else {
-                super.setTypefaceView(context);
-            }
+        ChatStyle style = ChatStyle.getInstance();
+        if (!TextUtils.isEmpty(style.messageHeaderFont)) {
+            setTypeface(Typeface.createFromAsset(context.getAssets(), style.messageHeaderFont));
+        } else {
+            super.setTypefaceView(context);
         }
     }
 }

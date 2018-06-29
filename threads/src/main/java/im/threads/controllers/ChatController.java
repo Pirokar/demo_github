@@ -34,7 +34,6 @@ import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import im.threads.BuildConfig;
 import im.threads.R;
 import im.threads.activities.ChatActivity;
 import im.threads.activities.ConsultActivity;
@@ -165,6 +164,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     public static ChatController getInstance(final Context ctx) {
         String clientId = PrefUtils.getNewClientID(ctx); //clientId заданный в настройках чата
+
+        if (ChatStyle.appContext == null) {
+            ChatStyle.appContext = ctx.getApplicationContext();
+        }
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "getInstance clientId = " + clientId);
@@ -386,7 +389,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (pendingIntentCreator == null) {
             pendingIntentCreator = new PendingIntentCreator() {
                 @Override
-                public PendingIntent createPendingIntent(final Context context) {
+                public PendingIntent createPendingIntent(final Context context, String appMarker) {
                     final Intent i = new Intent(context, ChatActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -762,6 +765,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (appContext != null) {
             final Intent i = new Intent(appContext, NotificationService.class);
             i.setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE);
+            i.putExtra(NotificationService.EXTRA_APP_MARKER, PrefUtils.getAppMarker(appContext));
             if (!isActive) appContext.startService(i);
         }
         proceedSendingQueue();
@@ -1061,11 +1065,15 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onSystemMessageFromServer:");
         }
+        boolean isCurrentClientId = IncomingMessageParser.checkId(bundle, PrefUtils.getClientID(ctx));
+        String appMarker = bundle.getString(PushMessageAttributes.APP_MARKER_KEY);
         final long currentTimeMillis = System.currentTimeMillis();
         final PushMessageTypes pushMessageTypes = PushMessageTypes.getKnownType(bundle);
         switch (pushMessageTypes) {
             case TYPING:
-                addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentAvatarPath()), ctx);
+                if (isCurrentClientId) {
+                    addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentAvatarPath()), ctx);
+                }
                 break;
             case MESSAGES_READ:
                 final List<String> list = IncomingMessageParser.getReadIds(bundle);
@@ -1093,6 +1101,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 }
                 intent2.putExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT, shortMessage);
                 intent2.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE_TEXT);
+                intent2.putExtra(NotificationService.EXTRA_APP_MARKER, appMarker);
                 ctx.startService(intent2);
                 break;
         }
@@ -1191,84 +1200,82 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             PrefUtils.setThreadId(ctx, -1L);
         }
 
-        if (!IncomingMessageParser.checkId(pushMessage, PrefUtils.getClientID(ctx))
-                || chatItem instanceof EmptyChatItem) {
-            pushMessageCheckResult.setNeedsShowIsStatusBar(false);
-            return pushMessageCheckResult;
-        }
+        boolean isCurrentClientId = IncomingMessageParser.checkId(pushMessage, PrefUtils.getClientID(ctx));
 
-        if (chatItem instanceof Survey) {
-            final Survey survey = (Survey) chatItem;
-            final String ratingDoneMessage = OutgoingMessageCreator.createRatingReceivedMessage(
-                    survey.getSendingId(),
-                    PrefUtils.getClientID(appContext),
-                    appContext
-            );
+        if (isCurrentClientId) {
+            if (chatItem instanceof Survey) {
+                final Survey survey = (Survey) chatItem;
+                final String ratingDoneMessage = OutgoingMessageCreator.createRatingReceivedMessage(
+                        survey.getSendingId(),
+                        PrefUtils.getClientID(appContext),
+                        appContext
+                );
 
-            Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
-                @Override
-                public void onResult(final String s) {
-                    survey.setMessageId(s);
-                    setSurveyLifetime(survey);
-                }
-
-                @Override
-                public void onError(final PushServerErrorException e) {
-
-                }
-            }, null);
-        }
-
-        if (chatItem instanceof RequestResolveThread) {
-            isResolveRequestVisible = true;
-            final RequestResolveThread resolveThread = (RequestResolveThread) chatItem;
-            // if thread is closed by timeout
-            // remove close request from the history
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (isResolveRequestVisible) {
-                        removeResolveRequest();
-                    }
-                }
-            }, resolveThread.getHideAfter() * 1000);
-        }
-
-        if (chatItem instanceof ScheduleInfo) {
-            final ScheduleInfo schedule = (ScheduleInfo) chatItem;
-            updateInputEnable(schedule.isSendDuringInactive());
-            isScheduleInfoReceived = true;
-            if(null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
-            h.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (null != fragment) {
-                        fragment.removeSearching();
-                        fragment.setTitleStateDefault();
-                    }
-                }
-            });
-        }
-
-        final ConsultMessageReaction consultReactor = new ConsultMessageReaction(
-                mConsultWriter,
-                new ConsultMessageReactions() {
+                Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
                     @Override
-                    public void consultConnected(final String id, final String name, final String title) {
-                        if (fragment != null) {
-                            fragment.setStateConsultConnected(id, name);
+                    public void onResult(final String s) {
+                        survey.setMessageId(s);
+                        setSurveyLifetime(survey);
+                    }
+
+                    @Override
+                    public void onError(final PushServerErrorException e) {
+
+                    }
+                }, null);
+            }
+
+            if (chatItem instanceof RequestResolveThread) {
+                isResolveRequestVisible = true;
+                final RequestResolveThread resolveThread = (RequestResolveThread) chatItem;
+                // if thread is closed by timeout
+                // remove close request from the history
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isResolveRequestVisible) {
+                            removeResolveRequest();
                         }
                     }
+                }, resolveThread.getHideAfter() * 1000);
+            }
 
+            if (chatItem instanceof ScheduleInfo) {
+                final ScheduleInfo schedule = (ScheduleInfo) chatItem;
+                updateInputEnable(schedule.isSendDuringInactive());
+                isScheduleInfoReceived = true;
+                if(null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
+                h.post(new Runnable() {
                     @Override
-                    public void onConsultLeft() {
-                        if (null != fragment) fragment.setTitleStateDefault();
+                    public void run() {
+                        if (null != fragment) {
+                            fragment.removeSearching();
+                            fragment.setTitleStateDefault();
+                        }
                     }
                 });
-        consultReactor.onPushMessage(chatItem);
-        addMessage(chatItem, ctx);
+            }
 
-        if ((chatItem instanceof ScheduleInfo || chatItem instanceof UserPhrase)) {
+            final ConsultMessageReaction consultReactor = new ConsultMessageReaction(
+                    mConsultWriter,
+                    new ConsultMessageReactions() {
+                        @Override
+                        public void consultConnected(final String id, final String name, final String title) {
+                            if (fragment != null) {
+                                fragment.setStateConsultConnected(id, name);
+                            }
+                        }
+
+                        @Override
+                        public void onConsultLeft() {
+                            if (null != fragment) fragment.setTitleStateDefault();
+                        }
+                    });
+            consultReactor.onPushMessage(chatItem);
+            addMessage(chatItem, ctx);
+        }
+
+        if (chatItem instanceof ScheduleInfo || chatItem instanceof UserPhrase || chatItem instanceof EmptyChatItem) {
             // не показывать уведомление для расписания и сообщений пользователя
             pushMessageCheckResult.setNeedsShowIsStatusBar(false);
         } else {
@@ -1424,7 +1431,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public interface PendingIntentCreator {
-        PendingIntent createPendingIntent(Context context);
+        PendingIntent createPendingIntent(Context context, String appMarker);
     }
 
     public interface UnreadMessagesCountListener {

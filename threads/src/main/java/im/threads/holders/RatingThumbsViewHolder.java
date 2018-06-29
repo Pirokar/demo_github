@@ -12,7 +12,6 @@ import im.threads.R;
 import im.threads.adapters.ChatAdapter;
 import im.threads.model.ChatStyle;
 import im.threads.model.Survey;
-import im.threads.utils.PrefUtils;
 
 /**
  * ViewHolder для бинарных опросов
@@ -43,30 +42,17 @@ public class RatingThumbsViewHolder extends BaseHolder {
         thanksForRate = (TextView) itemView.findViewById(R.id.thanks_for_rate);
 
         if (style == null) {
-            style = PrefUtils.getIncomingStyle(itemView.getContext());
+            style = ChatStyle.getInstance();
         }
 
-        if (style != null) {
-            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
-                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-            }
+        topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
+        bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
 
-            if (style.surveyTextColorResId != ChatStyle.INVALID) {
-                askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
-                thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
-            }
+        askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
+        thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
 
-            if (style.surveyUnselectedColorFilterResId != ChatStyle.INVALID) {
-                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
-                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
-            }
-            else {
-                thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_survey_unselected_icon_tint), PorterDuff.Mode.SRC_ATOP);
-                thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_survey_unselected_icon_tint), PorterDuff.Mode.SRC_ATOP);
-
-            }
-        }
+        thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
+        thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
     }
 
     public void bind(final Survey survey, final ChatAdapter.AdapterInterface adapterInterface) {
@@ -75,41 +61,28 @@ public class RatingThumbsViewHolder extends BaseHolder {
         boolean hasRate = survey.getQuestions().get(0).hasRate();
 
         if (hasRate && survey.getQuestions().get(0).getRate() == 1) {
-            thumbUp.setImageResource(style.binarySurveyLikeSelectedIconResId == ChatStyle.INVALID
-                    ? R.drawable.threads_binary_survey_like_selected : style.binarySurveyLikeSelectedIconResId);
-
+            thumbUp.setImageResource(style.binarySurveyLikeSelectedIconResId);
             thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(),
-                    style.surveySelectedColorFilterResId == ChatStyle.INVALID
-                            ? R.color.threads_survey_selected_icon_tint : style.surveySelectedColorFilterResId),
+                    style.surveySelectedColorFilterResId),
                     PorterDuff.Mode.SRC_ATOP);
 
         } else {
-            thumbUp.setImageResource(style.binarySurveyLikeUnselectedIconResId == ChatStyle.INVALID
-                    ? R.drawable.threads_binary_survey_like_unselected : style.binarySurveyLikeUnselectedIconResId);
-
+            thumbUp.setImageResource(style.binarySurveyLikeUnselectedIconResId);
             thumbUp.setColorFilter(ContextCompat.getColor(itemView.getContext(),
-                    style.surveyUnselectedColorFilterResId == ChatStyle.INVALID
-                            ? R.color.threads_survey_unselected_icon_tint :style.surveyUnselectedColorFilterResId),
+                    style.surveyUnselectedColorFilterResId),
                     PorterDuff.Mode.SRC_ATOP);
         }
 
         if (hasRate && survey.getQuestions().get(0).getRate() == 0) {
-            thumbDown.setImageResource(style.binarySurveyDislikeSelectedIconResId == ChatStyle.INVALID
-                    ? R.drawable.threads_binary_survey_dislike_selected : style.binarySurveyDislikeSelectedIconResId);
-
+            thumbDown.setImageResource(style.binarySurveyDislikeSelectedIconResId);
             thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(),
-                    style.surveySelectedColorFilterResId == ChatStyle.INVALID
-                            ? R.color.threads_survey_selected_icon_tint : style.surveySelectedColorFilterResId),
+                    style.surveySelectedColorFilterResId),
                     PorterDuff.Mode.SRC_ATOP);
 
         } else {
-            thumbDown.setImageResource(style.binarySurveyDislikeUnselectedIconResId == ChatStyle.INVALID
-                    ? R.drawable.threads_binary_survey_dislike_unselected : style.binarySurveyDislikeUnselectedIconResId);
-
-
+            thumbDown.setImageResource(style.binarySurveyDislikeUnselectedIconResId);
             thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(),
-                    style.surveyUnselectedColorFilterResId == ChatStyle.INVALID
-                            ? R.color.threads_survey_unselected_icon_tint : style.surveyUnselectedColorFilterResId),
+                    style.surveyUnselectedColorFilterResId),
                     PorterDuff.Mode.SRC_ATOP);
         }
 

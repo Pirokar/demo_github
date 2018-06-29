@@ -180,7 +180,7 @@
                     android:id="@+id/input"
                     style="@style/InputEditTextStyle"
                     android:hint="@string/threads_input_hint"
-                    android:maxLines="5"/>
+                    android:maxLines="7"/>
 
                 <ImageButton
                     android:id="@+id/send_message"

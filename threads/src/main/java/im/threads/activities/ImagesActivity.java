@@ -34,7 +34,6 @@ import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
 import im.threads.permissions.PermissionsActivity;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.utils.ThreadUtils;
 
 /**
@@ -93,22 +92,8 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
                 finish();
             }
         });
-        ChatStyle style = PrefUtils.getIncomingStyle(this);
-       /* if (null != style) {
-            if (style.chatBackgroundColor != INVALID)
-                findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
-            if (style.chatToolbarColorResId != INVALID)
-                mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarColorResId != INVALID)
-                mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-            if (style.chatToolbarTextColorResId != INVALID)
-                mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC);
-        }*/
-    }
-
-    @Override
-    protected void setActivityStyle(ChatStyle style) {
-
+        ChatStyle style = ChatStyle.getInstance();
+        mToolbar.setBackgroundColor(getColorInt(style.imagesScreenToolbarColor));
     }
 
     @Override

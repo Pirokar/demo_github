@@ -22,10 +22,6 @@ import java.util.Arrays;
 
 import im.threads.R;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
-
-import static im.threads.model.ChatStyle.INVALID;
-
 
 /**
  * Dialog fragment for picking folder
@@ -40,7 +36,7 @@ public class FilePickerFragment extends DialogFragment
     private static final String PREVIOUS_FOLDER_DOTS = "...";
     private ListView mListView;
     private Button mOkButton, mCancelButton, mDirectoryUpButton;
-    private  ArrayAdapter<String> mAnimatedArrayAdapter;
+    private ArrayAdapter<String> mAnimatedArrayAdapter;
     private SelectedListener mSelectedListener;
     private FileFilter mFileFilter;
     private boolean isFilterEnabled;
@@ -72,13 +68,9 @@ public class FilePickerFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v;
         AlertDialog dialog;
-        ChatStyle style = PrefUtils.getIncomingStyle(this.getActivity());
+        ChatStyle style = ChatStyle.getInstance();
         AlertDialog.Builder builder;
-        if (style != null && style.fileBrowserDialogStyleResId != INVALID) {
-            builder = new AlertDialog.Builder(getActivity(), style.fileBrowserDialogStyleResId);
-        } else {
-            builder = new AlertDialog.Builder(getActivity(), R.style.FileDialogStyleTransparent);
-        }
+        builder = new AlertDialog.Builder(getActivity(), style.fileBrowserDialogStyleResId);
         builder.setTitle(getString(R.string.threads_choose_file));
         builder.setNeutralButton(getString(R.string.threads_folder_up), this);
         builder.setNegativeButton(getString(R.string.threads_cancel), this);
@@ -87,7 +79,7 @@ public class FilePickerFragment extends DialogFragment
 
         dialog.setView(v);
         mListView = (ListView) v.findViewById(R.id.folder_list);
-        mAnimatedArrayAdapter = new  ArrayAdapter<String>(getActivity(), R.layout.item_filepicker, R.id.text);
+        mAnimatedArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.item_filepicker, R.id.text);
         mListView.setAdapter(travelToFolder(currentAbsoluteDir, mAnimatedArrayAdapter));
         mListView.setOnItemClickListener(this);
         return dialog;
@@ -222,16 +214,8 @@ public class FilePickerFragment extends DialogFragment
     @Override
     public void onStart() {
         super.onStart();
-        ChatStyle style = PrefUtils.getIncomingStyle(getActivity());
-        if (style != null) {
-            if (style.chatToolbarColorResId != ChatStyle.INVALID) {
-                ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
-                ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
-            }
-            else {
-                ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), R.color.threads_chat_toolbar));
-                ((AlertDialog)getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), R.color.threads_chat_toolbar));
-            }
-        }
+        ChatStyle style = ChatStyle.getInstance();
+        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
+        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
     }
 }

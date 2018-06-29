@@ -17,7 +17,6 @@ import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -29,7 +28,7 @@ public class FileAndMediaViewHolder extends BaseHolder {
     private TextView fileSizeTextView;
     private TextView timeStampTextView;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-    private static ChatStyle style;
+    private ChatStyle style;
     private Drawable tintedDrawable;
 
     public FileAndMediaViewHolder(ViewGroup parent) {
@@ -39,13 +38,12 @@ public class FileAndMediaViewHolder extends BaseHolder {
         fileSizeTextView = (TextView) itemView.findViewById(R.id.file_size);
         timeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         tintedDrawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
-        style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null && style.chatBodyIconsTint != ChatStyle.INVALID) {
-            tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
-        }
-        else {
-            tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_chat_icons_tint), PorterDuff.Mode.SRC_ATOP);
-        }
+        style = ChatStyle.getInstance();
+        tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+
+        fileSizeTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
+        fileHeaderTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
+        timeStampTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
     }
 
     public void onBind(

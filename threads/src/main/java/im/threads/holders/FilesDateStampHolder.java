@@ -15,7 +15,6 @@ import java.util.Locale;
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
 import im.threads.model.ChatStyle;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 01.07.2016.
@@ -23,7 +22,7 @@ import im.threads.utils.PrefUtils;
 public class FilesDateStampHolder extends RecyclerView.ViewHolder {
     private TextView mDateTextView;
     private SimpleDateFormat sdf;
-    private static ChatStyle style;
+    private ChatStyle style;
 
     public FilesDateStampHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_files_date_mark, parent, false));
@@ -34,15 +33,9 @@ public class FilesDateStampHolder extends RecyclerView.ViewHolder {
         } else {
             sdf = new SimpleDateFormat("dd MMMM yyyy");
         }
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (null != style) {
-            if (style.chatSystemMessageTextColor != ChatStyle.INVALID) {
-                mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(),style.chatSystemMessageTextColor));
-            }
-            if (style.chatBackgroundColor != ChatStyle.INVALID) {
-                linearLayout.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatBackgroundColor));
-            }
-        }
+        if (style == null) style = ChatStyle.getInstance();
+        mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
+        linearLayout.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatBackgroundColor));
     }
 
     public void onBind(long timeStamp) {

@@ -13,13 +13,11 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-import im.threads.R;
 import im.threads.controllers.QuickAnswerController;
 import im.threads.fragments.QuickAnswerFragment;
 import im.threads.model.ChatStyle;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.UpcomingUserMessage;
-import im.threads.utils.PrefUtils;
 
 /**
  * Created by yuri on 03.09.2016.
@@ -36,17 +34,12 @@ public class TranslucentActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChatStyle style = PrefUtils.getIncomingStyle(this);
+        ChatStyle style = ChatStyle.getInstance();
         if (Build.VERSION.SDK_INT > 20) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            if (style != null && style.chatStatusBarColorResId != ChatStyle.INVALID) {
-                window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
-            }
-            else {
-                window.setStatusBarColor(getResources().getColor(R.color.threads_chat_status_bar));
-            }
+            window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
         }
         mQuickAnswerReceiver = new QuickAnswerReceiver();
         controller = QuickAnswerController.getInstance();

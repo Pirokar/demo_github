@@ -17,9 +17,6 @@ import java.util.Locale;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.Survey;
-import im.threads.utils.PrefUtils;
-
-import static im.threads.model.ChatStyle.INVALID;
 
 /**
  * ViewHolder для результатов бинарного опроса
@@ -48,45 +45,23 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
         mBubble = itemView.findViewById(R.id.bubble);
 
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            if (style.outgoingMessageBubbleColor != INVALID) {
-                mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-            }
-            else {
-                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_outgoing_message_bubble), PorterDuff.Mode.SRC_ATOP);
-            }
-
-            if (style.outgoingMessageBubbleBackground != INVALID) {
-                mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
-            }
-            if (style.outgoingMessageTextColor != INVALID) {
-                messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-                setTextColorToViews(new TextView[]{mHeader, mTimeStampTextView}, style.outgoingMessageTextColor);
-            }
-        }
-
+        if (style == null) style = ChatStyle.getInstance();
+        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mHeader}, style.outgoingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
     }
 
     public void bind(Survey survey) {
         int rate = survey.getQuestions().get(0).getRate();
         if (rate == 1) {
-            if (style.binarySurveyLikeSelectedIconResId != INVALID) {
-                thumb.setImageResource(style.binarySurveyLikeSelectedIconResId);
-            } else {
-                thumb.setImageResource(R.drawable.threads_binary_survey_like_selected);
-            }
+            thumb.setImageResource(style.binarySurveyLikeSelectedIconResId);
         } else {
-            if (style.binarySurveyDislikeSelectedIconResId != INVALID) {
-                thumb.setImageResource(style.binarySurveyDislikeSelectedIconResId);
-            } else {
-                thumb.setImageResource(R.drawable.threads_binary_survey_dislike_selected);
-            }
+            thumb.setImageResource(style.binarySurveyDislikeSelectedIconResId);
         }
 
-        if (style.outgoingMessageTextColor != INVALID) {
-            thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
-        }
+        thumb.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor), PorterDuff.Mode.SRC_ATOP);
 
         mHeader.setText(survey.getQuestions().get(0).getText());
         mTimeStampTextView.setText(sdf.format(new Date(survey.getTimeStamp())));

@@ -117,6 +117,8 @@
                 android:paddingBottom="@dimen/margin_half"
                 android:paddingLeft="4dp"
                 android:paddingTop="5dp"
+                android:autoLink="web"
+                android:textColorLink="@color/threads_outgoing_message_link"
                 android:text="user text"
                 android:layout_marginRight="74dp"
                 android:textColor="@color/threads_outgoing_message_text"

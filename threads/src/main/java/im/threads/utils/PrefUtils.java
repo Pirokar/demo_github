@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -32,7 +33,7 @@ public class PrefUtils {
     public static final String APP_STYLE = "APP_STYLE";
     public static final String TAG_THREAD_ID = "THREAD_ID";
     public static final String SERVER_URL_META_INFO = "im.threads.getServerUrl";
-    public static final String APP_MARKER_META_KEY = "im.threads.appMarker";
+    public static final String APP_MARKER_KEY = "APP_MARKER";
 
     private PrefUtils() {
     }
@@ -120,11 +121,7 @@ public class PrefUtils {
         return !clientId.isEmpty();
     }
 
-    public static void setIncomingStyle(Context ctx, ChatStyle style) {
-        if (ctx == null || style == null) {
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "setIncomingStyle: ctx or bundle is null");
-            return;
-        }
+    public static void setIncomingStyle(@NonNull Context ctx, @NonNull ChatStyle style) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.putString(APP_STYLE, new Gson().toJson(style));
         editor.commit();
@@ -139,12 +136,12 @@ public class PrefUtils {
                 style = new Gson().fromJson(sharedPreferencesString, ChatStyle.class);
             }
         }
-        catch (IllegalStateException ex) {
-
+        catch (IllegalStateException|JsonSyntaxException ex) {
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                Log.w(TAG, "getIncomingStyle failed: ", ex);
+            }
         }
-        catch (JsonSyntaxException ex) {
 
-        }
         return style;
     }
 
@@ -152,8 +149,16 @@ public class PrefUtils {
         return getMetaData(context, SERVER_URL_META_INFO);
     }
 
+
+    public static void setAppMarker(Context ctx, String appMarker) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + APP_MARKER_KEY, appMarker).commit();
+    }
+
     public static String getAppMarker(Context context) {
-        return getMetaData(context, APP_MARKER_META_KEY);
+
+        String appMarker = PreferenceManager.getDefaultSharedPreferences(context).getString(PrefUtils.class + APP_MARKER_KEY, "");
+
+        return appMarker.length() > 0 ? appMarker : null;
     }
 
     @Nullable

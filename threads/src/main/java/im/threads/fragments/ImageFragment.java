@@ -3,6 +3,7 @@ package im.threads.fragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import java.util.Locale;
 
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
+import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
@@ -45,6 +47,9 @@ public class ImageFragment extends Fragment {
                 sdf = new SimpleDateFormat("dd MMMM yyyy");
             }
         }
+
+        ChatStyle style = ChatStyle.getInstance();
+
         final ImageView imageView = v.findViewById(R.id.image);
         FileDescription fd = getArguments().getParcelable("fd");
         if (fd == null) throw new IllegalStateException("you must provide filedescription");
@@ -66,9 +71,16 @@ public class ImageFragment extends Fragment {
                     .load(fd.getFilePath())
                     .fit()
                     .centerInside()
-                    .error(R.drawable.threads_image_placeholder)
+                    .error(style.imagePlaceholder)
                     .into(imageView);
         }
+
+        v.setBackgroundColor(ContextCompat.getColor(getActivity(), style.imagesScreenBackgroundColor));
+        from.setTextColor(ContextCompat.getColor(getActivity(), style.imagesScreenAuthorTextColor));
+        from.setTextSize(style.imagesScreenAuthorTextSize);
+        date.setTextColor(ContextCompat.getColor(getActivity(), style.imagesScreenDateTextColor));
+        date.setTextSize(style.imagesScreenDateTextSize);
+
         return v;
     }
 

@@ -24,14 +24,10 @@ import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
-import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
-import im.threads.utils.PrefUtils;
 import im.threads.utils.ViewUtils;
 import im.threads.views.CircularProgressButton;
-
-import static im.threads.model.ChatStyle.INVALID;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -52,7 +48,7 @@ public class UserPhraseViewHolder extends BaseHolder {
     private SimpleDateFormat fileSdf;
     private View mFilterView;
     private View mFilterViewSecond;
-    private static ChatStyle style;
+    private ChatStyle style;
     private View mBubble;
     private static
     @ColorInt
@@ -78,33 +74,21 @@ public class UserPhraseViewHolder extends BaseHolder {
         mRightTextHeader = (TextView) itemView.findViewById(R.id.to);
         mRightTextTimeStamp = (TextView) itemView.findViewById(R.id.send_at);
         mBubble = itemView.findViewById(R.id.bubble);
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
-            if (style.outgoingMessageBubbleColor != INVALID) {
-                mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-            } else {
-                mBubble.getBackground().setColorFilter(getColorInt(R.color.threads_chat_outgoing_message_bubble), PorterDuff.Mode.SRC_ATOP);
-            }
 
-            if (style.outgoingMessageBubbleBackground != INVALID) {
-                mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
-            }
-            if (style.outgoingMessageTextColor != INVALID) {
-                messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
-                setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, mTimeStampTextView}, style.outgoingMessageTextColor);
-                itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
-                mFileImageButton.setBackgroundColor(style.outgoingMessageTextColor);
-            }
-            if (style.outgoingMessageTextColor != INVALID && style.outgoingMessageBubbleColor != INVALID) {
-                setTintToProgressButtonUser(mFileImageButton, style.outgoingMessageTextColor, style.chatBodyIconsTint);
-            } else {
-                setTintToProgressButtonUser(mFileImageButton, android.R.color.white, R.color.threads_chat_icons_tint);
-            }
-            if (style.chatHighlightingColor != INVALID) {
-                mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-                mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-            }
-        }
+        if (style == null) style = ChatStyle.getInstance();
+        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
+        messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp}, style.outgoingMessageTextColor);
+        mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
+        itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
+        mFileImageButton.setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
+
+        mPhraseTextView.setLinkTextColor(getColorInt(style.outgoingMessageLinkColor));
+
+        setTintToProgressButtonUser(mFileImageButton, style.outgoingMessageTextColor, style.chatBodyIconsTint);
+        mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
     }
 
     public void onBind(final String phrase
@@ -161,26 +145,11 @@ public class UserPhraseViewHolder extends BaseHolder {
 
                 Picasso.with(itemView.getContext())
                         .load(fileDescription.getFilePath())
+                        .error(style.imagePlaceholder)
                         .fit()
                         .centerCrop()
-                        .into(mImage, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                if (style!=null && style.imagePlaceholder!= ChatStyle.INVALID){
-                                    mImage.setImageResource(style.imagePlaceholder);
-                                }else {
-                                    mImage.setImageResource(R.drawable.threads_image_placeholder);
-                                }
-
-                            }
-                        });
-            }
-            else {
+                        .into(mImage);
+            } else {
                 if (fileDescription.getFilePath() != null) fileDescription.setDownloadProgress(100);
                 mRightTextRow.setVisibility(View.VISIBLE);
                 mFileImageButton.setVisibility(View.VISIBLE);

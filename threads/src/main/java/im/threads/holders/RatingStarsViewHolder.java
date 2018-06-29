@@ -9,7 +9,6 @@ import android.widget.TextView;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.Survey;
-import im.threads.utils.PrefUtils;
 import im.threads.widget.Rating;
 
 /**
@@ -38,19 +37,12 @@ public class RatingStarsViewHolder extends BaseHolder {
         askForRate = (TextView) itemView.findViewById(R.id.ask_for_rate);
         thanksForRate = (TextView) itemView.findViewById(R.id.thanks_for_rate);
 
-        if (style == null) style = PrefUtils.getIncomingStyle(itemView.getContext());
-        if (style != null) {
+        if (style == null) style = ChatStyle.getInstance();
+        topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
+        bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
 
-            if (style.iconsAndSeparatorsColor != ChatStyle.INVALID) {
-                topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-                bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-            }
-
-            if (style.surveyTextColorResId != ChatStyle.INVALID) {
-                askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
-                thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
-            }
-        }
+        askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
+        thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
     }
 
     public void bind(Survey survey, Rating.CallBackListener callBackListener) {

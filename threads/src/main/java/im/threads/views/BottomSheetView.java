@@ -87,21 +87,19 @@ public class BottomSheetView extends LinearLayout {
     }
 
     public void setButtonsTint(@ColorRes int colorRes) {
-        if(colorRes != ChatStyle.INVALID) {
-            color = ContextCompat.getColor(getContext(), colorRes);
-            ArrayList<Drawable> drawables = new ArrayList<>();
-            file.setTextColor(color);
-            camera.setTextColor(color);
-            gallery.setTextColor(color);
-            hideButton.setTextColor(color);
-            drawables.addAll(Arrays.asList(file.getCompoundDrawables()));
-            drawables.addAll(Arrays.asList(camera.getCompoundDrawables()));
-            drawables.addAll(Arrays.asList(gallery.getCompoundDrawables()));
-            drawables.addAll(Arrays.asList(hideButton.getCompoundDrawables()));
-            for (Drawable d : drawables) {
-                if (d != null) {
-                    d.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-                }
+        color = ContextCompat.getColor(getContext(), colorRes);
+        ArrayList<Drawable> drawables = new ArrayList<>();
+        file.setTextColor(color);
+        camera.setTextColor(color);
+        gallery.setTextColor(color);
+        hideButton.setTextColor(color);
+        drawables.addAll(Arrays.asList(file.getCompoundDrawables()));
+        drawables.addAll(Arrays.asList(camera.getCompoundDrawables()));
+        drawables.addAll(Arrays.asList(gallery.getCompoundDrawables()));
+        drawables.addAll(Arrays.asList(hideButton.getCompoundDrawables()));
+        for (Drawable d : drawables) {
+            if (d != null) {
+                d.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             }
         }
     }

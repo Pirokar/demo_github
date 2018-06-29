@@ -643,22 +643,41 @@ public class IncomingMessageParser {
      *
      * @return true если нет поля clientId или оно совпадает с текущим clientId
      */
-    public static boolean checkId(final PushMessage pushMessage, final String clientID) {
+    public static boolean checkId(final PushMessage pushMessage, final String currentClientId) {
+
         final JSONObject fullMessage = getFullMessage(pushMessage);
-        if (fullMessage == null) {
-            return true;
-        }
-        if (clientID == null) {
-            return false;
-        }
+
+        boolean isCurrentClientId = false;
 
         try {
-            if (fullMessage.has(PushMessageAttributes.CLIENT_ID) && !clientID.equals(fullMessage.get(PushMessageAttributes.CLIENT_ID))) {
-                return false;
-            }
-        } catch (final JSONException e) {
+            isCurrentClientId = !TextUtils.isEmpty(currentClientId)
+                    && fullMessage != null
+                    && fullMessage.has(PushMessageAttributes.CLIENT_ID)
+                    && currentClientId.equalsIgnoreCase(fullMessage.getString(PushMessageAttributes.CLIENT_ID));
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        return true;
+
+        return isCurrentClientId;
+    }
+
+    public static boolean checkId(Bundle pushBundle, String currentClientId) {
+        return !TextUtils.isEmpty(currentClientId)
+                && pushBundle.containsKey(PushMessageAttributes.CLIENT_ID)
+                && currentClientId.equalsIgnoreCase(pushBundle.getString(PushMessageAttributes.CLIENT_ID));
+    }
+
+    public static String getAppMarker(PushMessage pushMessage) {
+        String appMarker = null;
+        final JSONObject fullMessage = getFullMessage(pushMessage);
+
+        if (fullMessage != null && fullMessage.has(PushMessageAttributes.APP_MARKER_KEY)) {
+            try {
+                appMarker = fullMessage.getString(PushMessageAttributes.APP_MARKER_KEY);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return appMarker;
     }
 }
