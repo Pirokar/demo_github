@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="mfms_provider_uid">PH5ucnVkYXMtbmV3LTE1MzE5MTQ2NTk4MDItZ2VuZXJhdGVkV2l0aFVJfj4=</string>
-    <string name="datastore_url">https://amurtigerstore.threads.im/files</string>
+    <string name="datastore_url">https://amurtigerstore.threads.im/</string>
     <string name="senderId">!STRING!1079639835466</string>
 </resources>
