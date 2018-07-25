@@ -60,6 +60,10 @@ public class MainPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onDeviceAddressChanged(final Context context, final String s) {
 
+        if (ChatStyle.appContext == null) {
+            ChatStyle.appContext = context.getApplicationContext();
+        }
+
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onDeviceAddressChanged " + s);
         }
