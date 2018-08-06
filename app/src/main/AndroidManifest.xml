@@ -66,6 +66,8 @@
         <meta-data
             android:name="com.pushserver.android.senderId"
             android:value="@string/senderId" />
+
+        <!--TODO move serverUrl to config.xml-->
         <meta-data
             android:name="com.pushserver.android.serverUrl"
             android:value="https://pushserver.mfms.ru/brooma" />

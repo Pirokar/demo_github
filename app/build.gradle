@@ -75,6 +75,10 @@ android {
             applicationId "com.threads.android.beta"
             resValue "string", "app_name1", "THR Beta"
         }
+        amurTiger {
+            applicationId "com.brooma.threads.android.amurtiger"
+            resValue "string", "app_name1", "THR AmurTiger"
+        }
     }
 
     lintOptions {
