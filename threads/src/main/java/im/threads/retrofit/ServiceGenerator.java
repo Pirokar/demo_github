@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.model.ChatStyle;
+import im.threads.opengraph.OGDataConverterFactory;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -37,6 +38,7 @@ public class ServiceGenerator {
         Retrofit.Builder builder =
                 new Retrofit.Builder()
                         .baseUrl(apiBaseUrl)
+                        .addConverterFactory(new OGDataConverterFactory())
                         .addConverterFactory(GsonConverterFactory.create());
 
         Interceptor userAgentInterceptor = new Interceptor() {

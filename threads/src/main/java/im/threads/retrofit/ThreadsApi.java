@@ -2,8 +2,8 @@ package im.threads.retrofit;
 
 import im.threads.model.FileUploadResponse;
 import im.threads.model.HistoryResponse;
+import im.threads.opengraph.OGData;
 import okhttp3.MultipartBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -38,5 +38,5 @@ public interface ThreadsApi {
     );
 
     @GET()
-    Call<ResponseBody> getUrlResponseBody (@Url String url);
+    Call<OGData> getOGData(@Url String url);
 }
