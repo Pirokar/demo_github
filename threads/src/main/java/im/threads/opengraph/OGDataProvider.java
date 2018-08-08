@@ -21,6 +21,12 @@ public class OGDataProvider {
 
 
     public static void getOGData(String url, final Callback<OGData> callback) {
+
+        //Workaround - retrofit will add baseUrl for scheme-less urls
+        if (!url.startsWith("http")) {
+            url = "http://" + url;
+        }
+
         ServiceGenerator.getThreadsApi().getOGData(url).enqueue(callback);
     }
 
