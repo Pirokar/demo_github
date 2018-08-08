@@ -12,7 +12,12 @@ public class OGDataConverterFactory extends Converter.Factory {
 
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
-        return new OGDataConverter();
+
+        if (type.equals(OGData.class)) {
+            return new OGDataConverter();
+        } else {
+            return retrofit.nextResponseBodyConverter(this, type, annotations);
+        }
     }
 
     public static class OGDataConverter implements Converter<ResponseBody, OGData> {

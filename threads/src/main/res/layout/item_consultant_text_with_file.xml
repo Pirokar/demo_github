@@ -123,7 +123,7 @@
                 android:paddingTop="5dp"
                 android:autoLink="web"
                 android:textColorLink="@color/threads_incoming_message_link"
-                android:text="text text text text "
+                android:text="text text text text google.com"
                 android:textSize="16sp"
                 android:textColor="@color/threads_incoming_message_text"/>
 

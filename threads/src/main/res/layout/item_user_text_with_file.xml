@@ -119,7 +119,7 @@
                 android:paddingTop="5dp"
                 android:autoLink="web"
                 android:textColorLink="@color/threads_outgoing_message_link"
-                android:text="user text"
+                android:text="user text google.com"
                 android:layout_marginRight="74dp"
                 android:textColor="@color/threads_outgoing_message_text"
                 android:textSize="16sp" />
