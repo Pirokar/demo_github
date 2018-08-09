@@ -26,18 +26,18 @@
         android:layout_width="@dimen/threads_operator_photo_size"
         android:layout_height="@dimen/threads_operator_photo_size"
         android:layout_below="@+id/bubble"
-        tools:src="@drawable/threads_operator_avatar_placeholder"
         android:layout_marginLeft="@dimen/margin_half"
-        android:layout_marginTop="@dimen/consultant_photo_offset_size"/>
+        android:layout_marginTop="@dimen/consultant_photo_offset_size"
+        tools:src="@drawable/threads_operator_avatar_placeholder"/>
 
     <LinearLayout
         android:id="@+id/bubble"
         style="@style/consultBubble"
         android:layout_width="wrap_content"
         android:layout_marginBottom="0dp"
-        android:orientation="vertical"
         android:layout_toRightOf="@+id/consult_avatar"
-        android:background="@drawable/thread_incoming_bubble">
+        android:background="@drawable/thread_incoming_bubble"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/image"
@@ -50,9 +50,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_quarter"
+            android:layout_marginLeft="@dimen/margin_big"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/margin_half"
-            android:layout_marginLeft="@dimen/margin_big">
+            android:paddingTop="@dimen/margin_half">
 
             <im.threads.views.CircularProgressButton
                 android:id="@+id/button_download"
@@ -60,7 +60,7 @@
                 android:background="@color/threads_chat_background"
                 app:completed_drawable="@drawable/file_image_consult"
                 app:in_progress_label="@drawable/ic_clear_blue_consult_36dp"
-                app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp" />
+                app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp"/>
 
             <View
                 android:id="@+id/delimeter"
@@ -68,7 +68,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/margin_half"
                 android:layout_marginTop="@dimen/margin_half"
-                android:background="@color/threads_chat_icons_tint" />
+                android:background="@color/threads_chat_icons_tint"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,8 +83,8 @@
                     android:layout_marginTop="2dp"
                     android:paddingRight="80dp"
                     android:text="Иван Петров"
-                    android:textStyle="bold"
-                    android:textColor="@color/threads_incoming_message_text"/>
+                    android:textColor="@color/threads_incoming_message_text"
+                    android:textStyle="bold"/>
 
                 <im.threads.widget.text_view.QuoteMessageTextView
                     android:id="@+id/file_specs"
@@ -102,8 +102,8 @@
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:text="отправлено 21 апр 2016"
-                    android:textSize="12sp"
-                    android:textColor="@color/threads_incoming_message_text"/>
+                    android:textColor="@color/threads_incoming_message_text"
+                    android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -120,12 +120,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="60dp"
-                android:paddingTop="5dp"
                 android:autoLink="web"
-                android:textColorLink="@color/threads_incoming_message_link"
+                android:paddingTop="5dp"
                 android:text="text text text text google.com"
-                android:textSize="16sp"
-                android:textColor="@color/threads_incoming_message_text"/>
+                android:textColor="@color/threads_incoming_message_text"
+                android:textColorLink="@color/threads_incoming_message_link"
+                android:textSize="16sp"/>
 
             <im.threads.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
@@ -133,8 +133,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:paddingRight="4dp"
-                android:textColor="@color/threads_operator_message_timestamp"
-                android:text="10:19" />
+                android:text="10:19"
+                android:textColor="@color/threads_operator_message_timestamp"/>
 
         </FrameLayout>
 
