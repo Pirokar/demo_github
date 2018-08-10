@@ -18,7 +18,6 @@ public class UrlUtils {
         Matcher m = Patterns.WEB_URL.matcher(text);
         while (m.find()) {
             String url = m.group();
-            LogUtils.logDev("URL found: " + url);
             links.add(url);
         }
 

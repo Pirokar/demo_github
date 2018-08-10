@@ -78,7 +78,6 @@ import im.threads.utils.ConsultWriter;
 import im.threads.utils.DeviceInfoHelper;
 import im.threads.utils.DualFilePoster;
 import im.threads.utils.FileUtils;
-import im.threads.utils.LogUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.Seeker;
 import im.threads.utils.Transport;
@@ -1211,7 +1210,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     public void onResponse(Call<OGData> call, Response<OGData> response) {
 
                         OGData ogData = response.body();
-                        LogUtils.logDev(String.valueOf(ogData));
+
+                        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                            Log.d(TAG,"OGData for url: " + url
+                                    + "\n received: " + String.valueOf(ogData));
+                        }
 
                         if (ogData != null && !ogData.isEmpty()) {
                             if (chatItem instanceof UserPhrase) {

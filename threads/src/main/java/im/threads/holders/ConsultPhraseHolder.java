@@ -31,7 +31,6 @@ import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
-import im.threads.utils.LogUtils;
 import im.threads.utils.ViewUtils;
 import im.threads.views.CircularProgressButton;
 
@@ -144,8 +143,6 @@ public class ConsultPhraseHolder extends BaseHolder {
         }
 
         OGData ogData = message.ogData;
-        LogUtils.logDev(String.valueOf(ogData));
-
         if (ogData == null || ogData.isEmpty()) {
             mOgDataLayout.setVisibility(View.GONE);
             mTimeStampTextView.setVisibility(View.VISIBLE);
