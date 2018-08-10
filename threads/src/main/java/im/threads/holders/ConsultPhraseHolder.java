@@ -133,6 +133,8 @@ public class ConsultPhraseHolder extends BaseHolder {
             , View.OnClickListener onAvatarClickListener
             , View.OnClickListener onOgClickListener, boolean isChosen) {
 
+        ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
+
         mConsultAvatar.setImageBitmap(null);
         if (phrase == null) {
             mPhraseTextView.setVisibility(View.GONE);
@@ -195,7 +197,6 @@ public class ConsultPhraseHolder extends BaseHolder {
         }
 
         mImage.setVisibility(View.GONE);
-        ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         String timeText = timeStampSdf.format(new Date(timeStamp));
         mTimeStampTextView.setText(timeText);
         mOgTimestamp.setText(timeText);

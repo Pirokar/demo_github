@@ -119,6 +119,10 @@ public class UserPhraseViewHolder extends BaseHolder {
             , final View.OnClickListener onRowClickListener
             , final View.OnLongClickListener onLongClickListener
             , View.OnClickListener onOgClickListener, final boolean isChosen) {
+
+        ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
+        ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
+
         if (phrase == null || phrase.length() == 0) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
@@ -183,8 +187,6 @@ public class UserPhraseViewHolder extends BaseHolder {
         String timeText = sdf.format(new Date(timeStamp));
         mTimeStampTextView.setText(timeText);
         mOgTimestamp.setText(timeText);
-        ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
-        ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
         if (fileDescription == null && quote == null) {
             mRightTextRow.setVisibility(View.GONE);
         }
