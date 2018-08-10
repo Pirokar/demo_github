@@ -421,6 +421,7 @@ public class ChatFragment extends Fragment implements
 
     private void afterRefresh(List<ChatItem> result) {
         int itemsBefore = mChatAdapter.getItemCount();
+        mChatController.checkAndLoadOgData(result);
         mChatAdapter.addItems(result);
         int itemsAfter = mChatAdapter.getItemCount();
         scrollToPosition(itemsAfter - itemsBefore);
@@ -591,6 +592,10 @@ public class ChatFragment extends Fragment implements
 
     public void updateUi() {
         mChatAdapter.notifyDataSetChangedOnUi();
+    }
+
+    public void updateChatItem(ChatItem chatItem) {
+        mChatAdapter.notifyItemChangedOnUi(chatItem);
     }
 
     private void showPopup() {

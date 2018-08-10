@@ -2,6 +2,7 @@ package im.threads.model;
 
 import android.text.TextUtils;
 
+import im.threads.opengraph.OGData;
 import im.threads.utils.FileUtils;
 
 /**
@@ -24,6 +25,8 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
     private boolean found;
 
     private String backendId;
+    public OGData ogData;
+    public String ogUrl;
 
     public ConsultPhrase(
             FileDescription fileDescription

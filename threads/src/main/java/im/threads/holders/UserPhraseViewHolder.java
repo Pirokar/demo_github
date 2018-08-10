@@ -1,10 +1,12 @@
 package im.threads.holders;
 
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +26,12 @@ import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.model.Quote;
+import im.threads.model.UserPhrase;
+import im.threads.opengraph.OGData;
+import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
+import im.threads.utils.LogUtils;
 import im.threads.utils.ViewUtils;
 import im.threads.views.CircularProgressButton;
 
@@ -50,9 +56,14 @@ public class UserPhraseViewHolder extends BaseHolder {
     private View mFilterViewSecond;
     private ChatStyle style;
     private View mBubble;
-    private static
+    private View mOgDataLayout;
+    private ImageView mOgImage;
+    private TextView mOgTitle;
+    private TextView mOgDescription;
+    private TextView mOgUrl;
+    private TextView mOgTimestamp;
     @ColorInt
-    int messageColor;
+    private static int messageColor;
 
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -63,6 +74,12 @@ public class UserPhraseViewHolder extends BaseHolder {
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mFileImageButton = (CircularProgressButton) itemView.findViewById(R.id.button_download);
         mPhraseFrame = (FrameLayout) itemView.findViewById(R.id.phrase_frame);
+        mOgDataLayout = itemView.findViewById(R.id.og_data_layout);
+        mOgImage = itemView.findViewById(R.id.og_image);
+        mOgTitle = itemView.findViewById(R.id.og_title);
+        mOgDescription = itemView.findViewById(R.id.og_description);
+        mOgUrl = itemView.findViewById(R.id.og_url);
+        mOgTimestamp = itemView.findViewById(R.id.og_timestamp);
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             fileSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
@@ -81,6 +98,7 @@ public class UserPhraseViewHolder extends BaseHolder {
         messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
         setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
+        mOgTimestamp.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mFileImageButton.setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
 
@@ -91,7 +109,7 @@ public class UserPhraseViewHolder extends BaseHolder {
         mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
     }
 
-    public void onBind(final String phrase
+    public void onBind(UserPhrase message, final String phrase
             , final long timeStamp
             , final MessageState sentState
             , final Quote quote
@@ -107,8 +125,66 @@ public class UserPhraseViewHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(phrase);
         }
+
+        mOgDataLayout.setVisibility(View.GONE);
+        mTimeStampTextView.setVisibility(View.VISIBLE);
+
+        OGData ogData = message.ogData;
+        LogUtils.logDev(String.valueOf(ogData));
+
+        if (ogData == null) {
+            mOgDataLayout.setVisibility(View.GONE);
+            mTimeStampTextView.setVisibility(View.VISIBLE);
+        } else {
+            mOgDataLayout.setVisibility(View.VISIBLE);
+            mTimeStampTextView.setVisibility(View.GONE);
+
+            if (TextUtils.isEmpty(ogData.title)) {
+                mOgTitle.setVisibility(View.GONE);
+            } else {
+                mOgTitle.setText(ogData.title);
+                mOgTitle.setTypeface(mOgTitle.getTypeface(), Typeface.BOLD);
+            }
+
+            if (TextUtils.isEmpty(ogData.description)) {
+                mOgDescription.setVisibility(View.GONE);
+            } else {
+                mOgDescription.setText(ogData.description);
+            }
+
+            if (TextUtils.isEmpty(ogData.url)) {
+                mOgUrl.setVisibility(View.GONE);
+//                mOgUrl.setText(message.ogUrl);
+            } else {
+                mOgUrl.setText(ogData.url);
+            }
+
+            if (TextUtils.isEmpty(ogData.image)) {
+                mOgImage.setVisibility(View.GONE);
+            } else {
+                Picasso.with(itemView.getContext())
+                        .load(ogData.image)
+                        .error(style.imagePlaceholder)
+                        .fit()
+                        .centerCrop()
+                        .into(mOgImage, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                mOgImage.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        }
+
         mImage.setVisibility(View.GONE);
-        mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
+        String timeText = sdf.format(new Date(timeStamp));
+        mTimeStampTextView.setText(timeText);
+        mOgTimestamp.setText(timeText);
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
         if (fileDescription == null && quote == null) {
@@ -121,7 +197,7 @@ public class UserPhraseViewHolder extends BaseHolder {
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(quote.getTimeStamp()));
-            mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
+            mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));//TODO why set it here? It is already set earlier
             if (quote.getFileDescription() != null) {
                 if (quote.getFileDescription().getFilePath() != null)
                     quote.getFileDescription().setDownloadProgress(100);
@@ -165,7 +241,7 @@ public class UserPhraseViewHolder extends BaseHolder {
                 if (fileClickListener != null) {
                     mFileImageButton.setOnClickListener(fileClickListener);
                 }
-                mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
+                mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));//TODO why set it here? It is already set earlier
                 if (fileDescription.getFilePath() != null) {
                     mFileImageButton.setProgress(100);
                 } else {
@@ -190,20 +266,24 @@ public class UserPhraseViewHolder extends BaseHolder {
                 d = itemView.getResources().getDrawable(R.drawable.threads_message_received);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                mOgTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
                 d = itemView.getResources().getDrawable(R.drawable.threads_message_sent);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                mOgTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
                 d = itemView.getResources().getDrawable(R.drawable.threads_message_waiting);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                mOgTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:
                 d = itemView.getResources().getDrawable(R.drawable.empty_space_24dp);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                mOgTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
         }
         if (isChosen) {

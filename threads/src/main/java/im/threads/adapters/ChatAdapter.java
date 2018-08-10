@@ -159,7 +159,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
             ((ConsultPhraseHolder) holder)
-                    .onBind(cp.getPhrase()
+                    .onBind(cp, cp.getPhrase()
                             , cp.getAvatarPath()
                             , cp.getTimeStamp()
                             , cp.isAvatarVisible()
@@ -216,7 +216,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 mAdapterInterface.onImageDownloadRequest(up.getFileDescription());
             }
 
-            ((UserPhraseViewHolder) holder).onBind(
+            ((UserPhraseViewHolder) holder).onBind(up,
                     up.getPhrase()
                     , up.getTimeStamp()
                     , up.getSentState()
@@ -1060,6 +1060,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             @Override
             public void run() {
                 notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void notifyItemChangedOnUi(ChatItem chatItem) {
+        final int position = list.indexOf(chatItem);
+
+        ThreadUtils.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(position);
             }
         });
     }

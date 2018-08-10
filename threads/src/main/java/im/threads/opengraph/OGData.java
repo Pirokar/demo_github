@@ -1,5 +1,7 @@
 package im.threads.opengraph;
 
+import android.text.TextUtils;
+
 public class OGData {
     public String title;
     public String description;
@@ -36,6 +38,13 @@ public class OGData {
 
     public String getUrl() {
         return url;
+    }
+
+    public boolean isEmpty() {
+        return TextUtils.isEmpty(title)
+                && TextUtils.isEmpty(description)
+                && TextUtils.isEmpty(image)
+                && TextUtils.isEmpty(url);
     }
 
     public String toString() {
