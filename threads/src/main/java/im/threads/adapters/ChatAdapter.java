@@ -159,7 +159,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
             ((ConsultPhraseHolder) holder)
-                    .onBind(cp.getPhrase()
+                    .onBind(cp, cp.getPhrase()
                             , cp.getAvatarPath()
                             , cp.getTimeStamp()
                             , cp.isAvatarVisible()
@@ -207,6 +207,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     }
                                 }
                             }
+                            , new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (mAdapterInterface != null) {
+                                        final ConsultPhrase cp = (ConsultPhrase) list.get(holder.getAdapterPosition());
+                                        mAdapterInterface.onOpenGraphClicked(cp.ogUrl, holder.getAdapterPosition());
+                                    }
+                                }
+                            }
                             , cp.isChosen());
         }
 
@@ -216,7 +225,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 mAdapterInterface.onImageDownloadRequest(up.getFileDescription());
             }
 
-            ((UserPhraseViewHolder) holder).onBind(
+            ((UserPhraseViewHolder) holder).onBind(up,
                     up.getPhrase()
                     , up.getTimeStamp()
                     , up.getSentState()
@@ -260,6 +269,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 return true;
                             }
                             return false;
+                        }
+                    }
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mAdapterInterface != null) {
+                                final UserPhrase up = (UserPhrase) list.get(holder.getAdapterPosition());
+                                mAdapterInterface.onOpenGraphClicked(up.ogUrl, holder.getAdapterPosition());
+                            }
                         }
                     }
                     , up.isChosen());
@@ -992,6 +1010,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void onResolveThreadClick(boolean approveResolve);
 
+        void onOpenGraphClicked(String ogUrl, int adapterPosition);
     }
 
     private class MyBroadcastReceiver extends BroadcastReceiver {
@@ -1060,6 +1079,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             @Override
             public void run() {
                 notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void notifyItemChangedOnUi(ChatItem chatItem) {
+        final int position = list.indexOf(chatItem);
+
+        ThreadUtils.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemChanged(position);
             }
         });
     }

@@ -86,6 +86,7 @@ import im.threads.utils.LateTextWatcher;
 import im.threads.utils.MyFileFilter;
 import im.threads.utils.PermissionChecker;
 import im.threads.utils.PrefUtils;
+import im.threads.utils.UrlUtils;
 import im.threads.views.BottomSheetView;
 import im.threads.views.MySwipeRefreshLayout;
 
@@ -421,6 +422,7 @@ public class ChatFragment extends Fragment implements
 
     private void afterRefresh(List<ChatItem> result) {
         int itemsBefore = mChatAdapter.getItemCount();
+        mChatController.checkAndLoadOgData(result);
         mChatAdapter.addItems(result);
         int itemsAfter = mChatAdapter.getItemCount();
         scrollToPosition(itemsAfter - itemsBefore);
@@ -585,12 +587,21 @@ public class ChatFragment extends Fragment implements
     }
 
     @Override
+    public void onOpenGraphClicked(String ogUrl, int adapterPosition) {
+        UrlUtils.openUrl(getContext(), ogUrl);
+    }
+
+    @Override
     public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
         mChatController.checkAndResendPhrase(userPhrase);
     }
 
     public void updateUi() {
         mChatAdapter.notifyDataSetChangedOnUi();
+    }
+
+    public void updateChatItem(ChatItem chatItem) {
+        mChatAdapter.notifyItemChangedOnUi(chatItem);
     }
 
     private void showPopup() {

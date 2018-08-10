@@ -2,6 +2,7 @@ package im.threads.retrofit;
 
 import im.threads.model.FileUploadResponse;
 import im.threads.model.HistoryResponse;
+import im.threads.opengraph.OGData;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -10,6 +11,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 /**
  * Created by Admin on 28.03.2017.
@@ -34,4 +36,7 @@ public interface ThreadsApi {
             @Query("count") Long count,
             @Query("libVersion") String version
     );
+
+    @GET()
+    Call<OGData> getOGData(@Url String url);
 }
