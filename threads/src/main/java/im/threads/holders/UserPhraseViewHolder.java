@@ -56,7 +56,7 @@ public class UserPhraseViewHolder extends BaseHolder {
     private View mFilterViewSecond;
     private ChatStyle style;
     private View mBubble;
-    private View mOgDataLayout;
+    private ViewGroup mOgDataLayout;
     private ImageView mOgImage;
     private TextView mOgTitle;
     private TextView mOgDescription;
@@ -118,7 +118,7 @@ public class UserPhraseViewHolder extends BaseHolder {
             , @Nullable final View.OnClickListener fileClickListener
             , final View.OnClickListener onRowClickListener
             , final View.OnLongClickListener onLongClickListener
-            , final boolean isChosen) {
+            , View.OnClickListener onOgClickListener, final boolean isChosen) {
         if (phrase == null || phrase.length() == 0) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
@@ -126,18 +126,17 @@ public class UserPhraseViewHolder extends BaseHolder {
             mPhraseTextView.setText(phrase);
         }
 
-        mOgDataLayout.setVisibility(View.GONE);
-        mTimeStampTextView.setVisibility(View.VISIBLE);
-
         OGData ogData = message.ogData;
         LogUtils.logDev(String.valueOf(ogData));
 
-        if (ogData == null) {
+        if (ogData == null || ogData.isEmpty()) {
             mOgDataLayout.setVisibility(View.GONE);
             mTimeStampTextView.setVisibility(View.VISIBLE);
         } else {
             mOgDataLayout.setVisibility(View.VISIBLE);
             mTimeStampTextView.setVisibility(View.GONE);
+
+            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
 
             if (TextUtils.isEmpty(ogData.title)) {
                 mOgTitle.setVisibility(View.GONE);
@@ -154,7 +153,6 @@ public class UserPhraseViewHolder extends BaseHolder {
 
             if (TextUtils.isEmpty(ogData.url)) {
                 mOgUrl.setVisibility(View.GONE);
-//                mOgUrl.setText(message.ogUrl);
             } else {
                 mOgUrl.setText(ogData.url);
             }

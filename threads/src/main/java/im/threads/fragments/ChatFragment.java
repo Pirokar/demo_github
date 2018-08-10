@@ -86,6 +86,7 @@ import im.threads.utils.LateTextWatcher;
 import im.threads.utils.MyFileFilter;
 import im.threads.utils.PermissionChecker;
 import im.threads.utils.PrefUtils;
+import im.threads.utils.UrlUtils;
 import im.threads.views.BottomSheetView;
 import im.threads.views.MySwipeRefreshLayout;
 
@@ -583,6 +584,11 @@ public class ChatFragment extends Fragment implements
     @Override
     public void onImageDownloadRequest(FileDescription fileDescription) {
         mChatController.onImageDownloadRequest(fileDescription);
+    }
+
+    @Override
+    public void onOpenGraphClicked(String ogUrl, int adapterPosition) {
+        UrlUtils.openUrl(getContext(), ogUrl);
     }
 
     @Override

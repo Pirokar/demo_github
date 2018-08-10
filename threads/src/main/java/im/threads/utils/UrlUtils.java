@@ -1,5 +1,9 @@
 package im.threads.utils;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Patterns;
 
 import java.util.ArrayList;
@@ -19,6 +23,20 @@ public class UrlUtils {
         }
 
         return links;
+    }
+
+    public static void openUrl(Context context, String url) {
+
+        Uri uri = Uri.parse(url);
+        if (TextUtils.isEmpty(uri.getScheme())) {
+            uri = Uri.parse("http://" + url);
+        }
+
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
+
+        if (browserIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(browserIntent);
+        }
     }
 
 }
