@@ -174,6 +174,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             if (TextUtils.isEmpty(ogData.image)) {
                 mOgImage.setVisibility(View.GONE);
             } else {
+                mOgImage.setVisibility(View.VISIBLE);
                 Picasso.with(itemView.getContext())
                         .load(ogData.image)
                         .error(style.imagePlaceholder)
