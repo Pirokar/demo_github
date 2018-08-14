@@ -11,7 +11,9 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 
 public class OGDataProvider {
 
@@ -57,6 +59,32 @@ public class OGDataProvider {
         client = clientBuilder.build();
     }
 
+    public static void getOGDataProxy(String url, final Callback<OGData> callback) {
+
+        //Workaround - proxy doesn't understand scheme-less urls
+        if (!url.startsWith("http")) {
+            url = "http://" + url;
+        }
+
+        ServiceGenerator.getThreadsApi().getOGDataProxy(url).enqueue(new retrofit2.Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                try {
+                    OGData ogData = OGParser.parse(response.body().byteStream());
+                    callback.onSuccess(ogData);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    callback.onError(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
 
     public static void getOGData(String url, final retrofit2.Callback<OGData> callback) {
 
@@ -97,7 +125,7 @@ public class OGDataProvider {
     public interface Callback<T> {
         void onSuccess(T data);
 
-        void onError(Exception error);
+        void onError(Throwable error);
     }
 
 }

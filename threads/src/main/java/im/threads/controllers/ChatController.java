@@ -1225,7 +1225,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             }
 
             @Override
-            public void onError(Exception error) {
+            public void onError(Throwable error) {
                 if (ChatStyle.getInstance().isDebugLoggingEnabled) {
                     Log.w(TAG, "OpenGraph data load failed: ", error);
                 }
