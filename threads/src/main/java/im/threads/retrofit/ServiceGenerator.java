@@ -24,7 +24,7 @@ public class ServiceGenerator {
     private static String userAgent;
     private static ThreadsApi sThreadsApi;
 
-    private static final String USER_AGENT_HEADER = "User-Agent";
+    public static final String USER_AGENT_HEADER = "User-Agent";
 
 
     public static ThreadsApi getThreadsApi() {

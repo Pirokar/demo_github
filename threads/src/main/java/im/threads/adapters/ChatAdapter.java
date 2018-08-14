@@ -1083,10 +1083,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
     }
 
-    public void notifyItemChangedOnUi(ChatItem chatItem) {
-        final int position = list.indexOf(chatItem);
-
+    public void notifyItemChangedOnUi(final ChatItem chatItem) {
         ThreadUtils.runOnUiThread(new Runnable() {
+            final int position = list.indexOf(chatItem);
             @Override
             public void run() {
                 notifyItemChanged(position);

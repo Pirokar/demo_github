@@ -82,8 +82,6 @@ import im.threads.utils.PrefUtils;
 import im.threads.utils.Seeker;
 import im.threads.utils.Transport;
 import im.threads.utils.UrlUtils;
-import retrofit2.Call;
-import retrofit2.Response;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -1202,41 +1200,35 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
         final String url = urls.get(0);
 
-        mExecutor.execute(new Runnable() {
+        OGDataProvider.getOGData(url, new OGDataProvider.Callback<OGData>() {
+
             @Override
-            public void run() {
-                OGDataProvider.getOGData(url, new retrofit2.Callback<OGData>() {
-                    @Override
-                    public void onResponse(Call<OGData> call, Response<OGData> response) {
+            public void onSuccess(OGData ogData) {
 
-                        OGData ogData = response.body();
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                    Log.d(TAG, "OGData for url: " + url
+                            + "\n received: " + String.valueOf(ogData));
+                }
 
-                        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                            Log.d(TAG,"OGData for url: " + url
-                                    + "\n received: " + String.valueOf(ogData));
-                        }
-
-                        if (ogData != null && !ogData.isEmpty()) {
-                            if (chatItem instanceof UserPhrase) {
-                                UserPhrase message = (UserPhrase) chatItem;
-                                message.ogData = ogData;
-                                message.ogUrl = url;
-                            } else if (chatItem instanceof ConsultPhrase) {
-                                ConsultPhrase message = (ConsultPhrase) chatItem;
-                                message.ogData = ogData;
-                                message.ogUrl = url;
-                            }
-                            updateChatItem(chatItem);
-                        }
+                if (ogData != null && !ogData.isEmpty()) {
+                    if (chatItem instanceof UserPhrase) {
+                        UserPhrase message = (UserPhrase) chatItem;
+                        message.ogData = ogData;
+                        message.ogUrl = url;
+                    } else if (chatItem instanceof ConsultPhrase) {
+                        ConsultPhrase message = (ConsultPhrase) chatItem;
+                        message.ogData = ogData;
+                        message.ogUrl = url;
                     }
+                    updateChatItem(chatItem);
+                }
+            }
 
-                    @Override
-                    public void onFailure(Call<OGData> call, Throwable t) {
-                        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                            Log.w(TAG, "OpenGraph data load failed: ", t);
-                        }
-                    }
-                });
+            @Override
+            public void onError(Exception error) {
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                    Log.w(TAG, "OpenGraph data load failed: ", error);
+                }
             }
         });
     }
