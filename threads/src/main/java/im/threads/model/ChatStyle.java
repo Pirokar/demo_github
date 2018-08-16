@@ -24,7 +24,7 @@ import im.threads.utils.PrefUtils;
 
 public class ChatStyle implements Serializable {
 
-    public static Context appContext;
+    private static Context appContext;
 
     //common styles
     @ColorRes
@@ -279,6 +279,12 @@ public class ChatStyle implements Serializable {
             }
         }
         return localInstance;
+    }
+
+    public static void updateContext(Context context) {
+        if (appContext == null) {
+            appContext = context.getApplicationContext();
+        }
     }
 
     private ChatStyle() {

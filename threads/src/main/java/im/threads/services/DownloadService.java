@@ -34,6 +34,7 @@ public class DownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        ChatStyle.updateContext(this);
         if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onStartCommand");
         if (intent == null) return START_STICKY;
         final FileDescription fileDescription = intent.getParcelableExtra(FD_TAG);
