@@ -91,9 +91,7 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
 
-        if (ChatStyle.appContext == null) {
-            ChatStyle.appContext = this.getApplicationContext();
-        }
+        ChatStyle.updateContext(this);
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onStartCommand");
 
