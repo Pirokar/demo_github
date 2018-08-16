@@ -155,7 +155,7 @@ public class ChatFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
         appContext = activity.getApplicationContext();
-
+        ChatStyle.updateContext(activity);
         style = ChatStyle.getInstance();
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 

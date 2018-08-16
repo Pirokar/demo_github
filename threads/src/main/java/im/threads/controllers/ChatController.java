@@ -165,9 +165,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     public static ChatController getInstance(final Context ctx) {
         String clientId = PrefUtils.getNewClientID(ctx); //clientId заданный в настройках чата
 
-        if (ChatStyle.appContext == null) {
-            ChatStyle.appContext = ctx.getApplicationContext();
-        }
+        ChatStyle.updateContext(ctx);
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "getInstance clientId = " + clientId);
