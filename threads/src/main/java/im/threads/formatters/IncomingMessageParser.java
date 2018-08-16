@@ -533,7 +533,7 @@ public class IncomingMessageParser {
                 if (message == null)
                     continue;
                 final String messageId = message.getProviderId();
-                final String backendId = String.valueOf(message.getId());
+                final String backendId = String.valueOf(message.getBackendId());
                 final long timeStamp = message.getTimeStamp();
                 final Operator operator = message.getOperator();
                 String name = null;
@@ -553,7 +553,7 @@ public class IncomingMessageParser {
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
                         message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
-                    out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId, false));
+                    out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId, message.isDisplay()));
                 } else {
                     final String phraseText = message.getText();
                     final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;

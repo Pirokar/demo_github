@@ -854,7 +854,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
                     final List<MessgeFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
-                    lastMessageId = items.get(items.size() - 1).getId();
+                    lastMessageId = items.get(items.size() - 1).getBackendId();
                     currentOffset += items.size();
                     isAllMessagesDownloaded = items.size() != chunk;
                     final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);

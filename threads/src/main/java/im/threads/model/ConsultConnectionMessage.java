@@ -1,5 +1,7 @@
 package im.threads.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
     private final String type;
     private final String name;
@@ -69,6 +71,7 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
         return sex;
     }
 
+    @SerializedName("display")
     public boolean isDisplayMessage() {
         return displayMessage;
     }

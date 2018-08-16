@@ -30,7 +30,7 @@ import im.threads.utils.FileUtils;
  */
 class MyOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "MyOpenHelper ";
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
     private static final String COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP";
@@ -47,6 +47,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
     private static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
     private static final String COLUMN_IS_READ = "COLUMN_IS_READ";
     private static final String COLUMN_BACKEND_ID = "COLUMN_BACKEND_ID";
+    private static final String COLUMN_DISPLAY_MASSAGE = "COLUMN_DISPLAY_MESSAGE";
 
 
     private static final String TABLE_QUOTE = "TABLE_QUOTE";
@@ -89,7 +90,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s text," +//COLUMN_CONSULT_TITLE
                         "%s text," +//connection type
                         "%s integer," + //isRead
-                        "%s text)", //COLUMN_BACKEND_ID
+                        "%s text" //COLUMN_BACKEND_ID
+                        + "," + COLUMN_DISPLAY_MASSAGE + " integer"
+                        + ")",
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
                 COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID,
@@ -111,12 +114,16 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s integer, " + // is from quote
                         "%s text," + // incoming filename
                         "%s integer)" // download progress
-                , TABLE_FILE_DESCRIPTION, COLUMN_FD_HEADER, COLUMN_FD_PATH, COLUMN_FD_TIMESTAMP, COLUMN_FD_MESSAGE_ID_EXT, COLUMN_FD_DOWNLOAD_PATH, COLUMN_FD_SIZE, COLUMN_FD_IS_FROM_QUOTE, COLUMN_FD_INCOMING_FILENAME, COLUMN_FD_DOWNLOAD_PROGRESS));
+                , TABLE_FILE_DESCRIPTION, COLUMN_FD_HEADER, COLUMN_FD_PATH, COLUMN_FD_TIMESTAMP,
+                COLUMN_FD_MESSAGE_ID_EXT, COLUMN_FD_DOWNLOAD_PATH, COLUMN_FD_SIZE, COLUMN_FD_IS_FROM_QUOTE,
+                COLUMN_FD_INCOMING_FILENAME, COLUMN_FD_DOWNLOAD_PROGRESS));
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COLUMN_DISPLAY_MASSAGE + " INTEGER DEFAULT 0");
+        }
     }
 
     private void putUserPhrase(UserPhrase userPhrase) {
@@ -201,7 +208,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         boolean isDup = false;
         Cursor c;
-        c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES + " where " + COLUMN_BACKEND_ID + " = ?", new String[]{phrase.getBackendId()});
+        c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID + " from " + TABLE_MESSAGES
+                + " where " + COLUMN_BACKEND_ID + " = ?", new String[]{phrase.getBackendId()});
         if (c.getCount() > 0) isDup = true;
         cv.put(COLUMN_MESSAGE_ID, phrase.getMessageId());
         cv.put(COLUMN_PHRASE, phrase.getPhrase());
@@ -268,11 +276,14 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_CONSULT_STATUS, consultConnectionMessage.getStatus());
         cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.getTitle());
         cv.put(COLUMN_MESSAGE_ID, consultConnectionMessage.getMessageId());
+        cv.put(COLUMN_DISPLAY_MASSAGE, consultConnectionMessage.isDisplayMessage() ? "1" : "0");
         if (consultConnectionMessage.getName() == null) {
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             return;
         }
-        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_NAME + " , " + COLUMN_TIMESTAMP + " from " + TABLE_MESSAGES + " where " + COLUMN_NAME + " = ? and " + COLUMN_TIMESTAMP + " = ? ", new String[]{consultConnectionMessage.getName(), "" + consultConnectionMessage.getTimeStamp()});
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_NAME + " , " + COLUMN_TIMESTAMP
+                + " from " + TABLE_MESSAGES + " where " + COLUMN_NAME + " = ? and " + COLUMN_TIMESTAMP
+                + " = ? ", new String[]{consultConnectionMessage.getName(), "" + consultConnectionMessage.getTimeStamp()});
         if (c.getCount() == 0) {
             c.close();
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
@@ -284,13 +295,17 @@ class MyOpenHelper extends SQLiteOpenHelper {
         if (query == null) return list;
         List<ChatItem> chatItems = getChatItems(0, -1);
         for (ChatItem chatItem : chatItems) {
+
             if (chatItem instanceof UserPhrase) {
-                if (((UserPhrase) chatItem).getPhraseText() != null && ((UserPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
+                if (((UserPhrase) chatItem).getPhraseText() != null
+                        && ((UserPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
                     list.add((UserPhrase) chatItem);
                 }
             }
             if (chatItem instanceof ConsultPhrase) {
-                if (((ConsultPhrase) chatItem).getPhraseText() != null && ((ConsultPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
+                if (((ConsultPhrase) chatItem).getPhraseText() != null
+                        && ((ConsultPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
+
                     list.add((ConsultPhrase) chatItem);
                 }
             }
@@ -341,7 +356,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     public List<ChatItem> getChatItems(int offset, int limit) {
         List<ChatItem> items = new ArrayList<>();
-        String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc", TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset), COLUMN_TIMESTAMP);
+        String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc",
+                TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset), COLUMN_TIMESTAMP);
         Cursor c = getWritableDatabase().rawQuery(query, null);
         if (c.getCount() == 0) {
             c.close();
@@ -360,7 +376,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             int type = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_TYPE));
             if (type == MessageTypes.TYPE_CONSULT_CONNECTED.type) {
-                boolean sex = c.getInt(c.getColumnIndex(COLUMN_SEX)) == 1;
+                boolean sex = c.getInt(INDEX_SEX) == 1;
                 String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
                 String connectionType = c.getString(INDEX_CONNECTION_TYPE);
@@ -368,8 +384,10 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 int indextitle = c.getColumnIndex(COLUMN_CONSULT_TITLE);
                 String status = c.isNull(indexStatus) ? null : c.getString(indexStatus);
                 String title = c.isNull(indextitle) ? null : c.getString(indextitle);
+                boolean displayMessage = c.getInt(c.getColumnIndex(COLUMN_DISPLAY_MASSAGE)) == 1;
                 ConsultConnectionMessage cc =
-                        new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex, c.getLong(INDEX_TIMESTAMP), avatarPath, status, title, c.getString(INDEX_MESSAGE_ID), false);
+                        new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex,
+                                c.getLong(INDEX_TIMESTAMP), avatarPath, status, title, c.getString(INDEX_MESSAGE_ID), displayMessage);
                 items.add(cc);
             } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
                 String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);

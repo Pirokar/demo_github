@@ -142,9 +142,9 @@ public final class Transport {
         if (list != null) {
             for (MessgeFromHistory item : list) {
                 if (lastLoadId == null) {
-                    lastLoadId = item.getId();
-                } else if (lastLoadId > item.getId()) {
-                    lastLoadId = item.getId();
+                    lastLoadId = item.getBackendId();
+                } else if (item.getBackendId() != null && lastLoadId > item.getBackendId()) {
+                    lastLoadId = item.getBackendId();
                 }
             }
         }

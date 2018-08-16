@@ -16,7 +16,7 @@ import im.threads.utils.DateHelper;
 
 public class MessgeFromHistory implements ChatItem {
 
-    private Long id;
+    private Long backendId;
     private String providerId;
     private Long threadId;
     private Operator operator;
@@ -28,6 +28,7 @@ public class MessgeFromHistory implements ChatItem {
     private List<Attachment> attachments;
     private List<MessgeFromHistory> quotes;
     private String type;
+    private boolean display;
 
     public static List<MessgeFromHistory> getListMessageFromServerResponse(String response) {
         List<MessgeFromHistory> list = null;
@@ -43,12 +44,12 @@ public class MessgeFromHistory implements ChatItem {
         return list;
     }
 
-    public Long getId() {
-        return id;
+    public Long getBackendId() {
+        return backendId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setBackendId(Long id) {
+        this.backendId = id;
     }
 
     public String getProviderId() {
@@ -142,5 +143,13 @@ public class MessgeFromHistory implements ChatItem {
     @Override
     public long getTimeStamp() {
         return DateHelper.getMessageTimestampFromDateString(receivedDate);
+    }
+
+    public boolean isDisplay() {
+        return display;
+    }
+
+    public void setDisplay(boolean display) {
+        this.display = display;
     }
 }
