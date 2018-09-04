@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import java.util.UUID;
 
+import im.threads.opengraph.OGData;
 import im.threads.utils.FileUtils;
 
 /**
@@ -24,6 +25,8 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private boolean found;
 
     private String backendId;
+    public OGData ogData;
+    public String ogUrl;
 
 
     public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, String backendId) {

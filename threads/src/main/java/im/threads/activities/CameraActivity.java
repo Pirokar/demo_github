@@ -279,8 +279,7 @@ public class CameraActivity extends BaseActivity {
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.GONE);
         ImageView image = (ImageView) findViewById(R.id.photo_preview);
         image.setVisibility(View.VISIBLE);
-        Picasso
-                .with(this)
+        Picasso.with(this)
                 .load(imagePath)
                 .fit()
                 .centerCrop()

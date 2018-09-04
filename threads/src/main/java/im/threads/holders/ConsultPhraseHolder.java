@@ -1,9 +1,11 @@
 package im.threads.holders;
 
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -21,8 +23,10 @@ import java.util.Locale;
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
 import im.threads.model.ChatStyle;
+import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.Quote;
+import im.threads.opengraph.OGData;
 import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
@@ -54,6 +58,12 @@ public class ConsultPhraseHolder extends BaseHolder {
     private ChatStyle style;
     private View mBubble;
     private View mPhraseFrame;
+    private ViewGroup mOgDataLayout;
+    private ImageView mOgImage;
+    private TextView mOgTitle;
+    private TextView mOgDescription;
+    private TextView mOgUrl;
+    private TextView mOgTimestamp;
     @DrawableRes
     private int defIcon;
 
@@ -71,6 +81,12 @@ public class ConsultPhraseHolder extends BaseHolder {
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mPhraseFrame = itemView.findViewById(R.id.phrase_frame);
+        mOgDataLayout = itemView.findViewById(R.id.og_data_layout);
+        mOgImage = itemView.findViewById(R.id.og_image);
+        mOgTitle = itemView.findViewById(R.id.og_title);
+        mOgDescription = itemView.findViewById(R.id.og_description);
+        mOgUrl = itemView.findViewById(R.id.og_url);
+        mOgTimestamp = itemView.findViewById(R.id.og_timestamp);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {
@@ -87,6 +103,7 @@ public class ConsultPhraseHolder extends BaseHolder {
                 rightTextFileStamp}, style.incomingMessageTextColor);
 
         mTimeStampTextView.setTextColor(getColorInt(style.incomingMessageTimeColor));
+        mOgTimestamp.setTextColor(getColorInt(style.incomingMessageTimeColor));
 
         mPhraseTextView.setLinkTextColor(getColorInt(style.incomingMessageLinkColor));
 
@@ -103,7 +120,7 @@ public class ConsultPhraseHolder extends BaseHolder {
     }
 
 
-    public void onBind(String phrase
+    public void onBind(ConsultPhrase message, String phrase
             , String avatarPath
             , long timeStamp
             , boolean isAvatarVisible
@@ -113,7 +130,10 @@ public class ConsultPhraseHolder extends BaseHolder {
             , @Nullable View.OnClickListener fileClickListener
             , View.OnLongClickListener onRowLongClickListener
             , View.OnClickListener onAvatarClickListener
-            , boolean isChosen) {
+            , View.OnClickListener onOgClickListener, boolean isChosen) {
+
+        ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
+
         mConsultAvatar.setImageBitmap(null);
         if (phrase == null) {
             mPhraseTextView.setVisibility(View.GONE);
@@ -121,9 +141,63 @@ public class ConsultPhraseHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(phrase);
         }
+
+        OGData ogData = message.ogData;
+        if (ogData == null || ogData.isEmpty()) {
+            mOgDataLayout.setVisibility(View.GONE);
+            mTimeStampTextView.setVisibility(View.VISIBLE);
+        } else {
+            mOgDataLayout.setVisibility(View.VISIBLE);
+            mTimeStampTextView.setVisibility(View.GONE);
+
+            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
+
+            if (TextUtils.isEmpty(ogData.title)) {
+                mOgTitle.setVisibility(View.GONE);
+            } else {
+                mOgTitle.setText(ogData.title);
+                mOgTitle.setTypeface(mOgTitle.getTypeface(), Typeface.BOLD);
+            }
+
+            if (TextUtils.isEmpty(ogData.description)) {
+                mOgDescription.setVisibility(View.GONE);
+            } else {
+                mOgDescription.setText(ogData.description);
+            }
+
+            if (TextUtils.isEmpty(ogData.url)) {
+                mOgUrl.setVisibility(View.GONE);
+            } else {
+                mOgUrl.setText(ogData.url);
+            }
+
+            if (TextUtils.isEmpty(ogData.image)) {
+                mOgImage.setVisibility(View.GONE);
+            } else {
+                mOgImage.setVisibility(View.VISIBLE);
+                Picasso.with(itemView.getContext())
+                        .load(ogData.image)
+                        .error(style.imagePlaceholder)
+                        .fit()
+                        .centerCrop()
+                        .into(mOgImage, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                mOgImage.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        }
+
         mImage.setVisibility(View.GONE);
-        ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
-        mTimeStampTextView.setText(timeStampSdf.format(new Date(timeStamp)));
+        String timeText = timeStampSdf.format(new Date(timeStamp));
+        mTimeStampTextView.setText(timeText);
+        mOgTimestamp.setText(timeText);
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);

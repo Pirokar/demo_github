@@ -67,6 +67,8 @@ import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.model.UserPhrase;
+import im.threads.opengraph.OGData;
+import im.threads.opengraph.OGDataProvider;
 import im.threads.retrofit.ServiceGenerator;
 import im.threads.services.DownloadService;
 import im.threads.services.NotificationService;
@@ -79,6 +81,7 @@ import im.threads.utils.FileUtils;
 import im.threads.utils.PrefUtils;
 import im.threads.utils.Seeker;
 import im.threads.utils.Transport;
+import im.threads.utils.UrlUtils;
 
 /**
  * Created by yuri on 08.06.2016.
@@ -195,8 +198,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     onClientIdChanged(ctx, finalClientId);
                 }
             });
-        }
-        else {
+        } else {
             // clientId не изменился
             PrefUtils.setNewClientId(ctx, "");
         }
@@ -224,12 +226,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     if (!unsendMessages.isEmpty()) {
                         if (DeviceInfoHelper.hasNoInternet(ctx)) {
                             scheduleResend();
-                        }
-                        else {
+                        } else {
                             // try to send all unsent messages
                             mUnsendMessageHandler.removeMessages(RESEND_MSG);
                             final ListIterator<UserPhrase> iterator = unsendMessages.listIterator();
-                            while(iterator.hasNext()) {
+                            while (iterator.hasNext()) {
                                 final UserPhrase phrase = iterator.next();
                                 checkAndResendPhrase(phrase);
                                 iterator.remove();
@@ -258,10 +259,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             PrefUtils.setClientId(ctx, finalClientId);
             Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId, ctx), true);
             final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
-                                                                                    finalClientId,
-                                                                                    PrefUtils.getClientIDEncrypted(ctx),
-                                                                                    PrefUtils.getData(ctx),
-                                                                                    ctx);
+                    finalClientId,
+                    PrefUtils.getClientIDEncrypted(ctx),
+                    PrefUtils.getData(ctx),
+                    ctx);
             Transport.sendMessageMFMSSync(ctx, environmentMessage, true);
             Transport.getPushControllerInstance(ctx).resetCounterSync();
 
@@ -276,6 +277,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     instance.fragment.setStateConsultConnected(info.getId(), info.getName());
                 }
             }
+
+            instance.checkAndLoadOgData(phrases);
             PrefUtils.setClientIdWasSet(true, ctx);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -485,10 +488,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             public void run() {
                 Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext), appContext), true, null, null);
                 final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
-                                                                                    PrefUtils.getClientID(appContext),
-                                                                                    PrefUtils.getClientIDEncrypted(appContext),
-                                                                                    PrefUtils.getData(appContext),
-                                                                                    appContext);
+                        PrefUtils.getClientID(appContext),
+                        PrefUtils.getClientIDEncrypted(appContext),
+                        PrefUtils.getData(appContext),
+                        appContext);
                 Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
             }
         });
@@ -529,6 +532,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     }
                 }
             });
+            checkAndLoadOgData(items);
             currentOffset = items.size();
 
             final List<UserPhrase> unsendUserPhrase = mDatabaseHolder.getUnsendUserPhrase(historyLoadingCount);
@@ -564,6 +568,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                             final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, count));
                             if (null != fragment) {
                                 fragment.addChatItems(items);
+                                checkAndLoadOgData(items);
                                 if (info != null) {
                                     fragment.setStateConsultConnected(info.getId(), info.getName());
                                 }
@@ -634,6 +639,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         }
 
         queueMessageSending(um);
+        checkAndLoadOgData(um);
     }
 
     private void sendMessage(final UserPhrase userPhrase) {
@@ -868,8 +874,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 if (null != fragment) {
                     final ChatItem ci = setLastAvatars(Arrays.asList(new ChatItem[]{cm})).get(0);
                     if (!(ci instanceof ConsultConnectionMessage)
-                            || ((ConsultConnectionMessage) ci).isDisplayMessage())
+                            || ((ConsultConnectionMessage) ci).isDisplayMessage()) {
                         fragment.addChatItem(ci);
+                        checkAndLoadOgData(ci);
+                    }
+
                     if (ci instanceof ConsultChatPhrase) {
                         fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath()
                                 , ((ConsultChatPhrase) ci).getConsultId());
@@ -1106,7 +1115,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(appContext));
+        if (ChatStyle.getInstance().isDebugLoggingEnabled)
+            Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet(appContext));
         if (!PrefUtils.isClientIdNotEmpty(appContext)) {
             callback.onSuccess(new ArrayList<ChatItem>());
             return;
@@ -1155,6 +1165,75 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 i.putExtra(DownloadService.FD_TAG, fileDescription);
                 activity.startService(i);
             }
+        }
+    }
+
+    public void checkAndLoadOgData(List<ChatItem> chatItems) {
+
+        for (ChatItem chatItem : chatItems) {
+            checkAndLoadOgData(chatItem);
+        }
+    }
+
+    private void checkAndLoadOgData(ChatItem chatItem) {
+
+        String phrase = null;
+
+        if (chatItem instanceof UserPhrase) {
+            phrase = ((UserPhrase) chatItem).getPhrase();
+        } else if (chatItem instanceof ConsultPhrase) {
+            phrase = ((ConsultPhrase) chatItem).getPhrase();
+        }
+
+        if (phrase != null) {
+            List<String> urls = UrlUtils.extractLinks(phrase);
+
+            if (!urls.isEmpty()) {
+                loadOgData(chatItem, urls);
+            }
+        }
+    }
+
+    public void loadOgData(final ChatItem chatItem, final List<String> urls) {
+
+        final String url = urls.get(0);
+
+        OGDataProvider.getOGData(url, new OGDataProvider.Callback<OGData>() {
+
+            @Override
+            public void onSuccess(OGData ogData) {
+
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                    Log.d(TAG, "OGData for url: " + url
+                            + "\n received: " + String.valueOf(ogData));
+                }
+
+                if (ogData != null && !ogData.isEmpty()) {
+                    if (chatItem instanceof UserPhrase) {
+                        UserPhrase message = (UserPhrase) chatItem;
+                        message.ogData = ogData;
+                        message.ogUrl = url;
+                    } else if (chatItem instanceof ConsultPhrase) {
+                        ConsultPhrase message = (ConsultPhrase) chatItem;
+                        message.ogData = ogData;
+                        message.ogUrl = url;
+                    }
+                    updateChatItem(chatItem);
+                }
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                    Log.w(TAG, "OpenGraph data load failed: ", error);
+                }
+            }
+        });
+    }
+
+    private void updateChatItem(ChatItem chatItem) {
+        if (fragment != null) {
+            fragment.updateChatItem(chatItem);
         }
     }
 
@@ -1242,7 +1321,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 final ScheduleInfo schedule = (ScheduleInfo) chatItem;
                 updateInputEnable(schedule.isSendDuringInactive());
                 isScheduleInfoReceived = true;
-                if(null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
+                if (null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
                 h.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1252,6 +1331,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                         }
                     }
                 });
+            }
+
+            if (chatItem instanceof UserPhrase || chatItem instanceof ConsultPhrase) {
+                checkAndLoadOgData(chatItem);
             }
 
             final ConsultMessageReaction consultReactor = new ConsultMessageReaction(
@@ -1325,16 +1408,18 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                         Transport.getPushControllerInstance(ctx).resetCounterSync();
 
                         Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
-                                                                                            PrefUtils.getNewClientID(ctx),
-                                                                                            PrefUtils.getClientIDEncrypted(ctx),
-                                                                                            PrefUtils.getData(ctx),
-                                                                                            ctx), true);
+                                PrefUtils.getNewClientID(ctx),
+                                PrefUtils.getClientIDEncrypted(ctx),
+                                PrefUtils.getData(ctx),
+                                ctx), true);
 
                         final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
                         final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                         mDatabaseHolder.putMessagesSync(serverItems);
                         if (fragment != null) {
-                            fragment.addChatItems((List<ChatItem>) setLastAvatars(serverItems));
+                            List<ChatItem> itemsWithLastAvatars = (List<ChatItem>) setLastAvatars(serverItems);
+                            fragment.addChatItems(itemsWithLastAvatars);
+                            checkAndLoadOgData(itemsWithLastAvatars);
                             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                             if (info != null) {
                                 fragment.setStateConsultConnected(info.getId(), info.getName());
