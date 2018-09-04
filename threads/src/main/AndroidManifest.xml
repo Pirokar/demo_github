@@ -43,12 +43,12 @@
             android:name="im.threads.activities.TranslucentActivity"
             android:label=""
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
+            android:screenOrientation="unspecified"
             android:theme="@style/Translucent"/>
         <activity
             android:name=".permissions.PermissionsActivity"
             android:label="@string/threads_permissions_help"
-            android:screenOrientation="portrait"
+            android:screenOrientation="unspecified"
             android:theme="@style/Transparent"/>
         <service
             android:name="im.threads.services.IncomingMessagesIntentService"
