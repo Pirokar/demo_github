@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="server_url_list">
+        <item>http://pushservertest.mfms.ru/push-test</item>
+    </string-array>
+    <string-array name="server_id_list">
+        <item>mfms</item>
+    </string-array>
+</resources>
