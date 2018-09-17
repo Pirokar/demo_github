@@ -17,12 +17,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.pushserver.android.PushBroadcastReceiver;
-import com.pushserver.android.PushController;
-import com.pushserver.android.PushServerIntentService;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
-import com.pushserver.android.model.PushMessage;
+import com.mfms.android.push_lite.PushBroadcastReceiver;
+import com.mfms.android.push_lite.PushController;
+import com.mfms.android.push_lite.PushServerIntentService;
+import com.mfms.android.push_lite.RequestCallback;
+import com.mfms.android.push_lite.exception.PushServerErrorException;
+import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.io.File;
 import java.lang.ref.WeakReference;

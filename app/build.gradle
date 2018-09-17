@@ -16,6 +16,12 @@ repositories {
 }
 apply plugin: 'io.fabric'
 android {
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
@@ -105,7 +111,7 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
             def file = output.outputFile
-            def appName = "AppWithChat"
+            def appName = "THR"
             def fileName = appName + "_" + variant.flavorName + "-" + variant.buildType.name + ".apk"
             outputFileName = fileName
         }
@@ -118,7 +124,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':threads')
 
-    implementation 'com.google.firebase:firebase-messaging:10.2.1'
+    implementation 'com.google.firebase:firebase-messaging:17.3.1'
 
     implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:design:$supportVersion"
@@ -129,6 +135,10 @@ dependencies {
         transitive = true;
     }
 
+    implementation 'com.google.code.gson:gson:2.8.5'
+
     implementation 'com.azoft.carousellayoutmanager:carousel:1.2.1'
+    debugImplementation 'com.mfms.android:push-lite-debug:2.5.0'
+    releaseImplementation 'com.mfms.android:push-lite-release:2.5.0'
 }
 apply plugin: 'com.google.gms.google-services'
