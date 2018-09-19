@@ -47,15 +47,22 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$supportVersion"
 
     /*
-    *Если нужен retrofit, то необходимо использовать
-    * версию 2.1.0 (okhttp 3.3.0), т.к. только эта версия
-    * использует библиотеку okio 1.8.0, которая подгружается
-    * в библиотеке mfms
+    * !WARNING!
+    * Retrofit & MFMS depends on okhttp:
+    *
+    * +--- com.squareup.retrofit2:retrofit:2.4.0
+    * |    \--- com.squareup.okhttp3:okhttp:3.10.0
+    * \--- com.squareup.okhttp3:logging-interceptor:3.10.0
+    *      \--- com.squareup.okhttp3:okhttp:3.10.0
+    *
+    * +--- com.mfms.android:push-lite-debug:2.5.0
+    * |    +--- com.google.firebase:firebase-messaging:17.0.0
+    * |    \--- com.squareup.okhttp3:okhttp:3.10.0
     * */
-    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'//api - for usage of Gson in dependent app
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     debugImplementation 'com.mfms.android:push-lite-debug:2.5.0'
     releaseImplementation 'com.mfms.android:push-lite-release:2.5.0'
 }
