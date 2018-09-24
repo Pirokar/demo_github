@@ -3,8 +3,8 @@ package im.threads.services;
 import android.content.Intent;
 import android.util.Log;
 
-import com.pushserver.android.PushServerIntentService;
-import com.pushserver.android.model.PushMessage;
+import com.mfms.android.push_lite.PushServerIntentService;
+import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;

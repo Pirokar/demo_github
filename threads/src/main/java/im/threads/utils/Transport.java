@@ -2,9 +2,9 @@ package im.threads.utils;
 
 import android.content.Context;
 
-import com.pushserver.android.PushController;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
+import com.mfms.android.push_lite.PushController;
+import com.mfms.android.push_lite.RequestCallback;
+import com.mfms.android.push_lite.exception.PushServerErrorException;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.pushserver.android.PushBroadcastReceiver;
+import com.mfms.android.push_lite.PushBroadcastReceiver;
 
 import im.threads.controllers.ChatController;
 import im.threads.formatters.IncomingMessageParser;
