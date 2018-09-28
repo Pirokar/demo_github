@@ -4,10 +4,12 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,51 +136,7 @@ public class UserPhraseViewHolder extends BaseHolder {
             mOgDataLayout.setVisibility(View.GONE);
             mTimeStampTextView.setVisibility(View.VISIBLE);
         } else {
-            mOgDataLayout.setVisibility(View.VISIBLE);
-            mTimeStampTextView.setVisibility(View.GONE);
-
-            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
-
-            if (TextUtils.isEmpty(ogData.title)) {
-                mOgTitle.setVisibility(View.GONE);
-            } else {
-                mOgTitle.setText(ogData.title);
-                mOgTitle.setTypeface(mOgTitle.getTypeface(), Typeface.BOLD);
-            }
-
-            if (TextUtils.isEmpty(ogData.description)) {
-                mOgDescription.setVisibility(View.GONE);
-            } else {
-                mOgDescription.setText(ogData.description);
-            }
-
-            if (TextUtils.isEmpty(ogData.url)) {
-                mOgUrl.setVisibility(View.GONE);
-            } else {
-                mOgUrl.setText(ogData.url);
-            }
-
-            if (TextUtils.isEmpty(ogData.image)) {
-                mOgImage.setVisibility(View.GONE);
-            } else {
-                mOgImage.setVisibility(View.VISIBLE);
-                Picasso.with(itemView.getContext())
-                        .load(ogData.image)
-                        .error(style.imagePlaceholder)
-                        .fit()
-                        .centerCrop()
-                        .into(mOgImage, new Callback() {
-                            @Override
-                            public void onSuccess() {
-
-                            }
-
-                            @Override
-                            public void onError() {
-                                mOgImage.setVisibility(View.GONE);
-                            }
-                        });
-            }
+            bindOGData(ogData, onOgClickListener);
         }
 
         mImage.setVisibility(View.GONE);
@@ -290,6 +248,74 @@ public class UserPhraseViewHolder extends BaseHolder {
         } else {
             mFilterView.setVisibility(View.INVISIBLE);
             mFilterViewSecond.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void bindOGData(@NonNull final OGData ogData, final View.OnClickListener onOgClickListener) {
+
+        if (ogData.areTextsEmpty()) {
+            mOgDataLayout.setVisibility(View.GONE);
+            mTimeStampTextView.setVisibility(View.VISIBLE);
+        } else {
+            mOgDataLayout.setVisibility(View.VISIBLE);
+            mTimeStampTextView.setVisibility(View.GONE);
+
+            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
+
+            if (TextUtils.isEmpty(ogData.title)) {
+                mOgTitle.setVisibility(View.GONE);
+            } else {
+                mOgTitle.setText(ogData.title);
+                mOgTitle.setTypeface(mOgTitle.getTypeface(), Typeface.BOLD);
+            }
+
+            if (TextUtils.isEmpty(ogData.description)) {
+                mOgDescription.setVisibility(View.GONE);
+            } else {
+                mOgDescription.setText(ogData.description);
+            }
+
+            if (TextUtils.isEmpty(ogData.url)) {
+                mOgUrl.setVisibility(View.GONE);
+            } else {
+                mOgUrl.setText(ogData.url);
+            }
+        }
+
+        if (TextUtils.isEmpty(ogData.image)) {
+            mOgImage.setVisibility(View.GONE);
+        } else {
+            Picasso.with(itemView.getContext())
+                    .load(ogData.image)
+                    .fetch(new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            mOgDataLayout.setVisibility(View.VISIBLE);
+                            mTimeStampTextView.setVisibility(View.GONE);
+                            mOgImage.setVisibility(View.VISIBLE);
+                            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
+
+                            Picasso.with(itemView.getContext())
+                                    .load(ogData.image)
+                                    .error(style.imagePlaceholder)
+                                    .fit()
+                                    .centerCrop()
+                                    .into(mOgImage);
+                        }
+
+                        @Override
+                        public void onError() {
+                            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                                Log.d(TAG, "Could not load OpenGraph image");
+                            }
+
+                            mOgImage.setVisibility(View.GONE);
+                            if (TextUtils.isEmpty(ogData.title) && TextUtils.isEmpty(ogData.description) && TextUtils.isEmpty(ogData.url)) {
+                                mOgDataLayout.setVisibility(View.GONE);
+                                mTimeStampTextView.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
         }
     }
 }

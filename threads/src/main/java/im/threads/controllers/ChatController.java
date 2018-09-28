@@ -903,8 +903,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             }
         }, 1500);
 
-        // Если пришло сообщение от оператора, нужно удалить расписание из чата.
-        if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage) {
+        // Если пришло сообщение от оператора,
+        // или новое расписание в котором сейчас чат работает
+        // - нужно удалить расписание из чата
+        if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage
+                || (cm instanceof ScheduleInfo && ((ScheduleInfo)cm).isChatWorking())) {
             h.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1319,7 +1322,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
             if (chatItem instanceof ScheduleInfo) {
                 final ScheduleInfo schedule = (ScheduleInfo) chatItem;
-                updateInputEnable(schedule.isSendDuringInactive());
+                updateInputEnable(schedule.isChatWorking() || schedule.isSendDuringInactive());
                 isScheduleInfoReceived = true;
                 if (null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
                 h.post(new Runnable() {
