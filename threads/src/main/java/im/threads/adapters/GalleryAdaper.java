@@ -1,14 +1,14 @@
 package im.threads.adapters;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import im.threads.holders.GalleryItemHolder;
-import im.threads.model.MediaPhoto;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
+import im.threads.holders.GalleryItemHolder;
+import im.threads.model.MediaPhoto;
 
 /**
  * Created by yuri on 07.07.2016.

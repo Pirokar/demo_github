@@ -3,9 +3,6 @@ package im.threads.views;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +13,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
 import im.threads.R;
-import im.threads.model.ChatStyle;
 
 /**
  * Created by yuri on 06.06.2016.

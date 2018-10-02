@@ -2,7 +2,6 @@ package im.threads.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import androidx.core.content.ContextCompat;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;

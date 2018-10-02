@@ -1,7 +1,6 @@
 package im.threads.formatters;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -22,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;

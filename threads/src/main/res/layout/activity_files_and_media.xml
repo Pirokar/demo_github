@@ -8,7 +8,7 @@
     android:id="@+id/activity_root">
 
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +19,7 @@
         android:layout_height="63dp"
         android:background="@drawable/toolbar_shadow" />
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
             android:textColor="@color/threads_chat_toolbar_text"
             android:layout_marginRight="40dp"
             android:visibility="gone" />
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <ImageButton
         android:id="@+id/search"

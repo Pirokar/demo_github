@@ -5,18 +5,18 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.viewpager.widget.PagerAdapter;
 import im.threads.fragments.ImageFragment;
 import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.utils.ThreadUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yuri on 05.08.2016.

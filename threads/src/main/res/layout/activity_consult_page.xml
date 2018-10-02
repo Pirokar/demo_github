@@ -18,7 +18,7 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/background_gradient_black_top_bottom"/>
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

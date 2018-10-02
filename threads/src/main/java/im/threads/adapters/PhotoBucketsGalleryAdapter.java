@@ -1,13 +1,13 @@
 package im.threads.adapters;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.holders.GalleryBucketImageHolder;
 import im.threads.model.PhotoBucketItem;
-
-import java.util.List;
 
 /**
  * Created by yuri on 06.07.2016.

@@ -1,9 +1,9 @@
 package im.threads.activities;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import im.threads.R;
 import im.threads.fragments.ChatFragment;
 

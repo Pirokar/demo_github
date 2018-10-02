@@ -1,14 +1,14 @@
 package im.threads.adapters;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import im.threads.holders.BottomGalleryImageHolder;
-import im.threads.model.BottomGalleryItem;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
+import im.threads.holders.BottomGalleryImageHolder;
+import im.threads.model.BottomGalleryItem;
 
 /**
  * Created by yuri on 30.06.2016.

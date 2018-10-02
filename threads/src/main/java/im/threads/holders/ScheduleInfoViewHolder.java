@@ -1,12 +1,12 @@
 package im.threads.holders;
 
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.ScheduleInfo;

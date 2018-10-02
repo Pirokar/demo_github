@@ -4,13 +4,13 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.ColorRes;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
 import im.threads.R;
 
 /**
