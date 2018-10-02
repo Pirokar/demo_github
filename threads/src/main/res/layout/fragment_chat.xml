@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
     <data>
     </data>
 
     <RelativeLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/chat_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -129,7 +129,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:background="@null"
-                    android:src="@drawable/ic_reply_gray_24dp" />
+                    app:srcCompat="@drawable/ic_reply_gray_24dp" />
 
 
                 <ImageView
@@ -148,7 +148,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:background="@null"
-                    android:src="@drawable/ic_clear_blue_user_36dp" />
+                    app:srcCompat="@drawable/ic_clear_blue_user_36dp" />
 
                 <View
                     android:id="@+id/delimeter"
@@ -174,7 +174,7 @@
                     android:layout_width="60dp"
                     android:layout_height="64dp"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/threads_ic_attachment_button" />
+                    app:srcCompat="@drawable/threads_ic_attachment_button" />
 
                 <im.threads.widget.CustomFontEditText
                     android:id="@+id/input"
@@ -188,7 +188,7 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/threads_ic_send_button" />
+                    app:srcCompat="@drawable/threads_ic_send_button" />
             </LinearLayout>
 
             <im.threads.views.BottomGallery
@@ -231,7 +231,7 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
-                    android:src="@drawable/ic_arrow_back_white_24dp"
+                    app:srcCompat="@drawable/ic_arrow_back_white_24dp"
                     android:visibility="gone" />
 
                 <LinearLayout
@@ -250,7 +250,7 @@
                         android:layout_height="30dp"
                         android:layout_marginLeft="-60dp"
                         android:background="@null"
-                        android:src="@drawable/ic_reply_blue_30dp" />
+                        app:srcCompat="@drawable/ic_reply_blue_30dp" />
 
                     <ImageButton
                         android:id="@+id/content_copy"
@@ -258,7 +258,7 @@
                         android:layout_height="30dp"
                         android:layout_marginLeft="@dimen/margin_big"
                         android:background="@null"
-                        android:src="@drawable/ic_content_copy_blue_24dp" />
+                        app:srcCompat="@drawable/ic_content_copy_blue_24dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -322,7 +322,7 @@
                             android:layout_height="match_parent"
                             android:layout_toLeftOf="@+id/search_down_ib"
                             android:alpha="0.5"
-                            android:src="@drawable/ic_expand_more_white_24dp"
+                            app:srcCompat="@drawable/ic_expand_more_white_24dp"
                             app:backgroundTint="@android:color/transparent" />
 
                         <android.support.v7.widget.AppCompatImageButton
@@ -332,7 +332,7 @@
                             android:layout_alignParentRight="true"
                             android:layout_marginRight="@dimen/margin_half"
                             android:alpha="0.5"
-                            android:src="@drawable/ic_expand_less_white_24dp"
+                            app:srcCompat="@drawable/ic_expand_less_white_24dp"
                             app:backgroundTint="@android:color/transparent" />
                     </RelativeLayout>
                 </LinearLayout>
