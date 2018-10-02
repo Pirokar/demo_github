@@ -37,7 +37,7 @@ public class OGDataProvider {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             clientBuilder.addInterceptor(new HttpLoggingInterceptor()
-                    .setLevel(HttpLoggingInterceptor.Level.BODY));
+                    .setLevel(HttpLoggingInterceptor.Level.BASIC));
         }
 
         //Preventing redirects to mobile versions without OpenGraph
