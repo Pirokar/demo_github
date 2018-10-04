@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.pushserver.android.model.PushMessage;
+import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import org.json.JSONArray;
 import org.json.JSONException;

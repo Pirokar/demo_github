@@ -3,7 +3,7 @@ package im.threads.utils;
 import android.Manifest;
 import android.content.Context;
 
-import com.pushserver.android.PushController;
+import com.mfms.android.push_lite.PushController;
 
 import java.util.HashMap;
 

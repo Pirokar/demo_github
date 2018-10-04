@@ -23,6 +23,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -91,9 +93,7 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
 
-        if (ChatStyle.appContext == null) {
-            ChatStyle.appContext = this.getApplicationContext();
-        }
+        ChatStyle.updateContext(this);
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onStartCommand");
 
@@ -118,7 +118,7 @@ public class NotificationService extends Service {
             nm.createNotificationChannel(channel);
         }
 
-        final ArrayList<com.pushserver.android.model.PushMessage> il =
+        final ArrayList<PushMessage> il =
                 intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
         if (intent.getAction() != null && intent.getAction().equals(ACTION_REMOVE_NOTIFICATION)) {
             dismissUnreadMessagesNotification();

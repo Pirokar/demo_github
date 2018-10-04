@@ -23,14 +23,13 @@ public final class DeviceInfoHelper {
     public static String getLocale(Context ctx) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return ctx.getResources().getConfiguration().getLocales().get(0).toLanguageTag();
+
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return ctx.getResources().getConfiguration().locale.toLanguageTag();
+
         } else {
-            //noinspection deprecation
-            try {
-                return ctx.getResources().getConfiguration().locale.toLanguageTag();
-            } catch (NoSuchMethodError e) {
-                return ctx.getResources().getConfiguration().locale.getLanguage()
-                        + "-" + ctx.getResources().getConfiguration().locale.getCountry();
-            }
+            return ctx.getResources().getConfiguration().locale.getLanguage()
+                    + "-" + ctx.getResources().getConfiguration().locale.getCountry();
         }
     }
 
@@ -43,7 +42,7 @@ public final class DeviceInfoHelper {
                     if (!addr.isLoopbackAddress()) {
                         String sAddr = addr.getHostAddress();
                         //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        boolean isIPv4 = sAddr.indexOf(':')<0;
+                        boolean isIPv4 = sAddr.indexOf(':') < 0;
                         if (isIPv4)
                             return sAddr;
 

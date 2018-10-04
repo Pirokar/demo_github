@@ -3,8 +3,8 @@ package im.threads.services;
 import android.content.Intent;
 import android.util.Log;
 
-import com.pushserver.android.PushServerIntentService;
-import com.pushserver.android.model.PushMessage;
+import com.mfms.android.push_lite.PushServerIntentService;
+import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +25,7 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
 
-        if (ChatStyle.appContext == null) {
-            ChatStyle.appContext = this.getApplicationContext();
-        }
+        ChatStyle.updateContext(this);
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "saveMessages " + list);
@@ -83,6 +81,10 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
 
     @Override
     protected void messagesWereRead(List<String> list) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "messagesWereRead " + list);
+
+        ChatStyle.updateContext(this);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.e(TAG, "messagesWereRead " + list);
+        }
     }
 }

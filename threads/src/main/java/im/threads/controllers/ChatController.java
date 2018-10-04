@@ -17,12 +17,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.pushserver.android.PushBroadcastReceiver;
-import com.pushserver.android.PushController;
-import com.pushserver.android.PushServerIntentService;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
-import com.pushserver.android.model.PushMessage;
+import com.mfms.android.push_lite.PushBroadcastReceiver;
+import com.mfms.android.push_lite.PushController;
+import com.mfms.android.push_lite.PushServerIntentService;
+import com.mfms.android.push_lite.RequestCallback;
+import com.mfms.android.push_lite.exception.PushServerErrorException;
+import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -168,9 +168,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     public static ChatController getInstance(final Context ctx) {
         String clientId = PrefUtils.getNewClientID(ctx); //clientId заданный в настройках чата
 
-        if (ChatStyle.appContext == null) {
-            ChatStyle.appContext = ctx.getApplicationContext();
-        }
+        ChatStyle.updateContext(ctx);
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "getInstance clientId = " + clientId);
@@ -905,8 +903,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             }
         }, 1500);
 
-        // Если пришло сообщение от оператора, нужно удалить расписание из чата.
-        if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage) {
+        // Если пришло сообщение от оператора,
+        // или новое расписание в котором сейчас чат работает
+        // - нужно удалить расписание из чата
+        if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage
+                || (cm instanceof ScheduleInfo && ((ScheduleInfo)cm).isChatWorking())) {
             h.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1321,7 +1322,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
             if (chatItem instanceof ScheduleInfo) {
                 final ScheduleInfo schedule = (ScheduleInfo) chatItem;
-                updateInputEnable(schedule.isSendDuringInactive());
+                updateInputEnable(schedule.isChatWorking() || schedule.isSendDuringInactive());
                 isScheduleInfoReceived = true;
                 if (null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
                 h.post(new Runnable() {

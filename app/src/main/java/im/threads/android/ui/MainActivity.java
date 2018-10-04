@@ -17,10 +17,10 @@ import com.azoft.carousellayoutmanager.CarouselLayoutManager;
 import com.azoft.carousellayoutmanager.CarouselZoomPostLayoutListener;
 import com.azoft.carousellayoutmanager.CenterScrollListener;
 import com.crashlytics.android.Crashlytics;
-import com.pushserver.android.PushBroadcastReceiver;
-import com.pushserver.android.PushController;
-import com.pushserver.android.PushServerIntentService;
-import com.pushserver.android.model.PushMessage;
+import com.mfms.android.push_lite.PushBroadcastReceiver;
+import com.mfms.android.push_lite.PushController;
+import com.mfms.android.push_lite.PushServerIntentService;
+import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.util.List;
 

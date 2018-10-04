@@ -47,6 +47,12 @@ public class OGData {
                 && TextUtils.isEmpty(url);
     }
 
+    public boolean areTextsEmpty() {
+        return TextUtils.isEmpty(title)
+                && TextUtils.isEmpty(description)
+                && TextUtils.isEmpty(url);
+    }
+
     public String toString() {
         return "Open Graph Data:" +
                 "[title:" + title +

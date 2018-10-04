@@ -3,7 +3,8 @@ package im.threads.broadcastReceivers;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import com.pushserver.android.PushBroadcastReceiver;
+
+import com.mfms.android.push_lite.PushBroadcastReceiver;
 
 import im.threads.model.ChatStyle;
 
@@ -15,6 +16,7 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
+        ChatStyle.updateContext(context);
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
         }
@@ -22,6 +24,7 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onStatusChanged(Context context, String s) {
+        ChatStyle.updateContext(context);
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onStatusChanged " + s);
         }
@@ -30,6 +33,7 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressChanged(Context context, String s) {
+        ChatStyle.updateContext(context);
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onDeviceAddressChanged " + s);
         }

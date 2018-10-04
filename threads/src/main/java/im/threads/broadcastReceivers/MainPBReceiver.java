@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.pushserver.android.PushBroadcastReceiver;
+import com.mfms.android.push_lite.PushBroadcastReceiver;
 
 import im.threads.controllers.ChatController;
 import im.threads.formatters.IncomingMessageParser;
@@ -25,9 +25,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onNewPushNotification(final Context context, final String s, final Bundle bundle) {
 
-        if (ChatStyle.appContext == null) {
-            ChatStyle.appContext = context.getApplicationContext();
-        }
+        ChatStyle.updateContext(context);
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
@@ -60,9 +58,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
     @Override
     public void onDeviceAddressChanged(final Context context, final String s) {
 
-        if (ChatStyle.appContext == null) {
-            ChatStyle.appContext = context.getApplicationContext();
-        }
+        ChatStyle.updateContext(context);
 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onDeviceAddressChanged " + s);
