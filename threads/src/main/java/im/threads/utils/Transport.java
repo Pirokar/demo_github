@@ -14,7 +14,7 @@ import im.threads.formatters.IncomingMessageParser;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
 import im.threads.model.HistoryResponse;
-import im.threads.model.MessgeFromHistory;
+import im.threads.model.MessageFromHistory;
 import im.threads.retrofit.ServiceGenerator;
 import im.threads.retrofit.ThreadsApi;
 import retrofit2.Call;
@@ -129,7 +129,7 @@ public final class Transport {
     public static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponse response) {
         List<ChatItem> list = new ArrayList<>();
         if (response != null) {
-            List<MessgeFromHistory> responseList = response.getMessages();
+            List<MessageFromHistory> responseList = response.getMessages();
             if (responseList != null) {
                 list = IncomingMessageParser.formatNew(responseList);
                 setupLastItemIdFromHistory(responseList);
@@ -138,9 +138,9 @@ public final class Transport {
         return list;
     }
 
-    private static void setupLastItemIdFromHistory(List<MessgeFromHistory> list) {
+    private static void setupLastItemIdFromHistory(List<MessageFromHistory> list) {
         if (list != null) {
-            for (MessgeFromHistory item : list) {
+            for (MessageFromHistory item : list) {
                 if (lastLoadId == null) {
                     lastLoadId = item.getBackendId();
                 } else if (item.getBackendId() != null && lastLoadId > item.getBackendId()) {

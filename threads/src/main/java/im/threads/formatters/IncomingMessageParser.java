@@ -1,6 +1,7 @@
 package im.threads.formatters;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,8 +30,8 @@ import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
+import im.threads.model.MessageFromHistory;
 import im.threads.model.MessageState;
-import im.threads.model.MessgeFromHistory;
 import im.threads.model.Operator;
 import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
@@ -39,6 +40,7 @@ import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UserPhrase;
 import im.threads.utils.DateHelper;
+import im.threads.utils.LogUtils;
 
 public class IncomingMessageParser {
     private static final String TAG = "MessageFormatter ";
@@ -324,22 +326,31 @@ public class IncomingMessageParser {
     }
 
     private static Survey getRatingFromPush(final PushMessage pushMessage, final JSONObject fullMessage) {
-        Survey survey = null;
+
         final String text = getMessage(fullMessage, pushMessage);
-        if (text != null) {
-            try {
-                survey = new Gson().fromJson(text, Survey.class);
-                final long time = new Date().getTime();
-                survey.setPhraseTimeStamp(time);
-                survey.setSentState(MessageState.STATE_NOT_SENT);
-                for (final QuestionDTO questionDTO : survey.getQuestions()) {
-                    questionDTO.setPhraseTimeStamp(time);
-                }
-            } catch (final JsonSyntaxException e) {
-                e.printStackTrace();
-            }
+        if (!TextUtils.isEmpty(text)) {
+            return getSurveyFromText(text);
+        } else {
+            return null;
         }
-        return survey;
+    }
+
+    private static Survey getSurveyFromText(@NonNull String text) {
+
+        try {
+            Survey survey = new Gson().fromJson(text, Survey.class);
+            final long time = new Date().getTime();
+            survey.setPhraseTimeStamp(time);
+            survey.setSentState(MessageState.STATE_NOT_SENT);
+            for (final QuestionDTO questionDTO : survey.getQuestions()) {
+                questionDTO.setPhraseTimeStamp(time);
+            }
+            return survey;
+
+        } catch (final JsonSyntaxException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // show close thread's request only if thread has time till close (hideAfter)
@@ -435,11 +446,11 @@ public class IncomingMessageParser {
         return quote;
     }
 
-    public static Quote quoteFromList(final List<MessgeFromHistory> quotes) {
+    public static Quote quoteFromList(final List<MessageFromHistory> quotes) {
 
         Quote quote = null;
         if (quotes.size() > 0 && quotes.get(0) != null) {
-            MessgeFromHistory quoteFromHistory = quotes.get(0);
+            MessageFromHistory quoteFromHistory = quotes.get(0);
             FileDescription quoteFileDescription = null;
             String quoteString = null;
             String authorName = "";
@@ -526,10 +537,10 @@ public class IncomingMessageParser {
         return list;
     }
 
-    public static ArrayList<ChatItem> formatNew(final List<MessgeFromHistory> messages) {
+    public static ArrayList<ChatItem> formatNew(final List<MessageFromHistory> messages) {
         final ArrayList<ChatItem> out = new ArrayList<>();
         try {
-            for (final MessgeFromHistory message : messages) {
+            for (final MessageFromHistory message : messages) {
                 if (message == null)
                     continue;
                 final String messageId = message.getProviderId();
@@ -549,11 +560,23 @@ public class IncomingMessageParser {
                     operatorId = String.valueOf(operator.getId());
                 }
 
-                if (message.getType() != null && !message.getType().isEmpty() &&
+                if (!TextUtils.isEmpty(message.getType()) &&
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
                         message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
                     out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId, message.isDisplay()));
+
+                } else if (!TextUtils.isEmpty(message.getType())
+                        && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {
+
+                    Survey survey = getSurveyFromText(message.getText());
+                    out.add(survey);
+
+                } else if (!TextUtils.isEmpty(message.getType())
+                        && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY_QUESTION_ANSWER.name())) {
+
+                    LogUtils.logDev("SURVEY ANSWERED: " + message);
+
                 } else {
                     final String phraseText = message.getText();
                     final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;

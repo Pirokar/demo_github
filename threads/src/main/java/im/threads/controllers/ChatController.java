@@ -58,8 +58,8 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
 import im.threads.model.HistoryResponse;
+import im.threads.model.MessageFromHistory;
 import im.threads.model.MessageState;
-import im.threads.model.MessgeFromHistory;
 import im.threads.model.PushMessageCheckResult;
 import im.threads.model.RequestResolveThread;
 import im.threads.model.SaveThreadIdChatItem;
@@ -850,7 +850,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     final Long chunk = 100L;
                     final Long start = lastMessageId == null ? null : lastMessageId;
                     final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
-                    final List<MessgeFromHistory> items = response != null ? response.getMessages() : null;
+                    final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
                     lastMessageId = items.get(items.size() - 1).getBackendId();
                     currentOffset += items.size();
