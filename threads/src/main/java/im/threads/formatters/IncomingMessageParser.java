@@ -40,7 +40,6 @@ import im.threads.model.ScheduleInfo;
 import im.threads.model.Survey;
 import im.threads.model.UserPhrase;
 import im.threads.utils.DateHelper;
-import im.threads.utils.LogUtils;
 
 public class IncomingMessageParser {
     private static final String TAG = "MessageFormatter ";
@@ -353,6 +352,26 @@ public class IncomingMessageParser {
         }
     }
 
+    private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
+
+        Survey survey = new Survey();
+        survey.setPhraseTimeStamp(message.getTimeStamp());
+        survey.setMessageId(String.valueOf(message.getBackendId()));
+        survey.setSendingId(message.getSendingId());
+        survey.setSentState(MessageState.STATE_WAS_READ);
+
+        QuestionDTO question = new QuestionDTO();
+        question.setId(message.getQuestionId());
+        question.setPhraseTimeStamp(message.getTimeStamp());
+        question.setRate(message.getRate());
+        question.setScale(message.getScale());
+        question.setSendingId(message.getSendingId());
+        question.setSimple(message.isSimple());
+
+        survey.setQuestions(Collections.singletonList(question));
+        return survey;
+    }
+
     // show close thread's request only if thread has time till close (hideAfter)
     private static RequestResolveThread getCloseRequestFromPush(final JSONObject fullMessage) {
         final Long hideAfter = getHideAfter(fullMessage);
@@ -575,7 +594,8 @@ public class IncomingMessageParser {
                 } else if (!TextUtils.isEmpty(message.getType())
                         && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY_QUESTION_ANSWER.name())) {
 
-                    LogUtils.logDev("SURVEY ANSWERED: " + message);
+                    Survey completedSurvey = getCompletedSurveyFromHistory(message);
+                    out.add(completedSurvey);
 
                 } else {
                     final String phraseText = message.getText();

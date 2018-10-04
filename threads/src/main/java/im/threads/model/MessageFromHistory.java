@@ -34,8 +34,8 @@ public class MessageFromHistory implements ChatItem {
     //SURVEY ANSWERED
     private Long sendingId;
     private Long questionId;
-    private Long rate;
-    private Long scale;
+    private Integer rate;
+    private Integer scale;
     private boolean simple;
 
     public static List<MessageFromHistory> getListMessageFromServerResponse(String response) {
@@ -185,19 +185,19 @@ public class MessageFromHistory implements ChatItem {
         this.questionId = questionId;
     }
 
-    public Long getRate() {
+    public Integer getRate() {
         return rate;
     }
 
-    public void setRate(Long rate) {
+    public void setRate(Integer rate) {
         this.rate = rate;
     }
 
-    public Long getScale() {
+    public Integer getScale() {
         return scale;
     }
 
-    public void setScale(Long scale) {
+    public void setScale(Integer scale) {
         this.scale = scale;
     }
 
