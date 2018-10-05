@@ -18,6 +18,7 @@ import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.Survey;
 import im.threads.model.UserPhrase;
 
 /**
@@ -182,6 +183,9 @@ public class DatabaseHolder {
             }
             if (item instanceof ConsultConnectionMessage) {
                 mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
+            }
+            if (item instanceof Survey) {
+                mMyOpenHelper.putSurvey((Survey) item);
             }
         }
         mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();

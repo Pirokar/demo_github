@@ -72,4 +72,35 @@ public class Survey implements ChatItem {
     public long getTimeStamp() {
         return phraseTimeStamp;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+
+        } else if (!(obj instanceof Survey)) {
+            return false;
+
+        } else {
+            Survey otherSurvey = (Survey) obj;
+
+            if (sendingId != 0) {
+                return sendingId == otherSurvey.sendingId;
+            }
+
+//            if (messageId != null && otherSurvey.messageId != null) {
+//                return messageId.equals(otherSurvey.messageId);
+//            }
+
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Long.valueOf(sendingId).hashCode();
+//        result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
+        return result;
+    }
 }

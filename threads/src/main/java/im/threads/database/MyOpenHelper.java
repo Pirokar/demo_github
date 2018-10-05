@@ -20,7 +20,9 @@ import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
+import im.threads.model.Survey;
 import im.threads.model.UserPhrase;
 import im.threads.utils.FileUtils;
 
@@ -30,7 +32,7 @@ import im.threads.utils.FileUtils;
  */
 class MyOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "MyOpenHelper ";
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
     private static final String COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP";
@@ -66,6 +68,19 @@ class MyOpenHelper extends SQLiteOpenHelper {
     private static final String COLUMN_FD_IS_FROM_QUOTE = "COLUMN_FD_IS_FROM_QUOTE";
     private static final String COLUMN_FD_INCOMING_FILENAME = "COLUMN_FD_INCOMING_FILENAME";
     private static final String COLUMN_FD_MESSAGE_ID_EXT = "COLUMN_FD_MESSAGE_ID_EXT";
+
+    private static final String COLUMN_SURVEY_SENDING_ID = "COLUMN_SURVEY_SENDING_ID";
+    private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
+    private static final String COLUMN_SURVEY_ID = "COLUMN_SURVEY_ID";
+
+    private static final String TABLE_QUESTIONS = "TABLE_QUESTIONS";
+    private static final String COLUMN_QUESTION_SCALE = "COLUMN_QUESTION_SCALE";
+    private static final String COLUMN_QUESTION_SURVEY_SENDING_ID_EXT = "COLUMN_QUESTION_SURVEY_SENDING_ID_EXT";
+    private static final String COLUMN_QUESTION_ID = "COLUMN_QUESTION_ID";
+    private static final String COLUMN_QUESTION_SENDING_ID = "COLUMN_QUESTION_SENDING_ID";
+    private static final String COLUMN_QUESTION_RATE = "COLUMN_QUESTION_RATE";
+    private static final String COLUMN_QUESTION_TEXT = "COLUMN_QUESTION_TEXT";
+
     private ArrayList<UserPhrase> cashedPhrases = new ArrayList<>();
     private long lastPhraseRequest = System.currentTimeMillis();
 
@@ -92,6 +107,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s integer," + //isRead
                         "%s text" //COLUMN_BACKEND_ID
                         + "," + COLUMN_DISPLAY_MASSAGE + " integer"
+                        + "," + COLUMN_SURVEY_ID + "integer"
+                        + "," + COLUMN_SURVEY_SENDING_ID + "integer"
+                        + "," + COLUMN_SURVEY_HIDE_AFTER + "integer"
                         + ")",
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
@@ -117,12 +135,26 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 , TABLE_FILE_DESCRIPTION, COLUMN_FD_HEADER, COLUMN_FD_PATH, COLUMN_FD_TIMESTAMP,
                 COLUMN_FD_MESSAGE_ID_EXT, COLUMN_FD_DOWNLOAD_PATH, COLUMN_FD_SIZE, COLUMN_FD_IS_FROM_QUOTE,
                 COLUMN_FD_INCOMING_FILENAME, COLUMN_FD_DOWNLOAD_PROGRESS));
+
+        db.execSQL("CREATE TABLE " + TABLE_QUESTIONS + "("
+                + COLUMN_QUESTION_ID + "text"
+                + COLUMN_QUESTION_SURVEY_SENDING_ID_EXT + "text"
+                + COLUMN_QUESTION_SENDING_ID + "text"
+                + COLUMN_QUESTION_SCALE + "text"
+                + COLUMN_QUESTION_RATE + "text"
+                + COLUMN_QUESTION_TEXT + "text"
+                + ")");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COLUMN_DISPLAY_MASSAGE + " INTEGER DEFAULT 0");
+        }
+
+        if (oldVersion < VERSION) {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES + "," + TABLE_QUOTE + "," + TABLE_FILE_DESCRIPTION);
+            onCreate(db);
         }
     }
 
@@ -148,17 +180,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                             fd != null && !fd.first ? fd.second : null,
                             c.getString(INDEX_BACKEND_ID));
                     int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
-                    MessageState ms = MessageState.STATE_WAS_READ;
-                    if (sentState == 0) {
-                        ms = MessageState.STATE_NOT_SENT;
-                    } else if (sentState == 1) {
-                        ms = MessageState.STATE_SENT;
-                    } else if (sentState == 2) {
-                        ms = MessageState.STATE_WAS_READ;
-                    } else if (sentState == 3) {
-                        ms = MessageState.STATE_NOT_SENT;
-                    }
-                    up.setSentState(ms);
+                    up.setSentState(MessageState.fromOrdinal(sentState));
                     phrasesInDb.add(up);
                 }
             }
@@ -172,7 +194,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_ID, userPhrase.getMessageId());
         cv.put(COLUMN_PHRASE, userPhrase.getPhrase());
-        cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().getType());
+        cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().ordinal());
         cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.type);
         cv.put(COLUMN_BACKEND_ID, userPhrase.getBackendId());
@@ -247,7 +269,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     void setUserPhraseState(String messageId, MessageState messageState) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_SEND_STATE, messageState.getType());
+        cv.put(COLUMN_MESSAGE_SEND_STATE, messageState.ordinal());
         getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_ID + " = ?", new String[]{messageId});
         getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_BACKEND_ID + " = ?", new String[]{messageId});
     }
@@ -287,6 +309,32 @@ class MyOpenHelper extends SQLiteOpenHelper {
         if (c.getCount() == 0) {
             c.close();
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+        }
+    }
+
+    public void putSurvey(Survey survey) {
+        ContentValues surveyValues = new ContentValues();
+        surveyValues.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_SURVEY.type);
+        surveyValues.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
+        surveyValues.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
+        surveyValues.put(COLUMN_SURVEY_ID, survey.getId());
+        surveyValues.put(COLUMN_MESSAGE_ID, survey.getMessageId());
+        surveyValues.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
+        surveyValues.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
+        //        cv.put(COLUMN_SURVEY_SENDING_ID, survey.getQuestions());
+
+        getWritableDatabase().insert(TABLE_MESSAGES, null, surveyValues);
+
+        for (QuestionDTO question : survey.getQuestions()) {
+            ContentValues questionValues = new ContentValues();
+            questionValues.put(COLUMN_QUESTION_SURVEY_SENDING_ID_EXT, survey.getSendingId());
+            questionValues.put(COLUMN_QUESTION_ID, question.getId());
+            questionValues.put(COLUMN_QUESTION_SENDING_ID, question.getSendingId());
+            questionValues.put(COLUMN_QUESTION_SCALE, question.getScale());
+            questionValues.put(COLUMN_QUESTION_RATE, question.getRate());
+            questionValues.put(COLUMN_QUESTION_TEXT, question.getText());
+            questionValues.put(COLUMN_TIMESTAMP, question.getTimeStamp());
+            getWritableDatabase().insert(TABLE_QUESTIONS, null, questionValues);
         }
     }
 
@@ -422,17 +470,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         fd != null && !fd.first ? fd.second : null,
                         c.getString(INDEX_BACKEND_ID));
                 int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
-                MessageState ms = MessageState.STATE_WAS_READ;
-                if (sentState == 0) {
-                    ms = MessageState.STATE_NOT_SENT;
-                } else if (sentState == 1) {
-                    ms = MessageState.STATE_SENT;
-                } else if (sentState == 2) {
-                    ms = MessageState.STATE_WAS_READ;
-                } else if (sentState == 3) {
-                    ms = MessageState.STATE_NOT_SENT;
-                }
-                up.setSentState(ms);
+                up.setSentState(MessageState.fromOrdinal(sentState));
                 items.add(up);
             }
         }
@@ -560,7 +598,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
     private enum MessageTypes {
         TYPE_CONSULT_CONNECTED(1),
         TYPE_CONSULT_PHRASE(2),
-        TYPE_USER_PHRASE(3);
+        TYPE_USER_PHRASE(3),
+        TYPE_SURVEY(4);
         int type;
 
         MessageTypes(int type) {
@@ -692,17 +731,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         c.getString(INDEX_BACKEND_ID)
                 );
                 int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
-                MessageState ms = MessageState.STATE_WAS_READ;
-                if (sentState == 0) {
-                    ms = MessageState.STATE_NOT_SENT;
-                } else if (sentState == 1) {
-                    ms = MessageState.STATE_SENT;
-                } else if (sentState == 2) {
-                    ms = MessageState.STATE_WAS_READ;
-                } else if (sentState == 3) {
-                    ms = MessageState.STATE_NOT_SENT;
-                }
-                ((UserPhrase) cp).setSentState(ms);
+                ((UserPhrase) cp).setSentState(MessageState.fromOrdinal(sentState));
             }
         }
         c.close();

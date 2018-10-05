@@ -328,13 +328,13 @@ public class IncomingMessageParser {
 
         final String text = getMessage(fullMessage, pushMessage);
         if (!TextUtils.isEmpty(text)) {
-            return getSurveyFromText(text);
+            return getSurveyFromJsonString(text);
         } else {
             return null;
         }
     }
 
-    private static Survey getSurveyFromText(@NonNull String text) {
+    private static Survey getSurveyFromJsonString(@NonNull String text) {
 
         try {
             Survey survey = new Gson().fromJson(text, Survey.class);
@@ -588,7 +588,7 @@ public class IncomingMessageParser {
                 } else if (!TextUtils.isEmpty(message.getType())
                         && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {
 
-                    Survey survey = getSurveyFromText(message.getText());
+                    Survey survey = getSurveyFromJsonString(message.getText());
                     out.add(survey);
 
                 } else if (!TextUtils.isEmpty(message.getType())
