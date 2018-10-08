@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -90,6 +91,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         db.execSQL(String.format(Locale.US, "create table %s " +//messages table
                         "( %s integer primary key autoincrement," +//id column
                         " %s integer, " +//timestamp
@@ -98,7 +100,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         " %s text, " +//name
                         " %s text, " +//avatar path
                         " %s text, " + // message id
-                        "%s integer, " + //sex
+                        " %s integer, " + //sex
                         " %s integer," +//message sent state
                         "%s text," + //consultid
                         "%s text," + //COLUMN_CONSULT_STATUS
@@ -106,22 +108,24 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s text," +//connection type
                         "%s integer," + //isRead
                         "%s text" //COLUMN_BACKEND_ID
-                        + "," + COLUMN_DISPLAY_MASSAGE + " integer"
-                        + "," + COLUMN_SURVEY_ID + "integer"
-                        + "," + COLUMN_SURVEY_SENDING_ID + "integer"
-                        + "," + COLUMN_SURVEY_HIDE_AFTER + "integer"
+                        + ", " + COLUMN_DISPLAY_MASSAGE + " integer"
+                        + ", " + COLUMN_SURVEY_ID + " integer"
+                        + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
+                        + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
                         + ")",
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
                 COLUMN_MESSAGE_ID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID,
                 COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE,
                 COLUMN_IS_READ, COLUMN_BACKEND_ID));
+
         db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_QUOTE
                         " %s text, " +//header
                         " %s text, " +//body
                         " %s integer, " +//timestamp
                         " %s integer)" // message id
                 , TABLE_QUOTE, COLUMN_QUOTE_HEADER, COLUMN_QUOTE_BODY, COLUMN_QUOTE_TIMESTAMP, COLUMN_QUOTE_MESSAGE_ID_EXT));
+
         db.execSQL(String.format(Locale.US, "create table %s ( " + // TABLE_FILE_DESCRIPTION
                         "%s text, " +//header
                         "%s text, " +//body
@@ -137,12 +141,13 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 COLUMN_FD_INCOMING_FILENAME, COLUMN_FD_DOWNLOAD_PROGRESS));
 
         db.execSQL("CREATE TABLE " + TABLE_QUESTIONS + "("
-                + COLUMN_QUESTION_ID + "text"
-                + COLUMN_QUESTION_SURVEY_SENDING_ID_EXT + "text"
-                + COLUMN_QUESTION_SENDING_ID + "text"
-                + COLUMN_QUESTION_SCALE + "text"
-                + COLUMN_QUESTION_RATE + "text"
-                + COLUMN_QUESTION_TEXT + "text"
+                + COLUMN_QUESTION_ID + " text,"
+                + COLUMN_QUESTION_SURVEY_SENDING_ID_EXT + " text,"
+                + COLUMN_QUESTION_SENDING_ID + " text,"
+                + COLUMN_TIMESTAMP + " integer,"
+                + COLUMN_QUESTION_SCALE + " text,"
+                + COLUMN_QUESTION_RATE + " text,"
+                + COLUMN_QUESTION_TEXT + " text"
                 + ")");
     }
 
@@ -153,7 +158,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
         }
 
         if (oldVersion < VERSION) {
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES + "," + TABLE_QUOTE + "," + TABLE_FILE_DESCRIPTION);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUOTE);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_FILE_DESCRIPTION);
             onCreate(db);
         }
     }
@@ -163,23 +170,19 @@ class MyOpenHelper extends SQLiteOpenHelper {
         if (cashedPhrases == null || cashedPhrases.isEmpty()
                 || (System.currentTimeMillis() - lastPhraseRequest) > 300) {
             Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES, new String[]{});
-            final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
-            final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
-            final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
-            final int INDEX_BACKEND_ID = c.getColumnIndex(COLUMN_BACKEND_ID);
-            final int INDEX_TYPE = c.getColumnIndex(COLUMN_MESSAGE_TYPE);
+
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                if (c.getInt(INDEX_TYPE) == MessageTypes.TYPE_USER_PHRASE.type) {
-                    String phrase1 = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
-                    Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+                if (cGetInt(c, COLUMN_MESSAGE_TYPE) == MessageTypes.TYPE_USER_PHRASE.type) {
+                    String phrase1 = cGetString(c, COLUMN_PHRASE);
+                    Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
                     UserPhrase up = new UserPhrase(
-                            c.getString(INDEX_MESSAGE_ID),
+                            cGetString(c, COLUMN_MESSAGE_ID),
                             phrase1,
-                            getQuote(c.getString(INDEX_MESSAGE_ID)),
-                            c.getLong(INDEX_TIMESTAMP),
+                            getQuote(cGetString(c, COLUMN_MESSAGE_ID)),
+                            cGetLong(c, COLUMN_TIMESTAMP),
                             fd != null && !fd.first ? fd.second : null,
-                            c.getString(INDEX_BACKEND_ID));
-                    int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
+                            cGetString(c, COLUMN_BACKEND_ID));
+                    int sentState = cGetInt(c, COLUMN_MESSAGE_SEND_STATE);
                     up.setSentState(MessageState.fromOrdinal(sentState));
                     phrasesInDb.add(up);
                 }
@@ -292,13 +295,13 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_TIMESTAMP, consultConnectionMessage.getTimeStamp());
         cv.put(COLUMN_AVATAR_PATH, consultConnectionMessage.getAvatarPath());
         cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_CONNECTED.type);
-        cv.put(COLUMN_SEX, consultConnectionMessage.getSex() ? "1" : "0");
+        cv.put(COLUMN_SEX, consultConnectionMessage.getSex());
         cv.put(COLUMN_CONNECTION_TYPE, consultConnectionMessage.getConnectionType());
         cv.put(COLUMN_CONSULT_ID, consultConnectionMessage.getConsultId());
         cv.put(COLUMN_CONSULT_STATUS, consultConnectionMessage.getStatus());
         cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.getTitle());
         cv.put(COLUMN_MESSAGE_ID, consultConnectionMessage.getMessageId());
-        cv.put(COLUMN_DISPLAY_MASSAGE, consultConnectionMessage.isDisplayMessage() ? "1" : "0");
+        cv.put(COLUMN_DISPLAY_MASSAGE, consultConnectionMessage.isDisplayMessage());
         if (consultConnectionMessage.getName() == null) {
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
             return;
@@ -367,34 +370,22 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 + " and " + COLUMN_IS_READ + " = 0 order by " + COLUMN_TIMESTAMP + " desc", new String[]{});
         if (c.getCount() > 0) {
             c.moveToFirst();
-            final int INDEX_NAME = c.getColumnIndex(COLUMN_NAME);
-            final int INDEX_AVATAR_PATH = c.getColumnIndex(COLUMN_AVATAR_PATH);
-            final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
-            final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
-            final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
-            final int INDEX_BACKEND_ID = c.getColumnIndex(COLUMN_BACKEND_ID);
-            final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
-            final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
-            final int INDEX_SEX = c.getColumnIndex(COLUMN_SEX);
-            String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
-            String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
-            String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
-            String status = c.isNull(c.getColumnIndex(COLUMN_CONSULT_STATUS)) ? null : c.getString(c.getColumnIndex(COLUMN_CONSULT_STATUS));
-            boolean isRead = c.getInt(INDEX_IS_READ) == 1;
-            Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+
+            Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
+
             ConsultPhrase cp = new ConsultPhrase(
                     fd != null && !fd.first ? fd.second : null,
-                    getQuote(c.getString(INDEX_MESSAGE_ID)),
-                    name,
-                    c.getString(INDEX_MESSAGE_ID),
-                    phrase,
-                    c.getLong(INDEX_TIMESTAMP),
-                    c.getString(INDEX_CONSULT_ID),
-                    avatarPath
-                    , isRead
-                    , status
-                    , c.getInt(INDEX_SEX) == 1
-                    , c.getString(INDEX_BACKEND_ID)
+                    getQuote(cGetString(c, COLUMN_MESSAGE_ID)),
+                    cGetString(c, COLUMN_NAME),
+                    cGetString(c, COLUMN_MESSAGE_ID),
+                    cGetString(c, COLUMN_PHRASE),
+                    cGetLong(c, COLUMN_TIMESTAMP),
+                    cGetString(c, COLUMN_CONSULT_ID),
+                    cGetString(c, COLUMN_AVATAR_PATH)
+                    , cGetBool(c, COLUMN_IS_READ)
+                    , cGetString(c, COLUMN_CONSULT_STATUS)
+                    , cGetBool(c, COLUMN_SEX)
+                    , cGetString(c, COLUMN_BACKEND_ID)
             );
             c.close();
             return cp;
@@ -411,66 +402,62 @@ class MyOpenHelper extends SQLiteOpenHelper {
             c.close();
             return items;
         }
-        final int INDEX_NAME = c.getColumnIndex(COLUMN_NAME);
-        final int INDEX_AVATAR_PATH = c.getColumnIndex(COLUMN_AVATAR_PATH);
-        final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
-        final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
-        final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
-        final int INDEX_BACKEND_ID = c.getColumnIndex(COLUMN_BACKEND_ID);
-        final int INDEX_CONNECTION_TYPE = c.getColumnIndex(COLUMN_CONNECTION_TYPE);
-        final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
-        final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
-        final int INDEX_SEX = c.getColumnIndex(COLUMN_SEX);
+
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            int type = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_TYPE));
+
+            int type = cGetInt(c, COLUMN_MESSAGE_TYPE);
+
             if (type == MessageTypes.TYPE_CONSULT_CONNECTED.type) {
-                boolean sex = c.getInt(INDEX_SEX) == 1;
-                String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
-                String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
-                String connectionType = c.getString(INDEX_CONNECTION_TYPE);
-                int indexStatus = c.getColumnIndex(COLUMN_CONSULT_STATUS);
-                int indextitle = c.getColumnIndex(COLUMN_CONSULT_TITLE);
-                String status = c.isNull(indexStatus) ? null : c.getString(indexStatus);
-                String title = c.isNull(indextitle) ? null : c.getString(indextitle);
-                boolean displayMessage = c.getInt(c.getColumnIndex(COLUMN_DISPLAY_MASSAGE)) == 1;
-                ConsultConnectionMessage cc =
-                        new ConsultConnectionMessage(c.getString(INDEX_CONSULT_ID), connectionType, name, sex,
-                                c.getLong(INDEX_TIMESTAMP), avatarPath, status, title, c.getString(INDEX_MESSAGE_ID), displayMessage);
+
+                ConsultConnectionMessage cc = new ConsultConnectionMessage(
+                        cGetString(c, COLUMN_CONSULT_ID),
+                        cGetString(c, COLUMN_CONNECTION_TYPE),
+                        cGetString(c, COLUMN_NAME),
+                        cGetBool(c, COLUMN_SEX),
+                        cGetLong(c, COLUMN_TIMESTAMP),
+                        cGetString(c, COLUMN_AVATAR_PATH),
+                        cGetString(c, COLUMN_CONSULT_STATUS),
+                        cGetString(c, COLUMN_CONSULT_TITLE),
+                        cGetString(c, COLUMN_MESSAGE_ID),
+                        cGetBool(c, COLUMN_DISPLAY_MASSAGE));
+
                 items.add(cc);
+
             } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
-                String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
-                String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
-                String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
-                String status = c.isNull(c.getColumnIndex(COLUMN_CONSULT_STATUS)) ? null : c.getString(c.getColumnIndex(COLUMN_CONSULT_STATUS));
-                boolean isRead = c.getInt(INDEX_IS_READ) == 1;
-                Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+
+                Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
+
                 ConsultPhrase cp = new ConsultPhrase(
                         fd != null && !fd.first ? fd.second : null,
-                        getQuote(c.getString(INDEX_MESSAGE_ID)),
-                        name,
-                        c.getString(INDEX_MESSAGE_ID),
-                        phrase,
-                        c.getLong(INDEX_TIMESTAMP),
-                        c.getString(INDEX_CONSULT_ID),
-                        avatarPath
-                        , isRead
-                        , status
-                        , c.getInt(INDEX_SEX) == 1
-                        , c.getString(INDEX_BACKEND_ID)
+                        getQuote(cGetString(c, COLUMN_MESSAGE_ID)),
+                        cGetString(c, COLUMN_NAME),
+                        cGetString(c, COLUMN_MESSAGE_ID),
+                        cGetString(c, COLUMN_PHRASE),
+                        cGetLong(c, COLUMN_TIMESTAMP),
+                        cGetString(c, COLUMN_CONSULT_ID),
+                        cGetString(c, COLUMN_AVATAR_PATH),
+                        cGetBool(c, COLUMN_IS_READ),
+                        cGetString(c, COLUMN_CONSULT_STATUS),
+                        cGetBool(c, COLUMN_SEX),
+                        cGetString(c, COLUMN_BACKEND_ID)
                 );
                 items.add(cp);
+
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
-                String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
-                Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+
+                Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
+
                 UserPhrase up = new UserPhrase(
-                        c.getString(INDEX_MESSAGE_ID),
-                        phrase,
-                        getQuote(c.getString(INDEX_MESSAGE_ID)),
-                        c.getLong(INDEX_TIMESTAMP),
+                        cGetString(c, COLUMN_MESSAGE_ID),
+                        cGetString(c, COLUMN_PHRASE),
+                        getQuote(cGetString(c, COLUMN_MESSAGE_ID)),
+                        cGetLong(c, COLUMN_TIMESTAMP),
                         fd != null && !fd.first ? fd.second : null,
-                        c.getString(INDEX_BACKEND_ID));
-                int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
+                        cGetString(c, COLUMN_BACKEND_ID));
+
+                int sentState = cGetInt(c, COLUMN_MESSAGE_SEND_STATE);
                 up.setSentState(MessageState.fromOrdinal(sentState));
+
                 items.add(up);
             }
         }
@@ -488,10 +475,14 @@ class MyOpenHelper extends SQLiteOpenHelper {
             c.close();
             return null;
         }
-        String header = c.isNull(c.getColumnIndex(COLUMN_QUOTE_HEADER)) ? null : c.getString(c.getColumnIndex(COLUMN_QUOTE_HEADER));
-        String body = c.isNull(c.getColumnIndex(COLUMN_QUOTE_BODY)) ? null : c.getString(c.getColumnIndex(COLUMN_QUOTE_BODY));
+
         Pair<Boolean, FileDescription> quoteFd = getFd(messageId);
-        Quote q = new Quote(header, body, quoteFd != null && quoteFd.first ? quoteFd.second : null, c.getLong(c.getColumnIndex(COLUMN_QUOTE_TIMESTAMP)));
+
+        Quote q = new Quote(cGetString(c, COLUMN_QUOTE_HEADER),
+                cGetString(c, COLUMN_QUOTE_BODY),
+                quoteFd != null && quoteFd.first ? quoteFd.second : null,
+                cGetLong(c, COLUMN_QUOTE_TIMESTAMP));
+
         c.close();
         return q;
     }
@@ -523,48 +514,57 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     private Pair<Boolean, FileDescription> getFd(String messageId) {
+
         if (TextUtils.isEmpty(messageId)) {
             return null;
         }
+
         String query = String.format(Locale.US, "select * from %s where %s = ?", TABLE_FILE_DESCRIPTION, COLUMN_FD_MESSAGE_ID_EXT);
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{messageId});
         if (!c.moveToFirst()) {
             c.close();
             return null;
         }
-        String header = c.isNull(c.getColumnIndex(COLUMN_FD_HEADER)) ? null : c.getString(c.getColumnIndex(COLUMN_FD_HEADER));
-        String path = c.isNull(c.getColumnIndex(COLUMN_FD_PATH)) ? null : c.getString(c.getColumnIndex(COLUMN_FD_PATH));
-        Integer progress = c.isNull(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PROGRESS)) ? 0 : c.getInt(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PROGRESS));
-        FileDescription fd = new FileDescription(header, path, c.getLong(c.getColumnIndex(COLUMN_FD_SIZE)), c.getLong(c.getColumnIndex(COLUMN_FD_TIMESTAMP)));
+
+        Integer progress = cGetInt(c, COLUMN_FD_DOWNLOAD_PROGRESS);
+
+        FileDescription fd = new FileDescription(cGetString(c, COLUMN_FD_HEADER),
+                cGetString(c, COLUMN_FD_PATH),
+                cGetLong(c, COLUMN_FD_SIZE),
+                cGetLong(c, COLUMN_FD_TIMESTAMP));
+
         fd.setDownloadProgress(progress);
-        fd.setDownloadPath(c.getString(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PATH)));
-        fd.setIncomingName(c.getString(c.getColumnIndex(COLUMN_FD_INCOMING_FILENAME)));
-        boolean isFromQuote = c.getInt(c.getColumnIndex(COLUMN_FD_IS_FROM_QUOTE)) == 1;
+        fd.setDownloadPath(cGetString(c, COLUMN_FD_DOWNLOAD_PATH));
+        fd.setIncomingName(cGetString(c, COLUMN_FD_INCOMING_FILENAME));
+        boolean isFromQuote = cGetBool(c, COLUMN_FD_IS_FROM_QUOTE);
+
         c.close();
         return new Pair<>(isFromQuote, fd);
     }
 
     List<FileDescription> getFd() {
+
         String query = String.format(Locale.US, "select * from %s order by %s desc", TABLE_FILE_DESCRIPTION, COLUMN_FD_TIMESTAMP);
         List<FileDescription> list = new ArrayList<>();
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{});
+
         if (!c.moveToFirst()) {
             c.close();
             return list;
         }
-        int fdHeaderIndex = c.getColumnIndex(COLUMN_FD_HEADER);
-        int fdPAthIndex = c.getColumnIndex(COLUMN_FD_PATH);
-        int fdProgress = c.getColumnIndex(COLUMN_FD_DOWNLOAD_PROGRESS);
-        int fdTimeStamp = c.getColumnIndex(COLUMN_FD_TIMESTAMP);
-        int fdFilename = c.getColumnIndex(COLUMN_FD_INCOMING_FILENAME);
+
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            String header = c.isNull(fdHeaderIndex) ? null : c.getString(fdHeaderIndex);
-            String path = c.isNull(fdPAthIndex) ? null : c.getString(fdPAthIndex);
-            Integer progress = c.isNull(fdProgress) ? 0 : c.getInt(fdProgress);
-            FileDescription fd = new FileDescription(header, path, c.getLong(c.getColumnIndex(COLUMN_FD_SIZE)), c.getLong(fdTimeStamp));
+            Integer progress = cGetInt(c, COLUMN_FD_DOWNLOAD_PROGRESS);
+
+            FileDescription fd = new FileDescription(cGetString(c, COLUMN_FD_HEADER),
+                    cGetString(c, COLUMN_FD_PATH),
+                    cGetLong(c, COLUMN_FD_SIZE),
+                    cGetLong(c, COLUMN_FD_TIMESTAMP));
+
             fd.setDownloadProgress(progress);
-            fd.setIncomingName(c.isNull(fdFilename) ? null : c.getString(fdFilename));
-            fd.setDownloadPath(c.getString(c.getColumnIndex(COLUMN_FD_DOWNLOAD_PATH)));
+            fd.setIncomingName(cGetString(c, COLUMN_FD_INCOMING_FILENAME));
+            fd.setDownloadPath(cGetString(c, COLUMN_FD_DOWNLOAD_PATH));
+
             list.add(fd);
         }
         c.close();
@@ -673,7 +673,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     ChatPhrase getChatphraseByDescription(FileDescription fileDescription) {
+
         if (fileDescription == null) return null;
+
         ChatPhrase cp = null;
         Cursor c = getWritableDatabase().query(true
                 , TABLE_FILE_DESCRIPTION
@@ -682,55 +684,46 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         + " and " + COLUMN_FD_DOWNLOAD_PATH + " like " + fileDescription.getDownloadPath()
                         + " and " + COLUMN_FD_HEADER + " like " + fileDescription.getFrom()
                 , new String[]{}, null, null, null, null);
+
         if (c.getCount() > 0) {
+
             c.moveToFirst();
-            String id = c.getString(c.getColumnIndex(COLUMN_FD_MESSAGE_ID_EXT));
-            c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES + " where " + COLUMN_MESSAGE_ID + " like " + id, new String[]{});
+            String id = cGetString(c, COLUMN_FD_MESSAGE_ID_EXT);
+
+            c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES
+                    + " where " + COLUMN_MESSAGE_ID + " like " + id, new String[]{});
+
             c.moveToFirst();
-            final int INDEX_NAME = c.getColumnIndex(COLUMN_NAME);
-            final int INDEX_AVATAR_PATH = c.getColumnIndex(COLUMN_AVATAR_PATH);
-            final int INDEX_TIMESTAMP = c.getColumnIndex(COLUMN_TIMESTAMP);
-            final int INDEX_PHRASE = c.getColumnIndex(COLUMN_PHRASE);
-            final int INDEX_MESSAGE_ID = c.getColumnIndex(COLUMN_MESSAGE_ID);
-            final int INDEX_BACKEND_ID = c.getColumnIndex(COLUMN_BACKEND_ID);
-            final int INDEX_CONNECTION_TYPE = c.getColumnIndex(COLUMN_CONNECTION_TYPE);
-            final int INDEX_CONSULT_ID = c.getColumnIndex(COLUMN_CONSULT_ID);
-            final int INDEX_IS_READ = c.getColumnIndex(COLUMN_IS_READ);
-            final int INDEX_SEX = c.getColumnIndex(COLUMN_SEX);
-            int type = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_TYPE));
+
+            int type = cGetInt(c, COLUMN_MESSAGE_TYPE);
+
             if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
-                String avatarPath = c.isNull(INDEX_AVATAR_PATH) ? null : c.getString(INDEX_AVATAR_PATH);
-                String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
-                String name = c.isNull(INDEX_NAME) ? null : c.getString(INDEX_NAME);
-                String status = c.isNull(c.getColumnIndex(COLUMN_CONSULT_STATUS)) ? null : c.getString(c.getColumnIndex(COLUMN_CONSULT_STATUS));
-                boolean isRead = c.getInt(INDEX_IS_READ) == 1;
-                Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+                Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
                 cp = new ConsultPhrase(
                         fd != null && !fd.first ? fd.second : null,
-                        getQuote(c.getString(INDEX_MESSAGE_ID)),
-                        name,
-                        c.getString(INDEX_MESSAGE_ID),
-                        phrase,
-                        c.getLong(INDEX_TIMESTAMP),
-                        c.getString(INDEX_CONSULT_ID),
-                        avatarPath
-                        , isRead
-                        , status
-                        , c.getInt(INDEX_SEX) == 1
-                        , c.getString(INDEX_BACKEND_ID)
-                );
+                        getQuote(cGetString(c, COLUMN_MESSAGE_ID)),
+                        cGetString(c, COLUMN_NAME),
+                        cGetString(c, COLUMN_MESSAGE_ID),
+                        cGetString(c, COLUMN_PHRASE),
+                        cGetLong(c, COLUMN_TIMESTAMP),
+                        cGetString(c, COLUMN_CONSULT_ID),
+                        cGetString(c, COLUMN_AVATAR_PATH),
+                        cGetBool(c, COLUMN_IS_READ),
+                        cGetString(c, COLUMN_CONSULT_STATUS),
+                        cGetBool(c, COLUMN_SEX),
+                        cGetString(c, COLUMN_BACKEND_ID));
+
             } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
-                String phrase = c.isNull(INDEX_PHRASE) ? null : c.getString(INDEX_PHRASE);
-                Pair<Boolean, FileDescription> fd = getFd(c.getString(INDEX_MESSAGE_ID));
+                Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
                 cp = new UserPhrase(
-                        c.getString(INDEX_MESSAGE_ID),
-                        phrase,
-                        getQuote(c.getString(INDEX_MESSAGE_ID)),
-                        c.getLong(INDEX_TIMESTAMP),
+                        cGetString(c, COLUMN_MESSAGE_ID),
+                        cGetString(c, COLUMN_PHRASE),
+                        getQuote(cGetString(c, COLUMN_MESSAGE_ID)),
+                        cGetLong(c, COLUMN_TIMESTAMP),
                         fd != null && !fd.first ? fd.second : null,
-                        c.getString(INDEX_BACKEND_ID)
+                        cGetString(c, COLUMN_BACKEND_ID)
                 );
-                int sentState = c.getInt(c.getColumnIndex(COLUMN_MESSAGE_SEND_STATE));
+                int sentState = cGetInt(c, COLUMN_MESSAGE_SEND_STATE);
                 ((UserPhrase) cp).setSentState(MessageState.fromOrdinal(sentState));
             }
         }
@@ -748,7 +741,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             return null;
         }
         c.moveToFirst();
-        return c.getString(c.getColumnIndex(COLUMN_AVATAR_PATH));
+        return cGetString(c, COLUMN_AVATAR_PATH);
     }
 
     void cleanDb() {
@@ -767,9 +760,35 @@ class MyOpenHelper extends SQLiteOpenHelper {
             return null;
         }
         c.moveToFirst();
-        return new ConsultInfo(c.getString(c.getColumnIndex(COLUMN_NAME))
+        return new ConsultInfo(cGetString(c, COLUMN_NAME)
                 , id
-                , c.getString(c.getColumnIndex(COLUMN_CONSULT_STATUS))
-                , c.getString(c.getColumnIndex(COLUMN_AVATAR_PATH)));
+                , cGetString(c, COLUMN_CONSULT_STATUS)
+                , cGetString(c, COLUMN_AVATAR_PATH));
+    }
+
+    public static boolean cIsNull(Cursor c, String columnName) {
+        return c.isNull(c.getColumnIndex(columnName));
+    }
+
+    private boolean cGetBool(Cursor c, String columnName) {
+        return cGetInt(c, columnName) == 1;
+    }
+
+    /**
+     * @param c          Cursor
+     * @param columnName
+     * @return String or null
+     */
+    public static @Nullable
+    String cGetString(Cursor c, String columnName) {
+        return cIsNull(c, columnName) ? null : c.getString(c.getColumnIndex(columnName));
+    }
+
+    public static long cGetLong(Cursor c, String columnName) {
+        return c.getLong(c.getColumnIndex(columnName));
+    }
+
+    public static int cGetInt(Cursor c, String columnName) {
+        return cIsNull(c, columnName) ? 0 : c.getInt(c.getColumnIndex(columnName));
     }
 }

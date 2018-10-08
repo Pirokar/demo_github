@@ -578,12 +578,16 @@ public class IncomingMessageParser {
                 if (operator != null && operator.getId() != null) {
                     operatorId = String.valueOf(operator.getId());
                 }
+                boolean sex = false;
+                if (operator != null && operator.getGender() != null) {
+                    sex = operator.getGender() == Operator.Gender.MALE;
+                }
 
                 if (!TextUtils.isEmpty(message.getType()) &&
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
                         message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
-                    out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId, message.isDisplay()));
+                    out.add(new ConsultConnectionMessage(operatorId, type, name, sex, timeStamp, photoUrl, null, null, messageId, message.isDisplay()));
 
                 } else if (!TextUtils.isEmpty(message.getType())
                         && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {
