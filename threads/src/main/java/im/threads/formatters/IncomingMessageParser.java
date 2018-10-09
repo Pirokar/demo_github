@@ -363,6 +363,7 @@ public class IncomingMessageParser {
         QuestionDTO question = new QuestionDTO();
         question.setId(message.getQuestionId());
         question.setPhraseTimeStamp(message.getTimeStamp());
+        question.setText(message.getText());
         question.setRate(message.getRate());
         question.setScale(message.getScale());
         question.setSendingId(message.getSendingId());

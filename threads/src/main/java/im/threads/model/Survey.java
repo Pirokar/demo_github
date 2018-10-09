@@ -16,6 +16,19 @@ public class Survey implements ChatItem {
     private long phraseTimeStamp;
     private MessageState sentState;
 
+    public Survey() {
+
+    }
+
+    public Survey(long id, long surveySendingId, long hideAfter, String messageId, long phraseTimeStamp, MessageState messageState) {
+        this.id = id;
+        sendingId = surveySendingId;
+        this.hideAfter = hideAfter;
+        this.messageId = messageId;
+        this.phraseTimeStamp = phraseTimeStamp;
+        this.sentState = messageState;
+    }
+
     public long getId() {
         return id;
     }

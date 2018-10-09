@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -81,6 +82,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
     private static final String COLUMN_QUESTION_SENDING_ID = "COLUMN_QUESTION_SENDING_ID";
     private static final String COLUMN_QUESTION_RATE = "COLUMN_QUESTION_RATE";
     private static final String COLUMN_QUESTION_TEXT = "COLUMN_QUESTION_TEXT";
+    private static final String COLUMN_QUESTION_SIMPLE = "COLUMN_QUESTION_SIMPLE";
 
     private ArrayList<UserPhrase> cashedPhrases = new ArrayList<>();
     private long lastPhraseRequest = System.currentTimeMillis();
@@ -145,6 +147,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 + COLUMN_QUESTION_SURVEY_SENDING_ID_EXT + " text,"
                 + COLUMN_QUESTION_SENDING_ID + " text,"
                 + COLUMN_TIMESTAMP + " integer,"
+                + COLUMN_QUESTION_SIMPLE + " text,"
                 + COLUMN_QUESTION_SCALE + " text,"
                 + COLUMN_QUESTION_RATE + " text,"
                 + COLUMN_QUESTION_TEXT + " text"
@@ -172,7 +175,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES, new String[]{});
 
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                if (cGetInt(c, COLUMN_MESSAGE_TYPE) == MessageTypes.TYPE_USER_PHRASE.type) {
+                if (cGetInt(c, COLUMN_MESSAGE_TYPE) == MessageTypes.TYPE_USER_PHRASE.ordinal()) {
                     String phrase1 = cGetString(c, COLUMN_PHRASE);
                     Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
                     UserPhrase up = new UserPhrase(
@@ -199,7 +202,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_PHRASE, userPhrase.getPhrase());
         cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().ordinal());
         cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.type);
+        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.ordinal());
         cv.put(COLUMN_BACKEND_ID, userPhrase.getBackendId());
         getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
         if (userPhrase.getFileDescription() != null) {
@@ -239,7 +242,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_MESSAGE_ID, phrase.getMessageId());
         cv.put(COLUMN_PHRASE, phrase.getPhrase());
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_PHRASE.type);
+        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_PHRASE.ordinal());
         cv.put(COLUMN_AVATAR_PATH, phrase.getAvatarPath());
         cv.put(COLUMN_CONSULT_ID, phrase.getConsultId());
         cv.put(COLUMN_IS_READ, phrase.isRead());
@@ -294,7 +297,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_NAME, consultConnectionMessage.getName());
         cv.put(COLUMN_TIMESTAMP, consultConnectionMessage.getTimeStamp());
         cv.put(COLUMN_AVATAR_PATH, consultConnectionMessage.getAvatarPath());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_CONNECTED.type);
+        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_CONSULT_CONNECTED.ordinal());
         cv.put(COLUMN_SEX, consultConnectionMessage.getSex());
         cv.put(COLUMN_CONNECTION_TYPE, consultConnectionMessage.getConnectionType());
         cv.put(COLUMN_CONSULT_ID, consultConnectionMessage.getConsultId());
@@ -317,7 +320,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     public void putSurvey(Survey survey) {
         ContentValues surveyValues = new ContentValues();
-        surveyValues.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_SURVEY.type);
+        surveyValues.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_SURVEY.ordinal());
         surveyValues.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
         surveyValues.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
         surveyValues.put(COLUMN_SURVEY_ID, survey.getId());
@@ -336,6 +339,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             questionValues.put(COLUMN_QUESTION_SCALE, question.getScale());
             questionValues.put(COLUMN_QUESTION_RATE, question.getRate());
             questionValues.put(COLUMN_QUESTION_TEXT, question.getText());
+            questionValues.put(COLUMN_QUESTION_SIMPLE, question.isSimple());
             questionValues.put(COLUMN_TIMESTAMP, question.getTimeStamp());
             getWritableDatabase().insert(TABLE_QUESTIONS, null, questionValues);
         }
@@ -366,7 +370,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     ConsultPhrase getLastUnreadPhrase() {
         Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_PHRASE.type
+                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_PHRASE.ordinal()
                 + " and " + COLUMN_IS_READ + " = 0 order by " + COLUMN_TIMESTAMP + " desc", new String[]{});
         if (c.getCount() > 0) {
             c.moveToFirst();
@@ -407,7 +411,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
             int type = cGetInt(c, COLUMN_MESSAGE_TYPE);
 
-            if (type == MessageTypes.TYPE_CONSULT_CONNECTED.type) {
+            if (type == MessageTypes.TYPE_CONSULT_CONNECTED.ordinal()) {
 
                 ConsultConnectionMessage cc = new ConsultConnectionMessage(
                         cGetString(c, COLUMN_CONSULT_ID),
@@ -423,7 +427,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
                 items.add(cc);
 
-            } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
+            } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.ordinal()) {
 
                 Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
 
@@ -443,7 +447,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 );
                 items.add(cp);
 
-            } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
+            } else if (type == MessageTypes.TYPE_USER_PHRASE.ordinal()) {
 
                 Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
 
@@ -459,6 +463,22 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 up.setSentState(MessageState.fromOrdinal(sentState));
 
                 items.add(up);
+            } else if (type == MessageTypes.TYPE_SURVEY.ordinal()) {
+
+                long surveySendingId = cGetLong(c, COLUMN_SURVEY_SENDING_ID);
+
+                Survey survey = new Survey(
+                        cGetLong(c, COLUMN_SURVEY_ID),
+                        surveySendingId,
+                        cGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
+                        cGetString(c, COLUMN_MESSAGE_ID),
+                        cGetLong(c, COLUMN_TIMESTAMP),
+                        MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
+                );
+
+                survey.setQuestions(Collections.singletonList(getQuestion(surveySendingId)));
+
+                items.add(survey);
             }
         }
         c.close();
@@ -571,6 +591,28 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    private QuestionDTO getQuestion(long surveySendingId) {
+
+        String query = "select * from " + TABLE_QUESTIONS + " where "+ COLUMN_QUESTION_SURVEY_SENDING_ID_EXT +" = ?";
+        Cursor c = getWritableDatabase().rawQuery(query, new String[]{String.valueOf(surveySendingId)});
+        if (!c.moveToFirst()) {
+            c.close();
+            return null;
+        }
+
+        QuestionDTO question = new QuestionDTO();
+        question.setPhraseTimeStamp(cGetLong(c, COLUMN_TIMESTAMP));
+        question.setId(cGetLong(c, COLUMN_QUESTION_ID));
+        question.setSendingId(cGetLong(c, COLUMN_QUESTION_SENDING_ID));
+        question.setSimple(cGetBool(c, COLUMN_QUESTION_SIMPLE));
+        question.setText(cGetString(c, COLUMN_QUESTION_TEXT));
+        question.setScale(cGetInt(c, COLUMN_QUESTION_SCALE));
+        question.setRate(cGetInt(c, COLUMN_QUESTION_RATE));
+
+        c.close();
+        return question;
+    }
+
     int getMessagesCount() {
         Cursor c = getWritableDatabase().rawQuery(String.format(Locale.US, "select count(%s) from %s", COLUMN_TABLE_ID, TABLE_MESSAGES), null);
         if (c.getCount() == 0) {
@@ -596,15 +638,11 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     private enum MessageTypes {
-        TYPE_CONSULT_CONNECTED(1),
-        TYPE_CONSULT_PHRASE(2),
-        TYPE_USER_PHRASE(3),
-        TYPE_SURVEY(4);
-        int type;
-
-        MessageTypes(int type) {
-            this.type = type;
-        }
+        TYPE_UNKNOWN,
+        TYPE_CONSULT_CONNECTED,
+        TYPE_CONSULT_PHRASE,
+        TYPE_USER_PHRASE,
+        TYPE_SURVEY;
     }
 
     void setAllRead() {
@@ -613,7 +651,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().update(
                 TABLE_MESSAGES
                 , cv
-                , COLUMN_MESSAGE_TYPE + "  = " + MessageTypes.TYPE_CONSULT_PHRASE.type + " and " + COLUMN_IS_READ + " = ?"
+                , COLUMN_MESSAGE_TYPE + "  = " + MessageTypes.TYPE_CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = ?"
                 , new String[]{String.valueOf(0)});
     }
 
@@ -625,7 +663,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().update(
                 TABLE_MESSAGES
                 , cv
-                , COLUMN_MESSAGE_TYPE + "  = " + MessageTypes.TYPE_CONSULT_PHRASE.type + " and " + COLUMN_MESSAGE_ID + " = ? "
+                , COLUMN_MESSAGE_TYPE + "  = " + MessageTypes.TYPE_CONSULT_PHRASE.ordinal() + " and " + COLUMN_MESSAGE_ID + " = ? "
                 , args);
     }
 
@@ -633,7 +671,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         ArrayList<String> ids = new ArrayList<>();
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_ID +
                 " from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_PHRASE.type
+                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_PHRASE.ordinal()
                 + " and " + COLUMN_IS_READ + " = 0"
                 + " order by " + COLUMN_TIMESTAMP + " asc", null);
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
@@ -697,7 +735,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
             int type = cGetInt(c, COLUMN_MESSAGE_TYPE);
 
-            if (type == MessageTypes.TYPE_CONSULT_PHRASE.type) {
+            if (type == MessageTypes.TYPE_CONSULT_PHRASE.ordinal()) {
                 Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
                 cp = new ConsultPhrase(
                         fd != null && !fd.first ? fd.second : null,
@@ -713,7 +751,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         cGetBool(c, COLUMN_SEX),
                         cGetString(c, COLUMN_BACKEND_ID));
 
-            } else if (type == MessageTypes.TYPE_USER_PHRASE.type) {
+            } else if (type == MessageTypes.TYPE_USER_PHRASE.ordinal()) {
                 Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_ID));
                 cp = new UserPhrase(
                         cGetString(c, COLUMN_MESSAGE_ID),

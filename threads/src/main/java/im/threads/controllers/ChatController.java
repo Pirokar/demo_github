@@ -297,13 +297,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (chatItem != null) {
             addMessage(chatItem, appContext);
         }
-        final String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(
-                survey.getSendingId(),
-                survey.getQuestions().get(0).getId(),
-                survey.getQuestions().get(0).getRate(),
+        String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(survey,
                 PrefUtils.getClientID(appContext),
-                appContext
-        );
+                PrefUtils.getAppMarker(appContext));
 
         Transport.sendMessageMFMSAsync(context, ratingDoneMessage, false,
                 new RequestCallback<String, PushServerErrorException>() {
