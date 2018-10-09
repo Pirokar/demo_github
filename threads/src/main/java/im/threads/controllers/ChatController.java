@@ -558,10 +558,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                         || !dbItems.containsAll(serverItems)) {
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "not same!");
                     mDatabaseHolder.putMessagesSync(serverItems);
+                    final int serverCount = serverItems.size();
                     h.post(new Runnable() {
                         @Override
                         public void run() {
-                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, count));
+                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, serverCount));
                             if (null != fragment) {
                                 fragment.addChatItems(items);
                                 checkAndLoadOgData(items);
@@ -1125,10 +1126,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             public void run() {
                 if (instance.fragment != null) {
                     final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
-                    final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
+                    int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
                     try {
                         final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, false);
                         final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
+                        count = serverItems.size();
                         mDatabaseHolder.putMessagesSync(serverItems);
                         final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                         currentOffset[0] += chatItems.size();

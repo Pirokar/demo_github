@@ -385,6 +385,7 @@ public class IncomingMessageParser {
         try {
             final JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
             final String messageId = pushMessage.messageId;
+            String backendId = fullMessage.getString(PushMessageAttributes.BACKEND_ID);
             final long timeStamp = pushMessage.sentAt;
             final JSONObject operator = fullMessage.getJSONObject("operator");
             final long operatorId = operator.getLong("id");
@@ -404,8 +405,9 @@ public class IncomingMessageParser {
                     , photourl
                     , status
                     , title
-                    , pushMessage.messageId
-                    , displayMessage);
+                    , pushMessage.messageId,
+                    backendId,
+                    displayMessage);
 
         } catch (final JSONException e) {
             e.printStackTrace();
@@ -588,7 +590,7 @@ public class IncomingMessageParser {
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
                         message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
-                    out.add(new ConsultConnectionMessage(operatorId, type, name, sex, timeStamp, photoUrl, null, null, messageId, message.isDisplay()));
+                    out.add(new ConsultConnectionMessage(operatorId, type, name, sex, timeStamp, photoUrl, null, null, messageId, backendId, message.isDisplay()));
 
                 } else if (!TextUtils.isEmpty(message.getType())
                         && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {

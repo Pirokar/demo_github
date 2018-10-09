@@ -139,14 +139,8 @@ public final class Transport {
     }
 
     private static void setupLastItemIdFromHistory(List<MessageFromHistory> list) {
-        if (list != null) {
-            for (MessageFromHistory item : list) {
-                if (lastLoadId == null) {
-                    lastLoadId = item.getBackendId();
-                } else if (item.getBackendId() != null && lastLoadId > item.getBackendId()) {
-                    lastLoadId = item.getBackendId();
-                }
-            }
+        if (list != null && !list.isEmpty()) {
+            lastLoadId = list.get(0).getBackendId();
         }
     }
 }
