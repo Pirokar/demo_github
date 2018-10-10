@@ -363,7 +363,12 @@ class MyOpenHelper extends SQLiteOpenHelper {
             questionValues.put(COLUMN_QUESTION_ID, question.getId());
             questionValues.put(COLUMN_QUESTION_SENDING_ID, question.getSendingId());
             questionValues.put(COLUMN_QUESTION_SCALE, question.getScale());
-            questionValues.put(COLUMN_QUESTION_RATE, question.getRate());
+
+            //TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
+            //Null is unanswered survey
+            if (question.hasRate()) {
+                questionValues.put(COLUMN_QUESTION_RATE, question.getRate());
+            }
             questionValues.put(COLUMN_QUESTION_TEXT, question.getText());
             questionValues.put(COLUMN_QUESTION_SIMPLE, question.isSimple());
             questionValues.put(COLUMN_TIMESTAMP, question.getTimeStamp());
@@ -640,7 +645,14 @@ class MyOpenHelper extends SQLiteOpenHelper {
         question.setSimple(cGetBool(c, COLUMN_QUESTION_SIMPLE));
         question.setText(cGetString(c, COLUMN_QUESTION_TEXT));
         question.setScale(cGetInt(c, COLUMN_QUESTION_SCALE));
-        question.setRate(cGetInt(c, COLUMN_QUESTION_RATE));
+
+        //TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
+        if (cIsNull(c, COLUMN_QUESTION_RATE)) {
+            //Null is unanswered survey
+            question.setRate(null);
+        } else {
+            question.setRate(cGetInt(c, COLUMN_QUESTION_RATE));
+        }
 
         c.close();
         return question;
