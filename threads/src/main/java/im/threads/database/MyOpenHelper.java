@@ -311,8 +311,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
             return;
         }
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_BACKEND_ID
-                + " from " + TABLE_MESSAGES
-                + " where " + COLUMN_BACKEND_ID + " = ? and " + COLUMN_MESSAGE_TYPE + " = ? ",
+                        + " from " + TABLE_MESSAGES
+                        + " where " + COLUMN_BACKEND_ID + " = ? and " + COLUMN_MESSAGE_TYPE + " = ? ",
                 new String[]{consultConnectionMessage.getBackendId(), String.valueOf(MessageTypes.TYPE_CONSULT_CONNECTED.ordinal())});
 
         boolean isDuplicate = c.getCount() > 0;
@@ -322,38 +322,56 @@ class MyOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void putSurvey(Survey survey) {
+    public void insertOrUpdateSurvey(Survey survey) {
 
-        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_BACKEND_ID
+        Cursor cSurvey = getWritableDatabase().rawQuery("select " + COLUMN_SURVEY_SENDING_ID
                         + " from " + TABLE_MESSAGES
                         + " where " + COLUMN_SURVEY_SENDING_ID + " = ? and " + COLUMN_MESSAGE_TYPE + " = ? ",
                 new String[]{String.valueOf(survey.getSendingId()), String.valueOf(MessageTypes.TYPE_SURVEY.ordinal())});
 
-        boolean isDuplicate = c.getCount() > 0;
-        c.close();
+        boolean surveyExists = cSurvey.getCount() > 0;
+        cSurvey.close();
 
-        if (!isDuplicate) {
-            ContentValues surveyValues = new ContentValues();
-            surveyValues.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_SURVEY.ordinal());
-            surveyValues.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
-            surveyValues.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
-            surveyValues.put(COLUMN_SURVEY_ID, survey.getId());
-            surveyValues.put(COLUMN_MESSAGE_ID, survey.getMessageId());
-            surveyValues.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
-            surveyValues.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
+        ContentValues surveyValues = new ContentValues();
+        surveyValues.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_SURVEY.ordinal());
+        surveyValues.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
+        surveyValues.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
+        surveyValues.put(COLUMN_SURVEY_ID, survey.getId());
+        surveyValues.put(COLUMN_MESSAGE_ID, survey.getMessageId());
+        surveyValues.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
+        surveyValues.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
 
+        if (surveyExists) {
+            getWritableDatabase().update(TABLE_MESSAGES, surveyValues,
+                    COLUMN_SURVEY_SENDING_ID + " = ? ", new String[]{String.valueOf(survey.getSendingId())});
+        } else {
             getWritableDatabase().insert(TABLE_MESSAGES, null, surveyValues);
+        }
 
-            for (QuestionDTO question : survey.getQuestions()) {
-                ContentValues questionValues = new ContentValues();
-                questionValues.put(COLUMN_QUESTION_SURVEY_SENDING_ID_EXT, survey.getSendingId());
-                questionValues.put(COLUMN_QUESTION_ID, question.getId());
-                questionValues.put(COLUMN_QUESTION_SENDING_ID, question.getSendingId());
-                questionValues.put(COLUMN_QUESTION_SCALE, question.getScale());
-                questionValues.put(COLUMN_QUESTION_RATE, question.getRate());
-                questionValues.put(COLUMN_QUESTION_TEXT, question.getText());
-                questionValues.put(COLUMN_QUESTION_SIMPLE, question.isSimple());
-                questionValues.put(COLUMN_TIMESTAMP, question.getTimeStamp());
+        for (QuestionDTO question : survey.getQuestions()) {
+
+            Cursor cQuestion = getWritableDatabase().rawQuery("select " + COLUMN_QUESTION_SENDING_ID
+                            + " from " + TABLE_QUESTIONS
+                            + " where " + COLUMN_QUESTION_SENDING_ID + " = ? ",
+                    new String[]{String.valueOf(question.getSendingId())});
+
+            boolean questionExists = cQuestion.getCount() > 0;
+            cQuestion.close();
+
+            ContentValues questionValues = new ContentValues();
+            questionValues.put(COLUMN_QUESTION_SURVEY_SENDING_ID_EXT, survey.getSendingId());
+            questionValues.put(COLUMN_QUESTION_ID, question.getId());
+            questionValues.put(COLUMN_QUESTION_SENDING_ID, question.getSendingId());
+            questionValues.put(COLUMN_QUESTION_SCALE, question.getScale());
+            questionValues.put(COLUMN_QUESTION_RATE, question.getRate());
+            questionValues.put(COLUMN_QUESTION_TEXT, question.getText());
+            questionValues.put(COLUMN_QUESTION_SIMPLE, question.isSimple());
+            questionValues.put(COLUMN_TIMESTAMP, question.getTimeStamp());
+
+            if (questionExists) {
+                getWritableDatabase().update(TABLE_QUESTIONS, questionValues,
+                        COLUMN_QUESTION_SENDING_ID + " = ? ", new String[]{String.valueOf(question.getSendingId())});
+            } else {
                 getWritableDatabase().insert(TABLE_QUESTIONS, null, questionValues);
             }
         }
@@ -608,7 +626,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     private QuestionDTO getQuestion(long surveySendingId) {
 
-        String query = "select * from " + TABLE_QUESTIONS + " where "+ COLUMN_QUESTION_SURVEY_SENDING_ID_EXT +" = ?";
+        String query = "select * from " + TABLE_QUESTIONS + " where " + COLUMN_QUESTION_SURVEY_SENDING_ID_EXT + " = ?";
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{String.valueOf(surveySendingId)});
         if (!c.moveToFirst()) {
             c.close();

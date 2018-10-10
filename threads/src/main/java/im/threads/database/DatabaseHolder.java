@@ -82,6 +82,9 @@ public class DatabaseHolder {
             mMyOpenHelper.putChatPhrase((ChatPhrase) chatItem);
             return true;
         }
+        if (chatItem instanceof Survey) {
+            mMyOpenHelper.insertOrUpdateSurvey((Survey) chatItem);
+        }
         return false;
     }
 
@@ -185,7 +188,7 @@ public class DatabaseHolder {
                 mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
             }
             if (item instanceof Survey) {
-                mMyOpenHelper.putSurvey((Survey) item);
+                mMyOpenHelper.insertOrUpdateSurvey((Survey) item);
             }
         }
         mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();

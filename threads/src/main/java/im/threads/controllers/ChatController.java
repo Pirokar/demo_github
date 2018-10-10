@@ -1045,7 +1045,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (fragment != null) {
             fragment.setPhraseSentStatus(survey.getMessageId(), survey.getSentState());
         }
-        mDatabaseHolder.setStateOfUserPhrase(survey.getMessageId(), survey.getSentState());
+        mDatabaseHolder.putChatItem(survey);
     }
 
     private UserPhrase convert(final UpcomingUserMessage message) {
