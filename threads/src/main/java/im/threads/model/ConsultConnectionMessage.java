@@ -1,5 +1,7 @@
 package im.threads.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
     private final String type;
     private final String name;
@@ -8,6 +10,7 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
     private final String status;
     private String title;
     private final String messageId;
+    private String backendId;
     private boolean displayMessage;
 
     public String getName() {
@@ -32,8 +35,9 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
             , String avatarPath
             , String status
             , String title
-            , String messageId
-            , boolean displayMessage) {
+            , String messageId,
+            String backendId,
+            boolean displayMessage) {
         super(avatarPath, consultId);
         this.type = type;
         this.name = name;
@@ -42,6 +46,7 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
         this.status = status;
         this.title = title;
         this.messageId = messageId;
+        this.backendId = backendId;
         this.displayMessage = displayMessage;
     }
 
@@ -69,6 +74,15 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
         return sex;
     }
 
+    public long getDate() {
+        return date;
+    }
+
+    public String getBackendId() {
+        return backendId;
+    }
+
+    @SerializedName("display")
     public boolean isDisplayMessage() {
         return displayMessage;
     }
@@ -101,9 +115,5 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
-    }
-
-    public long getDate() {
-        return date;
     }
 }

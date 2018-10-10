@@ -1,96 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="im.threads.android">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="im.threads.android">
 
     <permission
         android:name="${applicationId}.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
+        android:protectionLevel="signature"/>
     <permission
         android:name="${applicationId}.permission.pushserver.RECEIVE"
-        android:protectionLevel="signature" />
+        android:protectionLevel="signature"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.SEND" />
-    <uses-permission android:name="${applicationId}.permission.pushserver.RECEIVE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.SEND"/>
+    <uses-permission android:name="${applicationId}.permission.pushserver.RECEIVE"/>
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name1"
         android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label">
 
-        <activity android:name=".ui.MainActivity"
+        <activity
+            android:name=".ui.MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <activity
             android:name=".ui.BottomNavigationActivity"
             android:label="@string/title_activity_bottom_navigation"
-            android:theme="@style/BottomNavigationTheme" />
+            android:theme="@style/BottomNavigationTheme"/>
 
         <receiver
             android:name="im.threads.broadcastReceivers.MainPBReceiver"
             android:exported="false"
             android:permission="${applicationId}.permission.pushserver.RECEIVE">
             <intent-filter>
-                <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT" />
-                <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT" />
-                <action android:name="com.pushserver.android.DEVICE_ADDRESS_CHANGED_EVENT" />
-                <action android:name="com.pushserver.android.ERROR_EVENT" />
+                <action android:name="com.pushserver.android.NEW_PUSH_MESSAGE_EVENT"/>
+                <action android:name="com.pushserver.android.RECEIVER_CHANGED_EVENT"/>
+                <action android:name="com.pushserver.android.DEVICE_ADDRESS_CHANGED_EVENT"/>
+                <action android:name="com.pushserver.android.ERROR_EVENT"/>
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="com.pushserver.android.providerUid"
-            android:value="@string/mfms_provider_uid" />
+            android:value="@string/mfms_provider_uid"/>
 
         <meta-data
             android:name="im.threads.getServerUrl"
-            android:value="@string/datastore_url" />
+            android:value="@string/datastore_url"/>
 
         <meta-data
             android:name="com.pushserver.android.service"
-            android:value="im.threads.services.IncomingMessagesIntentService" />
+            android:value="im.threads.services.IncomingMessagesIntentService"/>
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="1e16d59476dc33c7506b19bf8b6ed04de67068cd" />
+            android:value="1e16d59476dc33c7506b19bf8b6ed04de67068cd"/>
         <meta-data
             android:name="com.pushserver.android.senderId"
-            android:value="@string/senderId" />
+            android:value="@string/senderId"/>
 
         <!--TODO move serverUrl to config.xml-->
         <meta-data
             android:name="com.pushserver.android.serverUrl"
-            android:value="https://pushserver.mfms.ru/brooma" />
+            android:value="https://pushserver.mfms.ru/brooma"/>
         <meta-data
             android:name="com.pushserver.android.logs"
-            android:value="true" />
+            android:value="false"/>
         <meta-data
             android:name="com.pushserver.android.location"
-            android:value="true" />
+            android:value="true"/>
         <meta-data
             android:name="com.pushserver.android.heartbeatInterval"
-            android:value="300000" />
+            android:value="300000"/>
         <meta-data
             android:name="com.pushserver.android.uploadServerUrl"
-            android:value="https://pushserver.mfms.ru/brooma/file/upload" />
+            android:value="https://pushserver.mfms.ru/brooma/file/upload"/>
         <meta-data
             android:name="com.pushserver.android.serverIdList"
-            android:resource="@array/server_id_list" />
+            android:resource="@array/server_id_list"/>
         <meta-data
             android:name="com.pushserver.android.serverUrlList"
-            android:resource="@array/server_url_list" />
+            android:resource="@array/server_url_list"/>
         <meta-data
             android:name="com.pushserver.android.serverPrimaryId"
-            android:value="mfms" />
+            android:value="mfms"/>
     </application>
 </manifest>

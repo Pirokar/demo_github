@@ -14,10 +14,11 @@ import im.threads.utils.DateHelper;
  * Created by Admin on 25.05.2017.
  */
 
-public class MessgeFromHistory implements ChatItem {
+public class MessageFromHistory implements ChatItem {
 
-    private Long id;
+    private Long backendId;
     private String providerId;
+    private String clientId;
     private Long threadId;
     private Operator operator;
     private Client client;
@@ -26,14 +27,22 @@ public class MessgeFromHistory implements ChatItem {
     private boolean read;
     private String text;
     private List<Attachment> attachments;
-    private List<MessgeFromHistory> quotes;
+    private List<MessageFromHistory> quotes;
     private String type;
+    private boolean display;
 
-    public static List<MessgeFromHistory> getListMessageFromServerResponse(String response) {
-        List<MessgeFromHistory> list = null;
+    //SURVEY ANSWERED
+    private Long sendingId;
+    private Long questionId;
+    private Integer rate;
+    private Integer scale;
+    private boolean simple;
+
+    public static List<MessageFromHistory> getListMessageFromServerResponse(String response) {
+        List<MessageFromHistory> list = null;
         try {
             if (response != null) {
-                Type listType = new TypeToken<ArrayList<MessgeFromHistory>>() {
+                Type listType = new TypeToken<ArrayList<MessageFromHistory>>() {
                 }.getType();
                 list = new Gson().fromJson(response, listType);
             }
@@ -43,12 +52,12 @@ public class MessgeFromHistory implements ChatItem {
         return list;
     }
 
-    public Long getId() {
-        return id;
+    public Long getBackendId() {
+        return backendId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setBackendId(Long id) {
+        this.backendId = id;
     }
 
     public String getProviderId() {
@@ -57,6 +66,14 @@ public class MessgeFromHistory implements ChatItem {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     public Long getThreadId() {
@@ -123,11 +140,11 @@ public class MessgeFromHistory implements ChatItem {
         this.attachments = attachments;
     }
 
-    public List<MessgeFromHistory> getQuotes() {
+    public List<MessageFromHistory> getQuotes() {
         return quotes;
     }
 
-    public void setQuotes(List<MessgeFromHistory> quotes) {
+    public void setQuotes(List<MessageFromHistory> quotes) {
         this.quotes = quotes;
     }
 
@@ -143,4 +160,53 @@ public class MessgeFromHistory implements ChatItem {
     public long getTimeStamp() {
         return DateHelper.getMessageTimestampFromDateString(receivedDate);
     }
+
+    public boolean isDisplay() {
+        return display;
+    }
+
+    public void setDisplay(boolean display) {
+        this.display = display;
+    }
+
+    public Long getSendingId() {
+        return sendingId;
+    }
+
+    public void setSendingId(Long sendingId) {
+        this.sendingId = sendingId;
+    }
+
+    public Long getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
+    }
+
+    public Integer getRate() {
+        return rate;
+    }
+
+    public void setRate(Integer rate) {
+        this.rate = rate;
+    }
+
+    public Integer getScale() {
+        return scale;
+    }
+
+    public void setScale(Integer scale) {
+        this.scale = scale;
+    }
+
+    public boolean isSimple() {
+        return simple;
+    }
+
+    public void setSimple(boolean simple) {
+        this.simple = simple;
+    }
+
 }

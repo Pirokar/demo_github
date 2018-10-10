@@ -21,7 +21,7 @@ import retrofit2.http.Url;
 
 public interface ThreadsApi {
 
-    public static String API_VERSION = "v3";
+    public static String API_VERSION = "v4";
 
     @Multipart
     @PUT("files")
