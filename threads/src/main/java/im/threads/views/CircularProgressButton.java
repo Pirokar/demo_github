@@ -58,9 +58,13 @@ public class CircularProgressButton extends FrameLayout {
 
         } else {
 
-            completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
-            inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
-            startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
+//            try {
+//                completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
+//                inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
+//                startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
+//            } catch (Resources.NotFoundException e) {
+//                Log.w(TAG, "Vector Drawable compatibility issue");
+//            }
 
             final int completedDrawableId = ta.getResourceId(R.styleable.CircularProgressButton_completed_drawable, -1);
             final int inProgressId = ta.getResourceId(R.styleable.CircularProgressButton_in_progress_label, -1);

@@ -3,6 +3,7 @@ package im.threads.formatters;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -100,13 +101,13 @@ public class MarshmellowPushMessageFormatter {
             }
         }
         if (imagesCount != 0 && plainFilesCount == 0) {
-            Drawable d = ctx.getResources().getDrawable(R.drawable.ic_images_12dp);
+            Drawable d = AppCompatResources.getDrawable(ctx, R.drawable.ic_images_12dp);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             ImageSpan imageSpan = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
             sp.setSpan(imageSpan, consultName.length() - 1, consultName.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             sp.append(new SpannableString(" " + ctx.getResources().getQuantityString(R.plurals.threads_images, imagesCount, imagesCount)));
         } else if (plainFilesCount != 0) {
-            Drawable d = ctx.getResources().getDrawable(R.drawable.ic_attach_file_gray_12dp);
+            Drawable d = AppCompatResources.getDrawable(ctx, R.drawable.ic_attach_file_gray_12dp);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
             ImageSpan imageSpan = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
             sp.setSpan(imageSpan, consultName.length() - 1, consultName.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

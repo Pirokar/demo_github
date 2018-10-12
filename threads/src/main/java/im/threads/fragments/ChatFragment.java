@@ -25,6 +25,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -1175,7 +1176,7 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         Context context = activity.getApplicationContext();
         setTitleStateCurrentOperatorConnected();
-        Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
+        Drawable d = AppCompatResources.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
         ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
         binding.chatBackButton.setImageDrawable(d);
         ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);

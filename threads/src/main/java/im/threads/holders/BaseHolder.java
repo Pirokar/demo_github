@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -37,9 +38,9 @@ public abstract class BaseHolder extends RecyclerView.ViewHolder {
         }
     }
     protected void setTintToProgressButtonUser(CircularProgressButton button, @ColorRes int colorRes, @ColorRes int colorResInsideCurcle){
-        Drawable completed = itemView.getResources().getDrawable(R.drawable.file_image_user);
-        Drawable inProgress = itemView.getResources().getDrawable(R.drawable.ic_clear_blue_user_36dp);
-        Drawable download = itemView.getResources().getDrawable(R.drawable.ic_vertical_align_bottom_user_24dp);
+        Drawable completed = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.file_image_user);
+        Drawable inProgress = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_clear_blue_user_36dp);
+        Drawable download = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_vertical_align_bottom_user_24dp);
         setTintToViews(new Drawable[]{completed}, colorRes);
         setTintToViews(new Drawable[]{inProgress, download}, colorResInsideCurcle);
         button.setCompletedDrawable(completed);
@@ -48,9 +49,10 @@ public abstract class BaseHolder extends RecyclerView.ViewHolder {
     }
 
     protected void setTintToProgressButtonConsult(CircularProgressButton button, @ColorRes int colorRes){
-        Drawable completed = itemView.getResources().getDrawable(R.drawable.file_image_consult);
-        Drawable inProgress = itemView.getResources().getDrawable(R.drawable.ic_clear_blue_consult_36dp);
-        Drawable download = itemView.getResources().getDrawable(R.drawable.ic_vertical_align_bottom_consult_24dp);
+
+        Drawable completed = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.file_image_consult);
+        Drawable inProgress = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_clear_blue_consult_36dp);
+        Drawable download = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_vertical_align_bottom_consult_24dp);
         setTintToViews(new Drawable[]{completed, inProgress, download}, colorRes);
         button.setCompletedDrawable(completed);
         button.setStartDownloadDrawable(download);
