@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginTop="1dp">
 
     <ImageButton
@@ -10,23 +12,23 @@
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:background="@null"
-        android:scaleType="centerInside"
         android:padding="@dimen/margin_half"
-        android:src="@drawable/ic_insert_file_blue_42dp" />
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/ic_insert_file_blue_42dp"/>
 
     <im.threads.widget.BoldCustomFontTextView
         android:id="@+id/file_title"
-        android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="@dimen/margin_big"
         android:layout_marginTop="@dimen/margin_three_fourth"
+        android:layout_marginRight="@dimen/margin_big"
         android:layout_toRightOf="@id/file_button"
         android:ellipsize="end"
         android:lines="1"
-        tools:text="Название файла"
-        android:textColor="@color/threads_files_list"/>
+        android:textColor="@color/threads_files_list"
+        android:textStyle="bold"
+        tools:text="Название файла"/>
 
     <im.threads.widget.LightCustomFontTextView
         android:id="@+id/file_size"
@@ -35,18 +37,18 @@
         android:layout_below="@+id/file_title"
         android:layout_marginTop="@dimen/margin_quarter"
         android:layout_toRightOf="@+id/file_button"
-        tools:text="2.3 Мб"
-        android:textColor="@color/threads_files_list"/>
+        android:textColor="@color/threads_files_list"
+        tools:text="2.3 Мб"/>
 
     <im.threads.widget.LightCustomFontTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/file_title"
-        android:layout_marginRight="@dimen/margin_big"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/margin_quarter"
-        tools:text="20:15"
-        android:textColor="@color/threads_files_list"/>
+        android:layout_marginRight="@dimen/margin_big"
+        android:textColor="@color/threads_files_list"
+        tools:text="20:15"/>
 </RelativeLayout>

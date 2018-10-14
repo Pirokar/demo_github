@@ -3,6 +3,7 @@ package im.threads.holders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ public class FileAndMediaViewHolder extends BaseHolder {
         fileHeaderTextView = (TextView) itemView.findViewById(R.id.file_title);
         fileSizeTextView = (TextView) itemView.findViewById(R.id.file_size);
         timeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
-        tintedDrawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
+        tintedDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
         style = ChatStyle.getInstance();
         tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
 

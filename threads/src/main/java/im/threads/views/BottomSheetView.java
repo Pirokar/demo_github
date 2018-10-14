@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import im.threads.R;
-import im.threads.model.ChatStyle;
+import im.threads.utils.ViewUtils;
 
 /**
  * Created by yuri on 06.06.2016.
@@ -48,8 +49,10 @@ public class BottomSheetView extends LinearLayout {
     }
 
     private void init() {
+
         ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_bottom_attachment_sheet, this, true);
         camera = (Button) findViewById(R.id.camera);
+        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(camera, R.drawable.ic_camera_alt_blue_42dp, ViewUtils.DrawablePosition.TOP);
         camera.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +60,7 @@ public class BottomSheetView extends LinearLayout {
             }
         });
         gallery = (Button) findViewById(R.id.gallery);
+        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(gallery, R.drawable.ic_insert_photo_blue_42dp, ViewUtils.DrawablePosition.TOP);
         gallery.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,6 +68,7 @@ public class BottomSheetView extends LinearLayout {
             }
         });
         file = (Button) findViewById(R.id.file);
+        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(file, R.drawable.ic_insert_file_blue_42dp, ViewUtils.DrawablePosition.TOP);
         file.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,6 +76,7 @@ public class BottomSheetView extends LinearLayout {
             }
         });
         hideButton = (TextView) findViewById(R.id.bmsheet_hide);
+        ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(hideButton, R.drawable.ic_keyboard_arrow_down_blue_42dp, ViewUtils.DrawablePosition.TOP);
         hideButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,13 +113,13 @@ public class BottomSheetView extends LinearLayout {
     public void setSelectedState(boolean isSmthSelected) {
         Drawable d;
         if (isSmthSelected) {
-            d = getContext().getResources().getDrawable(R.drawable.ic_send_blue_42dp);
+            d = AppCompatResources.getDrawable(getContext(), R.drawable.ic_send_blue_42dp);
             if (color!=0){
                 d.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             }
             hideButton.setText(getContext().getResources().getString(R.string.threads_send));
         } else {
-            d = getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_blue_42dp);
+            d = AppCompatResources.getDrawable(getContext(), R.drawable.ic_keyboard_arrow_down_blue_42dp);
             if (color!=0){
                 d.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             }

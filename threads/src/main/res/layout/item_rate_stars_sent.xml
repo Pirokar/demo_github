@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -9,16 +10,16 @@
         android:id="@+id/bubble"
         style="@style/userBubble"
         android:layout_marginBottom="@dimen/margin_half"
-        android:paddingRight="24dp"
-        android:background="@drawable/thread_outgoing_bubble">
+        android:background="@drawable/thread_outgoing_bubble"
+        android:paddingRight="24dp">
 
         <LinearLayout
             android:id="@+id/image_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/margin_half"
-            android:layout_centerVertical="true">
+            android:orientation="vertical">
 
 
             <RelativeLayout
@@ -30,17 +31,17 @@
                     android:id="@+id/star"
                     android:layout_width="42dp"
                     android:layout_height="42dp"
-                    android:src="@drawable/threads_options_survey_selected"
-                    android:tint="@color/threads_outgoing_message_text"
+                    android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true"/>
+                    android:tint="@color/threads_outgoing_message_text"
+                    app:srcCompat="@drawable/threads_options_survey_selected"/>
 
                 <im.threads.widget.text_view.BubbleMessageTextView
                     android:id="@+id/rate_stars_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
                     android:gravity="center"/>
 
             </RelativeLayout>
@@ -48,26 +49,26 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/margin_quarter"
-                android:layout_gravity="center_horizontal">
+                android:orientation="horizontal">
 
                 <im.threads.widget.text_view.BubbleMessageTextView
                     android:id="@+id/from"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:gravity="center"
+                    android:layout_height="wrap_content"
                     android:layout_marginRight="4dp"
+                    android:gravity="center"
                     android:text="@string/threads_item_user_rate_text"
-                    android:textColor="@color/threads_outgoing_message_text" />
+                    android:textColor="@color/threads_outgoing_message_text"/>
 
                 <im.threads.widget.text_view.BubbleMessageTextView
                     android:id="@+id/total_stars_count"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
-                    tools:text="5"
-                    android:textColor="@color/threads_outgoing_message_text" />
+                    android:textColor="@color/threads_outgoing_message_text"
+                    tools:text="5"/>
 
             </LinearLayout>
 
@@ -82,19 +83,19 @@
             android:layout_marginLeft="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toRightOf="@+id/image_layout"
-            tools:text="@string/threads_item_user_rate_header"
-            android:textColor="@color/threads_outgoing_message_text" />
+            android:textColor="@color/threads_outgoing_message_text"
+            tools:text="@string/threads_item_user_rate_header"/>
 
         <im.threads.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
             style="@style/timestamp"
-            android:layout_alignParentRight="true"
-            android:layout_alignRight="@+id/header"
             android:layout_below="@+id/header"
+            android:layout_alignRight="@+id/header"
+            android:layout_alignParentRight="true"
             android:layout_marginTop="@dimen/margin_quarter"
             android:drawablePadding="@dimen/margin_quarter"
-            android:textColor="@color/threads_user_message_timestamp"
-            android:text="10:19" />
+            android:text="10:19"
+            android:textColor="@color/threads_user_message_timestamp"/>
 
     </RelativeLayout>
 

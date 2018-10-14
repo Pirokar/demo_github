@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/threads_files_medias_screen_background"
-    android:id="@+id/activity_root">
+    android:orientation="vertical">
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar" />
+        android:layout_below="@+id/toolbar"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="63dp"
-        android:background="@drawable/toolbar_shadow" />
+        android:background="@drawable/toolbar_shadow"/>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -32,17 +33,17 @@
             android:id="@+id/search_edit_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginRight="40dp"
             android:background="@null"
             android:hint="@string/threads_search_files"
-            android:textColorHint="@color/threads_chat_toolbar_hint"
-            android:lines="1"
-            android:textCursorDrawable="@null"
             android:imeOptions="actionSearch"
             android:inputType="text"
-            android:textSize="@dimen/text_big"
+            android:lines="1"
             android:textColor="@color/threads_chat_toolbar_text"
-            android:layout_marginRight="40dp"
-            android:visibility="gone" />
+            android:textColorHint="@color/threads_chat_toolbar_hint"
+            android:textCursorDrawable="@null"
+            android:textSize="@dimen/text_big"
+            android:visibility="gone"/>
     </android.support.v7.widget.Toolbar>
 
     <ImageButton
@@ -50,8 +51,8 @@
         android:layout_width="48dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/toolbar"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_search_white_24dp" />
+        app:srcCompat="@drawable/ic_search_white_24dp"/>
 </RelativeLayout>
