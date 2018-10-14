@@ -85,7 +85,7 @@ public class CircularProgressButton extends FrameLayout {
         mcp.setVisibility(VISIBLE);
         background.setVisibility(VISIBLE);
         mImageLabel.setBackground(startDownloadDrawable);
-        progressBackgroundDrawable = ContextCompat.getDrawable(getContext(), R.drawable.circle_gray_48dp);
+        progressBackgroundDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.circle_gray_48dp);
         background.setBackground(progressBackgroundDrawable);
         this.setBackground(null);
     }

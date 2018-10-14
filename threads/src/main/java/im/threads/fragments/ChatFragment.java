@@ -466,7 +466,7 @@ public class ChatFragment extends Fragment implements
         binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
 
         binding.input.setMinHeight((int) activity.getResources().getDimension(style.inputHeight));
-        binding.input.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
+        binding.input.setBackground(AppCompatResources.getDrawable(activity, style.inputBackground));
         binding.input.setHint(style.inputHint);
 
         binding.addAttachment.setImageResource(style.attachmentsIconResId);
@@ -657,7 +657,7 @@ public class ChatFragment extends Fragment implements
             return;
         }
 
-        Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
+        Drawable d = AppCompatResources.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
 
         ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
         ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);

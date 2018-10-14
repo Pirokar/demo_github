@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -54,7 +55,7 @@ public class ConsultActivity extends BaseActivity {
         mConsultMotoTextView = (TextView) findViewById(R.id.consult_moto);
         mConsultImageView = (ImageView) findViewById(R.id.image);
 
-        mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.defaultOperatorAvatar));
+        mConsultImageView.setBackground(AppCompatResources.getDrawable(this, style.defaultOperatorAvatar));
 
         Intent i = getIntent();
         String imagePath = i.getStringExtra("imagePath");

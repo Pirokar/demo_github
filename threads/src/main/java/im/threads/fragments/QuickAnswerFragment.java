@@ -11,6 +11,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.content.res.AppCompatResources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +115,7 @@ public class QuickAnswerFragment extends DialogFragment {
 
         mEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
         mEditText.getLayoutParams().height = (int) getActivity().getResources().getDimension(style.inputHeight);
-        mEditText.setBackground(ContextCompat.getDrawable(getActivity(), style.inputBackground));
+        mEditText.setBackground(AppCompatResources.getDrawable(getActivity(), style.inputBackground));
         return v;
     }
 

@@ -95,7 +95,7 @@ public class UserPhraseViewHolder extends BaseHolder {
         mBubble = itemView.findViewById(R.id.bubble);
 
         if (style == null) style = ChatStyle.getInstance();
-        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
         setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp}, style.outgoingMessageTextColor);
