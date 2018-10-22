@@ -356,7 +356,7 @@ public class IncomingMessageParser {
 
         Survey survey = new Survey();
         survey.setPhraseTimeStamp(message.getTimeStamp());
-        survey.setMessageId(String.valueOf(message.getBackendId()));
+        survey.setMessageId(String.valueOf(message.getUuid()));
         survey.setSendingId(message.getSendingId());
         survey.setSentState(MessageState.STATE_WAS_READ);
 
@@ -565,8 +565,8 @@ public class IncomingMessageParser {
             for (final MessageFromHistory message : messages) {
                 if (message == null)
                     continue;
-                final String messageId = message.getProviderId();
-                final String backendId = String.valueOf(message.getBackendId());
+                final String messageId = message.getUuid(); //TODO THREADS-3395 Remove
+                final String backendId = String.valueOf(message.getUuid()); //TODO THREADS-3395 Switch to uuid
                 final long timeStamp = message.getTimeStamp();
                 final Operator operator = message.getOperator();
                 String name = null;

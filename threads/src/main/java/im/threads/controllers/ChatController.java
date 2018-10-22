@@ -124,7 +124,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private Context appContext;
     private static ChatController instance;
     private int currentOffset = 0;
-    private Long lastMessageId;
+    private Long lastMessageTimestamp;
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
     private ConsultWriter mConsultWriter;
@@ -845,13 +845,12 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 try {
                     isDownloadingMessages = true;
                     final Long chunk = 100L;
-                    final Long start = lastMessageId == null ? null : lastMessageId;
-                    final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
+                    final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), lastMessageTimestamp, chunk);
                     final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
-                    lastMessageId = items.get(items.size() - 1).getBackendId();
+                    lastMessageTimestamp = items.get(items.size() - 1).getTimeStamp();
                     currentOffset += items.size();
-                    isAllMessagesDownloaded = items.size() != chunk;
+                    isAllMessagesDownloaded = items.size() < chunk; // Backend can give us more than chunk anytime, it will give less only on history end
                     final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
                     mDatabaseHolder.putMessagesSync(chatItems);
                     isDownloadingMessages = false;

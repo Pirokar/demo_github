@@ -16,8 +16,7 @@ import im.threads.utils.DateHelper;
 
 public class MessageFromHistory implements ChatItem {
 
-    private Long backendId;
-    private String providerId;
+    private String uuid;
     private String clientId;
     private Long threadId;
     private Operator operator;
@@ -52,20 +51,12 @@ public class MessageFromHistory implements ChatItem {
         return list;
     }
 
-    public Long getBackendId() {
-        return backendId;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setBackendId(Long id) {
-        this.backendId = id;
-    }
-
-    public String getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public void setUuid(String id) {
+        this.uuid = id;
     }
 
     public String getClientId() {
