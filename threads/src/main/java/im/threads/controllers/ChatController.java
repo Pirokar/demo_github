@@ -118,7 +118,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private boolean isResolveRequestVisible;
 
     // keep an active and visible for user survey id
-    private String activeSurveyId;
+    private String activeSurveyUuid;
 
     private DatabaseHolder mDatabaseHolder;
     private Context appContext;
@@ -293,7 +293,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void onRatingClick(final Context context, final Survey survey) {
-        final ChatItem chatItem = convertRatingItem(survey);
+//        final ChatItem chatItem = convertRatingItem(survey); //TODO THREADS-3395 Figure out what is this for
+        final ChatItem chatItem = survey;
         if (chatItem != null) {
             addMessage(chatItem, appContext);
         }
@@ -304,9 +305,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         Transport.sendMessageMFMSAsync(context, ratingDoneMessage, false,
                 new RequestCallback<String, PushServerErrorException>() {
                     @Override
-                    public void onResult(final String s) {
-                        survey.setMessageId(s);
-
+                    public void onResult(final String providerId) {
                         // Change survey view after 2 seconds
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
@@ -359,12 +358,12 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void removeActiveSurvey() {
-        if (TextUtils.isEmpty(activeSurveyId)) {
+        if (TextUtils.isEmpty(activeSurveyUuid)) {
             return;
         }
 
         if (fragment != null) {
-            final boolean removed = fragment.removeSurvey(activeSurveyId);
+            final boolean removed = fragment.removeSurvey(activeSurveyUuid);
             if (removed) {
                 updateUi();
             }
@@ -373,7 +372,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void resetActiveSurvey() {
-        activeSurveyId = "";
+        activeSurveyUuid = "";
     }
 
     private void updateUi() {
@@ -747,11 +746,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.d(TAG, "server answer on pharse sent with id " + newProviderId);
         }
-        setMessageState(userPhrase, MessageState.STATE_SENT);
         mDatabaseHolder.setUserPhraseProviderId(userPhrase.getUuid(), newProviderId);
         if (fragment != null) {
             fragment.setUserPhraseProviderId(userPhrase.getUuid(), newProviderId);
         }
+        setMessageState(userPhrase, MessageState.STATE_SENT);
         proceedSendingQueue();
     }
 
@@ -1042,7 +1041,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     void setSurveyState(final Survey survey, final MessageState messageState) {
         survey.setSentState(messageState);
         if (fragment != null) {
-            fragment.setPhraseSentStatusByProviderId(survey.getMessageId(), survey.getSentState());
+            fragment.setPhraseSentStatus(survey.getUuid(), survey.getSentState());
         }
         mDatabaseHolder.putChatItem(survey);
     }
@@ -1066,7 +1065,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private ChatItem convertRatingItem(final ChatItem chatItem) {
         if (chatItem instanceof Survey) {
             final Survey survey = (Survey) chatItem;
-            survey.setMessageId("local" + UUID.randomUUID().toString());
+            survey.setUuid("local" + UUID.randomUUID().toString());
             return chatItem;
         }
         return null;
@@ -1296,7 +1295,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
                     @Override
                     public void onResult(final String s) {
-                        survey.setMessageId(s);
+                        survey.setUuid(s);
                         setSurveyLifetime(survey);
                     }
 
@@ -1374,7 +1373,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     public void setSurveyLifetime(final Survey survey) {
         // delete survey after timeout if user doesn't vote
-        activeSurveyId = survey.getMessageId();
+        activeSurveyUuid = survey.getUuid();
         final Long hideAfter = survey.getHideAfter();
         final Handler closeActiveSurveyHandler = new Handler(Looper.getMainLooper());
         closeActiveSurveyHandler.postDelayed(new Runnable() {

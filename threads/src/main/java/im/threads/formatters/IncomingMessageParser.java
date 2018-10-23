@@ -314,7 +314,17 @@ public class IncomingMessageParser {
 
         final String text = getMessage(fullMessage, pushMessage);
         if (!TextUtils.isEmpty(text)) {
-            return getSurveyFromJsonString(text);
+            Survey survey = getSurveyFromJsonString(text);
+
+            if (survey != null) {
+                survey.setPhraseTimeStamp(pushMessage.sentAt);
+
+                for (final QuestionDTO questionDTO : survey.getQuestions()) {
+                    questionDTO.setPhraseTimeStamp(pushMessage.sentAt);
+                }
+            }
+
+            return survey;
         } else {
             return null;
         }
@@ -340,11 +350,8 @@ public class IncomingMessageParser {
 
     private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
 
-        Survey survey = new Survey();
-        survey.setPhraseTimeStamp(message.getTimeStamp());
-        survey.setMessageId(String.valueOf(message.getUuid()));
-        survey.setSendingId(message.getSendingId());
-        survey.setSentState(MessageState.STATE_WAS_READ);
+        Survey survey = new Survey(message.getSendingId(), message.getUuid(),
+                message.getTimeStamp(), MessageState.STATE_WAS_READ);
 
         QuestionDTO question = new QuestionDTO();
         question.setId(message.getQuestionId());
@@ -565,7 +572,7 @@ public class IncomingMessageParser {
 
                 if (!TextUtils.isEmpty(message.getType()) &&
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
-                        message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
+                                message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
                     out.add(new ConsultConnectionMessage(uuid, providerId, operatorId, type, name, sex, timeStamp, photoUrl, null, null, message.isDisplay()));
 
@@ -573,7 +580,14 @@ public class IncomingMessageParser {
                         && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {
 
                     Survey survey = getSurveyFromJsonString(message.getText());
-                    out.add(survey);
+
+                    if (survey != null) {
+                        survey.setPhraseTimeStamp(message.getTimeStamp());
+                        for (final QuestionDTO questionDTO : survey.getQuestions()) {
+                            questionDTO.setPhraseTimeStamp(message.getTimeStamp());
+                        }
+                        out.add(survey);
+                    }
 
                 } else if (!TextUtils.isEmpty(message.getType())
                         && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY_QUESTION_ANSWER.name())) {
@@ -637,7 +651,8 @@ public class IncomingMessageParser {
                 if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "getReadIds = ");
             }
             if (readIds instanceof String) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "getReadIds instanceof String " + readIds);
+                if (ChatStyle.getInstance().isDebugLoggingEnabled)
+                    Log.i(TAG, "getReadIds instanceof String " + readIds);
                 final String contents = (String) readIds;
                 if (!contents.contains(",")) {
                     ids.add((String) readIds);

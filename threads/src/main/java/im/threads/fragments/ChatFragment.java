@@ -1145,7 +1145,7 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setUserPhraseProviderId(String uuid, String providerId) {
-        mChatAdapter.setUserPhraseMessageId(uuid, providerId);
+        mChatAdapter.setUserPhraseProviderId(uuid, providerId);
     }
 
     public void showConnectionError() {
@@ -1234,6 +1234,10 @@ public class ChatFragment extends Fragment implements
     }
 
 
+    public void setPhraseSentStatus(String uuid, MessageState sentState) {
+        mChatAdapter.changeStateOfMessage(uuid, sentState);
+    }
+
     public void setPhraseSentStatusByProviderId(String providerId, MessageState messageState) {
         mChatAdapter.changeStateOfMessageByProviderId(providerId, messageState);
     }
@@ -1252,8 +1256,8 @@ public class ChatFragment extends Fragment implements
      *
      * @return true - if deletion occurred, false - if there was no survey in the history
      */
-    public boolean removeSurvey(String messageId) {
-        return mChatAdapter.removeSurvey(messageId);
+    public boolean removeSurvey(String uuid) {
+        return mChatAdapter.removeSurvey(uuid);
     }
 
     public int getCurrentItemsCount() {

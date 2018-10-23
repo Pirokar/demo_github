@@ -31,6 +31,9 @@ public class MessageFromHistory implements ChatItem {
     private String type;
     private boolean display;
 
+    //SURVEY
+    private Long hideAfter;
+
     //SURVEY ANSWERED
     private Long sendingId;
     private Long questionId;
@@ -175,6 +178,10 @@ public class MessageFromHistory implements ChatItem {
 
     public void setSendingId(Long sendingId) {
         this.sendingId = sendingId;
+    }
+
+    public Long getHideAfter() {
+        return hideAfter;
     }
 
     public Long getQuestionId() {

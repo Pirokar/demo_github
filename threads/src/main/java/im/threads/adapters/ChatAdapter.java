@@ -96,7 +96,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private AdapterInterface mAdapterInterface;
     public static final String ACTION_CHANGED = "im.threads.adapters.ACTION_CHANGED";
     private boolean isInSearchMode = false;
-    private Handler typingHandler = new Handler(Looper.getMainLooper());
+    private Handler viewHandler = new Handler(Looper.getMainLooper());
 
     public ChatAdapter(final ArrayList<ChatItem> list, final Context ctx, final AdapterInterface adapterInterface) {
         this.list = list;
@@ -498,7 +498,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             if (item instanceof UnreadMessages) {
                 iter.remove();
-                notifyItemRemoved(list.indexOf(item));
+                notifyItemRemoved(item);
             }
         }
     }
@@ -599,14 +599,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * Remove survey from the thread history
      * @return true - if deletion occurred, false - if Survey item wasn't found in the history
      */
-    public boolean removeSurvey(final String messageId) {
+    public boolean removeSurvey(final String uuid) {
         boolean removed = false;
         final ArrayList<ChatItem> list = getOriginalList();
         for (final ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
             final ChatItem cm = iter.next();
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
-                if (survey.getMessageId() != null && survey.getMessageId().equalsIgnoreCase(messageId)) {
+                if (survey.getUuid() != null && survey.getUuid().equalsIgnoreCase(uuid)) {
                     try {
                         notifyItemRemoved(list.lastIndexOf(cm));
                     } catch (final Exception e) {
@@ -679,8 +679,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         if (withTyping) {
             removeConsultIsTyping();
-            typingHandler.removeCallbacksAndMessages(null);
-            typingHandler.postDelayed(new Runnable() {
+            viewHandler.removeCallbacksAndMessages(null);
+            viewHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     removeConsultIsTyping();
@@ -859,11 +859,26 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return super.getItemViewType(position);
     }
 
+    public void changeStateOfMessage(String uuid, MessageState sentState) {
+        for (final ChatItem cm : getOriginalList()) {
+            if (cm instanceof UserPhrase) {
+                final UserPhrase up = (UserPhrase) cm;
+                if (uuid.equals(up.getUuid())) {
+                    if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                        Log.i(TAG, "changeStateOfMessageByProviderId: changing read state");
+                    }
+                    ((UserPhrase) cm).setSentState(sentState);
+                    notifyItemChangedOnUi(up);
+                }
+            }
+        }
+    }
+
     public void changeStateOfMessageByProviderId(final String providerId, final MessageState state) {
         for (final ChatItem cm : getOriginalList()) {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
-                if (up.getProviderId().equals(providerId)) {
+                if (providerId.equals(up.getProviderId())) {
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) {
                         Log.i(TAG, "changeStateOfMessageByProviderId: changing read state");
                     }
@@ -874,7 +889,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChangedOnUi();
     }
 
-    public void setUserPhraseMessageId(final String uuid, final String newProviderId) {
+    public void setUserPhraseProviderId(final String uuid, final String newProviderId) {
         final ArrayList<ChatItem> list = getOriginalList();
         for (final ChatItem cm : list) {
             if (cm instanceof UserPhrase && ((((UserPhrase) cm).getUuid()).equals(uuid))) {
@@ -1091,6 +1106,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 notifyItemChanged(position);
             }
         });
+    }
+
+    public void notifyItemRemovedOnUi(final ChatItem chatItem) {
+        ThreadUtils.runOnUiThread(() -> {
+            final int position = list.indexOf(chatItem);
+            notifyItemRemoved(position);
+        });
+    }
+
+    public void notifyItemRemoved(final ChatItem chatItem) {
+        viewHandler.post(() -> notifyItemRemoved(list.indexOf(chatItem)));
     }
 
     public static class ChatMessagesOrderer {

@@ -73,7 +73,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
     private static final String COLUMN_SURVEY_SENDING_ID = "COLUMN_SURVEY_SENDING_ID";
     private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
-    private static final String COLUMN_SURVEY_ID = "COLUMN_SURVEY_ID";
 
     private static final String TABLE_QUESTIONS = "TABLE_QUESTIONS";
     private static final String COLUMN_QUESTION_SCALE = "COLUMN_QUESTION_SCALE";
@@ -111,7 +110,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         "%s integer," + //isRead
                         "%s text" //COLUMN_BACKEND_ID
                         + ", " + COLUMN_DISPLAY_MASSAGE + " integer"
-                        + ", " + COLUMN_SURVEY_ID + " integer"
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
                         + ")",
@@ -330,8 +328,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         surveyValues.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_SURVEY.ordinal());
         surveyValues.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
         surveyValues.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
-        surveyValues.put(COLUMN_SURVEY_ID, survey.getId());
-        surveyValues.put(COLUMN_MESSAGE_UUID, survey.getMessageId());
+        surveyValues.put(COLUMN_MESSAGE_UUID, survey.getUuid());
         surveyValues.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
         surveyValues.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
 
@@ -500,7 +497,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 long surveySendingId = cGetLong(c, COLUMN_SURVEY_SENDING_ID);
 
                 Survey survey = new Survey(
-                        cGetLong(c, COLUMN_SURVEY_ID),
                         surveySendingId,
                         cGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
                         cGetString(c, COLUMN_MESSAGE_UUID),

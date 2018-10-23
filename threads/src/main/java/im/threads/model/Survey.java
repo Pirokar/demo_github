@@ -1,5 +1,7 @@
 package im.threads.model;
 
+import android.text.TextUtils;
+
 import java.util.List;
 
 /**
@@ -8,33 +10,23 @@ import java.util.List;
 
 public class Survey implements ChatItem {
 
-    private String messageId;
-    private long id;
+    private String uuid;
     private long sendingId;
     private List<QuestionDTO> questions;
     private Long hideAfter;
     private long phraseTimeStamp;
     private MessageState sentState;
 
-    public Survey() {
-
-    }
-
-    public Survey(long id, long surveySendingId, long hideAfter, String messageId, long phraseTimeStamp, MessageState messageState) {
-        this.id = id;
-        sendingId = surveySendingId;
+    public Survey(Long surveySendingId, Long hideAfter, String uuid, long phraseTimeStamp, MessageState messageState) {
+        this.sendingId = surveySendingId;
         this.hideAfter = hideAfter;
-        this.messageId = messageId;
+        this.uuid = uuid;
         this.phraseTimeStamp = phraseTimeStamp;
         this.sentState = messageState;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public Survey(Long surveySendingId, String uuid, long phraseTimeStamp, MessageState messageState) {
+        this(surveySendingId, null, uuid, phraseTimeStamp, messageState);
     }
 
     public long getSendingId() {
@@ -65,12 +57,12 @@ public class Survey implements ChatItem {
         this.phraseTimeStamp = phraseTimeStamp;
     }
 
-    public String getMessageId() {
-        return messageId;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public MessageState getSentState() {
@@ -98,13 +90,9 @@ public class Survey implements ChatItem {
         } else {
             Survey otherSurvey = (Survey) obj;
 
-            if (sendingId != 0) {
-                return sendingId == otherSurvey.sendingId;
+            if (!TextUtils.isEmpty(uuid)) {
+                return uuid.equals(otherSurvey.uuid);
             }
-
-//            if (messageId != null && otherSurvey.messageId != null) {
-//                return messageId.equals(otherSurvey.messageId);
-//            }
 
             return false;
         }
@@ -112,8 +100,6 @@ public class Survey implements ChatItem {
 
     @Override
     public int hashCode() {
-        int result = Long.valueOf(sendingId).hashCode();
-//        result = 31 * result + (messageId != null ? messageId.hashCode() : 0);
-        return result;
+        return uuid.hashCode();
     }
 }
