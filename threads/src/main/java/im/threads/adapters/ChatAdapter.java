@@ -859,13 +859,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return super.getItemViewType(position);
     }
 
-    public void changeStateOfMessage(final String id, final MessageState state) {
+    public void changeStateOfMessageByProviderId(final String providerId, final MessageState state) {
         for (final ChatItem cm : getOriginalList()) {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
-                if (up.getMessageId().equals(id) || (up.getBackendId() != null && up.getBackendId().equals(id))) {
+                if (up.getProviderId().equals(providerId)) {
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                        Log.i(TAG, "changeStateOfMessage: changing read state");
+                        Log.i(TAG, "changeStateOfMessageByProviderId: changing read state");
                     }
                     ((UserPhrase) cm).setSentState(state);
                 }
@@ -874,11 +874,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChangedOnUi();
     }
 
-    public void setUserPhraseMessageId(final String oldId, final String newId) {
+    public void setUserPhraseMessageId(final String uuid, final String newProviderId) {
         final ArrayList<ChatItem> list = getOriginalList();
         for (final ChatItem cm : list) {
-            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(oldId))) {
-                ((UserPhrase) cm).setMessageId(newId);
+            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getUuid()).equals(uuid))) {
+                ((UserPhrase) cm).setProviderId(newProviderId);
             }
         }
     }

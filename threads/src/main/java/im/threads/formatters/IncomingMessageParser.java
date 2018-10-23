@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
@@ -148,13 +149,14 @@ public class IncomingMessageParser {
                                                           final JSONObject fullMessage,
                                                           final String message) {
         try {
-            final String messageId = pushMessage.messageId;
-            String backendId;
+            String uuid;
             try {
-                backendId = String.valueOf(fullMessage.getInt(PushMessageAttributes.BACKEND_ID));
+                uuid = String.valueOf(fullMessage.getInt(PushMessageAttributes.UUID));
             } catch (final Exception e) {
-                backendId = "0";
+                uuid = UUID.randomUUID().toString();
             }
+            String providerId = pushMessage.messageId;
+
             String receivedDateString = fullMessage.getString(PushMessageAttributes.RECEIVED_DATE);
             long timeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
             final JSONObject operatorInfo = fullMessage.getJSONObject("operator");
@@ -176,21 +178,11 @@ public class IncomingMessageParser {
                 quote.getFileDescription().setTimeStamp(timeStamp);
             }
             final boolean gender = operatorInfo.isNull("gender") ? false : operatorInfo.getString("gender").equalsIgnoreCase("male");
+            String operatorId = String.valueOf(operatorInfo.getLong("id"));
 
-            return new ConsultPhrase(
-                    fileDescription,
-                    quote,
-                    name,
-                    messageId,
-                    message,
-                    timeStamp,
-                    String.valueOf(operatorInfo.getLong("id")),
-                    photoUrl,
-                    false,
-                    status,
-                    gender,
-                    backendId
-            );
+            return new ConsultPhrase(uuid, providerId, fileDescription, quote, name, message, timeStamp,
+                    operatorId, photoUrl, false, status, gender);
+
         } catch (final JSONException e) {
             e.printStackTrace();
             return null;
@@ -201,13 +193,14 @@ public class IncomingMessageParser {
                                                     final JSONObject fullMessage,
                                                     final String message) {
         try {
-            final String messageId = pushMessage.messageId;
-            String backendId;
+            String uuid;
             try {
-                backendId = String.valueOf(fullMessage.getInt(PushMessageAttributes.BACKEND_ID));
+                uuid = String.valueOf(fullMessage.getInt(PushMessageAttributes.UUID));
             } catch (final Exception e) {
-                backendId = "0";
+                uuid = UUID.randomUUID().toString();
             }
+            String providerId = pushMessage.messageId;
+
             String receivedDateString = fullMessage.getString(PushMessageAttributes.RECEIVED_DATE);
             long phraseTimeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
             final JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
@@ -224,14 +217,7 @@ public class IncomingMessageParser {
                 mQuote.getFileDescription().setTimeStamp(phraseTimeStamp);
             }
 
-            final UserPhrase userPhrase = new UserPhrase(
-                    messageId,
-                    message,
-                    mQuote,
-                    phraseTimeStamp,
-                    fileDescription,
-                    backendId
-            );
+            final UserPhrase userPhrase = new UserPhrase(uuid, providerId, message, mQuote, phraseTimeStamp, fileDescription);
             userPhrase.setSentState(MessageState.STATE_SENT);
             return userPhrase;
         } catch (final JSONException e) {
@@ -384,9 +370,9 @@ public class IncomingMessageParser {
 
         try {
             final JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
-            final String messageId = pushMessage.messageId;
-            String backendId = fullMessage.getString(PushMessageAttributes.BACKEND_ID);
-            final long timeStamp = pushMessage.sentAt;
+            final String providerId = pushMessage.messageId;
+            String uuid = fullMessage.getString(PushMessageAttributes.UUID);
+            final long timeStamp = pushMessage.sentAt; // TODO Why it is not used?
             final JSONObject operator = fullMessage.getJSONObject("operator");
             final long operatorId = operator.getLong("id");
             final String name = operator.isNull("name") ? null : operator.getString("name");
@@ -396,18 +382,9 @@ public class IncomingMessageParser {
             final String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
             final String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
             final boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
-            chatItem = new ConsultConnectionMessage(
-                    String.valueOf(operatorId)
-                    , type
-                    , name
-                    , gender
-                    , System.currentTimeMillis()
-                    , photourl
-                    , status
-                    , title
-                    , pushMessage.messageId,
-                    backendId,
-                    displayMessage);
+
+            chatItem = new ConsultConnectionMessage(uuid, providerId, String.valueOf(operatorId), type, name, gender,
+                    System.currentTimeMillis(), photourl, status, title, displayMessage);
 
         } catch (final JSONException e) {
             e.printStackTrace();
@@ -565,8 +542,8 @@ public class IncomingMessageParser {
             for (final MessageFromHistory message : messages) {
                 if (message == null)
                     continue;
-                final String messageId = message.getUuid(); //TODO THREADS-3395 Remove
-                final String backendId = String.valueOf(message.getUuid()); //TODO THREADS-3395 Switch to uuid
+                final String uuid = message.getUuid();
+                final String providerId = message.getProviderId();
                 final long timeStamp = message.getTimeStamp();
                 final Operator operator = message.getOperator();
                 String name = null;
@@ -590,7 +567,7 @@ public class IncomingMessageParser {
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
                         message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
-                    out.add(new ConsultConnectionMessage(operatorId, type, name, sex, timeStamp, photoUrl, null, null, messageId, backendId, message.isDisplay()));
+                    out.add(new ConsultConnectionMessage(uuid, providerId, operatorId, type, name, sex, timeStamp, photoUrl, null, null, message.isDisplay()));
 
                 } else if (!TextUtils.isEmpty(message.getType())
                         && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {
@@ -615,19 +592,8 @@ public class IncomingMessageParser {
                     if (quote != null && quote.getFileDescription() != null)
                         quote.getFileDescription().setTimeStamp(timeStamp);
                     if (message.getOperator() != null) {
-                        out.add(new ConsultPhrase(fileDescription
-                                , quote
-                                , name
-                                , messageId
-                                , phraseText
-                                , timeStamp
-                                , operatorId
-                                , photoUrl
-                                , true
-                                , null
-                                , false
-                                , backendId
-                        ));
+                        out.add(new ConsultPhrase(uuid, providerId, fileDescription, quote, name, phraseText, timeStamp,
+                                operatorId, photoUrl, true, null, false));
                     } else {
                         if (fileDescription != null) {
                             if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
@@ -636,7 +602,7 @@ public class IncomingMessageParser {
                                 fileDescription.setFrom("I");
                             }
                         }
-                        out.add(new UserPhrase(messageId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ, backendId));
+                        out.add(new UserPhrase(uuid, providerId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
                     }
                 }
             }
@@ -659,22 +625,22 @@ public class IncomingMessageParser {
         final ArrayList<String> ids = new ArrayList<>();
         try {
             if (b == null) return new ArrayList<>();
-            final Object o = b.get("readInMessageIds");
+            final Object readIds = b.get(PushMessageAttributes.READ_PROVIDER_IDS);
 
-            if (o instanceof ArrayList) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "getReadIds o instanceof ArrayList");
-                final Collection<? extends String> readInMessageIds = (Collection<? extends String>) b.get("readInMessageIds");
+            if (readIds instanceof ArrayList) {
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "getReadIds instanceof ArrayList");
+                final Collection<? extends String> readInMessageIds = (Collection<? extends String>) b.get(PushMessageAttributes.READ_PROVIDER_IDS);
                 if (readInMessageIds != null) {
                     ids.addAll(readInMessageIds);
                 }
 
                 if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "getReadIds = ");
             }
-            if (o instanceof String) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "getReadIds o instanceof String " + o);
-                final String contents = (String) o;
+            if (readIds instanceof String) {
+                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "getReadIds instanceof String " + readIds);
+                final String contents = (String) readIds;
                 if (!contents.contains(",")) {
-                    ids.add((String) o);
+                    ids.add((String) readIds);
                 } else {
                     final String[] idsArray = contents.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
                     ids.addAll(Arrays.asList(idsArray));
