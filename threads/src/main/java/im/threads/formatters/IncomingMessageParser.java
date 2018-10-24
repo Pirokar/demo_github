@@ -21,8 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
