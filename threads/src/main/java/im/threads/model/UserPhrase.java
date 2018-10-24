@@ -104,7 +104,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
         UserPhrase that = (UserPhrase) o;
 
-        if (uuid != null && that.uuid != null) {
+        if (!TextUtils.isEmpty(uuid)) {
             return uuid.equals(that.uuid);
         } else {
             return false;

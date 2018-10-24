@@ -1,7 +1,5 @@
 package im.threads.model;
 
-import android.text.TextUtils;
-
 import java.util.List;
 
 /**
@@ -10,23 +8,21 @@ import java.util.List;
 
 public class Survey implements ChatItem {
 
-    private String uuid;
     private long sendingId;
     private List<QuestionDTO> questions;
     private Long hideAfter;
     private long phraseTimeStamp;
     private MessageState sentState;
 
-    public Survey(Long surveySendingId, Long hideAfter, String uuid, long phraseTimeStamp, MessageState messageState) {
+    public Survey(Long surveySendingId, Long hideAfter, long phraseTimeStamp, MessageState messageState) {
         this.sendingId = surveySendingId;
         this.hideAfter = hideAfter;
-        this.uuid = uuid;
         this.phraseTimeStamp = phraseTimeStamp;
         this.sentState = messageState;
     }
 
-    public Survey(Long surveySendingId, String uuid, long phraseTimeStamp, MessageState messageState) {
-        this(surveySendingId, null, uuid, phraseTimeStamp, messageState);
+    public Survey(Long surveySendingId, long phraseTimeStamp, MessageState messageState) {
+        this(surveySendingId, null, phraseTimeStamp, messageState);
     }
 
     public long getSendingId() {
@@ -57,14 +53,6 @@ public class Survey implements ChatItem {
         this.phraseTimeStamp = phraseTimeStamp;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
     public MessageState getSentState() {
         return sentState;
     }
@@ -90,8 +78,8 @@ public class Survey implements ChatItem {
         } else {
             Survey otherSurvey = (Survey) obj;
 
-            if (!TextUtils.isEmpty(uuid)) {
-                return uuid.equals(otherSurvey.uuid);
+            if (sendingId > 0) {
+                return sendingId == otherSurvey.sendingId;
             }
 
             return false;
@@ -100,6 +88,6 @@ public class Survey implements ChatItem {
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        return String.valueOf(sendingId).hashCode();
     }
 }

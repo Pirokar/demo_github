@@ -1234,8 +1234,8 @@ public class ChatFragment extends Fragment implements
     }
 
 
-    public void setPhraseSentStatus(String uuid, MessageState sentState) {
-        mChatAdapter.changeStateOfMessage(uuid, sentState);
+    public void setSurveySentStatus(long uuid, MessageState sentState) {
+        mChatAdapter.changeStateOfSurvey(uuid, sentState);
     }
 
     public void setPhraseSentStatusByProviderId(String providerId, MessageState messageState) {
@@ -1256,8 +1256,8 @@ public class ChatFragment extends Fragment implements
      *
      * @return true - if deletion occurred, false - if there was no survey in the history
      */
-    public boolean removeSurvey(String uuid) {
-        return mChatAdapter.removeSurvey(uuid);
+    public boolean removeSurvey(long sendingId) {
+        return mChatAdapter.removeSurvey(sendingId);
     }
 
     public int getCurrentItemsCount() {

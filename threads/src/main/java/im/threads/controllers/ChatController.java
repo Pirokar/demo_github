@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -118,7 +117,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private boolean isResolveRequestVisible;
 
     // keep an active and visible for user survey id
-    private String activeSurveyUuid;
+    private long activeSurveySendingId;
 
     private DatabaseHolder mDatabaseHolder;
     private Context appContext;
@@ -358,12 +357,12 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void removeActiveSurvey() {
-        if (TextUtils.isEmpty(activeSurveyUuid)) {
+        if (activeSurveySendingId == -1) {
             return;
         }
 
         if (fragment != null) {
-            final boolean removed = fragment.removeSurvey(activeSurveyUuid);
+            final boolean removed = fragment.removeSurvey(activeSurveySendingId);
             if (removed) {
                 updateUi();
             }
@@ -372,7 +371,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void resetActiveSurvey() {
-        activeSurveyUuid = "";
+        activeSurveySendingId = -1;
     }
 
     private void updateUi() {
@@ -1039,7 +1038,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     void setSurveyState(final Survey survey, final MessageState messageState) {
         survey.setSentState(messageState);
         if (fragment != null) {
-            fragment.setPhraseSentStatus(survey.getUuid(), survey.getSentState());
+            fragment.setSurveySentStatus(survey.getSendingId(), survey.getSentState());
         }
         mDatabaseHolder.putChatItem(survey);
     }
@@ -1058,15 +1057,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
         up.setCopy(message.isCopyied());
         return up;
-    }
-
-    private ChatItem convertRatingItem(final ChatItem chatItem) {
-        if (chatItem instanceof Survey) {
-            final Survey survey = (Survey) chatItem;
-            survey.setUuid("local" + UUID.randomUUID().toString());
-            return chatItem;
-        }
-        return null;
     }
 
     public void onSystemMessageFromServer(final Context ctx, final Bundle bundle, final String shortMessage) {
@@ -1293,7 +1283,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
                     @Override
                     public void onResult(final String s) {
-                        survey.setUuid(s);
                         setSurveyLifetime(survey);
                     }
 
@@ -1371,7 +1360,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     public void setSurveyLifetime(final Survey survey) {
         // delete survey after timeout if user doesn't vote
-        activeSurveyUuid = survey.getUuid();
+        activeSurveySendingId = survey.getSendingId();
         final Long hideAfter = survey.getHideAfter();
         final Handler closeActiveSurveyHandler = new Handler(Looper.getMainLooper());
         closeActiveSurveyHandler.postDelayed(new Runnable() {

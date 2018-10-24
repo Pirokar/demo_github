@@ -153,7 +153,7 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
 
         ConsultPhrase that = (ConsultPhrase) o;
 
-        if (uuid != null && that.uuid != null) {
+        if (!TextUtils.isEmpty(uuid)) {
             return uuid.equals(that.uuid);
         } else {
             return false;

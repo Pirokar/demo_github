@@ -350,8 +350,7 @@ public class IncomingMessageParser {
 
     private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
 
-        Survey survey = new Survey(message.getSendingId(), message.getUuid(),
-                message.getTimeStamp(), MessageState.STATE_WAS_READ);
+        Survey survey = new Survey(message.getSendingId(),message.getTimeStamp(), MessageState.STATE_WAS_READ);
 
         QuestionDTO question = new QuestionDTO();
         question.setId(message.getQuestionId());

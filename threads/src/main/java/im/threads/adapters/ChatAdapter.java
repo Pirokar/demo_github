@@ -599,14 +599,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * Remove survey from the thread history
      * @return true - if deletion occurred, false - if Survey item wasn't found in the history
      */
-    public boolean removeSurvey(final String uuid) {
+    public boolean removeSurvey(final long sendingId) {
         boolean removed = false;
         final ArrayList<ChatItem> list = getOriginalList();
         for (final ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
             final ChatItem cm = iter.next();
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
-                if (survey.getUuid() != null && survey.getUuid().equalsIgnoreCase(uuid)) {
+                if (sendingId == survey.getSendingId()) {
                     try {
                         notifyItemRemoved(list.lastIndexOf(cm));
                     } catch (final Exception e) {
@@ -859,16 +859,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return super.getItemViewType(position);
     }
 
-    public void changeStateOfMessage(String uuid, MessageState sentState) {
+    public void changeStateOfSurvey(long sendingId, MessageState sentState) {
         for (final ChatItem cm : getOriginalList()) {
-            if (cm instanceof UserPhrase) {
-                final UserPhrase up = (UserPhrase) cm;
-                if (uuid.equals(up.getUuid())) {
+            if (cm instanceof Survey) {
+                final Survey survey = (Survey) cm;
+                if (sendingId == survey.getSendingId()) {
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) {
                         Log.i(TAG, "changeStateOfMessageByProviderId: changing read state");
                     }
-                    ((UserPhrase) cm).setSentState(sentState);
-                    notifyItemChangedOnUi(up);
+                    ((Survey) cm).setSentState(sentState);
+                    notifyItemChangedOnUi(survey);
                 }
             }
         }

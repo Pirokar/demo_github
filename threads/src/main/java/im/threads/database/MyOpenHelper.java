@@ -329,7 +329,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         surveyValues.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_SURVEY.ordinal());
         surveyValues.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
         surveyValues.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
-        surveyValues.put(COLUMN_MESSAGE_UUID, survey.getUuid());
         surveyValues.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
         surveyValues.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
 
@@ -500,7 +499,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 Survey survey = new Survey(
                         surveySendingId,
                         cGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
-                        cGetString(c, COLUMN_MESSAGE_UUID),
                         cGetLong(c, COLUMN_TIMESTAMP),
                         MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
                 );
