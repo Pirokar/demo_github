@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
@@ -37,7 +38,7 @@ public class FileAndMediaViewHolder extends BaseHolder {
         fileHeaderTextView = (TextView) itemView.findViewById(R.id.file_title);
         fileSizeTextView = (TextView) itemView.findViewById(R.id.file_size);
         timeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
-        tintedDrawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
+        tintedDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
         style = ChatStyle.getInstance();
         tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
 

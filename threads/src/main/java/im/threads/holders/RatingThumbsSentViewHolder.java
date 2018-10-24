@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import androidx.annotation.ColorInt;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import im.threads.R;
 import im.threads.model.ChatStyle;
@@ -46,7 +47,7 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
         mBubble = itemView.findViewById(R.id.bubble);
 
         if (style == null) style = ChatStyle.getInstance();
-        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         messageColor = ContextCompat.getColor(itemView.getContext(), style.outgoingMessageTextColor);
         setTextColorToViews(new TextView[]{mHeader}, style.outgoingMessageTextColor);
@@ -68,22 +69,22 @@ public class RatingThumbsSentViewHolder extends BaseHolder {
         Drawable d;
         switch (survey.getSentState()) {
             case STATE_WAS_READ:
-                d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
-                d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.threads_message_sent);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_sent);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
-                d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:
-                d = ContextCompat.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
         }

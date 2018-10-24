@@ -58,8 +58,8 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
 import im.threads.model.HistoryResponse;
+import im.threads.model.MessageFromHistory;
 import im.threads.model.MessageState;
-import im.threads.model.MessgeFromHistory;
 import im.threads.model.PushMessageCheckResult;
 import im.threads.model.RequestResolveThread;
 import im.threads.model.SaveThreadIdChatItem;
@@ -297,13 +297,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (chatItem != null) {
             addMessage(chatItem, appContext);
         }
-        final String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(
-                survey.getSendingId(),
-                survey.getQuestions().get(0).getId(),
-                survey.getQuestions().get(0).getRate(),
+        String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(survey,
                 PrefUtils.getClientID(appContext),
-                appContext
-        );
+                PrefUtils.getAppMarker(appContext));
 
         Transport.sendMessageMFMSAsync(context, ratingDoneMessage, false,
                 new RequestCallback<String, PushServerErrorException>() {
@@ -483,18 +479,16 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             mDatabaseHolder = DatabaseHolder.getInstance(appContext);
         }
         updateChatItemsOnBindAsync();
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext), appContext), true, null, null);
-                final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
-                        PrefUtils.getClientID(appContext),
-                        PrefUtils.getClientIDEncrypted(appContext),
-                        PrefUtils.getData(appContext),
-                        appContext);
-                Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
-            }
-        });
+        Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(
+                PrefUtils.getClientID(appContext), appContext), true, null, null);
+
+        final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
+                PrefUtils.getClientID(appContext),
+                PrefUtils.getClientIDEncrypted(appContext),
+                PrefUtils.getData(appContext),
+                appContext);
+        Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
+
         if (mConsultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName());
         } else if (mConsultWriter.istSearchingConsult()) {
@@ -562,10 +556,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                         || !dbItems.containsAll(serverItems)) {
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "not same!");
                     mDatabaseHolder.putMessagesSync(serverItems);
+                    final int serverCount = serverItems.size();
                     h.post(new Runnable() {
                         @Override
                         public void run() {
-                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, count));
+                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, serverCount));
                             if (null != fragment) {
                                 fragment.addChatItems(items);
                                 checkAndLoadOgData(items);
@@ -850,9 +845,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     final Long chunk = 100L;
                     final Long start = lastMessageId == null ? null : lastMessageId;
                     final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
-                    final List<MessgeFromHistory> items = response != null ? response.getMessages() : null;
+                    final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
-                    lastMessageId = items.get(items.size() - 1).getId();
+                    lastMessageId = items.get(items.size() - 1).getBackendId();
                     currentOffset += items.size();
                     isAllMessagesDownloaded = items.size() != chunk;
                     final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
@@ -1048,7 +1043,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (fragment != null) {
             fragment.setPhraseSentStatus(survey.getMessageId(), survey.getSentState());
         }
-        mDatabaseHolder.setStateOfUserPhrase(survey.getMessageId(), survey.getSentState());
+        mDatabaseHolder.putChatItem(survey);
     }
 
     private UserPhrase convert(final UpcomingUserMessage message) {
@@ -1129,10 +1124,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             public void run() {
                 if (instance.fragment != null) {
                     final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
-                    final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
+                    int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
                     try {
                         final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, false);
                         final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
+                        count = serverItems.size();
                         mDatabaseHolder.putMessagesSync(serverItems);
                         final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                         currentOffset[0] += chatItems.size();

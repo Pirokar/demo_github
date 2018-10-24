@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import im.threads.R;
 import im.threads.utils.ViewUtils;
 
@@ -31,15 +33,15 @@ public class CircularProgressButton extends FrameLayout {
 
     public CircularProgressButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(attrs);
+        init(context, attrs);
     }
 
     public CircularProgressButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(attrs);
+        init(context, attrs);
     }
 
-    private void init(AttributeSet attributeSet) {
+    private void init(Context context, AttributeSet attributeSet) {
         ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_progress_button, this, true);
         mcp = (MyCircleProgress) findViewById(R.id.circular_progress);
         mImageLabel = findViewById(R.id.label_image);
@@ -47,16 +49,43 @@ public class CircularProgressButton extends FrameLayout {
                 attributeSet,
                 R.styleable.CircularProgressButton,
                 0, 0);
-        completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
-        inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
-        startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
+            inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
+            startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
+
+        } else {
+
+//            try {
+//                completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
+//                inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
+//                startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
+//            } catch (Resources.NotFoundException e) {
+//                Log.w(TAG, "Vector Drawable compatibility issue");
+//            }
+
+            final int completedDrawableId = ta.getResourceId(R.styleable.CircularProgressButton_completed_drawable, -1);
+            final int inProgressId = ta.getResourceId(R.styleable.CircularProgressButton_in_progress_label, -1);
+            final int startDownloadDrawableId = ta.getResourceId(R.styleable.CircularProgressButton_start_download_label, -1);
+
+            if (completedDrawableId != -1)
+                completedDrawable = AppCompatResources.getDrawable(context, completedDrawableId);
+            if (inProgressId != -1)
+                inProgress = AppCompatResources.getDrawable(context, inProgressId);
+            if (startDownloadDrawableId != -1)
+                startDownloadDrawable = AppCompatResources.getDrawable(context, startDownloadDrawableId);
+        }
+
+
         background = findViewById(R.id.background);
         ta.recycle();
         mImageLabel.setVisibility(View.VISIBLE);
         mcp.setVisibility(VISIBLE);
         background.setVisibility(VISIBLE);
         mImageLabel.setBackground(startDownloadDrawable);
-        progressBackgroundDrawable = ContextCompat.getDrawable(getContext(), R.drawable.circle_gray_48dp);
+        progressBackgroundDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.circle_gray_48dp);
         background.setBackground(progressBackgroundDrawable);
         this.setBackground(null);
     }

@@ -13,10 +13,10 @@ import java.util.List;
 
 public class HistoryResponse {
 
-    private List<MessgeFromHistory> messages;
+    private List<MessageFromHistory> messages;
     private AgentInfo agentInfo;
 
-    public HistoryResponse(List<MessgeFromHistory> messages) {
+    public HistoryResponse(List<MessageFromHistory> messages) {
         this.messages = messages;
     }
 
@@ -24,7 +24,7 @@ public class HistoryResponse {
         return agentInfo != null ? agentInfo.getAgent() : null;
     }
 
-    public List<MessgeFromHistory> getMessages() {
+    public List<MessageFromHistory> getMessages() {
         return messages;
     }
 

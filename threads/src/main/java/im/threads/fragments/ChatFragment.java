@@ -45,6 +45,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
@@ -465,7 +466,7 @@ public class ChatFragment extends Fragment implements
         binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
 
         binding.input.setMinHeight((int) activity.getResources().getDimension(style.inputHeight));
-        binding.input.setBackground(ContextCompat.getDrawable(activity, style.inputBackground));
+        binding.input.setBackground(AppCompatResources.getDrawable(activity, style.inputBackground));
         binding.input.setHint(style.inputHint);
 
         binding.addAttachment.setImageResource(style.attachmentsIconResId);
@@ -656,7 +657,7 @@ public class ChatFragment extends Fragment implements
             return;
         }
 
-        Drawable d = ContextCompat.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
+        Drawable d = AppCompatResources.getDrawable(ctx, R.drawable.ic_arrow_back_blue_24dp);
 
         ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
         ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
@@ -1175,7 +1176,7 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         Context context = activity.getApplicationContext();
         setTitleStateCurrentOperatorConnected();
-        Drawable d = ContextCompat.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
+        Drawable d = AppCompatResources.getDrawable(context, R.drawable.ic_arrow_back_white_24dp);
         ColorsHelper.setDrawableColor(context, d, style.chatToolbarTextColorResId);
         binding.chatBackButton.setImageDrawable(d);
         ColorsHelper.setDrawableColor(context, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);

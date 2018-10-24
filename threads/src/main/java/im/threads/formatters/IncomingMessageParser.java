@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
@@ -29,8 +30,8 @@ import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
+import im.threads.model.MessageFromHistory;
 import im.threads.model.MessageState;
-import im.threads.model.MessgeFromHistory;
 import im.threads.model.Operator;
 import im.threads.model.QuestionDTO;
 import im.threads.model.Quote;
@@ -324,21 +325,51 @@ public class IncomingMessageParser {
     }
 
     private static Survey getRatingFromPush(final PushMessage pushMessage, final JSONObject fullMessage) {
-        Survey survey = null;
+
         final String text = getMessage(fullMessage, pushMessage);
-        if (text != null) {
-            try {
-                survey = new Gson().fromJson(text, Survey.class);
-                final long time = new Date().getTime();
-                survey.setPhraseTimeStamp(time);
-                survey.setSentState(MessageState.STATE_NOT_SENT);
-                for (final QuestionDTO questionDTO : survey.getQuestions()) {
-                    questionDTO.setPhraseTimeStamp(time);
-                }
-            } catch (final JsonSyntaxException e) {
-                e.printStackTrace();
-            }
+        if (!TextUtils.isEmpty(text)) {
+            return getSurveyFromJsonString(text);
+        } else {
+            return null;
         }
+    }
+
+    private static Survey getSurveyFromJsonString(@NonNull String text) {
+
+        try {
+            Survey survey = new Gson().fromJson(text, Survey.class);
+            final long time = new Date().getTime();
+            survey.setPhraseTimeStamp(time);
+            survey.setSentState(MessageState.STATE_NOT_SENT);
+            for (final QuestionDTO questionDTO : survey.getQuestions()) {
+                questionDTO.setPhraseTimeStamp(time);
+            }
+            return survey;
+
+        } catch (final JsonSyntaxException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
+
+        Survey survey = new Survey();
+        survey.setPhraseTimeStamp(message.getTimeStamp());
+        survey.setMessageId(String.valueOf(message.getBackendId()));
+        survey.setSendingId(message.getSendingId());
+        survey.setSentState(MessageState.STATE_WAS_READ);
+
+        QuestionDTO question = new QuestionDTO();
+        question.setId(message.getQuestionId());
+        question.setPhraseTimeStamp(message.getTimeStamp());
+        question.setText(message.getText());
+        question.setRate(message.getRate());
+        question.setScale(message.getScale());
+        question.setSendingId(message.getSendingId());
+        question.setSimple(message.isSimple());
+
+        survey.setQuestions(Collections.singletonList(question));
         return survey;
     }
 
@@ -354,6 +385,7 @@ public class IncomingMessageParser {
         try {
             final JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
             final String messageId = pushMessage.messageId;
+            String backendId = fullMessage.getString(PushMessageAttributes.BACKEND_ID);
             final long timeStamp = pushMessage.sentAt;
             final JSONObject operator = fullMessage.getJSONObject("operator");
             final long operatorId = operator.getLong("id");
@@ -373,8 +405,9 @@ public class IncomingMessageParser {
                     , photourl
                     , status
                     , title
-                    , pushMessage.messageId
-                    , displayMessage);
+                    , pushMessage.messageId,
+                    backendId,
+                    displayMessage);
 
         } catch (final JSONException e) {
             e.printStackTrace();
@@ -435,11 +468,11 @@ public class IncomingMessageParser {
         return quote;
     }
 
-    public static Quote quoteFromList(final List<MessgeFromHistory> quotes) {
+    public static Quote quoteFromList(final List<MessageFromHistory> quotes) {
 
         Quote quote = null;
         if (quotes.size() > 0 && quotes.get(0) != null) {
-            MessgeFromHistory quoteFromHistory = quotes.get(0);
+            MessageFromHistory quoteFromHistory = quotes.get(0);
             FileDescription quoteFileDescription = null;
             String quoteString = null;
             String authorName = "";
@@ -526,14 +559,14 @@ public class IncomingMessageParser {
         return list;
     }
 
-    public static ArrayList<ChatItem> formatNew(final List<MessgeFromHistory> messages) {
+    public static ArrayList<ChatItem> formatNew(final List<MessageFromHistory> messages) {
         final ArrayList<ChatItem> out = new ArrayList<>();
         try {
-            for (final MessgeFromHistory message : messages) {
+            for (final MessageFromHistory message : messages) {
                 if (message == null)
                     continue;
                 final String messageId = message.getProviderId();
-                final String backendId = String.valueOf(message.getId());
+                final String backendId = String.valueOf(message.getBackendId());
                 final long timeStamp = message.getTimeStamp();
                 final Operator operator = message.getOperator();
                 String name = null;
@@ -548,12 +581,29 @@ public class IncomingMessageParser {
                 if (operator != null && operator.getId() != null) {
                     operatorId = String.valueOf(operator.getId());
                 }
+                boolean sex = false;
+                if (operator != null && operator.getGender() != null) {
+                    sex = operator.getGender() == Operator.Gender.MALE;
+                }
 
-                if (message.getType() != null && !message.getType().isEmpty() &&
+                if (!TextUtils.isEmpty(message.getType()) &&
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
                         message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
-                    out.add(new ConsultConnectionMessage(operatorId, type, name, false, timeStamp, photoUrl, null, null, messageId, false));
+                    out.add(new ConsultConnectionMessage(operatorId, type, name, sex, timeStamp, photoUrl, null, null, messageId, backendId, message.isDisplay()));
+
+                } else if (!TextUtils.isEmpty(message.getType())
+                        && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {
+
+                    Survey survey = getSurveyFromJsonString(message.getText());
+                    out.add(survey);
+
+                } else if (!TextUtils.isEmpty(message.getType())
+                        && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY_QUESTION_ANSWER.name())) {
+
+                    Survey completedSurvey = getCompletedSurveyFromHistory(message);
+                    out.add(completedSurvey);
+
                 } else {
                     final String phraseText = message.getText();
                     final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;

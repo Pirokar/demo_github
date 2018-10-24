@@ -20,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import im.threads.R;
 import im.threads.fragments.ChatFragment;
@@ -54,7 +55,7 @@ public class ConsultActivity extends BaseActivity {
         mConsultMotoTextView = (TextView) findViewById(R.id.consult_moto);
         mConsultImageView = (ImageView) findViewById(R.id.image);
 
-        mConsultImageView.setBackground(ContextCompat.getDrawable(this, style.defaultOperatorAvatar));
+        mConsultImageView.setBackground(AppCompatResources.getDrawable(this, style.defaultOperatorAvatar));
 
         Intent i = getIntent();
         String imagePath = i.getStringExtra("imagePath");

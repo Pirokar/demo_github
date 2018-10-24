@@ -18,6 +18,7 @@ import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
+import im.threads.model.Survey;
 import im.threads.model.UserPhrase;
 
 /**
@@ -80,6 +81,9 @@ public class DatabaseHolder {
         if (chatItem instanceof ChatPhrase) {
             mMyOpenHelper.putChatPhrase((ChatPhrase) chatItem);
             return true;
+        }
+        if (chatItem instanceof Survey) {
+            mMyOpenHelper.insertOrUpdateSurvey((Survey) chatItem);
         }
         return false;
     }
@@ -182,6 +186,9 @@ public class DatabaseHolder {
             }
             if (item instanceof ConsultConnectionMessage) {
                 mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
+            }
+            if (item instanceof Survey) {
+                mMyOpenHelper.insertOrUpdateSurvey((Survey) item);
             }
         }
         mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();

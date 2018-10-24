@@ -24,6 +24,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.PermissionChecker;
 import androidx.viewpager.widget.ViewPager;
 import im.threads.R;
@@ -54,7 +55,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        Drawable d = getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp);
+        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp);
         d.setColorFilter(getColorInt(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
         mToolbar.setNavigationIcon(d);
         setSupportActionBar(mToolbar);

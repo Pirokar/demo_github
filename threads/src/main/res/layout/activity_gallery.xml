@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/activity_root"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/black"
-                android:orientation="vertical">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -45,7 +46,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.15"
                 android:background="@null"
-                android:src="@drawable/ic_clear_gray_30dp"/>
+                app:srcCompat="@drawable/ic_clear_gray_30dp"/>
         </LinearLayout>
 
     </androidx.appcompat.widget.Toolbar>
@@ -64,7 +65,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_search_white_24dp"/>
+            app:srcCompat="@drawable/ic_search_white_24dp"/>
 
         <im.threads.widget.CustomFontTextView
             android:id="@+id/search_photo_title"
@@ -99,8 +100,8 @@
         android:id="@+id/nothing_found_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
         android:gravity="center_vertical"
         android:paddingTop="84dp"

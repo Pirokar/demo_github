@@ -114,7 +114,7 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int unreadMsgCountTextColorResId = R.color.threads_chat_unread_msg_count_text;
 
-    //TODO #THREADS-2853
+    //TODO #THREADS-3523
     //chat message statuses
 //    R.color.threads_outgoing_message_sent_icon - цвет иконки статуса "Отправлено" (галочка) на сообщении клиента
 //    R.color.threads_outgoing_message_received_icon - цвет иконки статуса "Прочитано" (двойная галочка) на сообщении клиента

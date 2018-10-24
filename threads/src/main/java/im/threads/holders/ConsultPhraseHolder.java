@@ -21,6 +21,7 @@ import java.util.Locale;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
@@ -97,7 +98,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = ChatStyle.getInstance();
 
-        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
+        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
         mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTextColorToViews(new TextView[]{mPhraseTextView,
                 rightTextHeader,

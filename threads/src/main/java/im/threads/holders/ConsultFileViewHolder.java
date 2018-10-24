@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import androidx.annotation.DrawableRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import im.threads.R;
 import im.threads.model.ChatStyle;
@@ -51,7 +52,7 @@ public class ConsultFileViewHolder extends BaseHolder {
         mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = ChatStyle.getInstance();
 
-        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
+        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
         mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView}, style.incomingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.incomingMessageTimeColor));

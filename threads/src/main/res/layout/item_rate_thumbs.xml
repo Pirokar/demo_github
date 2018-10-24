@@ -1,43 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
     <View
         android:id="@+id/top_separator"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@color/threads_icon_and_separators_color" />
+        android:background="@color/threads_icon_and_separators_color"/>
 
     <im.threads.widget.text_view.BubbleMessageTextView
         android:id="@+id/ask_for_rate"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/threads_ask_to_rate"
-        android:textColor="@color/threads_chat_system_message"
-        android:gravity="center"/>
+        android:textColor="@color/threads_chat_system_message"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/activity_vertical_margin">
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/thumb_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/threads_binary_survey_like_unselected"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"/>
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            app:srcCompat="@drawable/threads_binary_survey_like_unselected"/>
 
         <ImageView
             android:id="@+id/thumb_down"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/threads_binary_survey_dislike_unselected"/>
+            app:srcCompat="@drawable/threads_binary_survey_dislike_unselected"/>
 
     </LinearLayout>
 
@@ -45,9 +47,9 @@
         android:id="@+id/thanks_for_rate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/threads_thanks_for_rate"
         android:textColor="@color/threads_chat_system_message"
-        android:gravity="center"
         android:visibility="gone"/>
 
     <View

@@ -33,6 +33,16 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
     }
+
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storePassword 'android'
+            storeFile file('debug.keystore')
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false

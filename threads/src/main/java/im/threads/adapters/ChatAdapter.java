@@ -666,7 +666,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final ArrayList<ChatItem> list = getOriginalList();
         int count = 0;
         for (final ChatItem item : list) {
-            if (item instanceof UserPhrase || item instanceof ConsultPhrase || item instanceof ConsultConnectionMessage)
+            if (item instanceof UserPhrase || item instanceof ConsultPhrase || item instanceof ConsultConnectionMessage || item instanceof Survey)
                 count++;
         }
         return count;
