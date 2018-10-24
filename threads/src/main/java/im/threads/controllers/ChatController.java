@@ -478,18 +478,16 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             mDatabaseHolder = DatabaseHolder.getInstance(appContext);
         }
         updateChatItemsOnBindAsync();
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext), appContext), true, null, null);
-                final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
-                        PrefUtils.getClientID(appContext),
-                        PrefUtils.getClientIDEncrypted(appContext),
-                        PrefUtils.getData(appContext),
-                        appContext);
-                Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
-            }
-        });
+        Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(
+                PrefUtils.getClientID(appContext), appContext), true, null, null);
+
+        final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
+                PrefUtils.getClientID(appContext),
+                PrefUtils.getClientIDEncrypted(appContext),
+                PrefUtils.getData(appContext),
+                appContext);
+        Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
+
         if (mConsultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName());
         } else if (mConsultWriter.istSearchingConsult()) {
