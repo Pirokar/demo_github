@@ -37,6 +37,7 @@ public class OutgoingMessageCreator {
             Quote quote = upcomingUserMessage.getQuote();
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
             JSONObject formattedMessage = new JSONObject();
+            formattedMessage.put(PushMessageAttributes.UUID, upcomingUserMessage.getUuid());
             formattedMessage.put(PushMessageAttributes.CLIENT_ID, clientId);
             final String phrase = upcomingUserMessage.getPhrase();
             formattedMessage.put(PushMessageAttributes.TEXT, phrase == null ? "" : phrase);

@@ -249,6 +249,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_IS_READ, phrase.isRead());
         cv.put(COLUMN_CONSULT_STATUS, phrase.getStatus());
         cv.put(COLUMN_NAME, phrase.getConsultName());
+        cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
         cv.put(COLUMN_SEX, phrase.getSex());
         if (!isDup) {
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);

@@ -151,7 +151,7 @@ public class IncomingMessageParser {
         try {
             String uuid;
             try {
-                uuid = String.valueOf(fullMessage.getInt(PushMessageAttributes.UUID));
+                uuid = fullMessage.getString(PushMessageAttributes.UUID);
             } catch (final Exception e) {
                 uuid = UUID.randomUUID().toString();
             }
@@ -195,7 +195,7 @@ public class IncomingMessageParser {
         try {
             String uuid;
             try {
-                uuid = String.valueOf(fullMessage.getInt(PushMessageAttributes.UUID));
+                uuid = fullMessage.getString(PushMessageAttributes.UUID);
             } catch (final Exception e) {
                 uuid = UUID.randomUUID().toString();
             }
