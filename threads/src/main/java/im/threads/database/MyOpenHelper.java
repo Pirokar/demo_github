@@ -254,7 +254,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         if (!isDup) {
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
         } else {
-            getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_UUID + " = ? ", new String[]{phrase.getId()});
+            getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_UUID + " = ? ", new String[]{phrase.getUuid()});
         }
         if (phrase.getFileDescription() != null) {
             putFd(phrase.getFileDescription(), phrase.getUuid(), false);

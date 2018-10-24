@@ -153,41 +153,43 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
 
         ConsultPhrase that = (ConsultPhrase) o;
 
-        if (sex != that.sex) {
-            return false;
-        }
-
-        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null) {
-            return false;
-        }
-
         if (uuid != null && that.uuid != null) {
             return uuid.equals(that.uuid);
-        }
-
-        if (!TextUtils.isEmpty(phrase) ? !phrase.equals(that.phrase) : !TextUtils.isEmpty(that.phrase))  {
+        } else {
             return false;
         }
 
-        if (quote != null ? !quote.equals(that.quote) : that.quote != null) {
-            return false;
-        }
-
-        if (fileDescription != null && that.fileDescription != null) {
-            return fileDescription.equals(that.fileDescription);
-        }
-
-        return status != null ? status.equals(that.status) : that.status == null;
+//        if (sex != that.sex) {
+//            return false;
+//        }
+//
+//        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null) {
+//            return false;
+//        }
+//        if (!TextUtils.isEmpty(phrase) ? !phrase.equals(that.phrase) : !TextUtils.isEmpty(that.phrase))  {
+//            return false;
+//        }
+//
+//        if (quote != null ? !quote.equals(that.quote) : that.quote != null) {
+//            return false;
+//        }
+//
+//        if (fileDescription != null && that.fileDescription != null) {
+//            return fileDescription.equals(that.fileDescription);
+//        }
+//
+//        return status != null ? status.equals(that.status) : that.status == null;
     }
 
     @Override
     public int hashCode() {
-        int result = consultId != null ? consultId.hashCode() : 0;
-        result = 31 * result + (sex ? 1 : 0);
-        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
-        result = 31 * result + (quote != null ? quote.hashCode() : 0);
-        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
+        int result = uuid != null ? uuid.hashCode() : 0;
+//        int result = consultId != null ? consultId.hashCode() : 0;
+//        result = 31 * result + (sex ? 1 : 0);
+//        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
+//        result = 31 * result + (quote != null ? quote.hashCode() : 0);
+//        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
+//        result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
     }
 

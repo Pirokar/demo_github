@@ -106,19 +106,21 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
         if (uuid != null && that.uuid != null) {
             return uuid.equals(that.uuid);
+        } else {
+            return false;
         }
 
-        if (fileDescription != null && that.fileDescription != null) {
-            return fileDescription.equals(that.fileDescription);
-        }
-
-        return !TextUtils.isEmpty(phrase) ? phrase.equals(that.phrase) : TextUtils.isEmpty(that.phrase);
+//        if (fileDescription != null && that.fileDescription != null) {
+//            return fileDescription.equals(that.fileDescription);
+//        }
+//
+//        return !TextUtils.isEmpty(phrase) ? phrase.equals(that.phrase) : TextUtils.isEmpty(that.phrase);
     }
 
     @Override
     public int hashCode() {
         int result = uuid != null ? uuid.hashCode() : 0;
-        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
+//        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
         return result;
     }
 
