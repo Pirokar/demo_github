@@ -1397,17 +1397,20 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                if (fragment != null) {
-                    if (PrefUtils.getNewClientID(ctx) == null) return;
+
+                String newClientId = PrefUtils.getNewClientID(ctx);
+
+                if (fragment != null && !TextUtils.isEmpty(newClientId)) {
+
                     try {
                         cleanAll();
-                        PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
+                        PrefUtils.setClientId(ctx, newClientId);
                         PrefUtils.setClientIdWasSet(true, ctx);
 
                         Transport.getPushControllerInstance(ctx).resetCounterSync();
 
                         Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
-                                PrefUtils.getNewClientID(ctx),
+                                newClientId,
                                 PrefUtils.getClientIDEncrypted(ctx),
                                 PrefUtils.getData(ctx),
                                 ctx), true);
