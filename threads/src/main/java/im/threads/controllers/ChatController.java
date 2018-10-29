@@ -188,6 +188,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             }
 
             final String finalClientId = clientId;
+            PrefUtils.setClientId(ctx, finalClientId);
             // Начальная инициализация чата.
             // Здесь происходит первоначальная загрузка истории сообщений,
             // отправка сообщения о клиенте
@@ -256,7 +257,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 instance.fragment.removeSearching();
             }
             instance.mConsultWriter.setCurrentConsultLeft();
-            PrefUtils.setClientId(ctx, finalClientId);
             Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId, ctx), true);
             final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                     finalClientId,
