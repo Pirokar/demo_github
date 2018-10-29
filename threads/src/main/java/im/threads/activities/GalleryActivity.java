@@ -43,7 +43,7 @@ public class GalleryActivity extends BaseActivity
         , GalleryAdaper.OnGalleryItemClick {
     private RecyclerView mRecyclerView;
     private static final String TAG = "GalleryActivity ";
-    private ArrayList<ArrayList<MediaPhoto>> lists;
+    private ArrayList<ArrayList<MediaPhoto>> lists = new ArrayList<>();
     List<PhotoBucketItem> bucketItems = new ArrayList<>();
     private boolean isInBuckets = false;
     private BucketsGalleryDecorator mBucketsGalleryDecorator = new BucketsGalleryDecorator(4);
@@ -147,7 +147,7 @@ public class GalleryActivity extends BaseActivity
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             allItems.add(new MediaPhoto(c.getString(DATA), c.getString(BUCKET_DISPLAY_NAME)));
         }
-        lists = new ArrayList<>();
+
         ArrayList<MediaPhoto> list = new ArrayList<>();
         list.add(allItems.get(0));
         lists.add(list);
