@@ -166,42 +166,35 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public static ChatController getInstance(final Context ctx) {
-        String clientId = PrefUtils.getNewClientID(ctx); //clientId заданный в настройках чата
 
         ChatStyle.updateContext(ctx);
 
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "getInstance clientId = " + clientId);
-        }
         if (instance == null) {
             instance = new ChatController(ctx);
         }
-        if (TextUtils.isEmpty(clientId)) {
-            clientId = PrefUtils.getClientID(ctx);
-        }
-        if ((TextUtils.isEmpty(PrefUtils.getClientID(ctx)) && !TextUtils.isEmpty(clientId))
-                || !clientId.equals(PrefUtils.getClientID(ctx))) {
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.i(TAG, "setting new client id");
-                Log.i(TAG, "clientId = " + clientId);
-                Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
-            }
 
-            final String finalClientId = clientId;
-            PrefUtils.setClientId(ctx, finalClientId);
-            // Начальная инициализация чата.
-            // Здесь происходит первоначальная загрузка истории сообщений,
-            // отправка сообщения о клиенте
-            // и т.п.
+        String newClientId = PrefUtils.getNewClientID(ctx);
+        String oldClientId = PrefUtils.getClientID(ctx);
+
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "getInstance newClientId = " + newClientId
+                    + ", oldClientClientId = " + oldClientId);
+        }
+
+        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
+            // clientId has not changed
+            PrefUtils.setNewClientId(ctx, "");
+
+        } else {
+            final String clientId = newClientId;
+            PrefUtils.setClientId(ctx, clientId);
+
             instance.mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    onClientIdChanged(ctx, finalClientId);
+                    onClientIdChanged(ctx, clientId);
                 }
             });
-        } else {
-            // clientId не изменился
-            PrefUtils.setNewClientId(ctx, "");
         }
         return instance;
     }
