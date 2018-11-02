@@ -1,5 +1,6 @@
 package im.threads.holders;
 
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,9 +22,10 @@ public class GalleryItemHolder extends RecyclerView.ViewHolder {
 
     public GalleryItemHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_image, parent, false));
+
         mImageView = (ImageView) itemView.findViewById(R.id.image);
         mCheckBox = (AppCompatCheckBox) itemView.findViewById(R.id.checkbox);
-
+        mCheckBox.setButtonDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.bk_checkbox_blue));
     }
 
     public void onBind(final String imagePath, final View.OnClickListener listener, final boolean isChecked) {

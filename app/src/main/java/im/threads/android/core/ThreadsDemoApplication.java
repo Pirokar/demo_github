@@ -1,8 +1,8 @@
 package im.threads.android.core;
 
-import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import im.threads.android.utils.ChatBuilderHelper;
 import im.threads.android.utils.PrefUtils;
 import im.threads.controllers.ChatController;
 
-public class ThreadsDemoApplication extends Application {
+public class ThreadsDemoApplication extends MultiDexApplication {
 
     @Override
     public void onCreate() {

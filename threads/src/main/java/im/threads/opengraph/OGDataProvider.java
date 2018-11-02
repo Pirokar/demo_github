@@ -72,7 +72,7 @@ public class OGDataProvider {
                 try {
                     OGData ogData = OGParser.parse(response.body().byteStream());
                     callback.onSuccess(ogData);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     callback.onError(e);
                 }
@@ -115,7 +115,7 @@ public class OGDataProvider {
                 try {
                     Response response = getInstance().client.newCall(request).execute();
                     callback.onSuccess(OGParser.parse(response.body().byteStream()));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     callback.onError(e);
                 }
             }
