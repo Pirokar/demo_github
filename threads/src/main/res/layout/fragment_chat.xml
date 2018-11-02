@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
@@ -213,7 +213,7 @@
             android:layout_height="63dp"
             android:background="@drawable/toolbar_shadow"/>
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -318,7 +318,7 @@
                             android:textSize="@dimen/text_big"
                             android:visibility="visible"/>
 
-                        <android.support.v7.widget.AppCompatImageButton
+                        <androidx.appcompat.widget.AppCompatImageButton
                             android:id="@+id/search_up_ib"
                             android:layout_width="36dp"
                             android:layout_height="match_parent"
@@ -327,7 +327,7 @@
                             app:backgroundTint="@android:color/transparent"
                             app:srcCompat="@drawable/ic_expand_more_white_24dp"/>
 
-                        <android.support.v7.widget.AppCompatImageButton
+                        <androidx.appcompat.widget.AppCompatImageButton
                             android:id="@+id/search_down_ib"
                             android:layout_width="36dp"
                             android:layout_height="match_parent"
@@ -350,7 +350,7 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
     </RelativeLayout>
 </layout>

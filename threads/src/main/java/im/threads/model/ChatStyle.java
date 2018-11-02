@@ -2,16 +2,16 @@ package im.threads.model;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.annotation.StyleRes;
 import android.text.TextUtils;
 
 import java.io.Serializable;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
 import im.threads.R;
 import im.threads.utils.PrefUtils;
 

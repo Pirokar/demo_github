@@ -11,7 +11,7 @@ import im.threads.model.ChatStyle;
  * Created by Admin on 20.03.2017.
  */
 
-public class LightCustomFontTextView extends android.support.v7.widget.AppCompatTextView {
+public class LightCustomFontTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     public LightCustomFontTextView(Context context) {
         super(context);

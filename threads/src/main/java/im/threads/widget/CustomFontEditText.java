@@ -11,7 +11,7 @@ import im.threads.model.ChatStyle;
  * Created by Admin on 20.03.2017.
  */
 
-public class CustomFontEditText extends android.support.v7.widget.AppCompatEditText {
+public class CustomFontEditText extends androidx.appcompat.widget.AppCompatEditText {
     public CustomFontEditText(Context context) {
         super(context);
 

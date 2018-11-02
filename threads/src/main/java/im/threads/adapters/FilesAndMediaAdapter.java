@@ -1,6 +1,5 @@
 package im.threads.adapters;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -8,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.holders.EmptyViewHolder;
 import im.threads.holders.FileAndMediaViewHolder;
 import im.threads.holders.FilesDateStampHolder;

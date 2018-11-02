@@ -3,10 +3,6 @@ package im.threads.utils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntDef;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -15,6 +11,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 /**
  * Created by yuri on 25.08.2016.

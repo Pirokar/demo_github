@@ -3,7 +3,6 @@ package im.threads.formatters;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.support.v7.content.res.AppCompatResources;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -13,6 +12,7 @@ import android.text.style.StyleSpan;
 import java.util.List;
 import java.util.ListIterator;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import im.threads.R;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;

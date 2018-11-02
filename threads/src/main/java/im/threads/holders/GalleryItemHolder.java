@@ -1,8 +1,5 @@
 package im.threads.holders;
 
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.AppCompatCheckBox;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +7,9 @@ import android.widget.ImageView;
 
 import java.io.File;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.AppCompatCheckBox;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.R;
 import im.threads.picasso_url_connection_only.Picasso;
 

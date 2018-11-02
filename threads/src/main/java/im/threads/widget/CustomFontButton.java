@@ -11,7 +11,7 @@ import im.threads.model.ChatStyle;
  * Created by Admin on 20.03.2017.
  */
 
-public class CustomFontButton extends android.support.v7.widget.AppCompatButton {
+public class CustomFontButton extends androidx.appcompat.widget.AppCompatButton {
     public CustomFontButton(Context context) {
         super(context);
 

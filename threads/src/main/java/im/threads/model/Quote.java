@@ -1,6 +1,6 @@
 package im.threads.model;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Created by yuri on 13.06.2016.

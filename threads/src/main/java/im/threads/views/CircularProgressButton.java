@@ -5,15 +5,15 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.ColorRes;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import im.threads.R;
 import im.threads.utils.ViewUtils;
 

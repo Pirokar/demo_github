@@ -1,18 +1,18 @@
 package im.threads.views;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.R;
 import im.threads.adapters.BottomGalleryAdapter;
 import im.threads.model.BottomGalleryItem;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by yuri on 30.06.2016.

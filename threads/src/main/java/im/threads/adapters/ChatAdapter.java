@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -21,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.holders.ConsultConnectionMessageViewHolder;
 import im.threads.holders.ConsultFileViewHolder;
 import im.threads.holders.ConsultIsTypingViewHolderNew;

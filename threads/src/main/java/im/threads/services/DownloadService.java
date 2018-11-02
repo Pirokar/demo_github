@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.File;
@@ -12,6 +11,7 @@ import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import androidx.annotation.Nullable;
 import im.threads.broadcastReceivers.ProgressReceiver;
 import im.threads.database.DatabaseHolder;
 import im.threads.model.ChatStyle;

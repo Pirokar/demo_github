@@ -7,8 +7,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
 
     lintOptions {
         disable 'InvalidPackage'
@@ -20,7 +19,7 @@ android {
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 78
         versionName "2.43.0"
         vectorDrawables.useSupportLibrary = true
@@ -37,14 +36,14 @@ android {
 
 }
 dependencies {
-    def final supportVersion = "27.1.1"
+    def final androidXVersion = "1.0.0"
 
 //    compile project(':push-api-release-2.0.114')
 
-    implementation "com.android.support:appcompat-v7:$supportVersion"
-    implementation "com.android.support:support-media-compat:27.1.1"
-    implementation "com.android.support:support-v4:27.1.1"
-    implementation "com.android.support:recyclerview-v7:$supportVersion"
+    implementation "androidx.appcompat:appcompat:$androidXVersion"
+    implementation "androidx.legacy:legacy-support-v4:$androidXVersion"
+    implementation "androidx.media:media:$androidXVersion"
+    implementation "androidx.recyclerview:recyclerview:$androidXVersion"
 
     /*
     * !WARNING!
@@ -63,6 +62,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+
     debugImplementation 'com.mfms.android:push-lite-debug:2.5.0'
     releaseImplementation 'com.mfms.android:push-lite-release:2.5.0'
 }

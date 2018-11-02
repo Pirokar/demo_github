@@ -1,9 +1,9 @@
 package im.threads.holders;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.R;
 
 public class EmptyViewHolder extends RecyclerView.ViewHolder {

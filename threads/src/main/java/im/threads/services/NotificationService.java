@@ -16,8 +16,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +31,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import im.threads.R;
 import im.threads.activities.TranslucentActivity;
 import im.threads.controllers.ChatController;
@@ -460,7 +460,7 @@ public class NotificationService extends Service {
                     && !pushContents.hasPlainFiles
                     && pushContents.imagesCount == 1) {
                 final NotificationCompat.BigPictureStyle pictureStyle
-                        = new android.support.v4.app.NotificationCompat.BigPictureStyle();
+                        = new androidx.core.app.NotificationCompat.BigPictureStyle();
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
