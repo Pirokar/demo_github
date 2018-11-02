@@ -134,6 +134,7 @@ dependencies {
     implementation project(':threads')
 
     implementation 'com.google.firebase:firebase-messaging:17.3.1'
+    implementation 'com.android.support:multidex:1.0.3'
 
     implementation "androidx.appcompat:appcompat:$androidXVersion"
     implementation "com.google.android.material:material:$androidXVersion"
