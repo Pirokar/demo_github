@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.recyclerview.widget.RecyclerView;
 import im.threads.R;
