@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_root"
-    android:background="@color/threads_chat_background"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/threads_chat_background">
 
     <LinearLayout
         android:id="@+id/header"
@@ -18,7 +20,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/margin_half" />
+            android:layout_marginLeft="@dimen/margin_half"/>
 
         <im.threads.widget.CustomFontTextView
             android:id="@+id/consult_name"
@@ -28,7 +30,7 @@
             android:paddingLeft="@dimen/margin_half"
             android:text="Иван Иванович Иванов"
             android:textColor="@color/threads_chat_toolbar_text"
-            android:textSize="@dimen/text_medium" />
+            android:textSize="@dimen/text_medium"/>
     </LinearLayout>
 
     <im.threads.widget.CustomFontTextView
@@ -41,21 +43,21 @@
         android:minHeight="120dp"
         android:padding="@dimen/margin_material"
         android:textColor="@color/threads_quick_reply_message_text_color"
-        android:textSize="@dimen/text_medium" />
+        android:textSize="@dimen/text_medium"/>
 
     <LinearLayout
         android:id="@+id/answer_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/question"
-        android:gravity="center_vertical"
-        android:background="@color/threads_input_background">
+        android:background="@color/threads_input_background"
+        android:gravity="center_vertical">
 
         <im.threads.widget.CustomFontEditText
             android:id="@+id/answer"
             style="@style/InputEditTextStyle"
-            android:maxLines="5"
-            android:layout_marginLeft="@dimen/margin_big"/>
+            android:layout_marginLeft="@dimen/margin_big"
+            android:maxLines="5"/>
 
         <ImageButton
             android:id="@+id/send"
@@ -64,7 +66,7 @@
             android:layout_height="64dp"
             android:layout_gravity="right|bottom"
             android:background="@android:color/transparent"
-            android:src="@drawable/threads_ic_send_button" />
+            app:srcCompat="@drawable/threads_ic_send_button"/>
     </LinearLayout>
 
     <im.threads.widget.CustomFontButton
@@ -75,11 +77,11 @@
         android:layout_below="@+id/answer_layout"
         android:layout_marginBottom="@dimen/margin_half"
         android:text="@string/threads_close"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_alignTop="@id/close_button"
-        android:background="@android:color/darker_gray" />
+        android:background="@android:color/darker_gray"/>
 </RelativeLayout>

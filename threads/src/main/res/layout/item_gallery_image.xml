@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<im.threads.views.SquareLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<im.threads.views.SquareLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,12 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/threads_image_placeholder" />
+        app:srcCompat="@drawable/threads_image_placeholder"/>
 
     <android.support.v7.widget.AppCompatCheckBox
         android:id="@+id/checkbox"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_gravity="right|top"
-        android:button="@drawable/bk_checkbox_blue" />
+        android:layout_gravity="right|top"/>
 </im.threads.views.SquareLayout>

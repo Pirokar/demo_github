@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.pushserver.android.PushBroadcastReceiver;
+import com.mfms.android.push_lite.PushBroadcastReceiver;
 
 import im.threads.model.ChatStyle;
 

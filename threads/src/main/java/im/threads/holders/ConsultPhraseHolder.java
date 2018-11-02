@@ -6,6 +6,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -97,7 +98,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = ChatStyle.getInstance();
 
-        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
+        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.incomingMessageBubbleBackground));
         mBubble.getBackground().setColorFilter(getColorInt(style.incomingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTextColorToViews(new TextView[]{mPhraseTextView,
                 rightTextHeader,

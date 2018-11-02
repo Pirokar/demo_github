@@ -17,12 +17,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.pushserver.android.PushBroadcastReceiver;
-import com.pushserver.android.PushController;
-import com.pushserver.android.PushServerIntentService;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
-import com.pushserver.android.model.PushMessage;
+import com.mfms.android.push_lite.PushBroadcastReceiver;
+import com.mfms.android.push_lite.PushController;
+import com.mfms.android.push_lite.PushServerIntentService;
+import com.mfms.android.push_lite.RequestCallback;
+import com.mfms.android.push_lite.exception.PushServerErrorException;
+import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -58,8 +58,8 @@ import im.threads.model.ConsultTyping;
 import im.threads.model.EmptyChatItem;
 import im.threads.model.FileDescription;
 import im.threads.model.HistoryResponse;
+import im.threads.model.MessageFromHistory;
 import im.threads.model.MessageState;
-import im.threads.model.MessgeFromHistory;
 import im.threads.model.PushMessageCheckResult;
 import im.threads.model.RequestResolveThread;
 import im.threads.model.SaveThreadIdChatItem;
@@ -166,41 +166,35 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public static ChatController getInstance(final Context ctx) {
-        String clientId = PrefUtils.getNewClientID(ctx); //clientId заданный в настройках чата
 
         ChatStyle.updateContext(ctx);
 
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "getInstance clientId = " + clientId);
-        }
         if (instance == null) {
             instance = new ChatController(ctx);
         }
-        if (TextUtils.isEmpty(clientId)) {
-            clientId = PrefUtils.getClientID(ctx);
-        }
-        if ((TextUtils.isEmpty(PrefUtils.getClientID(ctx)) && !TextUtils.isEmpty(clientId))
-                || !clientId.equals(PrefUtils.getClientID(ctx))) {
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.i(TAG, "setting new client id");
-                Log.i(TAG, "clientId = " + clientId);
-                Log.i(TAG, "old client id = " + PrefUtils.getClientID(ctx));
-            }
 
-            final String finalClientId = clientId;
-            // Начальная инициализация чата.
-            // Здесь происходит первоначальная загрузка истории сообщений,
-            // отправка сообщения о клиенте
-            // и т.п.
+        String newClientId = PrefUtils.getNewClientID(ctx);
+        String oldClientId = PrefUtils.getClientID(ctx);
+
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "getInstance newClientId = " + newClientId
+                    + ", oldClientClientId = " + oldClientId);
+        }
+
+        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
+            // clientId has not changed
+            PrefUtils.setNewClientId(ctx, "");
+
+        } else {
+            final String clientId = newClientId;
+            PrefUtils.setClientId(ctx, clientId);
+
             instance.mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    onClientIdChanged(ctx, finalClientId);
+                    onClientIdChanged(ctx, clientId);
                 }
             });
-        } else {
-            // clientId не изменился
-            PrefUtils.setNewClientId(ctx, "");
         }
         return instance;
     }
@@ -256,7 +250,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 instance.fragment.removeSearching();
             }
             instance.mConsultWriter.setCurrentConsultLeft();
-            PrefUtils.setClientId(ctx, finalClientId);
             Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createInitChatMessage(finalClientId, ctx), true);
             final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
                     finalClientId,
@@ -297,13 +290,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (chatItem != null) {
             addMessage(chatItem, appContext);
         }
-        final String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(
-                survey.getSendingId(),
-                survey.getQuestions().get(0).getId(),
-                survey.getQuestions().get(0).getRate(),
+        String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(survey,
                 PrefUtils.getClientID(appContext),
-                appContext
-        );
+                PrefUtils.getAppMarker(appContext));
 
         Transport.sendMessageMFMSAsync(context, ratingDoneMessage, false,
                 new RequestCallback<String, PushServerErrorException>() {
@@ -483,18 +472,16 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             mDatabaseHolder = DatabaseHolder.getInstance(appContext);
         }
         updateChatItemsOnBindAsync();
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext), appContext), true, null, null);
-                final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
-                        PrefUtils.getClientID(appContext),
-                        PrefUtils.getClientIDEncrypted(appContext),
-                        PrefUtils.getData(appContext),
-                        appContext);
-                Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
-            }
-        });
+        Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(
+                PrefUtils.getClientID(appContext), appContext), true, null, null);
+
+        final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
+                PrefUtils.getClientID(appContext),
+                PrefUtils.getClientIDEncrypted(appContext),
+                PrefUtils.getData(appContext),
+                appContext);
+        Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
+
         if (mConsultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName());
         } else if (mConsultWriter.istSearchingConsult()) {
@@ -562,10 +549,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                         || !dbItems.containsAll(serverItems)) {
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "not same!");
                     mDatabaseHolder.putMessagesSync(serverItems);
+                    final int serverCount = serverItems.size();
                     h.post(new Runnable() {
                         @Override
                         public void run() {
-                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, count));
+                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, serverCount));
                             if (null != fragment) {
                                 fragment.addChatItems(items);
                                 checkAndLoadOgData(items);
@@ -850,9 +838,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     final Long chunk = 100L;
                     final Long start = lastMessageId == null ? null : lastMessageId;
                     final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
-                    final List<MessgeFromHistory> items = response != null ? response.getMessages() : null;
+                    final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
-                    lastMessageId = items.get(items.size() - 1).getId();
+                    lastMessageId = items.get(items.size() - 1).getBackendId();
                     currentOffset += items.size();
                     isAllMessagesDownloaded = items.size() != chunk;
                     final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
@@ -1048,7 +1036,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (fragment != null) {
             fragment.setPhraseSentStatus(survey.getMessageId(), survey.getSentState());
         }
-        mDatabaseHolder.setStateOfUserPhrase(survey.getMessageId(), survey.getSentState());
+        mDatabaseHolder.putChatItem(survey);
     }
 
     private UserPhrase convert(final UpcomingUserMessage message) {
@@ -1129,10 +1117,11 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             public void run() {
                 if (instance.fragment != null) {
                     final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
-                    final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
+                    int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
                     try {
                         final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, false);
                         final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
+                        count = serverItems.size();
                         mDatabaseHolder.putMessagesSync(serverItems);
                         final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                         currentOffset[0] += chatItems.size();
@@ -1401,17 +1390,20 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                if (fragment != null) {
-                    if (PrefUtils.getNewClientID(ctx) == null) return;
+
+                String newClientId = PrefUtils.getNewClientID(ctx);
+
+                if (fragment != null && !TextUtils.isEmpty(newClientId)) {
+
                     try {
                         cleanAll();
-                        PrefUtils.setClientId(ctx, PrefUtils.getNewClientID(ctx));
+                        PrefUtils.setClientId(ctx, newClientId);
                         PrefUtils.setClientIdWasSet(true, ctx);
 
                         Transport.getPushControllerInstance(ctx).resetCounterSync();
 
                         Transport.sendMessageMFMSSync(ctx, OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(ctx),
-                                PrefUtils.getNewClientID(ctx),
+                                newClientId,
                                 PrefUtils.getClientIDEncrypted(ctx),
                                 PrefUtils.getData(ctx),
                                 ctx), true);

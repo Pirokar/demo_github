@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/threads_attachments_background">
+    android:background="@color/threads_attachments_background"
+    android:orientation="vertical">
 
     <ImageView
-
-        android:src="@android:drawable/ic_delete"
         android:id="@+id/image"
-        android:scaleType="centerInside"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.9" />
+        android:layout_weight="0.9"
+        android:scaleType="centerInside"
+        app:srcCompat="@android:drawable/ic_delete"/>
 
     <im.threads.widget.CustomFontTextView
         android:id="@+id/from"
@@ -23,8 +24,7 @@
         android:paddingLeft="@dimen/margin_material"
         android:paddingTop="@dimen/margin_quarter"
         android:textColor="@color/threads_attachments_author_text_color"
-        android:textSize="@dimen/threads_attachments_author_text_size"
-        />
+        android:textSize="@dimen/threads_attachments_author_text_size"/>
 
     <im.threads.widget.CustomFontTextView
         android:id="@+id/date"
@@ -32,8 +32,8 @@
         android:layout_height="0dp"
         android:layout_weight="0.05"
         android:gravity="center_vertical|left"
-        android:paddingBottom="@dimen/margin_quarter"
         android:paddingLeft="@dimen/margin_material"
+        android:paddingBottom="@dimen/margin_quarter"
         android:textColor="@color/threads_attachments_date_text_color"
-        android:textSize="@dimen/threads_attachments_date_text_size" />
+        android:textSize="@dimen/threads_attachments_date_text_size"/>
 </LinearLayout>

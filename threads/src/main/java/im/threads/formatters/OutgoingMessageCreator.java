@@ -14,9 +14,9 @@ import im.threads.R;
 import im.threads.model.ConsultInfo;
 import im.threads.model.FileDescription;
 import im.threads.model.Quote;
+import im.threads.model.Survey;
 import im.threads.model.UserPhrase;
 import im.threads.utils.AppInfoHelper;
-import im.threads.utils.DateHelper;
 import im.threads.utils.DeviceInfoHelper;
 import im.threads.utils.PrefUtils;
 
@@ -156,15 +156,16 @@ public class OutgoingMessageCreator {
         return object.toString().replaceAll("\\\\", "");
     }
 
-    public static String createRatingDoneMessage(long sendingId, long questionId, int rate, String clientId, Context ctx) {
+    public static String createRatingDoneMessage(Survey survey, String clientId, String appMarker) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.SURVEY_QUESTION_ANSWER.name());
-            object.put("sendingId", sendingId);
-            object.put("questionId", questionId);
-            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
-            object.put("rate", rate);
+            object.put("sendingId", survey.getSendingId());
+            object.put("questionId", survey.getQuestions().get(0).getId());
+            object.put("rate", survey.getQuestions().get(0).getRate());
+            object.put("text", survey.getQuestions().get(0).getText());
+            object.put(PushMessageAttributes.APP_MARKER_KEY, appMarker);
         } catch (JSONException e) {
             e.printStackTrace();
         }

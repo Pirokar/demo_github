@@ -16,18 +16,34 @@ repositories {
 }
 apply plugin: 'io.fabric'
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.3'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 26
-        versionCode 77
-        versionName "2.42.0"
+        targetSdkVersion 27
+        versionCode 78
+        versionName "2.43.0"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName)
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
     }
+
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storePassword 'android'
+            storeFile file('debug.keystore')
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -36,46 +52,56 @@ android {
 
     }
 
+    flavorDimensions "server"
     productFlavors {
         // АРМ = threads.brooma.ru
         brooma {
+            dimension "server"
             applicationId "com.sequenia.appwithchatdev"
             resValue "string", "app_name1", "THR Test"
         }
         // АРМ = polarbear.threads.im
         polarbear {
+            dimension "server"
             applicationId "com.sequenia.appwithchat.polarbear"
             resValue "string", "app_name1", "THR Polarbear"
         }
         polarbearChannel2 {
+            dimension "server"
             applicationId "com.sequenia.appwithchat.polarbear.channel2"
             resValue "string", "app_name1", "THR Polarbear Channel 2"
         }
         // АРМ = winlab.threads.im
         winlab {
+            dimension "server"
             applicationId "com.sequenia.appwithchat.beta4"
             resValue "string", "app_name1", "THR Winlab (Beta4)"
         }
 
         winlabChannel2 {
+            dimension "server"
             applicationId "com.sequenia.appwithchat.beta4.channel2"
             resValue "string", "app_name1", "THR Winlab (Beta4) Channel 2"
         }
 
         winlab0 {
+            dimension "server"
             applicationId "com.threads.android.winlab0"
             resValue "string", "app_name1", "THR Winlab0"
         }
 
         bobtail {
+            dimension "server"
             applicationId "com.threads.android.bobtail"
             resValue "string", "app_name1", "THR Bobtail"
         }
         beta {
+            dimension "server"
             applicationId "com.threads.android.beta"
             resValue "string", "app_name1", "THR Beta"
         }
         amurTiger {
+            dimension "server"
             applicationId "com.brooma.threads.android.amurtiger"
             resValue "string", "app_name1", "THR AmurTiger"
         }
@@ -93,31 +119,44 @@ android {
     }
 
     applicationVariants.all { variant ->
-        variant.outputs.each { output ->
+        variant.outputs.all { output ->
             def file = output.outputFile
-            def appName = "AppWithChat"
+            def appName = "THR"
             def fileName = appName + "_" + variant.flavorName + "-" + variant.buildType.name + ".apk"
-            output.outputFile = new File(file.parent, fileName)
+            outputFileName = fileName
         }
     }
 }
 
 dependencies {
-    def final supportVersion = "26.1.0"
+    def final supportVersion = "27.1.1"
 
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':threads')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':threads')
 
-    compile 'com.google.firebase:firebase-messaging:10.2.1'
+    implementation 'com.google.firebase:firebase-messaging:17.3.1'
+    implementation 'com.android.support:multidex:1.0.3'
 
-    compile "com.android.support:appcompat-v7:$supportVersion"
-    compile "com.android.support:design:$supportVersion"
-    compile "com.android.support:support-vector-drawable:$supportVersion"
+    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "com.android.support:design:$supportVersion"
+    implementation "com.android.support:support-vector-drawable:$supportVersion"
+    implementation "com.android.support:support-media-compat:$supportVersion"
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
 
-    compile 'com.azoft.carousellayoutmanager:carousel:1.2.1'
+    /*
+    * Threads depends on:
+    * +--- com.squareup.retrofit2:converter-gson:2.4.0
+    * |    +--- com.squareup.retrofit2:retrofit:2.4.0 (*)
+    * |    \--- com.google.code.gson:gson:2.8.2
+    *
+    */
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+    implementation 'com.azoft.carousellayoutmanager:carousel:1.2.1'
+    debugImplementation 'com.mfms.android:push-lite-debug:2.5.0'
+    releaseImplementation 'com.mfms.android:push-lite-release:2.5.0'
 }
 apply plugin: 'com.google.gms.google-services'

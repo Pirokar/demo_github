@@ -1,6 +1,7 @@
 package im.threads.holders;
 
 import android.graphics.drawable.Drawable;
+import android.support.v7.content.res.AppCompatResources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +34,10 @@ public class BottomGalleryImageHolder extends BaseHolder {
         }
         Drawable d;
         if (item.isChosen()) {
-            d = (itemView.getResources().getDrawable(R.drawable.ic_circle_done_blue_36dp));
+            d = (AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_circle_done_blue_36dp));
             setTintToViews(new Drawable[]{d}, style.chatBodyIconsTint);
         } else {
-            d = itemView.getResources().getDrawable(R.drawable.ic_panorama_fish_eye_white_36dp);
+            d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_panorama_fish_eye_white_36dp);
         }
         chosenMark.setBackground(d);
         Picasso

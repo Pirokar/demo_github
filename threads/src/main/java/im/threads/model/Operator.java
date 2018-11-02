@@ -12,6 +12,8 @@ public class Operator {
     private Long maxThreads;
     private String photoUrl;
 
+    private Gender gender = Gender.FEMALE;
+
     public Long getId() {
         return id;
     }
@@ -50,5 +52,18 @@ public class Operator {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public enum Gender {
+        MALE,
+        FEMALE;
     }
 }

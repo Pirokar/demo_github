@@ -3,6 +3,7 @@ package im.threads.holders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,22 +85,22 @@ public class ImageFromUserViewHolder extends BaseHolder {
         Drawable d;
         switch (sentState) {
             case STATE_WAS_READ:
-                d = itemView.getResources().getDrawable(R.drawable.threads_image_message_received);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_image_message_received);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_image_received_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.threads_message_image_sent);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_image_sent);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_image_sent_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.threads_message_image_waiting);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_image_waiting);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_image_not_send_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:
-                d = itemView.getResources().getDrawable(R.drawable.empty_space_24dp);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
         }
     }

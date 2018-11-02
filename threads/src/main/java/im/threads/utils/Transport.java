@@ -2,9 +2,9 @@ package im.threads.utils;
 
 import android.content.Context;
 
-import com.pushserver.android.PushController;
-import com.pushserver.android.RequestCallback;
-import com.pushserver.android.exception.PushServerErrorException;
+import com.mfms.android.push_lite.PushController;
+import com.mfms.android.push_lite.RequestCallback;
+import com.mfms.android.push_lite.exception.PushServerErrorException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import im.threads.formatters.IncomingMessageParser;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
 import im.threads.model.HistoryResponse;
-import im.threads.model.MessgeFromHistory;
+import im.threads.model.MessageFromHistory;
 import im.threads.retrofit.ServiceGenerator;
 import im.threads.retrofit.ThreadsApi;
 import retrofit2.Call;
@@ -129,7 +129,7 @@ public final class Transport {
     public static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponse response) {
         List<ChatItem> list = new ArrayList<>();
         if (response != null) {
-            List<MessgeFromHistory> responseList = response.getMessages();
+            List<MessageFromHistory> responseList = response.getMessages();
             if (responseList != null) {
                 list = IncomingMessageParser.formatNew(responseList);
                 setupLastItemIdFromHistory(responseList);
@@ -138,9 +138,9 @@ public final class Transport {
         return list;
     }
 
-    private static void setupLastItemIdFromHistory(List<MessgeFromHistory> list) {
+    private static void setupLastItemIdFromHistory(List<MessageFromHistory> list) {
         if (list != null && !list.isEmpty()) {
-            lastLoadId = list.get(0).getId();
+            lastLoadId = list.get(0).getBackendId();
         }
     }
 }

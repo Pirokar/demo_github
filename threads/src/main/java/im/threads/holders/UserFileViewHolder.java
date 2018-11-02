@@ -4,6 +4,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +53,7 @@ public class UserFileViewHolder extends BaseHolder {
         setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         mCircularProgressButton.setBackgroundColorResId(style.outgoingMessageTextColor);
-        mBubble.setBackground(ContextCompat.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+        mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTintToProgressButtonUser(mCircularProgressButton, style.incomingMessageBubbleColor, style.chatBodyIconsTint);
 
@@ -99,22 +100,22 @@ public class UserFileViewHolder extends BaseHolder {
         Drawable d;
         switch (sentState) {
             case STATE_WAS_READ:
-                d = itemView.getResources().getDrawable(R.drawable.threads_message_received);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.threads_message_sent);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_sent);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
-                d = itemView.getResources().getDrawable(R.drawable.threads_message_waiting);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:
-                d = itemView.getResources().getDrawable(R.drawable.empty_space_24dp);
+                d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
         }
