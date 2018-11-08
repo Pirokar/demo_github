@@ -11,7 +11,9 @@ import im.threads.utils.FileUtils;
  * Created by yuri on 10.06.2016.
  */
 public class UserPhrase implements ChatPhrase, IsOnlyImage {
-    private String messageId;
+
+    private String uuid;
+    private String providerId; //This this a mfms messageId required for read status updates
     private final String phrase;
     private final boolean withFile;
     private MessageState sentState;
@@ -24,31 +26,27 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     //для поиска сообщений в чате
     private boolean found;
 
-    private String backendId;
     public OGData ogData;
     public String ogUrl;
 
-
-    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, String backendId) {
-        this.messageId = messageId == null ? "localID: " + UUID.randomUUID().toString() : messageId;
+    public UserPhrase(String uuid, String providerId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
+        this.uuid = uuid;
+        this.providerId = providerId;
         this.phrase = phrase;
-        this.withFile = fileDescription != null;
         this.mQuote = mQuote;
         this.phraseTimeStamp = phraseTimeStamp;
+        this.withFile = fileDescription != null;
         this.fileDescription = fileDescription;
-        sentState = MessageState.STATE_SENDING;
-        this.backendId = backendId;
+        this.sentState = sentState;
     }
 
-    public UserPhrase(String messageId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState, String backendId) {
-        this.messageId = messageId == null ? "localID: " + UUID.randomUUID().toString() : messageId;
-        this.phrase = phrase;
-        this.withFile = fileDescription != null;
-        this.mQuote = mQuote;
-        this.phraseTimeStamp = phraseTimeStamp;
-        this.fileDescription = fileDescription;
-        this.sentState = MessageState.STATE_WAS_READ;
-        this.backendId = backendId;
+    public UserPhrase(String uuid, String providerId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
+        this(uuid, providerId, phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
+    }
+
+    public UserPhrase(String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
+        this(UUID.randomUUID().toString(), "tempProviderId: " + UUID.randomUUID().toString(),
+                phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
     }
 
     public boolean isWithPhrase() {
@@ -106,30 +104,40 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
         UserPhrase that = (UserPhrase) o;
 
-        if (backendId != null && that.backendId != null) {
-            return backendId.equals(that.backendId);
+        if (!TextUtils.isEmpty(uuid)) {
+            return uuid.equals(that.uuid);
+        } else {
+            return false;
         }
 
-        if (messageId != null && that.messageId != null) {
-            return messageId.equals(that.messageId);
-        }
-
-        if (fileDescription != null && that.fileDescription != null) {
-            return fileDescription.equals(that.fileDescription);
-        }
-
-        return !TextUtils.isEmpty(phrase) ? phrase.equals(that.phrase) : TextUtils.isEmpty(that.phrase);
+//        if (fileDescription != null && that.fileDescription != null) {
+//            return fileDescription.equals(that.fileDescription);
+//        }
+//
+//        return !TextUtils.isEmpty(phrase) ? phrase.equals(that.phrase) : TextUtils.isEmpty(that.phrase);
     }
 
     @Override
     public int hashCode() {
-        int result = messageId != null ? messageId.hashCode() : 0;
-        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
+        int result = uuid != null ? uuid.hashCode() : 0;
+//        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
         return result;
     }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     @Override
@@ -139,11 +147,6 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
     public Quote getQuote() {
         return mQuote;
-    }
-
-
-    public String getMessageId() {
-        return messageId;
     }
 
     public String getPhrase() {
@@ -176,7 +179,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
     @Override
     public String getId() {
-        return messageId;
+        return uuid;
     }
 
     @Override
@@ -205,13 +208,5 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
                 "phrase='" + phrase + '\'' +
                 ", isChosen=" + isChosen +
                 '}' + "\n";
-    }
-
-    public String getBackendId() {
-        return backendId;
-    }
-
-    public void setBackendId(String backendId) {
-        this.backendId = backendId;
     }
 }

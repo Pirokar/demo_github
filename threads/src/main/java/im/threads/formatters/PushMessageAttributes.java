@@ -11,9 +11,9 @@ public class PushMessageAttributes {
     public static final String QUOTES = "quotes";
     public static final String ATTACHMENTS = "attachments";
     public static final String PROVIDER_ID = "providerId";
-    public static final String BACKEND_ID = "backendId";
+    public static final String READ_PROVIDER_IDS = "readInMessageIds";
+    public static final String UUID = "uuid";
     public static final String HIDE_AFTER = "hideAfter";
-
     public static final String ORIGIN = "origin";
     public static final String THREADS = "threads";
     public static final String APP_MARKER_KEY = "appMarker";
