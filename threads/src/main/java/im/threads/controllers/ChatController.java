@@ -22,6 +22,7 @@ import com.mfms.android.push_lite.PushController;
 import com.mfms.android.push_lite.PushServerIntentService;
 import com.mfms.android.push_lite.RequestCallback;
 import com.mfms.android.push_lite.exception.PushServerErrorException;
+import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
 import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.io.File;
@@ -295,9 +296,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 PrefUtils.getAppMarker(appContext));
 
         Transport.sendMessageMFMSAsync(context, ratingDoneMessage, false,
-                new RequestCallback<String, PushServerErrorException>() {
+                new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                     @Override
-                    public void onResult(final String providerId) {
+                    public void onResult(InMessageSend.Response response) {
                         // Change survey view after 2 seconds
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
@@ -326,9 +327,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 OutgoingMessageCreator.createReopenThreadMessage(clientID, appContext);
 
         Transport.sendMessageMFMSAsync(context, resolveThreadMessage, true,
-                new RequestCallback<String, PushServerErrorException>() {
+                new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                     @Override
-                    public void onResult(final String s) {
+                    public void onResult(InMessageSend.Response response) {
                         removeResolveRequest();
                     }
 
@@ -436,15 +437,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             lastUserTypingSend = currentTime;
             Transport.sendMessageMFMSAsync(appContext,
                     OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), appContext),
-                    true, new RequestCallback<String, PushServerErrorException>() {
-                        @Override
-                        public void onResult(final String aVoid) {
-                        }
-
-                        @Override
-                        public void onError(final PushServerErrorException e) {
-                        }
-                    }, null);
+                    true, null, null);
         }
     }
 
@@ -671,10 +664,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 PrefUtils.getThreadID(appContext),
                 appContext);
 
-        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
+        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
             @Override
-            public void onResult(final String providerId) {
-                onMessageSent(userPhrase, providerId);
+            public void onResult(InMessageSend.Response response) {
+                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMilis());
             }
 
             @Override
@@ -719,10 +712,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 PrefUtils.getThreadID(appContext),
                 appContext);
 
-        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
+        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
             @Override
-            public void onResult(final String providerId) {
-                onMessageSent(userPhrase, providerId);
+            public void onResult(InMessageSend.Response response) {
+                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMilis());
             }
 
             @Override
@@ -732,13 +725,17 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         }, null);
     }
 
-    private void onMessageSent(final UserPhrase userPhrase, final String newProviderId) {
+    private void onMessageSent(final UserPhrase userPhrase, String providerId, long sentAtTimestamp) {
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.d(TAG, "server answer on pharse sent with id " + newProviderId);
+            Log.d(TAG, "server answer on pharse sent with id " + providerId);
         }
-        mDatabaseHolder.setUserPhraseProviderId(userPhrase.getUuid(), newProviderId);
+        userPhrase.setProviderId(providerId);
+        userPhrase.setTimeStamp(sentAtTimestamp);
+
+        mDatabaseHolder.putChatItem(userPhrase);
+
         if (fragment != null) {
-            fragment.setUserPhraseProviderId(userPhrase.getUuid(), newProviderId);
+            fragment.updateChatItem(userPhrase);
         }
         setMessageState(userPhrase, MessageState.STATE_SENT);
         proceedSendingQueue();
@@ -1273,9 +1270,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                         appContext
                 );
 
-                Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
+                Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                     @Override
-                    public void onResult(final String s) {
+                    public void onResult(InMessageSend.Response response) {
                         setSurveyLifetime(survey);
                     }
 

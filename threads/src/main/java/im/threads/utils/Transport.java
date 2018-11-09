@@ -5,6 +5,7 @@ import android.content.Context;
 import com.mfms.android.push_lite.PushController;
 import com.mfms.android.push_lite.RequestCallback;
 import com.mfms.android.push_lite.exception.PushServerErrorException;
+import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,15 +48,15 @@ public final class Transport {
     public static void sendMessageMFMSAsync(Context ctx,
                                              String message,
                                              boolean isSystem,
-                                             final RequestCallback<String, PushServerErrorException> listener,
+                                             final RequestCallback<InMessageSend.Response, PushServerErrorException> listener,
                                              final ExceptionListener exceptionListener) {
         try {
             getPushControllerInstance(ctx).sendMessageAsync(
-                    message, isSystem, new RequestCallback<String, PushServerErrorException>() {
+                    message, isSystem, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                         @Override
-                        public void onResult(String aVoid) {
+                        public void onResult(InMessageSend.Response response) {
                             if (listener != null) {
-                                listener.onResult(aVoid);
+                                listener.onResult(response);
                             }
                         }
 

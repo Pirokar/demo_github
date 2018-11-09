@@ -19,7 +19,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private MessageState sentState;
     private final Quote mQuote;
     private boolean isWithQuote;
-    private final long phraseTimeStamp;
+    private long phraseTimeStamp;
     private FileDescription fileDescription;
     private boolean isChosen;
     public boolean isCopy = false;
@@ -138,6 +138,10 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+
+    public void setTimeStamp(long timestamp) {
+        this.phraseTimeStamp = timestamp;
     }
 
     @Override
