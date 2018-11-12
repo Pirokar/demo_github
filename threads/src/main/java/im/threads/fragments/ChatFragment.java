@@ -601,8 +601,14 @@ public class ChatFragment extends Fragment implements
         mChatAdapter.notifyDataSetChangedOnUi();
     }
 
-    public void updateChatItem(ChatItem chatItem) {
-        mChatAdapter.notifyItemChangedOnUi(chatItem);
+    public void updateChatItem(ChatItem chatItem, boolean needsReordering) {
+
+        if (needsReordering) {
+            mChatAdapter.reorder(chatItem);
+            mChatAdapter.notifyDataSetChangedOnUi();
+        } else {
+            mChatAdapter.notifyItemChangedOnUi(chatItem);
+        }
     }
 
     private void showPopup() {

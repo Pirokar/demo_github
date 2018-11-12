@@ -667,7 +667,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
             @Override
             public void onResult(InMessageSend.Response response) {
-                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMilis());
+                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMillis());
             }
 
             @Override
@@ -715,7 +715,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
             @Override
             public void onResult(InMessageSend.Response response) {
-                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMilis());
+                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMillis());
             }
 
             @Override
@@ -735,7 +735,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         mDatabaseHolder.putChatItem(userPhrase);
 
         if (fragment != null) {
-            fragment.updateChatItem(userPhrase);
+            fragment.updateChatItem(userPhrase, true);
         }
         setMessageState(userPhrase, MessageState.STATE_SENT);
         proceedSendingQueue();
@@ -1215,7 +1215,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     private void updateChatItem(ChatItem chatItem) {
         if (fragment != null) {
-            fragment.updateChatItem(chatItem);
+            fragment.updateChatItem(chatItem, false);
         }
     }
 
