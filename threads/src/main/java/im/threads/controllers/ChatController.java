@@ -730,7 +730,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             Log.d(TAG, "server answer on pharse sent with id " + providerId);
         }
         userPhrase.setProviderId(providerId);
-        userPhrase.setTimeStamp(sentAtTimestamp);
+        if (sentAtTimestamp > 0) {
+            userPhrase.setTimeStamp(sentAtTimestamp);
+        }
 
         mDatabaseHolder.putChatItem(userPhrase);
 
