@@ -162,6 +162,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUOTE);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_FILE_DESCRIPTION);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTIONS);
             onCreate(db);
         }
     }
