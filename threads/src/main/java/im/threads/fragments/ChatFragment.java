@@ -1112,10 +1112,9 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setStateConsultConnected(final String connectedConsultId, final String consultName) {
-        final ChatFragment f = this;
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+
+        h.postDelayed(() -> {
+            if (isAdded()) {
                 if (!isInMessageSearchMode) {
                     binding.subtitle.setVisibility(View.VISIBLE);
                     binding.consultName.setVisibility(View.VISIBLE);
@@ -1127,7 +1126,8 @@ public class ChatFragment extends Fragment implements
                 }
 
                 binding.subtitle.setText(getString(style.chatSubtitleTextResId));
-                f.connectedConsultId = connectedConsultId;
+
+                ChatFragment.this.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();
             }
