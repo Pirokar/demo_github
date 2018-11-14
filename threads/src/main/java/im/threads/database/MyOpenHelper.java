@@ -230,7 +230,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         }
 
         if (phrase instanceof UserPhrase) {
-            putUserPhrase((UserPhrase) phrase);
+            insertOrUpdateUserPhrase((UserPhrase) phrase);
         }
     }
 
@@ -257,6 +257,43 @@ class MyOpenHelper extends SQLiteOpenHelper {
         } else {
             getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_UUID + " = ? ", new String[]{phrase.getUuid()});
         }
+        if (phrase.getFileDescription() != null) {
+            putFd(phrase.getFileDescription(), phrase.getUuid(), false);
+        }
+        if (phrase.getQuote() != null) {
+            cv.clear();
+            cv.put(COLUMN_QUOTE_MESSAGE_UUID_EXT, phrase.getUuid());
+            cv.put(COLUMN_QUOTE_HEADER, phrase.getQuote().getPhraseOwnerTitle());
+            cv.put(COLUMN_QUOTE_BODY, phrase.getQuote().getText());
+            cv.put(COLUMN_QUOTE_TIMESTAMP, phrase.getQuote().getTimeStamp());
+            getWritableDatabase().insert(TABLE_QUOTE, null, cv);
+            if (phrase.getQuote().getFileDescription() != null) {
+                putFd(phrase.getQuote().getFileDescription(), phrase.getUuid(), true);
+            }
+        }
+        c.close();
+    }
+
+    private void insertOrUpdateUserPhrase(UserPhrase phrase) {
+
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_MESSAGE_UUID, phrase.getUuid());
+        cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
+        cv.put(COLUMN_PHRASE, phrase.getPhrase());
+        cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
+        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.ordinal());
+        cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.getSentState().ordinal());
+
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_UUID + " from " + TABLE_MESSAGES
+                + " where " + COLUMN_MESSAGE_UUID + " = ?", new String[]{phrase.getUuid()});
+        boolean existsInDb = c.getCount() > 0;
+
+        if (existsInDb) {
+            getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_UUID + " = ? ", new String[]{phrase.getUuid()});
+        } else {
+            getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+        }
+
         if (phrase.getFileDescription() != null) {
             putFd(phrase.getFileDescription(), phrase.getUuid(), false);
         }
