@@ -167,63 +167,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void putUserPhrase(UserPhrase userPhrase) {
-        ArrayList<UserPhrase> phrasesInDb = new ArrayList<>();
-        if (cashedPhrases == null || cashedPhrases.isEmpty()
-                || (System.currentTimeMillis() - lastPhraseRequest) > 300) {
-            Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES, new String[]{});
-
-            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                if (cGetInt(c, COLUMN_MESSAGE_TYPE) == MessageTypes.TYPE_USER_PHRASE.ordinal()) {
-                    String phrase1 = cGetString(c, COLUMN_PHRASE);
-                    Pair<Boolean, FileDescription> fd = getFd(cGetString(c, COLUMN_MESSAGE_UUID));
-
-                    UserPhrase up = new UserPhrase(
-                            cGetString(c, COLUMN_MESSAGE_UUID),
-                            cGetString(c, COLUMN_PROVIDER_ID),
-                            phrase1,
-                            getQuote(cGetString(c, COLUMN_MESSAGE_UUID)),
-                            cGetLong(c, COLUMN_TIMESTAMP),
-                            fd != null && !fd.first ? fd.second : null);
-
-                    int sentState = cGetInt(c, COLUMN_MESSAGE_SEND_STATE);
-                    up.setSentState(MessageState.fromOrdinal(sentState));
-                    phrasesInDb.add(up);
-                }
-            }
-            c.close();
-            lastPhraseRequest = System.currentTimeMillis();
-            cashedPhrases = phrasesInDb;
-        } else {
-            phrasesInDb = cashedPhrases;
-        }
-        if (phrasesInDb.contains(userPhrase)) return;
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_UUID, userPhrase.getUuid());
-        cv.put(COLUMN_PROVIDER_ID, userPhrase.getProviderId());
-        cv.put(COLUMN_PHRASE, userPhrase.getPhrase());
-        cv.put(COLUMN_MESSAGE_SEND_STATE, userPhrase.getSentState().ordinal());
-        cv.put(COLUMN_TIMESTAMP, userPhrase.getTimeStamp());
-        cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.ordinal());
-
-        getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
-        if (userPhrase.getFileDescription() != null) {
-            putFd(userPhrase.getFileDescription(), userPhrase.getUuid(), false);
-        }
-        if (userPhrase.getQuote() != null) {
-            cv.clear();
-            cv.put(COLUMN_QUOTE_MESSAGE_UUID_EXT, userPhrase.getUuid());
-            cv.put(COLUMN_QUOTE_HEADER, userPhrase.getQuote().getPhraseOwnerTitle());
-            cv.put(COLUMN_QUOTE_BODY, userPhrase.getQuote().getText());
-            cv.put(COLUMN_QUOTE_TIMESTAMP, userPhrase.getQuote().getTimeStamp());
-            getWritableDatabase().insert(TABLE_QUOTE, null, cv);
-            if (userPhrase.getQuote().getFileDescription() != null) {
-                putFd(userPhrase.getQuote().getFileDescription(), userPhrase.getUuid(), true);
-            }
-        }
-    }
-
-
     void putChatPhrase(ChatPhrase phrase) {
         if (phrase instanceof ConsultPhrase) {
             insertOrUpdateConsultPhrase((ConsultPhrase) phrase);
