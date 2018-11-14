@@ -390,7 +390,7 @@ public class IncomingMessageParser {
             final boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
 
             chatItem = new ConsultConnectionMessage(uuid, providerId, String.valueOf(operatorId), type, name, gender,
-                    System.currentTimeMillis(), photourl, status, title, displayMessage);
+                    timeStamp, photourl, status, title, displayMessage);
 
         } catch (final JSONException e) {
             e.printStackTrace();
