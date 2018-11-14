@@ -1165,6 +1165,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) == nextTimeStamp.get(Calendar.DAY_OF_YEAR)) {
                     items.remove(daterows.get(i + 1));
                 }
+
+                //Removing daterow if it is a last item - may happen when message order has changed
+                DateRow lastDateRow = daterows.get(daterows.size() -1 );
+                if (lastDateRow == items.get(items.size() -1)) {
+                    items.remove(lastDateRow);
+                }
             }
             for (final ChatItem ci : items) {
                 final int index = items.indexOf(ci);

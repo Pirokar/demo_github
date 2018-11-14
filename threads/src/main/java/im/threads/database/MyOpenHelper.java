@@ -293,6 +293,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
         c.close();
         if (!isDuplicate) {
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
+        } else {
+            getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_UUID + " = ? ", new String[]{consultConnectionMessage.getUuid()});
         }
     }
 
