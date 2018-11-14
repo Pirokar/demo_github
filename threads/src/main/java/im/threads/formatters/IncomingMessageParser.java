@@ -378,7 +378,7 @@ public class IncomingMessageParser {
             final JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
             final String providerId = pushMessage.messageId;
             String uuid = fullMessage.getString(PushMessageAttributes.UUID);
-            final long timeStamp = pushMessage.sentAt; // TODO Why it is not used?
+            final long timeStamp = pushMessage.sentAt;
             final JSONObject operator = fullMessage.getJSONObject("operator");
             final long operatorId = operator.getLong("id");
             final String name = operator.isNull("name") ? null : operator.getString("name");
