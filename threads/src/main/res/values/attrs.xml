@@ -5,8 +5,4 @@
         <attr name="start_download_label" format="reference"/>
         <attr name="in_progress_label" format="reference"/>
     </declare-styleable>
-    <declare-styleable name="MyTextView">
-        <attr name="textSize" format="integer"/>
-        <attr name="textColor" format="color"/>
-    </declare-styleable>
 </resources>

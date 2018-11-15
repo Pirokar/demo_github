@@ -21,7 +21,7 @@ import retrofit2.http.Url;
 
 public interface ThreadsApi {
 
-    public static String API_VERSION = "v4";
+    public static String API_VERSION = "v5";
 
     @Multipart
     @PUT("files")
@@ -33,7 +33,7 @@ public interface ThreadsApi {
     @GET("history/" + API_VERSION)
     Call<HistoryResponse> history(
             @Header("X-Client-Token") String token,
-            @Query("start") Long start,
+            @Query("before") String beforeDate,
             @Query("count") Long count,
             @Query("libVersion") String version
     );

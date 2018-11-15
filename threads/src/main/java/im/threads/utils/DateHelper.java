@@ -12,7 +12,7 @@ import java.util.TimeZone;
 
 public class DateHelper {
 
-    public static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    public static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static String SERVER_DATE_TIMEZONE = "UTC";
 
     private static SimpleDateFormat sdf = new SimpleDateFormat(SERVER_DATE_FORMAT, Locale.getDefault());
