@@ -3,15 +3,43 @@ package im.threads.model;
 import com.google.gson.annotations.SerializedName;
 
 public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
+
+    private String uuid;
+    private String providerId; //This this a mfms messageId required for read status updates
     private final String type;
     private final String name;
     private final boolean sex;
     private final long date;
     private final String status;
     private String title;
-    private final String messageId;
-    private String backendId;
     private boolean displayMessage;
+
+    public ConsultConnectionMessage(String uuid, String providerId, String consultId, String type, String name, boolean sex, long date,
+                                    String avatarPath, String status, String title, boolean displayMessage) {
+
+        super(avatarPath, consultId);
+        this.uuid = uuid;
+        this.providerId = providerId;
+        this.type = type;
+        this.name = name;
+        this.sex = sex;
+        this.date = date;
+        this.status = status;
+        this.title = title;
+        this.displayMessage = displayMessage;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
 
     public String getName() {
         return name;
@@ -24,34 +52,6 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
     @Override
     public long getTimeStamp() {
         return date;
-    }
-
-    public ConsultConnectionMessage(
-            String consultId
-            , String type
-            , String name
-            , boolean sex
-            , long date
-            , String avatarPath
-            , String status
-            , String title
-            , String messageId,
-            String backendId,
-            boolean displayMessage) {
-        super(avatarPath, consultId);
-        this.type = type;
-        this.name = name;
-        this.sex = sex;
-        this.date = date;
-        this.status = status;
-        this.title = title;
-        this.messageId = messageId;
-        this.backendId = backendId;
-        this.displayMessage = displayMessage;
-    }
-
-    public String getMessageId() {
-        return messageId;
     }
 
     public String getTitle() {
@@ -78,10 +78,6 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
         return date;
     }
 
-    public String getBackendId() {
-        return backendId;
-    }
-
     @SerializedName("display")
     public boolean isDisplayMessage() {
         return displayMessage;
@@ -91,14 +87,14 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ConsultConnectionMessage)) return false;
-        if (messageId == null) return false;
+        if (uuid == null) return false;
         ConsultConnectionMessage that = (ConsultConnectionMessage) o;
         if (sex != that.sex) return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
 
         try {
-            return messageId.equalsIgnoreCase(that.messageId);
+            return uuid.equalsIgnoreCase(that.uuid);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }

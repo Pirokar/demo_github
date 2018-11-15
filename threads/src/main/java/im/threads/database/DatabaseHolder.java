@@ -88,8 +88,8 @@ public class DatabaseHolder {
         return false;
     }
 
-    public void setStateOfUserPhrase(String messageId, MessageState messageState) {
-        mMyOpenHelper.setUserPhraseState(messageId, messageState);
+    public void setStateOfUserPhraseByProviderId(String providerId, MessageState messageState) {
+        mMyOpenHelper.setUserPhraseStateByProviderId(providerId, messageState);
     }
 
     public int getMessagesCount() {
@@ -195,8 +195,8 @@ public class DatabaseHolder {
         mMyOpenHelper.getWritableDatabase().endTransaction();
     }
 
-    public void setUserPhraseMessageId(String oldId, String newId) {
-        mMyOpenHelper.setUserPhraseMessageId(oldId, newId);
+    public void setUserPhraseProviderId(String uuid, String providerId) {
+        mMyOpenHelper.setUserPhraseProviderId(uuid, providerId);
     }
 
     public void cleanDbAsync(final CompletionHandler<Void> onComplete) {
@@ -239,8 +239,8 @@ public class DatabaseHolder {
         });
     }
 
-    public List<String> getUnreadMessagesId() {
-        return mMyOpenHelper.getUnreadMessagesId();
+    public List<String> getUnreadMessagesProviderIds() {
+        return mMyOpenHelper.getUnreadMessagesProviderIds();
     }
 
     // let the DB time to write the incoming message
@@ -261,13 +261,13 @@ public class DatabaseHolder {
 
     private void getUnreadMessagesCount(final ChatController.UnreadMessagesCountListener unreadMessagesCountListener) {
         if (unreadMessagesCountListener != null) {
-            final int unreadMessagesCount = mMyOpenHelper.getUnreadMessagesId().size();
+            final int unreadMessagesCount = mMyOpenHelper.getUnreadMessagesProviderIds().size();
             unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadMessagesCount);
         }
     }
 
-    public void setMessageWereRead(String messageId) {
-        mMyOpenHelper.setMessageWereRead(messageId);
+    public void setMessageWereRead(String providerId) {
+        mMyOpenHelper.setMessageWereRead(providerId);
     }
 
     public String getLastConsultAvatarPathSync(String id) {

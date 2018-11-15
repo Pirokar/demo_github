@@ -10,10 +10,12 @@ import im.threads.utils.FileUtils;
  * сообщение оператора
  */
 public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsOnlyImage {
+
+    private final String uuid;
+    private String providerId; //This this a mfms messageId required for read status updates
     private final boolean sex;
     private final long timeStamp;
     private final String phrase;
-    private final String messageId;
     private final String consultName;
     private boolean isAvatarVisible = true;
     private final Quote quote;
@@ -24,35 +26,37 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
     //для поиска сообщений в чате
     private boolean found;
 
-    private String backendId;
     public OGData ogData;
     public String ogUrl;
 
-    public ConsultPhrase(
-            FileDescription fileDescription
-            , Quote quote
-            , String consultName
-            , String messageId
-            , String phrase
-            , long timeStamp
-            , String consultId
-            , String avatarPath
-            , boolean isRead
-            , String status
-            , boolean sex
-            , String backendId
-    ) {
+    public ConsultPhrase(String uuid, String providerId, FileDescription fileDescription, Quote quote, String consultName,
+                         String phrase, long timeStamp, String consultId, String avatarPath,
+                         boolean isRead, String status, boolean sex) {
+
         super(avatarPath, consultId);
+
+        this.uuid = uuid;
+        this.providerId = providerId;
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.consultName = consultName;
-        this.messageId = messageId;
         this.phrase = phrase;
         this.timeStamp = timeStamp;
         this.isRead = isRead;
         this.status = status;
         this.sex = sex;
-        this.backendId = backendId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     public String getStatus() {
@@ -101,7 +105,7 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
 
     @Override
     public String getId() {
-        return messageId;
+        return uuid;
     }
 
     public boolean hasFile() {
@@ -149,52 +153,45 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
 
         ConsultPhrase that = (ConsultPhrase) o;
 
-        if (sex != that.sex) {
+        if (!TextUtils.isEmpty(uuid)) {
+            return uuid.equals(that.uuid);
+        } else {
             return false;
         }
 
-        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null) {
-            return false;
-        }
-
-        if (backendId != null && that.backendId != null) {
-            return backendId.equals(that.backendId);
-        }
-
-        if (messageId != null && that.messageId != null) {
-            return messageId.equals(that.messageId);
-        }
-
-        if (!TextUtils.isEmpty(phrase) ? !phrase.equals(that.phrase) : !TextUtils.isEmpty(that.phrase))  {
-            return false;
-        }
-
-        if (quote != null ? !quote.equals(that.quote) : that.quote != null) {
-            return false;
-        }
-
-        if (fileDescription != null && that.fileDescription != null) {
-            return fileDescription.equals(that.fileDescription);
-        }
-
-        return status != null ? status.equals(that.status) : that.status == null;
+//        if (sex != that.sex) {
+//            return false;
+//        }
+//
+//        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null) {
+//            return false;
+//        }
+//        if (!TextUtils.isEmpty(phrase) ? !phrase.equals(that.phrase) : !TextUtils.isEmpty(that.phrase))  {
+//            return false;
+//        }
+//
+//        if (quote != null ? !quote.equals(that.quote) : that.quote != null) {
+//            return false;
+//        }
+//
+//        if (fileDescription != null && that.fileDescription != null) {
+//            return fileDescription.equals(that.fileDescription);
+//        }
+//
+//        return status != null ? status.equals(that.status) : that.status == null;
     }
 
     @Override
     public int hashCode() {
-        int result = consultId != null ? consultId.hashCode() : 0;
-        result = 31 * result + (sex ? 1 : 0);
-        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
-        result = 31 * result + (quote != null ? quote.hashCode() : 0);
-        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
+        int result = uuid != null ? uuid.hashCode() : 0;
+//        int result = consultId != null ? consultId.hashCode() : 0;
+//        result = 31 * result + (sex ? 1 : 0);
+//        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
+//        result = 31 * result + (quote != null ? quote.hashCode() : 0);
+//        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
+//        result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
     }
-
-    public String getMessageId() {
-        return messageId;
-    }
-
 
     @Override
     public Quote getQuote() {
@@ -215,11 +212,4 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
         return phrase;
     }
 
-    public String getBackendId() {
-        return backendId;
-    }
-
-    public void setBackendId(String backendId) {
-        this.backendId = backendId;
-    }
 }

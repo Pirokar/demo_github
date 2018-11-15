@@ -20,8 +20,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 78
-        versionName "2.43.0"
+        versionCode 79
+        versionName "2.44.0"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -62,9 +62,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
-
-    debugImplementation 'com.mfms.android:push-lite-debug:2.5.0'
-    releaseImplementation 'com.mfms.android:push-lite-release:2.5.0'
+    debugImplementation 'com.mfms.android:push-lite-debug:2.6.13'
+    releaseImplementation 'com.mfms.android:push-lite-release:2.6.13'
 }
 
 
