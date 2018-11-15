@@ -5,6 +5,7 @@ import android.content.Context;
 import com.mfms.android.push_lite.PushController;
 import com.mfms.android.push_lite.RequestCallback;
 import com.mfms.android.push_lite.exception.PushServerErrorException;
+import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import retrofit2.Response;
 
 public final class Transport {
 
-    private static Long lastLoadId;
+    private static Long lastLoadedTimestamp;
 
     public interface ExceptionListener {
         void onException(Exception e);
@@ -47,15 +48,15 @@ public final class Transport {
     public static void sendMessageMFMSAsync(Context ctx,
                                              String message,
                                              boolean isSystem,
-                                             final RequestCallback<String, PushServerErrorException> listener,
+                                             final RequestCallback<InMessageSend.Response, PushServerErrorException> listener,
                                              final ExceptionListener exceptionListener) {
         try {
             getPushControllerInstance(ctx).sendMessageAsync(
-                    message, isSystem, new RequestCallback<String, PushServerErrorException>() {
+                    message, isSystem, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                         @Override
-                        public void onResult(String aVoid) {
+                        public void onResult(InMessageSend.Response response) {
                             if (listener != null) {
-                                listener.onResult(aVoid);
+                                listener.onResult(response);
                             }
                         }
 
@@ -91,10 +92,10 @@ public final class Transport {
      * метод обертка для запроса истории сообщений
      * выполняется синхронно
      *
-     * @param start id сообщения от которого грузить, null если с начала
+     * @param beforeTimestamp timestamp сообщения от которого грузить, null если с начала
      * @param count количество сообщений для загрузки
      */
-    public static HistoryResponse getHistorySync(Context ctx, Long start, Long count) throws Exception {
+    public static HistoryResponse getHistorySync(Context ctx, Long beforeTimestamp, Long count) throws Exception {
         String token = getPushControllerInstance(ctx).getDeviceAddress() + ":" + PrefUtils.getClientID(ctx);
         String url = PrefUtils.getServerUrlMetaInfo(ctx);
         if (count == null) {
@@ -103,7 +104,8 @@ public final class Transport {
         if (url != null && !url.isEmpty() && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
             ThreadsApi threadsApi = ServiceGenerator.getThreadsApi();
-            Call<HistoryResponse> call = threadsApi.history(token, start, count, AppInfoHelper.getLibVersion());
+            String beforeDate = beforeTimestamp == null ? null : DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp);
+            Call<HistoryResponse> call = threadsApi.history(token, beforeDate, count, AppInfoHelper.getLibVersion());
             Response<HistoryResponse> response = call.execute();
             return response.body();
         } else {
@@ -119,7 +121,7 @@ public final class Transport {
      * @param fromBeginning загружать ли историю с начала или с последнего полученного сообщения
      */
     public static HistoryResponse getHistorySync(Context ctx, Long count, boolean fromBeginning) throws Exception {
-        return getHistorySync(ctx, fromBeginning ? null : lastLoadId, count);
+        return getHistorySync(ctx, fromBeginning ? null : lastLoadedTimestamp, count);
     }
 
     public static long getHistoryLoadingCount(Context ctx) {
@@ -140,7 +142,7 @@ public final class Transport {
 
     private static void setupLastItemIdFromHistory(List<MessageFromHistory> list) {
         if (list != null && !list.isEmpty()) {
-            lastLoadId = list.get(0).getBackendId();
+            lastLoadedTimestamp = list.get(0).getTimeStamp();
         }
     }
 }

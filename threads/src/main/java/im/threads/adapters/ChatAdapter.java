@@ -96,7 +96,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private AdapterInterface mAdapterInterface;
     public static final String ACTION_CHANGED = "im.threads.adapters.ACTION_CHANGED";
     private boolean isInSearchMode = false;
-    private Handler typingHandler = new Handler(Looper.getMainLooper());
+    private Handler viewHandler = new Handler(Looper.getMainLooper());
 
     public ChatAdapter(final ArrayList<ChatItem> list, final Context ctx, final AdapterInterface adapterInterface) {
         this.list = list;
@@ -498,7 +498,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             if (item instanceof UnreadMessages) {
                 iter.remove();
-                notifyItemRemoved(list.indexOf(item));
+                notifyItemRemoved(item);
             }
         }
     }
@@ -599,14 +599,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * Remove survey from the thread history
      * @return true - if deletion occurred, false - if Survey item wasn't found in the history
      */
-    public boolean removeSurvey(final String messageId) {
+    public boolean removeSurvey(final long sendingId) {
         boolean removed = false;
         final ArrayList<ChatItem> list = getOriginalList();
         for (final ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
             final ChatItem cm = iter.next();
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
-                if (survey.getMessageId() != null && survey.getMessageId().equalsIgnoreCase(messageId)) {
+                if (sendingId == survey.getSendingId()) {
                     try {
                         notifyItemRemoved(list.lastIndexOf(cm));
                     } catch (final Exception e) {
@@ -679,8 +679,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         if (withTyping) {
             removeConsultIsTyping();
-            typingHandler.removeCallbacksAndMessages(null);
-            typingHandler.postDelayed(new Runnable() {
+            viewHandler.removeCallbacksAndMessages(null);
+            viewHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     removeConsultIsTyping();
@@ -691,7 +691,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 && items.get(0) instanceof ConsultPhrase) {
             removeConsultIsTyping();
         }
-        new ChatMessagesOrderer().addAndOrder(getOriginalList(), items);
+        ChatMessagesOrderer.addAndOrder(getOriginalList(), items);
         if (!isInSearchMode) notifyDataSetChangedOnUi();
     }
 
@@ -859,13 +859,28 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return super.getItemViewType(position);
     }
 
-    public void changeStateOfMessage(final String id, final MessageState state) {
+    public void changeStateOfSurvey(long sendingId, MessageState sentState) {
+        for (final ChatItem cm : getOriginalList()) {
+            if (cm instanceof Survey) {
+                final Survey survey = (Survey) cm;
+                if (sendingId == survey.getSendingId()) {
+                    if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                        Log.i(TAG, "changeStateOfMessageByProviderId: changing read state");
+                    }
+                    ((Survey) cm).setSentState(sentState);
+                    notifyItemChangedOnUi(survey);
+                }
+            }
+        }
+    }
+
+    public void changeStateOfMessageByProviderId(final String providerId, final MessageState state) {
         for (final ChatItem cm : getOriginalList()) {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
-                if (up.getMessageId().equals(id) || (up.getBackendId() != null && up.getBackendId().equals(id))) {
+                if (providerId.equals(up.getProviderId())) {
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                        Log.i(TAG, "changeStateOfMessage: changing read state");
+                        Log.i(TAG, "changeStateOfMessageByProviderId: changing read state");
                     }
                     ((UserPhrase) cm).setSentState(state);
                 }
@@ -874,11 +889,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChangedOnUi();
     }
 
-    public void setUserPhraseMessageId(final String oldId, final String newId) {
+    public void setUserPhraseProviderId(final String uuid, final String newProviderId) {
         final ArrayList<ChatItem> list = getOriginalList();
         for (final ChatItem cm : list) {
-            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getMessageId()).equals(oldId))) {
-                ((UserPhrase) cm).setMessageId(newId);
+            if (cm instanceof UserPhrase && ((((UserPhrase) cm).getUuid()).equals(uuid))) {
+                ((UserPhrase) cm).setProviderId(newProviderId);
             }
         }
     }
@@ -991,6 +1006,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    public void reorder(ChatItem chatItem) {
+        ChatMessagesOrderer.updateOrder(getOriginalList());
+    }
+
     public interface AdapterInterface {
         void onFileClick(FileDescription description);
 
@@ -1093,33 +1112,49 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
     }
 
+    public void notifyItemRemovedOnUi(final ChatItem chatItem) {
+        ThreadUtils.runOnUiThread(() -> {
+            final int position = list.indexOf(chatItem);
+            notifyItemRemoved(position);
+        });
+    }
+
+    public void notifyItemRemoved(final ChatItem chatItem) {
+        viewHandler.post(() -> notifyItemRemoved(list.indexOf(chatItem)));
+    }
+
     public static class ChatMessagesOrderer {
 
-        public void addAndOrder(final List<ChatItem> listToInsertTo, final List<ChatItem> listToAdd) {
+        public static void addAndOrder(final List<ChatItem> listToInsertTo, final List<ChatItem> listToAdd) {
             if (listToInsertTo.containsAll(listToAdd)) return;
             for (int i = 0; i < listToAdd.size(); i++) {
                 if (!listToInsertTo.contains(listToAdd.get(i)))
                     addItemInternal(listToInsertTo, listToAdd.get(i));
             }
-            Collections.sort(listToInsertTo, new Comparator<ChatItem>() {
+            updateOrder(listToInsertTo);
+        }
+
+        public static void updateOrder(List<ChatItem> items) {
+
+            Collections.sort(items, new Comparator<ChatItem>() {
                 @Override
                 public int compare(final ChatItem lhs, final ChatItem rhs) {
                     return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
                 }
             });
-            if (listToInsertTo.size() == 0) return;
-            listToInsertTo.add(0, new DateRow(listToInsertTo.get(0).getTimeStamp() - 2));
+            if (items.size() == 0) return;
+            items.add(0, new DateRow(items.get(0).getTimeStamp() - 2));
             final Calendar currentTimeStamp = Calendar.getInstance();
             final Calendar nextTimeStamp = Calendar.getInstance();
             final List<DateRow> daterows = new ArrayList<>();
-            for (final ChatItem ci : listToInsertTo) {
+            for (final ChatItem ci : items) {
                 if (ci instanceof DateRow) {
                     daterows.add((DateRow) ci);
                     continue;
                 }
-                final int index = listToInsertTo.indexOf(ci);
-                if (index == (listToInsertTo.size() - 1)) continue;//removing dups of date rows
-                if (ci instanceof ConsultPhrase && listToInsertTo.get(index + 1) instanceof ConsultPhrase) {
+                final int index = items.indexOf(ci);
+                if (index == (items.size() - 1)) continue;//removing dups of date rows
+                if (ci instanceof ConsultPhrase && items.get(index + 1) instanceof ConsultPhrase) {
                     ((ConsultPhrase) ci).setAvatarVisible(false);
                 }
             }
@@ -1128,40 +1163,46 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 currentTimeStamp.setTimeInMillis(daterows.get(i).getTimeStamp());
                 nextTimeStamp.setTimeInMillis(daterows.get(i + 1).getTimeStamp());
                 if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) == nextTimeStamp.get(Calendar.DAY_OF_YEAR)) {
-                    listToInsertTo.remove(daterows.get(i + 1));
+                    items.remove(daterows.get(i + 1));
+                }
+
+                //Removing daterow if it is a last item - may happen when message order has changed
+                DateRow lastDateRow = daterows.get(daterows.size() -1 );
+                if (lastDateRow == items.get(items.size() -1)) {
+                    items.remove(lastDateRow);
                 }
             }
-            for (final ChatItem ci : listToInsertTo) {
-                final int index = listToInsertTo.indexOf(ci);
-                if (index == (listToInsertTo.size() - 1))
+            for (final ChatItem ci : items) {
+                final int index = items.indexOf(ci);
+                if (index == (items.size() - 1))
                     continue;//removing wrong avatar visibility of consult of date rows
-                if (ci instanceof ConsultPhrase && listToInsertTo.get(index + 1) instanceof ConsultPhrase) {
+                if (ci instanceof ConsultPhrase && items.get(index + 1) instanceof ConsultPhrase) {
                     ((ConsultPhrase) ci).setAvatarVisible(false);
                 }
             }
             SearchingConsult sc = null;
-            for (final ChatItem ci : listToInsertTo) {
+            for (final ChatItem ci : items) {
                 if (ci instanceof SearchingConsult) sc = (SearchingConsult) ci;
             }
             if (sc != null) {
-                final int prevPos = listToInsertTo.lastIndexOf(sc);
-                listToInsertTo.remove(sc);
-                listToInsertTo.add(sc);
+                final int prevPos = items.lastIndexOf(sc);
+                items.remove(sc);
+                items.add(sc);
             }
             boolean hasUnread = false;
-            for (final ChatItem ci : listToInsertTo) {
+            for (final ChatItem ci : items) {
                 if (ci instanceof ConsultPhrase) {
                     if (!((ConsultPhrase) ci).isRead()) hasUnread = true;
                 }
             }
             if (hasUnread) {
-                final long lastUnreadStamp = getLastUnreadStamp(listToInsertTo);
-                final int counter = getUnreadCount(listToInsertTo, lastUnreadStamp);
+                final long lastUnreadStamp = getLastUnreadStamp(items);
+                final int counter = getUnreadCount(items, lastUnreadStamp);
 
-                removeUnreadMessagesTitle(listToInsertTo);
-                listToInsertTo.add(new UnreadMessages(lastUnreadStamp - 1, counter));
+                removeUnreadMessagesTitle(items);
+                items.add(new UnreadMessages(lastUnreadStamp - 1, counter));
             }
-            Collections.sort(listToInsertTo, new Comparator<ChatItem>() {
+            Collections.sort(items, new Comparator<ChatItem>() {
                 @Override
                 public int compare(final ChatItem lhs, final ChatItem rhs) {
                     return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
@@ -1169,30 +1210,30 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
             boolean isWithTyping = false;
             ConsultTyping ct = null;
-            for (final ChatItem ci : listToInsertTo) {
+            for (final ChatItem ci : items) {
                 if (ci instanceof ConsultTyping) {
                     isWithTyping = true;
                     ct = (ConsultTyping) ci;
                 }
             }
             if (isWithTyping
-                    && listToInsertTo.size() != 0
-                    && !(listToInsertTo.get(listToInsertTo.size() - 1) instanceof ConsultTyping)) {
-                ct.setDate(listToInsertTo.get(listToInsertTo.size() - 1).getTimeStamp() + 1);
+                    && items.size() != 0
+                    && !(items.get(items.size() - 1) instanceof ConsultTyping)) {
+                ct.setDate(items.get(items.size() - 1).getTimeStamp() + 1);
             }
 
-            Collections.sort(listToInsertTo, new Comparator<ChatItem>() {
+            Collections.sort(items, new Comparator<ChatItem>() {
                 @Override
                 public int compare(final ChatItem lhs, final ChatItem rhs) {
                     return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
                 }
             });
-            removeAllSpacings(listToInsertTo);
-            for (int i = 0; i < listToInsertTo.size(); i++) {
+            removeAllSpacings(items);
+            for (int i = 0; i < items.size(); i++) {
                 if (i == 0) continue;
-                if (listToInsertTo.size() == 1) return;
-                final ChatItem prev = listToInsertTo.get(i - 1);
-                final ChatItem current = listToInsertTo.get(i);
+                if (items.size() == 1) return;
+                final ChatItem prev = items.get(i - 1);
+                final ChatItem current = items.get(i);
                 if (prev instanceof ConsultPhrase
                         && current instanceof ConsultPhrase) {
                     ((ConsultPhrase) prev).setAvatarVisible(false);//setting proper visibility of consult avatars
@@ -1200,10 +1241,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
 
-            insertSpacing(listToInsertTo);
+            insertSpacing(items);
         }
 
-        private void addItemInternal(final List<ChatItem> listToInsertTo, final ChatItem itemToInsert) {
+        private static void addItemInternal(final List<ChatItem> listToInsertTo, final ChatItem itemToInsert) {
             if (listToInsertTo.size() == 0) {
                 listToInsertTo.add(new DateRow(itemToInsert.getTimeStamp() - 2));
             }
@@ -1242,7 +1283,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         }
 
-        private void insertSpacing(final List<ChatItem> listToInsertTo) {
+        private static void insertSpacing(final List<ChatItem> listToInsertTo) {
             if (listToInsertTo.size() < 2) return;
             for (int i = 1; i < listToInsertTo.size(); i++) {
                 final ChatItem last = listToInsertTo.get(i);
@@ -1294,7 +1335,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
 
-        private void removeAllSpacings(final List<ChatItem> list) {
+        private static void removeAllSpacings(final List<ChatItem> list) {
             for (final Iterator<ChatItem> iter = list.iterator(); iter.hasNext(); ) {
                 if (iter.next() instanceof Space) iter.remove();
             }

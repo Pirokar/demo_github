@@ -22,6 +22,7 @@ import com.mfms.android.push_lite.PushController;
 import com.mfms.android.push_lite.PushServerIntentService;
 import com.mfms.android.push_lite.RequestCallback;
 import com.mfms.android.push_lite.exception.PushServerErrorException;
+import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
 import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.io.File;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -118,13 +118,13 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     private boolean isResolveRequestVisible;
 
     // keep an active and visible for user survey id
-    private String activeSurveyId;
+    private long activeSurveySendingId;
 
     private DatabaseHolder mDatabaseHolder;
     private Context appContext;
     private static ChatController instance;
     private int currentOffset = 0;
-    private Long lastMessageId;
+    private Long lastMessageTimestamp;
     private boolean isActive;
     private long lastUserTypingSend = System.currentTimeMillis();
     private ConsultWriter mConsultWriter;
@@ -147,7 +147,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     // Для оповещения об изменении количества непрочитанных сообщений
     private static WeakReference<UnreadMessagesCountListener> unreadMessagesCountListener;
-    private String firstUnreadMessageId;
+    private String firstUnreadProviderId;
 
     /**
      * Оповещает о приходе короткого Push-уведомления.
@@ -286,7 +286,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void onRatingClick(final Context context, final Survey survey) {
-        final ChatItem chatItem = convertRatingItem(survey);
+//        final ChatItem chatItem = convertRatingItem(survey); //TODO THREADS-3395 Figure out what is this for
+        final ChatItem chatItem = survey;
         if (chatItem != null) {
             addMessage(chatItem, appContext);
         }
@@ -295,11 +296,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 PrefUtils.getAppMarker(appContext));
 
         Transport.sendMessageMFMSAsync(context, ratingDoneMessage, false,
-                new RequestCallback<String, PushServerErrorException>() {
+                new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                     @Override
-                    public void onResult(final String s) {
-                        survey.setMessageId(s);
-
+                    public void onResult(InMessageSend.Response response) {
                         // Change survey view after 2 seconds
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
@@ -328,9 +327,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 OutgoingMessageCreator.createReopenThreadMessage(clientID, appContext);
 
         Transport.sendMessageMFMSAsync(context, resolveThreadMessage, true,
-                new RequestCallback<String, PushServerErrorException>() {
+                new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                     @Override
-                    public void onResult(final String s) {
+                    public void onResult(InMessageSend.Response response) {
                         removeResolveRequest();
                     }
 
@@ -352,12 +351,12 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void removeActiveSurvey() {
-        if (TextUtils.isEmpty(activeSurveyId)) {
+        if (activeSurveySendingId == -1) {
             return;
         }
 
         if (fragment != null) {
-            final boolean removed = fragment.removeSurvey(activeSurveyId);
+            final boolean removed = fragment.removeSurvey(activeSurveySendingId);
             if (removed) {
                 updateUi();
             }
@@ -366,7 +365,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void resetActiveSurvey() {
-        activeSurveyId = "";
+        activeSurveySendingId = -1;
     }
 
     private void updateUi() {
@@ -438,15 +437,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
             lastUserTypingSend = currentTime;
             Transport.sendMessageMFMSAsync(appContext,
                     OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), appContext),
-                    true, new RequestCallback<String, PushServerErrorException>() {
-                        @Override
-                        public void onResult(final String aVoid) {
-                        }
-
-                        @Override
-                        public void onError(final PushServerErrorException e) {
-                        }
-                    }, null);
+                    true, null, null);
         }
     }
 
@@ -673,10 +664,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 PrefUtils.getThreadID(appContext),
                 appContext);
 
-        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
+        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
             @Override
-            public void onResult(final String string) {
-                onMessageSent(userPhrase, string);
+            public void onResult(InMessageSend.Response response) {
+                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMillis());
             }
 
             @Override
@@ -721,10 +712,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 PrefUtils.getThreadID(appContext),
                 appContext);
 
-        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<String, PushServerErrorException>() {
+        Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
             @Override
-            public void onResult(final String string) {
-                onMessageSent(userPhrase, string);
+            public void onResult(InMessageSend.Response response) {
+                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMillis());
             }
 
             @Override
@@ -734,15 +725,21 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         }, null);
     }
 
-    private void onMessageSent(final UserPhrase userPhrase, final String newId) {
+    private void onMessageSent(final UserPhrase userPhrase, String providerId, long sentAtTimestamp) {
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.d(TAG, "server answer on pharse sent with id " + newId);
+            Log.d(TAG, "server answer on pharse sent with id " + providerId);
+        }
+        userPhrase.setProviderId(providerId);
+        if (sentAtTimestamp > 0) {
+            userPhrase.setTimeStamp(sentAtTimestamp);
+        }
+
+        mDatabaseHolder.putChatItem(userPhrase);
+
+        if (fragment != null) {
+            fragment.updateChatItem(userPhrase, true);
         }
         setMessageState(userPhrase, MessageState.STATE_SENT);
-        mDatabaseHolder.setUserPhraseMessageId(userPhrase.getId(), newId);
-        if (fragment != null) {
-            fragment.setUserPhraseMessageId(userPhrase.getId(), newId);
-        }
         proceedSendingQueue();
     }
 
@@ -836,13 +833,12 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 try {
                     isDownloadingMessages = true;
                     final Long chunk = 100L;
-                    final Long start = lastMessageId == null ? null : lastMessageId;
-                    final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), start, chunk);
+                    final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), lastMessageTimestamp, chunk);
                     final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
                     if (items == null || items.size() == 0) return;
-                    lastMessageId = items.get(items.size() - 1).getBackendId();
+                    lastMessageTimestamp = items.get(items.size() - 1).getTimeStamp();
                     currentOffset += items.size();
-                    isAllMessagesDownloaded = items.size() != chunk;
+                    isAllMessagesDownloaded = items.size() < chunk; // Backend can give us more than chunk anytime, it will give less only on history end
                     final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
                     mDatabaseHolder.putMessagesSync(chatItems);
                     isDownloadingMessages = false;
@@ -877,8 +873,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (cm instanceof ConsultPhrase
                 && ctx != null
                 && isActive) {
-            final String messageId = ((ConsultPhrase) cm).getId();
-            setConsultMessageRead(ctx, messageId);
+            final String providerId = ((ConsultPhrase) cm).getProviderId();
+            setConsultMessageRead(ctx, providerId);
         }
         final Context finalContext = ctx;
         h.postDelayed(new Runnable() {
@@ -950,7 +946,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     public void checkAndResendPhrase(final UserPhrase userPhrase) {
         if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
             if (fragment != null) {
-                fragment.setMessageState(userPhrase.getMessageId(), MessageState.STATE_SENDING);
+                fragment.setMessageState(userPhrase.getProviderId(), MessageState.STATE_SENDING);
             }
             queueMessageSending(userPhrase);
         }
@@ -995,15 +991,15 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 if (cm != null
                         && cm.getActiveNetworkInfo() != null
                         && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
-                    final List<String> unread = mDatabaseHolder.getUnreadMessagesId();
-                    if (unread != null && !unread.isEmpty()) {
-                        firstUnreadMessageId = unread.get(0); // для скролла к первому непрочитанному сообщению
+                    final List<String> unreadProviderIds = mDatabaseHolder.getUnreadMessagesProviderIds();
+                    if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
+                        firstUnreadProviderId = unreadProviderIds.get(0); // для скролла к первому непрочитанному сообщению
                     } else {
-                        firstUnreadMessageId = null;
+                        firstUnreadProviderId = null;
                     }
-                    if (unread != null) {
-                        for (final String id : unread) {
-                            setConsultMessageRead(appContext, id);
+                    if (unreadProviderIds != null) {
+                        for (final String providerId : unreadProviderIds) {
+                            setConsultMessageRead(appContext, providerId);
                         }
                     }
                 }
@@ -1019,44 +1015,40 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         }, 1500);
     }
 
-    public String getFirstUnreadMessageId() {
-        return firstUnreadMessageId;
+    public String getFirstUnreadProviderId() {
+        return firstUnreadProviderId;
     }
 
     void setMessageState(final UserPhrase up, final MessageState messageState) {
         up.setSentState(messageState);
         if (fragment != null) {
-            fragment.setPhraseSentStatus(up.getId(), up.getSentState());
+            fragment.setPhraseSentStatusByProviderId(up.getProviderId(), up.getSentState());
         }
-        mDatabaseHolder.setStateOfUserPhrase(up.getId(), up.getSentState());
+        mDatabaseHolder.setStateOfUserPhraseByProviderId(up.getProviderId(), up.getSentState());
     }
 
     void setSurveyState(final Survey survey, final MessageState messageState) {
         survey.setSentState(messageState);
         if (fragment != null) {
-            fragment.setPhraseSentStatus(survey.getMessageId(), survey.getSentState());
+            fragment.setSurveySentStatus(survey.getSendingId(), survey.getSentState());
         }
         mDatabaseHolder.putChatItem(survey);
     }
 
     private UserPhrase convert(final UpcomingUserMessage message) {
+
         if (message == null)
-            return new UserPhrase("local" + UUID.randomUUID().toString(), "", null, System.currentTimeMillis(), null, null);
+            return new UserPhrase(null, null, System.currentTimeMillis(), null);
+
         if (message.getFileDescription() != null && !message.getFileDescription().getFilePath().contains("file://")) {
             message.getFileDescription().setFilePath("file://" + message.getFileDescription().getFilePath());
         }
-        final UserPhrase up = new UserPhrase("local" + UUID.randomUUID().toString(), message.getText(), message.getQuote(), System.currentTimeMillis(), message.getFileDescription(), null);
+
+        final UserPhrase up = new UserPhrase(message.getText(), message.getQuote(),
+                System.currentTimeMillis(), message.getFileDescription());
+
         up.setCopy(message.isCopyied());
         return up;
-    }
-
-    private ChatItem convertRatingItem(final ChatItem chatItem) {
-        if (chatItem instanceof Survey) {
-            final Survey survey = (Survey) chatItem;
-            survey.setMessageId("local" + UUID.randomUUID().toString());
-            return chatItem;
-        }
-        return null;
     }
 
     public void onSystemMessageFromServer(final Context ctx, final Bundle bundle, final String shortMessage) {
@@ -1078,12 +1070,12 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 if (ChatStyle.getInstance().isDebugLoggingEnabled) {
                     Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
                 }
-                for (final String s : list) {
+                for (final String readMessageProviderId : list) {
                     if (fragment != null) {
-                        fragment.setPhraseSentStatus(s, MessageState.STATE_WAS_READ);
+                        fragment.setPhraseSentStatusByProviderId(readMessageProviderId, MessageState.STATE_WAS_READ);
                     }
                     if (mDatabaseHolder != null)
-                        mDatabaseHolder.setStateOfUserPhrase(s, MessageState.STATE_WAS_READ);
+                        mDatabaseHolder.setStateOfUserPhraseByProviderId(readMessageProviderId, MessageState.STATE_WAS_READ);
                 }
                 break;
             case REMOVE_PUSHES:
@@ -1225,7 +1217,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     private void updateChatItem(ChatItem chatItem) {
         if (fragment != null) {
-            fragment.updateChatItem(chatItem);
+            fragment.updateChatItem(chatItem, false);
         }
     }
 
@@ -1280,10 +1272,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                         appContext
                 );
 
-                Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<String, PushServerErrorException>() {
+                Transport.sendMessageMFMSAsync(ctx, ratingDoneMessage, true, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                     @Override
-                    public void onResult(final String s) {
-                        survey.setMessageId(s);
+                    public void onResult(InMessageSend.Response response) {
                         setSurveyLifetime(survey);
                     }
 
@@ -1361,7 +1352,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     public void setSurveyLifetime(final Survey survey) {
         // delete survey after timeout if user doesn't vote
-        activeSurveyId = survey.getMessageId();
+        activeSurveySendingId = survey.getSendingId();
         final Long hideAfter = survey.getHideAfter();
         final Handler closeActiveSurveyHandler = new Handler(Looper.getMainLooper());
         closeActiveSurveyHandler.postDelayed(new Runnable() {
@@ -1516,10 +1507,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         void onUnreadMessagesCountChanged(int count);
     }
 
-    private void setConsultMessageRead(final Context ctx, final String messageId) {
+    private void setConsultMessageRead(final Context ctx, final String providerId) {
         try {
-            Transport.getPushControllerInstance(ctx).notifyMessageRead(messageId);
-            mDatabaseHolder.setMessageWereRead(messageId);
+            Transport.getPushControllerInstance(ctx).notifyMessageRead(providerId);
+            mDatabaseHolder.setMessageWereRead(providerId);
         } catch (final PushServerErrorException e) {
             e.printStackTrace();
         }

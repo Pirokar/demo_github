@@ -16,8 +16,8 @@ import im.threads.utils.DateHelper;
 
 public class MessageFromHistory implements ChatItem {
 
-    private Long backendId;
-    private String providerId;
+    private String uuid;
+    private String providerId; //This this a mfms messageId required for read status updates
     private String clientId;
     private Long threadId;
     private Operator operator;
@@ -30,6 +30,9 @@ public class MessageFromHistory implements ChatItem {
     private List<MessageFromHistory> quotes;
     private String type;
     private boolean display;
+
+    //SURVEY
+    private Long hideAfter;
 
     //SURVEY ANSWERED
     private Long sendingId;
@@ -52,12 +55,12 @@ public class MessageFromHistory implements ChatItem {
         return list;
     }
 
-    public Long getBackendId() {
-        return backendId;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setBackendId(Long id) {
-        this.backendId = id;
+    public void setUuid(String id) {
+        this.uuid = id;
     }
 
     public String getProviderId() {
@@ -175,6 +178,10 @@ public class MessageFromHistory implements ChatItem {
 
     public void setSendingId(Long sendingId) {
         this.sendingId = sendingId;
+    }
+
+    public Long getHideAfter() {
+        return hideAfter;
     }
 
     public Long getQuestionId() {

@@ -37,6 +37,7 @@ public class OutgoingMessageCreator {
             Quote quote = upcomingUserMessage.getQuote();
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
             JSONObject formattedMessage = new JSONObject();
+            formattedMessage.put(PushMessageAttributes.UUID, upcomingUserMessage.getUuid());
             formattedMessage.put(PushMessageAttributes.CLIENT_ID, clientId);
             final String phrase = upcomingUserMessage.getPhrase();
             formattedMessage.put(PushMessageAttributes.TEXT, phrase == null ? "" : phrase);
@@ -60,11 +61,8 @@ public class OutgoingMessageCreator {
                 if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                     quoteJson.put(PushMessageAttributes.ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
                 }
-                if (upcomingUserMessage.getQuote().getMessageId() != null) {
-                    quoteJson.put(PushMessageAttributes.PROVIDER_ID, upcomingUserMessage.getQuote().getMessageId());
-                }
-                if (upcomingUserMessage.getQuote().getBackendId() != null) {
-                    quoteJson.put(PushMessageAttributes.BACKEND_ID, upcomingUserMessage.getQuote().getBackendId());
+                if (upcomingUserMessage.getQuote().getUuid() != null) {
+                    quoteJson.put(PushMessageAttributes.UUID, upcomingUserMessage.getQuote().getUuid());
                 }
             }
             if (fileDescription != null && mfmsFilePath != null) {
