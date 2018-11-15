@@ -601,8 +601,14 @@ public class ChatFragment extends Fragment implements
         mChatAdapter.notifyDataSetChangedOnUi();
     }
 
-    public void updateChatItem(ChatItem chatItem) {
-        mChatAdapter.notifyItemChangedOnUi(chatItem);
+    public void updateChatItem(ChatItem chatItem, boolean needsReordering) {
+
+        if (needsReordering) {
+            mChatAdapter.reorder(chatItem);
+            mChatAdapter.notifyDataSetChangedOnUi();
+        } else {
+            mChatAdapter.notifyItemChangedOnUi(chatItem);
+        }
     }
 
     private void showPopup() {
@@ -1106,10 +1112,9 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setStateConsultConnected(final String connectedConsultId, final String consultName) {
-        final ChatFragment f = this;
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+
+        h.postDelayed(() -> {
+            if (isAdded()) {
                 if (!isInMessageSearchMode) {
                     binding.subtitle.setVisibility(View.VISIBLE);
                     binding.consultName.setVisibility(View.VISIBLE);
@@ -1121,7 +1126,8 @@ public class ChatFragment extends Fragment implements
                 }
 
                 binding.subtitle.setText(getString(style.chatSubtitleTextResId));
-                f.connectedConsultId = connectedConsultId;
+
+                ChatFragment.this.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();
             }

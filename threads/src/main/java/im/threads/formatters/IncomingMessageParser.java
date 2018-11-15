@@ -378,7 +378,7 @@ public class IncomingMessageParser {
             final JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
             final String providerId = pushMessage.messageId;
             String uuid = fullMessage.getString(PushMessageAttributes.UUID);
-            final long timeStamp = pushMessage.sentAt; // TODO Why it is not used?
+            final long timeStamp = pushMessage.sentAt;
             final JSONObject operator = fullMessage.getJSONObject("operator");
             final long operatorId = operator.getLong("id");
             final String name = operator.isNull("name") ? null : operator.getString("name");
@@ -390,7 +390,7 @@ public class IncomingMessageParser {
             final boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
 
             chatItem = new ConsultConnectionMessage(uuid, providerId, String.valueOf(operatorId), type, name, gender,
-                    System.currentTimeMillis(), photourl, status, title, displayMessage);
+                    timeStamp, photourl, status, title, displayMessage);
 
         } catch (final JSONException e) {
             e.printStackTrace();
