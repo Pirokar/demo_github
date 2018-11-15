@@ -601,8 +601,14 @@ public class ChatFragment extends Fragment implements
         mChatAdapter.notifyDataSetChangedOnUi();
     }
 
-    public void updateChatItem(ChatItem chatItem) {
-        mChatAdapter.notifyItemChangedOnUi(chatItem);
+    public void updateChatItem(ChatItem chatItem, boolean needsReordering) {
+
+        if (needsReordering) {
+            mChatAdapter.reorder(chatItem);
+            mChatAdapter.notifyDataSetChangedOnUi();
+        } else {
+            mChatAdapter.notifyItemChangedOnUi(chatItem);
+        }
     }
 
     private void showPopup() {
@@ -714,8 +720,7 @@ public class ChatFragment extends Fragment implements
             headerText = appContext.getString(R.string.threads_I);
             mQuote.setFromConsult(false);
             mQuote.setPhraseOwnerTitle(headerText);
-            mQuote.setMessageId(userPhrase.getMessageId());
-            mQuote.setBackendId(userPhrase.getBackendId());
+            mQuote.setUuid(userPhrase.getUuid());
         } else if (cp instanceof ConsultPhrase) {
             ConsultPhrase consultPhrase = (ConsultPhrase) cp;
             headerText = ((ConsultPhrase) cp).getConsultName();
@@ -725,8 +730,7 @@ public class ChatFragment extends Fragment implements
                 headerText = appContext.getString(R.string.threads_consult);
             }
             mQuote.setPhraseOwnerTitle(headerText);
-            mQuote.setMessageId(consultPhrase.getMessageId());
-            mQuote.setBackendId(consultPhrase.getBackendId());
+            mQuote.setUuid(consultPhrase.getUuid());
         }
         if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                 || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
@@ -1070,13 +1074,13 @@ public class ChatFragment extends Fragment implements
         if (list.size() == 1 && list.get(0) instanceof ConsultTyping)
             return;//don't scroll if it is just typing item
 
-        String firstUnreadMessageId = mChatController.getFirstUnreadMessageId();
+        String firstUnreadProviderId = mChatController.getFirstUnreadProviderId();
         ArrayList<ChatItem> newList = mChatAdapter.getList();
-        if (newList != null && !newList.isEmpty() && firstUnreadMessageId != null) {
+        if (newList != null && !newList.isEmpty() && firstUnreadProviderId != null) {
             for (int i = 1; i < newList.size(); i++) {
                 if (newList.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) newList.get(i);
-                    if (firstUnreadMessageId.equalsIgnoreCase(cp.getMessageId())) {
+                    if (firstUnreadProviderId.equalsIgnoreCase(cp.getProviderId())) {
                         final int index = i;
                         h.postDelayed(new Runnable() {
                             @Override
@@ -1108,10 +1112,9 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setStateConsultConnected(final String connectedConsultId, final String consultName) {
-        final ChatFragment f = this;
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+
+        h.postDelayed(() -> {
+            if (isAdded()) {
                 if (!isInMessageSearchMode) {
                     binding.subtitle.setVisibility(View.VISIBLE);
                     binding.consultName.setVisibility(View.VISIBLE);
@@ -1123,7 +1126,8 @@ public class ChatFragment extends Fragment implements
                 }
 
                 binding.subtitle.setText(getString(style.chatSubtitleTextResId));
-                f.connectedConsultId = connectedConsultId;
+
+                ChatFragment.this.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();
             }
@@ -1146,8 +1150,8 @@ public class ChatFragment extends Fragment implements
         }, 50);
     }
 
-    public void setUserPhraseMessageId(String oldId, String newId) {
-        mChatAdapter.setUserPhraseMessageId(oldId, newId);
+    public void setUserPhraseProviderId(String uuid, String providerId) {
+        mChatAdapter.setUserPhraseProviderId(uuid, providerId);
     }
 
     public void showConnectionError() {
@@ -1162,8 +1166,8 @@ public class ChatFragment extends Fragment implements
         mToast.show();
     }
 
-    public void setMessageState(String messageId, MessageState state) {
-        mChatAdapter.changeStateOfMessage(messageId, state);
+    public void setMessageState(String providerId, MessageState state) {
+        mChatAdapter.changeStateOfMessageByProviderId(providerId, state);
     }
 
     private boolean isCopy(String text) {
@@ -1236,8 +1240,12 @@ public class ChatFragment extends Fragment implements
     }
 
 
-    public void setPhraseSentStatus(String id, MessageState messageState) {
-        mChatAdapter.changeStateOfMessage(id, messageState);
+    public void setSurveySentStatus(long uuid, MessageState sentState) {
+        mChatAdapter.changeStateOfSurvey(uuid, sentState);
+    }
+
+    public void setPhraseSentStatusByProviderId(String providerId, MessageState messageState) {
+        mChatAdapter.changeStateOfMessageByProviderId(providerId, messageState);
     }
 
     /**
@@ -1254,8 +1262,8 @@ public class ChatFragment extends Fragment implements
      *
      * @return true - if deletion occurred, false - if there was no survey in the history
      */
-    public boolean removeSurvey(String messageId) {
-        return mChatAdapter.removeSurvey(messageId);
+    public boolean removeSurvey(long sendingId) {
+        return mChatAdapter.removeSurvey(sendingId);
     }
 
     public int getCurrentItemsCount() {
@@ -1450,12 +1458,12 @@ public class ChatFragment extends Fragment implements
 
     private void scrollToFirstUnreadMessage() {
         List<ChatItem> list = mChatAdapter.getList();
-        String firstUnreadMessageId = mChatController.getFirstUnreadMessageId();
-        if (list != null && !list.isEmpty() && firstUnreadMessageId != null) {
+        String firstUnreadProviderId = mChatController.getFirstUnreadProviderId();
+        if (list != null && !list.isEmpty() && firstUnreadProviderId != null) {
             for (int i = 1; i < list.size(); i++) {
                 if (list.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) list.get(i);
-                    if (firstUnreadMessageId.equalsIgnoreCase(cp.getMessageId())) {
+                    if (firstUnreadProviderId.equalsIgnoreCase(cp.getProviderId())) {
                         final int index = i;
                         h.post(new Runnable() {
                             @Override

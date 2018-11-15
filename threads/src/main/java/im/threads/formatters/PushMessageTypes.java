@@ -39,7 +39,7 @@ public enum PushMessageTypes {
         if (bundle == null) {
             return UNKNOWN;
         }
-        if (bundle.containsKey("readInMessageIds")) {
+        if (bundle.containsKey(PushMessageAttributes.READ_PROVIDER_IDS)) {
             return MESSAGES_READ;
         }
 

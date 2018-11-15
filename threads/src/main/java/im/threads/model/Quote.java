@@ -13,8 +13,7 @@ public class Quote {
     private boolean isFromConsult;
     @Nullable private String quotedPhraseId;
 
-    private String messageId;
-    private String backendId;
+    private String uuid;
 
     public Quote(String phraseOwnerTitle, String text, FileDescription fileDescription, long timeStamp) {
         this.phraseOwnerTitle = phraseOwnerTitle;
@@ -94,19 +93,11 @@ public class Quote {
                 '}';
     }
 
-    public String getMessageId() {
-        return messageId;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
-    }
-
-    public String getBackendId() {
-        return backendId;
-    }
-
-    public void setBackendId(String backendId) {
-        this.backendId = backendId;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }
