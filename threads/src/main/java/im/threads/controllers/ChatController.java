@@ -667,7 +667,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
             @Override
             public void onResult(InMessageSend.Response response) {
-                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMillis());
+                long sentAt = response.getSentAt() == null ? 0 : response.getSentAt().getMillis();
+                onMessageSent(userPhrase, response.getMessageId(), sentAt);
             }
 
             @Override
@@ -715,7 +716,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         Transport.sendMessageMFMSAsync(appContext, message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
             @Override
             public void onResult(InMessageSend.Response response) {
-                onMessageSent(userPhrase, response.getMessageId(), response.getSentAt().getMillis());
+                long sentAt = response.getSentAt() == null ? 0 : response.getSentAt().getMillis();
+                onMessageSent(userPhrase, response.getMessageId(), sentAt);
             }
 
             @Override
