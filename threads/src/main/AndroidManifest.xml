@@ -78,10 +78,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <meta-data
-            android:name="com.pushserver.android.useDefaultDeviceUID"
-            android:value="true" />
-
     </application>
 
 </manifest>
