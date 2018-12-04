@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="mfms_provider_uid">PH5AckgzOkBXSEMqRC4sJkBBUl0uX0A8PSxARGVyaiZAViZ0ZyQzfj4K</string>
-    <string name="datastore_url">https://polarbearstore.threads.im/</string>
-    <string name="senderId">!STRING!1079639835466</string>
+    <string name="datastore_url" translatable="false">https://polarbearstore.threads.im/</string>
 </resources>
