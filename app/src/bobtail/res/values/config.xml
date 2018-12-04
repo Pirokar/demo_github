@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="mfms_provider_uid">PH5AckgzOkZELF0rQDpYRjNAO11VckRlV2A3QFcsXnRAOzBPLjdtZnV+Pg==</string>
-    <string name="datastore_url">https://bobtailstore.threads.im/</string>
-    <string name="senderId">!STRING!1079639835466</string>
+    <string name="datastore_url" translatable="false">https://bobtailstore.threads.im/</string>
 </resources>

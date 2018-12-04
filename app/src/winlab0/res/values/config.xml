@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="mfms_provider_uid">PH5AckgzOkZELF0rQDpYRjNAO11VckRlV2A3R0ExcjJAOkNvQDdtZnVYfj4=</string>
-    <string name="datastore_url">https://winlab0store.threads.im/</string>
-    <string name="senderId">!STRING!424621565517</string>
+    <string name="datastore_url" translatable="false">https://winlab0store.threads.im/</string>
 </resources>

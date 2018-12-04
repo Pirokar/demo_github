@@ -86,5 +86,7 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.e(TAG, "messagesWereRead " + list);
         }
+
+        //TODO THREADS-3937 Why it is not used?
     }
 }

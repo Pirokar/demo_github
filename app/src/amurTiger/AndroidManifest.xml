@@ -10,10 +10,5 @@
         android:theme="@style/AppTheme"
         tools:replace="android:label">
 
-        <meta-data
-            tools:replace="android:value"
-            android:name="com.pushserver.android.serverUrl"
-            android:value="http://pushservertest.mfms.ru/push-test" />
-
     </application>
 </manifest>
