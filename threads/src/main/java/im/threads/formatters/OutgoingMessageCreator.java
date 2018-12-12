@@ -151,7 +151,7 @@ public class OutgoingMessageCreator {
             e.printStackTrace();
         }
 
-        return object.toString().replaceAll("\\\\", "");
+        return object.toString();
     }
 
     public static String createRatingDoneMessage(Survey survey, String clientId, String appMarker) {
@@ -167,7 +167,7 @@ public class OutgoingMessageCreator {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return object.toString().replaceAll("\\\\", "");
+        return object.toString();
     }
 
     public static String createRatingReceivedMessage(long sendingId, String clientId, Context ctx) {
@@ -180,7 +180,7 @@ public class OutgoingMessageCreator {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return object.toString().replaceAll("\\\\", "");
+        return object.toString();
     }
 
     public static String createResolveThreadMessage(String clientId, Context ctx) {
@@ -193,7 +193,7 @@ public class OutgoingMessageCreator {
             e.printStackTrace();
         }
 
-        return object.toString().replaceAll("\\\\", "");
+        return object.toString();
     }
 
     public static String createReopenThreadMessage(String clientId, Context ctx) {
@@ -206,7 +206,7 @@ public class OutgoingMessageCreator {
             e.printStackTrace();
         }
 
-        return object.toString().replaceAll("\\\\", "");
+        return object.toString();
     }
 
     public static String createMessageTyping(String clientId, Context ctx) {
@@ -257,6 +257,6 @@ public class OutgoingMessageCreator {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return object.toString().replaceAll("\\\\", "");
+        return object.toString();
     }
 }
