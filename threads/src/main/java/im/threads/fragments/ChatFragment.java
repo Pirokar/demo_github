@@ -13,6 +13,8 @@ import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -65,6 +67,7 @@ import im.threads.adapters.ChatAdapter;
 import im.threads.controllers.ChatController;
 import im.threads.databinding.FragmentChatBinding;
 import im.threads.helpers.FileHelper;
+import im.threads.helpers.MediaHelper;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
@@ -533,7 +536,13 @@ public class ChatFragment extends Fragment implements
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 externalCameraPhotoFile = FileHelper.createImageFile(getContext());
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), activity.getPackageName() + ".fileprovider", externalCameraPhotoFile));
+                Uri photoUri = FileProvider.getUriForFile(getContext(), activity.getPackageName() + ".fileprovider", externalCameraPhotoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+
+                if ( Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP ) { // https://stackoverflow.com/a/48391446/1321401
+                    MediaHelper.grantPermissions(getContext(), intent, photoUri);
+                }
+
                 startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
 
             } else {
