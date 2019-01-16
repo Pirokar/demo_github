@@ -32,4 +32,8 @@ public class FileHelper {
         return output;
     }
 
+    public static boolean isThreadsImage(File file) {
+        return file.getName().startsWith("thr") && file.getName().endsWith(".jpg");
+    }
+
 }
