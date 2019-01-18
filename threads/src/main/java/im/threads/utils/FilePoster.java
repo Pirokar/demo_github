@@ -7,6 +7,8 @@ import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import im.threads.helpers.FileHelper;
+import im.threads.helpers.MediaHelper;
 import im.threads.model.FileDescription;
 import im.threads.model.FileUploadResponse;
 import im.threads.retrofit.ServiceGenerator;
@@ -40,6 +42,16 @@ public class FilePoster {
             }
 
             if (file != null && file.exists() && file.isFile() && file.canRead()) {
+
+                if (FileHelper.isThreadsImage(file)) {
+
+                    File downsizedImageFile = MediaHelper.downsizeImage(context, file, MediaHelper.PHOTO_RESIZE_MAX_SIDE);
+
+                    if (downsizedImageFile != null) {
+                        file = downsizedImageFile;
+                    }
+                }
+
                 ServiceGenerator.setUrl(UPLOAD_FILE_URL);
                 ThreadsApi threadsApi = ServiceGenerator.getThreadsApi();
                 String path = file.getPath();
