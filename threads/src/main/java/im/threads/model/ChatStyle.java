@@ -232,6 +232,8 @@ public class ChatStyle implements Serializable {
     // set can show specialist onfo
     public boolean canShowSpecialistInfo = true;
 
+    public boolean useExternalCameraApp = false;
+
     // set if client id encrypted
     public boolean isClientIdEncrypted = false;
 
@@ -359,6 +361,11 @@ public class ChatStyle implements Serializable {
 
         public ChatStyleBuilder setCanShowSpecialistInfo(final boolean show) {
             chatStyle.canShowSpecialistInfo = show;
+            return this;
+        }
+
+        public ChatStyleBuilder setUseExternalCameraApp(final boolean useExternal) {
+            chatStyle.useExternalCameraApp = useExternal;
             return this;
         }
 
