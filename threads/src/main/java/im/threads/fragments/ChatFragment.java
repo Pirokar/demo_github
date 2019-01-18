@@ -13,6 +13,8 @@ import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.content.res.AppCompatResources;
@@ -63,6 +66,8 @@ import im.threads.adapters.BottomGalleryAdapter;
 import im.threads.adapters.ChatAdapter;
 import im.threads.controllers.ChatController;
 import im.threads.databinding.FragmentChatBinding;
+import im.threads.helpers.FileHelper;
+import im.threads.helpers.MediaHelper;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
@@ -107,6 +112,7 @@ public class ChatFragment extends Fragment implements
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
+    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 105;
     public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 102;
     public static final int REQUEST_PERMISSION_CAMERA = 103;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
@@ -147,6 +153,7 @@ public class ChatFragment extends Fragment implements
     private FragmentChatBinding binding;
 
     private Toast mToast;
+    private File externalCameraPhotoFile;
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -519,12 +526,30 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         boolean isCameraGranted = PermissionChecker.isCameraPermissionGranted(activity);
         boolean isWriteGranted = PermissionChecker.isWriteExternalPermissionGranted(activity);
-        if (ChatStyle.getInstance().isDebugLoggingEnabled)
+
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
+        }
+
         if (isCameraGranted && isWriteGranted) {
-            setBottomStateDefault();
-            binding.bottomGallery.setVisibility(View.GONE);
-            startActivityForResult(new Intent(activity, CameraActivity.class), REQUEST_CODE_PHOTO);
+            if (ChatStyle.getInstance().useExternalCameraApp) {
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                externalCameraPhotoFile = FileHelper.createImageFile(getContext());
+                Uri photoUri = FileProvider.getUriForFile(getContext(), activity.getPackageName() + ".fileprovider", externalCameraPhotoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+
+                if ( Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP ) { // https://stackoverflow.com/a/48391446/1321401
+                    MediaHelper.grantPermissions(getContext(), intent, photoUri);
+                }
+
+                startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
+
+            } else {
+                setBottomStateDefault();
+                binding.bottomGallery.setVisibility(View.GONE);
+                startActivityForResult(new Intent(activity, CameraActivity.class), REQUEST_CODE_PHOTO);
+            }
         } else {
             ArrayList<String> permissions = new ArrayList<>();
             if (!isCameraGranted) permissions.add(android.Manifest.permission.CAMERA);
@@ -1422,14 +1447,31 @@ public class ChatFragment extends Fragment implements
                                 , false);
                 mChatController.onUserInput(uum);
             }
+
+        } else if (requestCode == REQUEST_EXTERNAL_CAMERA_PHOTO) {
+
+            if (resultCode == Activity.RESULT_OK && externalCameraPhotoFile != null) {
+                mFileDescription = new FileDescription(appContext.getString(R.string.threads_image),
+                        externalCameraPhotoFile.getAbsolutePath(),
+                        externalCameraPhotoFile.length(), System.currentTimeMillis());
+
+                UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
+                sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
+            }
+
+            externalCameraPhotoFile = null;
+
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == Activity.RESULT_OK) {
             mFileDescription = new FileDescription(appContext.getString(R.string.threads_image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
             UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
             sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
+
         } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
             openBottomSheetAndGallery();
+
         } else if (requestCode == REQUEST_PERMISSION_CAMERA && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
             onCameraClick();
+
         } else if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
             FilePickerFragment picker = FilePickerFragment.newInstance(null);
             picker.setFileFilter(new MyFileFilter());

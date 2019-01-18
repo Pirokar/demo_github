@@ -1,13 +1,11 @@
 package im.threads.activities;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -31,6 +29,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import im.threads.R;
+import im.threads.helpers.FileHelper;
 import im.threads.picasso_url_connection_only.Picasso;
 
 /**
@@ -179,24 +178,7 @@ public class CameraActivity extends BaseActivity {
                                             out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), matrix, true);
                                             raw.recycle();
                                         }
-                                        String filename = "thr" + System.currentTimeMillis() + ".jpg";
-                                        File output = null;
-                                        try {
-
-                                            output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-                                                    filename);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            try {
-                                                output = new File(getPackageManager().getApplicationInfo(getPackageName(), 0).dataDir + File.separator + filename);
-                                            } catch (PackageManager.NameNotFoundException e1) {
-                                                e1.printStackTrace();
-                                            }
-
-                                        }
-                                        if (output == null) {
-                                            output = new File(getFilesDir(), filename);
-                                        }
+                                        File output = FileHelper.createImageFile(CameraActivity.this);
                                         try {
                                             FileOutputStream fio = new FileOutputStream(output);
                                             out.compress(Bitmap.CompressFormat.JPEG, 100, fio);
