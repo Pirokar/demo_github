@@ -29,6 +29,7 @@
     <string name="threads_press">Нажмите</string>
     <string name="threads_to_photo">для фото</string>
     <string name="threads_no_cameras_detected">На устройстве отсутствует камера</string>
+    <string name="threads_camera_could_not_start_error">Не удалось запустить приложение камеры</string>
     <string name="threads_retake">Переснять</string>
     <string name="threads_consult">Консультант</string>
 
