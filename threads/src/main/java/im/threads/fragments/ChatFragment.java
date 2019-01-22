@@ -108,7 +108,7 @@ public class ChatFragment extends Fragment implements
         FilePickerFragment.SelectedListener,
         PopupMenu.OnMenuItemClickListener {
 
-    private static final String TAG = "ChatFragment ";
+    private static final String TAG = ChatFragment.class.getSimpleName();
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -534,16 +534,27 @@ public class ChatFragment extends Fragment implements
         if (isCameraGranted && isWriteGranted) {
             if (ChatStyle.getInstance().useExternalCameraApp) {
 
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                externalCameraPhotoFile = FileHelper.createImageFile(getContext());
-                Uri photoUri = FileProvider.getUriForFile(getContext(), activity.getPackageName() + ".fileprovider", externalCameraPhotoFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                try {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    externalCameraPhotoFile = FileHelper.createImageFile(getContext());
+                    Uri photoUri = FileProvider.getUriForFile(getContext(), activity.getPackageName() + ".im.threads.fileprovider", externalCameraPhotoFile);
 
-                if ( Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP ) { // https://stackoverflow.com/a/48391446/1321401
-                    MediaHelper.grantPermissions(getContext(), intent, photoUri);
+                    if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                        Log.d(TAG, "Image File uri resolved: " + photoUri.toString());
+                    }
+
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+
+                    if ( Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP ) { // https://stackoverflow.com/a/48391446/1321401
+                        MediaHelper.grantPermissions(getContext(), intent, photoUri);
+                    }
+
+                    startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
+
+                } catch (IllegalArgumentException e) {
+                    Log.w(TAG, "Could not start external camera", e);
+                    showToast(getString(R.string.threads_camera_could_not_start_error));
                 }
-
-                startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
 
             } else {
                 setBottomStateDefault();
