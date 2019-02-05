@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="im.threads">
+          package="im.threads">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
+        android:required="false"/>
     <uses-feature
         android:name="android.hardware.camera.autofocus"
-        android:required="false" />
+        android:required="false"/>
 
     <application
         android:hardwareAccelerated="true"
@@ -26,19 +26,19 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
         <activity
             android:name="im.threads.activities.ConsultActivity"
-            android:theme="@style/ThreadsStyleConsultPage" />
+            android:theme="@style/ThreadsStyleConsultPage"/>
         <activity
             android:name="im.threads.activities.FilesActivity"
-            android:theme="@style/ThreadsStyle" />
+            android:theme="@style/ThreadsStyle"/>
         <activity
             android:name="im.threads.activities.GalleryActivity"
-            android:theme="@style/ThreadsGalleryStyle" />
+            android:theme="@style/ThreadsGalleryStyle"/>
         <activity
             android:name="im.threads.activities.CameraActivity"
-            android:theme="@style/ThreadsGalleryStyle" />
+            android:theme="@style/ThreadsGalleryStyle"/>
         <activity
             android:name="im.threads.activities.ImagesActivity"
-            android:theme="@style/ThreadsGalleryStyle" />
+            android:theme="@style/ThreadsGalleryStyle"/>
         <activity
             android:name="im.threads.activities.TranslucentActivity"
             android:label=""
@@ -50,21 +50,23 @@
             android:label="@string/threads_permissions_help"
             android:screenOrientation="unspecified"
             android:theme="@style/Transparent"/>
+
         <service
             android:name="im.threads.services.IncomingMessagesIntentService"
-            android:exported="false" />
+            android:exported="false"/>
         <service
             android:name="im.threads.services.DownloadService"
-            android:exported="false" />
+            android:exported="false"/>
         <service
             android:name="im.threads.services.NotificationService"
-            android:exported="false" />
+            android:exported="false"/>
+
         <receiver
             android:name="im.threads.broadcastReceivers.MyOtherPBReceiver"
             android:exported="false"
             android:permission="com.pushserver.android.permission.RECEIVE">
             <intent-filter>
-                <action android:name="com.pushserver.android.OTHER_PUSH_MESSAGE_EVENT" />
+                <action android:name="com.pushserver.android.OTHER_PUSH_MESSAGE_EVENT"/>
             </intent-filter>
         </receiver>
 
@@ -75,7 +77,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                android:resource="@xml/provider_paths"/>
         </provider>
 
     </application>

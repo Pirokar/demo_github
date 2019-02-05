@@ -42,8 +42,8 @@ public class RequestResolveThreadViewHolder extends BaseHolder {
         bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
 
         requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
-        approveRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId));
-        denyRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId));
+        approveRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyChoicesTextColorResId));
+        denyRequest.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyChoicesTextColorResId));
 
         requestToResolveThread.setText(style.requestToResolveThreadTextResId);
         approveRequest.setText(style.approveRequestToResolveThreadTextResId);
