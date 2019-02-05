@@ -205,6 +205,8 @@ public class ChatStyle implements Serializable {
     public int surveyUnselectedColorFilterResId = R.color.threads_survey_unselected_icon_tint;
     @ColorRes
     public int surveyTextColorResId = R.color.threads_chat_system_message;
+    @ColorRes
+    public int surveyChoicesTextColorResId = R.color.threads_survey_choices_text;
 
     // schedule message style
     @ColorRes
@@ -747,6 +749,7 @@ public class ChatStyle implements Serializable {
          * @param surveySelectedColorFilterResId         - R.color.threads_survey_selected_icon_tint
          * @param surveyUnselectedColorFilterResId       - R.color.threads_survey_unselected_icon_tint
          * @param surveyTextColorResId                   - R.color.threads_chat_system_message
+         * @param surveyChoicesTextColorResId            - R.color.threads_survey_choices_text
          */
         public ChatStyleBuilder setSurveyStyle(@DrawableRes final int binarySurveyLikeUnselectedIconResId,
                                                @DrawableRes final int binarySurveyLikeSelectedIconResId,
@@ -756,7 +759,8 @@ public class ChatStyle implements Serializable {
                                                @DrawableRes final int optionsSurveySelectedIconResId,
                                                @ColorRes final int surveySelectedColorFilterResId,
                                                @ColorRes final int surveyUnselectedColorFilterResId,
-                                               @ColorRes final int surveyTextColorResId) {
+                                               @ColorRes final int surveyTextColorResId,
+                                               @ColorRes int surveyChoicesTextColorResId) {
             chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
             chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
             chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
@@ -766,6 +770,7 @@ public class ChatStyle implements Serializable {
             chatStyle.surveySelectedColorFilterResId = surveySelectedColorFilterResId;
             chatStyle.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
             chatStyle.surveyTextColorResId = surveyTextColorResId;
+            chatStyle.surveyChoicesTextColorResId = surveyChoicesTextColorResId;
             return this;
         }
 
