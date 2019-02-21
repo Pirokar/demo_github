@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.Window;
@@ -41,6 +42,10 @@ public class ColorsHelper {
         if(colorResId != 0 && view != null && context != null) {
             view.setBackgroundColor(ContextCompat.getColor(context, colorResId));
         }
+    }
+
+    public static void setTextColor(final @NonNull TextView textView, final @ColorRes int colorResId) {
+        setTextColor(textView.getContext(), textView, colorResId);
     }
 
     public static void setTextColor(Context context, TextView textView, @ColorRes int colorResId) {
