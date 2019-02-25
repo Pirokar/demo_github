@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 app:last_line_padding_symbols="10"
-                android:lineSpacingMultiplier="1.7"
+                android:lineSpacingMultiplier="1.25"
                 android:autoLink="web"
                 android:paddingTop="5dp"
                 android:text="text text text text google.com"
