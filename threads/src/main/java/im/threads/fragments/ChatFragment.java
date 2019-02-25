@@ -72,6 +72,7 @@ import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
 import im.threads.model.ConsultConnectionMessage;
+import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.ConsultTyping;
 import im.threads.model.FileDescription;
@@ -1136,7 +1137,7 @@ public class ChatFragment extends Fragment implements
 
     }
 
-    public void setStateConsultConnected(final String connectedConsultId, final String consultName) {
+    public void setStateConsultConnected(ConsultInfo info) {
 
         h.postDelayed(() -> {
             if (isAdded()) {
@@ -1144,15 +1145,16 @@ public class ChatFragment extends Fragment implements
                     binding.subtitle.setVisibility(View.VISIBLE);
                     binding.consultName.setVisibility(View.VISIBLE);
                 }
-                if (!TextUtils.isEmpty(consultName) && !consultName.equals("null")) {
-                    binding.consultName.setText(consultName);
+                if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
+                    binding.consultName.setText(info.getName());
                 } else {
                     binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
                 }
 
-                binding.subtitle.setText(getString(style.chatSubtitleTextResId));
+                binding.subtitle.setText(info.getOrganizationUnit() == null
+                        ? getString(style.chatSubtitleTextResId)
+                        : info.getOrganizationUnit());
 
-                ChatFragment.this.connectedConsultId = connectedConsultId;
                 mChatAdapter.removeConsultSearching();
                 showOverflowMenu();
             }
@@ -1667,7 +1669,7 @@ public class ChatFragment extends Fragment implements
                 setTitleStateDefault();
                 break;
             case ChatController.CONSULT_STATE_FOUND:
-                setStateConsultConnected(connectedConsultId, mChatController.getCurrentConsultName());
+                setStateConsultConnected(mChatController.getCurrentConsultInfo());
                 break;
             case ChatController.CONSULT_STATE_SEARCHING:
                 setTitleStateSearchingConsult();

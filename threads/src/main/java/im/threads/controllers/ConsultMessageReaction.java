@@ -3,6 +3,7 @@ package im.threads.controllers;
 import im.threads.formatters.PushMessageTypes;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
+import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 import im.threads.utils.ConsultWriter;
 
@@ -20,22 +21,42 @@ public class ConsultMessageReaction {
     }
 
     public synchronized void onPushMessage(ChatItem chatItem) {
+
         if (chatItem instanceof ConsultConnectionMessage) {
+
             ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
+
             if (ccm.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
-                if(null != consultWriter) consultWriter.setSearchingConsult(false);
-                if (null != consultWriter) consultWriter.setCurrentConsultInfo(ccm);
-                if (null != reactions)
-                    reactions.consultConnected(ccm.getConsultId(), ccm.getName(), ccm.getTitle());
+
+                if (consultWriter != null) {
+                    consultWriter.setSearchingConsult(false);
+                    consultWriter.setCurrentConsultInfo(ccm);
+                }
+
+                if (reactions != null) {
+                    reactions.consultConnected(new ConsultInfo(ccm.getName(), ccm.getConsultId(),
+                            ccm.getStatus(), ccm.getOrgUnit(), ccm.getAvatarPath()));
+                }
+
             } else {
-                  if(null != consultWriter)  consultWriter.setCurrentConsultLeft();
-                   if(null != reactions) reactions.onConsultLeft();
+                if (consultWriter != null) consultWriter.setCurrentConsultLeft();
+                if (reactions != null) reactions.onConsultLeft();
             }
+
         } else if (chatItem instanceof ConsultPhrase) {
+
             ConsultPhrase cp = (ConsultPhrase) chatItem;
-            if(null != consultWriter) consultWriter.setSearchingConsult(false);
-            if(null != consultWriter)consultWriter.setCurrentConsultInfo(cp);
-            if(null != reactions)reactions.consultConnected(cp.getConsultId(), cp.getConsultName(), null);
+
+            if (consultWriter != null) {
+                consultWriter.setSearchingConsult(false);
+                consultWriter.setCurrentConsultInfo(cp);
+            }
+
+            if (reactions != null) {
+                //TODO #THREADS-4426 What is this for? It overrides OPERATOR_JOINED info
+                reactions.consultConnected(new ConsultInfo(cp.getConsultName(), cp.getConsultId(),
+                        "", "", ""));
+            }
         }
 
     }
