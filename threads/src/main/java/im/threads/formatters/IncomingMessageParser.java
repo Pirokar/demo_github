@@ -388,9 +388,10 @@ public class IncomingMessageParser {
             final String photourl = operator.isNull("photoUrl") ? null : operator.getString("photoUrl");
             final String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
             final boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
+            String orgUnit = operator.isNull(PushMessageAttributes.OPERATOR_ORG_UNIT) ? null : operator.getString(PushMessageAttributes.OPERATOR_ORG_UNIT);
 
             chatItem = new ConsultConnectionMessage(uuid, providerId, String.valueOf(operatorId), type, name, gender,
-                    timeStamp, photourl, status, title, displayMessage);
+                    timeStamp, photourl, status, title, orgUnit, displayMessage);
 
         } catch (final JSONException e) {
             e.printStackTrace();
@@ -569,11 +570,16 @@ public class IncomingMessageParser {
                     sex = operator.getGender() == Operator.Gender.MALE;
                 }
 
+                String orgUnit = null;
+                if (operator != null) {
+                    orgUnit = operator.getOrgUnit();
+                }
+
                 if (!TextUtils.isEmpty(message.getType()) &&
                         (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
                                 message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
-                    out.add(new ConsultConnectionMessage(uuid, providerId, operatorId, type, name, sex, timeStamp, photoUrl, null, null, message.isDisplay()));
+                    out.add(new ConsultConnectionMessage(uuid, providerId, operatorId, type, name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay()));
 
                 } else if (!TextUtils.isEmpty(message.getType())
                         && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {

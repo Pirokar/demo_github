@@ -12,10 +12,11 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
     private final long date;
     private final String status;
     private String title;
+    private String orgUnit;
     private boolean displayMessage;
 
     public ConsultConnectionMessage(String uuid, String providerId, String consultId, String type, String name, boolean sex, long date,
-                                    String avatarPath, String status, String title, boolean displayMessage) {
+                                    String avatarPath, String status, String title, String orgUnit, boolean displayMessage) {
 
         super(avatarPath, consultId);
         this.uuid = uuid;
@@ -26,6 +27,7 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
         this.date = date;
         this.status = status;
         this.title = title;
+        this.orgUnit = orgUnit;
         this.displayMessage = displayMessage;
     }
 
@@ -56,6 +58,10 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
 
     public String getTitle() {
         return title;
+    }
+
+    public String getOrgUnit() {
+        return orgUnit;
     }
 
     public String getStatus() {

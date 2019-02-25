@@ -9,6 +9,7 @@ public class Operator {
     private Long id;
     private String name;
     private String role;
+    private String orgUnit;
     private Long maxThreads;
     private String photoUrl;
 
@@ -60,6 +61,14 @@ public class Operator {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public String getOrgUnit() {
+        return orgUnit;
+    }
+
+    public void setOrgUnit(String orgUnit) {
+        this.orgUnit = orgUnit;
     }
 
     public enum Gender {
