@@ -46,6 +46,7 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int chatToolbarHintTextColor = R.color.threads_chat_toolbar_hint;
     public boolean showBackButton = false;
+    public boolean chatSubtitleShowOrgUnit = false;
 
     // chat body style
     @ColorRes
@@ -328,6 +329,10 @@ public class ChatStyle implements Serializable {
         public ChatStyleBuilder showChatBackButton(final boolean showBackButton) {
             chatStyle.showBackButton = showBackButton;
             return this;
+        }
+
+        public void setChatSubtitleShowConsultOrgUnit(boolean showConsultOrgUnit) {
+            chatStyle.chatSubtitleShowOrgUnit = showConsultOrgUnit;
         }
 
         public ChatStyleBuilder setShowConsultSearching(final boolean show) {

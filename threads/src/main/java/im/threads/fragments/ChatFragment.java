@@ -1151,7 +1151,7 @@ public class ChatFragment extends Fragment implements
                     binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
                 }
 
-                binding.subtitle.setText(info.getOrganizationUnit() == null
+                binding.subtitle.setText( (!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
                         ? getString(style.chatSubtitleTextResId)
                         : info.getOrganizationUnit());
 

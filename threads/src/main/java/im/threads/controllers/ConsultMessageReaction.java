@@ -4,7 +4,6 @@ import im.threads.formatters.PushMessageTypes;
 import im.threads.model.ChatItem;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultInfo;
-import im.threads.model.ConsultPhrase;
 import im.threads.utils.ConsultWriter;
 
 /**
@@ -42,22 +41,6 @@ public class ConsultMessageReaction {
                 if (consultWriter != null) consultWriter.setCurrentConsultLeft();
                 if (reactions != null) reactions.onConsultLeft();
             }
-
-        } else if (chatItem instanceof ConsultPhrase) {
-
-            ConsultPhrase cp = (ConsultPhrase) chatItem;
-
-            if (consultWriter != null) {
-                consultWriter.setSearchingConsult(false);
-                consultWriter.setCurrentConsultInfo(cp);
-            }
-
-            if (reactions != null) {
-                //TODO #THREADS-4426 What is this for? It overrides OPERATOR_JOINED info
-                reactions.consultConnected(new ConsultInfo(cp.getConsultName(), cp.getConsultId(),
-                        "", "", ""));
-            }
         }
-
     }
 }
