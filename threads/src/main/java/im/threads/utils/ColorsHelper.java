@@ -44,6 +44,10 @@ public class ColorsHelper {
         }
     }
 
+    public static void setTextColor(final @NonNull TextView textView, final @ColorRes int colorResId) {
+        setTextColor(textView.getContext(), textView, colorResId);
+    }
+
     public static void setTextColor(Context context, TextView textView, @ColorRes int colorResId) {
         if(colorResId != 0 && textView != null && context != null) {
             textView.setTextColor(ContextCompat.getColor(context, colorResId));

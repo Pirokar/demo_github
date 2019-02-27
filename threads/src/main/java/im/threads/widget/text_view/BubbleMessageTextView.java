@@ -1,10 +1,12 @@
 package im.threads.widget.text_view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
+import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.widget.CustomFontTextView;
 
@@ -13,12 +15,36 @@ import im.threads.widget.CustomFontTextView;
  */
 
 public class BubbleMessageTextView extends CustomFontTextView {
+
+    private String lastLinePadding = "";
+
     public BubbleMessageTextView(Context context) {
         super(context);
+        init(null);
     }
 
     public BubbleMessageTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(attrs);
+    }
+
+    private void init(AttributeSet attributeSet) {
+        if (attributeSet != null) {
+            final TypedArray ta = getContext().getTheme().obtainStyledAttributes(
+                    attributeSet,
+                    R.styleable.BubbleMessageTextView,
+                    0, 0);
+            try {
+                int lastLinePaddingSymbols = ta.getInt(R.styleable.BubbleMessageTextView_last_line_padding_symbols, 0);
+                StringBuilder paddingBuilder = new StringBuilder();
+                for (int i = 0; i < lastLinePaddingSymbols; ++i) {
+                    paddingBuilder.append("\b");
+                }
+                lastLinePadding = paddingBuilder.toString();
+            } finally {
+                ta.recycle();
+            }
+        }
     }
 
     @Override
@@ -30,4 +56,15 @@ public class BubbleMessageTextView extends CustomFontTextView {
             super.setTypefaceView(context);
         }
     }
+
+    @Override
+    public boolean onPreDraw() {
+        String originalString = getText().toString();
+        if (!TextUtils.isEmpty(originalString) && !originalString.endsWith(lastLinePadding)) {
+            append(lastLinePadding);
+            return false;
+        }
+        return true;
+    }
+
 }

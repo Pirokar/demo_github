@@ -136,9 +136,13 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         if (!PermissionChecker.checkPermissions(this)) {
             PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
         } else {
-            ChatBuilderHelper.buildChatStyle(this, currentCard.getAppMarker(), currentCard.getUserId(), currentCard.getUserName(),
-                    "", getCurrentDesign());
-            startActivity(new Intent(this, ChatActivity.class));
+            if (currentCard.getUserId() != null && currentCard.getUserName() != null) {
+                ChatBuilderHelper.buildChatStyle(this, currentCard.getAppMarker(), currentCard.getUserId(), currentCard.getUserName(),
+                        "", getCurrentDesign());
+                startActivity(new Intent(this, ChatActivity.class));
+            } else {
+                displayError(R.string.error_empty_username_userid);
+            }
         }
     }
 
@@ -151,9 +155,12 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
      */
     private void showChatAsFragment() {
         Card currentCard = getCurrentCard();
-        Intent i = BottomNavigationActivity.createIntent(this, currentCard.getAppMarker(), currentCard.getUserId(),
-                currentCard.getUserName(), getCurrentDesign());
-        startActivity(i);
+        if (currentCard.getUserId() != null && currentCard.getUserName() != null) {
+            startActivity(BottomNavigationActivity.createIntent(this, currentCard.getAppMarker(), currentCard.getUserId(),
+                    currentCard.getUserName(), getCurrentDesign()));
+        } else {
+            displayError(R.string.error_empty_username_userid);
+        }
     }
 
     private Card getCurrentCard() {
@@ -248,4 +255,13 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
             Log.i(TAG, "Full push not accepted by chat: " + String.valueOf(pushMessage));
         }
     }
+
+    private void displayError(final @StringRes int errorTextRes) {
+        displayError(getString(errorTextRes));
+    }
+
+    private void displayError(final @NonNull String errorText) {
+        Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show();
+    }
+
 }
