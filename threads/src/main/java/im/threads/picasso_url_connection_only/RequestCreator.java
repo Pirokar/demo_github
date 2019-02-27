@@ -21,17 +21,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.v7.content.res.AppCompatResources;
 import android.widget.ImageView;
 import android.widget.RemoteViews;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static  im.threads.picasso_url_connection_only.BitmapHunter.forRequest;
-import static  im.threads.picasso_url_connection_only.MemoryPolicy.NO_CACHE;
-import static  im.threads.picasso_url_connection_only.MemoryPolicy.NO_STORE;
-import static  im.threads.picasso_url_connection_only.MemoryPolicy.shouldReadFromMemoryCache;
+import androidx.appcompat.content.res.AppCompatResources;
+
+import static im.threads.picasso_url_connection_only.BitmapHunter.forRequest;
+import static im.threads.picasso_url_connection_only.MemoryPolicy.NO_CACHE;
+import static im.threads.picasso_url_connection_only.MemoryPolicy.NO_STORE;
+import static im.threads.picasso_url_connection_only.MemoryPolicy.shouldReadFromMemoryCache;
 
 /** Fluent API for building an image download request. */
 @SuppressWarnings("UnusedDeclaration") // Public API.

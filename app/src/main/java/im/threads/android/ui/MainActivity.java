@@ -22,6 +22,7 @@ import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import im.threads.activities.ChatActivity;
