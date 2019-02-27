@@ -49,12 +49,15 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding3.widget.RxTextView;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import im.threads.R;
 import im.threads.activities.CameraActivity;
@@ -96,6 +99,8 @@ import im.threads.utils.PrefUtils;
 import im.threads.utils.UrlUtils;
 import im.threads.views.BottomSheetView;
 import im.threads.views.MySwipeRefreshLayout;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Весь функционал чата находится здесь во фрагменте,
@@ -155,6 +160,7 @@ public class ChatFragment extends Fragment implements
 
     private Toast mToast;
     private File externalCameraPhotoFile;
+    private Disposable inputChangesSubscription;
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -190,10 +196,10 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onDestroyView() {
+        inputChangesSubscription.dispose();
         super.onDestroyView();
         mChatController.unbindFragment();
         Activity activity = getActivity();
-        Context context = activity.getApplicationContext();
         activity.unregisterReceiver(mChatReceiver);
 
         chatIsShown = false;
@@ -271,12 +277,13 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        binding.input.addTextChangedListener(new LateTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                mChatController.onUserTyping();
-            }
-        });
+        inputChangesSubscription = RxTextView.textChanges(binding.input)
+                .throttleLatest(3, TimeUnit.SECONDS)
+                .map(CharSequence::toString)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        input -> mChatController.onUserTyping(input)
+                );
 
         binding.searchUpIb.setOnClickListener(new View.OnClickListener() {
             @Override

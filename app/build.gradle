@@ -157,8 +157,8 @@ dependencies {
 
     implementation 'com.azoft.carousellayoutmanager:carousel:1.2.1'
 
-//    debugImplementation 'com.mfms.android:push-lite-debug:2.6.13'
-//    releaseImplementation 'com.mfms.android:push-lite-release:2.6.13'
+//    debugImplementation 'com.mfms.android:push-lite-debug:2.6.18'
+//    releaseImplementation 'com.mfms.android:push-lite-release:2.6.18'
     implementation 'com.mfms.android:push-lite-release:2.6.18'
 }
 apply plugin: 'com.google.gms.google-services'

@@ -431,14 +431,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         else return CONSULT_STATE_DEFAULT;
     }
 
-    public void onUserTyping() {
-        final long currentTime = System.currentTimeMillis();
-        if ((currentTime - lastUserTypingSend) >= 3000) {
-            lastUserTypingSend = currentTime;
+    public void onUserTyping(String input) {
             Transport.sendMessageMFMSAsync(appContext,
-                    OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), appContext),
+                    OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), input, appContext),
                     true, null, null);
-        }
     }
 
     public boolean isNeedToShowWelcome() {
