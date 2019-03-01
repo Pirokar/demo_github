@@ -9,9 +9,9 @@
         android:id="@+id/filter"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
+        android:layout_below="@+id/bubble"
         android:layout_alignBottom="@+id/bubble"
         android:layout_alignParentTop="true"
-        android:layout_below="@+id/bubble"
         android:background="@color/threads_chat_highlighting"/>
 
     <View
@@ -28,10 +28,10 @@
         android:layout_height="wrap_content"
         android:background="@drawable/thread_outgoing_bubble"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/margin_quarter"
         android:paddingLeft="@dimen/margin_quarter"
+        android:paddingTop="@dimen/margin_quarter"
         android:paddingRight="19dp"
-        android:paddingTop="@dimen/margin_quarter">
+        android:paddingBottom="@dimen/margin_quarter">
 
         <ImageView
             android:id="@+id/image"
@@ -52,8 +52,8 @@
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginBottom="@dimen/margin_half"
                 android:layout_marginTop="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_half"
                 android:background="@drawable/file_image_user"
                 app:completed_drawable="@drawable/file_image_user"
                 app:in_progress_label="@drawable/ic_clear_blue_user_36dp"
@@ -115,15 +115,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="74dp"
                 android:autoLink="web"
-                android:paddingBottom="@dimen/margin_half"
+                android:lineSpacingMultiplier="1.25"
                 android:paddingLeft="4dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="@dimen/margin_half"
                 android:text="user text google.com"
                 android:textColor="@color/threads_outgoing_message_text"
                 android:textColorLink="@color/threads_outgoing_message_link"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                app:last_line_padding_symbols="16"/>
 
             <im.threads.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
@@ -159,7 +160,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_quarter"
-                    android:layout_marginRight="74dp"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:paddingTop="@dimen/margin_half"
@@ -173,7 +173,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_quarter"
-                    android:layout_marginRight="74dp"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:textColor="@color/threads_outgoing_message_text"
@@ -185,10 +184,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_quarter"
-                    android:layout_marginRight="74dp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:paddingTop="@dimen/margin_half"
+                    android:paddingRight="74dp"
                     android:textColor="@color/threads_outgoing_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
