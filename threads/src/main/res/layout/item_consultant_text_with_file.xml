@@ -49,8 +49,8 @@
             android:id="@+id/right_text_row"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_quarter"
             android:layout_marginLeft="@dimen/margin_big"
+            android:layout_marginBottom="@dimen/margin_quarter"
             android:orientation="horizontal"
             android:paddingTop="@dimen/margin_half">
 
@@ -119,14 +119,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                app:last_line_padding_symbols="10"
-                android:lineSpacingMultiplier="1.25"
                 android:autoLink="web"
+                android:lineSpacingMultiplier="1.25"
                 android:paddingTop="5dp"
                 android:text="text text text text google.com"
                 android:textColor="@color/threads_incoming_message_text"
                 android:textColorLink="@color/threads_incoming_message_link"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                app:last_line_padding_symbols="10"/>
 
             <im.threads.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
@@ -160,7 +160,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_big"
-                    app:last_line_padding_symbols="10"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:paddingTop="@dimen/margin_half"
@@ -174,7 +173,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_big"
-                    app:last_line_padding_symbols="10"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:textColor="@color/threads_incoming_message_text"
@@ -186,10 +184,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_big"
-                    app:last_line_padding_symbols="10"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:paddingTop="@dimen/margin_half"
+                    android:paddingRight="60dp"
                     android:textColor="@color/threads_incoming_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
