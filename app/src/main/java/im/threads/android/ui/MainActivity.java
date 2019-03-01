@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         if (!PermissionChecker.checkPermissions(this)) {
             PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
         } else {
-            if (currentCard.getUserId() != null && currentCard.getUserName() != null) {
+            if (currentCard.getUserId() != null) {
                 ChatBuilderHelper.buildChatStyle(this, currentCard.getAppMarker(), currentCard.getUserId(), currentCard.getUserName(),
                         "", getCurrentDesign());
                 startActivity(new Intent(this, ChatActivity.class));
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
      */
     private void showChatAsFragment() {
         Card currentCard = getCurrentCard();
-        if (currentCard.getUserId() != null && currentCard.getUserName() != null) {
+        if (currentCard.getUserId() != null) {
             startActivity(BottomNavigationActivity.createIntent(this, currentCard.getAppMarker(), currentCard.getUserId(),
                     currentCard.getUserName(), getCurrentDesign()));
         } else {

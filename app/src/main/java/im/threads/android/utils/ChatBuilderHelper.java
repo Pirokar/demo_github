@@ -39,7 +39,7 @@ public class ChatBuilderHelper {
         }
     }
 
-    public static ChatStyle buildChatStyle(final @NonNull Activity activity, final String appMarker, final @NonNull String clientId, final @NonNull String userName, final String data, ChatDesign design) {
+    public static ChatStyle buildChatStyle(final @NonNull Activity activity, final String appMarker, final @NonNull String clientId, String userName, final String data, ChatDesign design) {
         ChatStyle.ChatStyleBuilder builder = ChatStyle.ChatStyleBuilder
                 .getBuilder(activity, clientId, userName, data) // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
                 .setAppMarker(appMarker)

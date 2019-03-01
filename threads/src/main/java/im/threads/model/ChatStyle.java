@@ -307,11 +307,11 @@ public class ChatStyle implements Serializable {
         private ChatStyleBuilder() {
         }
 
-        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, final @NonNull String userName) {
+        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, String userName) {
             return getBuilder(ctx, clientId, userName, "");
         }
 
-        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, final @NonNull String userName, final String data) {
+        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, String userName, final String data) {
             final ChatStyleBuilder builder = new ChatStyleBuilder();
             builder.clientId = clientId;
             builder.userName = userName;
