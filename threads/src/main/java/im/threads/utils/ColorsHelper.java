@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 /**
@@ -42,6 +43,10 @@ public class ColorsHelper {
         if(colorResId != 0 && view != null && context != null) {
             view.setBackgroundColor(ContextCompat.getColor(context, colorResId));
         }
+    }
+
+    public static void setTextColor(final @NonNull TextView textView, final @ColorRes int colorResId) {
+        setTextColor(textView.getContext(), textView, colorResId);
     }
 
     public static void setTextColor(Context context, TextView textView, @ColorRes int colorResId) {

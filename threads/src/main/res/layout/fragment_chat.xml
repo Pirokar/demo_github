@@ -47,9 +47,7 @@
             <im.threads.views.WelcomeScreen
                 android:id="@+id/welcome"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/threads_white_dark"
-                android:visibility="visible"/>
+                android:layout_height="match_parent"/>
 
         </FrameLayout>
 

@@ -18,6 +18,8 @@ package im.threads.picasso_url_connection_only;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 final class TargetAction extends Action<Target> {
 
   TargetAction(Picasso picasso, Target target, Request data, int memoryPolicy, int networkPolicy,
@@ -44,7 +46,7 @@ final class TargetAction extends Action<Target> {
     Target target = getTarget();
     if (target != null) {
       if (errorResId != 0) {
-        target.onBitmapFailed(picasso.context.getResources().getDrawable(errorResId));
+        target.onBitmapFailed(AppCompatResources.getDrawable(picasso.context, errorResId));
       } else {
         target.onBitmapFailed(errorDrawable);
       }

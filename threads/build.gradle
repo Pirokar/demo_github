@@ -20,8 +20,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 82
-        versionName "2.45.2"
+        versionCode 83
+        versionName "2.47.1"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -65,7 +65,7 @@ dependencies {
 
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.13'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.13'
-    implementation 'com.mfms.android:push-lite-release:2.6.13'
+    implementation 'com.mfms.android:push-lite-release:2.6.18'
 }
 
 

@@ -2,55 +2,58 @@ package im.threads.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import im.threads.R;
 import im.threads.model.ChatStyle;
 import im.threads.utils.ColorsHelper;
 
 public class WelcomeScreen extends LinearLayout {
-    ImageView logoView;
-    TextView title;
-    TextView subTitle;
-    View back;
 
     public WelcomeScreen(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init();
     }
 
     public WelcomeScreen(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
-        ((LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .inflate(R.layout.view_welcome, this, true);
-        setOrientation(VERTICAL);
-        setGravity(Gravity.CENTER);
+    private void init() {
+        final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (inflater == null) {
+            return;
+        }
+        inflater.inflate(R.layout.view_welcome, this, true);
+        final ChatStyle style = ChatStyle.getInstance();
+        initLogo(style);
+        initTitle(style);
+        initSubtitle(style);
+    }
 
-        title = (TextView) findViewById(R.id.welcome_title);
-        subTitle = (TextView) findViewById(R.id.welcome_subtitle);
-        logoView = (ImageView) findViewById(R.id.welcome_logo);
-        back = findViewById(R.id.welcome_back);
-
-        ChatStyle style = ChatStyle.getInstance();
-
-        ColorsHelper.setBackgroundColor(context, this, style.chatBackgroundColor);
-        ColorsHelper.setTextColor(context, title, style.welcomeScreenTitleTextColorResId);
-        ColorsHelper.setTextColor(context, subTitle, style.welcomeScreenSubtitleTextColorResId);
-
+    private void initLogo(final @NonNull ChatStyle style) {
+        final ImageView logoView = findViewById(R.id.welcome_logo);
         logoView.setImageResource(style.welcomeScreenLogoResId);
-        title.setTextSize(style.welcomeScreenTitleSizeInSp);
-        subTitle.setTextSize(style.welcomeScreenSubtitleSizeInSp);
+    }
+
+    private void initTitle(final @NonNull ChatStyle style) {
+        final TextView title = findViewById(R.id.welcome_title);
+        ColorsHelper.setTextColor(title, style.welcomeScreenTitleTextColorResId);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(style.welcomeScreenTitleSizeInSp));
         title.setText(style.welcomeScreenTitleTextResId);
+    }
+
+    private void initSubtitle(final @NonNull ChatStyle style) {
+        final TextView subTitle = findViewById(R.id.welcome_subtitle);
+        ColorsHelper.setTextColor(subTitle, style.welcomeScreenSubtitleTextColorResId);
+        subTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(style.welcomeScreenSubtitleSizeInSp));
         subTitle.setText(style.welcomeScreenSubtitleTextResId);
     }
+
 }
