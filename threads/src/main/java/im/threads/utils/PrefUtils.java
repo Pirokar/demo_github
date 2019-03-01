@@ -56,7 +56,6 @@ public class PrefUtils {
     }
 
     public static void setUserName(Context ctx, String ClientName) {
-        if (ClientName == null) throw new IllegalStateException("ClientName is null");
         PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString(PrefUtils.class + CLIENT_NAME, ClientName).commit();
     }
 

@@ -270,15 +270,6 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        binding.input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    welcomeScreenVisibility(false);
-                }
-            }
-        });
-
         binding.input.addTextChangedListener(new LateTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -681,7 +672,6 @@ public class ChatFragment extends Fragment implements
         if (item.getItemId() == R.id.search && isInMessageSearchMode) {
             return true;
         } else if (item.getItemId() == R.id.search) {
-            welcomeScreenVisibility(false);
             search(false);
             binding.chatBackButton.setVisibility(View.VISIBLE);
         }
@@ -1043,8 +1033,6 @@ public class ChatFragment extends Fragment implements
     }
 
     public void addChatItem(final ChatItem item) {
-        welcomeScreenVisibility(false);
-
         boolean isUserSeesMessage = (mChatAdapter.getItemCount() - ((LinearLayoutManager) binding.recycler.getLayoutManager()).findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT;
         if (item instanceof ConsultPhrase) {
             if (isUserSeesMessage && isResumed && !isInMessageSearchMode) {
@@ -1054,6 +1042,7 @@ public class ChatFragment extends Fragment implements
             }
         }
         if (needsAddMessage(item)) {
+            welcomeScreenVisibility(false);
             mChatAdapter.addItems(Arrays.asList(item));
 
             if (!isUserSeesMessage) {

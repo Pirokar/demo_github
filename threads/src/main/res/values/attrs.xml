@@ -5,4 +5,8 @@
         <attr name="start_download_label" format="reference"/>
         <attr name="in_progress_label" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="BubbleMessageTextView">
+        <attr name="last_line_padding_symbols" format="integer"/>
+    </declare-styleable>
 </resources>

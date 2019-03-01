@@ -22,7 +22,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 27
         versionCode 83
-        versionName "2.47.0"
+        versionName "2.47.1"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -66,7 +66,7 @@ dependencies {
 
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.13'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.13'
-    implementation 'com.mfms.android:push-lite-release:2.6.13'
+    implementation 'com.mfms.android:push-lite-release:2.6.18'
 }
 
 

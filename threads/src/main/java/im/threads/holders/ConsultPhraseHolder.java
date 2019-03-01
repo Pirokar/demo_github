@@ -150,7 +150,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             mOgDataLayout.setVisibility(View.GONE);
             mTimeStampTextView.setVisibility(View.VISIBLE);
         } else {
-            bindOGData(ogData, onOgClickListener);
+            bindOGData(ogData, message.ogUrl, onOgClickListener);
         }
 
         mImage.setVisibility(View.GONE);
@@ -275,7 +275,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         mFilterViewSecond.setVisibility(isChosen && isAvatarVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private void bindOGData(@NonNull final OGData ogData, final View.OnClickListener onOgClickListener) {
+    private void bindOGData(@NonNull final OGData ogData, String ogUrl, final View.OnClickListener onOgClickListener) {
 
         if (ogData.areTextsEmpty()) {
             mOgDataLayout.setVisibility(View.GONE);
@@ -300,7 +300,7 @@ public class ConsultPhraseHolder extends BaseHolder {
             }
 
             if (TextUtils.isEmpty(ogData.url)) {
-                mOgUrl.setVisibility(View.GONE);
+                mOgUrl.setText(ogUrl);
             } else {
                 mOgUrl.setText(ogData.url);
             }

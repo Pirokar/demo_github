@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.v7.content.res.AppCompatResources;
 import android.widget.ImageView;
 import android.widget.RemoteViews;
 import java.io.IOException;
@@ -31,8 +32,6 @@ import static  im.threads.picasso_url_connection_only.BitmapHunter.forRequest;
 import static  im.threads.picasso_url_connection_only.MemoryPolicy.NO_CACHE;
 import static  im.threads.picasso_url_connection_only.MemoryPolicy.NO_STORE;
 import static  im.threads.picasso_url_connection_only.MemoryPolicy.shouldReadFromMemoryCache;
-import static  im.threads.picasso_url_connection_only.Utils.createKey;
-import static  im.threads.picasso_url_connection_only.Utils.log;
 
 /** Fluent API for building an image download request. */
 @SuppressWarnings("UnusedDeclaration") // Public API.
@@ -694,7 +693,7 @@ public class RequestCreator {
 
   private Drawable getPlaceholderDrawable() {
     if (placeholderResId != 0) {
-      return picasso.context.getResources().getDrawable(placeholderResId);
+      return AppCompatResources.getDrawable(picasso.context, placeholderResId);
     } else {
       return placeholderDrawable; // This may be null which is expected and desired behavior.
     }
