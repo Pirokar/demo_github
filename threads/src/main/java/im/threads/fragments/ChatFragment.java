@@ -196,7 +196,9 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onDestroyView() {
-        inputChangesSubscription.dispose();
+        if (inputChangesSubscription != null && !inputChangesSubscription.isDisposed()) {
+            inputChangesSubscription.dispose();
+        }
         super.onDestroyView();
         mChatController.unbindFragment();
         Activity activity = getActivity();
@@ -277,13 +279,7 @@ public class ChatFragment extends Fragment implements
             }
         });
 
-        inputChangesSubscription = RxTextView.textChanges(binding.input)
-                .throttleLatest(3, TimeUnit.SECONDS)
-                .map(CharSequence::toString)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        input -> mChatController.onUserTyping(input)
-                );
+        configureInputChangesSubscription();
 
         binding.searchUpIb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -379,6 +375,25 @@ public class ChatFragment extends Fragment implements
                 }
             }
         });
+    }
+
+    private void configureInputChangesSubscription() {
+        inputChangesSubscription = RxTextView.textChanges(binding.input)
+                .skipWhile(charSequence -> charSequence.length() == 0)
+                .throttleLatest(3, TimeUnit.SECONDS)
+                .map(CharSequence::toString)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        input -> mChatController.onUserTyping(input)
+                );
+    }
+
+    private void resetInputChangesSubscription() {
+        if (inputChangesSubscription != null && !inputChangesSubscription.isDisposed()) {
+            inputChangesSubscription.dispose();
+        }
+
+        configureInputChangesSubscription();
     }
 
     private void showUnreadMsgsCount(int unreadCount) {
@@ -1037,6 +1052,8 @@ public class ChatFragment extends Fragment implements
                 mChosenPhrase = null;
             }
             if (isInMessageSearchMode) onActivityBackPressed();
+
+            resetInputChangesSubscription();
         }
     }
 
