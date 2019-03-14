@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
@@ -62,15 +63,21 @@ public class BubbleMessageTextView extends CustomFontTextView {
     }
 
     @Override
-    public boolean onPreDraw() {
-        String originalString = getText().toString();
-        if (!TextUtils.isEmpty(originalString) && !originalString.endsWith(lastLinePadding)) {
+    public void setText(CharSequence text, BufferType type) {
+
+        String originalString = text.toString();
+
+        if (!TextUtils.isEmpty(originalString) && !TextUtils.isEmpty(lastLinePadding) && !originalString.endsWith(lastLinePadding)) {
+
+            SpannableStringBuilder phraseSpan = new SpannableStringBuilder(originalString);
             Spannable lastLineSpan = new SpannableString(lastLinePadding);
             lastLineSpan.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, lastLineSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            append(lastLineSpan);
-            return false;
+            phraseSpan.append(lastLineSpan);
+            super.setText(phraseSpan, type);
+
+        } else {
+            super.setText(text, type);
         }
-        return true;
     }
 
 }
