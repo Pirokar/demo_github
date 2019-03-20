@@ -718,8 +718,7 @@ public class ChatFragment extends Fragment implements
         ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
         binding.chatBackButton.setImageDrawable(d);
 
-        ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
-        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, R.color.threads_chat_toolbar_text);
+        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, style.chatToolbarTextColorResId);
 
         binding.copyControls.setVisibility(View.VISIBLE);
         binding.consultName.setVisibility(View.GONE);
