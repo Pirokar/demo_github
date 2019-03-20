@@ -1376,7 +1376,6 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setStateSearchingConsult() {
-        hideOverflowMenu();
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
