@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,7 +62,7 @@ public class ConsultActivity extends BaseActivity {
         String imagePath = i.getStringExtra("imagePath");
         String title = i.getStringExtra("title");
         String moto = i.getStringExtra("moto");
-        if (null != imagePath && !imagePath.equals("null")) {
+        if (!TextUtils.isEmpty(imagePath)) {
             imagePath = FileUtils.convertRelativeUrlToAbsolute(this, imagePath);
             Picasso.with(this)
                     .load(imagePath)
