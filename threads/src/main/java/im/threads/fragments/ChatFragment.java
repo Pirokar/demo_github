@@ -146,7 +146,6 @@ public class ChatFragment extends Fragment implements
     private FileDescription mFileDescription = null;
     private ChatPhrase mChosenPhrase = null;
     private List<String> mAttachedImages = new ArrayList<>();
-    private String connectedConsultId;
     private ChatReceiver mChatReceiver;
 
     private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
@@ -267,7 +266,7 @@ public class ChatFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 if (mChatController.isConsultFound())
-                    onConsultAvatarClick(connectedConsultId);
+                    onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
             }
         });
 
@@ -275,7 +274,7 @@ public class ChatFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 if (mChatController.isConsultFound())
-                    onConsultAvatarClick(connectedConsultId);
+                    onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
             }
         });
 
@@ -1195,7 +1194,6 @@ public class ChatFragment extends Fragment implements
                     binding.search.setText("");
                     binding.consultName.setText(style.chatTitleTextResId);
                 }
-                connectedConsultId = String.valueOf(-1);
             }
         }, 50);
     }

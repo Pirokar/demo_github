@@ -1357,10 +1357,15 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void onConsultChoose(final Activity activity, final String consultId) {
-        ConsultInfo info = mDatabaseHolder.getConsultInfoSync(consultId);
-        if (info == null) info = new ConsultInfo("", consultId, "", "", "");
-        final Intent i = ConsultActivity.getStartIntent(activity, info.getPhotoUrl(), info.getName(), info.getStatus());
-        activity.startActivity(i);
+
+        if (consultId == null) {
+            Log.w(TAG, "Can't show consult info: consultId == null");
+        } else {
+            ConsultInfo info = mDatabaseHolder.getConsultInfoSync(consultId);
+            if (info == null) info = new ConsultInfo("", consultId, "", "", "");
+            final Intent i = ConsultActivity.getStartIntent(activity, info.getPhotoUrl(), info.getName(), info.getStatus());
+            activity.startActivity(i);
+        }
     }
 
     public void getLastUnreadConsultPhrase(final CompletionHandler<ConsultPhrase> handler) {

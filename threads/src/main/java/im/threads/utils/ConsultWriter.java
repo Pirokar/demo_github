@@ -138,7 +138,7 @@ public class ConsultWriter {
     }
 
     public ConsultInfo getConsultInfo(String id) {
-        return new ConsultInfo(getName(id), getConsultTitle(id),
+        return new ConsultInfo(getName(id), id,
                 getStatus(id), getOrgUnit(id), getPhotoUrl(id));
     }
 
