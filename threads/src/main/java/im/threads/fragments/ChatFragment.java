@@ -1557,6 +1557,7 @@ public class ChatFragment extends Fragment implements
         mChatController.setActivityIsForeground(false);
         isResumed = false;
         chatIsShown = false;
+        isInMessageSearchMode = false;
     }
 
     @Override
