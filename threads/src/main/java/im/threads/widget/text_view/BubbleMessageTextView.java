@@ -2,8 +2,12 @@ package im.threads.widget.text_view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 
 import im.threads.R;
@@ -38,7 +42,7 @@ public class BubbleMessageTextView extends CustomFontTextView {
                 int lastLinePaddingSymbols = ta.getInt(R.styleable.BubbleMessageTextView_last_line_padding_symbols, 0);
                 StringBuilder paddingBuilder = new StringBuilder();
                 for (int i = 0; i < lastLinePaddingSymbols; ++i) {
-                    paddingBuilder.append("\b");
+                    paddingBuilder.append("_");
                 }
                 lastLinePadding = paddingBuilder.toString();
             } finally {
@@ -61,7 +65,9 @@ public class BubbleMessageTextView extends CustomFontTextView {
     public boolean onPreDraw() {
         String originalString = getText().toString();
         if (!TextUtils.isEmpty(originalString) && !originalString.endsWith(lastLinePadding)) {
-            append(lastLinePadding);
+            Spannable lastLineSpan = new SpannableString(lastLinePadding);
+            lastLineSpan.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, lastLineSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            append(lastLineSpan);
             return false;
         }
         return true;

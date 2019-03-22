@@ -34,7 +34,7 @@ import im.threads.utils.FileUtils;
  */
 class MyOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "MyOpenHelper ";
-    private static final int VERSION = 4;
+    private static final int VERSION = 5;
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
     private static final String COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID";
@@ -49,6 +49,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
     private static final String COLUMN_CONSULT_ID = "COLUMN_CONSULT_ID";
     private static final String COLUMN_CONSULT_STATUS = "COLUMN_CONSULT_STATUS";
     private static final String COLUMN_CONSULT_TITLE = "COLUMN_CONSULT_TITLE";
+    private static final String COLUMN_CONSULT_ORG_UNIT = "COLUMN_CONSULT_ORG_UNIT";
     private static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
     private static final String COLUMN_IS_READ = "COLUMN_IS_READ";
     private static final String COLUMN_DISPLAY_MASSAGE = "COLUMN_DISPLAY_MESSAGE";
@@ -105,7 +106,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         " %s integer," +//message sent state
                         "%s text," + //consultid
                         "%s text," + //COLUMN_CONSULT_STATUS
-                        "%s text," +//COLUMN_CONSULT_TITLE
+                        "%s text"//COLUMN_CONSULT_TITLE
+                        + ", " + COLUMN_CONSULT_ORG_UNIT +  " text," +//COLUMN_CONSULT_ORG_UNIT
                         "%s text," +//connection type
                         "%s integer," + //isRead
                         "%s text" //COLUMN_BACKEND_ID
@@ -278,6 +280,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_CONSULT_ID, consultConnectionMessage.getConsultId());
         cv.put(COLUMN_CONSULT_STATUS, consultConnectionMessage.getStatus());
         cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.getTitle());
+        cv.put(COLUMN_CONSULT_ORG_UNIT, consultConnectionMessage.getOrgUnit());
         cv.put(COLUMN_MESSAGE_UUID, consultConnectionMessage.getUuid());
         cv.put(COLUMN_DISPLAY_MASSAGE, consultConnectionMessage.isDisplayMessage());
         if (consultConnectionMessage.getName() == null) {
@@ -435,6 +438,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         cGetString(c, COLUMN_AVATAR_PATH),
                         cGetString(c, COLUMN_CONSULT_STATUS),
                         cGetString(c, COLUMN_CONSULT_TITLE),
+                        cGetString(c, COLUMN_CONSULT_ORG_UNIT),
                         cGetBool(c, COLUMN_DISPLAY_MASSAGE));
 
                 items.add(cc);
@@ -816,6 +820,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return new ConsultInfo(cGetString(c, COLUMN_NAME)
                 , id
                 , cGetString(c, COLUMN_CONSULT_STATUS)
+                , cGetString(c, COLUMN_CONSULT_ORG_UNIT)
                 , cGetString(c, COLUMN_AVATAR_PATH));
     }
 

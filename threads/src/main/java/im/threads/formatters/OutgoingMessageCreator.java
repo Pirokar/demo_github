@@ -209,11 +209,12 @@ public class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createMessageTyping(String clientId, Context ctx) {
+    public static String createMessageTyping(String clientId, String input, Context ctx) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
             jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPING.name());
+            jsonObject.put(PushMessageAttributes.TYPING_DRAFT, input);
             jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
         } catch (JSONException e) {
             e.printStackTrace();

@@ -20,8 +20,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 83
-        versionName "2.47.1"
+        versionCode 84
+        versionName "2.47.2"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -38,12 +38,13 @@ android {
 dependencies {
     def final androidXVersion = "1.0.0"
 
-//    compile project(':push-api-release-2.0.114')
-
     implementation "androidx.appcompat:appcompat:$androidXVersion"
     implementation "androidx.legacy:legacy-support-v4:$androidXVersion"
     implementation "androidx.media:media:$androidXVersion"
     implementation "androidx.recyclerview:recyclerview:$androidXVersion"
+
+    def final rxbindingVersion = "3.0.0-alpha2"
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbindingVersion"
 
     /*
     * !WARNING!
@@ -63,9 +64,9 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
-//    debugImplementation 'com.mfms.android:push-lite-debug:2.6.13'
-//    releaseImplementation 'com.mfms.android:push-lite-release:2.6.13'
-    implementation 'com.mfms.android:push-lite-release:2.6.18'
+//    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
+//    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
+    implementation 'com.mfms.android:push-lite-release:2.6.21'
 }
 
 

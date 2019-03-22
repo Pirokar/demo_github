@@ -267,7 +267,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 instance.fragment.addChatItems(phrases);
                 final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                 if (info != null) {
-                    instance.fragment.setStateConsultConnected(info.getId(), info.getName());
+                    instance.fragment.setStateConsultConnected(info);
                 }
             }
 
@@ -431,14 +431,10 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         else return CONSULT_STATE_DEFAULT;
     }
 
-    public void onUserTyping() {
-        final long currentTime = System.currentTimeMillis();
-        if ((currentTime - lastUserTypingSend) >= 3000) {
-            lastUserTypingSend = currentTime;
+    public void onUserTyping(String input) {
             Transport.sendMessageMFMSAsync(appContext,
-                    OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), appContext),
+                    OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), input, appContext),
                     true, null, null);
-        }
     }
 
     public boolean isNeedToShowWelcome() {
@@ -474,7 +470,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         Transport.sendMessageMFMSAsync(appContext, environmentMessage, true, null, null);
 
         if (mConsultWriter.isConsultConnected()) {
-            fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultId(), mConsultWriter.getCurrentConsultName());
+            fragment.setStateConsultConnected(mConsultWriter.getCurrentConsultInfo());
         } else if (mConsultWriter.istSearchingConsult()) {
             fragment.setStateSearchingConsult();
         } else {
@@ -549,7 +545,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                                 fragment.addChatItems(items);
                                 checkAndLoadOgData(items);
                                 if (info != null) {
-                                    fragment.setStateConsultConnected(info.getId(), info.getName());
+                                    fragment.setStateConsultConnected(info);
                                 }
                             }
                         }
@@ -626,7 +622,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
             final String id = userPhrase.getQuote().getQuotedPhraseId();
-            consultInfo = new ConsultInfo(mConsultWriter.getName(id), id, mConsultWriter.getStatus(id), mConsultWriter.getPhotoUrl(id));
+            consultInfo = mConsultWriter.getConsultInfo(id);
         }
 
         try {
@@ -905,13 +901,8 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         }
     }
 
-    public String getCurrentConsultName() {
-        return mConsultWriter.getCurrentConsultName();
-    }
-
-
-    public String getCurrentConsultTitle() {
-        return mConsultWriter.getCurrentConsultTitle();
+    public ConsultInfo getCurrentConsultInfo() {
+        return mConsultWriter.getCurrentConsultInfo();
     }
 
     public void onFileClick(final FileDescription fileDescription) {
@@ -932,7 +923,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     final Intent target = new Intent(Intent.ACTION_VIEW);
                     final File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
                     target.setDataAndType(FileProvider.getUriForFile(
-                            activity, /*BuildConfig.APPLICATION_ID*/ activity.getPackageName() + ".fileprovider", file), "application/pdf"
+                            activity, /*BuildConfig.APPLICATION_ID*/ activity.getPackageName() + ".im.threads.fileprovider", file), "application/pdf"
                     );
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     try {
@@ -1064,7 +1055,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         switch (pushMessageTypes) {
             case TYPING:
                 if (isCurrentClientId) {
-                    addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentAvatarPath()), ctx);
+                    addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentPhotoUrl()), ctx);
                 }
                 break;
             case MESSAGES_READ:
@@ -1326,9 +1317,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     mConsultWriter,
                     new ConsultMessageReactions() {
                         @Override
-                        public void consultConnected(final String id, final String name, final String title) {
+                        public void consultConnected(ConsultInfo consultInfo) {
                             if (fragment != null) {
-                                fragment.setStateConsultConnected(id, name);
+                                fragment.setStateConsultConnected(consultInfo);
                             }
                         }
 
@@ -1367,7 +1358,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
     public void onConsultChoose(final Activity activity, final String consultId) {
         ConsultInfo info = mDatabaseHolder.getConsultInfoSync(consultId);
-        if (info == null) info = new ConsultInfo("", consultId, "", "");
+        if (info == null) info = new ConsultInfo("", consultId, "", "", "");
         final Intent i = ConsultActivity.getStartIntent(activity, info.getPhotoUrl(), info.getName(), info.getStatus());
         activity.startActivity(i);
     }
@@ -1410,7 +1401,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                             checkAndLoadOgData(itemsWithLastAvatars);
                             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                             if (info != null) {
-                                fragment.setStateConsultConnected(info.getId(), info.getName());
+                                fragment.setStateConsultConnected(info);
                             }
                         }
                         currentOffset = serverItems.size();
