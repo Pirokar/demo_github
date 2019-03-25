@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ConsultConnectionMessage;
@@ -807,7 +808,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().execSQL("delete * from " + TABLE_QUOTE);
     }
 
-    ConsultInfo getLastConsultInfo(String id) {
+    ConsultInfo getLastConsultInfo(@NonNull String id) {
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_AVATAR_PATH + ", " + COLUMN_NAME + ", " + COLUMN_CONSULT_STATUS
                 + " from " + TABLE_MESSAGES
                 + " where " + COLUMN_CONSULT_ID + " =  ? "
