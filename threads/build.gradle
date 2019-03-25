@@ -21,8 +21,9 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 84
-        versionName "2.47.2"
+
+        versionCode 85
+        versionName "2.48.0"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -39,12 +40,13 @@ android {
 dependencies {
     def final supportVersion = "27.1.1"
 
-//    compile project(':push-api-release-2.0.114')
-
     implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:support-media-compat:27.1.1"
     implementation "com.android.support:support-v4:27.1.1"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
+
+    def final rxbindingVersion = "3.0.0-alpha2"
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbindingVersion"
 
     /*
     * !WARNING!

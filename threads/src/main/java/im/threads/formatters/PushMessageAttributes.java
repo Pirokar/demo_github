@@ -6,6 +6,7 @@ public class PushMessageAttributes {
     public static final String CLIENT_ID_ENCRYPTED = "clientIdIsEncrypted";
     public static final String TYPE = "type";
     public static final String TEXT = "text";
+    public static final String TYPING_DRAFT = "draft";
     public static final String RECEIVED_DATE = "receivedDate";
     public static final String THREAD_ID = "threadId";
     public static final String QUOTES = "quotes";
@@ -18,4 +19,5 @@ public class PushMessageAttributes {
     public static final String THREADS = "threads";
     public static final String APP_MARKER_KEY = "appMarker";
     public static final String OPERATOR_URL = "operatorPhotoUrl";
+    public static final String OPERATOR_ORG_UNIT = "organizationUnit";
 }

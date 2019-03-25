@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import androidx.annotation.NonNull;
 import im.threads.controllers.ChatController;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
@@ -274,7 +275,7 @@ public class DatabaseHolder {
         if (id == null) return null;
         return mMyOpenHelper.getLastOperatorAvatar(id);
     }
-    public ConsultInfo getConsultInfoSync(String id){
+    public ConsultInfo getConsultInfoSync(@NonNull String id){
         return mMyOpenHelper.getLastConsultInfo(id);
     }
 }
