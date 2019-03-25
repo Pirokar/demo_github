@@ -146,7 +146,6 @@ public class ChatFragment extends Fragment implements
     private FileDescription mFileDescription = null;
     private ChatPhrase mChosenPhrase = null;
     private List<String> mAttachedImages = new ArrayList<>();
-    private String connectedConsultId;
     private ChatReceiver mChatReceiver;
 
     private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
@@ -196,7 +195,9 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onDestroyView() {
-        inputChangesSubscription.dispose();
+        if (inputChangesSubscription != null && !inputChangesSubscription.isDisposed()) {
+            inputChangesSubscription.dispose();
+        }
         super.onDestroyView();
         mChatController.unbindFragment();
         Activity activity = getActivity();
@@ -265,7 +266,7 @@ public class ChatFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 if (mChatController.isConsultFound())
-                    onConsultAvatarClick(connectedConsultId);
+                    onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
             }
         });
 
@@ -273,17 +274,11 @@ public class ChatFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 if (mChatController.isConsultFound())
-                    onConsultAvatarClick(connectedConsultId);
+                    onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
             }
         });
 
-        inputChangesSubscription = RxTextView.textChanges(binding.input)
-                .throttleLatest(3, TimeUnit.SECONDS)
-                .map(CharSequence::toString)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        input -> mChatController.onUserTyping(input)
-                );
+        configureInputChangesSubscription();
 
         binding.searchUpIb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -379,6 +374,25 @@ public class ChatFragment extends Fragment implements
                 }
             }
         });
+    }
+
+    private void configureInputChangesSubscription() {
+        inputChangesSubscription = RxTextView.textChanges(binding.input)
+                .skipWhile(charSequence -> charSequence.length() == 0)
+                .throttleLatest(3, TimeUnit.SECONDS)
+                .map(CharSequence::toString)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        input -> mChatController.onUserTyping(input)
+                );
+    }
+
+    private void resetInputChangesSubscription() {
+        if (inputChangesSubscription != null && !inputChangesSubscription.isDisposed()) {
+            inputChangesSubscription.dispose();
+        }
+
+        configureInputChangesSubscription();
     }
 
     private void showUnreadMsgsCount(int unreadCount) {
@@ -703,8 +717,7 @@ public class ChatFragment extends Fragment implements
         ColorsHelper.setDrawableColor(ctx, d, style.chatBodyIconsTint);
         binding.chatBackButton.setImageDrawable(d);
 
-        ColorsHelper.setDrawableColor(ctx, binding.popupMenuButton.getDrawable(), R.color.threads_chat_icons_tint);
-        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, R.color.threads_chat_toolbar_text);
+        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, style.chatToolbarTextColorResId);
 
         binding.copyControls.setVisibility(View.VISIBLE);
         binding.consultName.setVisibility(View.GONE);
@@ -1037,6 +1050,8 @@ public class ChatFragment extends Fragment implements
                 mChosenPhrase = null;
             }
             if (isInMessageSearchMode) onActivityBackPressed();
+
+            resetInputChangesSubscription();
         }
     }
 
@@ -1179,7 +1194,6 @@ public class ChatFragment extends Fragment implements
                     binding.search.setText("");
                     binding.consultName.setText(style.chatTitleTextResId);
                 }
-                connectedConsultId = String.valueOf(-1);
             }
         }, 50);
     }
@@ -1360,7 +1374,6 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setStateSearchingConsult() {
-        hideOverflowMenu();
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1542,6 +1555,7 @@ public class ChatFragment extends Fragment implements
         mChatController.setActivityIsForeground(false);
         isResumed = false;
         chatIsShown = false;
+        isInMessageSearchMode = false;
     }
 
     @Override

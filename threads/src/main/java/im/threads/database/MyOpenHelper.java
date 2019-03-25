@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -807,7 +808,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         getWritableDatabase().execSQL("delete * from " + TABLE_QUOTE);
     }
 
-    ConsultInfo getLastConsultInfo(String id) {
+    ConsultInfo getLastConsultInfo(@NonNull String id) {
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_AVATAR_PATH + ", " + COLUMN_NAME + ", " + COLUMN_CONSULT_STATUS
                 + " from " + TABLE_MESSAGES
                 + " where " + COLUMN_CONSULT_ID + " =  ? "
