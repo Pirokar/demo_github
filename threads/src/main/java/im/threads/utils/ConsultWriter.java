@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import im.threads.model.ConsultConnectionMessage;
+import im.threads.model.ConsultInfo;
 import im.threads.model.ConsultPhrase;
 
 /**
@@ -14,6 +15,7 @@ public class ConsultWriter {
     public static final String OPERATOR_STATUS = "OPERATOR_STATUS";
     public static final String OPERATOR_NAME = "OPERATOR_NAME";
     public static final String OPERATOR_TITLE = "OPERATOR_TITLE";
+    public static final String OPERATOR_ORG_UNIT = "OPERATOR_ORG_UNIT";
     public static final String OPERATOR_PHOTO = "OPERATOR_PHOTO";
     public static final String OPERATOR_ID = "OPERATOR_ID";
     public static final String SEARCHING_CONSULT = "SEARCHING_CONSULT";
@@ -50,6 +52,7 @@ public class ConsultWriter {
         editor.putString(OPERATOR_STATUS + consultId, message.getStatus()).commit();
         editor.putString(OPERATOR_NAME + consultId, message.getName()).commit();
         editor.putString(OPERATOR_TITLE + consultId, message.getTitle()).commit();
+        editor.putString(OPERATOR_ORG_UNIT + consultId, message.getOrgUnit()).commit();
         editor.putString(OPERATOR_PHOTO + consultId, message.getAvatarPath()).commit();
         setCurrentConsultId(consultId);
     }
@@ -98,12 +101,24 @@ public class ConsultWriter {
         return getConsultTitle(getCurrentConsultId());
     }
 
+    public String getOrgUnit(String id) {
+        return sharedPreferences.getString(OPERATOR_ORG_UNIT + id, null);
+    }
+
+    private String getCurrentConsultOrgUnit() {
+        if (getCurrentConsultId() == null) {
+            return null;
+        } else {
+            return getOrgUnit(getCurrentConsultId());
+        }
+    }
+
     public String getPhotoUrl(String id) {
         return sharedPreferences.getString(OPERATOR_PHOTO + id, null);
     }
 
-    public String getCurrentAvatarPath() {
-        if (getCurrentConsultId()==null)return null;
+    public String getCurrentPhotoUrl() {
+        if (getCurrentConsultId() == null) return null;
         return getPhotoUrl(getCurrentConsultId());
     }
 
@@ -120,5 +135,21 @@ public class ConsultWriter {
     public boolean isConsultConnected() {
         String id = sharedPreferences.getString(OPERATOR_ID, null);
         return id != null;
+    }
+
+    public ConsultInfo getConsultInfo(String id) {
+        return new ConsultInfo(getName(id), id,
+                getStatus(id), getOrgUnit(id), getPhotoUrl(id));
+    }
+
+    public ConsultInfo getCurrentConsultInfo() {
+
+        String currentId = getCurrentConsultId();
+
+        if (currentId == null) {
+            return null;
+        } else {
+            return getConsultInfo(currentId);
+        }
     }
 }

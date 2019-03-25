@@ -20,8 +20,9 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 84
-        versionName "2.47.2"
+
+        versionCode 85
+        versionName "2.48.0"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -38,12 +39,13 @@ android {
 dependencies {
     def final androidXVersion = "1.0.0"
 
-//    compile project(':push-api-release-2.0.114')
-
     implementation "androidx.appcompat:appcompat:$androidXVersion"
     implementation "androidx.legacy:legacy-support-v4:$androidXVersion"
     implementation "androidx.media:media:$androidXVersion"
     implementation "androidx.recyclerview:recyclerview:$androidXVersion"
+
+    def final rxbindingVersion = "3.0.0-alpha2"
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbindingVersion"
 
     /*
     * !WARNING!

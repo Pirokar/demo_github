@@ -2,8 +2,13 @@ package im.threads.widget.text_view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 
 import im.threads.R;
@@ -38,7 +43,7 @@ public class BubbleMessageTextView extends CustomFontTextView {
                 int lastLinePaddingSymbols = ta.getInt(R.styleable.BubbleMessageTextView_last_line_padding_symbols, 0);
                 StringBuilder paddingBuilder = new StringBuilder();
                 for (int i = 0; i < lastLinePaddingSymbols; ++i) {
-                    paddingBuilder.append("\b");
+                    paddingBuilder.append("_");
                 }
                 lastLinePadding = paddingBuilder.toString();
             } finally {
@@ -58,13 +63,21 @@ public class BubbleMessageTextView extends CustomFontTextView {
     }
 
     @Override
-    public boolean onPreDraw() {
-        String originalString = getText().toString();
-        if (!TextUtils.isEmpty(originalString) && !originalString.endsWith(lastLinePadding)) {
-            append(lastLinePadding);
-            return false;
+    public void setText(CharSequence text, BufferType type) {
+
+        String originalString = text.toString();
+
+        if (!TextUtils.isEmpty(originalString) && !TextUtils.isEmpty(lastLinePadding) && !originalString.endsWith(lastLinePadding)) {
+
+            SpannableStringBuilder phraseSpan = new SpannableStringBuilder(originalString);
+            Spannable lastLineSpan = new SpannableString(lastLinePadding);
+            lastLineSpan.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, lastLineSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            phraseSpan.append(lastLineSpan);
+            super.setText(phraseSpan, type);
+
+        } else {
+            super.setText(text, type);
         }
-        return true;
     }
 
 }
