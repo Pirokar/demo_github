@@ -201,7 +201,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                     chatFragment = ChatFragment.newInstance();
                 }
                 // генерируем настройки стилей чата
-                ChatBuilderHelper.buildChatStyle(this, appMarker, clientId, userName, "", chatDesign);
+                ChatBuilderHelper.buildChatStyle(this, appMarker, clientId, null, userName, "", chatDesign);
                 // создаем фрагмент чата
                 fragment = chatFragment;
                 break;
