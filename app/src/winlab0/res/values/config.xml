@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="datastore_url" translatable="false">https://winlab0store.threads.im/</string>
+    <string name="serverBaseUrl" translatable="false">https://winlab0.threads.im</string>
 </resources>

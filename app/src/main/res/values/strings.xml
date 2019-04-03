@@ -60,5 +60,6 @@
     <string name="alt_threads_welcome_screen_title_text">Рады помочь Вам в VIP Чат</string>
     <string name="alt_threads_welcome_screen_subtitle_text">Отправьте ваш вопрос, и ваш персональный менеджер на него сразу ответит</string>
     <string name="alt_threads_input_hint">Введите Ваше сообщение</string>
+    <string name="get_signature_error">Не удалось получить подпись clientId</string>
 
 </resources>

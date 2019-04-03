@@ -15,9 +15,16 @@ import im.threads.controllers.ChatController;
 
 public class ThreadsDemoApplication extends MultiDexApplication {
 
+    private static Context appContext;
+
+    public static Context getAppContext() {
+        return appContext;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        appContext = getApplicationContext();
 
         ChatController.setPendingIntentCreator(new ChatController.PendingIntentCreator() {
             @Override

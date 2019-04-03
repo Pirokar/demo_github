@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.mfms.android.push_lite.PushController;
@@ -23,11 +23,15 @@ import java.util.List;
 
 import im.threads.android.R;
 import im.threads.android.data.Card;
+import im.threads.android.network.AuthProvider;
 import im.threads.android.utils.ChatBuilderHelper;
 import im.threads.android.utils.PrefUtils;
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
 import im.threads.utils.PermissionChecker;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Пример активности с нижней навигацией,
@@ -55,9 +59,12 @@ public class BottomNavigationActivity extends AppCompatActivity {
     private static final int PERM_REQUEST_CODE_CLICK = 1;
 
     private String clientId;
+    private String clientIdSignature;
     private String userName;
     private String appMarker;
     private ChatBuilderHelper.ChatDesign chatDesign;
+
+    private Disposable signatureDisposable;
 
     private BottomNavigationView bottomNavigationView;
     private TabItem selectedTab;
@@ -106,12 +113,30 @@ public class BottomNavigationActivity extends AppCompatActivity {
                     selectTab(TabItem.TAB_HOME);
                     return true;
                 case R.id.navigation_chat:
-                    // При попытке открыть чат нужно спросить разрешения.
+
                     if (!PermissionChecker.checkPermissions(BottomNavigationActivity.this)) {
                         PermissionChecker.requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK, BottomNavigationActivity.this);
                         return false;
+
                     } else {
-                        selectTab(TabItem.TAB_CHAT);
+
+                        if (signatureDisposable != null && !signatureDisposable.isDisposed()) {
+                            signatureDisposable.dispose();
+                        }
+
+                        signatureDisposable = AuthProvider.getSignature(clientId)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        s -> {
+                                            clientIdSignature = s;
+                                            selectTab(TabItem.TAB_CHAT);
+                                        },
+                                        throwable -> {
+                                            showError(R.string.get_signature_error);
+                                            selectTab(TabItem.TAB_CHAT);
+                                        });
+
                         return true;
                     }
             }
@@ -146,7 +171,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         // При открытии экрана из пуш уведомления нужно сразу открыть чат,
         // а не главную страницу
         if (intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
-            updateNavigationBarState(TabItem.TAB_CHAT.getMenuId());
+            bottomNavigationView.setSelectedItemId(TabItem.TAB_CHAT.getMenuId());
         }
         // после переворота экрана открываем последнюю выбранную вкладку
         else if (savedInstanceState != null) {
@@ -154,11 +179,11 @@ public class BottomNavigationActivity extends AppCompatActivity {
             if (savedTab == null) {
                 savedTab = TabItem.TAB_HOME;
             }
-            updateNavigationBarState(savedTab.getMenuId());
+            bottomNavigationView.setSelectedItemId(savedTab.getMenuId());
         }
         // при первом входе в приложение открываем главную страницу
         else {
-            updateNavigationBarState(TabItem.TAB_HOME.getMenuId());
+            bottomNavigationView.setSelectedItemId(TabItem.TAB_HOME.getMenuId());
         }
     }
 
@@ -166,7 +191,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
-            updateNavigationBarState(TabItem.TAB_CHAT.getMenuId());
+            bottomNavigationView.setSelectedItemId(TabItem.TAB_CHAT.getMenuId());
         }
     }
 
@@ -200,9 +225,9 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 if (chatFragment == null) {
                     chatFragment = ChatFragment.newInstance();
                 }
-                // генерируем настройки стилей чата
-                ChatBuilderHelper.buildChatStyle(this, appMarker, clientId, null, userName, "", chatDesign);
-                // создаем фрагмент чата
+                // configuring chat
+                ChatBuilderHelper.buildChatStyle(this, appMarker, clientId, clientIdSignature, userName, "", chatDesign);
+                // creating chat fragment
                 fragment = chatFragment;
                 break;
         }
@@ -214,15 +239,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
                     .commit();
             fm.executePendingTransactions();
         }
-    }
-
-    /**
-     * Активирует программно выбранную вкладку
-     * @param selectedMenuId id выбранной вкладки
-     */
-    private void updateNavigationBarState(int selectedMenuId){
-        View view = bottomNavigationView.findViewById(selectedMenuId);
-        view.performClick();
     }
 
     /**
@@ -255,7 +271,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
             // Если чат нужно закрыть, возвращаем пользователя на предыдущий открытый экран
             boolean needsCloseChat = ((ChatFragment) fragment).onBackPressed();
             if (needsCloseChat) {
-                updateNavigationBarState(TabItem.TAB_HOME.getMenuId());
+                bottomNavigationView.setSelectedItemId(TabItem.TAB_HOME.getMenuId());
             }
         } else {
             super.onBackPressed();
@@ -330,7 +346,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (showChatAfterGrantPermission) {
-            updateNavigationBarState(TabItem.TAB_CHAT.getMenuId());
+            bottomNavigationView.setSelectedItemId(TabItem.TAB_CHAT.getMenuId());
             showChatAfterGrantPermission = false;
         }
     }
@@ -339,5 +355,15 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putSerializable("selectedTab", selectedTab);
+    }
+
+    @Override
+    protected void onDestroy() {
+        signatureDisposable.dispose();
+        super.onDestroy();
+    }
+
+    private void showError(@StringRes int errorMessageResId) {
+        Toast.makeText(this, errorMessageResId, Toast.LENGTH_SHORT).show();
     }
 }
