@@ -50,7 +50,8 @@ public class ThreadsDemoApplication extends MultiDexApplication {
 
                         return BottomNavigationActivity.createPendingIntent(context, true,
                                 pushClientCard.getUserId(), pushClientCard.getUserName(),
-                                pushClientCard.getAppMarker(), chatDesign);
+                                pushClientCard.getAppMarker(), pushClientCard.getClientIdSignature(),
+                                chatDesign);
                     }
                 } else {
                     //This is an exaple of creating pending intent for single chat app
@@ -61,7 +62,8 @@ public class ThreadsDemoApplication extends MultiDexApplication {
 
                         return BottomNavigationActivity.createPendingIntent(context, true,
                                 pushClientCard.getUserId(), pushClientCard.getUserName(),
-                                pushClientCard.getAppMarker(), ChatBuilderHelper.ChatDesign.GREEN);
+                                pushClientCard.getAppMarker(), pushClientCard.getClientIdSignature(),
+                                ChatBuilderHelper.ChatDesign.GREEN);
                     }
                 }
 

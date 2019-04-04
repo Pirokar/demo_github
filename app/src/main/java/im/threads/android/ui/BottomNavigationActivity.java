@@ -23,24 +23,20 @@ import java.util.List;
 
 import im.threads.android.R;
 import im.threads.android.data.Card;
-import im.threads.android.network.AuthProvider;
 import im.threads.android.utils.ChatBuilderHelper;
 import im.threads.android.utils.PrefUtils;
 import im.threads.controllers.ChatController;
 import im.threads.fragments.ChatFragment;
 import im.threads.utils.PermissionChecker;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Пример активности с нижней навигацией,
  * где чат выступает в роли одного из пунктов меню.
- *
+ * <p>
  * Для использования чата в виде фрагмента
  * нужно создать его экземпляр, вызвав метод ChatFragment.newInstance(Bundle bundle),
  * передав в него Bundle с настройками.
- *
+ * <p>
  * Чтобы корректно обработать навигацию внутри чата,
  * переопределите у Активности метод onBackPressed()
  * и вызовите метод onBackPressed() у ChatFragment,
@@ -53,6 +49,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public static final String ARG_CLIENT_ID = "clientId";
     public static final String ARG_USER_NAME = "userName";
     public static final String ARG_APP_MARKER = "appMarker";
+    public static final String ARG_CLIENT_ID_SIGNATURE = "clientIdSignature";
     public static final String ARG_NEEDS_SHOW_CHAT = "needsShowChat";
     private static final String ARG_CHAT_DESIGN = "chatDesign";
 
@@ -63,8 +60,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
     private String userName;
     private String appMarker;
     private ChatBuilderHelper.ChatDesign chatDesign;
-
-    private Disposable signatureDisposable;
 
     private BottomNavigationView bottomNavigationView;
     private TabItem selectedTab;
@@ -92,12 +87,13 @@ public class BottomNavigationActivity extends AppCompatActivity {
      * @return intent для открытия BottomNavigationActivity
      * с передачей clientId и userName.
      */
-    public static Intent createIntent(Activity activity, String appMarker, String clientId,
+    public static Intent createIntent(Activity activity, String appMarker, String clientId, String clientIdSignature,
                                       String userName, ChatBuilderHelper.ChatDesign chatDesign) {
 
         Intent intent = new Intent(activity, BottomNavigationActivity.class);
         intent.putExtra(ARG_APP_MARKER, appMarker);
         intent.putExtra(ARG_CLIENT_ID, clientId);
+        intent.putExtra(ARG_CLIENT_ID_SIGNATURE, clientIdSignature);
         intent.putExtra(ARG_USER_NAME, userName);
         intent.putExtra(ARG_CHAT_DESIGN, chatDesign);
         return intent;
@@ -119,24 +115,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                         return false;
 
                     } else {
-
-                        if (signatureDisposable != null && !signatureDisposable.isDisposed()) {
-                            signatureDisposable.dispose();
-                        }
-
-                        signatureDisposable = AuthProvider.getSignature(clientId)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        s -> {
-                                            clientIdSignature = s;
-                                            selectTab(TabItem.TAB_CHAT);
-                                        },
-                                        throwable -> {
-                                            showError(R.string.get_signature_error);
-                                            selectTab(TabItem.TAB_CHAT);
-                                        });
-
+                        selectTab(TabItem.TAB_CHAT);
                         return true;
                     }
             }
@@ -160,6 +139,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         clientId = intent.getStringExtra(ARG_CLIENT_ID);
         userName = intent.getStringExtra(ARG_USER_NAME);
         appMarker = intent.getStringExtra(ARG_APP_MARKER);
+        clientIdSignature = intent.getStringExtra(ARG_CLIENT_ID_SIGNATURE);
         chatDesign = (ChatBuilderHelper.ChatDesign) intent.getSerializableExtra(ARG_CHAT_DESIGN);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -243,11 +223,12 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
     /**
      * Меняет состояние ActionBar в зависимости от выбранной вкладки
+     *
      * @param tabItem выбранная вкладка
      */
     private void showActionBar(final TabItem tabItem) {
         final ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) {
+        if (actionBar != null) {
             switch (tabItem) {
                 case TAB_HOME:
                     actionBar.show();
@@ -267,7 +248,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content);
-        if(fragment instanceof ChatFragment) {
+        if (fragment instanceof ChatFragment) {
             // Если чат нужно закрыть, возвращаем пользователя на предыдущий открытый экран
             boolean needsCloseChat = ((ChatFragment) fragment).onBackPressed();
             if (needsCloseChat) {
@@ -282,7 +263,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERM_REQUEST_CODE_CLICK) {
-            if(PermissionChecker.checkGrantResult(grantResults)) {
+            if (PermissionChecker.checkGrantResult(grantResults)) {
                 showChatAfterGrantPermission = true;
             } else {
                 Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
@@ -316,21 +297,22 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
                         return BottomNavigationActivity.createPendingIntent(context, true,
                                 pushClientCard.getUserId(), pushClientCard.getUserName(),
-                                pushClientCard.getAppMarker(), chatDesign);
+                                pushClientCard.getAppMarker(), pushClientCard.getClientIdSignature(), chatDesign);
                     }
                 }
 
                 //This is an exaple of creating pending intent for single chat app
                 return BottomNavigationActivity.createPendingIntent(context, true,
                         clientId, userName,
-                        BottomNavigationActivity.this.appMarker, chatDesign);
+                        BottomNavigationActivity.this.appMarker, clientIdSignature, chatDesign);
 
             }
         };
     }
 
-    public static PendingIntent createPendingIntent (Context context, boolean needsShowChat, String clientId,
-                                                 String userName, String appMarker, ChatBuilderHelper.ChatDesign chatDesign) {
+    public static PendingIntent createPendingIntent(Context context, boolean needsShowChat, String clientId,
+                                                    String userName, String appMarker, String clientIdSignature,
+                                                    ChatBuilderHelper.ChatDesign chatDesign) {
 
         Intent i = new Intent(context, BottomNavigationActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -338,6 +320,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         i.putExtra(ARG_CLIENT_ID, clientId);
         i.putExtra(ARG_USER_NAME, userName);
         i.putExtra(ARG_APP_MARKER, appMarker);
+        i.putExtra(ARG_CLIENT_ID_SIGNATURE, clientIdSignature);
         i.putExtra(ARG_CHAT_DESIGN, chatDesign);
         return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
     }
@@ -359,7 +342,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        signatureDisposable.dispose();
         super.onDestroy();
     }
 
