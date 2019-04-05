@@ -33,6 +33,7 @@ public class ServerAPI {
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
+        ChatStyle.updateContext(ThreadsDemoApplication.getAppContext());
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             httpClient.addInterceptor(new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BODY));
