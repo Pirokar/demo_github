@@ -1,6 +1,7 @@
 package im.threads.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.mfms.android.push_lite.PushController;
 import com.mfms.android.push_lite.RequestCallback;
@@ -96,7 +97,11 @@ public final class Transport {
      * @param count количество сообщений для загрузки
      */
     public static HistoryResponse getHistorySync(Context ctx, Long beforeTimestamp, Long count) throws Exception {
-        String token = getPushControllerInstance(ctx).getDeviceAddress() + ":" + PrefUtils.getClientID(ctx);
+
+        String clientIdSignature = PrefUtils.getClientIdSignature(ctx);
+
+        String token = (TextUtils.isEmpty(clientIdSignature) ? getPushControllerInstance(ctx).getDeviceAddress() : clientIdSignature)
+                + ":" + PrefUtils.getClientID(ctx);
         String url = PrefUtils.getServerUrlMetaInfo(ctx);
         if (count == null) {
             count = getHistoryLoadingCount(ctx);
