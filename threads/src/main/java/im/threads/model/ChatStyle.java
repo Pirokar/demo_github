@@ -301,24 +301,31 @@ public class ChatStyle implements Serializable {
 
         private String appMarker;
         private String clientId;
+        private String clientIdSignature;
         private String userName;
         private String data;
 
         private ChatStyleBuilder() {
         }
 
-        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, String userName) {
-            return getBuilder(ctx, clientId, userName, "");
+        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, String clientIdSignature, String userName) {
+            return getBuilder(ctx, clientId, clientIdSignature, userName, "");
         }
 
-        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, String userName, final String data) {
+        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, String clientIdSignature, String userName, final String data) {
             final ChatStyleBuilder builder = new ChatStyleBuilder();
             builder.clientId = clientId;
+            builder.clientIdSignature = clientIdSignature;
             builder.userName = userName;
             builder.data = data;
             builder.chatStyle = new ChatStyle();
             builder.appContext = ctx.getApplicationContext();
             return builder;
+        }
+
+        public ChatStyleBuilder setClientIdSignature(String clientIdSignature) {
+            this.clientIdSignature = clientIdSignature;
+            return this;
         }
 
         public ChatStyleBuilder setAppMarker(String appMarker) {
@@ -488,6 +495,7 @@ public class ChatStyle implements Serializable {
 
             PrefUtils.setAppMarker(appContext, appMarker);
             PrefUtils.setNewClientId(appContext, clientId);
+            PrefUtils.setClientIdSignature(appContext, clientIdSignature);
             PrefUtils.setUserName(appContext, userName);
             PrefUtils.setData(appContext, data);
 
