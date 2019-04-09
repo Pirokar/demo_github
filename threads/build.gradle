@@ -23,7 +23,7 @@ android {
         targetSdkVersion 27
 
         versionCode 85
-        versionName "2.48.0"
+        versionName "2.48.0.1"
         vectorDrawables.useSupportLibrary = true
     }
 
