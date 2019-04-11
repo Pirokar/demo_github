@@ -25,6 +25,8 @@ android {
         versionCode 85
         versionName "2.48.0.1"
         vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -69,6 +71,8 @@ dependencies {
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
     implementation 'com.mfms.android:push-lite-release:2.6.21'
+
+    testImplementation 'junit:junit:4.12'
 }
 
 
