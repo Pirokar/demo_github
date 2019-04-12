@@ -38,6 +38,12 @@ android {
         }
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
 }
 dependencies {
     def final supportVersion = "27.1.1"
@@ -71,6 +77,8 @@ dependencies {
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
     implementation 'com.mfms.android:push-lite-release:2.6.21'
+
+    testImplementation 'org.robolectric:robolectric:4.2'
 
     testImplementation 'junit:junit:4.12'
 }
