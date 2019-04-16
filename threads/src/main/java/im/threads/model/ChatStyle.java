@@ -308,16 +308,9 @@ public class ChatStyle implements Serializable {
         private ChatStyleBuilder() {
         }
 
-        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, String clientIdSignature, String userName) {
-            return getBuilder(ctx, clientId, clientIdSignature, userName, "");
-        }
-
-        public static ChatStyleBuilder getBuilder(final Context ctx, final @NonNull String clientId, String clientIdSignature, String userName, final String data) {
+        public static ChatStyleBuilder getBuilder(@NonNull final Context ctx, @NonNull String clientId) {
             final ChatStyleBuilder builder = new ChatStyleBuilder();
             builder.clientId = clientId;
-            builder.clientIdSignature = clientIdSignature;
-            builder.userName = userName;
-            builder.data = data;
             builder.chatStyle = new ChatStyle();
             builder.appContext = ctx.getApplicationContext();
             return builder;
@@ -325,6 +318,16 @@ public class ChatStyle implements Serializable {
 
         public ChatStyleBuilder setClientIdSignature(String clientIdSignature) {
             this.clientIdSignature = clientIdSignature;
+            return this;
+        }
+
+        public ChatStyleBuilder setUserName(String userName) {
+            this.userName = userName;
+            return this;
+        }
+
+        public ChatStyleBuilder setData(String data) {
+            this.data = data;
             return this;
         }
 
