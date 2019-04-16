@@ -23,7 +23,7 @@ android {
         targetSdkVersion 27
 
         versionCode 85
-        versionName "2.48.0.1"
+        versionName "2.48.0.2"
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
