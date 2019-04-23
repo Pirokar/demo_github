@@ -85,10 +85,14 @@ public class PluralsTest {
     @ParameterizedRobolectricTestRunner.Parameters(name = "quantity = {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
+                {0},
                 {1},
                 {2},
+                {3},
                 {4},
                 {5},
+                {6},
+                {7},
                 {8},
                 {9},
                 {10},
