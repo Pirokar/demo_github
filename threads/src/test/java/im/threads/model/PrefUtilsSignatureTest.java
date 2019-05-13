@@ -3,8 +3,7 @@ package im.threads.model;
 
 import android.content.Context;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +40,7 @@ public class PrefUtilsSignatureTest {
         Assert.assertEquals(expectedSignature, signature);
     }
 
-    @ParameterizedRobolectricTestRunner.Parameters(name = "inputSignature = {0}")
+    @ParameterizedRobolectricTestRunner.Parameters(name = "inputSignature = {0}, expectedResult = {1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {null, ""},
