@@ -38,7 +38,7 @@ public class FilePoster {
             File file = null;
 
             if (fileDescription.getFilePath() != null) {
-                file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
+                file = new File(fileDescription.getFilePath());
             }
 
             if (file != null && file.exists() && file.isFile() && file.canRead()) {
@@ -85,7 +85,7 @@ public class FilePoster {
                     }
                 });
 
-            } else if (fileDescription.getFilePath() != null && !new File(fileDescription.getFilePath().replaceAll("file://", "")).exists()) {
+            } else if (fileDescription.getFilePath() != null && !new File(fileDescription.getFilePath()).exists()) {
                 if (fileDescription.getDownloadPath() != null) {
                     callback.onSuccess(fileDescription.getDownloadPath());
                 } else {

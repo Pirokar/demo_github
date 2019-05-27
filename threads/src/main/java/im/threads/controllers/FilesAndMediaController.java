@@ -4,11 +4,11 @@ import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,16 +93,23 @@ public class FilesAndMediaController extends Fragment {
     public void onFileClick(FileDescription fileDescription) {
         if (FileUtils.isImage(fileDescription)) {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
+
         } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
             Intent target = new Intent(Intent.ACTION_VIEW);
-            File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
-            target.setDataAndType(Uri.fromFile(file), "application/pdf");
-            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            File file = new File(fileDescription.getFilePath());
+
+            target.setDataAndType(
+                    FileProvider.getUriForFile(activity,
+                            activity.getPackageName() + ".im.threads.fileprovider",
+                            file),
+                    "application/pdf"
+            );
+            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             try {
-                startActivity(target);
-            } catch (ActivityNotFoundException e) {
-                // Instruct the user to install a PDF reader here, or something
-                Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
+                activity.startActivity(target);
+            } catch (final ActivityNotFoundException e) {
+                Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT)
+                        .show();
             }
         }
     }

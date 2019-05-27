@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -59,7 +60,7 @@ public class FileAndMediaViewHolder extends BaseHolder {
         } else if (extension == FileUtils.JPEG || extension == FileUtils.PNG) {
             if (fileDescription.getFilePath() != null) {
                 p
-                        .load(fileDescription.getFilePath())
+                        .load(new File(fileDescription.getFilePath()))
                         .fit()
                         .centerInside()
                         .into(mImageButton);

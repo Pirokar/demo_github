@@ -113,7 +113,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
                     R.string.threads_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
-        String path = files.get(mViewPager.getCurrentItem()).getFilePath().replaceAll("file://", "");
+        String path = files.get(mViewPager.getCurrentItem()).getFilePath();
         try {
             File file = new File(path);
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) == null) {
