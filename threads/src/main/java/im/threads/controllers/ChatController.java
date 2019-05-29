@@ -833,14 +833,19 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                     final Long chunk = 100L;
                     final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), lastMessageTimestamp, chunk);
                     final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
-                    if (items == null || items.size() == 0) return;
-                    lastMessageTimestamp = items.get(items.size() - 1).getTimeStamp();
-                    currentOffset += items.size();
-                    isAllMessagesDownloaded = items.size() < chunk; // Backend can give us more than chunk anytime, it will give less only on history end
-                    final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
-                    mDatabaseHolder.putMessagesSync(chatItems);
-                    isDownloadingMessages = false;
-                    if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
+
+                    if (items != null && !items.isEmpty()) {
+                        lastMessageTimestamp = items.get(0).getTimeStamp();
+                        currentOffset += items.size();
+                        isAllMessagesDownloaded = items.size() < chunk; // Backend can give us more than chunk anytime, it will give less only on history end
+                        final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
+                        mDatabaseHolder.putMessagesSync(chatItems);
+                        isDownloadingMessages = false;
+                        if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
+                    } else {
+                        isDownloadingMessages = false;
+                        isAllMessagesDownloaded = true;
+                    }
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
