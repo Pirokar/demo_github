@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import java.util.List;
 import im.threads.activities.FilesActivity;
 import im.threads.activities.ImagesActivity;
 import im.threads.database.DatabaseHolder;
+import im.threads.helpers.FileProviderHelper;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
 import im.threads.utils.FileUtils;
@@ -98,10 +98,7 @@ public class FilesAndMediaController extends Fragment {
             Intent target = new Intent(Intent.ACTION_VIEW);
             File file = new File(fileDescription.getFilePath());
 
-            target.setDataAndType(
-                    FileProvider.getUriForFile(activity,
-                            activity.getPackageName() + ".im.threads.fileprovider",
-                            file),
+            target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
                     "application/pdf"
             );
             target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);

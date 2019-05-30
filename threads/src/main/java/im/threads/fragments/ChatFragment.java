@@ -25,7 +25,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.content.res.AppCompatResources;
@@ -70,6 +69,7 @@ import im.threads.adapters.ChatAdapter;
 import im.threads.controllers.ChatController;
 import im.threads.databinding.FragmentChatBinding;
 import im.threads.helpers.FileHelper;
+import im.threads.helpers.FileProviderHelper;
 import im.threads.helpers.MediaHelper;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
@@ -550,7 +550,7 @@ public class ChatFragment extends Fragment implements
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     externalCameraPhotoFile = FileHelper.createImageFile(getContext());
-                    Uri photoUri = FileProvider.getUriForFile(getContext(), activity.getPackageName() + ".im.threads.fileprovider", externalCameraPhotoFile);
+                    Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
 
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) {
                         Log.d(TAG, "Image File uri resolved: " + photoUri.toString());

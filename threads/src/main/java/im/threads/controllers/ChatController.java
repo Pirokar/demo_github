@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -45,6 +44,7 @@ import im.threads.formatters.OutgoingMessageCreator;
 import im.threads.formatters.PushMessageAttributes;
 import im.threads.formatters.PushMessageTypes;
 import im.threads.fragments.ChatFragment;
+import im.threads.helpers.FileProviderHelper;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
@@ -927,10 +927,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
                     final File file = new File(fileDescription.getFilePath());
 
-                    target.setDataAndType(
-                            FileProvider.getUriForFile(activity,
-                                    activity.getPackageName() + ".im.threads.fileprovider",
-                                    file),
+                    target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
                             "application/pdf"
                     );
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);

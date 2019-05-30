@@ -168,6 +168,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTIONS);
             onCreate(db);
         }
+
+        // 6 VERSION - version increased to drop data with old file paths starting with "file://" prefix
     }
 
     void putChatPhrase(ChatPhrase phrase) {
