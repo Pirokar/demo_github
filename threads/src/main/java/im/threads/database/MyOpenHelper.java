@@ -244,19 +244,10 @@ class MyOpenHelper extends SQLiteOpenHelper {
             putFd(phrase.getFileDescription(), phrase.getUuid(), false);
         }
         if (phrase.getQuote() != null) {
-            cv.clear();
-            cv.put(COLUMN_QUOTE_MESSAGE_UUID_EXT, phrase.getUuid());
-            cv.put(COLUMN_QUOTE_HEADER, phrase.getQuote().getPhraseOwnerTitle());
-            cv.put(COLUMN_QUOTE_BODY, phrase.getQuote().getText());
-            cv.put(COLUMN_QUOTE_TIMESTAMP, phrase.getQuote().getTimeStamp());
-            getWritableDatabase().insert(TABLE_QUOTE, null, cv);
-            if (phrase.getQuote().getFileDescription() != null) {
-                putFd(phrase.getQuote().getFileDescription(), phrase.getUuid(), true);
-            }
+            putQuote(phrase.getUuid(), phrase.getQuote());
         }
         c.close();
     }
-
 
     void setUserPhraseStateByProviderId(String providerId, MessageState messageState) {
         ContentValues cv = new ContentValues();
@@ -500,6 +491,19 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return items;
     }
 
+    private void putQuote(String uuid, Quote quote) {
+        ContentValues cv = new ContentValues();
+        cv.clear();
+        cv.put(COLUMN_QUOTE_MESSAGE_UUID_EXT, uuid);
+        cv.put(COLUMN_QUOTE_HEADER, quote.getPhraseOwnerTitle());
+        cv.put(COLUMN_QUOTE_BODY, quote.getText());
+        cv.put(COLUMN_QUOTE_TIMESTAMP, quote.getTimeStamp());
+        getWritableDatabase().insert(TABLE_QUOTE, null, cv);
+        if (quote.getFileDescription() != null) {
+            putFd(quote.getFileDescription(), quote.getUuid(), true);
+        }
+    }
+
     private Quote getQuote(String uuid) {
         if (TextUtils.isEmpty(uuid)) {
             return null;
@@ -699,18 +703,33 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return ids;
     }
 
-    private void putFd(FileDescription fileDescription, String id, boolean isFromQuote) {
+    private void putFd(FileDescription fileDescription, String messageUuid, boolean isFromQuote) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_FD_MESSAGE_UUID_EXT, id);
+        cv.put(COLUMN_FD_MESSAGE_UUID_EXT, messageUuid);
         cv.put(COLUMN_FD_HEADER, fileDescription.getFileSentTo());
-        cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
+
+        if (!TextUtils.isEmpty(fileDescription.getFilePath())) {
+            cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
+        }
+
         cv.put(COLUMN_FD_DOWNLOAD_PATH, fileDescription.getDownloadPath());
         cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
         cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
         cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
         cv.put(COLUMN_FD_IS_FROM_QUOTE, isFromQuote);
         cv.put(COLUMN_FD_INCOMING_FILENAME, fileDescription.getIncomingName());
-        getWritableDatabase().insert(TABLE_FILE_DESCRIPTION, null, cv);
+
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_FD_MESSAGE_UUID_EXT + " from " + TABLE_FILE_DESCRIPTION
+                + " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?", new String[]{messageUuid});
+        boolean existsInDb = c.getCount() > 0;
+
+        if (existsInDb) {
+            getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
+                    COLUMN_FD_MESSAGE_UUID_EXT + " = ? ", new String[]{messageUuid});
+        } else {
+            getWritableDatabase().insert(TABLE_FILE_DESCRIPTION, null, cv);
+        }
+        c.close();
     }
 
     void updateFd(FileDescription fileDescription) {
