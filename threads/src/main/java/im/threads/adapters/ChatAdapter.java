@@ -1120,7 +1120,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void notifyItemRemoved(final ChatItem chatItem) {
-        viewHandler.post(() -> notifyItemRemoved(list.indexOf(chatItem)));
+        notifyItemRemoved(list.indexOf(chatItem));
     }
 
     public static class ChatMessagesOrderer {

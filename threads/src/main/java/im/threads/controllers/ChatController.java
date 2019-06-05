@@ -432,9 +432,9 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     public void onUserTyping(String input) {
-            Transport.sendMessageMFMSAsync(appContext,
-                    OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), input, appContext),
-                    true, null, null);
+        Transport.sendMessageMFMSAsync(appContext,
+                OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(appContext), input, appContext),
+                true, null, null);
     }
 
     public boolean isNeedToShowWelcome() {
@@ -516,30 +516,33 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                 scheduleResend();
             }
         }
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                updateChatHistoryOnBind();
-            }
-        });
+
+        loadHistory();
     }
 
-    private void updateChatHistoryOnBind() {
-        if (fragment != null) {
-            try {
-                final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
-                final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
-                final ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
-                final List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, count);
-                if (dbItems.size() != serverItems.size()
-                        || !dbItems.containsAll(serverItems)) {
-                    if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "not same!");
-                    mDatabaseHolder.putMessagesSync(serverItems);
-                    final int serverCount = serverItems.size();
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
+    private void loadHistory() {
+
+        if (fragment != null && !isDownloadingMessages) {
+            isDownloadingMessages = true;
+            mExecutor.execute(() -> {
+                try {
+                    final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), null, true);
+                    final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
+                    final ConsultInfo info = response != null ? response.getConsultInfo() : null;
+                    final int count = (int) Transport.getHistoryLoadingCount(instance.fragment.getActivity());
+                    final List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, count);
+
+                    if (dbItems.size() != serverItems.size()
+                            || !dbItems.containsAll(serverItems)) {
+
+                        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                            Log.d(TAG, "Local and downloaded history are not same");
+                        }
+
+                        mDatabaseHolder.putMessagesSync(serverItems);
+                        final int serverCount = serverItems.size();
+
+                        h.post(() -> {
                             final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, serverCount));
                             if (null != fragment) {
                                 fragment.addChatItems(items);
@@ -548,13 +551,19 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
                                     fragment.setStateConsultConnected(info);
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    isDownloadingMessages = false;
                 }
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
+            });
         }
+    }
+
+    public static void reloadHistory(Context context) {
+        getInstance(context).loadHistory();
     }
 
     public boolean isConsultFound() {
@@ -889,7 +898,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
         if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage
-                || (cm instanceof ScheduleInfo && ((ScheduleInfo)cm).isChatWorking())) {
+                || (cm instanceof ScheduleInfo && ((ScheduleInfo) cm).isChatWorking())) {
             h.post(new Runnable() {
                 @Override
                 public void run() {
