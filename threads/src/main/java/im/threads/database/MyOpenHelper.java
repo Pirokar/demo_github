@@ -207,15 +207,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
             putFd(phrase.getFileDescription(), phrase.getUuid(), false);
         }
         if (phrase.getQuote() != null) {
-            cv.clear();
-            cv.put(COLUMN_QUOTE_MESSAGE_UUID_EXT, phrase.getUuid());
-            cv.put(COLUMN_QUOTE_HEADER, phrase.getQuote().getPhraseOwnerTitle());
-            cv.put(COLUMN_QUOTE_BODY, phrase.getQuote().getText());
-            cv.put(COLUMN_QUOTE_TIMESTAMP, phrase.getQuote().getTimeStamp());
-            getWritableDatabase().insert(TABLE_QUOTE, null, cv);
-            if (phrase.getQuote().getFileDescription() != null) {
-                putFd(phrase.getQuote().getFileDescription(), phrase.getUuid(), true);
-            }
+            putQuote(phrase.getUuid(), phrase.getQuote());
         }
         c.close();
     }
@@ -498,7 +490,19 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_QUOTE_HEADER, quote.getPhraseOwnerTitle());
         cv.put(COLUMN_QUOTE_BODY, quote.getText());
         cv.put(COLUMN_QUOTE_TIMESTAMP, quote.getTimeStamp());
-        getWritableDatabase().insert(TABLE_QUOTE, null, cv);
+
+        Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_QUOTE_MESSAGE_UUID_EXT + " from " + TABLE_QUOTE
+                + " where " + COLUMN_QUOTE_MESSAGE_UUID_EXT + " = ?", new String[]{uuid});
+        boolean existsInDb = c.getCount() > 0;
+
+        if (existsInDb) {
+            getWritableDatabase().update(TABLE_QUOTE, cv,
+                    COLUMN_QUOTE_MESSAGE_UUID_EXT + " = ? ", new String[]{uuid});
+        } else {
+            getWritableDatabase().insert(TABLE_QUOTE, null, cv);
+        }
+        c.close();
+
         if (quote.getFileDescription() != null) {
             putFd(quote.getFileDescription(), quote.getUuid(), true);
         }
