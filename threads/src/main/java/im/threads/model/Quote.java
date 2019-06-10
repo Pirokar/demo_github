@@ -11,11 +11,12 @@ public class Quote {
     private FileDescription fileDescription;
     private final long timeStamp;
     private boolean isFromConsult;
-    @Nullable private String quotedPhraseId;
+    @Nullable private String quotedPhraseConsultId;
 
     private String uuid;
 
-    public Quote(String phraseOwnerTitle, String text, FileDescription fileDescription, long timeStamp) {
+    public Quote(String uuid, String phraseOwnerTitle, String text, FileDescription fileDescription, long timeStamp) {
+        this.uuid = uuid;
         this.phraseOwnerTitle = phraseOwnerTitle;
         this.text = text;
         this.fileDescription = fileDescription;
@@ -27,12 +28,12 @@ public class Quote {
     }
 
     @Nullable
-    public String getQuotedPhraseId() {
-        return quotedPhraseId;
+    public String getQuotedPhraseConsultId() {
+        return quotedPhraseConsultId;
     }
 
-    public void setQuotedPhraseId(@Nullable String quotedPhraseId) {
-        this.quotedPhraseId = quotedPhraseId;
+    public void setQuotedPhraseConsultId(@Nullable String quotedPhraseConsultId) {
+        this.quotedPhraseConsultId = quotedPhraseConsultId;
     }
 
     public boolean isFromConsult() {
@@ -89,7 +90,7 @@ public class Quote {
                 ", fileDescription=" + fileDescription +
                 ", timeStamp=" + timeStamp +
                 ", isFromConsult=" + isFromConsult +
-                ", quotedPhraseId='" + quotedPhraseId + '\'' +
+                ", quotedPhraseConsultId='" + quotedPhraseConsultId + '\'' +
                 '}';
     }
 

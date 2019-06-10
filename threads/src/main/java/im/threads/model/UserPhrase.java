@@ -15,7 +15,6 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
     private final String phrase;
-    private final boolean withFile;
     private MessageState sentState;
     private final Quote mQuote;
     private boolean isWithQuote;
@@ -35,7 +34,6 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         this.phrase = phrase;
         this.mQuote = mQuote;
         this.phraseTimeStamp = phraseTimeStamp;
-        this.withFile = fileDescription != null;
         this.fileDescription = fileDescription;
         this.sentState = sentState;
     }
