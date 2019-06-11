@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import im.threads.opengraph.OGData;
 import im.threads.utils.FileUtils;
+import im.threads.utils.ObjectUtils;
 
 /**
  * Created by yuri on 10.06.2016.
@@ -17,7 +18,6 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private final String phrase;
     private MessageState sentState;
     private final Quote mQuote;
-    private boolean isWithQuote;
     private long phraseTimeStamp;
     private FileDescription fileDescription;
     private boolean isChosen;
@@ -210,5 +210,28 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
                 "phrase='" + phrase + '\'' +
                 ", isChosen=" + isChosen +
                 '}' + "\n";
+    }
+
+    public boolean hasSameContent(UserPhrase userPhrase) {
+
+        if (userPhrase == null) {
+            return false;
+        }
+
+        boolean hasSameContent = ObjectUtils.areEqual(this.uuid, userPhrase.uuid)
+                && ObjectUtils.areEqual(this.phrase, userPhrase.phrase)
+                && ObjectUtils.areEqual(this.providerId, userPhrase.providerId)
+                && ObjectUtils.areEqual(this.phraseTimeStamp, userPhrase.phraseTimeStamp)
+                && ObjectUtils.areEqual(this.sentState, userPhrase.sentState);
+
+        if (this.fileDescription != null) {
+            hasSameContent = hasSameContent && this.fileDescription.hasSameContent(userPhrase.fileDescription);
+        }
+
+        if (this.mQuote != null) {
+            hasSameContent = hasSameContent && this.mQuote.hasSameContent(userPhrase.mQuote);
+        }
+
+        return hasSameContent;
     }
 }

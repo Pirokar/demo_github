@@ -35,15 +35,29 @@ public class DatabaseHolderTest {
         dbHolder = DatabaseHolder.getInstance(appContext);
     }
 
-    public DatabaseHolderTest(ChatItem chatItem){
+    public DatabaseHolderTest(ChatItem chatItem) {
         this.chatItem = chatItem;
     }
 
     @Test
     public void saveAndGetChatItem() {
+        String assertErrorMessage = "Chat item not equal after set and get from DB. ";
+
         dbHolder.putChatItem(this.chatItem);
         ChatItem itemFromDb = dbHolder.getChatItems(0, 1).get(0);
-        Assert.assertEquals("Chat item not equal after set and get from DB. ",this.chatItem, itemFromDb);
+        Assert.assertEquals(assertErrorMessage, this.chatItem, itemFromDb);
+
+        UserPhrase userPhrase = chatItem instanceof UserPhrase ? (UserPhrase) chatItem : null;
+        ConsultPhrase consultPhrase = chatItem instanceof ConsultPhrase ? (ConsultPhrase) chatItem : null;
+
+        if (userPhrase != null) {
+            UserPhrase userPhraseFromDB = (UserPhrase) itemFromDb;
+            Assert.assertTrue(assertErrorMessage, userPhrase.hasSameContent(userPhraseFromDB));
+
+        } else if (consultPhrase != null) {
+            ConsultPhrase consultPhraseFromDB = (ConsultPhrase) itemFromDb;
+            Assert.assertTrue(assertErrorMessage, consultPhrase.hasSameContent(consultPhraseFromDB));
+        }
     }
 
     @Test
@@ -72,7 +86,7 @@ public class DatabaseHolderTest {
 
             List<FileDescription> fileDescriptions = dbHolder.getMyOpenHelper().getFd();
 
-            Assert.assertEquals("Duplicate file descriptions in DB. ",1, fileDescriptions.size());
+            Assert.assertEquals("Duplicate file descriptions in DB. ", 1, fileDescriptions.size());
         }
     }
 
@@ -92,7 +106,7 @@ public class DatabaseHolderTest {
             dbHolder.putChatItem(this.chatItem);
 
             List<Quote> quotes = dbHolder.getMyOpenHelper().getQuotes();
-            Assert.assertEquals("Duplicate quotes in DB. ",1, quotes.size());
+            Assert.assertEquals("Duplicate quotes in DB. ", 1, quotes.size());
         }
     }
 
@@ -157,8 +171,8 @@ public class DatabaseHolderTest {
                 fileDesc,
                 null,
                 "Оператор4 Андреевич",
-                 "",
-                 1559810598957L,
+                "",
+                1559810598957L,
                 "7",
                 "055b27bc-7455-4d42-a043-70bdbfa09aa6",
                 false,
