@@ -748,42 +748,42 @@ public class ChatFragment extends Fragment implements
     }
 
     private void onReplyClick(ChatPhrase cp, int position) {
-        String headerText = "";
-        String text = cp.getPhraseText();
-        hideCopyControls();
 
+        hideCopyControls();
         scrollToPosition(position);
-        FileDescription quoteFileDescription = cp.getFileDescription();
-        if (quoteFileDescription == null && cp.getQuote() != null) {
-            quoteFileDescription = cp.getQuote().getFileDescription();
-        }
-        mQuote = new Quote(TextUtils.isEmpty(headerText) ? "" : headerText, TextUtils.isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
-        mFileDescription = null;
-        if (TextUtils.isEmpty(cp.getPhraseText())) {
-            mQuote = new Quote(headerText, cp.getPhraseText(), quoteFileDescription, System.currentTimeMillis());
-        }
-        if (cp instanceof UserPhrase) {
-            UserPhrase userPhrase = (UserPhrase) cp;
-            headerText = appContext.getString(R.string.threads_I);
+
+        UserPhrase userPhrase = cp instanceof UserPhrase ? (UserPhrase) cp : null;
+        ConsultPhrase consultPhrase = cp instanceof ConsultPhrase ? (ConsultPhrase) cp : null;
+
+        String text = cp.getPhraseText();
+
+        if (userPhrase != null) {
+            mQuote = new Quote(userPhrase.getUuid(),
+                    appContext.getString(R.string.threads_I),
+                    userPhrase.getPhraseText(),
+                    userPhrase.getFileDescription(),
+                    userPhrase.getTimeStamp());
             mQuote.setFromConsult(false);
-            mQuote.setPhraseOwnerTitle(headerText);
-            mQuote.setUuid(userPhrase.getUuid());
-        } else if (cp instanceof ConsultPhrase) {
-            ConsultPhrase consultPhrase = (ConsultPhrase) cp;
-            headerText = ((ConsultPhrase) cp).getConsultName();
+
+        } else if (consultPhrase != null) {
+
+            mQuote = new Quote(consultPhrase.getUuid(),
+                    consultPhrase.getConsultName() != null
+                            ? consultPhrase.getConsultName()
+                            : appContext.getString(R.string.threads_consult),
+                    consultPhrase.getPhraseText(),
+                    consultPhrase.getFileDescription(),
+                    consultPhrase.getTimeStamp());
             mQuote.setFromConsult(true);
-            mQuote.setQuotedPhraseId(((ConsultPhrase) cp).getConsultId());
-            if (headerText == null) {
-                headerText = appContext.getString(R.string.threads_consult);
-            }
-            mQuote.setPhraseOwnerTitle(headerText);
-            mQuote.setUuid(consultPhrase.getUuid());
+            mQuote.setQuotedPhraseConsultId(consultPhrase.getConsultId());
         }
+
+        mFileDescription = null;
 
         if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                 || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
 
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText,
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
                     cp.getFileDescription().getFilePath());
 
@@ -791,16 +791,20 @@ public class ChatFragment extends Fragment implements
 
             String fileName = "";
             try {
-                fileName = cp.getFileDescription().getIncomingName() == null ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath())) : cp.getFileDescription().getIncomingName();
+                fileName = cp.getFileDescription().getIncomingName() == null
+                        ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath()))
+                        : cp.getFileDescription().getIncomingName();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText,
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
                     null);
 
         } else {
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText, TextUtils.isEmpty(text) ? "" : text, null);
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+                    TextUtils.isEmpty(text) ? "" : text,
+                    null);
         }
     }
 

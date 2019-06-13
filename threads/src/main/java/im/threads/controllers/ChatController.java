@@ -630,7 +630,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         ConsultInfo consultInfo = null;
 
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
-            final String id = userPhrase.getQuote().getQuotedPhraseId();
+            final String id = userPhrase.getQuote().getQuotedPhraseConsultId();
             consultInfo = mConsultWriter.getConsultInfo(id);
         }
 

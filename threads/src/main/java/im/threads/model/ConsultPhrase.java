@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import im.threads.opengraph.OGData;
 import im.threads.utils.FileUtils;
+import im.threads.utils.ObjectUtils;
 
 /**
  * Created by yuri on 10.06.2016.
@@ -212,4 +213,31 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
         return phrase;
     }
 
+    public boolean hasSameContent(ConsultPhrase consultPhrase) {
+
+        if (consultPhrase == null) {
+            return false;
+        }
+
+        boolean hasSameContent = ObjectUtils.areEqual(this.uuid, consultPhrase.uuid)
+                && ObjectUtils.areEqual(this.phrase, consultPhrase.phrase)
+                && ObjectUtils.areEqual(this.providerId, consultPhrase.providerId)
+                && ObjectUtils.areEqual(this.timeStamp, consultPhrase.timeStamp)
+                && ObjectUtils.areEqual(this.isRead, consultPhrase.isRead)
+                && ObjectUtils.areEqual(this.getAvatarPath(), consultPhrase.getAvatarPath())
+                && ObjectUtils.areEqual(this.consultId, consultPhrase.consultId)
+                && ObjectUtils.areEqual(this.consultName, consultPhrase.consultName)
+                && ObjectUtils.areEqual(this.sex, consultPhrase.sex)
+                && ObjectUtils.areEqual(this.status, consultPhrase.status);
+
+        if (this.fileDescription != null) {
+            hasSameContent = hasSameContent && this.fileDescription.hasSameContent(consultPhrase.fileDescription);
+        }
+
+        if (this.quote != null) {
+            hasSameContent = hasSameContent && this.quote.hasSameContent(consultPhrase.quote);
+        }
+
+        return hasSameContent;
+    }
 }
