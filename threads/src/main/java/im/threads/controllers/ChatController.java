@@ -830,31 +830,40 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void downloadMessagesTillEnd() {
-        if (isDownloadingMessages) return;
-        Log.e(TAG, "downloadMessagesTillEnd");
-        if (isAllMessagesDownloaded) return;
-        if (appContext == null) return;
-        mMessagesExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
+
+        if (!isDownloadingMessages && !isAllMessagesDownloaded && appContext != null) {
+
+            isDownloadingMessages = true;
+
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                Log.d(TAG, "downloadMessagesTillEnd");
+            }
+
+            mMessagesExecutor.execute(() -> {
                 try {
-                    isDownloadingMessages = true;
                     final Long chunk = 100L;
                     final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), lastMessageTimestamp, chunk);
                     final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
-                    if (items == null || items.size() == 0) return;
-                    lastMessageTimestamp = items.get(items.size() - 1).getTimeStamp();
-                    currentOffset += items.size();
-                    isAllMessagesDownloaded = items.size() < chunk; // Backend can give us more than chunk anytime, it will give less only on history end
-                    final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
-                    mDatabaseHolder.putMessagesSync(chatItems);
-                    isDownloadingMessages = false;
-                    if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
+
+                    if (items == null || items.isEmpty()) {
+                        isDownloadingMessages = false;
+                        isAllMessagesDownloaded = true;
+                    } else {
+                        lastMessageTimestamp = items.get(0).getTimeStamp();
+                        currentOffset += items.size();
+                        isAllMessagesDownloaded = items.size() < chunk; // Backend can give us more than chunk anytime, it will give less only on history end
+                        final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
+                        mDatabaseHolder.putMessagesSync(chatItems);
+                        isDownloadingMessages = false;
+                        if (!isAllMessagesDownloaded) {
+                            downloadMessagesTillEnd();
+                        }
+                    }
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
-            }
-        });
+            });
+        }
     }
 
     void addMessage(final ChatItem cm, final Context ctx) {
