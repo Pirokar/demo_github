@@ -351,7 +351,9 @@ public class ChatFragment extends Fragment implements
                     }
                 } else {
                     binding.scrollDownButtonContainer.setVisibility(View.GONE);
-                    mChatAdapter.setAllMessagesRead();
+                    recyclerView.post(() -> {
+                        mChatAdapter.setAllMessagesRead();
+                    });
                 }
             }
         });
