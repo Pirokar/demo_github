@@ -35,7 +35,7 @@ import im.threads.utils.FileUtils;
  */
 class MyOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "MyOpenHelper ";
-    private static final int VERSION = 5;
+    private static final int VERSION = 6;
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
     private static final String COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID";
@@ -168,6 +168,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTIONS);
             onCreate(db);
         }
+
+        // 6 VERSION - version increased to drop data with old file paths starting with "file://" prefix
     }
 
     void putChatPhrase(ChatPhrase phrase) {

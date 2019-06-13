@@ -117,8 +117,8 @@ public class OutgoingMessageCreator {
 
     private static JSONArray attachmentsFromFileDescription(FileDescription fileDescription, String mfmsFilepath) throws JSONException {
         JSONArray attachments = null;
-        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath().replaceAll("file://", "")).exists()) {
-            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath().replaceAll("file://", "")));
+        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath()).exists()) {
+            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath()));
         } else if (fileDescription.getDownloadPath() != null) {
             attachments = attachmentsFromMfmsPath(fileDescription);
         }

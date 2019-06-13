@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -45,6 +44,7 @@ import im.threads.formatters.OutgoingMessageCreator;
 import im.threads.formatters.PushMessageAttributes;
 import im.threads.formatters.PushMessageTypes;
 import im.threads.fragments.ChatFragment;
+import im.threads.helpers.FileProviderHelper;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
@@ -921,24 +921,30 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
+
                 if (fileDescription.getFilePath() == null) {
                     final Intent i = new Intent(activity, DownloadService.class);
                     i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
                     i.putExtra(DownloadService.FD_TAG, fileDescription);
                     activity.startService(i);
+
                 } else if (FileUtils.isImage(fileDescription) && fileDescription.getFilePath() != null) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
+
                 } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
                     final Intent target = new Intent(Intent.ACTION_VIEW);
-                    final File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
-                    target.setDataAndType(FileProvider.getUriForFile(
-                            activity, /*BuildConfig.APPLICATION_ID*/ activity.getPackageName() + ".im.threads.fileprovider", file), "application/pdf"
+
+                    final File file = new File(fileDescription.getFilePath());
+
+                    target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
+                            "application/pdf"
                     );
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     try {
                         activity.startActivity(target);
                     } catch (final ActivityNotFoundException e) {
-                        Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT)
+                                .show();
                     }
                 }
             }
@@ -1041,10 +1047,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
         if (message == null)
             return new UserPhrase(null, null, System.currentTimeMillis(), null);
-
-        if (message.getFileDescription() != null && !message.getFileDescription().getFilePath().contains("file://")) {
-            message.getFileDescription().setFilePath("file://" + message.getFileDescription().getFilePath());
-        }
 
         final UserPhrase up = new UserPhrase(message.getText(), message.getQuote(),
                 System.currentTimeMillis(), message.getFileDescription());
