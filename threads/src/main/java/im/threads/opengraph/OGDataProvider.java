@@ -110,9 +110,8 @@ public class OGDataProvider {
                     finalUrl = url;
                 }
 
-                Request request = new Request.Builder().url(finalUrl).build();
-
                 try {
+                    Request request = new Request.Builder().url(finalUrl).build();
                     Response response = getInstance().client.newCall(request).execute();
                     callback.onSuccess(OGParser.parse(response.body().byteStream()));
                 } catch (Exception e) {
