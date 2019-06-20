@@ -14,7 +14,7 @@ import java.io.IOException;
 import im.threads.helpers.FileProviderHelper;
 import im.threads.utils.FileDownloader;
 
-public class ProviderPathsTest {
+public class FileProviderHelperTest {
 
     private Context appContext;
 
