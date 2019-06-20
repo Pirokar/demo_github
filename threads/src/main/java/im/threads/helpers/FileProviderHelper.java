@@ -2,9 +2,10 @@ package im.threads.helpers;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.v4.content.FileProvider;
 
 import java.io.File;
+
+import androidx.core.content.FileProvider;
 
 public class FileProviderHelper {
 

@@ -2,7 +2,6 @@ package threads.resources;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,6 +10,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
+import androidx.test.InstrumentationRegistry;
 import im.threads.helpers.FileProviderHelper;
 import im.threads.utils.FileDownloader;
 
