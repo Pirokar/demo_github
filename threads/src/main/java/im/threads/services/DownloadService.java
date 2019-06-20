@@ -44,7 +44,9 @@ public class DownloadService extends Service {
             return START_STICKY;
         }
         final Context context = this;
+
         final FileDownloader fileDownloader = new FileDownloader(fileDescription.getDownloadPath(), fileDescription.getIncomingName(), context) {
+
             @Override
             public void onProgress(double progress) {
                 if (progress < 1) progress = 1.0;
@@ -56,7 +58,7 @@ public class DownloadService extends Service {
             @Override
             public void onComplete(final File file) {
                 fileDescription.setDownloadProgress(100);
-                fileDescription.setFilePath("file://" + file.getAbsolutePath());
+                fileDescription.setFilePath(file.getAbsolutePath());
                 DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
                 runningDownloads.remove(fileDescription);
                 sendFinishBroadcast(fileDescription);
@@ -72,6 +74,7 @@ public class DownloadService extends Service {
                 sendDownloadErrorBroadcast(fileDescription, e);
             }
         };
+
         if (intent.getAction().equals(START_DOWNLOAD_FD_TAG)) {
             if (runningDownloads.containsKey(fileDescription)) {
                 FileDownloader tfileDownloader = runningDownloads.get(fileDescription);
