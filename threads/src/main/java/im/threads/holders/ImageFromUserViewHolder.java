@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -66,7 +67,7 @@ public class ImageFromUserViewHolder extends BaseHolder {
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
             Picasso.with(itemView.getContext())
-                    .load(fileDescription.getFilePath())
+                    .load(new File(fileDescription.getFilePath()))
                     .error(style.imagePlaceholder)
                     .fit()
                     .centerCrop()

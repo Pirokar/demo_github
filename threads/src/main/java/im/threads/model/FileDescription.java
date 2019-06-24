@@ -3,6 +3,8 @@ package im.threads.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import im.threads.utils.ObjectUtils;
+
 /**
  * Created by yuri on 13.06.2016.
  */
@@ -159,5 +161,20 @@ public class FileDescription implements Parcelable {
                 ", timeStamp=" + timeStamp +
                 ", downloadProgress=" + downloadProgress +
                 '}';
+    }
+
+    public boolean hasSameContent(FileDescription fileDescription) {
+
+        if (fileDescription == null) {
+            return false;
+        }
+
+        return ObjectUtils.areEqual(this.from, fileDescription.from)
+                && ObjectUtils.areEqual(this.filePath, fileDescription.filePath)
+                && ObjectUtils.areEqual(this.timeStamp, fileDescription.timeStamp)
+                && ObjectUtils.areEqual(this.downloadPath, fileDescription.downloadPath)
+                && ObjectUtils.areEqual(this.size, fileDescription.size)
+                && ObjectUtils.areEqual(this.incomingName, fileDescription.incomingName)
+                && ObjectUtils.areEqual(this.downloadProgress, fileDescription.downloadProgress);
     }
 }

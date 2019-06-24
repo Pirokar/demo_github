@@ -57,7 +57,7 @@ public class OutgoingMessageCreator {
                 if (!TextUtils.isEmpty(quote.getText())) {
                     quoteJson.put(PushMessageAttributes.TEXT, quote.getText());
                 }
-                if (null != consultInfo) quoteJson.put("operator", consultInfo.toJson());
+                if (null != consultInfo) quoteJson.put("operator", consultInfo.toJson());//TODO #THREADS-5270 What is it for?
                 if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                     quoteJson.put(PushMessageAttributes.ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
                 }
@@ -117,8 +117,8 @@ public class OutgoingMessageCreator {
 
     private static JSONArray attachmentsFromFileDescription(FileDescription fileDescription, String mfmsFilepath) throws JSONException {
         JSONArray attachments = null;
-        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath().replaceAll("file://", "")).exists()) {
-            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath().replaceAll("file://", "")));
+        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath()).exists()) {
+            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath()));
         } else if (fileDescription.getDownloadPath() != null) {
             attachments = attachmentsFromMfmsPath(fileDescription);
         }

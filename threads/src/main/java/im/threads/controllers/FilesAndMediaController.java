@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,6 +20,7 @@ import java.util.List;
 import im.threads.activities.FilesActivity;
 import im.threads.activities.ImagesActivity;
 import im.threads.database.DatabaseHolder;
+import im.threads.helpers.FileProviderHelper;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
 import im.threads.utils.FileUtils;
@@ -93,16 +93,20 @@ public class FilesAndMediaController extends Fragment {
     public void onFileClick(FileDescription fileDescription) {
         if (FileUtils.isImage(fileDescription)) {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
+
         } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
             Intent target = new Intent(Intent.ACTION_VIEW);
-            File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
-            target.setDataAndType(Uri.fromFile(file), "application/pdf");
-            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            File file = new File(fileDescription.getFilePath());
+
+            target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
+                    "application/pdf"
+            );
+            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             try {
-                startActivity(target);
-            } catch (ActivityNotFoundException e) {
-                // Instruct the user to install a PDF reader here, or something
-                Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
+                activity.startActivity(target);
+            } catch (final ActivityNotFoundException e) {
+                Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT)
+                        .show();
             }
         }
     }
