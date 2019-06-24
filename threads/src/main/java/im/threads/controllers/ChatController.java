@@ -45,6 +45,7 @@ import im.threads.formatters.OutgoingMessageCreator;
 import im.threads.formatters.PushMessageAttributes;
 import im.threads.formatters.PushMessageTypes;
 import im.threads.fragments.ChatFragment;
+import im.threads.helpers.FileProviderHelper;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
@@ -630,7 +631,7 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         ConsultInfo consultInfo = null;
 
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
-            final String id = userPhrase.getQuote().getQuotedPhraseId();
+            final String id = userPhrase.getQuote().getQuotedPhraseConsultId();
             consultInfo = mConsultWriter.getConsultInfo(id);
         }
 
@@ -830,31 +831,40 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
     }
 
     private void downloadMessagesTillEnd() {
-        if (isDownloadingMessages) return;
-        Log.e(TAG, "downloadMessagesTillEnd");
-        if (isAllMessagesDownloaded) return;
-        if (appContext == null) return;
-        mMessagesExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
+
+        if (!isDownloadingMessages && !isAllMessagesDownloaded && appContext != null) {
+
+            isDownloadingMessages = true;
+
+            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+                Log.d(TAG, "downloadMessagesTillEnd");
+            }
+
+            mMessagesExecutor.execute(() -> {
                 try {
-                    isDownloadingMessages = true;
                     final Long chunk = 100L;
                     final HistoryResponse response = Transport.getHistorySync(instance.fragment.getActivity(), lastMessageTimestamp, chunk);
                     final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
-                    if (items == null || items.size() == 0) return;
-                    lastMessageTimestamp = items.get(items.size() - 1).getTimeStamp();
-                    currentOffset += items.size();
-                    isAllMessagesDownloaded = items.size() < chunk; // Backend can give us more than chunk anytime, it will give less only on history end
-                    final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
-                    mDatabaseHolder.putMessagesSync(chatItems);
-                    isDownloadingMessages = false;
-                    if (!isAllMessagesDownloaded) downloadMessagesTillEnd();
+
+                    if (items == null || items.isEmpty()) {
+                        isDownloadingMessages = false;
+                        isAllMessagesDownloaded = true;
+                    } else {
+                        lastMessageTimestamp = items.get(0).getTimeStamp();
+                        currentOffset += items.size();
+                        isAllMessagesDownloaded = items.size() < chunk; // Backend can give us more than chunk anytime, it will give less only on history end
+                        final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
+                        mDatabaseHolder.putMessagesSync(chatItems);
+                        isDownloadingMessages = false;
+                        if (!isAllMessagesDownloaded) {
+                            downloadMessagesTillEnd();
+                        }
+                    }
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
-            }
-        });
+            });
+        }
     }
 
     void addMessage(final ChatItem cm, final Context ctx) {
@@ -921,24 +931,30 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
+
                 if (fileDescription.getFilePath() == null) {
                     final Intent i = new Intent(activity, DownloadService.class);
                     i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
                     i.putExtra(DownloadService.FD_TAG, fileDescription);
                     activity.startService(i);
+
                 } else if (FileUtils.isImage(fileDescription) && fileDescription.getFilePath() != null) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
+
                 } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
                     final Intent target = new Intent(Intent.ACTION_VIEW);
-                    final File file = new File(fileDescription.getFilePath().replaceAll("file://", ""));
-                    target.setDataAndType(FileProvider.getUriForFile(
-                            activity, /*BuildConfig.APPLICATION_ID*/ activity.getPackageName() + ".im.threads.fileprovider", file), "application/pdf"
+
+                    final File file = new File(fileDescription.getFilePath());
+
+                    target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
+                            "application/pdf"
                     );
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     try {
                         activity.startActivity(target);
                     } catch (final ActivityNotFoundException e) {
-                        Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT)
+                                .show();
                     }
                 }
             }
@@ -1041,10 +1057,6 @@ public class ChatController implements ProgressReceiver.DeviceIdChangedListener 
 
         if (message == null)
             return new UserPhrase(null, null, System.currentTimeMillis(), null);
-
-        if (message.getFileDescription() != null && !message.getFileDescription().getFilePath().contains("file://")) {
-            message.getFileDescription().setFilePath("file://" + message.getFileDescription().getFilePath());
-        }
 
         final UserPhrase up = new UserPhrase(message.getText(), message.getQuote(),
                 System.currentTimeMillis(), message.getFileDescription());
