@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -73,7 +74,7 @@ public class ImageFromConsultViewHolder extends BaseHolder {
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
             Picasso.with(itemView.getContext())
-                    .load(fileDescription.getFilePath())
+                    .load(new File(fileDescription.getFilePath()))
                     .fit()
                     .centerCrop()
                     .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_CONSULT))

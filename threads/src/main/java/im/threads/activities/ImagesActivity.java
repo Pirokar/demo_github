@@ -76,16 +76,18 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
                     }
                 }
                 collectionSize = files.size();
-                mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
-                FileDescription fd = getIntent().getParcelableExtra("FileDescription");
-                if (fd != null) {
-                    int page = files.indexOf(fd);
-                    if (page != -1) {
-                        mViewPager.setCurrentItem(page);
-                        onPageSelected(page);
+                ThreadUtils.runOnUiThread(() -> {
+                    mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
+                    FileDescription fd = getIntent().getParcelableExtra("FileDescription");
+                    if (fd != null) {
+                        int page = files.indexOf(fd);
+                        if (page != -1) {
+                            mViewPager.setCurrentItem(page);
+                            onPageSelected(page);
+                        }
                     }
-                }
-                onPageSelected(0);
+                    onPageSelected(0);
+                });
             }
 
             @Override
@@ -113,7 +115,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
                     R.string.threads_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
-        String path = files.get(mViewPager.getCurrentItem()).getFilePath().replaceAll("file://", "");
+        String path = files.get(mViewPager.getCurrentItem()).getFilePath();
         try {
             File file = new File(path);
             if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) == null) {
