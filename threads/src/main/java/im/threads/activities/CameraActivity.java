@@ -196,7 +196,7 @@ public class CameraActivity extends BaseActivity {
                                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                                             @Override
                                             public void run() {
-                                                setStateImagePreview("file://" + finalOutput.getAbsolutePath());
+                                                setStateImagePreview(finalOutput.getAbsolutePath());
                                             }
                                         });
                                     }
@@ -262,7 +262,7 @@ public class CameraActivity extends BaseActivity {
         ImageView image = (ImageView) findViewById(R.id.photo_preview);
         image.setVisibility(View.VISIBLE);
         Picasso.with(this)
-                .load(imagePath)
+                .load(new File(imagePath))
                 .fit()
                 .centerCrop()
                 .into(image);

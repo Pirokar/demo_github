@@ -22,7 +22,7 @@ android {
         targetSdkVersion 28
 
         versionCode 86
-        versionName "2.48.4"
+        versionName "2.48.5"
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -78,8 +78,9 @@ dependencies {
     implementation 'com.mfms.android:push-lite-release:2.6.21'
 
     testImplementation 'org.robolectric:robolectric:4.2'
-
     testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
 }
 
 

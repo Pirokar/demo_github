@@ -1,7 +1,6 @@
 package im.threads.utils;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -43,12 +42,9 @@ public abstract class FileDownloader {
                 urlConnection.setDoInput(true);
                 urlConnection.setConnectTimeout(15000);
                 urlConnection.setReadTimeout(15000);
-                File outputFile;
-                if (FileUtils.getExtensionFromPath(fileName) == FileUtils.PDF || FileUtils.getExtensionFromPath(fileName) == FileUtils.OTHER_DOC_FORMATS) {
-                    outputFile = new File(Environment.getExternalStorageDirectory(), fileName);
-                } else {
-                    outputFile = new File(ctx.getDir("files", Context.MODE_PRIVATE), fileName);
-                }
+
+                File outputFile = new File(getDownloadDir(ctx), fileName);
+
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
                 List values = urlConnection.getHeaderFields().get("Content-Length");
                 Long length = null;
@@ -88,6 +84,10 @@ public abstract class FileDownloader {
             e.printStackTrace();
             onFileDonwloaderError(e);
         }
+    }
+
+    public static File getDownloadDir(Context ctx) {
+        return ctx.getFilesDir();
     }
 
     public abstract void onProgress(double progress);

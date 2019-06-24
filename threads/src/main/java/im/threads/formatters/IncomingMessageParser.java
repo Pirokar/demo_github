@@ -407,11 +407,17 @@ public class IncomingMessageParser {
             JSONObject quoteJson = quotes.getJSONObject(0);
 
             FileDescription quoteFileDescription = null;
+            String quoteUuid = null;
             String quoteString = null;
             String authorName = "";
 
+
             String receivedDateString = quoteJson.getString(PushMessageAttributes.RECEIVED_DATE);
             long timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
+
+            if (quoteJson.has(PushMessageAttributes.UUID)) {
+                quoteUuid = quoteJson.getString(PushMessageAttributes.UUID);
+            }
 
             if ((quoteJson.has(PushMessageAttributes.TEXT))) {
                 quoteString = quoteJson.getString(PushMessageAttributes.TEXT);
@@ -441,8 +447,8 @@ public class IncomingMessageParser {
                 }
             }
 
-            if (quoteString != null || quoteFileDescription != null) {
-                quote = new Quote(authorName, quoteString, quoteFileDescription, timestamp);
+            if (quoteUuid != null && (quoteString != null || quoteFileDescription != null)) {
+                quote = new Quote(quoteUuid, authorName, quoteString, quoteFileDescription, timestamp);
             }
             if (quoteFileDescription != null) {
                 quoteFileDescription.setFrom(authorName);
@@ -486,7 +492,7 @@ public class IncomingMessageParser {
                 }
             }
             if (quoteString != null || quoteFileDescription != null) {
-                quote = new Quote(authorName, quoteString, quoteFileDescription, timestamp);
+                quote = new Quote(quoteFromHistory.getUuid(), authorName, quoteString, quoteFileDescription, timestamp);
             }
             if (quoteFileDescription != null) {
                 quoteFileDescription.setFrom(authorName);
