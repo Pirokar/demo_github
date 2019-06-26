@@ -469,7 +469,6 @@ public class ChatFragment extends Fragment implements
 
         ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
-        ColorsHelper.setBackgroundColor(activity, binding.copyControls, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
 
