@@ -61,6 +61,7 @@ import im.threads.model.UserPhrase;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
+import im.threads.utils.MaskedTransformation;
 import im.threads.utils.ThreadUtils;
 import im.threads.widget.Rating;
 
@@ -90,6 +91,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean isRemovingTyping = false;
 
 
+    ChatStyle style;
     ArrayList<ChatItem> list;
     ArrayList<ChatItem> backupList = new ArrayList<>();
     private final Context ctx;
@@ -97,14 +99,20 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final String ACTION_CHANGED = "im.threads.adapters.ACTION_CHANGED";
     private boolean isInSearchMode = false;
     private Handler viewHandler = new Handler(Looper.getMainLooper());
+    private MaskedTransformation outgoingImageMaskTransformation;
+    private MaskedTransformation incomingImageMaskTransformation;
 
     public ChatAdapter(final ArrayList<ChatItem> list, final Context ctx, final AdapterInterface adapterInterface) {
         this.list = list;
         if (this.list == null) this.list = new ArrayList<>();
         this.ctx = ctx;
+        style = ChatStyle.getInstance();
         this.mAdapterInterface = adapterInterface;
         final BroadcastReceiver br = new MyBroadcastReceiver();
         LocalBroadcastManager.getInstance(ctx).registerReceiver(br, new IntentFilter(ACTION_CHANGED));
+
+        outgoingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.outgoingImageBubbleMask));
+        incomingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.incomingImageBubbleMask));
     }
 
     public void setAdapterInterface(final AdapterInterface mAdapterInterface) {
@@ -121,8 +129,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_CONSULT_PHRASE) return new ConsultPhraseHolder(parent);
         if (viewType == TYPE_USER_PHRASE) return new UserPhraseViewHolder(parent);
         if (viewType == TYPE_FREE_SPACE) return new SpaceViewHolder(parent);
-        if (viewType == TYPE_IMAGE_FROM_CONSULT) return new ImageFromConsultViewHolder(parent);
-        if (viewType == TYPE_IMAGE_FROM_USER) return new ImageFromUserViewHolder(parent);
+        if (viewType == TYPE_IMAGE_FROM_CONSULT) return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation);
+        if (viewType == TYPE_IMAGE_FROM_USER) return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation);
         if (viewType == TYPE_FILE_FROM_CONSULT) return new ConsultFileViewHolder(parent);
         if (viewType == TYPE_FILE_FROM_USER) return new UserFileViewHolder(parent);
         if (viewType == TYPE_UNREAD_MESSAGES) return new UnreadMessageViewHolder(parent);
