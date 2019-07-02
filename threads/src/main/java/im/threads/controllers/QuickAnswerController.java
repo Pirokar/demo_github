@@ -2,6 +2,7 @@ package im.threads.controllers;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import im.threads.activities.TranslucentActivity;
@@ -46,7 +47,7 @@ public class QuickAnswerController extends Fragment {
         this.activity = null;
     }
 
-    public void onUserAnswer(UpcomingUserMessage upcomingUserMessage) {
+    public void onUserAnswer(@NonNull UpcomingUserMessage upcomingUserMessage) {
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onUserAnswer");
         }
