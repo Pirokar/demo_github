@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -583,6 +584,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
      * Remove close request from the thread history
+     *
      * @return true - if deletion occurred, false - if RequestResolveThread item wasn't found in the history
      */
     public boolean removeResolveRequest() {
@@ -605,6 +607,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
      * Remove survey from the thread history
+     *
      * @return true - if deletion occurred, false - if Survey item wasn't found in the history
      */
     public boolean removeSurvey(final long sendingId) {
@@ -1033,7 +1036,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
 
-        void onRatingClick(Survey survey, int rating);
+        void onRatingClick(@NonNull Survey survey, int rating);
 
         void onResolveThreadClick(boolean approveResolve);
 
@@ -1102,21 +1105,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void notifyDataSetChangedOnUi() {
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        ThreadUtils.runOnUiThread(() -> notifyDataSetChanged());
     }
 
     public void notifyItemChangedOnUi(final ChatItem chatItem) {
-        ThreadUtils.runOnUiThread(new Runnable() {
-            final int position = list.indexOf(chatItem);
-            @Override
-            public void run() {
-                notifyItemChanged(position);
-            }
+        ThreadUtils.runOnUiThread(() -> {
+            int position = list.indexOf(chatItem);
+            notifyItemChanged(position);
         });
     }
 
@@ -1144,12 +1139,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public static void updateOrder(List<ChatItem> items) {
 
-            Collections.sort(items, new Comparator<ChatItem>() {
-                @Override
-                public int compare(final ChatItem lhs, final ChatItem rhs) {
-                    return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
-                }
-            });
+            Collections.sort(items, (lhs, rhs) -> Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp()));
             if (items.size() == 0) return;
             items.add(0, new DateRow(items.get(0).getTimeStamp() - 2));
             final Calendar currentTimeStamp = Calendar.getInstance();
@@ -1175,8 +1165,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
 
                 //Removing daterow if it is a last item - may happen when message order has changed
-                DateRow lastDateRow = daterows.get(daterows.size() -1 );
-                if (lastDateRow == items.get(items.size() -1)) {
+                DateRow lastDateRow = daterows.get(daterows.size() - 1);
+                if (lastDateRow == items.get(items.size() - 1)) {
                     items.remove(lastDateRow);
                 }
             }

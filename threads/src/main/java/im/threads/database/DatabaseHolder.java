@@ -3,13 +3,13 @@ package im.threads.database;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
 import im.threads.controllers.ChatController;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
