@@ -35,8 +35,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jakewharton.rxbinding2.widget.RxTextView;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
