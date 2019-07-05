@@ -22,7 +22,7 @@ android {
         targetSdkVersion 28
 
         versionCode 86
-        versionName "2.48.4"
+        versionName "2.48.6"
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -52,8 +52,8 @@ dependencies {
     implementation "androidx.media:media:$androidXVersion"
     implementation "androidx.recyclerview:recyclerview:$androidXVersion"
 
-    def final rxbindingVersion = "3.0.0-alpha2"
-    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbindingVersion"
+    def final rxbindingVersion = "2.2.0"
+    implementation "com.jakewharton.rxbinding2:rxbinding:$rxbindingVersion"
 
     /*
     * !WARNING!

@@ -4,12 +4,13 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
 import im.threads.controllers.ChatController;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
@@ -51,9 +52,10 @@ public class DatabaseHolder {
 
     /**
      * For Autotests purposes
+     *
      * @return MyOpenHelper instance
      */
-    MyOpenHelper getMyOpenHelper(){
+    MyOpenHelper getMyOpenHelper() {
         return mMyOpenHelper;
     }
 
@@ -268,8 +270,7 @@ public class DatabaseHolder {
     public void getUnreadMessagesCount(boolean immediate, final ChatController.UnreadMessagesCountListener unreadMessagesCountListener) {
         if (immediate) {
             getUnreadMessagesCount(unreadMessagesCountListener);
-        }
-        else {
+        } else {
             final Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed(new Runnable() {
                 @Override
@@ -295,7 +296,8 @@ public class DatabaseHolder {
         if (id == null) return null;
         return mMyOpenHelper.getLastOperatorAvatar(id);
     }
-    public ConsultInfo getConsultInfoSync(@NonNull String id){
+
+    public ConsultInfo getConsultInfoSync(@NonNull String id) {
         return mMyOpenHelper.getLastConsultInfo(id);
     }
 }
