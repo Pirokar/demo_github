@@ -104,4 +104,5 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
+
 </resources>

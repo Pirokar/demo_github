@@ -48,7 +48,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jakewharton.rxbinding3.widget.RxTextView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -469,7 +469,6 @@ public class ChatFragment extends Fragment implements
 
         ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
-        ColorsHelper.setBackgroundColor(activity, binding.copyControls, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
 
@@ -603,7 +602,7 @@ public class ChatFragment extends Fragment implements
     }
 
     @Override
-    public void onRatingClick(Survey survey, int rating) {
+    public void onRatingClick(@NonNull Survey survey, int rating) {
         if (getActivity() != null) {
             survey.getQuestions().get(0).setRate(rating);
             mChatController.onRatingClick(getActivity(), survey);

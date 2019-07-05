@@ -239,10 +239,10 @@
                     android:id="@+id/copy_controls"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/threads_input_background"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal"
                     android:paddingLeft="36dp"
+                    tools:visibility="visible"
                     android:visibility="gone">
 
                     <ImageButton
