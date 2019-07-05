@@ -79,7 +79,6 @@ public class TranslucentActivity
     private class QuickAnswerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             if (ChatStyle.getInstance().isDebugLoggingEnabled) {
                 Log.d(TAG, "onReceive: " + intent);
             }
