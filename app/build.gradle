@@ -154,8 +154,7 @@ dependencies {
         transitive = true;
     }
 
-    def final rxbindingVersion = "3.0.0-alpha2"
-    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbindingVersion"
+    implementation "com.jakewharton.rxbinding2:rxbinding:2.2.0"
 
     /*
     * Threads depends on:
