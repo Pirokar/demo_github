@@ -71,10 +71,14 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int outgoingMessageTimeColor = R.color.threads_user_message_timestamp;
 
+    @DrawableRes
+    public int outgoingImageBubbleMask = R.drawable.thread_outgoing_image_mask;
     @ColorRes
     public int outgoingImageTimeColor = R.color.threads_outgoing_message_time;
     @ColorRes
     public int outgoingImageTimeBackgroundColor = R.color.threads_outgoing_time_underlay;
+    @DrawableRes
+    public int incomingImageBubbleMask = R.drawable.thread_incoming_image_mask;
     @ColorRes
     public int incomingImageTimeColor = R.color.threads_incoming_message_time;
     @ColorRes
@@ -554,8 +558,10 @@ public class ChatStyle implements Serializable {
          * @param outgoingMessageTextColor           - R.color.threads_outgoing_message_text
          * @param incomingMessageTimeColor           - R.color.threads_operator_message_timestamp;
          * @param outgoingMessageTimeColor           - R.color.threads_user_message_timestamp;
+         * @param outgoingImageBubbleMask            - R.drawable.thread_outgoing_image_mask
          * @param outgoingImageTimeColor             = R.color.threads_outgoing_message_time;
          * @param outgoingImageTimeBackgroundColor   = R.color.threads_outgoing_time_underlay;
+         * @param incomingImageBubbleMask            - R.drawable.thread_incoming_image_mask
          * @param incomingImageTimeColor             = R.color.threads_incoming_message_time;
          * @param incomingImageTimeBackgroundColor   = R.color.threads_incoming_time_underlay;
          * @param incomingMessageLinkColor           - R.color.threads_incoming_message_link;
@@ -588,8 +594,10 @@ public class ChatStyle implements Serializable {
                 @ColorRes final int outgoingMessageTextColor,
                 @ColorRes int incomingMessageTimeColor,
                 @ColorRes int outgoingMessageTimeColor,
+                @DrawableRes int outgoingImageBubbleMask,
                 @ColorRes int outgoingImageTimeColor,
                 @ColorRes int outgoingImageTimeBackgroundColor,
+                @DrawableRes int incomingImageBubbleMask,
                 @ColorRes int incomingImageTimeColor,
                 @ColorRes int incomingImageTimeBackgroundColor,
                 @ColorRes int incomingMessageLinkColor,
@@ -609,37 +617,53 @@ public class ChatStyle implements Serializable {
                 @DrawableRes final int scrollDownButtonResId,
                 @ColorRes final int unreadMsgStickerColorResId,
                 @ColorRes final int unreadMsgCountTextColorResId) {
+
             chatStyle.chatBackgroundColor = chatBackgroundColor;
             chatStyle.chatHighlightingColor = chatHighlightingColor;
+
             chatStyle.incomingMessageBubbleColor = incomingMessageBubbleColor;
             chatStyle.outgoingMessageBubbleColor = outgoingMessageBubbleColor;
             chatStyle.incomingMessageBubbleBackground = incomingMessageBubbleBackground;
             chatStyle.outgoingMessageBubbleBackground = outgoingMessageBubbleBackground;
+
             chatStyle.incomingMessageTextColor = incomingMessageTextColor;
             chatStyle.outgoingMessageTextColor = outgoingMessageTextColor;
             chatStyle.incomingMessageTimeColor = incomingMessageTimeColor;
             chatStyle.outgoingMessageTimeColor = outgoingMessageTimeColor;
+
+            chatStyle.outgoingImageBubbleMask = outgoingImageBubbleMask;
             chatStyle.outgoingImageTimeColor = outgoingImageTimeColor;
             chatStyle.outgoingImageTimeBackgroundColor = outgoingImageTimeBackgroundColor;
+
+            chatStyle.incomingImageBubbleMask = incomingImageBubbleMask;
             chatStyle.incomingImageTimeColor = incomingImageTimeColor;
             chatStyle.incomingImageTimeBackgroundColor = incomingImageTimeBackgroundColor;
+
             chatStyle.incomingMessageLinkColor = incomingMessageLinkColor;
             chatStyle.outgoingMessageLinkColor = outgoingMessageLinkColor;
+
             chatStyle.defaultOperatorAvatar = defaultOperatorAvatar;
             chatStyle.operatorAvatarSize = operatorAvatarSize;
             chatStyle.operatorSystemAvatarSize = operatorSystemAvatarSize;
+
             chatStyle.imagePlaceholder = imagePlaceholder;
             chatStyle.chatBodyIconsTint = chatBodyIconsTint;
             chatStyle.chatSystemMessageTextColor = chatSystemMessageTextColor;
+
             chatStyle.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
             chatStyle.filesAndMediaTextColor = filesAndMediaTextColor;
+
             chatStyle.iconsAndSeparatorsColor = iconsAndSeparatorsColor;
             chatStyle.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
+
             chatStyle.showConsultSearching = showConsultSearching;
+
             chatStyle.scrollChatToEndIfUserTyping = scrollChatToEndIfUserTyping;
             chatStyle.scrollDownButtonResId = scrollDownButtonResId;
+
             chatStyle.unreadMsgStickerColorResId = unreadMsgStickerColorResId;
             chatStyle.unreadMsgCountTextColorResId = unreadMsgCountTextColorResId;
+
             return this;
         }
 
