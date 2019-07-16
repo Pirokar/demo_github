@@ -602,7 +602,7 @@ public class ChatFragment extends Fragment implements
     }
 
     @Override
-    public void onRatingClick(Survey survey, int rating) {
+    public void onRatingClick(@NonNull Survey survey, int rating) {
         if (getActivity() != null) {
             survey.getQuestions().get(0).setRate(rating);
             mChatController.onRatingClick(getActivity(), survey);

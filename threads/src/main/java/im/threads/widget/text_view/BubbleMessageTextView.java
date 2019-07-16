@@ -2,13 +2,10 @@ package im.threads.widget.text_view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 
 import im.threads.R;
@@ -20,6 +17,8 @@ import im.threads.widget.CustomFontTextView;
  */
 
 public class BubbleMessageTextView extends CustomFontTextView {
+
+    private static final Spanned SPACE = Html.fromHtml("&#160;");
 
     private String lastLinePadding = "";
 
@@ -41,11 +40,13 @@ public class BubbleMessageTextView extends CustomFontTextView {
                     0, 0);
             try {
                 int lastLinePaddingSymbols = ta.getInt(R.styleable.BubbleMessageTextView_last_line_padding_symbols, 0);
-                StringBuilder paddingBuilder = new StringBuilder();
-                for (int i = 0; i < lastLinePaddingSymbols; ++i) {
-                    paddingBuilder.append("_");
+                if (lastLinePaddingSymbols > 0) {
+                    StringBuilder paddingBuilder = new StringBuilder(" ");
+                    for (int i = 0; i < lastLinePaddingSymbols; ++i) {
+                        paddingBuilder.append(SPACE);
+                    }
+                    lastLinePadding = paddingBuilder.toString();
                 }
-                lastLinePadding = paddingBuilder.toString();
             } finally {
                 ta.recycle();
             }
@@ -64,20 +65,11 @@ public class BubbleMessageTextView extends CustomFontTextView {
 
     @Override
     public void setText(CharSequence text, BufferType type) {
-
         String originalString = text.toString();
-
         if (!TextUtils.isEmpty(originalString) && !TextUtils.isEmpty(lastLinePadding) && !originalString.endsWith(lastLinePadding)) {
-
-            SpannableStringBuilder phraseSpan = new SpannableStringBuilder(originalString);
-            Spannable lastLineSpan = new SpannableString(lastLinePadding);
-            lastLineSpan.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), 0, lastLineSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            phraseSpan.append(lastLineSpan);
-            super.setText(phraseSpan, type);
-
+            super.setText(new StringBuilder(originalString).append(lastLinePadding), type);
         } else {
             super.setText(text, type);
         }
     }
-
 }
