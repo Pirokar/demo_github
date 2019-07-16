@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -21,22 +22,25 @@ import im.threads.picasso_url_connection_only.Callback;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
-import im.threads.utils.MaskedTransformer;
+import im.threads.utils.MaskedTransformation;
 
 /**
  * Created by yuri on 30.06.2016.
  */
 public class ImageFromConsultViewHolder extends BaseHolder {
+
     private TextView mTimeStampTextView;
     private ImageView mImage;
+    private MaskedTransformation maskedTransformation;
     private ImageView mConsultAvatar;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     private View filter;
     private View filterSecond;
     private ChatStyle style;
 
-    public ImageFromConsultViewHolder(ViewGroup parent) {
+    public ImageFromConsultViewHolder(ViewGroup parent, MaskedTransformation maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image_from_consult, parent, false));
+        this.maskedTransformation = maskedTransformation;
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mImage = (ImageView) itemView.findViewById(R.id.image);
         mConsultAvatar = (ImageView) itemView.findViewById(R.id.consult_avatar);
@@ -73,10 +77,10 @@ public class ImageFromConsultViewHolder extends BaseHolder {
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
             Picasso.with(itemView.getContext())
-                    .load(fileDescription.getFilePath())
+                    .load(new File(fileDescription.getFilePath()))
                     .fit()
                     .centerCrop()
-                    .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_CONSULT))
+                    .transform(maskedTransformation)
                     .into(mImage, new Callback() {
                         @Override
                         public void onSuccess() {

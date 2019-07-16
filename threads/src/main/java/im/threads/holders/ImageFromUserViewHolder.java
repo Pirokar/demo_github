@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,7 +19,7 @@ import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.model.MessageState;
 import im.threads.picasso_url_connection_only.Picasso;
-import im.threads.utils.MaskedTransformer;
+import im.threads.utils.MaskedTransformation;
 
 /**
  * Created by yuri on 30.06.2016.
@@ -27,15 +28,17 @@ public class ImageFromUserViewHolder extends BaseHolder {
     private static final String TAG = "ImageFromUserViewHolde ";
     private TextView mTimeStampTextView;
     private ImageView mImage;
+    private MaskedTransformation maskedTransformation;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     private View filter;
     private View filterSecond;
     private ChatStyle style;
 
-    public ImageFromUserViewHolder(ViewGroup parent) {
+    public ImageFromUserViewHolder(ViewGroup parent, MaskedTransformation maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
         mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
         mImage = (ImageView) itemView.findViewById(R.id.image);
+        this.maskedTransformation = maskedTransformation;
         filter = itemView.findViewById(R.id.filter);
         filterSecond = itemView.findViewById(R.id.filter_second);
         if (null == style) {
@@ -66,11 +69,11 @@ public class ImageFromUserViewHolder extends BaseHolder {
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
             Picasso.with(itemView.getContext())
-                    .load(fileDescription.getFilePath())
+                    .load(new File(fileDescription.getFilePath()))
                     .error(style.imagePlaceholder)
                     .fit()
                     .centerCrop()
-                    .transform(new MaskedTransformer(itemView.getContext(), MaskedTransformer.TYPE_USER))
+                    .transform(maskedTransformation)
                     .into(mImage);
         } else if (isDownloadError) {
             mImage.setImageResource(style.imagePlaceholder);

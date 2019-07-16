@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="datastore_url" translatable="false">https://polarbearstore.threads.im/</string>
+    <string name="serverBaseUrl" translatable="false">https://polarbear.threads.im</string>
 </resources>

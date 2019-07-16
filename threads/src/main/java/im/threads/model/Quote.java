@@ -2,6 +2,8 @@ package im.threads.model;
 
 import androidx.annotation.Nullable;
 
+import im.threads.utils.ObjectUtils;
+
 /**
  * Created by yuri on 13.06.2016.
  */
@@ -11,11 +13,12 @@ public class Quote {
     private FileDescription fileDescription;
     private final long timeStamp;
     private boolean isFromConsult;
-    @Nullable private String quotedPhraseId;
+    @Nullable private String quotedPhraseConsultId;
 
     private String uuid;
 
-    public Quote(String phraseOwnerTitle, String text, FileDescription fileDescription, long timeStamp) {
+    public Quote(String uuid, String phraseOwnerTitle, String text, FileDescription fileDescription, long timeStamp) {
+        this.uuid = uuid;
         this.phraseOwnerTitle = phraseOwnerTitle;
         this.text = text;
         this.fileDescription = fileDescription;
@@ -27,12 +30,12 @@ public class Quote {
     }
 
     @Nullable
-    public String getQuotedPhraseId() {
-        return quotedPhraseId;
+    public String getQuotedPhraseConsultId() {
+        return quotedPhraseConsultId;
     }
 
-    public void setQuotedPhraseId(@Nullable String quotedPhraseId) {
-        this.quotedPhraseId = quotedPhraseId;
+    public void setQuotedPhraseConsultId(@Nullable String quotedPhraseConsultId) {
+        this.quotedPhraseConsultId = quotedPhraseConsultId;
     }
 
     public boolean isFromConsult() {
@@ -89,7 +92,7 @@ public class Quote {
                 ", fileDescription=" + fileDescription +
                 ", timeStamp=" + timeStamp +
                 ", isFromConsult=" + isFromConsult +
-                ", quotedPhraseId='" + quotedPhraseId + '\'' +
+                ", quotedPhraseConsultId='" + quotedPhraseConsultId + '\'' +
                 '}';
     }
 
@@ -99,5 +102,23 @@ public class Quote {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public boolean hasSameContent(Quote quote) {
+
+        if (quote == null) {
+            return false;
+        }
+
+        boolean hasSameContent = ObjectUtils.areEqual(this.uuid, quote.uuid)
+                && ObjectUtils.areEqual(this.phraseOwnerTitle, quote.phraseOwnerTitle)
+                && ObjectUtils.areEqual(this.text, quote.text)
+                && ObjectUtils.areEqual(this.timeStamp, quote.timeStamp);
+
+        if (this.fileDescription != null) {
+            hasSameContent = hasSameContent && this.fileDescription.hasSameContent(quote.fileDescription);
+        }
+
+        return hasSameContent;
     }
 }

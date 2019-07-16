@@ -35,7 +35,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jakewharton.rxbinding3.widget.RxTextView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,6 +70,7 @@ import im.threads.adapters.ChatAdapter;
 import im.threads.controllers.ChatController;
 import im.threads.databinding.FragmentChatBinding;
 import im.threads.helpers.FileHelper;
+import im.threads.helpers.FileProviderHelper;
 import im.threads.helpers.MediaHelper;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
@@ -351,7 +352,9 @@ public class ChatFragment extends Fragment implements
                     }
                 } else {
                     binding.scrollDownButtonContainer.setVisibility(View.GONE);
-                    mChatAdapter.setAllMessagesRead();
+                    recyclerView.post(() -> {
+                        mChatAdapter.setAllMessagesRead();
+                    });
                 }
             }
         });
@@ -467,7 +470,6 @@ public class ChatFragment extends Fragment implements
 
         ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
-        ColorsHelper.setBackgroundColor(activity, binding.copyControls, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
 
@@ -550,7 +552,7 @@ public class ChatFragment extends Fragment implements
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     externalCameraPhotoFile = FileHelper.createImageFile(getContext());
-                    Uri photoUri = FileProvider.getUriForFile(getContext(), activity.getPackageName() + ".im.threads.fileprovider", externalCameraPhotoFile);
+                    Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
 
                     if (ChatStyle.getInstance().isDebugLoggingEnabled) {
                         Log.d(TAG, "Image File uri resolved: " + photoUri.toString());
@@ -601,7 +603,7 @@ public class ChatFragment extends Fragment implements
     }
 
     @Override
-    public void onRatingClick(Survey survey, int rating) {
+    public void onRatingClick(@NonNull Survey survey, int rating) {
         if (getActivity() != null) {
             survey.getQuestions().get(0).setRate(rating);
             mChatController.onRatingClick(getActivity(), survey);
@@ -748,52 +750,63 @@ public class ChatFragment extends Fragment implements
     }
 
     private void onReplyClick(ChatPhrase cp, int position) {
-        String headerText = "";
-        String text = cp.getPhraseText();
-        hideCopyControls();
 
+        hideCopyControls();
         scrollToPosition(position);
-        FileDescription quoteFileDescription = cp.getFileDescription();
-        if (quoteFileDescription == null && cp.getQuote() != null) {
-            quoteFileDescription = cp.getQuote().getFileDescription();
-        }
-        mQuote = new Quote(TextUtils.isEmpty(headerText) ? "" : headerText, TextUtils.isEmpty(text) ? "" : text, quoteFileDescription, cp.getTimeStamp());
-        mFileDescription = null;
-        if (TextUtils.isEmpty(cp.getPhraseText())) {
-            mQuote = new Quote(headerText, cp.getPhraseText(), quoteFileDescription, System.currentTimeMillis());
-        }
-        if (cp instanceof UserPhrase) {
-            UserPhrase userPhrase = (UserPhrase) cp;
-            headerText = appContext.getString(R.string.threads_I);
+
+        UserPhrase userPhrase = cp instanceof UserPhrase ? (UserPhrase) cp : null;
+        ConsultPhrase consultPhrase = cp instanceof ConsultPhrase ? (ConsultPhrase) cp : null;
+
+        String text = cp.getPhraseText();
+
+        if (userPhrase != null) {
+            mQuote = new Quote(userPhrase.getUuid(),
+                    appContext.getString(R.string.threads_I),
+                    userPhrase.getPhraseText(),
+                    userPhrase.getFileDescription(),
+                    userPhrase.getTimeStamp());
             mQuote.setFromConsult(false);
-            mQuote.setPhraseOwnerTitle(headerText);
-            mQuote.setUuid(userPhrase.getUuid());
-        } else if (cp instanceof ConsultPhrase) {
-            ConsultPhrase consultPhrase = (ConsultPhrase) cp;
-            headerText = ((ConsultPhrase) cp).getConsultName();
+
+        } else if (consultPhrase != null) {
+
+            mQuote = new Quote(consultPhrase.getUuid(),
+                    consultPhrase.getConsultName() != null
+                            ? consultPhrase.getConsultName()
+                            : appContext.getString(R.string.threads_consult),
+                    consultPhrase.getPhraseText(),
+                    consultPhrase.getFileDescription(),
+                    consultPhrase.getTimeStamp());
             mQuote.setFromConsult(true);
-            mQuote.setQuotedPhraseId(((ConsultPhrase) cp).getConsultId());
-            if (headerText == null) {
-                headerText = appContext.getString(R.string.threads_consult);
-            }
-            mQuote.setPhraseOwnerTitle(headerText);
-            mQuote.setUuid(consultPhrase.getUuid());
+            mQuote.setQuotedPhraseConsultId(consultPhrase.getConsultId());
         }
+
+        mFileDescription = null;
+
         if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
                 || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText, TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text, cp.getFileDescription().getFilePath());
+
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+                    TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
+                    cp.getFileDescription().getFilePath());
+
         } else if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PDF) {
+
             String fileName = "";
             try {
-                fileName = cp.getFileDescription().getIncomingName() == null ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath())) : cp.getFileDescription().getIncomingName();
+                fileName = cp.getFileDescription().getIncomingName() == null
+                        ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath()))
+                        : cp.getFileDescription().getIncomingName();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText,
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
                     null);
+
         } else {
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(headerText) ? "" : headerText, TextUtils.isEmpty(text) ? "" : text, null);
+            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+                    TextUtils.isEmpty(text) ? "" : text,
+                    null);
         }
     }
 
@@ -849,7 +862,7 @@ public class ChatFragment extends Fragment implements
                     new FileDescription(
                             appContext.getString(R.string.threads_I),
                             mAttachedImages.get(0),
-                            new File(mAttachedImages.get(0).replaceAll("file://", "")).length(),
+                            new File(mAttachedImages.get(0)).length(),
                             System.currentTimeMillis()),
                     mQuote,
                     binding.input.getText().toString().trim(),
@@ -859,7 +872,7 @@ public class ChatFragment extends Fragment implements
                 FileDescription fileDescription = new FileDescription(
                         appContext.getString(R.string.threads_I),
                         mAttachedImages.get(i),
-                        new File(mAttachedImages.get(i).replaceAll("file://", "")).length(),
+                        new File(mAttachedImages.get(i)).length(),
                         System.currentTimeMillis());
 
                 UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
@@ -994,7 +1007,7 @@ public class ChatFragment extends Fragment implements
                     if (c.getCount() == 0) return;
 
                     for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                        allItems.add("file://" + c.getString(DATA));
+                        allItems.add(c.getString(DATA));
                     }
                 }
                 binding.bottomGallery.setVisibility(View.VISIBLE);
@@ -1450,7 +1463,7 @@ public class ChatFragment extends Fragment implements
             UpcomingUserMessage uum =
                     new UpcomingUserMessage(new FileDescription(appContext.getString(R.string.threads_I)
                             , photos.get(0)
-                            , new File(photos.get(0).replaceAll("file://", "")).length()
+                            , new File(photos.get(0)).length()
                             , System.currentTimeMillis())
                             , null
                             , binding.input.getText().toString().trim()
@@ -1463,7 +1476,10 @@ public class ChatFragment extends Fragment implements
             for (int i = 1; i < photos.size(); i++) {
                 uum =
                         new UpcomingUserMessage(
-                                new FileDescription(appContext.getString(R.string.threads_I), photos.get(i), new File(photos.get(i).replaceAll("file://", "")).length(), System.currentTimeMillis())
+                                new FileDescription(appContext.getString(R.string.threads_I),
+                                        photos.get(i),
+                                        new File(photos.get(i)).length(),
+                                        System.currentTimeMillis())
                                 , null
                                 , null
                                 , false);
@@ -1484,7 +1500,10 @@ public class ChatFragment extends Fragment implements
             externalCameraPhotoFile = null;
 
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == Activity.RESULT_OK) {
-            mFileDescription = new FileDescription(appContext.getString(R.string.threads_image), data.getStringExtra(CameraActivity.IMAGE_EXTRA), new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA).replace("file://", "")).length(), System.currentTimeMillis());
+            mFileDescription = new FileDescription(appContext.getString(R.string.threads_image),
+                    data.getStringExtra(CameraActivity.IMAGE_EXTRA),
+                    new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA)).length(),
+                    System.currentTimeMillis());
             UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
             sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
 
@@ -1768,7 +1787,7 @@ public class ChatFragment extends Fragment implements
             binding.quoteImage.setVisibility(View.VISIBLE);
             Picasso
                     .with(getActivity().getApplicationContext())
-                    .load(path)
+                    .load(new File(path))
                     .fit()
                     .centerCrop()
                     .into(binding.quoteImage);

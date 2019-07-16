@@ -21,9 +21,11 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
 
-        versionCode 85
-        versionName "2.48.0"
+        versionCode 86
+        versionName "2.48.6"
         vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -32,6 +34,12 @@ android {
         }
         debug {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
         }
     }
 
@@ -68,6 +76,11 @@ dependencies {
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
     implementation 'com.mfms.android:push-lite-release:2.6.21'
+
+    testImplementation 'org.robolectric:robolectric:4.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
 }
 
 

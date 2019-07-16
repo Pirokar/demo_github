@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -177,7 +178,7 @@ public class UserPhraseViewHolder extends BaseHolder {
                 mImage.setOnClickListener(imageClickListener);
 
                 Picasso.with(itemView.getContext())
-                        .load(fileDescription.getFilePath())
+                        .load(new File(fileDescription.getFilePath()))
                         .error(style.imagePlaceholder)
                         .fit()
                         .centerCrop()
