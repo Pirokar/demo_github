@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -68,7 +69,7 @@ public class ImageFragment extends Fragment {
         if (fd.getFilePath() != null && (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.JPEG || FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PNG)) {
             Picasso
                     .with(getActivity())
-                    .load(fd.getFilePath())
+                    .load(new File(fd.getFilePath()))
                     .fit()
                     .centerInside()
                     .error(style.imagePlaceholder)

@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.io.File;
+
 import im.threads.R;
 import im.threads.model.BottomGalleryItem;
 import im.threads.model.ChatStyle;
@@ -42,7 +44,7 @@ public class BottomGalleryImageHolder extends BaseHolder {
         chosenMark.setBackground(d);
         Picasso
                 .with(itemView.getContext())
-                .load(item.getImagePath())
+                .load(new File(item.getImagePath()))
                 .fit()
                 .centerCrop()
                 .into(image);

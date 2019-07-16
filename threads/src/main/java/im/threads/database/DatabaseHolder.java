@@ -3,13 +3,13 @@ package im.threads.database;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
 import im.threads.controllers.ChatController;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
@@ -38,8 +38,23 @@ public class DatabaseHolder {
         return instance;
     }
 
+    /**
+     * Nullify instance. For Autotests purposes
+     */
+    static void eraseInsance() {
+        instance = null;
+    }
+
     private DatabaseHolder(Context ctx) {
         mMyOpenHelper = new MyOpenHelper(ctx);
+    }
+
+    /**
+     * For Autotests purposes
+     * @return MyOpenHelper instance
+     */
+    MyOpenHelper getMyOpenHelper(){
+        return mMyOpenHelper;
     }
 
     public List<ChatItem> getChatItems(int offset, int limit) {
@@ -180,20 +195,25 @@ public class DatabaseHolder {
     }
 
     public void putMessagesSync(final List<ChatItem> items) {
-        mMyOpenHelper.getWritableDatabase().beginTransaction();
-        for (ChatItem item : items) {
-            if (item instanceof ChatPhrase) {
-                mMyOpenHelper.putChatPhrase((ChatPhrase) item);
+        try {
+            mMyOpenHelper.getWritableDatabase().beginTransaction();
+            for (ChatItem item : items) {
+                if (item instanceof ChatPhrase) {
+                    mMyOpenHelper.putChatPhrase((ChatPhrase) item);
+                }
+                if (item instanceof ConsultConnectionMessage) {
+                    mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
+                }
+                if (item instanceof Survey) {
+                    mMyOpenHelper.insertOrUpdateSurvey((Survey) item);
+                }
             }
-            if (item instanceof ConsultConnectionMessage) {
-                mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
-            }
-            if (item instanceof Survey) {
-                mMyOpenHelper.insertOrUpdateSurvey((Survey) item);
-            }
+            mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            mMyOpenHelper.getWritableDatabase().endTransaction();
         }
-        mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
-        mMyOpenHelper.getWritableDatabase().endTransaction();
     }
 
     public void setUserPhraseProviderId(String uuid, String providerId) {

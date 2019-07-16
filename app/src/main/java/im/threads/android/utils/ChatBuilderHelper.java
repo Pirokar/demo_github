@@ -39,9 +39,12 @@ public class ChatBuilderHelper {
         }
     }
 
-    public static ChatStyle buildChatStyle(final @NonNull Activity activity, final String appMarker, final @NonNull String clientId, String userName, final String data, ChatDesign design) {
+    public static ChatStyle buildChatStyle(final @NonNull Activity activity, final String appMarker, final @NonNull String clientId, String clientIdSignature, String userName, final String data, ChatDesign design) {
         ChatStyle.ChatStyleBuilder builder = ChatStyle.ChatStyleBuilder
-                .getBuilder(activity, clientId, userName, data) // в последнем параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+                .getBuilder(activity, clientId)
+                .setClientIdSignature(clientIdSignature)
+                .setUserName(userName)
+                .setData(data) // в этом параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
                 .setAppMarker(appMarker)
                 .setDefaultFontBold(LATO_BOLD_FONT_PATH)
                 .setDefaultFontLight(LATO_LIGHT_FONT_PATH)
@@ -91,8 +94,10 @@ public class ChatBuilderHelper {
                         R.color.alt_threads_outgoing_message_text,
                         R.color.alt_threads_operator_message_timestamp,
                         R.color.alt_threads_user_message_timestamp,
+                        R.drawable.alt_thread_outgoing_image_mask,
                         R.color.alt_threads_outgoing_message_time,
                         R.color.alt_threads_outgoing_time_underlay,
+                        R.drawable.alt_thread_incoming_image_mask,
                         R.color.alt_threads_incoming_message_time,
                         R.color.alt_threads_incoming_time_underlay,
                         R.color.alt_threads_incoming_message_link,

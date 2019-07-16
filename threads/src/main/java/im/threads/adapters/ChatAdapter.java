@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -61,6 +62,7 @@ import im.threads.model.UserPhrase;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.CircleTransform;
 import im.threads.utils.FileUtils;
+import im.threads.utils.MaskedTransformation;
 import im.threads.utils.ThreadUtils;
 import im.threads.widget.Rating;
 
@@ -90,6 +92,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean isRemovingTyping = false;
 
 
+    ChatStyle style;
     ArrayList<ChatItem> list;
     ArrayList<ChatItem> backupList = new ArrayList<>();
     private final Context ctx;
@@ -97,14 +100,20 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final String ACTION_CHANGED = "im.threads.adapters.ACTION_CHANGED";
     private boolean isInSearchMode = false;
     private Handler viewHandler = new Handler(Looper.getMainLooper());
+    private MaskedTransformation outgoingImageMaskTransformation;
+    private MaskedTransformation incomingImageMaskTransformation;
 
     public ChatAdapter(final ArrayList<ChatItem> list, final Context ctx, final AdapterInterface adapterInterface) {
         this.list = list;
         if (this.list == null) this.list = new ArrayList<>();
         this.ctx = ctx;
+        style = ChatStyle.getInstance();
         this.mAdapterInterface = adapterInterface;
         final BroadcastReceiver br = new MyBroadcastReceiver();
         LocalBroadcastManager.getInstance(ctx).registerReceiver(br, new IntentFilter(ACTION_CHANGED));
+
+        outgoingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.outgoingImageBubbleMask));
+        incomingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.incomingImageBubbleMask));
     }
 
     public void setAdapterInterface(final AdapterInterface mAdapterInterface) {
@@ -121,8 +130,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_CONSULT_PHRASE) return new ConsultPhraseHolder(parent);
         if (viewType == TYPE_USER_PHRASE) return new UserPhraseViewHolder(parent);
         if (viewType == TYPE_FREE_SPACE) return new SpaceViewHolder(parent);
-        if (viewType == TYPE_IMAGE_FROM_CONSULT) return new ImageFromConsultViewHolder(parent);
-        if (viewType == TYPE_IMAGE_FROM_USER) return new ImageFromUserViewHolder(parent);
+        if (viewType == TYPE_IMAGE_FROM_CONSULT) return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation);
+        if (viewType == TYPE_IMAGE_FROM_USER) return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation);
         if (viewType == TYPE_FILE_FROM_CONSULT) return new ConsultFileViewHolder(parent);
         if (viewType == TYPE_FILE_FROM_USER) return new UserFileViewHolder(parent);
         if (viewType == TYPE_UNREAD_MESSAGES) return new UnreadMessageViewHolder(parent);
@@ -575,6 +584,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
      * Remove close request from the thread history
+     *
      * @return true - if deletion occurred, false - if RequestResolveThread item wasn't found in the history
      */
     public boolean removeResolveRequest() {
@@ -597,6 +607,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
      * Remove survey from the thread history
+     *
      * @return true - if deletion occurred, false - if Survey item wasn't found in the history
      */
     public boolean removeSurvey(final long sendingId) {
@@ -1025,7 +1036,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
 
-        void onRatingClick(Survey survey, int rating);
+        void onRatingClick(@NonNull Survey survey, int rating);
 
         void onResolveThreadClick(boolean approveResolve);
 
@@ -1094,21 +1105,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void notifyDataSetChangedOnUi() {
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        ThreadUtils.runOnUiThread(() -> notifyDataSetChanged());
     }
 
     public void notifyItemChangedOnUi(final ChatItem chatItem) {
-        ThreadUtils.runOnUiThread(new Runnable() {
-            final int position = list.indexOf(chatItem);
-            @Override
-            public void run() {
-                notifyItemChanged(position);
-            }
+        ThreadUtils.runOnUiThread(() -> {
+            int position = list.indexOf(chatItem);
+            notifyItemChanged(position);
         });
     }
 
@@ -1120,7 +1123,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void notifyItemRemoved(final ChatItem chatItem) {
-        viewHandler.post(() -> notifyItemRemoved(list.indexOf(chatItem)));
+        notifyItemRemoved(list.indexOf(chatItem));
     }
 
     public static class ChatMessagesOrderer {
@@ -1136,12 +1139,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public static void updateOrder(List<ChatItem> items) {
 
-            Collections.sort(items, new Comparator<ChatItem>() {
-                @Override
-                public int compare(final ChatItem lhs, final ChatItem rhs) {
-                    return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
-                }
-            });
+            Collections.sort(items, (lhs, rhs) -> Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp()));
             if (items.size() == 0) return;
             items.add(0, new DateRow(items.get(0).getTimeStamp() - 2));
             final Calendar currentTimeStamp = Calendar.getInstance();
@@ -1167,8 +1165,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
 
                 //Removing daterow if it is a last item - may happen when message order has changed
-                DateRow lastDateRow = daterows.get(daterows.size() -1 );
-                if (lastDateRow == items.get(items.size() -1)) {
+                DateRow lastDateRow = daterows.get(daterows.size() - 1);
+                if (lastDateRow == items.get(items.size() - 1)) {
                     items.remove(lastDateRow);
                 }
             }

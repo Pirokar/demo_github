@@ -22,9 +22,11 @@ android {
         minSdkVersion 17
         targetSdkVersion 27
 
-        versionCode 85
-        versionName "2.48.0"
+        versionCode 86
+        versionName "2.48.6"
         vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -33,6 +35,12 @@ android {
         }
         debug {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
         }
     }
 
@@ -45,8 +53,8 @@ dependencies {
     implementation "com.android.support:support-v4:27.1.1"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
 
-    def final rxbindingVersion = "3.0.0-alpha2"
-    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbindingVersion"
+    def final rxbindingVersion = "2.2.0"
+    implementation "com.jakewharton.rxbinding2:rxbinding:$rxbindingVersion"
 
     /*
     * !WARNING!
@@ -69,6 +77,11 @@ dependencies {
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
     implementation 'com.mfms.android:push-lite-release:2.6.21'
+
+    testImplementation 'org.robolectric:robolectric:4.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
 }
 
 
