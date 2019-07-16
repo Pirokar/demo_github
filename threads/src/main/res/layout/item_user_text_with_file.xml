@@ -124,7 +124,7 @@
                 android:textColor="@color/threads_outgoing_message_text"
                 android:textColorLink="@color/threads_outgoing_message_link"
                 android:textSize="16sp"
-                app:last_line_padding_symbols="12"/>
+                app:last_line_padding_symbols="16"/>
 
             <im.threads.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
