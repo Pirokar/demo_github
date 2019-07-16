@@ -1,31 +1,29 @@
 package im.threads.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 
-import im.threads.R;
 import im.threads.picasso_url_connection_only.Transformation;
 
 /**
  * Created by yuri on 11.07.2016.
  */
-public class MaskedTransformer implements Transformation {
-    private static final String TAG = "MaskedTransformer ";
-    private static MaskedTransformer instance;
-    private Context ctx;
-    public static final int TYPE_CONSULT = 1;
-    public static final int TYPE_USER = 2;
-    int type;
+public class MaskedTransformation implements Transformation {
 
-    public MaskedTransformer(Context ctx, int type) {
-        this.ctx = ctx;
-        this.type = type;
+    private static final String TAG = "MaskedTransformation ";
+
+    private Drawable maskDrawable;
+    private String cacheKey;
+
+    public MaskedTransformation(Drawable maskDrawable) {
+        this.maskDrawable = maskDrawable;
+        cacheKey = String.valueOf(maskDrawable.hashCode());
     }
 
     @Override
@@ -38,7 +36,7 @@ public class MaskedTransformer implements Transformation {
 
         Bitmap mask = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas tmpCanvas = new Canvas(mask);
-        NinePatchDrawable maskRaw9Patch = (NinePatchDrawable)ctx.getResources().getDrawable(type == TYPE_USER ? R.drawable.thread_outgoing_bubble : R.drawable.thread_incoming_bubble);
+        NinePatchDrawable maskRaw9Patch = (NinePatchDrawable) maskDrawable;
         maskRaw9Patch.setBounds(0, 0, tmpCanvas.getWidth(), tmpCanvas.getHeight());
         maskRaw9Patch.draw(tmpCanvas);
         
@@ -53,6 +51,6 @@ public class MaskedTransformer implements Transformation {
 
     @Override
     public String key() {
-        return "consultBubble";
+        return cacheKey;
     }
 }
