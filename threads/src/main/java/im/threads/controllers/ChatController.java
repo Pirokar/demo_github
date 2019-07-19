@@ -852,8 +852,10 @@ public class ChatController {
             mDatabaseHolder = DatabaseHolder.getInstance(appContext);
         }
         updateChatItemsOnBindAsync();
-        Transport.sendMessageMFMSAsync(appContext, OutgoingMessageCreator.createInitChatMessage(
-                PrefUtils.getClientID(appContext), appContext), true, null, null);
+        Transport.sendMessageMFMSAsync(appContext,
+                OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(appContext),
+                        PrefUtils.getData(appContext), appContext),
+                true, null, null);
 
         final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
                 PrefUtils.getClientID(appContext),
@@ -923,7 +925,11 @@ public class ChatController {
                 instance.fragment.removeSearching();
             }
             instance.mConsultWriter.setCurrentConsultLeft();
-            Transport.sendMessageMFMSSync(appContext, OutgoingMessageCreator.createInitChatMessage(finalClientId, appContext), true);
+            Transport.sendMessageMFMSSync(appContext,
+                    OutgoingMessageCreator.createInitChatMessage(finalClientId,
+                            PrefUtils.getData(appContext), appContext),
+                    true);
+
             final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(appContext),
                     finalClientId,
                     PrefUtils.getClientIDEncrypted(appContext),
