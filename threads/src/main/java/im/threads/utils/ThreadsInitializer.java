@@ -25,24 +25,15 @@ public class ThreadsInitializer {
     private ThreadsInitializer(Context ctx) {
         isInited = ctx.getSharedPreferences(this.getClass().toString(), Context.MODE_PRIVATE).getBoolean("initIfNotInited", false);
         this.ctx = ctx;
-        isInited = PrefUtils.isClientIdSet(ctx);
-    }
-
-    public synchronized boolean init() throws IllegalArgumentException {
-        if (PermissionChecker.isCoarseLocationPermissionGranted(ctx) && PermissionChecker.isReadSmsPermissionGranted(ctx) && PermissionChecker.isReadPhoneStatePermissionGranted(ctx)) {
-            PushController.getInstance(ctx).init();
-
-            return true;
-        }
-        return false;
+        isInited = PrefUtils.isClientIdSet();
     }
 
     public boolean isInited() {
-        return PrefUtils.isClientIdSet(ctx);
+        return PrefUtils.isClientIdSet();
     }
 
     public String getStatus() {
-        if (PrefUtils.isClientIdSet(ctx)) {
+        if (PrefUtils.isClientIdSet()) {
             return "Threads is initialised";
         }
         HashMap<String, Boolean> map = new HashMap<>();

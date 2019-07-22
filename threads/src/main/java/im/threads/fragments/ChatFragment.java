@@ -148,8 +148,6 @@ public class ChatFragment extends Fragment implements
     private List<String> mAttachedImages = new ArrayList<>();
     private ChatReceiver mChatReceiver;
 
-    private ChatController.UnreadMessagesCountListener unreadMessagesCountListener;
-
     private boolean isInMessageSearchMode;
     private boolean isResumed;
 
@@ -170,7 +168,6 @@ public class ChatFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
         appContext = activity.getApplicationContext();
-        ChatStyle.updateContext(activity);
         style = ChatStyle.getInstance();
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 
@@ -559,7 +556,7 @@ public class ChatFragment extends Fragment implements
 
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
 
-                    if ( Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP ) { // https://stackoverflow.com/a/48391446/1321401
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) { // https://stackoverflow.com/a/48391446/1321401
                         MediaHelper.grantPermissions(getContext(), intent, photoUri);
                     }
 
@@ -605,14 +602,14 @@ public class ChatFragment extends Fragment implements
     public void onRatingClick(@NonNull Survey survey, int rating) {
         if (getActivity() != null) {
             survey.getQuestions().get(0).setRate(rating);
-            mChatController.onRatingClick(getActivity(), survey);
+            mChatController.onRatingClick(survey);
         }
     }
 
     @Override
     public void onResolveThreadClick(boolean approveResolve) {
         if (getActivity() != null) {
-            mChatController.onResolveThreadClick(getActivity(), approveResolve);
+            mChatController.onResolveThreadClick(approveResolve);
         }
     }
 
@@ -813,7 +810,7 @@ public class ChatFragment extends Fragment implements
         ClipboardManager cm = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
         cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
         hideCopyControls();
-        PrefUtils.setLastCopyText(activity.getApplicationContext(), cp.getPhraseText());
+        PrefUtils.setLastCopyText(cp.getPhraseText());
         if (null != mChosenPhrase) unChooseItem(mChosenPhrase);
     }
 
@@ -884,7 +881,8 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onFileSelected(File fileOrDirectory) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onFileSelected: " + fileOrDirectory);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled)
+            Log.i(TAG, "onFileSelected: " + fileOrDirectory);
 
         mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
         mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
@@ -1124,12 +1122,9 @@ public class ChatFragment extends Fragment implements
 
     public void addChatItems(final List<ChatItem> list) {
         if (list.size() == 0) return;
-        h.post(new Runnable() {
-            @Override
-            public void run() {
-                welcomeScreenVisibility(false);
-                mChatAdapter.addItems(list);
-            }
+        h.post(() -> {
+            welcomeScreenVisibility(false);
+            mChatAdapter.addItems(list);
         });
         if (list.size() == 1 && list.get(0) instanceof ConsultTyping)
             return;//don't scroll if it is just typing item
@@ -1142,17 +1137,9 @@ public class ChatFragment extends Fragment implements
                     ConsultPhrase cp = (ConsultPhrase) newList.get(i);
                     if (firstUnreadProviderId.equalsIgnoreCase(cp.getProviderId())) {
                         final int index = i;
-                        h.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (!isInMessageSearchMode) {
-                                    binding.recycler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            ((LinearLayoutManager) binding.recycler.getLayoutManager()).scrollToPositionWithOffset(index - 1, 0);
-                                        }
-                                    });
-                                }
+                        h.postDelayed(() -> {
+                            if (!isInMessageSearchMode) {
+                                binding.recycler.post(() -> ((LinearLayoutManager) binding.recycler.getLayoutManager()).scrollToPositionWithOffset(index - 1, 0));
                             }
                         }, 600);
                         return;
@@ -1161,12 +1148,9 @@ public class ChatFragment extends Fragment implements
             }
         }
 
-        h.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!isInMessageSearchMode)
-                    scrollToPosition(mChatAdapter.getItemCount() - 1);
-            }
+        h.post(() -> {
+            if (!isInMessageSearchMode)
+                scrollToPosition(mChatAdapter.getItemCount() - 1);
         });
 
     }
@@ -1185,7 +1169,7 @@ public class ChatFragment extends Fragment implements
                     binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
                 }
 
-                binding.subtitle.setText( (!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
+                binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
                         ? getString(style.chatSubtitleTextResId)
                         : info.getOrganizationUnit());
 
@@ -1232,8 +1216,8 @@ public class ChatFragment extends Fragment implements
 
     private boolean isCopy(String text) {
         if (TextUtils.isEmpty(text)) return false;
-        if (TextUtils.isEmpty(PrefUtils.getLastCopyText(getActivity()))) return false;
-        return text.contains(PrefUtils.getLastCopyText(getActivity()));
+        if (TextUtils.isEmpty(PrefUtils.getLastCopyText())) return false;
+        return text.contains(PrefUtils.getLastCopyText());
     }
 
     private void hideCopyControls() {
@@ -1359,10 +1343,9 @@ public class ChatFragment extends Fragment implements
     }
 
     public void notifyConsultAvatarChanged(final String newAvatarUrl, final String consultId) {
-        h.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mChatAdapter != null) mChatAdapter.notifyAvatarChanged(newAvatarUrl, consultId);
+        h.post(() -> {
+            if (mChatAdapter != null) {
+                mChatAdapter.notifyAvatarChanged(newAvatarUrl, consultId);
             }
         });
     }
@@ -1386,12 +1369,9 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setStateSearchingConsult() {
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setTitleStateSearchingConsult();
-                mChatAdapter.setSearchingConsult();
-            }
+        h.postDelayed(() -> {
+            setTitleStateSearchingConsult();
+            mChatAdapter.setSearchingConsult();
         }, 50);
     }
 
@@ -1400,7 +1380,6 @@ public class ChatFragment extends Fragment implements
             mChatAdapter.removeConsultSearching();
             showOverflowMenu();
         }
-
     }
 
     private void unChooseItem(ChatPhrase cp) {
@@ -1732,7 +1711,8 @@ public class ChatFragment extends Fragment implements
     }
 
     private void search(final boolean searchInFiles) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "searchInFiles: " + searchInFiles);
+        if (ChatStyle.getInstance().isDebugLoggingEnabled)
+            Log.i(TAG, "searchInFiles: " + searchInFiles);
         isInMessageSearchMode = true;
         setBottomStateDefault();
         setTitleStateSearchingMessage();

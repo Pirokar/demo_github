@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import im.threads.controllers.ChatController;
+import im.threads.ThreadsLib;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.CompletionHandler;
@@ -30,7 +30,6 @@ public class DatabaseHolder {
     private static DatabaseHolder instance;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-
     public static DatabaseHolder getInstance(Context context) {
         if (instance == null) {
             instance = new DatabaseHolder(context);
@@ -41,7 +40,7 @@ public class DatabaseHolder {
     /**
      * Nullify instance. For Autotests purposes
      */
-    static void eraseInsance() {
+    static void eraseInstance() {
         instance = null;
     }
 
@@ -51,9 +50,10 @@ public class DatabaseHolder {
 
     /**
      * For Autotests purposes
+     *
      * @return MyOpenHelper instance
      */
-    MyOpenHelper getMyOpenHelper(){
+    MyOpenHelper getMyOpenHelper() {
         return mMyOpenHelper;
     }
 
@@ -265,26 +265,17 @@ public class DatabaseHolder {
     }
 
     // let the DB time to write the incoming message
-    public void getUnreadMessagesCount(boolean immediate, final ChatController.UnreadMessagesCountListener unreadMessagesCountListener) {
+    public void getUnreadMessagesCount(boolean immediate, @NonNull final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
         if (immediate) {
             getUnreadMessagesCount(unreadMessagesCountListener);
-        }
-        else {
+        } else {
             final Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getUnreadMessagesCount(unreadMessagesCountListener);
-                }
-            }, 1000);
+            handler.postDelayed(() -> getUnreadMessagesCount(unreadMessagesCountListener), 1000);
         }
     }
 
-    private void getUnreadMessagesCount(final ChatController.UnreadMessagesCountListener unreadMessagesCountListener) {
-        if (unreadMessagesCountListener != null) {
-            final int unreadMessagesCount = mMyOpenHelper.getUnreadMessagesProviderIds().size();
-            unreadMessagesCountListener.onUnreadMessagesCountChanged(unreadMessagesCount);
-        }
+    private void getUnreadMessagesCount(@NonNull final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
+        unreadMessagesCountListener.onUnreadMessagesCountChanged(mMyOpenHelper.getUnreadMessagesProviderIds().size());
     }
 
     public void setMessageWereRead(String providerId) {
@@ -295,7 +286,8 @@ public class DatabaseHolder {
         if (id == null) return null;
         return mMyOpenHelper.getLastOperatorAvatar(id);
     }
-    public ConsultInfo getConsultInfoSync(@NonNull String id){
+
+    public ConsultInfo getConsultInfoSync(@NonNull String id) {
         return mMyOpenHelper.getLastConsultInfo(id);
     }
 }

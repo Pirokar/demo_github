@@ -116,7 +116,7 @@ public class DatabaseHolderTest {
         // https://github.com/robolectric/robolectric/issues/1890#issuecomment-111726535
         // DatabaseHolder.instance setting to null
         dbHolder.getMyOpenHelper().close();
-        DatabaseHolder.eraseInsance();
+        DatabaseHolder.eraseInstance();
     }
 
 

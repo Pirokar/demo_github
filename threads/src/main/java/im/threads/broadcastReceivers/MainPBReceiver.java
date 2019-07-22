@@ -10,6 +10,7 @@ import com.mfms.android.push_lite.PushBroadcastReceiver;
 import im.threads.controllers.ChatController;
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.formatters.PushMessageTypes;
+import im.threads.internal.Config;
 import im.threads.model.ChatStyle;
 
 /**
@@ -24,21 +25,15 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(final Context context, final String s, final Bundle bundle) {
-
-        ChatStyle.updateContext(context);
-
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
         }
-
         if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
-
             if (isChatSystemPush(bundle)) {
                 ChatController.getInstance(context).onSystemMessageFromServer(context, bundle, s);
             }
-
-        } else if (ChatController.getShortPushListener() != null) {
-            ChatController.getShortPushListener().onNewShortPushNotification(this, context, s, bundle);
+        } else if (Config.instance.shortPushListener != null) {
+            Config.instance.shortPushListener.onNewShortPushNotification(this, context, s, bundle);
         }
     }
 
@@ -57,18 +52,11 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onDeviceAddressChanged(final Context context, final String s) {
-
-        ChatStyle.updateContext(context);
-
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onDeviceAddressChanged " + s);
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                context.sendBroadcast(new Intent(ProgressReceiver.DEVICE_ID_IS_SET_BROADCAST));
-            }
-        }).start();
+        new Thread(() -> context.sendBroadcast(new Intent(ProgressReceiver.DEVICE_ID_IS_SET_BROADCAST)))
+                .start();
     }
 
     @Override

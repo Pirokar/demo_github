@@ -1,7 +1,6 @@
 package im.threads.model;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
@@ -21,10 +20,7 @@ import im.threads.utils.PrefUtils;
  * и других кастомизациях чата.
  * Created by yuri on 08.11.2016.
  */
-
 public class ChatStyle implements Serializable {
-
-    private static Context appContext;
 
     //common styles
     @ColorRes
@@ -280,7 +276,7 @@ public class ChatStyle implements Serializable {
             synchronized (ChatStyle.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    localInstance = PrefUtils.getIncomingStyle(appContext);
+                    localInstance = PrefUtils.getIncomingStyle();
                     if (localInstance == null) {
                         localInstance = new ChatStyle();
                     }
@@ -292,19 +288,11 @@ public class ChatStyle implements Serializable {
         return localInstance;
     }
 
-    public static void updateContext(Context context) {
-        if (appContext == null) {
-            appContext = context.getApplicationContext();
-        }
-    }
-
     private ChatStyle() {
     }
 
     public static class ChatStyleBuilder {
         private ChatStyle chatStyle;
-        private Context appContext;
-
         private String appMarker;
         private String clientId;
         private String clientIdSignature;
@@ -314,11 +302,10 @@ public class ChatStyle implements Serializable {
         private ChatStyleBuilder() {
         }
 
-        public static ChatStyleBuilder getBuilder(@NonNull final Context ctx, @NonNull String clientId) {
+        public static ChatStyleBuilder getBuilder(@NonNull String clientId) {
             final ChatStyleBuilder builder = new ChatStyleBuilder();
             builder.clientId = clientId;
             builder.chatStyle = new ChatStyle();
-            builder.appContext = ctx.getApplicationContext();
             return builder;
         }
 
@@ -359,7 +346,7 @@ public class ChatStyle implements Serializable {
         public ChatStyleBuilder setIsClientIdEncrypted(final boolean encrypted) {
             chatStyle.isClientIdEncrypted = encrypted;
             if (encrypted) {
-                PrefUtils.setClientIdEncrypted(appContext);
+                PrefUtils.setClientIdEncrypted();
             }
             return this;
         }
@@ -496,20 +483,15 @@ public class ChatStyle implements Serializable {
 
         public ChatStyle build() {
             if (TextUtils.isEmpty(clientId)) {
-                throw new IllegalStateException(appContext.getString(R.string.threads_invalid_client_id));
+                throw new IllegalStateException("clientId must not be empty");
             }
-
-            ChatStyle.appContext = appContext;
-            PrefUtils.setIncomingStyle(appContext, chatStyle);
-
-            PrefUtils.setAppMarker(appContext, appMarker);
-            PrefUtils.setNewClientId(appContext, clientId);
-            PrefUtils.setClientIdSignature(appContext, clientIdSignature);
-            PrefUtils.setUserName(appContext, userName);
-            PrefUtils.setData(appContext, data);
-
+            PrefUtils.setIncomingStyle(chatStyle);
+            PrefUtils.setAppMarker(appMarker);
+            PrefUtils.setNewClientId(clientId);
+            PrefUtils.setClientIdSignature(clientIdSignature);
+            PrefUtils.setUserName(userName);
+            PrefUtils.setData(data);
             ChatStyle.instance = chatStyle;
-
             return chatStyle;
         }
 
@@ -748,11 +730,11 @@ public class ChatStyle implements Serializable {
          * @param imagesScreenDateTextSize    = R.dimen.threads_attachments_date_text_size;
          */
         public ChatStyleBuilder setImagesGalleryStyle(@ColorRes int imagesScreenToolbarColor,
-                                                             @ColorRes int imagesScreenBackgroundColor,
-                                                             @ColorRes int imagesScreenAuthorTextColor,
-                                                             @ColorRes int imagesScreenDateTextColor,
-                                                             @DimenRes int imagesScreenAuthorTextSize,
-                                                             @DimenRes int imagesScreenDateTextSize) {
+                                                      @ColorRes int imagesScreenBackgroundColor,
+                                                      @ColorRes int imagesScreenAuthorTextColor,
+                                                      @ColorRes int imagesScreenDateTextColor,
+                                                      @DimenRes int imagesScreenAuthorTextSize,
+                                                      @DimenRes int imagesScreenDateTextSize) {
 
             chatStyle.imagesScreenToolbarColor = imagesScreenToolbarColor;
             chatStyle.imagesScreenBackgroundColor = imagesScreenBackgroundColor;
@@ -856,7 +838,6 @@ public class ChatStyle implements Serializable {
                 , @ColorRes final int welcomeScreenSubtitleTextColorResId
                 , final int welcomeScreenTitleSizeInSp
                 , final int welcomeScreenSubtitleSizeInSp) {
-
             chatStyle.welcomeScreenLogoResId = welcomeScreenLogoResId;
             chatStyle.welcomeScreenTitleTextColorResId = welcomeScreenTitleTextColorResId;
             chatStyle.welcomeScreenSubtitleTextColorResId = welcomeScreenSubtitleTextColorResId;

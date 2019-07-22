@@ -34,12 +34,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import im.threads.R;
+import im.threads.ThreadsLib;
 import im.threads.activities.TranslucentActivity;
-import im.threads.controllers.ChatController;
+import im.threads.database.DatabaseHolder;
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.formatters.MarshmellowPushMessageFormatter;
 import im.threads.formatters.NugatMessageFormatter;
 import im.threads.fragments.ChatFragment;
+import im.threads.internal.Config;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
@@ -74,14 +76,13 @@ public class NotificationService extends Service {
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
 
     private ArrayList<ChatItem> unreadMessages = new ArrayList<>();
-    private myBroadcastReceiver mBroadcastReceiver;
+    private MyBroadcastReceiver mBroadcastReceiver;
     Handler h = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private ChatStyle style;
 
     public NotificationService() {
-
     }
 
     @Nullable
@@ -92,32 +93,25 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
-
-        ChatStyle.updateContext(this);
-
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onStartCommand");
-
+        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+            Log.i(TAG, "onStartCommand");
+        }
         if (style == null) {
             style = ChatStyle.getInstance();
         }
-
         if (mBroadcastReceiver == null) {
-            mBroadcastReceiver = new myBroadcastReceiver();
+            mBroadcastReceiver = new MyBroadcastReceiver();
             getApplicationContext().registerReceiver(mBroadcastReceiver,
                     new IntentFilter(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         }
-
         if (intent == null) {
             return START_STICKY;
         }
-
         final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         if (nm != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             final NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Threads Channel", NotificationManager.IMPORTANCE_DEFAULT);
             nm.createNotificationChannel(channel);
         }
-
         final ArrayList<PushMessage> il =
                 intent.getParcelableArrayListExtra(ACTION_ADD_UNREAD_MESSAGE);
         if (intent.getAction() != null && intent.getAction().equals(ACTION_REMOVE_NOTIFICATION)) {
@@ -166,12 +160,7 @@ public class NotificationService extends Service {
             notificationBuilder.setSmallIcon(iconResId);
             notificationBuilder.setContentIntent(pend);
             notificationBuilder.setAutoCancel(true);
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build());
-                }
-            }, 1500);
+            h.postDelayed(() -> nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
         }
 
         return START_STICKY;
@@ -185,17 +174,18 @@ public class NotificationService extends Service {
         notification.defaults |= Notification.DEFAULT_SOUND;
         notification.defaults |= Notification.DEFAULT_VIBRATE;
         if (needsShowNotification()) {
-
             boolean fixPushCrash = false;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && notification.getSmallIcon() == null) {
                 fixPushCrash = true;
             }
-
             if (!fixPushCrash) {
                 nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
             }
-
-            ChatController.notifyUnreadMessagesCountChanged(this);
+            ThreadsLib.UnreadMessagesCountListener l = Config.instance.unreadMessagesCountListener;
+            if (l != null) {
+                DatabaseHolder.getInstance(getApplicationContext())
+                        .getUnreadMessagesCount(false, l);
+            }
         }
     }
 
@@ -515,13 +505,11 @@ public class NotificationService extends Service {
         return buttonPend;
     }
 
-
     private PendingIntent getChatIntent(String appMarker) {
-        return ChatController.getPendingIntentCreator().createPendingIntent(this, appMarker);
+        return Config.instance.pendingIntentCreator.create(this, appMarker);
     }
 
-
-    private class myBroadcastReceiver extends BroadcastReceiver {
+    private class MyBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(final Context context, final Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals(NotificationService.ACTION_ALL_MESSAGES_WERE_READ)) {

@@ -44,8 +44,6 @@ public class ServerAPI {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-
-        ChatStyle.updateContext(ThreadsDemoApplication.getAppContext());
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             httpClient.addInterceptor(new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BODY));

@@ -16,7 +16,6 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(Context context, String s, Bundle bundle) {
-        ChatStyle.updateContext(context);
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
         }
@@ -24,20 +23,16 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onStatusChanged(Context context, String s) {
-        ChatStyle.updateContext(context);
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onStatusChanged " + s);
         }
-
     }
 
     @Override
     public void onDeviceAddressChanged(Context context, String s) {
-        ChatStyle.updateContext(context);
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "onDeviceAddressChanged " + s);
         }
-
     }
 
     @Override
@@ -49,6 +44,4 @@ public class MyOtherPBReceiver extends PushBroadcastReceiver {
     public void onError(Context context, String s) {
         Log.e(TAG, "onFileDonwloaderError " + s);
     }
-
-
 }

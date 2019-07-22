@@ -32,7 +32,7 @@ public class OutgoingMessageCreator {
 
     public static String createUserPhraseMessage(UserPhrase upcomingUserMessage, ConsultInfo consultInfo,
                                                  String quoteMfmsFilePath, String mfmsFilePath,
-                                                 String clientId, Long threadId, Context ctx) {
+                                                 String clientId, Long threadId) {
         try {
             Quote quote = upcomingUserMessage.getQuote();
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
@@ -46,7 +46,7 @@ public class OutgoingMessageCreator {
                 formattedMessage.put(PushMessageAttributes.THREAD_ID, String.valueOf(threadId));
             }
 
-            formattedMessage.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
+            formattedMessage.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
 
             if (quote != null) {
                 JSONArray quotes = new JSONArray();
@@ -143,7 +143,7 @@ public class OutgoingMessageCreator {
             object.put("appVersion", AppInfoHelper.getAppVersion(ctx));
             object.put("appName", AppInfoHelper.getAppName(ctx));
             object.put(PushMessageAttributes.APP_BUNDLE_KEY, AppInfoHelper.getAppId(ctx));
-            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
             object.put("libVersion", AppInfoHelper.getLibVersion());
             object.put("clientLocale", DeviceInfoHelper.getLocale(ctx));
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.CLIENT_INFO.name());
@@ -170,12 +170,12 @@ public class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createRatingReceivedMessage(long sendingId, String clientId, Context ctx) {
+    public static String createRatingReceivedMessage(long sendingId, String clientId) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.SURVEY_PASSED.name());
-            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
             object.put("sendingId", sendingId);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -183,12 +183,12 @@ public class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createResolveThreadMessage(String clientId, Context ctx) {
+    public static String createResolveThreadMessage(String clientId) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.CLOSE_THREAD.name());
-            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -196,12 +196,12 @@ public class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createReopenThreadMessage(String clientId, Context ctx) {
+    public static String createReopenThreadMessage(String clientId) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.REOPEN_THREAD.name());
-            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -209,13 +209,13 @@ public class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createMessageTyping(String clientId, String input, Context ctx) {
+    public static String createMessageTyping(String clientId, String input) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
             jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPING.name());
             jsonObject.put(PushMessageAttributes.TYPING_DRAFT, input);
-            jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
+            jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -223,12 +223,12 @@ public class OutgoingMessageCreator {
         return jsonObject.toString().replace("\\\\", "");
     }
 
-    public static String createMessageClientOffline(String clientId, Context ctx) {
+    public static String createMessageClientOffline(String clientId) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
             jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.CLIENT_OFFLINE.name());
-            jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
+            jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -249,13 +249,13 @@ public class OutgoingMessageCreator {
         return userAgent;
     }
 
-    public static String createInitChatMessage(String clientId, String data, Context ctx) {
+    public static String createInitChatMessage(String clientId, String data) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.INIT_CHAT.name());
             object.put(PushMessageAttributes.DATA, data);
-            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
+            object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             e.printStackTrace();
         }

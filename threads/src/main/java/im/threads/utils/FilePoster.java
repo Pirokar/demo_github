@@ -32,7 +32,7 @@ public class FilePoster {
     }
 
     public void post(final Callback<String, Throwable> callback) {
-        String token = PrefUtils.getClientID(context);
+        String token = PrefUtils.getClientID();
         if (!token.isEmpty()) {
 
             File file = null;

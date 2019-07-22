@@ -3,7 +3,6 @@ package im.threads.model;
 /**
  * Объект для обработки пуша с пришедшим threadId
  */
-
 public class SaveThreadIdChatItem implements ChatItem {
 
     private Long threadId;

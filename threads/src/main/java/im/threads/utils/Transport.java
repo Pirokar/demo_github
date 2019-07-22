@@ -1,6 +1,5 @@
 package im.threads.utils;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.mfms.android.push_lite.PushController;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.formatters.IncomingMessageParser;
+import im.threads.internal.Config;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
 import im.threads.model.HistoryResponse;
@@ -22,20 +22,15 @@ import im.threads.retrofit.ThreadsApi;
 import retrofit2.Call;
 import retrofit2.Response;
 
-
 public final class Transport {
 
     private static Long lastLoadedTimestamp;
 
-    public interface ExceptionListener {
-        void onException(Exception e);
-    }
-
     /**
      * метод-обертка над методом mfms sendMessage
      */
-    public static void sendMessageMFMSSync(Context ctx, String message, boolean isSystem) throws PushServerErrorException {
-        getPushControllerInstance(ctx).sendMessage(message, isSystem);
+    public static void sendMessageMFMSSync(String message, boolean isSystem) throws PushServerErrorException {
+        getPushControllerInstance().sendMessage(message, isSystem);
     }
 
     /**
@@ -46,13 +41,12 @@ public final class Transport {
      * @param listener          слушатель успешной/неуспешной отправки
      * @param exceptionListener слушатель ошибки отсутствия DeviceAdress
      */
-    public static void sendMessageMFMSAsync(Context ctx,
-                                             String message,
-                                             boolean isSystem,
-                                             final RequestCallback<InMessageSend.Response, PushServerErrorException> listener,
-                                             final ExceptionListener exceptionListener) {
+    public static void sendMessageMFMSAsync(String message,
+                                            boolean isSystem,
+                                            final RequestCallback<InMessageSend.Response, PushServerErrorException> listener,
+                                            final ExceptionListener exceptionListener) {
         try {
-            getPushControllerInstance(ctx).sendMessageAsync(
+            getPushControllerInstance().sendMessageAsync(
                     message, isSystem, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                         @Override
                         public void onResult(InMessageSend.Response response) {
@@ -80,31 +74,32 @@ public final class Transport {
      * обращение к пуш контроллеру, если нет DeviceAddress,
      * то выкидывает PushServerErrorException
      */
-    public static PushController getPushControllerInstance(Context ctx) throws PushServerErrorException {
-        PushController controller = PushController.getInstance(ctx);
+    public static PushController getPushControllerInstance() throws PushServerErrorException {
+        PushController controller = PushController.getInstance(Config.instance.context);
         String deviceAddress = controller.getDeviceAddress();
         if (deviceAddress != null && !deviceAddress.isEmpty()) {
-            return PushController.getInstance(ctx);
+            return controller;
         } else {
             throw new PushServerErrorException(PushServerErrorException.DEVICE_ADDRESS_INVALID);
         }
     }
+
     /**
      * метод обертка для запроса истории сообщений
      * выполняется синхронно
      *
      * @param beforeTimestamp timestamp сообщения от которого грузить, null если с начала
-     * @param count количество сообщений для загрузки
+     * @param count           количество сообщений для загрузки
      */
-    public static HistoryResponse getHistorySync(Context ctx, Long beforeTimestamp, Long count) throws Exception {
+    public static HistoryResponse getHistorySync(Long beforeTimestamp, Long count) throws Exception {
 
-        String clientIdSignature = PrefUtils.getClientIdSignature(ctx);
+        String clientIdSignature = PrefUtils.getClientIdSignature();
 
-        String token = (TextUtils.isEmpty(clientIdSignature) ? getPushControllerInstance(ctx).getDeviceAddress() : clientIdSignature)
-                + ":" + PrefUtils.getClientID(ctx);
-        String url = PrefUtils.getServerUrlMetaInfo(ctx);
+        String token = (TextUtils.isEmpty(clientIdSignature) ? getPushControllerInstance().getDeviceAddress() : clientIdSignature)
+                + ":" + PrefUtils.getClientID();
+        String url = PrefUtils.getServerUrlMetaInfo();
         if (count == null) {
-            count = getHistoryLoadingCount(ctx);
+            count = getHistoryLoadingCount();
         }
         if (url != null && !url.isEmpty() && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
@@ -122,14 +117,14 @@ public final class Transport {
      * метод обертка для запроса истории сообщений
      * выполняется синхронно
      *
-     * @param count количество сообщений для загрузки
+     * @param count         количество сообщений для загрузки
      * @param fromBeginning загружать ли историю с начала или с последнего полученного сообщения
      */
-    public static HistoryResponse getHistorySync(Context ctx, Long count, boolean fromBeginning) throws Exception {
-        return getHistorySync(ctx, fromBeginning ? null : lastLoadedTimestamp, count);
+    public static HistoryResponse getHistorySync(Long count, boolean fromBeginning) throws Exception {
+        return getHistorySync(fromBeginning ? null : lastLoadedTimestamp, count);
     }
 
-    public static long getHistoryLoadingCount(Context ctx) {
+    public static long getHistoryLoadingCount() {
         return ChatStyle.getInstance().historyLoadingCount;
     }
 
@@ -149,5 +144,9 @@ public final class Transport {
         if (list != null && !list.isEmpty()) {
             lastLoadedTimestamp = list.get(0).getTimeStamp();
         }
+    }
+
+    public interface ExceptionListener {
+        void onException(Exception e);
     }
 }

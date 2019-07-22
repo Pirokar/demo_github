@@ -12,21 +12,16 @@ import java.util.List;
 
 import im.threads.controllers.ChatController;
 import im.threads.formatters.IncomingMessageParser;
+import im.threads.internal.Config;
 import im.threads.model.ChatStyle;
 import im.threads.model.PushMessageCheckResult;
 
-/**
- *
- */
 public class IncomingMessagesIntentService extends PushServerIntentService {
 
     private static final String TAG = "MessagesIntentService ";
 
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
-
-        ChatStyle.updateContext(this);
-
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.i(TAG, "saveMessages " + list);
         }
@@ -34,38 +29,29 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
         // В контроллер чата уходят только распознанные по формату чата сообщения.
         // Остальные уходят на обработку пользователям библиотеки.
         List<PushMessage> toShow = new ArrayList<>();
-
         for (int i = 0; i < list.size(); i++) {
             PushMessage pushMessage = list.get(i);
-
             if (IncomingMessageParser.isThreadsOriginPush(pushMessage)) {
                 ChatController chatController = ChatController.getInstance(getApplication());
-                PushMessageCheckResult result = chatController.onFullMessage(pushMessage, getApplication());
-
-                if(result.isDetected()) {
-                    if(result.isNeedsShowIsStatusBar()) {
+                PushMessageCheckResult result = chatController.onFullMessage(pushMessage);
+                if (result.isDetected()) {
+                    if (result.isNeedsShowIsStatusBar()) {
                         toShow.add(pushMessage);
                     }
                 }
-
-            } else if(ChatController.getFullPushListener() != null) {
-                ChatController.getFullPushListener().onNewFullPushNotification(this, pushMessage);
+            } else if (Config.instance.fullPushListener != null) {
+                Config.instance.fullPushListener.onNewFullPushNotification(this, pushMessage);
             }
         }
-
-        if(toShow.size() > 0) {
-
+        if (toShow.size() > 0) {
             HashMap<String, ArrayList<PushMessage>> appMarkerMessagesMap = new HashMap<>();
-
             for (PushMessage pushMessage : toShow) {
                 String appMarker = IncomingMessageParser.getAppMarker(pushMessage);
-
                 if (!appMarkerMessagesMap.containsKey(appMarker)) {
                     appMarkerMessagesMap.put(appMarker, new ArrayList<PushMessage>());
                 }
                 appMarkerMessagesMap.get(appMarker).add(pushMessage);
             }
-
             for (String appMarker : appMarkerMessagesMap.keySet()) {
                 Intent intent = new Intent(getApplicationContext(), NotificationService.class);
                 ArrayList<PushMessage> al = new ArrayList<>(appMarkerMessagesMap.get(appMarker));
@@ -75,18 +61,14 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
                 startService(intent);
             }
         }
-
         return true;
     }
 
     @Override
     protected void messagesWereRead(List<String> list) {
-
-        ChatStyle.updateContext(this);
         if (ChatStyle.getInstance().isDebugLoggingEnabled) {
             Log.e(TAG, "messagesWereRead " + list);
         }
-
         //TODO THREADS-3937 Why it is not used?
     }
 }

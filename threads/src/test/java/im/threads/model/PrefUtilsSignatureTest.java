@@ -34,8 +34,8 @@ public class PrefUtilsSignatureTest {
 
     @Test
     public void saveAndGetSignature() {
-        PrefUtils.setClientIdSignature(appContext, inputSignature);
-        String signature = PrefUtils.getClientIdSignature(appContext);
+        PrefUtils.setClientIdSignature(inputSignature);
+        String signature = PrefUtils.getClientIdSignature();
 
         Assert.assertEquals(expectedSignature, signature);
     }
