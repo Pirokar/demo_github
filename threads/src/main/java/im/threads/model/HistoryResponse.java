@@ -5,6 +5,8 @@ import com.google.gson.JsonSyntaxException;
 
 import java.util.List;
 
+import im.threads.internal.ThreadsLogger;
+
 /**
  * Created by Vit on 23.06.2017.
  * ответ на запрос истории v2
@@ -12,6 +14,7 @@ import java.util.List;
  */
 
 public class HistoryResponse {
+    private static final String TAG = HistoryResponse.class.getSimpleName();
 
     private List<MessageFromHistory> messages;
     private AgentInfo agentInfo;
@@ -35,7 +38,7 @@ public class HistoryResponse {
                 historyResponse = new Gson().fromJson(response, HistoryResponse.class);
             }
         } catch (JsonSyntaxException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getHistoryFromServerResponse", e);
         }
 
         return historyResponse;

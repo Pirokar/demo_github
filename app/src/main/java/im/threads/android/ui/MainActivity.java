@@ -103,15 +103,15 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         if (!PermissionChecker.checkPermissions(this)) {
             PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
         } else {
-            String data = "{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}";
             if (currentCard.getUserId() != null) {
-                ChatBuilderHelper.buildChatStyle(this,
-                        currentCard.getAppMarker(),
-                        currentCard.getUserId(),
-                        currentCard.getClientIdSignature(),
-                        currentCard.getUserName(),
-                        data,
-                        getCurrentDesign());
+                ThreadsLib.initUser(
+                        new ThreadsLib.UserInfo(currentCard.getUserId())
+                                .setClientIdSignature(currentCard.getClientIdSignature())
+                                .setUserName(currentCard.getUserName())
+                                .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
+                                .setAppMarker(currentCard.getAppMarker())
+                );
+                ThreadsLib.applyChatStyle(ChatBuilderHelper.getChatStyleBuilder(getCurrentDesign()));
                 startActivity(new Intent(this, ChatActivity.class));
             } else {
                 displayError(R.string.error_empty_userid);

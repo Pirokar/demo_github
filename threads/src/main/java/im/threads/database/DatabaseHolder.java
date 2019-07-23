@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import im.threads.ThreadsLib;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.CompletionHandler;
@@ -26,8 +27,10 @@ import im.threads.model.UserPhrase;
  * Created by yuri on 23.06.2016.
  */
 public class DatabaseHolder {
-    private final MyOpenHelper mMyOpenHelper;
+    private static final String TAG = DatabaseHolder.class.getSimpleName();
+
     private static DatabaseHolder instance;
+    private final MyOpenHelper mMyOpenHelper;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public static DatabaseHolder getInstance(Context context) {
@@ -210,7 +213,7 @@ public class DatabaseHolder {
             }
             mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
         } catch (Exception e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "putMessagesSync", e);
         } finally {
             mMyOpenHelper.getWritableDatabase().endTransaction();
         }

@@ -30,6 +30,7 @@ import java.util.List;
 import im.threads.R;
 import im.threads.adapters.ImagesAdapter;
 import im.threads.database.DatabaseHolder;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
@@ -95,8 +96,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
                 finish();
             }
         });
-        ChatStyle style = ChatStyle.getInstance();
-        mToolbar.setBackgroundColor(getColorInt(style.imagesScreenToolbarColor));
+        mToolbar.setBackgroundColor(getColorInt(ChatStyle.getInstance().imagesScreenToolbarColor));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
             outStram.close();
             Toast.makeText(this, getString(R.string.threads_saved_to) + " " + out.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "downloadImage", e);
             Toast.makeText(this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
         }
     }

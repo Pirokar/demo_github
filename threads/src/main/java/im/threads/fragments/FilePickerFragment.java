@@ -31,7 +31,6 @@ import im.threads.model.ChatStyle;
  */
 public class FilePickerFragment extends DialogFragment
         implements FileFilter, View.OnClickListener, ListView.OnItemClickListener, AlertDialog.OnClickListener {
-    public static final String TAG = "DirChooserDialogFrag";
     private File currentAbsoluteDir;
     private static final String STARTING_FOLDER_TAG = "start";
     private static final String PREVIOUS_FOLDER_DOTS = "...";

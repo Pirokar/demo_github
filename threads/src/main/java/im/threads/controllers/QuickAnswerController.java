@@ -3,10 +3,9 @@ package im.threads.controllers;
 import android.app.Fragment;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import im.threads.activities.TranslucentActivity;
-import im.threads.model.ChatStyle;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.CompletionHandler;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.UpcomingUserMessage;
@@ -48,11 +47,9 @@ public class QuickAnswerController extends Fragment {
     }
 
     public void onUserAnswer(@NonNull UpcomingUserMessage upcomingUserMessage) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onUserAnswer");
-        }
+        ThreadsLogger.i(TAG, "onUserAnswer");
         if (activity == null && context == null) {
-            Log.e(TAG, "onUserAnswer context is null");
+            ThreadsLogger.e(TAG, "onUserAnswer context is null");
             return;
         }
         final Context ctx = activity == null ? context : activity;

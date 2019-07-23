@@ -13,8 +13,8 @@ import java.util.List;
 
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.internal.Config;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatItem;
-import im.threads.model.ChatStyle;
 import im.threads.model.HistoryResponse;
 import im.threads.model.MessageFromHistory;
 import im.threads.retrofit.ServiceGenerator;
@@ -24,6 +24,7 @@ import retrofit2.Response;
 
 public final class Transport {
 
+    private static final String TAG = Transport.class.getSimpleName();
     private static Long lastLoadedTimestamp;
 
     /**
@@ -63,7 +64,7 @@ public final class Transport {
                         }
                     });
         } catch (Exception e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "sendMessageMFMSAsync", e);
             if (exceptionListener != null) {
                 exceptionListener.onException(e);
             }
@@ -91,7 +92,7 @@ public final class Transport {
      * @param beforeTimestamp timestamp сообщения от которого грузить, null если с начала
      * @param count           количество сообщений для загрузки
      */
-    public static HistoryResponse getHistorySync(Long beforeTimestamp, Long count) throws Exception {
+    public static HistoryResponse getHistorySync(Long beforeTimestamp, Integer count) throws Exception {
 
         String clientIdSignature = PrefUtils.getClientIdSignature();
 
@@ -99,7 +100,7 @@ public final class Transport {
                 + ":" + PrefUtils.getClientID();
         String url = PrefUtils.getServerUrlMetaInfo();
         if (count == null) {
-            count = getHistoryLoadingCount();
+            count = Config.instance.historyLoadingCount;
         }
         if (url != null && !url.isEmpty() && !token.isEmpty()) {
             ServiceGenerator.setUrl(url);
@@ -120,12 +121,8 @@ public final class Transport {
      * @param count         количество сообщений для загрузки
      * @param fromBeginning загружать ли историю с начала или с последнего полученного сообщения
      */
-    public static HistoryResponse getHistorySync(Long count, boolean fromBeginning) throws Exception {
+    public static HistoryResponse getHistorySync(Integer count, boolean fromBeginning) throws Exception {
         return getHistorySync(fromBeginning ? null : lastLoadedTimestamp, count);
-    }
-
-    public static long getHistoryLoadingCount() {
-        return ChatStyle.getInstance().historyLoadingCount;
     }
 
     public static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponse response) {

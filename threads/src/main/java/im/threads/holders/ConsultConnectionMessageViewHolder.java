@@ -3,7 +3,6 @@ package im.threads.holders;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import java.util.Date;
 
 import im.threads.R;
 import im.threads.formatters.PushMessageTypes;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatStyle;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.picasso_url_connection_only.Callback;
@@ -57,7 +57,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
             , View.OnClickListener listener) {
         if (null == consultConnectionMessage.getName()
                 || consultConnectionMessage.getName().equals("null")) {
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.d(TAG, "consultName is null");
+            ThreadsLogger.d(TAG, "consultName is null");
             headerTextView.setText(itemView.getContext().getString(R.string.threads_unknown_operator));
         } else {
             headerTextView.setText(consultConnectionMessage.getName());

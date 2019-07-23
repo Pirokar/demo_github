@@ -1,11 +1,11 @@
 package im.threads.opengraph;
 
-import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import im.threads.model.ChatStyle;
+import im.threads.internal.Config;
+import im.threads.internal.ThreadsLogger;
 import im.threads.retrofit.ServiceGenerator;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -16,13 +16,13 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 
 public class OGDataProvider {
+    private static final String TAG = OGDataProvider.class.getSimpleName();
 
     private static volatile OGDataProvider instance;
     private final OkHttpClient client;
     private Executor mExecutor = Executors.newCachedThreadPool();
 
     public static OGDataProvider getInstance() {
-
         if (instance == null) {
             synchronized (OGDataProvider.class) {
                 if (instance == null) {
@@ -35,22 +35,19 @@ public class OGDataProvider {
 
     private OGDataProvider() {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+        if (Config.instance.isDebugLoggingEnabled) {
             clientBuilder.addInterceptor(new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BASIC));
         }
 
         //Preventing redirects to mobile versions without OpenGraph
-        Interceptor userAgentInterceptor = new Interceptor() {
-            @Override
-            public Response intercept(final Chain chain) throws IOException {
-                Request original = chain.request();
-                Request.Builder reqBuilder = original.newBuilder();
-                reqBuilder.header(ServiceGenerator.USER_AGENT_HEADER,
-                        "Chrome/68.0.3440.106");
-                reqBuilder.method(original.method(), original.body()).build();
-                return chain.proceed(reqBuilder.build());
-            }
+        Interceptor userAgentInterceptor = chain -> {
+            Request original = chain.request();
+            Request.Builder reqBuilder = original.newBuilder();
+            reqBuilder.header(ServiceGenerator.USER_AGENT_HEADER,
+                    "Chrome/68.0.3440.106");
+            reqBuilder.method(original.method(), original.body()).build();
+            return chain.proceed(reqBuilder.build());
         };
 
         clientBuilder.addInterceptor(userAgentInterceptor);
@@ -73,7 +70,7 @@ public class OGDataProvider {
                     OGData ogData = OGParser.parse(response.body().byteStream());
                     callback.onSuccess(ogData);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "getOGDataProxy", e);
                     callback.onError(e);
                 }
             }

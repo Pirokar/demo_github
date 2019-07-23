@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import java.util.List;
 import im.threads.R;
 import im.threads.adapters.ImagesAdapter;
 import im.threads.database.DatabaseHolder;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
 import im.threads.model.FileDescription;
@@ -50,11 +50,11 @@ public class ImagesGalleryActivity extends BaseActivity implements ViewPager.OnP
                 List<FileDescription> output = new ArrayList<>();
                 for (FileDescription fd : data) {
                     if (FileUtils.isImage(fd)) {
-                        Log.e(TAG, "hasImage()");
+                        ThreadsLogger.e(TAG, "hasImage()");
                         output.add(fd);
                     }
                 }
-                Log.e(TAG, "output = " + output);
+                ThreadsLogger.e(TAG, "output = " + output);
                 collectionSize = output.size();
                 viewPager.setAdapter(new ImagesAdapter(output, getFragmentManager()));
                 FileDescription fd = getIntent().getParcelableExtra("FileDescription");

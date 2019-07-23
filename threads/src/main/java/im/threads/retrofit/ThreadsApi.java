@@ -15,13 +15,11 @@ import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
- * Created by Admin on 28.03.2017.
  * описание серверных методов
  */
-
 public interface ThreadsApi {
 
-    public static String API_VERSION = "v6";
+    String API_VERSION = "v6";
 
     @Multipart
     @PUT("files")
@@ -34,7 +32,7 @@ public interface ThreadsApi {
     Call<HistoryResponse> history(
             @Header("X-Client-Token") String token,
             @Query("before") String beforeDate,
-            @Query("count") Long count,
+            @Query("count") Integer count,
             @Query("libVersion") String version
     );
 

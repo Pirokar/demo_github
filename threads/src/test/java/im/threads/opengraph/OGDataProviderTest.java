@@ -10,8 +10,11 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import im.threads.internal.ThreadsLogger;
+
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class OGDataProviderTest {
+    private static final String TAG = OGDataProviderTest.class.getSimpleName();
     private String url;
     private final boolean mustSucceed;
     boolean testFinished = false;
@@ -46,7 +49,7 @@ public class OGDataProviderTest {
             Assert.assertTrue("Some exception occured, or test timed out", testFinished);
         } catch (InterruptedException e) {
             Assert.fail(e.getMessage());
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getOGData", e);
         }
     }
 

@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
+import im.threads.ThreadsLib;
 import im.threads.android.R;
 import im.threads.android.utils.ChatBuilderHelper;
 import im.threads.fragments.ChatFragment;
@@ -203,11 +204,14 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 if (chatFragment == null) {
                     chatFragment = ChatFragment.newInstance();
                 }
-                // configuring chat
-                String data = "{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}";
-                ChatBuilderHelper.buildChatStyle(this, appMarker, clientId,
-                        clientIdSignature, userName, data, chatDesign);
-                // creating chat fragment
+                ThreadsLib.initUser(
+                        new ThreadsLib.UserInfo(clientId)
+                                .setClientIdSignature(clientIdSignature)
+                                .setUserName(userName)
+                                .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
+                                .setAppMarker(appMarker)
+                );
+                ThreadsLib.applyChatStyle(ChatBuilderHelper.getChatStyleBuilder(chatDesign));
                 fragment = chatFragment;
                 break;
         }

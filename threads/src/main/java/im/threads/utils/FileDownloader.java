@@ -1,7 +1,6 @@
 package im.threads.utils;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -10,6 +9,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+
+import im.threads.internal.ThreadsLogger;
 
 /**
  * Created by yuri on 29.07.2016.
@@ -53,7 +54,7 @@ public abstract class FileDownloader {
                         length = Long.parseLong((String) values.get(0));
                     }
                 } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "download", e);
                 }
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 int len1 = 0;
@@ -73,15 +74,13 @@ public abstract class FileDownloader {
                 fileOutputStream.close();
                 if (!isStopped) onComplete(outputFile);
             } catch (Exception e) {
-                Log.e(TAG, "1 "+e);
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "1 ", e);
                 onFileDonwloaderError(e);
             } finally {
                 urlConnection.disconnect();
             }
         } catch (Exception e) {
-            Log.e(TAG, "2 "+e);
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "2 ", e);
             onFileDonwloaderError(e);
         }
     }

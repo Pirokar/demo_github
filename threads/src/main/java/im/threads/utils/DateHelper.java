@@ -6,11 +6,14 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import im.threads.internal.ThreadsLogger;
+
 /**
  * Created by broomaservice on 06/03/2018.
  */
 
 public class DateHelper {
+    private static final String TAG = DateHelper.class.getSimpleName();
 
     public static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static String SERVER_DATE_TIMEZONE = "UTC";
@@ -27,7 +30,7 @@ public class DateHelper {
         try {
             date = sdf.parse(dateString);
         } catch (ParseException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getMessageTimestampFromDateString", e);
         }
         return date.getTime();
     }

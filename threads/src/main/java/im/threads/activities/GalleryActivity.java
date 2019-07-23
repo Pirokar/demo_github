@@ -29,6 +29,7 @@ import java.util.List;
 import im.threads.R;
 import im.threads.adapters.GalleryAdaper;
 import im.threads.adapters.PhotoBucketsGalleryAdapter;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.MediaPhoto;
 import im.threads.model.PhotoBucketItem;
 import im.threads.utils.BucketsGalleryDecorator;
@@ -69,7 +70,7 @@ public class GalleryActivity extends BaseActivity
 
         setContentView(R.layout.activity_gallery);
         initViews();
-        /*ChatStyle style = ChatStyle.getInstance();
+        /*ChatStyle style = ChatStyle.getChatStyle();
         findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
         mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
         mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
@@ -100,7 +101,7 @@ public class GalleryActivity extends BaseActivity
         try {
             overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
         } catch (Resources.NotFoundException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "initViews", e);
         }
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mSendButton = (Button) findViewById(R.id.send);

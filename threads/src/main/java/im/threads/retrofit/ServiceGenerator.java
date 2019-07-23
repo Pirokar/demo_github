@@ -3,7 +3,7 @@ package im.threads.retrofit;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import im.threads.model.ChatStyle;
+import im.threads.internal.Config;
 import im.threads.opengraph.OGDataConverterFactory;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -55,7 +55,7 @@ public class ServiceGenerator {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(userAgentInterceptor);
 
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
+        if (Config.instance.isDebugLoggingEnabled) {
             httpClient.addInterceptor(new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BODY));
         }

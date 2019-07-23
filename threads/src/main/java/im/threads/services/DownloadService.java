@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.File;
 import java.util.HashMap;
@@ -14,7 +13,7 @@ import java.util.concurrent.Executors;
 
 import im.threads.broadcastReceivers.ProgressReceiver;
 import im.threads.database.DatabaseHolder;
-import im.threads.model.ChatStyle;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.FileDescription;
 import im.threads.utils.FileDownloader;
 
@@ -34,12 +33,12 @@ public class DownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "onStartCommand");
+        ThreadsLogger.i(TAG, "onStartCommand");
         if (intent == null) return START_STICKY;
         final FileDescription fileDescription = intent.getParcelableExtra(FD_TAG);
         if (fileDescription == null) return START_STICKY;
         if (fileDescription.getDownloadPath() == null || fileDescription.getFilePath() != null) {
-            Log.e(TAG, "cant download with fileDescription = " + fileDescription);
+            ThreadsLogger.e(TAG, "cant download with fileDescription = " + fileDescription);
             return START_STICKY;
         }
         final Context context = this;
@@ -66,8 +65,7 @@ public class DownloadService extends Service {
 
             @Override
             public void onFileDonwloaderError(final Exception e) {
-                Log.e(TAG, "error while downloading file " + e);
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "error while downloading file ", e);
                 fileDescription.setDownloadProgress(0);
                 DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
                 sendDownloadErrorBroadcast(fileDescription, e);

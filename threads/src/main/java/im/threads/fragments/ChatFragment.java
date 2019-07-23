@@ -35,7 +35,6 @@ import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -71,6 +70,7 @@ import im.threads.databinding.FragmentChatBinding;
 import im.threads.helpers.FileHelper;
 import im.threads.helpers.FileProviderHelper;
 import im.threads.helpers.MediaHelper;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
@@ -511,7 +511,7 @@ public class ChatFragment extends Fragment implements
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
                 this.binding.input.setTypeface(custom_font);
             } catch (Exception e) {
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "setFragmentStyle", e);
             }
         }
 
@@ -528,7 +528,7 @@ public class ChatFragment extends Fragment implements
             Drawable overflowDrawable = binding.popupMenuButton.getDrawable();
             ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
         } catch (Resources.NotFoundException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "setFragmentStyle", e);
         }
     }
 
@@ -537,33 +537,21 @@ public class ChatFragment extends Fragment implements
         Activity activity = getActivity();
         boolean isCameraGranted = PermissionChecker.isCameraPermissionGranted(activity);
         boolean isWriteGranted = PermissionChecker.isWriteExternalPermissionGranted(activity);
-
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
-        }
-
+        ThreadsLogger.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             if (ChatStyle.getInstance().useExternalCameraApp) {
-
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     externalCameraPhotoFile = FileHelper.createImageFile(getContext());
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
-
-                    if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                        Log.d(TAG, "Image File uri resolved: " + photoUri.toString());
-                    }
-
+                    ThreadsLogger.d(TAG, "Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) { // https://stackoverflow.com/a/48391446/1321401
                         MediaHelper.grantPermissions(getContext(), intent, photoUri);
                     }
-
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
-
                 } catch (IllegalArgumentException e) {
-                    Log.w(TAG, "Could not start external camera", e);
+                    ThreadsLogger.w(TAG, "Could not start external camera", e);
                     showToast(getString(R.string.threads_camera_could_not_start_error));
                 }
 
@@ -793,7 +781,7 @@ public class ChatFragment extends Fragment implements
                         ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath()))
                         : cp.getFileDescription().getIncomingName();
             } catch (Exception e) {
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "onReplyClick", e);
             }
             mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
@@ -881,9 +869,7 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onFileSelected(File fileOrDirectory) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled)
-            Log.i(TAG, "onFileSelected: " + fileOrDirectory);
-
+        ThreadsLogger.i(TAG, "onFileSelected: " + fileOrDirectory);
         mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
         mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
         mQuote = null;
@@ -1036,8 +1022,7 @@ public class ChatFragment extends Fragment implements
     }
 
     private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled)
-            Log.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
+        ThreadsLogger.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) return;
         for (UpcomingUserMessage message : messages) {
             mChatController.onUserInput(message);
@@ -1711,8 +1696,7 @@ public class ChatFragment extends Fragment implements
     }
 
     private void search(final boolean searchInFiles) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled)
-            Log.i(TAG, "searchInFiles: " + searchInFiles);
+        ThreadsLogger.i(TAG, "searchInFiles: " + searchInFiles);
         isInMessageSearchMode = true;
         setBottomStateDefault();
         setTitleStateSearchingMessage();

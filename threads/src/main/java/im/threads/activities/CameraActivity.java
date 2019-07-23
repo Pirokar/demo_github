@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -30,6 +29,7 @@ import java.util.concurrent.Executors;
 
 import im.threads.R;
 import im.threads.helpers.FileHelper;
+import im.threads.internal.ThreadsLogger;
 import im.threads.picasso_url_connection_only.Picasso;
 
 /**
@@ -81,8 +81,7 @@ public class CameraActivity extends BaseActivity {
                         mCamera.startPreview();
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "error while setting preview display of camera");
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "error while setting preview display of camera", e);
                     finish();
                 }
             }
@@ -131,8 +130,7 @@ public class CameraActivity extends BaseActivity {
                         mCamera.setPreviewDisplay(mSurfaceView.getHolder());
                         mCamera.startPreview();
                     } catch (IOException e) {
-                        Log.e(TAG, "error while switching cameras");
-                        e.printStackTrace();
+                        ThreadsLogger.e(TAG, "error while switching cameras", e);
                         finish();
                     }
                 }
@@ -185,12 +183,11 @@ public class CameraActivity extends BaseActivity {
                                             try {
                                                 fio.flush();
                                             } catch (IOException e) {
-                                                e.printStackTrace();
+                                                ThreadsLogger.e(TAG, "onPictureTaken", e);
                                             }
                                             mCurrentPhoto = output.getAbsolutePath();
                                         } catch (FileNotFoundException e) {
-                                            Log.e(TAG, "error while saving image to disk");
-                                            e.printStackTrace();
+                                            ThreadsLogger.e(TAG, "error while saving image to disk", e);
                                         }
                                         final File finalOutput = output;
                                         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -323,7 +320,7 @@ public class CameraActivity extends BaseActivity {
             mCamera.startPreview();
             isCameraReleased = false;
         } catch (IOException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "restoreCamera", e);
         }
         mCamera.setParameters(setFlashState(mFlashMode, mCamera.getParameters()));
     }

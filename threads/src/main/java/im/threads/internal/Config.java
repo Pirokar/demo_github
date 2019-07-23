@@ -21,15 +21,29 @@ public class Config {
     @Nullable
     public final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener;
 
+    public final boolean isDebugLoggingEnabled;
+    /**
+     * set history loading count
+     */
+    public final int historyLoadingCount;
+
+    public final int surveyCompletionDelay;
+
     public Config(@NonNull Context context,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.ShortPushListener shortPushListener,
                   @Nullable ThreadsLib.FullPushListener fullPushListener,
-                  @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
+                  @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
+                  boolean isDebugLoggingEnabled,
+                  int historyLoadingCount,
+                  int surveyCompletionDelay) {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
         this.shortPushListener = shortPushListener;
         this.fullPushListener = fullPushListener;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
+        this.isDebugLoggingEnabled = isDebugLoggingEnabled;
+        this.historyLoadingCount = historyLoadingCount;
+        this.surveyCompletionDelay = surveyCompletionDelay;
     }
 }

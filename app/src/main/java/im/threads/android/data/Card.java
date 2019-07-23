@@ -1,5 +1,7 @@
 package im.threads.android.data;
 
+import android.support.v4.util.ObjectsCompat;
+
 import java.io.Serializable;
 
 public class Card implements Serializable {
@@ -8,7 +10,8 @@ public class Card implements Serializable {
     private String appMarker;
     private String clientIdSignature;
 
-    public Card(){}
+    public Card() {
+    }
 
     public Card(final String userId, final String userName, String appMarker, String clientIdSignature) {
         this.userId = userId;
@@ -44,7 +47,7 @@ public class Card implements Serializable {
 
         final Card card = (Card) o;
 
-        return userId != null ? userId.equals(card.userId) : card.userId == null;
+        return ObjectsCompat.equals(userId, card.userId);
 
     }
 

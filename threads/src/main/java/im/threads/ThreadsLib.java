@@ -20,6 +20,8 @@ import im.threads.controllers.ChatController;
 import im.threads.database.DatabaseHolder;
 import im.threads.formatters.OutgoingMessageCreator;
 import im.threads.internal.Config;
+import im.threads.internal.ThreadsLogger;
+import im.threads.model.ChatStyle;
 import im.threads.model.FileDescription;
 import im.threads.model.UpcomingUserMessage;
 import im.threads.utils.PrefUtils;
@@ -42,6 +44,19 @@ public final class ThreadsLib {
         }
     }
 
+    public static void initUser(UserInfo userInfo) {
+        PrefUtils.setAppMarker(userInfo.appMarker);
+        PrefUtils.setNewClientId(userInfo.clientId);
+        PrefUtils.setClientIdSignature(userInfo.clientIdSignature);
+        PrefUtils.setUserName(userInfo.userName);
+        PrefUtils.setData(userInfo.data);
+        PrefUtils.setClientIdEncrypted(userInfo.clientIdEncrypted);
+    }
+
+    public static void applyChatStyle(ChatStyle.Builder builder) {
+        ChatStyle.applyChatStyle(builder);
+    }
+
     public static ThreadsLib getInstance() {
         if (instance == null) {
             throw new IllegalStateException("ThreadsLib should be initialized first with ThreadsLib.init()");
@@ -52,10 +67,14 @@ public final class ThreadsLib {
     private ThreadsLib() {
     }
 
-    // send CLIENT_OFFLINE message
-    public void logoutClient(final String clientId) {
+    /**
+     * Метод для того, чтобы перестать получать сообщения для клиента с указанным clientId
+     */
+    public void logoutClient(@NonNull final String clientId) {
         if (!TextUtils.isEmpty(clientId)) {
             Transport.sendMessageMFMSAsync(OutgoingMessageCreator.createMessageClientOffline(clientId), true, null, null);
+        } else {
+            ThreadsLogger.i(getClass().getSimpleName(), "clientId must not be empty");
         }
     }
 
@@ -76,8 +95,10 @@ public final class ThreadsLib {
             UpcomingUserMessage msg = new UpcomingUserMessage(fileDescription, null, message, false);
             ChatController.getInstance(Config.instance.context).onUserInput(msg);
             return true;
+        } else {
+            ThreadsLogger.i(getClass().getSimpleName(), "You might need to initialize user first with ThreadsLib.userInfo()");
+            return false;
         }
-        return false;
     }
 
     public static final class ConfigBuilder {
@@ -95,6 +116,12 @@ public final class ThreadsLib {
         private FullPushListener fullPushListener;
         @Nullable
         private UnreadMessagesCountListener unreadMessagesCountListener;
+
+        private boolean isDebugLoggingEnabled = false;
+
+        private int historyLoadingCount = 50;
+
+        private int surveyCompletionDelay = 2000;
 
         public ConfigBuilder(@NonNull Context context) {
             this.context = context;
@@ -120,14 +147,80 @@ public final class ThreadsLib {
             return this;
         }
 
+        public ConfigBuilder isDebugLoggingEnabled(boolean isDebugLoggingEnabled) {
+            this.isDebugLoggingEnabled = isDebugLoggingEnabled;
+            return this;
+        }
+
+        public ConfigBuilder surveyCompletionDelay(final int  surveyCompletionDelay) {
+            this.surveyCompletionDelay = surveyCompletionDelay;
+            return this;
+        }
+
+        public ConfigBuilder setHistoryLoadingCount(final int historyLoadingCount) {
+            this.historyLoadingCount = historyLoadingCount;
+            return this;
+        }
+
         private Config build() {
             return new Config(
                     context,
                     pendingIntentCreator,
                     shortPushListener,
                     fullPushListener,
-                    unreadMessagesCountListener
+                    unreadMessagesCountListener,
+                    isDebugLoggingEnabled,
+                    historyLoadingCount,
+                    surveyCompletionDelay
             );
+        }
+    }
+
+    public static final class UserInfo {
+        private String clientId;
+        private String clientIdSignature;
+        private String userName;
+        private String data;
+        private String appMarker;
+
+        /**
+         * true if client id is encrypted
+         */
+        private boolean clientIdEncrypted = false;
+
+        public UserInfo(@NonNull String clientId) {
+            if (TextUtils.isEmpty(clientId)) {
+                throw new IllegalArgumentException("clientId must not be empty");
+            }
+            this.clientId = clientId;
+        }
+
+        public UserInfo setClientIdSignature(String clientIdSignature) {
+            this.clientIdSignature = clientIdSignature;
+            return this;
+        }
+
+        public UserInfo setUserName(String userName) {
+            this.userName = userName;
+            return this;
+        }
+
+        /**
+         * В параметре data в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+         */
+        public UserInfo setData(String data) {
+            this.data = data;
+            return this;
+        }
+
+        public UserInfo setAppMarker(String appMarker) {
+            this.appMarker = appMarker;
+            return this;
+        }
+
+        public UserInfo setClientIdEncrypted(boolean clientIdEncrypted) {
+            this.clientIdEncrypted = clientIdEncrypted;
+            return this;
         }
     }
 

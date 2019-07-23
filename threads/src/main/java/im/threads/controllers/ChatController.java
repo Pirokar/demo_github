@@ -13,7 +13,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.mfms.android.push_lite.RequestCallback;
@@ -42,9 +41,9 @@ import im.threads.formatters.PushMessageTypes;
 import im.threads.fragments.ChatFragment;
 import im.threads.helpers.FileProviderHelper;
 import im.threads.internal.Config;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
-import im.threads.model.ChatStyle;
 import im.threads.model.ClearThreadIdChatItem;
 import im.threads.model.CompletionHandler;
 import im.threads.model.ConsultChatPhrase;
@@ -87,7 +86,7 @@ import im.threads.utils.UrlUtils;
  * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
  */
 public class ChatController {
-    public static final String TAG = "ChatController ";
+    private static final String TAG = "ChatController ";
 
     // Состояния консультанта
     public static final int CONSULT_STATE_FOUND = 1;
@@ -95,6 +94,7 @@ public class ChatController {
     public static final int CONSULT_STATE_DEFAULT = 3;
 
     private static final long PER_PAGE_COUNT = 100;
+
     private static final int RESEND_MSG = 123;
 
     private static ChatController instance;
@@ -145,10 +145,7 @@ public class ChatController {
         }
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "getInstance newClientId = " + newClientId
-                    + ", oldClientClientId = " + oldClientId);
-        }
+        ThreadsLogger.i(TAG, "getChatStyle newClientId = " + newClientId + ", oldClientClientId = " + oldClientId);
         if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
             // clientId has not changed
             PrefUtils.setNewClientId("");
@@ -211,7 +208,7 @@ public class ChatController {
                             setSurveyState(survey, MessageState.STATE_SENT);
                             resetActiveSurvey();
                             updateUi();
-                        }, ChatStyle.getInstance().surveyCompletionDelay);
+                        }, Config.instance.surveyCompletionDelay);
                     }
 
                     @Override
@@ -250,9 +247,7 @@ public class ChatController {
     }
 
     public void onUserInput(@NonNull final UpcomingUserMessage upcomingUserMessage) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onUserInput: " + upcomingUserMessage);
-        }
+        ThreadsLogger.i(TAG, "onUserInput: " + upcomingUserMessage);
         // If user has written a message while the request to resolve the thread is visible
         // we should make invisible the resolve request
         if (isResolveRequestVisible) {
@@ -306,15 +301,13 @@ public class ChatController {
                 final List<ChatItem> list = seeker.seek(lastItems, !forward, query);
                 callback.onCall(list);
             } catch (final Exception e) {
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "fancySearch", e);
             }
         });
     }
 
     public void onFileClick(final FileDescription fileDescription) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onFileClick " + fileDescription);
-        }
+        ThreadsLogger.i(TAG, "onFileClick " + fileDescription);
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
@@ -387,9 +380,7 @@ public class ChatController {
     }
 
     public void onSystemMessageFromServer(@NonNull final Context ctx, @NonNull final Bundle bundle, final String shortMessage) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onSystemMessageFromServer:");
-        }
+        ThreadsLogger.i(TAG, "onSystemMessageFromServer:");
         boolean isCurrentClientId = IncomingMessageParser.checkId(bundle, PrefUtils.getClientID());
         String appMarker = bundle.getString(PushMessageAttributes.APP_MARKER_KEY);
         final long currentTimeMillis = System.currentTimeMillis();
@@ -402,9 +393,7 @@ public class ChatController {
                 break;
             case MESSAGES_READ:
                 final List<String> list = IncomingMessageParser.getReadIds(bundle);
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                    Log.i(TAG, "onSystemMessageFromServer: read messages " + list);
-                }
+                ThreadsLogger.i(TAG, "onSystemMessageFromServer: read messages " + list);
                 for (final String readMessageProviderId : list) {
                     if (fragment != null) {
                         fragment.setPhraseSentStatusByProviderId(readMessageProviderId, MessageState.STATE_WAS_READ);
@@ -433,8 +422,7 @@ public class ChatController {
     }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled)
-            Log.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet());
+        ThreadsLogger.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet());
         if (!PrefUtils.isClientIdNotEmpty()) {
             callback.onSuccess(new ArrayList<>());
             return;
@@ -442,7 +430,7 @@ public class ChatController {
         mExecutor.execute(() -> {
             if (instance.fragment != null) {
                 final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
-                int count = (int) Transport.getHistoryLoadingCount();
+                int count = Config.instance.historyLoadingCount;
                 try {
                     final HistoryResponse response = Transport.getHistorySync(null, false);
                     final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
@@ -452,7 +440,7 @@ public class ChatController {
                     currentOffset[0] += chatItems.size();
                     h.post(() -> callback.onSuccess(chatItems));
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "requestItems", e);
                     final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                     currentOffset[0] += chatItems.size();
                     h.post(() -> callback.onSuccess(chatItems));
@@ -484,10 +472,8 @@ public class ChatController {
         OGDataProvider.getOGData(url, new OGDataProvider.Callback<OGData>() {
             @Override
             public void onSuccess(OGData ogData) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                    Log.d(TAG, "OGData for url: " + url
-                            + "\n received: " + ogData);
-                }
+                ThreadsLogger.d(TAG, "OGData for url: " + url
+                        + "\n received: " + ogData);
                 if (ogData != null && !ogData.isEmpty()) {
                     if (chatItem instanceof UserPhrase) {
                         UserPhrase message = (UserPhrase) chatItem;
@@ -504,9 +490,7 @@ public class ChatController {
 
             @Override
             public void onError(Throwable error) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                    Log.w(TAG, "OpenGraph data load failed: ", error);
-                }
+                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
             }
         });
     }
@@ -516,9 +500,7 @@ public class ChatController {
      * false, если push уведомление не относится к чату и никак им не обработано.
      */
     public synchronized PushMessageCheckResult onFullMessage(final PushMessage pushMessage) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onFullMessage: " + pushMessage);
-        }
+        ThreadsLogger.i(TAG, "onFullMessage: " + pushMessage);
         final ChatItem chatItem = IncomingMessageParser.format(pushMessage);
         final PushMessageCheckResult pushMessageCheckResult = new PushMessageCheckResult();
         if (chatItem == null) {
@@ -623,7 +605,7 @@ public class ChatController {
 
     public void onConsultChoose(final Activity activity, final String consultId) {
         if (consultId == null) {
-            Log.w(TAG, "Can't show consult info: consultId == null");
+            ThreadsLogger.w(TAG, "Can't show consult info: consultId == null");
         } else {
             ConsultInfo info = mDatabaseHolder.getConsultInfoSync(consultId);
             if (info == null) info = new ConsultInfo("", consultId, "", "", "");
@@ -637,9 +619,7 @@ public class ChatController {
     }
 
     public void onSettingClientId(final Context ctx) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onSettingClientId:");
-        }
+        ThreadsLogger.i(TAG, "onSettingClientId:");
         mExecutor.execute(() -> {
             String newClientId = PrefUtils.getNewClientID();
             if (fragment != null && !TextUtils.isEmpty(newClientId)) {
@@ -669,7 +649,7 @@ public class ChatController {
                     currentOffset = serverItems.size();
 
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "onSettingClientId", e);
                 }
             }
         });
@@ -702,9 +682,7 @@ public class ChatController {
     }
 
     public void bindFragment(final ChatFragment f) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "bindFragment:");
-        }
+        ThreadsLogger.i(TAG, "bindFragment:");
         fragment = f;
         final Activity activity = f.getActivity();
         currentOffset = 0;
@@ -801,7 +779,7 @@ public class ChatController {
         try {
             Transport.getPushControllerInstance();
         } catch (final PushServerErrorException e) {
-            Log.e(TAG, "device address was not set, returning");
+            ThreadsLogger.e(TAG, "device address was not set, returning");
             return;
         }
         try {
@@ -838,7 +816,7 @@ public class ChatController {
             instance.checkAndLoadOgData(phrases);
             PrefUtils.setClientIdWasSet(true);
         } catch (final Exception e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "onClientIdChanged", e);
         }
     }
 
@@ -887,7 +865,7 @@ public class ChatController {
 
     private void updateChatItemsOnBind() {
         if (null != fragment) {
-            final int historyLoadingCount = (int) Transport.getHistoryLoadingCount();
+            final int historyLoadingCount = Config.instance.historyLoadingCount;
             final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, historyLoadingCount));
             h.post(() -> {
                 if (fragment != null) {
@@ -912,15 +890,13 @@ public class ChatController {
             isDownloadingMessages = true;
             mExecutor.execute(() -> {
                 try {
-                    final HistoryResponse response = Transport.getHistorySync(null, true);
+                    final int count = Config.instance.historyLoadingCount;
+                    final HistoryResponse response = Transport.getHistorySync(count, true);
                     final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                     final ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                    final int count = (int) Transport.getHistoryLoadingCount();
                     final List<ChatItem> dbItems = mDatabaseHolder.getChatItems(0, count);
                     if (dbItems.size() != serverItems.size() || !dbItems.containsAll(serverItems)) {
-                        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                            Log.d(TAG, "Local and downloaded history are not same");
-                        }
+                        ThreadsLogger.d(TAG, "Local and downloaded history are not same");
                         mDatabaseHolder.putMessagesSync(serverItems);
                         final int serverCount = serverItems.size();
                         h.post(() -> {
@@ -935,7 +911,7 @@ public class ChatController {
                         });
                     }
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "loadHistory", e);
                 } finally {
                     isDownloadingMessages = false;
                 }
@@ -983,7 +959,7 @@ public class ChatController {
                             try {
                                 Transport.getPushControllerInstance().notifyMessageUpdateNeeded();
                             } catch (final Exception e) {
-                                e.printStackTrace();
+                                ThreadsLogger.e(TAG, "sendMessage", e);
                             }
                     }
                 }).start();
@@ -1022,17 +998,13 @@ public class ChatController {
             @Override
             public void onError(final Throwable e) {
                 onMessageSentError(userPhrase);
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                    Log.w(TAG, "File send failed", e);
-                }
+                ThreadsLogger.w(TAG, "File send failed", e);
             }
         };
     }
 
     private void onFileSent(final UserPhrase userPhrase, final ConsultInfo consultInfo, final String mfmsFilePath, final String mfmsQuoteFilePath) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
-        }
+        ThreadsLogger.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
         final String message = OutgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath,
                 PrefUtils.getClientID(),
                 PrefUtils.getThreadID()
@@ -1052,9 +1024,7 @@ public class ChatController {
     }
 
     private void onMessageSent(final UserPhrase userPhrase, String providerId, long sentAtTimestamp) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.d(TAG, "server answer on pharse sent with id " + providerId);
-        }
+        ThreadsLogger.d(TAG, "server answer on pharse sent with id " + providerId);
         userPhrase.setProviderId(providerId);
         if (sentAtTimestamp > 0) {
             userPhrase.setTimeStamp(sentAtTimestamp);
@@ -1094,16 +1064,14 @@ public class ChatController {
     }
 
     private void onSentMessageException(final UserPhrase userPhrase, final Exception e) {
-        e.printStackTrace();
+        ThreadsLogger.e(TAG, "onSentMessageException", e);
         setMessageState(userPhrase, MessageState.STATE_NOT_SENT);
     }
 
     private void downloadMessagesTillEnd() {
         if (!isDownloadingMessages && !isAllMessagesDownloaded) {
             isDownloadingMessages = true;
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.d(TAG, "downloadMessagesTillEnd");
-            }
+            ThreadsLogger.d(TAG, "downloadMessagesTillEnd");
             mMessagesExecutor.execute(() -> {
                 try {
                     final HistoryResponse response = Transport.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
@@ -1123,7 +1091,7 @@ public class ChatController {
                         }
                     }
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "downloadMessagesTillEnd", e);
                 }
             });
         }
@@ -1183,9 +1151,7 @@ public class ChatController {
     }
 
     private void cleanAll() {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "cleanAll: ");
-        }
+        ThreadsLogger.i(TAG, "cleanAll: ");
         mDatabaseHolder.cleanDatabase();
         if (fragment != null) fragment.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
@@ -1260,7 +1226,7 @@ public class ChatController {
             Transport.getPushControllerInstance().notifyMessageRead(providerId);
             mDatabaseHolder.setMessageWereRead(providerId);
         } catch (final PushServerErrorException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "setConsultMessageRead", e);
         }
     }
 }

@@ -9,7 +9,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +40,7 @@ import im.threads.holders.SpaceViewHolder;
 import im.threads.holders.UnreadMessageViewHolder;
 import im.threads.holders.UserFileViewHolder;
 import im.threads.holders.UserPhraseViewHolder;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatPhrase;
 import im.threads.model.ChatStyle;
@@ -130,8 +130,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == TYPE_CONSULT_PHRASE) return new ConsultPhraseHolder(parent);
         if (viewType == TYPE_USER_PHRASE) return new UserPhraseViewHolder(parent);
         if (viewType == TYPE_FREE_SPACE) return new SpaceViewHolder(parent);
-        if (viewType == TYPE_IMAGE_FROM_CONSULT) return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation);
-        if (viewType == TYPE_IMAGE_FROM_USER) return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation);
+        if (viewType == TYPE_IMAGE_FROM_CONSULT)
+            return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation);
+        if (viewType == TYPE_IMAGE_FROM_USER)
+            return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation);
         if (viewType == TYPE_FILE_FROM_CONSULT) return new ConsultFileViewHolder(parent);
         if (viewType == TYPE_FILE_FROM_USER) return new UserFileViewHolder(parent);
         if (viewType == TYPE_UNREAD_MESSAGES) return new UnreadMessageViewHolder(parent);
@@ -574,7 +576,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 try {
                     notifyItemRemoved(list.lastIndexOf(cm));
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "removeConsultIsTyping", e);
                 }
                 iter.remove();
 
@@ -596,7 +598,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 try {
                     notifyItemRemoved(list.lastIndexOf(cm));
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "removeResolveRequest", e);
                 }
                 iter.remove();
                 removed = true;
@@ -621,7 +623,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     try {
                         notifyItemRemoved(list.lastIndexOf(cm));
                     } catch (final Exception e) {
-                        e.printStackTrace();
+                        ThreadsLogger.e(TAG, "removeSurvey", e);
                     }
                     iter.remove();
                     removed = true;
@@ -801,7 +803,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         try {
             o = list.get(position);
         } catch (final IndexOutOfBoundsException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getItemViewType", e);
             return 0;
         }
         if (o instanceof ConsultPhrase) {
@@ -875,9 +877,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (cm instanceof Survey) {
                 final Survey survey = (Survey) cm;
                 if (sendingId == survey.getSendingId()) {
-                    if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                        Log.i(TAG, "changeStateOfMessageByProviderId: changing read state");
-                    }
+                    ThreadsLogger.i(TAG, "changeStateOfMessageByProviderId: changing read state");
                     ((Survey) cm).setSentState(sentState);
                     notifyItemChangedOnUi(survey);
                 }
@@ -890,9 +890,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
                 if (providerId.equals(up.getProviderId())) {
-                    if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                        Log.i(TAG, "changeStateOfMessageByProviderId: changing read state");
-                    }
+                    ThreadsLogger.i(TAG, "changeStateOfMessageByProviderId: changing read state");
                     ((UserPhrase) cm).setSentState(state);
                 }
             }

@@ -9,12 +9,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
 import im.threads.controllers.QuickAnswerController;
 import im.threads.fragments.QuickAnswerFragment;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatStyle;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.UpcomingUserMessage;
@@ -79,15 +79,11 @@ public class TranslucentActivity
     private class QuickAnswerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.d(TAG, "onReceive: " + intent);
-            }
+            ThreadsLogger.d(TAG, "onReceive: " + intent);
             if (intent.getAction().equalsIgnoreCase(ACTION_CANCEL)) {
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                    Log.i(TAG, "onReceive: ACTION_ANSWER");
-                }
+                ThreadsLogger.i(TAG, "onReceive: ACTION_ANSWER");
                 controller.onUserAnswer(new UpcomingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER), false));
                 finish();
             }

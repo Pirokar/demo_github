@@ -3,7 +3,6 @@ package im.threads.broadcastReceivers;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.mfms.android.push_lite.PushBroadcastReceiver;
 
@@ -11,7 +10,7 @@ import im.threads.controllers.ChatController;
 import im.threads.formatters.IncomingMessageParser;
 import im.threads.formatters.PushMessageTypes;
 import im.threads.internal.Config;
-import im.threads.model.ChatStyle;
+import im.threads.internal.ThreadsLogger;
 
 /**
  * Приемщик всех коротких пуш уведомлений,
@@ -25,9 +24,7 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onNewPushNotification(final Context context, final String s, final Bundle bundle) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onNewPushNotification " + s + " " + bundle);
-        }
+        ThreadsLogger.i(TAG, "onNewPushNotification " + s + " " + bundle);
         if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
             if (isChatSystemPush(bundle)) {
                 ChatController.getInstance(context).onSystemMessageFromServer(context, bundle, s);
@@ -47,25 +44,23 @@ public class MainPBReceiver extends PushBroadcastReceiver {
 
     @Override
     public void onStatusChanged(final Context context, final String s) {
-        Log.e(TAG, "onStatusChanged " + s);
+        ThreadsLogger.e(TAG, "onStatusChanged " + s);
     }
 
     @Override
     public void onDeviceAddressChanged(final Context context, final String s) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onDeviceAddressChanged " + s);
-        }
+        ThreadsLogger.i(TAG, "onDeviceAddressChanged " + s);
         new Thread(() -> context.sendBroadcast(new Intent(ProgressReceiver.DEVICE_ID_IS_SET_BROADCAST)))
                 .start();
     }
 
     @Override
     public void onDeviceAddressProblems(final Context context, final String s) {
-        Log.w(TAG, "onDeviceAddressProblems " + s);
+        ThreadsLogger.w(TAG, "onDeviceAddressProblems " + s);
     }
 
     @Override
     public void onError(final Context context, final String s) {
-        Log.e(TAG, "onFileDonwloaderError " + s);
+        ThreadsLogger.e(TAG, "onFileDonwloaderError " + s);
     }
 }

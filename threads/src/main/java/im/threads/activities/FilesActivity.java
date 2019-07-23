@@ -134,7 +134,6 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
                 }
             }
         });
-
         setActivityStyle(ChatStyle.getInstance());
     }
 

@@ -19,7 +19,6 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -42,6 +41,7 @@ import im.threads.formatters.MarshmellowPushMessageFormatter;
 import im.threads.formatters.NugatMessageFormatter;
 import im.threads.fragments.ChatFragment;
 import im.threads.internal.Config;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatItem;
 import im.threads.model.ChatStyle;
 import im.threads.model.CompletionHandler;
@@ -93,9 +93,7 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.i(TAG, "onStartCommand");
-        }
+        ThreadsLogger.i(TAG, "onStartCommand");
         if (style == null) {
             style = ChatStyle.getInstance();
         }
@@ -308,7 +306,7 @@ public class NotificationService extends Service {
             final int smallIconViewId = getResources().getIdentifier("right_icon", "id", android.R.class.getPackage().getName());
             notification.contentView.setViewVisibility(smallIconViewId, View.INVISIBLE);
         } catch (final Exception e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getMstyleNotif", e);
         }
         return notification;
     }
@@ -466,7 +464,7 @@ public class NotificationService extends Service {
                             }
                             completionHandler.onComplete(builder.build());
                         } catch (final IOException e) {
-                            e.printStackTrace();
+                            ThreadsLogger.e(TAG, "getNstyleNotif", e);
                         }
                     }
                 });

@@ -35,7 +35,9 @@ public class ThreadsDemoApplication extends MultiDexApplication {
                 .pendingIntentCreator(new CustomPendingIntentCreator())
                 .shortPushListener(new CustomShortPushListener())
                 .fullPushListener(new CustomFullPushListener())
-                .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count));
+                .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count))
+                .isDebugLoggingEnabled(true)
+                .surveyCompletionDelay(2000);
         ThreadsLib.init(config);
     }
 

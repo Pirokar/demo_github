@@ -14,7 +14,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import im.threads.internal.ThreadsLogger;
+
 public class MediaHelper {
+
+    private static final String TAG = MediaHelper.class.getSimpleName();
 
     public static int PHOTO_RESIZE_MAX_SIDE = 1600;
     public static int IMAGE_MAX_SIZE = PHOTO_RESIZE_MAX_SIDE * PHOTO_RESIZE_MAX_SIDE;
@@ -80,7 +84,7 @@ public class MediaHelper {
                 return downsizedImageFile;
 
             } catch (IOException e) {
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "downsizeImage", e);
                 scaledBitmap.recycle();
                 downsizedImageFile.delete();
                 return null;

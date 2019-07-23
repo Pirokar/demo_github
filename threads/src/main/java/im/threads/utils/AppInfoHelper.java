@@ -6,8 +6,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import im.threads.BuildConfig;
+import im.threads.internal.ThreadsLogger;
 
 public final class AppInfoHelper {
+    private static final String TAG = AppInfoHelper.class.getSimpleName();
 
     private static String getAppBundle() {
         return BuildConfig.APPLICATION_ID;
@@ -19,7 +21,7 @@ public final class AppInfoHelper {
         try {
             pInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getAppVersion", e);
         }
         return pInfo != null ? pInfo.versionName : "";
     }
@@ -34,7 +36,7 @@ public final class AppInfoHelper {
             try {
                 return applicationInfo.loadLabel(context.getPackageManager()).toString();
             } catch (Exception e) {
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "getAppName", e);
             }
         }
         return "Unknown";
@@ -46,7 +48,7 @@ public final class AppInfoHelper {
             try {
                 return applicationInfo.packageName;
             } catch (Exception e) {
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "getAppId", e);
             }
         }
         return "";

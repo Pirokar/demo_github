@@ -23,7 +23,7 @@ import im.threads.android.R;
  */
 public class YesNoDialog extends DialogFragment {
 
-    public static final String TAG = "MessageDialog";
+    private static final String TAG = "MessageDialog";
 
     public static final String ARG_TEXT = "ARG_TEXT";
     public static final String ARG_REQUEST_CODE = "ARG_REQUEST_CODE";

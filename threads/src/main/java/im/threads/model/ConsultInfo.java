@@ -3,11 +3,12 @@ package im.threads.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by yuri on 09.09.2016.
- *
- */
+import im.threads.internal.ThreadsLogger;
+
 public class ConsultInfo {
+
+    private static final String TAG = ConsultInfo.class.getSimpleName();
+
     private final String name;
     private final String id;
     private final String status;
@@ -61,7 +62,7 @@ public class ConsultInfo {
             jsonObject.put("id", id);
             jsonObject.put("photoUrl", photoUrl);
         } catch (JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "toJson", e);
         }
         return jsonObject;
     }

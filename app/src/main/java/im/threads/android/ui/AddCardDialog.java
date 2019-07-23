@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class AddCardDialog extends DialogFragment {
 
-    public static final String TAG = "AddCardDialog";
+    private static final String TAG = "AddCardDialog";
 
     DialogAddCardBinding binding;
     private Disposable signatureDisposable;

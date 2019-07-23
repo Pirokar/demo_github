@@ -2,15 +2,14 @@ package im.threads.helpers;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.File;
 
-import im.threads.model.ChatStyle;
+import im.threads.internal.ThreadsLogger;
 
 public class FileHelper {
 
-    private static String LOG_TAG = FileHelper.class.getSimpleName();
+    private static String TAG = FileHelper.class.getSimpleName();
 
     public static File createImageFile(Context context) {
 
@@ -20,21 +19,15 @@ public class FileHelper {
         try {
             output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
                     filename);
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.d(LOG_TAG, "File genereated into ExternalStoragePublicDirectory, DCIM : " + output.getAbsolutePath());
-            }
+            ThreadsLogger.d(TAG, "File genereated into ExternalStoragePublicDirectory, DCIM : " + output.getAbsolutePath());
         } catch (Exception e) {
-            Log.w(LOG_TAG, "Could not create file in public storage");
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.d(LOG_TAG, "", e);
-            }
+            ThreadsLogger.w(TAG, "Could not create file in public storage");
+            ThreadsLogger.d(TAG, "", e);
         }
 
         if (output == null) {
             output = new File(context.getFilesDir(), filename);
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.d(LOG_TAG, "File genereated into filesDir : " + output.getAbsolutePath());
-            }
+            ThreadsLogger.d(TAG, "File genereated into filesDir : " + output.getAbsolutePath());
         }
 
         return output;

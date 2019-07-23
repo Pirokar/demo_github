@@ -8,12 +8,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import im.threads.internal.Config;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatStyle;
 
 /**
@@ -92,10 +92,10 @@ public class PrefUtils {
         return getDefaultSharedPreferences().getString(PrefUtils.class + TAG_CLIENT_ID, "");
     }
 
-    public static void setClientIdEncrypted() {
+    public static void setClientIdEncrypted(boolean clientIdEncrypted) {
         getDefaultSharedPreferences()
                 .edit()
-                .putBoolean(PrefUtils.class + TAG_CLIENT_ID_ENCRYPTED, true)
+                .putBoolean(PrefUtils.class + TAG_CLIENT_ID_ENCRYPTED, clientIdEncrypted)
                 .commit();
     }
 
@@ -160,9 +160,7 @@ public class PrefUtils {
                 style = new Gson().fromJson(sharedPreferencesString, ChatStyle.class);
             }
         } catch (IllegalStateException | JsonSyntaxException ex) {
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.w(TAG, "getIncomingStyle failed: ", ex);
-            }
+            ThreadsLogger.w(TAG, "getIncomingStyle failed: ", ex);
         }
         return style;
     }
@@ -191,7 +189,7 @@ public class PrefUtils {
             Bundle bundle = ai.metaData;
             return bundle.getString(key);
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Failed to load self applicationInfo - that's really weird. ", e);
+            ThreadsLogger.e(TAG, "Failed to load self applicationInfo - that's really weird. ", e);
             return null;
         }
     }

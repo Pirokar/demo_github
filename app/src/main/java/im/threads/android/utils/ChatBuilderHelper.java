@@ -1,8 +1,6 @@
 package im.threads.android.utils;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import im.threads.android.R;
@@ -39,22 +37,15 @@ public class ChatBuilderHelper {
         }
     }
 
-    public static ChatStyle buildChatStyle(final @NonNull Activity activity, final String appMarker, final @NonNull String clientId, String clientIdSignature, String userName, final String data, ChatDesign design) {
-        ChatStyle.ChatStyleBuilder builder = ChatStyle.ChatStyleBuilder
-                .getBuilder(clientId)
-                .setClientIdSignature(clientIdSignature)
-                .setUserName(userName)
-                .setData(data) // в этом параметре в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
-                .setAppMarker(appMarker)
+    public static ChatStyle.Builder getChatStyleBuilder(ChatDesign design) {
+        ChatStyle.Builder builder = new ChatStyle.Builder()
                 .setDefaultFontBold(LATO_BOLD_FONT_PATH)
                 .setDefaultFontLight(LATO_LIGHT_FONT_PATH)
                 .setDefaultFontRegular(LATO_REGULAR_FONT_PATH)
                 .showChatBackButton(true)// показывать кнопку назад
                 .setShowConsultSearching(true) //показывать загрузку при поиске консультанта
                 .setUseExternalCameraApp(true)
-                .setScrollChatToEndIfUserTyping(false) // не прокручивать чат к последнему сообщению, если пользователь начал ввод
-                .setDebugLoggingEnabled(true);
-
+                .setScrollChatToEndIfUserTyping(false);
         switch (design) {
             case GREEN: {
                 configureGreenDesign(builder);
@@ -65,17 +56,15 @@ public class ChatBuilderHelper {
                 break;
             }
         }
-
-        return builder.build();
+        return builder;
     }
 
-    private static void configureGreenDesign(ChatStyle.ChatStyleBuilder builder) {
+    private static void configureGreenDesign(ChatStyle.Builder builder) {
         builder.setChatSubtitleShowConsultOrgUnit(true);
         //Do nothing, using default threads design
     }
 
-    private static void configureBlueDesign(ChatStyle.ChatStyleBuilder builder) {
-
+    private static void configureBlueDesign(ChatStyle.Builder builder) {
         builder
                 .setWelcomeScreenStyle(R.drawable.alt_threads_welcome_logo,
                         R.string.alt_threads_welcome_screen_title_text,
@@ -160,8 +149,7 @@ public class ChatBuilderHelper {
                         R.color.alt_threads_survey_selected_icon_tint,
                         R.color.alt_threads_survey_unselected_icon_tint,
                         R.color.alt_threads_chat_system_message,
-                        R.color.alt_threads_survey_choices_text,
-                        2000);
+                        R.color.alt_threads_survey_choices_text);
 
     }
 }

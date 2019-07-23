@@ -2,14 +2,13 @@ package im.threads.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
 
-import im.threads.model.ChatStyle;
+import im.threads.internal.ThreadsLogger;
 
 /**
  * Created by yuri on 01.06.2016.
@@ -69,17 +68,13 @@ public class SwipeAwareView extends View {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                Log.e(TAG, "onFling");
-            }
-
+            ThreadsLogger.e(TAG, "onFling");
             boolean answer;
             final float xDistance = Math.abs(e1.getX() - e2.getX());
             final float yDistance = Math.abs(e1.getY() - e2.getY());
             if (xDistance < SWIPE_X_MIN_DISTANCE || yDistance > SWIPE_Y_MAX_DISTANCE) {
                 if (mSwipeListener != null) {
-                    for (MotionEvent m:events) {
+                    for (MotionEvent m : events) {
                         mSwipeListener.onTouchEvent(m);
                     }
                 }
@@ -97,7 +92,7 @@ public class SwipeAwareView extends View {
                     }
             }
             if (mSwipeListener != null) {
-                for (MotionEvent m:events) {
+                for (MotionEvent m : events) {
                     mSwipeListener.onTouchEvent(m);
                 }
             }

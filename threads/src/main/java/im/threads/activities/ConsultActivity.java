@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import im.threads.R;
 import im.threads.fragments.ChatFragment;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatStyle;
 import im.threads.picasso_url_connection_only.Picasso;
 import im.threads.utils.FileUtils;
@@ -86,7 +87,7 @@ public class ConsultActivity extends BaseActivity {
         try {
             overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
         } catch (Resources.NotFoundException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "onCreate", e);
         }
         if (Build.VERSION.SDK_INT > 20) {
             RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);

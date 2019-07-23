@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +24,7 @@ import java.util.Locale;
 
 import im.threads.R;
 import im.threads.formatters.RussianFormatSymbols;
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.ChatStyle;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.FileDescription;
@@ -329,10 +329,7 @@ public class ConsultPhraseHolder extends BaseHolder {
 
                         @Override
                         public void onError() {
-                            if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-                                Log.d(TAG, "Could not load OpenGraph image");
-                            }
-
+                            ThreadsLogger.d(TAG, "Could not load OpenGraph image");
                             mOgImage.setVisibility(View.GONE);
                             if (TextUtils.isEmpty(ogData.title) && TextUtils.isEmpty(ogData.description) && TextUtils.isEmpty(ogData.url)) {
                                 mOgDataLayout.setVisibility(View.GONE);

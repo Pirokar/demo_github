@@ -6,17 +6,16 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import im.threads.fragments.ImageFragment;
-import im.threads.model.ChatStyle;
-import im.threads.model.FileDescription;
-import im.threads.utils.ThreadUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import im.threads.fragments.ImageFragment;
+import im.threads.internal.ThreadsLogger;
+import im.threads.model.FileDescription;
+import im.threads.utils.ThreadUtils;
 
 /**
  * Created by yuri on 05.08.2016.
@@ -64,9 +63,7 @@ public class ImagesAdapter extends PagerAdapter {
         }
 
         Fragment fragment = getItem(position);
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.v(TAG, "Adding item #" + position + ": f=" + fragment);
-        }
+        ThreadsLogger.v(TAG, "Adding item #" + position + ": f=" + fragment);
         if (mSavedState.size() > position) {
             Fragment.SavedState fss = mSavedState.get(position);
             if (fss != null) {
@@ -90,10 +87,7 @@ public class ImagesAdapter extends PagerAdapter {
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
-        if (ChatStyle.getInstance().isDebugLoggingEnabled) {
-            Log.v(TAG, "Removing item #" + position + ": f=" + object
-                    + " v=" + fragment.getView());
-        }
+        ThreadsLogger.v(TAG, "Removing item #" + position + ": f=" + object + " v=" + fragment.getView());
         while (mSavedState.size() <= position) {
             mSavedState.add(null);
         }
@@ -186,7 +180,7 @@ public class ImagesAdapter extends PagerAdapter {
                         f.setMenuVisibility(false);
                         mFragments.set(index, f);
                     } else {
-                        Log.w(TAG, "Bad fragment at key " + key);
+                        ThreadsLogger.w(TAG, "Bad fragment at key " + key);
                     }
                 }
             }

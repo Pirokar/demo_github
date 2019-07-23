@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -24,9 +23,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import im.threads.internal.ThreadsLogger;
 import im.threads.model.Attachment;
 import im.threads.model.ChatItem;
-import im.threads.model.ChatStyle;
 import im.threads.model.ConsultConnectionMessage;
 import im.threads.model.ConsultPhrase;
 import im.threads.model.EmptyChatItem;
@@ -56,7 +55,7 @@ public class IncomingMessageParser {
                 fullMessage = new JSONObject(pushMessage.fullMessage);
             }
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getFullMessage", e);
         }
 
         return fullMessage;
@@ -68,7 +67,7 @@ public class IncomingMessageParser {
         try {
             type = fullMessage.getString(PushMessageAttributes.TYPE);
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getType", e);
         }
 
         return type;
@@ -80,7 +79,7 @@ public class IncomingMessageParser {
         try {
             origin = fullMessage.getString(PushMessageAttributes.ORIGIN);
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "isThreadsOriginPush", e);
         }
 
         return PushMessageAttributes.THREADS.equalsIgnoreCase(origin);
@@ -101,7 +100,7 @@ public class IncomingMessageParser {
         try {
             type = fullMessage.getString(PushMessageAttributes.CLIENT_ID);
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getClientId", e);
         }
 
         return type;
@@ -117,7 +116,7 @@ public class IncomingMessageParser {
                 type = null;
             }
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "isChatPush", e);
             type = null;
         }
 
@@ -128,7 +127,7 @@ public class IncomingMessageParser {
         try {
             return Long.parseLong(fullMessage.getString(PushMessageAttributes.HIDE_AFTER));
         } catch (final Exception e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getHideAfter", e);
         }
         return 0L;
     }
@@ -139,7 +138,7 @@ public class IncomingMessageParser {
             message = fullMessage.getString(PushMessageAttributes.TEXT) == null
                     ? pushMessage.shortMessage : fullMessage.getString(PushMessageAttributes.TEXT);
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getMessage", e);
         }
 
         return message;
@@ -184,7 +183,7 @@ public class IncomingMessageParser {
                     operatorId, photoUrl, false, status, gender);
 
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getConsultPhraseFromPush", e);
             return null;
         }
     }
@@ -221,7 +220,7 @@ public class IncomingMessageParser {
             userPhrase.setSentState(MessageState.STATE_SENT);
             return userPhrase;
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getUserPhraseFromPush", e);
             return null;
         }
     }
@@ -291,7 +290,7 @@ public class IncomingMessageParser {
         try {
             return Long.parseLong(fullMessage.getString(PushMessageAttributes.THREAD_ID));
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getThreadId", e);
         }
         return -1L;
     }
@@ -304,7 +303,7 @@ public class IncomingMessageParser {
                 scheduleInfo = new Gson().fromJson(text, ScheduleInfo.class);
                 scheduleInfo.setDate(new Date().getTime());
             } catch (final JsonSyntaxException e) {
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "getScheduleInfoFromPush", e);
             }
         }
         return scheduleInfo;
@@ -343,14 +342,14 @@ public class IncomingMessageParser {
             return survey;
 
         } catch (final JsonSyntaxException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getSurveyFromJsonString", e);
             return null;
         }
     }
 
     private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
 
-        Survey survey = new Survey(message.getSendingId(),message.getTimeStamp(), MessageState.STATE_WAS_READ);
+        Survey survey = new Survey(message.getSendingId(), message.getTimeStamp(), MessageState.STATE_WAS_READ);
 
         QuestionDTO question = new QuestionDTO();
         question.setId(message.getQuestionId());
@@ -394,7 +393,7 @@ public class IncomingMessageParser {
                     timeStamp, photourl, status, title, orgUnit, displayMessage);
 
         } catch (final JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getConsultConnectionFromPush", e);
         }
 
         return chatItem;
@@ -436,8 +435,7 @@ public class IncomingMessageParser {
                 try {
                     authorName = quoteJson.getJSONObject("operator").getString("name");
                 } catch (final JSONException e) {
-                    if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "" + quotes);
-                    e.printStackTrace();
+                    ThreadsLogger.e(TAG, "" + quotes, e);
                 }
             } else {
                 if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
@@ -638,10 +636,7 @@ public class IncomingMessageParser {
                 }
             });
         } catch (final Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "error while formatting");
-            if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "" + messages);
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "error while formatting: " + messages, e);
         }
         return out;
     }
@@ -653,17 +648,16 @@ public class IncomingMessageParser {
             final Object readIds = b.get(PushMessageAttributes.READ_PROVIDER_IDS);
 
             if (readIds instanceof ArrayList) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.i(TAG, "getReadIds instanceof ArrayList");
+                ThreadsLogger.i(TAG, "getReadIds instanceof ArrayList");
                 final Collection<? extends String> readInMessageIds = (Collection<? extends String>) b.get(PushMessageAttributes.READ_PROVIDER_IDS);
                 if (readInMessageIds != null) {
                     ids.addAll(readInMessageIds);
                 }
 
-                if (ChatStyle.getInstance().isDebugLoggingEnabled) Log.e(TAG, "getReadIds = ");
+                ThreadsLogger.e(TAG, "getReadIds = ");
             }
             if (readIds instanceof String) {
-                if (ChatStyle.getInstance().isDebugLoggingEnabled)
-                    Log.i(TAG, "getReadIds instanceof String " + readIds);
+                ThreadsLogger.i(TAG, "getReadIds instanceof String " + readIds);
                 final String contents = (String) readIds;
                 if (!contents.contains(",")) {
                     ids.add((String) readIds);
@@ -675,7 +669,7 @@ public class IncomingMessageParser {
             }
 
         } catch (final Exception e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getReadIds", e);
         }
         return ids;
     }
@@ -697,7 +691,7 @@ public class IncomingMessageParser {
                     && fullMessage.has(PushMessageAttributes.CLIENT_ID)
                     && currentClientId.equalsIgnoreCase(fullMessage.getString(PushMessageAttributes.CLIENT_ID));
         } catch (JSONException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "checkId", e);
         }
 
         return isCurrentClientId;
@@ -717,7 +711,7 @@ public class IncomingMessageParser {
             try {
                 appMarker = fullMessage.getString(PushMessageAttributes.APP_MARKER_KEY);
             } catch (JSONException e) {
-                e.printStackTrace();
+                ThreadsLogger.e(TAG, "getAppMarker", e);
             }
         }
         return appMarker;
