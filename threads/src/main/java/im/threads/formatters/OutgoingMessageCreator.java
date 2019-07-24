@@ -135,7 +135,7 @@ public class OutgoingMessageCreator {
             object.put("name", clientName);
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.CLIENT_ID_ENCRYPTED, clientIdEncrypted);
-            object.put("data", data);
+            object.put(PushMessageAttributes.DATA, data);
             object.put("platform", "Android");
             object.put("osVersion", DeviceInfoHelper.getOsVersion());
             object.put("device", DeviceInfoHelper.getDeviceName());
@@ -249,11 +249,12 @@ public class OutgoingMessageCreator {
         return userAgent;
     }
 
-    public static String createInitChatMessage(String clientId, Context ctx) {
+    public static String createInitChatMessage(String clientId, String data, Context ctx) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
             object.put(PushMessageAttributes.TYPE, PushMessageTypes.INIT_CHAT.name());
+            object.put(PushMessageAttributes.DATA, data);
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker(ctx));
         } catch (JSONException e) {
             e.printStackTrace();
