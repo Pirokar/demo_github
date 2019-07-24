@@ -72,8 +72,9 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
-    debugApi 'com.mfms.android:push-lite-debug:2.6.21'
-    releaseApi 'com.mfms.android:push-lite-release:2.6.21'
+//    debugApi 'com.mfms.android:push-lite-debug:2.6.21'
+//    releaseApi 'com.mfms.android:push-lite-release:2.6.21'
+    api 'com.mfms.android:push-lite-release:2.6.21'
 
     testImplementation 'org.robolectric:robolectric:4.2'
     testImplementation 'junit:junit:4.12'
