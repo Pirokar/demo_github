@@ -1,255 +1,849 @@
 {
   "project_info": {
-    "project_number": "1079639835466",
-    "firebase_url": "https://solity-mfms-push-server-gcm.firebaseio.com",
-    "project_id": "solity-mfms-push-server-gcm"
+    "project_number": "424621565517",
+    "firebase_url": "https://brooma-mfms-push-server-gcm.firebaseio.com",
+    "project_id": "brooma-mfms-push-server-gcm",
+    "storage_bucket": "brooma-mfms-push-server-gcm.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079639835466:android:28a83afff77e2972",
+        "mobilesdk_app_id": "1:424621565517:android:3a0848385b659d7f",
+        "android_client_info": {
+          "package_name": "com.example.revenant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:4a547c7704270ef4",
+        "android_client_info": {
+          "package_name": "com.sequenia.appwithchat.beta4"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:72cab74bc0a5bfdb",
         "android_client_info": {
           "package_name": "com.threads.android.gatetest18048"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1079639835466-jrsbipir72nfeff8vg0b4v8cj4p3t1o5.apps.googleusercontent.com",
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA899Nbx4gye6P-NXOita1jyB2GWhmPr_8"
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079639835466:android:28c92fb74cdc9955",
+        "mobilesdk_app_id": "1:424621565517:android:a0837372d7cfab54",
         "android_client_info": {
-          "package_name": "com.sequenia.appwithchat.beta4.channel2"
+          "package_name": "com.threads.android.winlab0"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1079639835466-jrsbipir72nfeff8vg0b4v8cj4p3t1o5.apps.googleusercontent.com",
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA899Nbx4gye6P-NXOita1jyB2GWhmPr_8"
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079639835466:android:4107eab46a25fd18",
+        "mobilesdk_app_id": "1:424621565517:android:684e5de39b6860d6",
         "android_client_info": {
-          "package_name": "com.sequenia.appwithchat.polarbear"
+          "package_name": "lk.vysotaservice"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1079639835466-jrsbipir72nfeff8vg0b4v8cj4p3t1o5.apps.googleusercontent.com",
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA899Nbx4gye6P-NXOita1jyB2GWhmPr_8"
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079639835466:android:88d808267d97b55a",
+        "mobilesdk_app_id": "1:424621565517:android:75e9a4c81dbac521",
         "android_client_info": {
-          "package_name": "com.sequenia.appwithchat.polarbear.channel2"
+          "package_name": "ru.domopult"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1079639835466-jrsbipir72nfeff8vg0b4v8cj4p3t1o5.apps.googleusercontent.com",
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA899Nbx4gye6P-NXOita1jyB2GWhmPr_8"
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079639835466:android:e4ed8a3bd9cff21b",
+        "mobilesdk_app_id": "1:424621565517:android:faef19fe66b45d7c",
         "android_client_info": {
-          "package_name": "com.sequenia.appwithchatdev"
+          "package_name": "ru.domopult.agile.android"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1079639835466-jrsbipir72nfeff8vg0b4v8cj4p3t1o5.apps.googleusercontent.com",
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA899Nbx4gye6P-NXOita1jyB2GWhmPr_8"
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079639835466:android:9e47f8466b072324",
+        "mobilesdk_app_id": "1:424621565517:android:0a3a35b878ee7c4c",
         "android_client_info": {
-          "package_name": "com.threads.android.beta"
+          "package_name": "ru.domopult.bazis.android"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1079639835466-jrsbipir72nfeff8vg0b4v8cj4p3t1o5.apps.googleusercontent.com",
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA899Nbx4gye6P-NXOita1jyB2GWhmPr_8"
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079639835466:android:2bd5cd8bf4f46fc8",
+        "mobilesdk_app_id": "1:424621565517:android:71865d25d64527c1",
         "android_client_info": {
-          "package_name": "com.threads.android.bobtail"
+          "package_name": "ru.domopult.ccm.android"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1079639835466-jrsbipir72nfeff8vg0b4v8cj4p3t1o5.apps.googleusercontent.com",
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA899Nbx4gye6P-NXOita1jyB2GWhmPr_8"
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079639835466:android:ca4208ce7b7020a3",
+        "mobilesdk_app_id": "1:424621565517:android:65dcbc04fa812f60",
         "android_client_info": {
-          "package_name": "ru.bcs.bcs_businessman.test"
+          "package_name": "ru.domopult.coldy.android"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1079639835466-jrsbipir72nfeff8vg0b4v8cj4p3t1o5.apps.googleusercontent.com",
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA899Nbx4gye6P-NXOita1jyB2GWhmPr_8"
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:9faed73c4962ea0c",
+        "android_client_info": {
+          "package_name": "ru.domopult.domoworker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:a2d21bd77273882f",
+        "android_client_info": {
+          "package_name": "ru.domopult.lclub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:f79c61b43cdeddbc",
+        "android_client_info": {
+          "package_name": "ru.domopult.matreshkacity.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:efe4aceae8566a85",
+        "android_client_info": {
+          "package_name": "ru.domopult.mitino.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:ae87cad602402974",
+        "android_client_info": {
+          "package_name": "ru.domopult.moe.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:b203213aa81d6aa1",
+        "android_client_info": {
+          "package_name": "ru.domopult.monarch.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:ba23a7b214d6afbb",
+        "android_client_info": {
+          "package_name": "ru.domopult.mone.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:44b47a15272df5cd",
+        "android_client_info": {
+          "package_name": "ru.domopult.nashupravdom.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:d87de43366594a70",
+        "android_client_info": {
+          "package_name": "ru.domopult.neva.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:8b1b642dbf6d324d",
+        "android_client_info": {
+          "package_name": "ru.domopult.r7.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:ad2726ee7c7eeea2",
+        "android_client_info": {
+          "package_name": "ru.domopult.rdm.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:89f3800037464222",
+        "android_client_info": {
+          "package_name": "ru.domopult.reef.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:77b8a36ccfd05338",
+        "android_client_info": {
+          "package_name": "ru.domopult.sgrc.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:1d71f7862f0d0abf",
+        "android_client_info": {
+          "package_name": "ru.domopult.smartrsk.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:2b9e966c2ca2c7f2",
+        "android_client_info": {
+          "package_name": "ru.domopult.smartservice.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:c26286c7a6238f18",
+        "android_client_info": {
+          "package_name": "ru.domopult.smolenka.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:5bf3eee50d5dbfe7",
+        "android_client_info": {
+          "package_name": "ru.domopult.tower.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:633181e4cb359e13",
+        "android_client_info": {
+          "package_name": "ru.domopult.uyt.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424621565517:android:20b70044e94d0c46",
+        "android_client_info": {
+          "package_name": "ru.domopult.visotaservice.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjmqZuae0A5n2xWCX8Hw-vmd63EfGZMEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424621565517-ubl59jkien9u0fggst0qc5r1t30drsj0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
