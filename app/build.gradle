@@ -111,6 +111,12 @@ android {
             applicationId "com.brooma.threads.android.amurtiger"
             resValue "string", "app_name1", "THR AmurTiger"
         }
+
+        gatetest18048 {
+            dimension "server"
+            applicationId "com.threads.android.gatetest18048"
+            resValue "string", "app_name1", "THR Gatetest18048"
+        }
     }
 
     lintOptions {
