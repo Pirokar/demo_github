@@ -22,7 +22,7 @@ android {
         targetSdkVersion 28
 
         versionCode 86
-        versionName "2.48.6"
+        versionName "2.48.7"
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -72,8 +72,9 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
-    debugApi 'com.mfms.android:push-lite-debug:2.6.21'
-    releaseApi 'com.mfms.android:push-lite-release:2.6.21'
+//    debugApi 'com.mfms.android:push-lite-debug:2.6.21'
+//    releaseApi 'com.mfms.android:push-lite-release:2.6.21'
+    api 'com.mfms.android:push-lite-release:2.6.21'
 
     testImplementation 'org.robolectric:robolectric:4.2'
     testImplementation 'androidx.test.ext:junit:1.1.1'
