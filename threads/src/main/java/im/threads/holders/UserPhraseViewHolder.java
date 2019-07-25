@@ -177,12 +177,23 @@ public class UserPhraseViewHolder extends BaseHolder {
                 mImage.setVisibility(View.VISIBLE);
                 mImage.setOnClickListener(imageClickListener);
 
-                Picasso.with(itemView.getContext())
-                        .load(new File(fileDescription.getFilePath()))
-                        .error(style.imagePlaceholder)
-                        .fit()
-                        .centerCrop()
-                        .into(mImage);
+                // User image can be already available locally
+                if (TextUtils.isEmpty(fileDescription.getFilePath())) {
+                    Picasso.with(itemView.getContext())
+                            .load(fileDescription.getDownloadPath())
+                            .error(style.imagePlaceholder)
+                            .fit()
+                            .centerCrop()
+                            .into(mImage);
+                } else {
+                    Picasso.with(itemView.getContext())
+                            .load(new File(fileDescription.getFilePath()))
+                            .error(style.imagePlaceholder)
+                            .fit()
+                            .centerCrop()
+                            .into(mImage);
+                }
+
             } else {
                 if (fileDescription.getFilePath() != null) fileDescription.setDownloadProgress(100);
                 mRightTextRow.setVisibility(View.VISIBLE);
