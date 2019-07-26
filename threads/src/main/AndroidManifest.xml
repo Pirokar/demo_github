@@ -52,7 +52,7 @@
             android:theme="@style/Transparent"/>
 
         <service
-            android:name="im.threads.services.IncomingMessagesIntentService"
+            android:name="im.threads.services.ThreadsPushServerIntentService"
             android:exported="false"/>
         <service
             android:name="im.threads.services.DownloadService"
@@ -60,15 +60,6 @@
         <service
             android:name="im.threads.services.NotificationService"
             android:exported="false"/>
-
-        <receiver
-            android:name="im.threads.broadcastReceivers.MyOtherPBReceiver"
-            android:exported="false"
-            android:permission="com.pushserver.android.permission.RECEIVE">
-            <intent-filter>
-                <action android:name="com.pushserver.android.OTHER_PUSH_MESSAGE_EVENT"/>
-            </intent-filter>
-        </receiver>
 
         <provider
             android:name="im.threads.utils.ThreadsFileProvider"

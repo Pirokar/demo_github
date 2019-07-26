@@ -2,15 +2,8 @@ package im.threads.android.core;
 
 import android.app.PendingIntent;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.mfms.android.push_lite.PushBroadcastReceiver;
-import com.mfms.android.push_lite.PushServerIntentService;
-import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.util.List;
 
@@ -33,8 +26,6 @@ public class ThreadsDemoApplication extends MultiDexApplication {
         appContext = getApplicationContext();
         ThreadsLib.ConfigBuilder config = new ThreadsLib.ConfigBuilder(this)
                 .pendingIntentCreator(new CustomPendingIntentCreator())
-                .shortPushListener(new CustomShortPushListener())
-                .fullPushListener(new CustomFullPushListener())
                 .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count))
                 .isDebugLoggingEnabled(true)
                 .surveyCompletionDelay(2000);
@@ -83,28 +74,6 @@ public class ThreadsDemoApplication extends MultiDexApplication {
                 }
             }
             return null;
-        }
-    }
-
-    private static class CustomShortPushListener implements ThreadsLib.ShortPushListener {
-
-        private static final String TAG = "CustomShortPushListener";
-
-        @Override
-        public void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle) {
-            Log.i(TAG, "Short push not accepted by chat: " + bundle.toString());
-            Toast.makeText(context, "Short push not accepted by chat: " + bundle.toString(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private static class CustomFullPushListener implements ThreadsLib.FullPushListener {
-
-        private static final String TAG = "CustomFullPushListener";
-
-        @Override
-        public void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage) {
-            Toast.makeText(pushServerIntentService.getApplicationContext(), "Full push not accepted by chat: " + pushMessage, Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "Full push not accepted by chat: " + pushMessage);
         }
     }
 }

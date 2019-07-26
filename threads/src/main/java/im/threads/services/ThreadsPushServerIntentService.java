@@ -11,18 +11,16 @@ import java.util.List;
 
 import im.threads.controllers.ChatController;
 import im.threads.formatters.IncomingMessageParser;
-import im.threads.internal.Config;
 import im.threads.internal.ThreadsLogger;
 import im.threads.model.PushMessageCheckResult;
 
-public class IncomingMessagesIntentService extends PushServerIntentService {
+public class ThreadsPushServerIntentService extends PushServerIntentService {
 
-    private static final String TAG = "MessagesIntentService ";
+    private static final String TAG = "ThreadsPushServerIntentService ";
 
     @Override
     protected boolean saveMessages(List<PushMessage> list) {
         ThreadsLogger.i(TAG, "saveMessages " + list);
-        if (list == null) return false;
         // В контроллер чата уходят только распознанные по формату чата сообщения.
         // Остальные уходят на обработку пользователям библиотеки.
         List<PushMessage> toShow = new ArrayList<>();
@@ -36,8 +34,6 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
                         toShow.add(pushMessage);
                     }
                 }
-            } else if (Config.instance.fullPushListener != null) {
-                Config.instance.fullPushListener.onNewFullPushNotification(this, pushMessage);
             }
         }
         if (toShow.size() > 0) {
@@ -45,7 +41,7 @@ public class IncomingMessagesIntentService extends PushServerIntentService {
             for (PushMessage pushMessage : toShow) {
                 String appMarker = IncomingMessageParser.getAppMarker(pushMessage);
                 if (!appMarkerMessagesMap.containsKey(appMarker)) {
-                    appMarkerMessagesMap.put(appMarker, new ArrayList<PushMessage>());
+                    appMarkerMessagesMap.put(appMarker, new ArrayList<>());
                 }
                 appMarkerMessagesMap.get(appMarker).add(pushMessage);
             }

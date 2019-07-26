@@ -15,10 +15,6 @@ public class Config {
     @NonNull
     public final ThreadsLib.PendingIntentCreator pendingIntentCreator;
     @Nullable
-    public final ThreadsLib.ShortPushListener shortPushListener;
-    @Nullable
-    public final ThreadsLib.FullPushListener fullPushListener;
-    @Nullable
     public final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener;
 
     public final boolean isDebugLoggingEnabled;
@@ -31,16 +27,12 @@ public class Config {
 
     public Config(@NonNull Context context,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
-                  @Nullable ThreadsLib.ShortPushListener shortPushListener,
-                  @Nullable ThreadsLib.FullPushListener fullPushListener,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
                   int surveyCompletionDelay) {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
-        this.shortPushListener = shortPushListener;
-        this.fullPushListener = fullPushListener;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.historyLoadingCount = historyLoadingCount;

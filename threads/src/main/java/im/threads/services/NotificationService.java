@@ -64,12 +64,12 @@ public class NotificationService extends Service {
     private static final String TAG = "NotificationService";
     private static final String CHANNEL_ID = "im.threads.services.NotificationService.CHANNEL_ID";
 
-    public static final String ACTION_ALL_MESSAGES_WERE_READ = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_MESSAGES_WERE_READ";
-    public static final String ACTION_ADD_UNREAD_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE";
-    public static final String ACTION_ADD_UNSENT_MESSAGE = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNSENT_MESSAGE";
-    public static final String ACTION_REMOVE_NOTIFICATION = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_REMOVE_NOTIFICATION";
-    public static final String ACTION_ADD_UNREAD_MESSAGE_TEXT = "com.sequenia.threads.services.IncomingMessagesIntentService.ACTION_ADD_UNREAD_MESSAGE_TEXT";
-    public static final String EXTRA_OPERATOR_URL = "com.sequenia.threads.services.IncomingMessagesIntentService.EXTRA_OPERATOR_URL";
+    public static final String ACTION_ALL_MESSAGES_WERE_READ = "com.sequenia.threads.services.ThreadsPushServerIntentService.ACTION_MESSAGES_WERE_READ";
+    public static final String ACTION_ADD_UNREAD_MESSAGE = "com.sequenia.threads.services.ThreadsPushServerIntentService.ACTION_ADD_UNREAD_MESSAGE";
+    public static final String ACTION_ADD_UNSENT_MESSAGE = "com.sequenia.threads.services.ThreadsPushServerIntentService.ACTION_ADD_UNSENT_MESSAGE";
+    public static final String ACTION_REMOVE_NOTIFICATION = "com.sequenia.threads.services.ThreadsPushServerIntentService.ACTION_REMOVE_NOTIFICATION";
+    public static final String ACTION_ADD_UNREAD_MESSAGE_TEXT = "com.sequenia.threads.services.ThreadsPushServerIntentService.ACTION_ADD_UNREAD_MESSAGE_TEXT";
+    public static final String EXTRA_OPERATOR_URL = "com.sequenia.threads.services.ThreadsPushServerIntentService.EXTRA_OPERATOR_URL";
     public static final String EXTRA_APP_MARKER = "appMarker";
 
     private static final int UNREAD_MESSAGE_PUSH_ID = 0;

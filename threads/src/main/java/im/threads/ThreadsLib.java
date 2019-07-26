@@ -3,15 +3,11 @@ package im.threads;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.mfms.android.push_lite.PushBroadcastReceiver;
 import com.mfms.android.push_lite.PushController;
-import com.mfms.android.push_lite.PushServerIntentService;
-import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.io.File;
 
@@ -68,7 +64,7 @@ public final class ThreadsLib {
     }
 
     /**
-     * Метод для того, чтобы перестать получать сообщения для клиента с указанным clientId
+     * Used to stop receiving messages for user with provided clientId
      */
     public void logoutClient(@NonNull final String clientId) {
         if (!TextUtils.isEmpty(clientId)) {
@@ -79,9 +75,9 @@ public final class ThreadsLib {
     }
 
     /**
-     * Метод для отправки произвольного сообщения от имени клиента
+     * Used to post messages to chat as if written by client
      *
-     * @return true, если удалось добавить сообщение в очередь отправки, иначе false
+     * @return true, if message was successfully added to messaging queue, otherwise false
      */
     public boolean sendMessage(@Nullable String message, @Nullable File file) {
         if (PrefUtils.isClientIdNotEmpty()) {
@@ -111,10 +107,6 @@ public final class ThreadsLib {
             return PendingIntent.getActivity(context1, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
         };
         @Nullable
-        private ShortPushListener shortPushListener;
-        @Nullable
-        private FullPushListener fullPushListener;
-        @Nullable
         private UnreadMessagesCountListener unreadMessagesCountListener;
 
         private boolean isDebugLoggingEnabled = false;
@@ -129,16 +121,6 @@ public final class ThreadsLib {
 
         public ConfigBuilder pendingIntentCreator(@NonNull PendingIntentCreator pendingIntentCreator) {
             this.pendingIntentCreator = pendingIntentCreator;
-            return this;
-        }
-
-        public ConfigBuilder shortPushListener(ShortPushListener shortPushListener) {
-            this.shortPushListener = shortPushListener;
-            return this;
-        }
-
-        public ConfigBuilder fullPushListener(FullPushListener fullPushListener) {
-            this.fullPushListener = fullPushListener;
             return this;
         }
 
@@ -166,8 +148,6 @@ public final class ThreadsLib {
             return new Config(
                     context,
                     pendingIntentCreator,
-                    shortPushListener,
-                    fullPushListener,
                     unreadMessagesCountListener,
                     isDebugLoggingEnabled,
                     historyLoadingCount,
@@ -206,7 +186,7 @@ public final class ThreadsLib {
         }
 
         /**
-         * В параметре data в виде строки можно передать любую дополнительную информацию, напр. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+         * Any additional information can be provided in data string, i.e. "{balance:"1000.00", fio:"Vasya Pupkin"}"
          */
         public UserInfo setData(String data) {
             this.data = data;
@@ -230,21 +210,5 @@ public final class ThreadsLib {
 
     public interface UnreadMessagesCountListener {
         void onUnreadMessagesCountChanged(int count);
-    }
-
-    /**
-     * Оповещает о приходе короткого Push-уведомления.
-     * Не срабатывает при опознанных системных Push-уведомлениях
-     */
-    public interface ShortPushListener {
-        void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle);
-    }
-
-    /**
-     * Оповещает о приходе полного Push-уведомления.
-     * Не срабатывает, если удалось определить, что это уведомления для библиотеки чата.
-     */
-    public interface FullPushListener {
-        void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage);
     }
 }
