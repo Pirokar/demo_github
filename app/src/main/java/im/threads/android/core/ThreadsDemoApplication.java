@@ -24,12 +24,12 @@ public class ThreadsDemoApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
-        ThreadsLib.ConfigBuilder config = new ThreadsLib.ConfigBuilder(this)
+        ThreadsLib.ConfigBuilder configBuilder = new ThreadsLib.ConfigBuilder(this)
                 .pendingIntentCreator(new CustomPendingIntentCreator())
                 .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count))
                 .isDebugLoggingEnabled(true)
                 .surveyCompletionDelay(2000);
-        ThreadsLib.init(config);
+        ThreadsLib.init(configBuilder);
     }
 
     public static Context getAppContext() {

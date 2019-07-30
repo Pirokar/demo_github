@@ -204,14 +204,14 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 if (chatFragment == null) {
                     chatFragment = ChatFragment.newInstance();
                 }
-                ThreadsLib.initUser(
+                ThreadsLib.getInstance().initUser(
                         new ThreadsLib.UserInfo(clientId)
                                 .setClientIdSignature(clientIdSignature)
                                 .setUserName(userName)
                                 .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
                                 .setAppMarker(appMarker)
                 );
-                ThreadsLib.applyChatStyle(ChatBuilderHelper.getChatStyleBuilder(chatDesign));
+                ThreadsLib.getInstance().applyChatStyle(ChatBuilderHelper.getChatStyleBuilder(chatDesign));
                 fragment = chatFragment;
                 break;
         }

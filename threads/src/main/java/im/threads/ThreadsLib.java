@@ -40,19 +40,6 @@ public final class ThreadsLib {
         }
     }
 
-    public static void initUser(UserInfo userInfo) {
-        PrefUtils.setAppMarker(userInfo.appMarker);
-        PrefUtils.setNewClientId(userInfo.clientId);
-        PrefUtils.setClientIdSignature(userInfo.clientIdSignature);
-        PrefUtils.setUserName(userInfo.userName);
-        PrefUtils.setData(userInfo.data);
-        PrefUtils.setClientIdEncrypted(userInfo.clientIdEncrypted);
-    }
-
-    public static void applyChatStyle(ChatStyle.Builder builder) {
-        ChatStyle.applyChatStyle(builder);
-    }
-
     public static ThreadsLib getInstance() {
         if (instance == null) {
             throw new IllegalStateException("ThreadsLib should be initialized first with ThreadsLib.init()");
@@ -61,6 +48,19 @@ public final class ThreadsLib {
     }
 
     private ThreadsLib() {
+    }
+
+    public void initUser(UserInfo userInfo) {
+        PrefUtils.setAppMarker(userInfo.appMarker);
+        PrefUtils.setNewClientId(userInfo.clientId);
+        PrefUtils.setClientIdSignature(userInfo.clientIdSignature);
+        PrefUtils.setUserName(userInfo.userName);
+        PrefUtils.setData(userInfo.data);
+        PrefUtils.setClientIdEncrypted(userInfo.clientIdEncrypted);
+    }
+
+    public void applyChatStyle(ChatStyle.Builder builder) {
+        ChatStyle.applyChatStyle(builder);
     }
 
     /**
@@ -74,12 +74,17 @@ public final class ThreadsLib {
         }
     }
 
+    public void reloadHistory() {
+        ChatController.getInstance(Config.instance.context).loadHistory();
+    }
+
     /**
      * Used to post messages to chat as if written by client
      *
      * @return true, if message was successfully added to messaging queue, otherwise false
      */
     public boolean sendMessage(@Nullable String message, @Nullable File file) {
+        ChatController chatController = ChatController.getInstance(Config.instance.context);
         if (PrefUtils.isClientIdNotEmpty()) {
             FileDescription fileDescription = null;
             if (file != null) {
@@ -89,7 +94,7 @@ public final class ThreadsLib {
                         System.currentTimeMillis());
             }
             UpcomingUserMessage msg = new UpcomingUserMessage(fileDescription, null, message, false);
-            ChatController.getInstance(Config.instance.context).onUserInput(msg);
+            chatController.onUserInput(msg);
             return true;
         } else {
             ThreadsLogger.i(getClass().getSimpleName(), "You might need to initialize user first with ThreadsLib.userInfo()");
@@ -107,7 +112,7 @@ public final class ThreadsLib {
             return PendingIntent.getActivity(context1, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
         };
         @Nullable
-        private UnreadMessagesCountListener unreadMessagesCountListener;
+        private UnreadMessagesCountListener unreadMessagesCountListener = null;
 
         private boolean isDebugLoggingEnabled = false;
 
@@ -157,11 +162,16 @@ public final class ThreadsLib {
     }
 
     public static final class UserInfo {
+        @NonNull
         private String clientId;
-        private String clientIdSignature;
-        private String userName;
-        private String data;
-        private String appMarker;
+        @Nullable
+        private String clientIdSignature = null;
+        @Nullable
+        private String userName = null;
+        @Nullable
+        private String data = null;
+        @Nullable
+        private String appMarker = null;
 
         /**
          * true if client id is encrypted

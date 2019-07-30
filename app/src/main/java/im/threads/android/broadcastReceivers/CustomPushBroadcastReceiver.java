@@ -13,10 +13,10 @@ public class CustomPushBroadcastReceiver extends ThreadsPushBroadcastReceiver {
 
     /**
      * If threads is used in companion with mfms push library,
-     * short push message processing can be implemented here
+     * short push message processing can be implemented here.
      */
     @Override
-    public void onNewPushNotification(final Context context, final String alert, final Bundle bundle) {
+    protected void onNewPushNotification(final Context context, final String alert, final Bundle bundle) {
         if (BuildConfig.DEBUG) {
             Log.i(TAG, "onNewPushNotification");
         }

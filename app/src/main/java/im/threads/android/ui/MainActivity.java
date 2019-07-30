@@ -104,14 +104,14 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
             PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
         } else {
             if (currentCard.getUserId() != null) {
-                ThreadsLib.initUser(
+                ThreadsLib.getInstance().initUser(
                         new ThreadsLib.UserInfo(currentCard.getUserId())
                                 .setClientIdSignature(currentCard.getClientIdSignature())
                                 .setUserName(currentCard.getUserName())
                                 .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
                                 .setAppMarker(currentCard.getAppMarker())
                 );
-                ThreadsLib.applyChatStyle(ChatBuilderHelper.getChatStyleBuilder(getCurrentDesign()));
+                ThreadsLib.getInstance().applyChatStyle(ChatBuilderHelper.getChatStyleBuilder(getCurrentDesign()));
                 startActivity(new Intent(this, ChatActivity.class));
             } else {
                 displayError(R.string.error_empty_userid);
@@ -150,18 +150,14 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         } catch (IOException ignored) {
         }
         Card currentCard = getCurrentCard();
-        String data = "{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}";
         boolean messageSent = false;
         if (currentCard.getUserId() != null) {
-            ChatBuilderHelper.buildChatStyle(
-                    this,
-                    currentCard.getAppMarker(),
-                    currentCard.getUserId(),
-                    currentCard.getClientIdSignature(),
-                    currentCard.getUserName(),
-                    data,
-                    getCurrentDesign()
-            );
+            ThreadsLib.UserInfo userInfo = new ThreadsLib.UserInfo(currentCard.getUserId())
+                    .setClientIdSignature(currentCard.getClientIdSignature())
+                    .setUserName(currentCard.getUserName())
+                    .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
+                    .setAppMarker(currentCard.getAppMarker());
+            ThreadsLib.getInstance().initUser(userInfo);
             messageSent = ThreadsLib.getInstance().sendMessage(getString(R.string.test_message), imageFile);
         }
         if (messageSent) {

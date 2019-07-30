@@ -93,7 +93,7 @@ public class ChatController {
     public static final int CONSULT_STATE_SEARCHING = 2;
     public static final int CONSULT_STATE_DEFAULT = 3;
 
-    private static final long PER_PAGE_COUNT = 100;
+    private static final int PER_PAGE_COUNT = 100;
 
     private static final int RESEND_MSG = 123;
 
@@ -885,7 +885,7 @@ public class ChatController {
         loadHistory();
     }
 
-    private void loadHistory() {
+    public void loadHistory() {
         if (!isDownloadingMessages) {
             isDownloadingMessages = true;
             mExecutor.execute(() -> {

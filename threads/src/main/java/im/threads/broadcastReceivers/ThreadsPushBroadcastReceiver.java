@@ -21,7 +21,7 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     private static final String TAG = "ThreadsPushBroadcastReceiver ";
 
     @Override
-    public void onNewPushNotification(final Context context, final String alert, final Bundle bundle) {
+    protected void onNewPushNotification(final Context context, final String alert, final Bundle bundle) {
         ThreadsLogger.i(TAG, "onNewPushNotification " + alert + " " + bundle);
         if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
             if (isChatSystemPush(bundle)) {
