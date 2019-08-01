@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -15,11 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
+import im.threads.UserInfoBuilder;
+import im.threads.view.ChatFragment;
 import im.threads.ThreadsLib;
 import im.threads.android.R;
-import im.threads.android.utils.ChatBuilderHelper;
-import im.threads.fragments.ChatFragment;
-import im.threads.utils.PermissionChecker;
+import im.threads.android.utils.ChatStyleBuilderHelper;
 
 /**
  * Пример активности с нижней навигацией,
@@ -45,18 +44,15 @@ public class BottomNavigationActivity extends AppCompatActivity {
     public static final String ARG_NEEDS_SHOW_CHAT = "needsShowChat";
     private static final String ARG_CHAT_DESIGN = "chatDesign";
 
-    private static final int PERM_REQUEST_CODE_CLICK = 1;
-
     private String clientId;
     private String clientIdSignature;
     private String userName;
     private String appMarker;
-    private ChatBuilderHelper.ChatDesign chatDesign;
+    private ChatStyleBuilderHelper.ChatDesign chatDesign;
 
     private BottomNavigationView bottomNavigationView;
     private TabItem selectedTab;
 
-    private boolean showChatAfterGrantPermission;
     private BottomNavigationHomeFragment homeFragment;
     private ChatFragment chatFragment;
 
@@ -84,7 +80,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                                       String clientId,
                                       String clientIdSignature,
                                       String userName,
-                                      ChatBuilderHelper.ChatDesign chatDesign) {
+                                      ChatStyleBuilderHelper.ChatDesign chatDesign) {
         Intent intent = new Intent(activity, BottomNavigationActivity.class);
         intent.putExtra(ARG_APP_MARKER, appMarker);
         intent.putExtra(ARG_CLIENT_ID, clientId);
@@ -99,7 +95,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                                                     String userName,
                                                     String appMarker,
                                                     String clientIdSignature,
-                                                    ChatBuilderHelper.ChatDesign chatDesign) {
+                                                    ChatStyleBuilderHelper.ChatDesign chatDesign) {
         Intent i = new Intent(context, BottomNavigationActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.putExtra(ARG_NEEDS_SHOW_CHAT, true);
@@ -117,15 +113,8 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 selectTab(TabItem.TAB_HOME);
                 return true;
             case R.id.navigation_chat:
-
-                if (!PermissionChecker.checkPermissions(BottomNavigationActivity.this)) {
-                    PermissionChecker.requestPermissionsAndInit(PERM_REQUEST_CODE_CLICK, BottomNavigationActivity.this);
-                    return false;
-
-                } else {
-                    selectTab(TabItem.TAB_CHAT);
-                    return true;
-                }
+                selectTab(TabItem.TAB_CHAT);
+                return true;
         }
         return false;
     };
@@ -139,7 +128,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         userName = intent.getStringExtra(ARG_USER_NAME);
         appMarker = intent.getStringExtra(ARG_APP_MARKER);
         clientIdSignature = intent.getStringExtra(ARG_CLIENT_ID_SIGNATURE);
-        chatDesign = (ChatBuilderHelper.ChatDesign) intent.getSerializableExtra(ARG_CHAT_DESIGN);
+        chatDesign = (ChatStyleBuilderHelper.ChatDesign) intent.getSerializableExtra(ARG_CHAT_DESIGN);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -205,13 +194,13 @@ public class BottomNavigationActivity extends AppCompatActivity {
                     chatFragment = ChatFragment.newInstance();
                 }
                 ThreadsLib.getInstance().initUser(
-                        new ThreadsLib.UserInfo(clientId)
+                        new UserInfoBuilder(clientId)
                                 .setClientIdSignature(clientIdSignature)
                                 .setUserName(userName)
                                 .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
                                 .setAppMarker(appMarker)
                 );
-                ThreadsLib.getInstance().applyChatStyle(ChatBuilderHelper.getChatStyleBuilder(chatDesign));
+                ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign));
                 fragment = chatFragment;
                 break;
         }
@@ -260,27 +249,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
             }
         } else {
             super.onBackPressed();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERM_REQUEST_CODE_CLICK) {
-            if (PermissionChecker.checkGrantResult(grantResults)) {
-                showChatAfterGrantPermission = true;
-            } else {
-                Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (showChatAfterGrantPermission) {
-            bottomNavigationView.setSelectedItemId(TabItem.TAB_CHAT.getMenuId());
-            showChatAfterGrantPermission = false;
         }
     }
 

@@ -7,10 +7,11 @@ import android.text.TextUtils;
 
 import java.util.List;
 
+import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
 import im.threads.android.data.Card;
 import im.threads.android.ui.BottomNavigationActivity;
-import im.threads.android.utils.ChatBuilderHelper;
+import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PrefUtils;
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -24,7 +25,7 @@ public class ThreadsDemoApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
-        ThreadsLib.ConfigBuilder configBuilder = new ThreadsLib.ConfigBuilder(this)
+        ConfigBuilder configBuilder = new ConfigBuilder(this)
                 .pendingIntentCreator(new CustomPendingIntentCreator())
                 .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count))
                 .isDebugLoggingEnabled(true)
@@ -53,9 +54,9 @@ public class ThreadsDemoApplication extends MultiDexApplication {
                     }
                 }
                 if (pushClientCard != null) {
-                    ChatBuilderHelper.ChatDesign chatDesign = ChatBuilderHelper.ChatDesign.BLUE;
+                    ChatStyleBuilderHelper.ChatDesign chatDesign = ChatStyleBuilderHelper.ChatDesign.BLUE;
                     if (appMarker.endsWith("CRG")) {
-                        chatDesign = ChatBuilderHelper.ChatDesign.GREEN;
+                        chatDesign = ChatStyleBuilderHelper.ChatDesign.GREEN;
                     }
                     return BottomNavigationActivity.createPendingIntent(context,
                             pushClientCard.getUserId(), pushClientCard.getUserName(),
@@ -70,7 +71,7 @@ public class ThreadsDemoApplication extends MultiDexApplication {
                     return BottomNavigationActivity.createPendingIntent(context,
                             pushClientCard.getUserId(), pushClientCard.getUserName(),
                             pushClientCard.getAppMarker(), pushClientCard.getClientIdSignature(),
-                            ChatBuilderHelper.ChatDesign.GREEN);
+                            ChatStyleBuilderHelper.ChatDesign.GREEN);
                 }
             }
             return null;

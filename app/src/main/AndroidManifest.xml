@@ -34,7 +34,7 @@
             android:label="@string/title_activity_bottom_navigation"
             android:theme="@style/BottomNavigationTheme"/>
 
-        <!-- Default implementation can be used instead (see im.threads.broadcastReceivers.ThreadsPushBroadcastReceiver) -->
+        <!-- Default implementation can be used instead (see im.threads.push.ThreadsPushBroadcastReceiver) -->
         <receiver
             android:name="im.threads.android.broadcastReceivers.CustomPushBroadcastReceiver"
             android:exported="false"
@@ -56,7 +56,7 @@
             android:name="im.threads.getServerUrl"
             android:value="@string/datastore_url"/>
 
-        <!-- Default implementation can be used instead (see im.threads.services.ThreadsPushServerIntentService) -->
+        <!-- Default implementation can be used instead (see im.threads.push.ThreadsPushServerIntentService) -->
         <meta-data
             android:name="com.pushserver.android.service"
             android:value="im.threads.android.services.CustomPushServerIntentService"/>

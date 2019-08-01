@@ -26,14 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.ThreadsLib;
-import im.threads.activities.ChatActivity;
+import im.threads.UserInfoBuilder;
 import im.threads.android.R;
 import im.threads.android.data.Card;
 import im.threads.android.databinding.ActivityMainBinding;
-import im.threads.android.utils.ChatBuilderHelper;
+import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PrefUtils;
-import im.threads.utils.AppInfoHelper;
-import im.threads.utils.PermissionChecker;
+import im.threads.view.ChatActivity;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -43,7 +42,6 @@ import io.fabric.sdk.android.Fabric;
  */
 public class MainActivity extends AppCompatActivity implements AddCardDialog.AddCardDialogActionsListener, YesNoDialog.YesNoDialogActionListener {
 
-    private static final int CHAT_PERMISSIONS_REQUEST_CODE = 123;
     private static final int YES_NO_DIALOG_REQUEST_CODE = 323;
 
     private CardsAdapter cardsAdapter;
@@ -57,8 +55,7 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setViewModel(this);
         TextView versionView = findViewById(R.id.version_name);
-        versionView.setText(getString(R.string.lib_version, AppInfoHelper.getLibVersion()));
-
+        versionView.setText(getString(R.string.lib_version, ThreadsLib.getLibVersion()));
         final CarouselLayoutManager layoutManager = new CarouselLayoutManager(CarouselLayoutManager.HORIZONTAL);
         layoutManager.setPostLayoutListener(new CarouselZoomPostLayoutListener());
         binding.cardsView.setLayoutManager(layoutManager);
@@ -99,23 +96,18 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
      */
     public void navigateToChatActivity() {
         Card currentCard = getCurrentCard();
-        // При открытии чата нужно проверить, выданы ли необходимые разрешения.
-        if (!PermissionChecker.checkPermissions(this)) {
-            PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
+        if (currentCard.getUserId() != null) {
+            ThreadsLib.getInstance().initUser(
+                    new UserInfoBuilder(currentCard.getUserId())
+                            .setClientIdSignature(currentCard.getClientIdSignature())
+                            .setUserName(currentCard.getUserName())
+                            .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
+                            .setAppMarker(currentCard.getAppMarker())
+            );
+            ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(getCurrentDesign()));
+            startActivity(new Intent(this, ChatActivity.class));
         } else {
-            if (currentCard.getUserId() != null) {
-                ThreadsLib.getInstance().initUser(
-                        new ThreadsLib.UserInfo(currentCard.getUserId())
-                                .setClientIdSignature(currentCard.getClientIdSignature())
-                                .setUserName(currentCard.getUserName())
-                                .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
-                                .setAppMarker(currentCard.getAppMarker())
-                );
-                ThreadsLib.getInstance().applyChatStyle(ChatBuilderHelper.getChatStyleBuilder(getCurrentDesign()));
-                startActivity(new Intent(this, ChatActivity.class));
-            } else {
-                displayError(R.string.error_empty_userid);
-            }
+            displayError(R.string.error_empty_userid);
         }
     }
 
@@ -152,12 +144,12 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         Card currentCard = getCurrentCard();
         boolean messageSent = false;
         if (currentCard.getUserId() != null) {
-            ThreadsLib.UserInfo userInfo = new ThreadsLib.UserInfo(currentCard.getUserId())
+            UserInfoBuilder userInfoBuilder = new UserInfoBuilder(currentCard.getUserId())
                     .setClientIdSignature(currentCard.getClientIdSignature())
                     .setUserName(currentCard.getUserName())
                     .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
                     .setAppMarker(currentCard.getAppMarker());
-            ThreadsLib.getInstance().initUser(userInfo);
+            ThreadsLib.getInstance().initUser(userInfoBuilder);
             messageSent = ThreadsLib.getInstance().sendMessage(getString(R.string.test_message), imageFile);
         }
         if (messageSent) {
@@ -167,26 +159,13 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         }
     }
 
-    private ChatBuilderHelper.ChatDesign getCurrentDesign() {
-        return ChatBuilderHelper.ChatDesign.enumOf(this, (String) binding.designSpinner.getSelectedItem());
+    private ChatStyleBuilderHelper.ChatDesign getCurrentDesign() {
+        return ChatStyleBuilderHelper.ChatDesign.enumOf(this, (String) binding.designSpinner.getSelectedItem());
     }
 
     private Card getCurrentCard() {
         final CarouselLayoutManager layoutManager = (CarouselLayoutManager) binding.cardsView.getLayoutManager();
         return cardsAdapter.getCard(layoutManager.getCenterItemPosition());
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CHAT_PERMISSIONS_REQUEST_CODE) {
-            if (PermissionChecker.checkGrantResult(grantResults)) {
-                navigateToChatActivity();
-            } else {
-                Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override

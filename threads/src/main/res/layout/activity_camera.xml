@@ -22,7 +22,7 @@
         android:background="@drawable/rect_round_corners_black"
         android:gravity="center_vertical">
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.internal.widget.CustomFontTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/p"
@@ -39,7 +39,7 @@
             android:layout_centerHorizontal="true"
             app:srcCompat="@drawable/ic_c_in_c_white_24dp"/>
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.internal.widget.CustomFontTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/p"
@@ -106,14 +106,14 @@
         android:background="@color/threads_toolbar_gray"
         android:visibility="gone">
 
-        <im.threads.widget.CustomFontButton
+        <im.threads.internal.widget.CustomFontButton
             android:id="@+id/retake"
             style="@style/bottomButtonTransparent"
             android:layout_gravity="left"
             android:text="@string/threads_retake"
             />
 
-        <im.threads.widget.CustomFontButton
+        <im.threads.internal.widget.CustomFontButton
             android:id="@+id/send"
             style="@style/bottomButtonTransparent"
             android:layout_gravity="right"

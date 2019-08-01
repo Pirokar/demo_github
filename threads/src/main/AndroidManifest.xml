@@ -20,49 +20,49 @@
         android:hardwareAccelerated="true"
         android:largeHeap="true">
         <activity
-            android:name="im.threads.activities.ChatActivity"
+            android:name="im.threads.view.ChatActivity"
             android:launchMode="singleTop"
             android:theme="@style/ThreadsStyle"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
         <activity
-            android:name="im.threads.activities.ConsultActivity"
+            android:name=".internal.activities.ConsultActivity"
             android:theme="@style/ThreadsStyleConsultPage"/>
         <activity
-            android:name="im.threads.activities.FilesActivity"
+            android:name=".internal.activities.FilesActivity"
             android:theme="@style/ThreadsStyle"/>
         <activity
-            android:name="im.threads.activities.GalleryActivity"
+            android:name=".internal.activities.GalleryActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity
-            android:name="im.threads.activities.CameraActivity"
+            android:name=".internal.activities.CameraActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity
-            android:name="im.threads.activities.ImagesActivity"
+            android:name=".internal.activities.ImagesActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity
-            android:name="im.threads.activities.TranslucentActivity"
+            android:name=".internal.activities.TranslucentActivity"
             android:label=""
             android:launchMode="singleInstance"
             android:screenOrientation="unspecified"
             android:theme="@style/Translucent"/>
         <activity
-            android:name=".permissions.PermissionsActivity"
+            android:name=".internal.permissions.PermissionsActivity"
             android:label="@string/threads_permissions_help"
             android:screenOrientation="unspecified"
             android:theme="@style/Transparent"/>
 
         <service
-            android:name="im.threads.services.ThreadsPushServerIntentService"
+            android:name="im.threads.push.ThreadsPushServerIntentService"
             android:exported="false"/>
         <service
-            android:name="im.threads.services.DownloadService"
+            android:name=".internal.services.DownloadService"
             android:exported="false"/>
         <service
-            android:name="im.threads.services.NotificationService"
+            android:name=".internal.services.NotificationService"
             android:exported="false"/>
 
         <provider
-            android:name="im.threads.utils.ThreadsFileProvider"
+            android:name=".internal.utils.ThreadsFileProvider"
             android:authorities="${applicationId}.im.threads.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">

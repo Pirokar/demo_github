@@ -5,7 +5,7 @@
     android:id="@+id/chat_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="im.threads.activities.ChatActivity">
+    tools:context="im.threads.view.ChatActivity">
 
     <FrameLayout
         android:id="@+id/chat_frame_layout"

@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import im.threads.ThreadsLib;
+import im.threads.ChatStyle;
+import im.threads.internal.utils.PrefUtils;
 
 public class Config {
 
@@ -12,6 +14,9 @@ public class Config {
 
     @NonNull
     public final Context context;
+
+    private volatile ChatStyle chatStyle = null;
+
     @NonNull
     public final ThreadsLib.PendingIntentCreator pendingIntentCreator;
     @Nullable
@@ -37,5 +42,28 @@ public class Config {
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
+    }
+
+    public void applyChatStyle(ChatStyle chatStyle) {
+        this.chatStyle = chatStyle;
+        PrefUtils.setIncomingStyle(chatStyle);
+    }
+
+    @NonNull
+    public ChatStyle getChatStyle() {
+        ChatStyle localInstance = chatStyle;
+        if (localInstance == null) {
+            synchronized (ChatStyle.class) {
+                localInstance = chatStyle;
+                if (localInstance == null) {
+                    localInstance = PrefUtils.getIncomingStyle();
+                    if (localInstance == null) {
+                        localInstance = new ChatStyle();
+                    }
+                    chatStyle = localInstance;
+                }
+            }
+        }
+        return localInstance;
     }
 }

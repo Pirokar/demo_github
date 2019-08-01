@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import im.threads.BuildConfig;
-import im.threads.broadcastReceivers.ThreadsPushBroadcastReceiver;
+import im.threads.push.ThreadsPushBroadcastReceiver;
 
 public class CustomPushBroadcastReceiver extends ThreadsPushBroadcastReceiver {
 

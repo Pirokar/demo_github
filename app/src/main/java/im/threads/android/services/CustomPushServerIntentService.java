@@ -7,7 +7,7 @@ import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 import java.util.List;
 
 import im.threads.BuildConfig;
-import im.threads.services.ThreadsPushServerIntentService;
+import im.threads.push.ThreadsPushServerIntentService;
 
 public class CustomPushServerIntentService extends ThreadsPushServerIntentService {
 

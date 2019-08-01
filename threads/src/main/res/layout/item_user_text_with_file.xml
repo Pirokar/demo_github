@@ -47,7 +47,7 @@
             android:layout_marginBottom="@dimen/margin_quarter"
             android:paddingTop="@dimen/margin_quarter">
 
-            <im.threads.views.CircularProgressButton
+            <im.threads.internal.views.CircularProgressButton
                 android:id="@+id/button_download"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
@@ -73,7 +73,7 @@
                 android:orientation="vertical"
                 android:paddingRight="2dp">
 
-                <im.threads.widget.text_view.QuoteAuthorTextView
+                <im.threads.internal.widget.text_view.QuoteAuthorTextView
                     android:id="@+id/to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                     android:textColor="@color/threads_outgoing_message_text"
                     android:textStyle="bold"/>
 
-                <im.threads.widget.text_view.QuoteMessageTextView
+                <im.threads.internal.widget.text_view.QuoteMessageTextView
                     android:id="@+id/file_specs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                     android:text="счет на оплату 1,2mb 436666666666364"
                     android:textColor="@color/threads_outgoing_message_text"/>
 
-                <im.threads.widget.text_view.QuoteTimeTextView
+                <im.threads.internal.widget.text_view.QuoteTimeTextView
                     android:id="@+id/send_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <im.threads.widget.text_view.BubbleMessageTextView
+            <im.threads.internal.widget.text_view.BubbleMessageTextView
                 android:id="@+id/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                 android:textSize="16sp"
                 app:last_line_padding_symbols="16"/>
 
-            <im.threads.widget.text_view.BubbleTimeTextView
+            <im.threads.internal.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -155,7 +155,7 @@
                     android:layout_height="125dp"
                     android:minWidth="240dp"/>
 
-                <im.threads.widget.text_view.BubbleMessageTextView
+                <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/og_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -168,7 +168,7 @@
                     android:textStyle="bold"
                     tools:text="My Awesome Site Title"/>
 
-                <im.threads.widget.text_view.BubbleMessageTextView
+                <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/og_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -179,7 +179,7 @@
                     android:textSize="16sp"
                     tools:text="My Awesome Site Descripton. Here I would write all awesome info"/>
 
-                <im.threads.widget.text_view.BubbleMessageTextView
+                <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/og_url"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -194,7 +194,7 @@
                     tools:text="http://my.awesome.site.com"/>
             </LinearLayout>
 
-            <im.threads.widget.text_view.BubbleTimeTextView
+            <im.threads.internal.widget.text_view.BubbleTimeTextView
                 android:id="@+id/og_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
