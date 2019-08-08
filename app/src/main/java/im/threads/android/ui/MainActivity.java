@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.activities.ChatActivity;
@@ -104,9 +105,12 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         binding.addCardHint.setVisibility(!hasCards ? View.VISIBLE : View.GONE);
         binding.chatActivityButton.setVisibility(hasCards ? View.VISIBLE : View.GONE);
         binding.chatFragmentButton.setVisibility(hasCards ? View.VISIBLE : View.GONE);
+        binding.sendMessageButton.setVisibility(hasCards ? View.VISIBLE : View.GONE);
 
         if (hasCards) {
             cardsAdapter.setCards(cards);
+        } else {
+            cardsAdapter.setCards(new ArrayList<>());
         }
     }
 
@@ -165,7 +169,23 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         } catch (FileNotFoundException ignored) {
         } catch (IOException ignored) {
         }
-        if (ChatController.sendMessage(this, getString(R.string.test_message), imageFile)) {
+
+        Card currentCard = getCurrentCard();
+        String data = "{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}";
+        boolean messageSent = false;
+        if (currentCard.getUserId() != null) {
+            ChatBuilderHelper.buildChatStyle(this,
+                    currentCard.getAppMarker(),
+                    currentCard.getUserId(),
+                    currentCard.getClientIdSignature(),
+                    currentCard.getUserName(),
+                    data,
+                    getCurrentDesign());
+
+            messageSent = ChatController.sendMessage(this, getString(R.string.test_message), imageFile);
+        }
+
+        if (messageSent) {
             Toast.makeText(this, R.string.send_text_message_success, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, R.string.send_text_message_error, Toast.LENGTH_SHORT).show();
@@ -231,6 +251,8 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         List<Card> cards = PrefUtils.getCards(this);
         if (cards.contains(cardForDelete)) {
             cards.remove(cardForDelete);
+            //TODO THREADS-5687 refactor for working with adapter instead of PrefUtils.
+            // use PrefUtils only on start and save
             updateViews(cards);
             PrefUtils.storeCards(this, cards);
 
