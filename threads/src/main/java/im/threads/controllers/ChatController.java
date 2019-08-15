@@ -254,6 +254,9 @@ public class ChatController {
      * @return true, если удалось добавить сообщение в очередь отправки, иначе false
      */
     public static boolean sendMessage(Context context, @Nullable String message, @Nullable File file) {
+
+        ChatController chatController = getInstance(context);
+
         if (PrefUtils.isClientIdNotEmpty(context)) {
             FileDescription fileDescription = null;
             if (file != null) {
@@ -263,8 +266,7 @@ public class ChatController {
                         System.currentTimeMillis());
             }
             UpcomingUserMessage msg = new UpcomingUserMessage(fileDescription, null, message, false);
-            getInstance(context)
-                    .onUserInput(msg);
+            chatController.onUserInput(msg);
             return true;
         }
         return false;
