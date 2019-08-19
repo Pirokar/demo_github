@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class DateRow implements ChatItem, MediaAndFileItem {
+public final class DateRow implements ChatItem, MediaAndFileItem {
     private final long date;
 
     @Override

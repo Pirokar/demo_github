@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import im.threads.internal.Config;
 import im.threads.ChatStyle;
 
-public class CustomFontButton extends android.support.v7.widget.AppCompatButton {
+public final class CustomFontButton extends android.support.v7.widget.AppCompatButton {
     public CustomFontButton(Context context) {
         super(context);
         if (isInEditMode()) {

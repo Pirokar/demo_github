@@ -17,7 +17,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MediaAndFileItem;
 import im.threads.internal.utils.FileUtils;
 
-public class FilesAndMediaAdapter extends RecyclerView.Adapter {
+public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
     private static final int TYPE_DATE_ROW = 1;
     private static final int TYPE_FILE_AND_MEDIA_ROW = 2;
     private OnFileClick mOnFileClick;

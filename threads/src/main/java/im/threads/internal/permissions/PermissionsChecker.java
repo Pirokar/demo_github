@@ -9,7 +9,7 @@ import android.support.v4.content.ContextCompat;
 /**
  * Менеджер разрешений
  */
-class PermissionsChecker {
+final class PermissionsChecker {
 
     private PermissionsChecker() {
     }

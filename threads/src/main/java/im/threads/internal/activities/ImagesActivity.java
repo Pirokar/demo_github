@@ -36,7 +36,7 @@ import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
+public final class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
     private static final String TAG = "ImagesActivity ";
     private static final int CODE_REQUEST_DOWNLOAD = 1;
 

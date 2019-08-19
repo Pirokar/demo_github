@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.content.res.AppCompatResources;
@@ -30,7 +30,7 @@ import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 
-public class QuickAnswerFragment extends DialogFragment {
+public final class QuickAnswerFragment extends DialogFragment {
     private EditText mEditText;
 
     public static QuickAnswerFragment getInstance(
@@ -46,7 +46,7 @@ public class QuickAnswerFragment extends DialogFragment {
         return frag;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ChatStyle style = Config.instance.getChatStyle();

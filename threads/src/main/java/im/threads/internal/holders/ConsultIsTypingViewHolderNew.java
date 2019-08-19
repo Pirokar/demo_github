@@ -15,7 +15,7 @@ import im.threads.internal.Config;
 /**
  * layout/item_consult_typing.xml
  */
-public class ConsultIsTypingViewHolderNew extends RecyclerView.ViewHolder {
+public final class ConsultIsTypingViewHolderNew extends RecyclerView.ViewHolder {
     public ImageView mConsultAvatar;
     private TextView mViewTypingInProgress;
     private ChatStyle style;

@@ -23,7 +23,7 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.MaskedTransformation;
 
-public class ImageFromUserViewHolder extends BaseHolder {
+public final class ImageFromUserViewHolder extends BaseHolder {
     private TextView mTimeStampTextView;
     private ImageView mImage;
     private MaskedTransformation maskedTransformation;

@@ -23,7 +23,7 @@ import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class DatabaseHolder {
+public final class DatabaseHolder {
     private static final String TAG = DatabaseHolder.class.getSimpleName();
 
     private static DatabaseHolder instance;

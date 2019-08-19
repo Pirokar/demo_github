@@ -5,7 +5,7 @@ import java.util.List;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 
-public class Seeker {
+public final class Seeker {
     private String lastQuery = "";
 
     public List<ChatItem> seek(List<ChatItem> target,

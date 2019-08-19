@@ -104,7 +104,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
  */
-public class ChatFragment extends BaseFragment implements
+public final class ChatFragment extends BaseFragment implements
         BottomSheetView.ButtonsListener,
         ChatAdapter.AdapterInterface,
         FilePickerFragment.SelectedListener,

@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class PushMessageCheckResult {
+public final class PushMessageCheckResult {
 
     private boolean detected = false;
     private boolean needsShowIsStatusBar = false;

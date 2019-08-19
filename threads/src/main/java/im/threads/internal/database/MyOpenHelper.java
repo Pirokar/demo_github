@@ -29,7 +29,7 @@ import im.threads.internal.model.UserPhrase;
 /**
  * обертка для БД
  */
-class MyOpenHelper extends SQLiteOpenHelper {
+final class MyOpenHelper extends SQLiteOpenHelper {
     private static final int VERSION = 6;
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";

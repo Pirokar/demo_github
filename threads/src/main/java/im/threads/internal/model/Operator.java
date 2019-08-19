@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class Operator {
+public final class Operator {
     private Long id;
     private String name;
     private String role;

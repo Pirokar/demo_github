@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import im.threads.internal.Config;
 import im.threads.ChatStyle;
 
-public class CustomFontEditText extends android.support.v7.widget.AppCompatEditText {
+public final class CustomFontEditText extends android.support.v7.widget.AppCompatEditText {
     public CustomFontEditText(Context context) {
         super(context);
         if (isInEditMode()) {

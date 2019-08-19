@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 
-public class BucketsGalleryDecorator extends RecyclerView.ItemDecoration {
+public final class BucketsGalleryDecorator extends RecyclerView.ItemDecoration {
     private int offset;
 
     public BucketsGalleryDecorator(int offset) {

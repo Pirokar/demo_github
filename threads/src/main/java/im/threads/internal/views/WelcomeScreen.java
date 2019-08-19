@@ -14,7 +14,7 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.utils.ColorsHelper;
 
-public class WelcomeScreen extends LinearLayout {
+public final class WelcomeScreen extends LinearLayout {
 
     public WelcomeScreen(Context context, AttributeSet attrs) {
         super(context, attrs);

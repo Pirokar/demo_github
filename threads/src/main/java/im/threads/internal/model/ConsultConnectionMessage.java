@@ -4,7 +4,7 @@ import android.support.v4.util.ObjectsCompat;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
+public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
 
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates

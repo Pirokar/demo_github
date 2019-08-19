@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 
-public class ConsultWriter {
+public final class ConsultWriter {
     private static final String OPERATOR_STATUS = "OPERATOR_STATUS";
     private static final String OPERATOR_NAME = "OPERATOR_NAME";
     private static final String OPERATOR_TITLE = "OPERATOR_TITLE";

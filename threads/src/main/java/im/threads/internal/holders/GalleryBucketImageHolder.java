@@ -12,7 +12,7 @@ import im.threads.internal.picasso_url_connection_only.Picasso;
 
 import java.io.File;
 
-public class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
+public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
     private TextView mNameTextView;
     private TextView mSizeTextView;

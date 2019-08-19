@@ -7,7 +7,7 @@ import java.util.TimeZone;
 /**
  * Информация о расписании
  */
-public class ScheduleInfo implements ChatItem {
+public final class ScheduleInfo implements ChatItem {
 
     private Long id;
     private String notification;

@@ -11,7 +11,7 @@ import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.UnreadMessages;
 
-public class UnreadMessageViewHolder extends RecyclerView.ViewHolder {
+public final class UnreadMessageViewHolder extends RecyclerView.ViewHolder {
     private TextView mTextView;
 
     public UnreadMessageViewHolder(ViewGroup parent) {

@@ -58,7 +58,7 @@ import static android.text.TextUtils.isEmpty;
 /**
  * Отображает пуш уведомление, о котором скачана полная информация.
  */
-public class NotificationService extends Service {
+public final class NotificationService extends Service {
 
     private static final String TAG = "NotificationService";
     private static final String CHANNEL_ID = "im.threads.internal.services.NotificationService.CHANNEL_ID";

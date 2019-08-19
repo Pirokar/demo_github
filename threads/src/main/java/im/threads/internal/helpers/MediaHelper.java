@@ -16,7 +16,7 @@ import java.util.List;
 
 import im.threads.internal.utils.ThreadsLogger;
 
-public class MediaHelper {
+public final class MediaHelper {
 
     private static final String TAG = MediaHelper.class.getSimpleName();
 

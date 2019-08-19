@@ -26,7 +26,7 @@ import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.views.CircularProgressButton;
 
-public class ConsultFileViewHolder extends BaseHolder {
+public final class ConsultFileViewHolder extends BaseHolder {
     private CircularProgressButton mCircularProgressButton;
     private TextView mFileHeader;
     private TextView mSizeTextView;

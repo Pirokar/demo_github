@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class FileAndMediaItem implements MediaAndFileItem {
+public final class FileAndMediaItem implements MediaAndFileItem {
     private final FileDescription fileDescription;
 
     public FileAndMediaItem(FileDescription fileDescription) {

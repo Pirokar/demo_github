@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-public class UrlUtils {
+public final class UrlUtils {
 
     public static List<String> extractLinks(String text) {
         List<String> links = new ArrayList<>();

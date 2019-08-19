@@ -14,7 +14,7 @@ import java.io.Serializable;
  * Хранит в себе информацию о расцветках, иконках
  * и других кастомизациях чата.
  */
-public class ChatStyle implements Serializable {
+public final class ChatStyle implements Serializable {
 
     //common styles
     @ColorRes

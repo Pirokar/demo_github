@@ -5,7 +5,7 @@ import android.content.Context;
 import im.threads.R;
 import im.threads.internal.model.ConsultConnectionMessage;
 
-class ConnectionPhrase {
+final class ConnectionPhrase {
 
     private ConnectionPhrase() {
     }

@@ -21,16 +21,16 @@ import java.io.FileFilter;
 import java.text.Collator;
 import java.util.Arrays;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
 
 /**
  * Dialog fragment for picking folder
  * implement SelectedListener interface to get chosen dir
  * set setFileFilter(FileFilter filefilter) if your need to display not only directories
  */
-public class FilePickerFragment extends DialogFragment
+public final class FilePickerFragment extends DialogFragment
         implements FileFilter, View.OnClickListener, ListView.OnItemClickListener, AlertDialog.OnClickListener {
     private File currentAbsoluteDir;
     private static final String STARTING_FOLDER_TAG = "start";

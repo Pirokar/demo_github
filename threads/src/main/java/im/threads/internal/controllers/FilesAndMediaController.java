@@ -24,7 +24,7 @@ import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
 
-public class FilesAndMediaController extends Fragment {
+public final class FilesAndMediaController extends Fragment {
     private FilesActivity activity;
 
     public static FilesAndMediaController getInstance() {

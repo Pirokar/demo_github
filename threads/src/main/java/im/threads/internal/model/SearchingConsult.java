@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class SearchingConsult implements ChatItem {
+public final class SearchingConsult implements ChatItem {
     private long date;
 
     public SearchingConsult(long date) {

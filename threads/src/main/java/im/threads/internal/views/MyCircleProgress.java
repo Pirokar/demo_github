@@ -10,7 +10,7 @@ import android.view.View;
 
 import im.threads.internal.Config;
 
-public class MyCircleProgress extends View {
+public final class MyCircleProgress extends View {
     private Paint finishedPaint;
     private RectF finishedOuterRect = new RectF();
     private int progress = 0;

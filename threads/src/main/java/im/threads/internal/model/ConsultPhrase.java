@@ -9,7 +9,7 @@ import im.threads.internal.utils.FileUtils;
 /**
  * сообщение оператора
  */
-public class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase, IsOnlyImage {
+public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase, IsOnlyImage {
 
     private final String uuid;
     private String providerId; //This this a mfms messageId required for read status updates

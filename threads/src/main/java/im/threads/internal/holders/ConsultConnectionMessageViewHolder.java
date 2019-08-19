@@ -27,7 +27,7 @@ import im.threads.internal.utils.ThreadsLogger;
 /**
  * layout/item_consult_connected.xml
  */
-public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder {
+public final class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "CCViewHolder ";
     private ImageView mConsultAvatar;
     private TextView headerTextView;

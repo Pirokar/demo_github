@@ -22,7 +22,7 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.views.CircularProgressButton;
 
-public class UserFileViewHolder extends BaseHolder {
+public final class UserFileViewHolder extends BaseHolder {
     private CircularProgressButton mCircularProgressButton;
     private TextView mFileHeader;
     private TextView mSizeTextView;

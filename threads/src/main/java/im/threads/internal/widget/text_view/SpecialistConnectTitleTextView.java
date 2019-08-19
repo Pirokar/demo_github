@@ -9,7 +9,7 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.CustomFontTextView;
 
-public class SpecialistConnectTitleTextView extends CustomFontTextView {
+public final class SpecialistConnectTitleTextView extends CustomFontTextView {
 
     public SpecialistConnectTitleTextView(Context context) {
         super(context);

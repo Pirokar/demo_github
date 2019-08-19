@@ -15,7 +15,7 @@ import im.threads.internal.widget.Rating;
 /**
  * ViewHolder для опросов с рейтингом
  */
-public class RatingStarsViewHolder extends BaseHolder {
+public final class RatingStarsViewHolder extends BaseHolder {
 
     private View topSeparator;
     private View bottomSeparator;

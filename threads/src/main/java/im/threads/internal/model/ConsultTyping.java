@@ -2,7 +2,7 @@ package im.threads.internal.model;
 
 import android.support.v4.util.ObjectsCompat;
 
-public class ConsultTyping extends ConsultChatPhrase implements ChatItem {
+public final class ConsultTyping extends ConsultChatPhrase implements ChatItem {
     private long date;
 
     @Override

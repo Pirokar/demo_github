@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class Attachment {
+public final class Attachment {
     private String result;
     private Optional optional;
 

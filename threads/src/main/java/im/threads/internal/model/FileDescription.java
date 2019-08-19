@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.util.ObjectsCompat;
 
-public class FileDescription implements Parcelable {
+public final class FileDescription implements Parcelable {
     private String from;
     private String filePath;
     private String downloadPath;

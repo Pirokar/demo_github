@@ -14,7 +14,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ColorsHelper {
+public final class ColorsHelper {
 
     public static void setStatusBarColor(Activity activity, @ColorRes int colorResId) {
         if (colorResId != 0 && Build.VERSION.SDK_INT > 20) {

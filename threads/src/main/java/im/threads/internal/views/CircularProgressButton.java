@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
 import im.threads.R;
 import im.threads.internal.utils.ViewUtils;
 
-public class CircularProgressButton extends FrameLayout {
+public final class CircularProgressButton extends FrameLayout {
     private MyCircleProgress mcp;
     private View mImageLabel;
     private View background;

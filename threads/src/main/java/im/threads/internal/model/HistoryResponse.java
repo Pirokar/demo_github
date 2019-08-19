@@ -11,7 +11,7 @@ import im.threads.internal.utils.ThreadsLogger;
  * ответ на запрос истории v2
  * в структуре появилась информация об операторе
  */
-public class HistoryResponse {
+public final class HistoryResponse {
     private static final String TAG = HistoryResponse.class.getSimpleName();
 
     private List<MessageFromHistory> messages;

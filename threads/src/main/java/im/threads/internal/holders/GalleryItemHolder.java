@@ -13,7 +13,7 @@ import java.io.File;
 import im.threads.R;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 
-public class GalleryItemHolder extends RecyclerView.ViewHolder {
+public final class GalleryItemHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
     private AppCompatCheckBox mCheckBox;
 

@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class QuestionDTO implements ChatItem {
+public final class QuestionDTO implements ChatItem {
 
     private long id;
     private long sendingId;

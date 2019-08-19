@@ -11,7 +11,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ServiceGenerator {
+public final class ServiceGenerator {
 
     private static String apiBaseUrl = "https://datastore.threads.im/";
 

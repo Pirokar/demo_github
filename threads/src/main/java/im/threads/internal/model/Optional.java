@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class Optional {
+public final class Optional {
     private String type;
     private String name;
     private Long size;

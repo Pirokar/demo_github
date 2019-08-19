@@ -18,7 +18,7 @@ import static im.threads.internal.utils.FileUtils.PDF;
 import static im.threads.internal.utils.FileUtils.PNG;
 import static im.threads.internal.utils.FileUtils.getExtensionFromFileDescription;
 
-public class NougatMessageFormatter {
+public final class NougatMessageFormatter {
     private Context ctx;
     private List<ChatItem> unreadMessages;
     private List<ChatItem> incomingPushes;

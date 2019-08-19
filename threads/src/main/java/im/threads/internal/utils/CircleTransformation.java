@@ -7,7 +7,7 @@ import android.graphics.Paint;
 
 import im.threads.internal.picasso_url_connection_only.Transformation;
 
-public class CircleTransformation implements Transformation {
+public final class CircleTransformation implements Transformation {
     @Override
     public Bitmap transform(Bitmap source) {
         int size = Math.min(source.getWidth(), source.getHeight());

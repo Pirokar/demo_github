@@ -4,7 +4,7 @@ package im.threads.internal.model;
  * Объект-пустышка для обработки сообщений, относящихся к чату (что бы они не прошли дальше),
  * но не имеющих действия в МП
  */
-public class EmptyChatItem implements ChatItem {
+public final class EmptyChatItem implements ChatItem {
 
     private String mType;
 

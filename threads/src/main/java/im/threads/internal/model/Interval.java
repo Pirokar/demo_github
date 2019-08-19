@@ -3,7 +3,7 @@ package im.threads.internal.model;
 /**
  * Интервал расписания
  */
-public class Interval {
+public final class Interval {
 
     private Integer weekDay;
     private Integer startTime;

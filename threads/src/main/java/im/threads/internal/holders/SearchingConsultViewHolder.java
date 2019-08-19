@@ -12,7 +12,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 
-public class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
+public final class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
 
     public SearchingConsultViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_searching_consult, parent, false));

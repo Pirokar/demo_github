@@ -10,7 +10,7 @@ import im.threads.internal.activities.BaseActivity;
 /**
  * Вся логика находится во фрагменте. Смотрите {@link ChatFragment}
  */
-public class ChatActivity extends BaseActivity {
+public final class ChatActivity extends BaseActivity {
 
     private ChatFragment chatFragment;
 

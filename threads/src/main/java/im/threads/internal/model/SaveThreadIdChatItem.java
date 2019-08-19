@@ -3,7 +3,7 @@ package im.threads.internal.model;
 /**
  * Объект для обработки пуша с пришедшим threadId
  */
-public class SaveThreadIdChatItem implements ChatItem {
+public final class SaveThreadIdChatItem implements ChatItem {
 
     private Long threadId;
 

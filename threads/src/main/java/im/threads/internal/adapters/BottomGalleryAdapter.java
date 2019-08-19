@@ -10,7 +10,7 @@ import java.util.List;
 import im.threads.internal.holders.BottomGalleryImageHolder;
 import im.threads.internal.model.BottomGalleryItem;
 
-public class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
+public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;
     private List<String> mChosenItems = new ArrayList<>();
     private OnChooseItemsListener mOnChooseItemsListener;

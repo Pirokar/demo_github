@@ -18,7 +18,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class ImagesAdapter extends PagerAdapter {
+public final class ImagesAdapter extends PagerAdapter {
     private List<FileDescription> fileDescriptions;
 
     private static final String TAG = "ImagesAdapter";

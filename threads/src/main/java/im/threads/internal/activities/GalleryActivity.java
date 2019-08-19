@@ -34,7 +34,7 @@ import im.threads.internal.utils.BucketsGalleryDecorator;
 import im.threads.internal.utils.GalleryDecorator;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class GalleryActivity
+public final class GalleryActivity
         extends BaseActivity
         implements PhotoBucketsGalleryAdapter.OnItemClick, GalleryAdapter.OnGalleryItemClick {
 

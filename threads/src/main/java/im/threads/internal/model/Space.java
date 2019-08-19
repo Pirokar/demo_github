@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class Space implements ChatItem {
+public final class Space implements ChatItem {
     private final int height;
     private final long timeStamp;
 

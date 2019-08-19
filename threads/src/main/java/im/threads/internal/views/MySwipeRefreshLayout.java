@@ -12,7 +12,7 @@ import android.view.ViewConfiguration;
 
 import im.threads.R;
 
-public class MySwipeRefreshLayout extends SwipeRefreshLayout {
+public final class MySwipeRefreshLayout extends SwipeRefreshLayout {
     private float initX;
     private float initY;
     private int mActivePointerId;

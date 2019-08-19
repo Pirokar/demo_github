@@ -9,7 +9,7 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.CustomFontTextView;
 
-public class BubbleTimeTextView extends CustomFontTextView {
+public final class BubbleTimeTextView extends CustomFontTextView {
 
     public BubbleTimeTextView(Context context) {
         super(context);

@@ -22,7 +22,7 @@ import im.threads.internal.model.Survey;
 /**
  * ViewHolder для результатов опроса с рейтингом
  */
-public class RatingStarsSentViewHolder extends BaseHolder {
+public final class RatingStarsSentViewHolder extends BaseHolder {
 
     private ImageView star;
     private TextView mHeader;

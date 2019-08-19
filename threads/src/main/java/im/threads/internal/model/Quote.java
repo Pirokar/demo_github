@@ -3,7 +3,7 @@ package im.threads.internal.model;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ObjectsCompat;
 
-public class Quote {
+public final class Quote {
     private String phraseOwnerTitle;
     private final String text;
     private FileDescription fileDescription;

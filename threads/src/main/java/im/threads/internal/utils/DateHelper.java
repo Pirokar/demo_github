@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class DateHelper {
+public final class DateHelper {
     private static final String TAG = DateHelper.class.getSimpleName();
 
     private static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";

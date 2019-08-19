@@ -9,7 +9,7 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.BoldCustomFontTextView;
 
-public class PlaceholderTitleTextView extends BoldCustomFontTextView {
+public final class PlaceholderTitleTextView extends BoldCustomFontTextView {
 
     public PlaceholderTitleTextView(Context context) {
         super(context);

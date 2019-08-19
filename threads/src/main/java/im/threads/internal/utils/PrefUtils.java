@@ -15,7 +15,7 @@ import com.google.gson.JsonSyntaxException;
 import im.threads.internal.Config;
 import im.threads.ChatStyle;
 
-public class PrefUtils {
+public final class PrefUtils {
     private static final String TAG = "PrefUtils ";
     private static final String TAG_CLIENT_ID = "TAG_CLIENT_ID";
     private static final String TAG_CLIENT_ID_ENCRYPTED = "TAG_CLIENT_ID_ENCRYPTED";

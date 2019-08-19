@@ -43,7 +43,7 @@ import static android.text.TextUtils.isEmpty;
 /**
  * layout/item_consultant_text_with_file.xml
  */
-public class ConsultPhraseHolder extends BaseHolder {
+public final class ConsultPhraseHolder extends BaseHolder {
     private static final String TAG = "ConsultPhraseHolder ";
     private View fileRow;
     private CircularProgressButton mCircularProgressButton;

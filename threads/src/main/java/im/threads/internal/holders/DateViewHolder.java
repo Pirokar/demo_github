@@ -18,7 +18,7 @@ import im.threads.ChatStyle;
 /**
  * layout/item_date.xml
  */
-public class DateViewHolder extends RecyclerView.ViewHolder {
+public final class DateViewHolder extends RecyclerView.ViewHolder {
     private TextView mTextView;
     private SimpleDateFormat sdf;
 

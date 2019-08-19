@@ -15,7 +15,7 @@ import im.threads.internal.Config;
 import im.threads.internal.model.BottomGalleryItem;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 
-public class BottomGalleryImageHolder extends BaseHolder {
+public final class BottomGalleryImageHolder extends BaseHolder {
     private ImageView image;
     private ImageView chosenMark;
     private ChatStyle style;

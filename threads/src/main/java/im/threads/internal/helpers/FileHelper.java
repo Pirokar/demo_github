@@ -7,9 +7,12 @@ import java.io.File;
 
 import im.threads.internal.utils.ThreadsLogger;
 
-public class FileHelper {
+public final class FileHelper {
 
     private static String TAG = FileHelper.class.getSimpleName();
+
+    private FileHelper(){
+    }
 
     public static File createImageFile(Context context) {
         String filename = "thr" + System.currentTimeMillis() + ".jpg";

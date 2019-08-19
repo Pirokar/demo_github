@@ -26,7 +26,7 @@ import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.MaskedTransformation;
 
-public class ImageFromConsultViewHolder extends BaseHolder {
+public final class ImageFromConsultViewHolder extends BaseHolder {
 
     private TextView mTimeStampTextView;
     private ImageView mImage;

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import im.threads.R;
 
-public class UnreadMessages implements ChatItem {
+public final class UnreadMessages implements ChatItem {
     private long timeStamp;
     private int count;
 

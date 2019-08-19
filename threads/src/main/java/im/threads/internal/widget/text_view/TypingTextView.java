@@ -9,7 +9,7 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.CustomFontTextView;
 
-public class TypingTextView extends CustomFontTextView {
+public final class TypingTextView extends CustomFontTextView {
     public TypingTextView(Context context) {
         super(context);
     }

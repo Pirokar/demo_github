@@ -11,7 +11,7 @@ import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class QuickAnswerController extends Fragment {
+public final class QuickAnswerController extends Fragment {
     private static final String TAG = "QuickAnswerController ";
     private TranslucentActivity activity;
     private Context context;

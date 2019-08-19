@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class MediaPhoto {
+public final class MediaPhoto {
     private String imagePath;
     private String bucketName;
     private boolean isChecked;

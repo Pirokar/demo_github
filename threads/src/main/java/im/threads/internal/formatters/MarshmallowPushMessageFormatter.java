@@ -19,7 +19,7 @@ import static im.threads.internal.utils.FileUtils.PNG;
 import static im.threads.internal.utils.FileUtils.UNKNOWN;
 import static im.threads.internal.utils.FileUtils.getExtensionFromFileDescription;
 
-public class MarshmallowPushMessageFormatter {
+public final class MarshmallowPushMessageFormatter {
     private Context ctx;
     private List<ChatItem> unreadMessages;
     private List<ChatItem> incomingPushes;

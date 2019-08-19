@@ -40,7 +40,7 @@ import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.DateHelper;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class IncomingMessageParser {
+public final class IncomingMessageParser {
     private static final String TAG = "MessageFormatter ";
 
     private IncomingMessageParser() {

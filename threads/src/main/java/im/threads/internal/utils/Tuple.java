@@ -2,7 +2,7 @@ package im.threads.internal.utils;
 
 import android.support.v4.util.ObjectsCompat;
 
-public class Tuple<F, S> {
+public final class Tuple<F, S> {
     public F first;
     public S second;
 

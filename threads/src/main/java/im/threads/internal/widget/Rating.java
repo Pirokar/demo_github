@@ -18,7 +18,7 @@ import im.threads.internal.Config;
 /**
  * Контрол для показа и изменения рейтинга
  */
-public class Rating extends LinearLayout {
+public final class Rating extends LinearLayout {
 
     private ChatStyle style;
     private int ratingCount;

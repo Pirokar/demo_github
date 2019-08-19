@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 /**
  * as it name says, it's a simple layout which height is always same as it's width;
  */
-public class SquareLayout extends FrameLayout {
+public final class SquareLayout extends FrameLayout {
     public SquareLayout(Context context) {
         super(context);
     }

@@ -19,7 +19,7 @@ import java.util.Arrays;
 import im.threads.R;
 import im.threads.internal.utils.ViewUtils;
 
-public class BottomSheetView extends LinearLayout {
+public final class BottomSheetView extends LinearLayout {
     private ButtonsListener buttonsListener;
     private TextView hideButton;
     private boolean isSmthSelected;

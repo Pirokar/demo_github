@@ -61,7 +61,7 @@ import im.threads.internal.utils.MaskedTransformation;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "ChatAdapter ";
     private static final int TYPE_CONSULT_TYPING = 1;
     private static final int TYPE_DATE = 2;

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * helper filter to filter up pictures
  */
-public class MyFileFilter implements FileFilter, FilenameFilter {
+public final class MyFileFilter implements FileFilter, FilenameFilter {
     private static final ArrayList<IgnoreCaseString> acceptedPicFormats = new ArrayList<>();
 
     public MyFileFilter() {

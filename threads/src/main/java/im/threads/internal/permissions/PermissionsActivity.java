@@ -18,7 +18,7 @@ import im.threads.R;
 /**
  * Активити для разрешений
  */
-public class PermissionsActivity extends AppCompatActivity {
+public final class PermissionsActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 0;
     private static final String EXTRA_PERMISSIONS = "EXTRA_PERMISSIONS";   // Ключ для передачи разрешений

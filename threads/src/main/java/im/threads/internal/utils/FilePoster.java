@@ -18,7 +18,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 
-public class FilePoster {
+public final class FilePoster {
     private static final String UPLOAD_FILE_URL = "https://datastore.threads.im/";
     private FileDescription fileDescription;
     private Context context;

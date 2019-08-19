@@ -2,7 +2,7 @@ package im.threads.internal.model;
 
 import java.util.List;
 
-public class Survey implements ChatItem {
+public final class Survey implements ChatItem {
     private long sendingId;
     private List<QuestionDTO> questions;
     private Long hideAfter;

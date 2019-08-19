@@ -22,7 +22,7 @@ import im.threads.internal.model.Survey;
 /**
  * ViewHolder для результатов бинарного опроса
  */
-public class RatingThumbsSentViewHolder extends BaseHolder {
+public final class RatingThumbsSentViewHolder extends BaseHolder {
     private ImageView thumb;
     private TextView mHeader;
     private TextView mTimeStampTextView;

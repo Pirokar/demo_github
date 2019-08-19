@@ -14,7 +14,7 @@ import im.threads.R;
 import im.threads.internal.adapters.BottomGalleryAdapter;
 import im.threads.internal.model.BottomGalleryItem;
 
-public class BottomGallery extends FrameLayout {
+public final class BottomGallery extends FrameLayout {
 
     private RecyclerView mRecyclerView;
 

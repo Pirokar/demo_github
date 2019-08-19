@@ -13,8 +13,8 @@ import android.widget.TextView;
 import im.threads.R;
 import im.threads.internal.views.CircularProgressButton;
 
-public abstract class BaseHolder extends RecyclerView.ViewHolder {
-    public BaseHolder(View itemView) {
+abstract class BaseHolder extends RecyclerView.ViewHolder {
+    BaseHolder(View itemView) {
         super(itemView);
     }
 

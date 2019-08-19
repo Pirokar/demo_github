@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import im.threads.R;
 
-public class EmptyViewHolder extends RecyclerView.ViewHolder {
+public final class EmptyViewHolder extends RecyclerView.ViewHolder {
     public EmptyViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_empty, parent, false));
     }

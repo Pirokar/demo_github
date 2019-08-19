@@ -7,7 +7,7 @@ import android.content.pm.PackageManager;
 /**
  * util class with static methods to test runtime permissions;
  */
-public class PermissionChecker {
+public final class PermissionChecker {
 
     public static boolean isCameraPermissionGranted(Context ctx) {
         return android.support.v4.content.PermissionChecker.checkSelfPermission(ctx, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;

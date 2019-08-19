@@ -16,7 +16,7 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 
-public class OGDataProvider {
+public final class OGDataProvider {
     private static final String TAG = OGDataProvider.class.getSimpleName();
 
     private static volatile OGDataProvider instance;

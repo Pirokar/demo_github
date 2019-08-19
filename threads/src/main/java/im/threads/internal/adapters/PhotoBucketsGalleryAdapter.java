@@ -9,7 +9,7 @@ import java.util.List;
 import im.threads.internal.holders.GalleryBucketImageHolder;
 import im.threads.internal.model.PhotoBucketItem;
 
-public class PhotoBucketsGalleryAdapter extends RecyclerView.Adapter<GalleryBucketImageHolder> {
+public final class PhotoBucketsGalleryAdapter extends RecyclerView.Adapter<GalleryBucketImageHolder> {
     private List<PhotoBucketItem> list;
     private OnItemClick mOnItemClick;
 

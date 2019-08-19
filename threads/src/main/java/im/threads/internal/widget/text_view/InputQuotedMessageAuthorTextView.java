@@ -9,7 +9,7 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.CustomFontTextView;
 
-public class InputQuotedMessageAuthorTextView extends CustomFontTextView {
+public final class InputQuotedMessageAuthorTextView extends CustomFontTextView {
 
     public InputQuotedMessageAuthorTextView(Context context) {
         super(context);

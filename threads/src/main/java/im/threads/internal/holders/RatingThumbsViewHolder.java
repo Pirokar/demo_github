@@ -17,7 +17,7 @@ import im.threads.internal.model.Survey;
 /**
  * ViewHolder для бинарных опросов
  */
-public class RatingThumbsViewHolder extends BaseHolder {
+public final class RatingThumbsViewHolder extends BaseHolder {
 
     private View topSeparator;
     private View bottomSeparator;

@@ -6,7 +6,7 @@ import android.support.v4.content.FileProvider;
 
 import java.io.File;
 
-public class FileProviderHelper {
+public final class FileProviderHelper {
 
     private static final String AUTHORITY_POSTFIX = ".im.threads.fileprovider";
 

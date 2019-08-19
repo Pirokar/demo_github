@@ -33,7 +33,7 @@ import im.threads.internal.controllers.FilesAndMediaController;
 import im.threads.ChatStyle;
 import im.threads.internal.model.FileDescription;
 
-public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.OnFileClick {
+public final class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.OnFileClick {
     private static final String TAG = "FilesActivity ";
     private FilesAndMediaController mFilesAndMediaController;
     private RecyclerView mRecyclerView;

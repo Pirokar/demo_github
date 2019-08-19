@@ -22,7 +22,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 
-public class FileAndMediaViewHolder extends BaseHolder {
+public final class FileAndMediaViewHolder extends BaseHolder {
     private ImageButton mImageButton;
     private TextView fileHeaderTextView;
     private TextView fileSizeTextView;

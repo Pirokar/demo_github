@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class BottomGalleryItem {
+public final class BottomGalleryItem {
     private boolean isChosen;
     private String imagePath;
 

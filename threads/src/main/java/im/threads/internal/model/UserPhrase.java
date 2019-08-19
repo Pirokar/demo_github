@@ -8,7 +8,7 @@ import java.util.UUID;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
 
-public class UserPhrase implements ChatPhrase, IsOnlyImage {
+public final class UserPhrase implements ChatPhrase, IsOnlyImage {
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
     private final String phrase;

@@ -31,7 +31,7 @@ import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.view.ChatFragment;
 
-public class ConsultActivity extends BaseActivity {
+public final class ConsultActivity extends BaseActivity {
     private static final String TAG = "ConsultActivity ";
     private TextView mConsulHeaderTextView;
     private TextView mConsultMotoTextView;

@@ -1,6 +1,6 @@
 package im.threads.internal.formatters;
 
-public class PushMessageAttributes {
+public final class PushMessageAttributes {
     public static final String APP_MARKER_KEY = "appMarker";
     public static final String OPERATOR_URL = "operatorPhotoUrl";
     static final String APP_BUNDLE_KEY = "appBundle";
@@ -20,4 +20,7 @@ public class PushMessageAttributes {
     static final String ORIGIN = "origin";
     static final String THREADS = "threads";
     static final String OPERATOR_ORG_UNIT = "organizationUnit";
+
+    private PushMessageAttributes() {
+    }
 }

@@ -2,7 +2,7 @@ package im.threads.internal.opengraph;
 
 import android.text.TextUtils;
 
-public class OGData {
+public final class OGData {
     public String title;
     public String description;
     public String image;

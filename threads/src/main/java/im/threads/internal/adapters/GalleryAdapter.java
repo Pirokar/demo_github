@@ -10,7 +10,7 @@ import java.util.List;
 import im.threads.internal.holders.GalleryItemHolder;
 import im.threads.internal.model.MediaPhoto;
 
-public class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder> {
+public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder> {
     private List<MediaPhoto> list;
     private List<MediaPhoto> chosenList = new ArrayList<>();
     private OnGalleryItemClick onGalleryItemClick;

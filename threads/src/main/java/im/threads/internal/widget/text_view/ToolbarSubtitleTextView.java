@@ -9,7 +9,7 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.CustomFontTextView;
 
-public class ToolbarSubtitleTextView extends CustomFontTextView {
+public final class ToolbarSubtitleTextView extends CustomFontTextView {
 
     public ToolbarSubtitleTextView(Context context) {
         super(context);

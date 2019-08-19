@@ -32,7 +32,7 @@ import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 
-public class CameraActivity extends BaseActivity {
+public final class CameraActivity extends BaseActivity {
     private static final String TAG = "CameraActivity ";
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
     private Camera mCamera;

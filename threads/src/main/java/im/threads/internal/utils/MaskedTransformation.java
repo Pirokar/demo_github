@@ -11,7 +11,7 @@ import android.graphics.drawable.NinePatchDrawable;
 
 import im.threads.internal.picasso_url_connection_only.Transformation;
 
-public class MaskedTransformation implements Transformation {
+public final class MaskedTransformation implements Transformation {
 
     private Drawable maskDrawable;
     private String cacheKey;

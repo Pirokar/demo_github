@@ -14,7 +14,7 @@ import im.threads.internal.adapters.ChatAdapter;
 /**
  * ViewHolder для запроса о завершении чата
  */
-public class RequestResolveThreadViewHolder extends BaseHolder {
+public final class RequestResolveThreadViewHolder extends BaseHolder {
 
     private View topSeparator;
     private View bottomSeparator;

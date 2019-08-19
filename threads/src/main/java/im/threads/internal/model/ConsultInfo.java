@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import im.threads.internal.utils.ThreadsLogger;
 
-public class ConsultInfo {
+public final class ConsultInfo {
 
     private static final String TAG = ConsultInfo.class.getSimpleName();
 

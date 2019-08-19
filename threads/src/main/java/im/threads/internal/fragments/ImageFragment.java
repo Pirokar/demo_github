@@ -2,7 +2,7 @@ package im.threads.internal.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +22,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 
-public class ImageFragment extends Fragment {
+public final class ImageFragment extends Fragment {
     private static SimpleDateFormat sdf;
     private static SimpleDateFormat hoursminutesSdf;
 
@@ -34,7 +34,7 @@ public class ImageFragment extends Fragment {
         return fr;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_image, container, false);

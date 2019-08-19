@@ -15,7 +15,7 @@ import im.threads.internal.model.ScheduleInfo;
 /**
  * ViewHolder для расписания
  */
-public class ScheduleInfoViewHolder extends RecyclerView.ViewHolder {
+public final class ScheduleInfoViewHolder extends RecyclerView.ViewHolder {
 
     private ImageView icon;
     private TextView text;

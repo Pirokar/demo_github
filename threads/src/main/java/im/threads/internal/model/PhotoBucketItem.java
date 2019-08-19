@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class PhotoBucketItem {
+public final class PhotoBucketItem {
     private final String bucketName;
     private final String bucketSize;
     private final String imagePath;

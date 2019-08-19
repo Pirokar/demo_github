@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class Channel {
+public final class Channel {
     private Long id;
     private String type;
     private String address;

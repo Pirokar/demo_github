@@ -20,7 +20,7 @@ import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.PrefUtils;
 
-public class OutgoingMessageCreator {
+public final class OutgoingMessageCreator {
     private static final String TAG = "MessageFormatter ";
 
     private static final String ERROR_FORMATTING_JSON = "error formatting json";

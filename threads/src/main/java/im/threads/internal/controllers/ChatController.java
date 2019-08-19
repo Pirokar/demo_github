@@ -84,7 +84,7 @@ import im.threads.internal.utils.UrlUtils;
  * all work here
  * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
  */
-public class ChatController {
+public final class ChatController {
     private static final String TAG = "ChatController ";
 
     // Состояния консультанта

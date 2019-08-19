@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public class FileUploadResponse {
+public final class FileUploadResponse {
     private String result;
     private FileUploadResponseOptional optional;
 

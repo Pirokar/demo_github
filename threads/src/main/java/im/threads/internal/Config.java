@@ -8,7 +8,7 @@ import im.threads.ThreadsLib;
 import im.threads.ChatStyle;
 import im.threads.internal.utils.PrefUtils;
 
-public class Config {
+public final class Config {
 
     public static Config instance;
 

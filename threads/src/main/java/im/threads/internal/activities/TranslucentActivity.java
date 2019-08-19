@@ -20,7 +20,7 @@ import im.threads.ChatStyle;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
 
-public class TranslucentActivity
+public final class TranslucentActivity
         extends AppCompatActivity {
     private static final String TAG = "TranslucentActivity ";
     public static final String ACTION_ANSWER = "im.threads.ACTION_ANSWER";

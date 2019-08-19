@@ -17,7 +17,7 @@ import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.ChatStyle;
 
-public class FilesDateStampHolder extends RecyclerView.ViewHolder {
+public final class FilesDateStampHolder extends RecyclerView.ViewHolder {
     private TextView mDateTextView;
     private SimpleDateFormat sdf;
     private ChatStyle style;

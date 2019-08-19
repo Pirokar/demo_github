@@ -41,7 +41,7 @@ import im.threads.internal.views.CircularProgressButton;
 /**
  * layout/item_user_text_with_file.xml
  */
-public class UserPhraseViewHolder extends BaseHolder {
+public final class UserPhraseViewHolder extends BaseHolder {
     private static final String TAG = "UserPhraseViewHolder ";
     private TextView mPhraseTextView;
     private TableRow mRightTextRow;

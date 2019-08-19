@@ -12,7 +12,7 @@ import im.threads.R;
  * app prototype determines different item spacing ,that depends on items sequence,
  * so this view holder do that job;
  */
-public class SpaceViewHolder extends RecyclerView.ViewHolder {
+public final class SpaceViewHolder extends RecyclerView.ViewHolder {
     private View root;
 
     public SpaceViewHolder(ViewGroup parent) {

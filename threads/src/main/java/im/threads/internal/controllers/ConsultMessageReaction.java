@@ -6,7 +6,7 @@ import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.utils.ConsultWriter;
 
-class ConsultMessageReaction {
+final class ConsultMessageReaction {
     private ConsultWriter consultWriter;
     private ConsultMessageReactions reactions;
 

@@ -9,7 +9,7 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.CustomFontTextView;
 
-public class PlaceholderSubtitleTextView extends CustomFontTextView {
+public final class PlaceholderSubtitleTextView extends CustomFontTextView {
 
     public PlaceholderSubtitleTextView(Context context) {
         super(context);

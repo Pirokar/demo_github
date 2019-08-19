@@ -4,7 +4,7 @@ import java.util.List;
 
 import im.threads.internal.utils.DateHelper;
 
-public class MessageFromHistory implements ChatItem {
+public final class MessageFromHistory implements ChatItem {
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
     private String clientId;

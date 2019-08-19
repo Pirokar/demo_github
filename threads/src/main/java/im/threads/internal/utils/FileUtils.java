@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import im.threads.internal.model.FileDescription;
 
-public class FileUtils {
+public final class FileUtils {
     public static final int JPEG = 0;
     public static final int PNG = 1;
     public static final int PDF = 2;

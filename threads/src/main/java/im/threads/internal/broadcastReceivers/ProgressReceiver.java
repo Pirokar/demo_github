@@ -16,7 +16,7 @@ import im.threads.view.ChatFragment;
  * Он скачивается через сервис.
  * Для приема сообщений из сервиса используется данный BroadcastReceiver
  */
-public class ProgressReceiver extends BroadcastReceiver {
+public final class ProgressReceiver extends BroadcastReceiver {
     private static final String TAG = "ProgressReceiver ";
     // Сообщения для Broadcast Receivers
     public static final String PROGRESS_BROADCAST = "im.threads.internal.controllers.PROGRESS_BROADCAST";

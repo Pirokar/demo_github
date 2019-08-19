@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
-class OGParser {
+final class OGParser {
 
     private static final String DECODE_UTF8 = "UTF-8";
     private static final String TITLE = "og:title";
