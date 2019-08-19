@@ -1,7 +1,6 @@
 package im.threads.internal.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -16,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,7 +22,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import java.util.Iterator;
 import java.util.List;
@@ -36,9 +33,6 @@ import im.threads.internal.controllers.FilesAndMediaController;
 import im.threads.ChatStyle;
 import im.threads.internal.model.FileDescription;
 
-/**
- * Created by yuri on 01.07.2016.
- */
 public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.OnFileClick {
     private static final String TAG = "FilesActivity ";
     private FilesAndMediaController mFilesAndMediaController;
@@ -47,9 +41,12 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
     private Toolbar mToolbar;
     private FilesAndMediaAdapter mFilesAndMediaAdapter;
 
+    public static Intent getStartIntent(Activity activity) {
+        return new Intent(activity, FilesActivity.class);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        final Context ctx = this;
         super.onCreate(savedInstanceState);
         ChatStyle style = Config.instance.getChatStyle();
         if (Build.VERSION.SDK_INT > 20) {
@@ -59,14 +56,9 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
             window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
         }
         setContentView(R.layout.activity_files_and_media);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         if (getFragmentManager().findFragmentByTag(TAG) == null) {
             mFilesAndMediaController = FilesAndMediaController.getInstance();
             getFragmentManager().beginTransaction().add(mFilesAndMediaController, TAG).commit();
@@ -74,32 +66,26 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
             mFilesAndMediaController = (FilesAndMediaController) getFragmentManager().findFragmentByTag(TAG);
         }
         mFilesAndMediaController.bindActivity(this);
-        mFilesAndMediaController.getFilesAcync();
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
+        mFilesAndMediaController.getFilesAsync();
+        mRecyclerView = findViewById(R.id.recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mSearchEditText = (EditText) findViewById(R.id.search_edit_text);
-        findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mSearchEditText.getVisibility() == View.VISIBLE) {
-                    mSearchEditText.setText("");
-                    mSearchEditText.setVisibility(View.GONE);
-                    mToolbar.setTitle(getString(R.string.threads_files_and_media));
-                    if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
-                } else {
-                    mSearchEditText.setVisibility(View.VISIBLE);
-                    mSearchEditText.requestFocus();
-                    mToolbar.setTitle("");
-                    if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.backupAndClear();
-                    mSearchEditText.setText("");
-                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                            imm.showSoftInput(mSearchEditText, InputMethodManager.SHOW_IMPLICIT);
-                        }
-                    }, 100);
-                }
+        mSearchEditText = findViewById(R.id.search_edit_text);
+        findViewById(R.id.search).setOnClickListener(v -> {
+            if (mSearchEditText.getVisibility() == View.VISIBLE) {
+                mSearchEditText.setText("");
+                mSearchEditText.setVisibility(View.GONE);
+                mToolbar.setTitle(getString(R.string.threads_files_and_media));
+                if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
+            } else {
+                mSearchEditText.setVisibility(View.VISIBLE);
+                mSearchEditText.requestFocus();
+                mToolbar.setTitle("");
+                if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.backupAndClear();
+                mSearchEditText.setText("");
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(mSearchEditText, InputMethodManager.SHOW_IMPLICIT);
+                }, 100);
             }
         });
         mSearchEditText.addTextChangedListener(new TextWatcher() {
@@ -113,7 +99,7 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
 
             @Override
             public void afterTextChanged(Editable s) {
-                String str = null;
+                String str;
                 if (s == null) {
                     str = "";
                 } else {
@@ -122,17 +108,12 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
                 search(str);
             }
         });
-
-        mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
-                if ((mSearchEditText.getVisibility() == View.VISIBLE) && actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    search(v.getText().toString());
-                    return true;
-                } else {
-                    return false;
-                }
+        mSearchEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if ((mSearchEditText.getVisibility() == View.VISIBLE) && actionId == EditorInfo.IME_ACTION_SEARCH) {
+                search(v.getText().toString());
+                return true;
+            } else {
+                return false;
             }
         });
         setActivityStyle(Config.instance.getChatStyle());
@@ -146,13 +127,10 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
 
     protected void setActivityStyle(@NonNull ChatStyle style) {
         findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.filesAndMediaScreenBackgroundColor));
-
         mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-
         ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
         mSearchEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
         mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
-
         mSearchEditText.setHintTextColor(getColorInt(style.chatToolbarHintTextColor));
     }
 
@@ -163,7 +141,6 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
             }
             mFilesAndMediaAdapter = new FilesAndMediaAdapter(descriptions, this);
             mRecyclerView.setAdapter(mFilesAndMediaAdapter);
-
         }
     }
 
@@ -172,18 +149,15 @@ public class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.
         mFilesAndMediaController.onFileClick(fileDescription);
     }
 
-    public static Intent getStartIntetent(Activity activity) {
-        Intent i = new Intent(activity, FilesActivity.class);
-        return i;
-    }
-
     @Override
     public void onBackPressed() {
         if (mSearchEditText.getVisibility() == View.VISIBLE) {
             mSearchEditText.setText("");
             mSearchEditText.setVisibility(View.GONE);
             mToolbar.setTitle(getString(R.string.threads_files_and_media));
-            if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
+            if (null != mFilesAndMediaAdapter) {
+                mFilesAndMediaAdapter.undoClear();
+            }
         } else {
             super.onBackPressed();
         }

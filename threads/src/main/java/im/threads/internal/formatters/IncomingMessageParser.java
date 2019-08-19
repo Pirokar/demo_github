@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.model.Attachment;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
@@ -40,6 +39,7 @@ import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.DateHelper;
+import im.threads.internal.utils.ThreadsLogger;
 
 public class IncomingMessageParser {
     private static final String TAG = "MessageFormatter ";
@@ -49,7 +49,6 @@ public class IncomingMessageParser {
 
     private static JSONObject getFullMessage(final PushMessage pushMessage) {
         JSONObject fullMessage = null;
-
         try {
             if (pushMessage.fullMessage != null) {
                 fullMessage = new JSONObject(pushMessage.fullMessage);
@@ -57,31 +56,26 @@ public class IncomingMessageParser {
         } catch (final JSONException e) {
             ThreadsLogger.e(TAG, "getFullMessage", e);
         }
-
         return fullMessage;
     }
 
     private static String getType(final JSONObject fullMessage) {
         String type = "";
-
         try {
             type = fullMessage.getString(PushMessageAttributes.TYPE);
         } catch (final JSONException e) {
             ThreadsLogger.e(TAG, "getType", e);
         }
-
         return type;
     }
 
-    public static boolean isThreadsOriginPush(final JSONObject fullMessage) {
+    private static boolean isThreadsOriginPush(final JSONObject fullMessage) {
         String origin = "";
-
         try {
             origin = fullMessage.getString(PushMessageAttributes.ORIGIN);
         } catch (final JSONException e) {
             ThreadsLogger.e(TAG, "isThreadsOriginPush", e);
         }
-
         return PushMessageAttributes.THREADS.equalsIgnoreCase(origin);
     }
 
@@ -92,35 +86,6 @@ public class IncomingMessageParser {
 
     public static boolean isThreadsOriginPush(final Bundle bundle) {
         return bundle != null && PushMessageAttributes.THREADS.equalsIgnoreCase(bundle.getString(PushMessageAttributes.ORIGIN));
-    }
-
-    private static String getClientId(final JSONObject fullMessage) {
-        String type = "";
-
-        try {
-            type = fullMessage.getString(PushMessageAttributes.CLIENT_ID);
-        } catch (final JSONException e) {
-            ThreadsLogger.e(TAG, "getClientId", e);
-        }
-
-        return type;
-    }
-
-    private static boolean isChatPush(final JSONObject fullMessage) {
-        String type;
-
-        try {
-            if (fullMessage.has("origin")) {
-                type = fullMessage.getString("origin");
-            } else {
-                type = null;
-            }
-        } catch (final JSONException e) {
-            ThreadsLogger.e(TAG, "isChatPush", e);
-            type = null;
-        }
-
-        return type != null && type.equalsIgnoreCase("threads");
     }
 
     public static Long getHideAfter(final JSONObject fullMessage) {
@@ -140,7 +105,6 @@ public class IncomingMessageParser {
         } catch (final JSONException e) {
             ThreadsLogger.e(TAG, "getMessage", e);
         }
-
         return message;
     }
 
@@ -155,7 +119,6 @@ public class IncomingMessageParser {
                 uuid = UUID.randomUUID().toString();
             }
             String providerId = pushMessage.messageId;
-
             String receivedDateString = fullMessage.getString(PushMessageAttributes.RECEIVED_DATE);
             long timeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
             final JSONObject operatorInfo = fullMessage.getJSONObject("operator");
@@ -178,10 +141,8 @@ public class IncomingMessageParser {
             }
             final boolean gender = operatorInfo.isNull("gender") ? false : operatorInfo.getString("gender").equalsIgnoreCase("male");
             String operatorId = String.valueOf(operatorInfo.getLong("id"));
-
             return new ConsultPhrase(uuid, providerId, fileDescription, quote, name, message, timeStamp,
                     operatorId, photoUrl, false, status, gender);
-
         } catch (final JSONException e) {
             ThreadsLogger.e(TAG, "getConsultPhraseFromPush", e);
             return null;
@@ -199,7 +160,6 @@ public class IncomingMessageParser {
                 uuid = UUID.randomUUID().toString();
             }
             String providerId = pushMessage.messageId;
-
             String receivedDateString = fullMessage.getString(PushMessageAttributes.RECEIVED_DATE);
             long phraseTimeStamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
             final JSONArray attachmentsArray = fullMessage.has(PushMessageAttributes.ATTACHMENTS) ? fullMessage.getJSONArray(PushMessageAttributes.ATTACHMENTS) : null;
@@ -215,7 +175,6 @@ public class IncomingMessageParser {
             if (mQuote != null && mQuote.getFileDescription() != null) {
                 mQuote.getFileDescription().setTimeStamp(phraseTimeStamp);
             }
-
             final UserPhrase userPhrase = new UserPhrase(uuid, providerId, message, mQuote, phraseTimeStamp, fileDescription);
             userPhrase.setSentState(MessageState.STATE_SENT);
             return userPhrase;
@@ -230,20 +189,16 @@ public class IncomingMessageParser {
      */
     public static ChatItem format(final PushMessage pushMessage) {
         final JSONObject fullMessage = getFullMessage(pushMessage);
-
         // В пуше для чата должен быть fullMessage, и он должен соответствовать формату JSON.
         if (fullMessage == null) {
             return null;
         }
-
         final String typeStr = getType(fullMessage);
-
         if (TextUtils.isEmpty(typeStr)) {
             return null;
         }
-
         try {
-            final PushMessageTypes type = PushMessageTypes.valueOf(typeStr);
+            final PushMessageType type = PushMessageType.valueOf(typeStr);
             switch (type) {
                 case OPERATOR_JOINED:
                 case OPERATOR_LEFT:
@@ -271,7 +226,6 @@ public class IncomingMessageParser {
         } catch (final IllegalArgumentException ex) {
             // pass
         }
-
         return null;
     }
 
@@ -284,15 +238,6 @@ public class IncomingMessageParser {
         } else {
             return null;
         }
-    }
-
-    private static Long getThreadId(final JSONObject fullMessage) {
-        try {
-            return Long.parseLong(fullMessage.getString(PushMessageAttributes.THREAD_ID));
-        } catch (final JSONException e) {
-            ThreadsLogger.e(TAG, "getThreadId", e);
-        }
-        return -1L;
     }
 
     private static ScheduleInfo getScheduleInfoFromPush(final PushMessage pushMessage, final JSONObject fullMessage) {
@@ -310,19 +255,15 @@ public class IncomingMessageParser {
     }
 
     private static Survey getRatingFromPush(final PushMessage pushMessage, final JSONObject fullMessage) {
-
         final String text = getMessage(fullMessage, pushMessage);
         if (!TextUtils.isEmpty(text)) {
             Survey survey = getSurveyFromJsonString(text);
-
             if (survey != null) {
                 survey.setPhraseTimeStamp(pushMessage.sentAt);
-
                 for (final QuestionDTO questionDTO : survey.getQuestions()) {
                     questionDTO.setPhraseTimeStamp(pushMessage.sentAt);
                 }
             }
-
             return survey;
         } else {
             return null;
@@ -330,7 +271,6 @@ public class IncomingMessageParser {
     }
 
     private static Survey getSurveyFromJsonString(@NonNull String text) {
-
         try {
             Survey survey = new Gson().fromJson(text, Survey.class);
             final long time = new Date().getTime();
@@ -340,7 +280,6 @@ public class IncomingMessageParser {
                 questionDTO.setPhraseTimeStamp(time);
             }
             return survey;
-
         } catch (final JsonSyntaxException e) {
             ThreadsLogger.e(TAG, "getSurveyFromJsonString", e);
             return null;
@@ -348,9 +287,7 @@ public class IncomingMessageParser {
     }
 
     private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
-
         Survey survey = new Survey(message.getSendingId(), message.getTimeStamp(), MessageState.STATE_WAS_READ);
-
         QuestionDTO question = new QuestionDTO();
         question.setId(message.getQuestionId());
         question.setPhraseTimeStamp(message.getTimeStamp());
@@ -359,7 +296,6 @@ public class IncomingMessageParser {
         question.setScale(message.getScale());
         question.setSendingId(message.getSendingId());
         question.setSimple(message.isSimple());
-
         survey.setQuestions(Collections.singletonList(question));
         return survey;
     }
@@ -372,7 +308,6 @@ public class IncomingMessageParser {
 
     private static ConsultConnectionMessage getConsultConnectionFromPush(final PushMessage pushMessage) {
         ConsultConnectionMessage chatItem = null;
-
         try {
             final JSONObject fullMessage = new JSONObject(pushMessage.fullMessage);
             final String providerId = pushMessage.messageId;
@@ -388,49 +323,35 @@ public class IncomingMessageParser {
             final String title = pushMessage.shortMessage == null ? null : pushMessage.shortMessage.split(" ")[0];
             final boolean displayMessage = !fullMessage.has("display") || fullMessage.getBoolean("display");
             String orgUnit = operator.isNull(PushMessageAttributes.OPERATOR_ORG_UNIT) ? null : operator.getString(PushMessageAttributes.OPERATOR_ORG_UNIT);
-
             chatItem = new ConsultConnectionMessage(uuid, providerId, String.valueOf(operatorId), type, name, gender,
                     timeStamp, photourl, status, title, orgUnit, displayMessage);
-
         } catch (final JSONException e) {
             ThreadsLogger.e(TAG, "getConsultConnectionFromPush", e);
         }
-
         return chatItem;
     }
 
     public static Quote quoteFromJson(final JSONArray quotes) throws JSONException {
-
         Quote quote = null;
         if (quotes.length() > 0 && quotes.getJSONObject(0) != null) {
             JSONObject quoteJson = quotes.getJSONObject(0);
-
             FileDescription quoteFileDescription = null;
             String quoteUuid = null;
             String quoteString = null;
             String authorName = "";
-
-
             String receivedDateString = quoteJson.getString(PushMessageAttributes.RECEIVED_DATE);
             long timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
-
             if (quoteJson.has(PushMessageAttributes.UUID)) {
                 quoteUuid = quoteJson.getString(PushMessageAttributes.UUID);
             }
-
             if ((quoteJson.has(PushMessageAttributes.TEXT))) {
                 quoteString = quoteJson.getString(PushMessageAttributes.TEXT);
             }
             if ((quoteJson.has(PushMessageAttributes.ATTACHMENTS))
                     && (quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS).length() > 0
                     && (quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).has("result")))) {
-                String header = null;
-                if (quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).has("optional")) {
-                    header = quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS).getJSONObject(0).getJSONObject("optional").getString("name");
-                }
                 quoteFileDescription = fileDescriptionFromJson(quoteJson.getJSONArray(PushMessageAttributes.ATTACHMENTS));
             }
-
             if (quoteJson.has("operator")) {
                 try {
                     authorName = quoteJson.getJSONObject("operator").getString("name");
@@ -444,40 +365,31 @@ public class IncomingMessageParser {
                     authorName = "I";
                 }
             }
-
             if (quoteUuid != null && (quoteString != null || quoteFileDescription != null)) {
                 quote = new Quote(quoteUuid, authorName, quoteString, quoteFileDescription, timestamp);
             }
             if (quoteFileDescription != null) {
                 quoteFileDescription.setFrom(authorName);
             }
-
         }
         return quote;
     }
 
     public static Quote quoteFromList(final List<MessageFromHistory> quotes) {
-
         Quote quote = null;
         if (quotes.size() > 0 && quotes.get(0) != null) {
             MessageFromHistory quoteFromHistory = quotes.get(0);
             FileDescription quoteFileDescription = null;
             String quoteString = null;
-            String authorName = "";
-
+            String authorName;
             String receivedDateString = quoteFromHistory.getReceivedDate();
             long timestamp = receivedDateString == null || receivedDateString.isEmpty() ? System.currentTimeMillis() : DateHelper.getMessageTimestampFromDateString(receivedDateString);
-
             if (quoteFromHistory.getText() != null) {
                 quoteString = quoteFromHistory.getText();
             }
             if ((quoteFromHistory.getAttachments() != null)
                     && (quoteFromHistory.getAttachments().size() > 0
                     && (quoteFromHistory.getAttachments().get(0).getResult() != null))) {
-                String header = null;
-                if (quotes.get(0).getAttachments().get(0).getOptional() != null) {
-                    header = quoteFromHistory.getAttachments().get(0).getOptional().getName();
-                }
                 quoteFileDescription = fileDescriptionFromList(quoteFromHistory.getAttachments());
             }
             if (quoteFromHistory.getOperator() != null) {
@@ -580,13 +492,13 @@ public class IncomingMessageParser {
                 }
 
                 if (!TextUtils.isEmpty(message.getType()) &&
-                        (message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name()) ||
-                                message.getType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name()))) {
+                        (message.getType().equalsIgnoreCase(PushMessageType.OPERATOR_JOINED.name()) ||
+                                message.getType().equalsIgnoreCase(PushMessageType.OPERATOR_LEFT.name()))) {
                     final String type = message.getType();
                     out.add(new ConsultConnectionMessage(uuid, providerId, operatorId, type, name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay()));
 
                 } else if (!TextUtils.isEmpty(message.getType())
-                        && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY.name())) {
+                        && message.getType().equalsIgnoreCase(PushMessageType.SURVEY.name())) {
 
                     Survey survey = getSurveyFromJsonString(message.getText());
 
@@ -599,7 +511,7 @@ public class IncomingMessageParser {
                     }
 
                 } else if (!TextUtils.isEmpty(message.getType())
-                        && message.getType().equalsIgnoreCase(PushMessageTypes.SURVEY_QUESTION_ANSWER.name())) {
+                        && message.getType().equalsIgnoreCase(PushMessageType.SURVEY_QUESTION_ANSWER.name())) {
 
                     Survey completedSurvey = getCompletedSurveyFromHistory(message);
                     out.add(completedSurvey);

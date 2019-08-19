@@ -6,17 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
 import im.threads.internal.model.Survey;
 import im.threads.internal.widget.Rating;
 
 /**
  * ViewHolder для опросов с рейтингом
- * Created by chybakut2004 on 17.04.17.
  */
-
 public class RatingStarsViewHolder extends BaseHolder {
 
     private View topSeparator;
@@ -29,19 +27,14 @@ public class RatingStarsViewHolder extends BaseHolder {
 
     public RatingStarsViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars, parent, false));
-
         topSeparator = itemView.findViewById(R.id.top_separator);
         bottomSeparator = itemView.findViewById(R.id.bottom_separator);
-
-        rating = (Rating) itemView.findViewById(R.id.mark);
-
-        askForRate = (TextView) itemView.findViewById(R.id.ask_for_rate);
-        thanksForRate = (TextView) itemView.findViewById(R.id.thanks_for_rate);
-
-        if (style == null) style = Config.instance.getChatStyle();
+        rating = itemView.findViewById(R.id.mark);
+        askForRate = itemView.findViewById(R.id.ask_for_rate);
+        thanksForRate = itemView.findViewById(R.id.thanks_for_rate);
+        style = Config.instance.getChatStyle();
         topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
         bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
-
         askForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
         thanksForRate.setTextColor(ContextCompat.getColor(itemView.getContext(), style.surveyTextColorResId));
     }
@@ -51,10 +44,8 @@ public class RatingStarsViewHolder extends BaseHolder {
         int scale = survey.getQuestions().get(0).getScale();
         rating.initRating(itemView.getContext(), rate, scale);
         askForRate.setText(survey.getQuestions().get(0).getText());
-
         boolean hasRate = survey.getQuestions().get(0).hasRate();
         rating.setListenerClick(hasRate ? null : callBackListener);
         thanksForRate.setVisibility(hasRate ? View.VISIBLE : View.GONE);
     }
-
 }

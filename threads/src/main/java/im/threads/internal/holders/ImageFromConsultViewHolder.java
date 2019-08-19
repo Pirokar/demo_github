@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import im.threads.R;
 import im.threads.internal.Config;
@@ -21,20 +22,17 @@ import im.threads.ChatStyle;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.picasso_url_connection_only.Callback;
 import im.threads.internal.picasso_url_connection_only.Picasso;
-import im.threads.internal.utils.CircleTransform;
+import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.MaskedTransformation;
 
-/**
- * Created by yuri on 30.06.2016.
- */
 public class ImageFromConsultViewHolder extends BaseHolder {
 
     private TextView mTimeStampTextView;
     private ImageView mImage;
     private MaskedTransformation maskedTransformation;
     private ImageView mConsultAvatar;
-    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private View filter;
     private View filterSecond;
     private ChatStyle style;
@@ -42,9 +40,9 @@ public class ImageFromConsultViewHolder extends BaseHolder {
     public ImageFromConsultViewHolder(ViewGroup parent, MaskedTransformation maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image_from_consult, parent, false));
         this.maskedTransformation = maskedTransformation;
-        mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
-        mImage = (ImageView) itemView.findViewById(R.id.image);
-        mConsultAvatar = (ImageView) itemView.findViewById(R.id.consult_avatar);
+        mTimeStampTextView = itemView.findViewById(R.id.timestamp);
+        mImage = itemView.findViewById(R.id.image);
+        mConsultAvatar = itemView.findViewById(R.id.consult_avatar);
         filter = itemView.findViewById(R.id.filter);
         filterSecond = itemView.findViewById(R.id.filter_second);
         style = Config.instance.getChatStyle();
@@ -85,7 +83,6 @@ public class ImageFromConsultViewHolder extends BaseHolder {
                     .into(mImage, new Callback() {
                         @Override
                         public void onSuccess() {
-
                         }
 
                         @Override
@@ -110,15 +107,14 @@ public class ImageFromConsultViewHolder extends BaseHolder {
             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mImage.getLayoutParams();
             lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin);
             mImage.setLayoutParams(lp);
-
             mConsultAvatar.setVisibility(View.VISIBLE);
             if (avatarPath != null) {
-                avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
                 Picasso.with(itemView.getContext())
                         .load(avatarPath)
                         .error(style.defaultOperatorAvatar)
                         .fit()
-                        .transform(new CircleTransform())
+                        .transform(new CircleTransformation())
                         .centerInside()
                         .noPlaceholder()
                         .into(mConsultAvatar);
@@ -127,13 +123,12 @@ public class ImageFromConsultViewHolder extends BaseHolder {
                         .load(resId)
                         .fit()
                         .noPlaceholder()
-                        .transform(new CircleTransform())
+                        .transform(new CircleTransformation())
                         .centerInside()
                         .into(mConsultAvatar);
             }
         } else {
             mConsultAvatar.setVisibility(View.GONE);
-
             int avatarSizeRes = style.operatorAvatarSize;
             int avatarSizePx = itemView.getContext().getResources().getDimensionPixelSize(avatarSizeRes);
             int bubbleLeftMarginPx = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.margin_half);

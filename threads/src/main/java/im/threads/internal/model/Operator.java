@@ -1,11 +1,6 @@
 package im.threads.internal.model;
 
-/**
- * Created by Admin on 25.05.2017.
- */
-
 public class Operator {
-
     private Long id;
     private String name;
     private String role;
@@ -73,6 +68,6 @@ public class Operator {
 
     public enum Gender {
         MALE,
-        FEMALE;
+        FEMALE
     }
 }

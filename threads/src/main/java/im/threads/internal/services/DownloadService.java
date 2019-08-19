@@ -17,9 +17,6 @@ import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileDownloader;
 
-/**
- * Created by yuri on 01.08.2016.
- */
 public class DownloadService extends Service {
     private static final String TAG = "DownloadService ";
     public static final String START_DOWNLOAD_FD_TAG = "com.sequenia.threads.services.START_DOWNLOAD_FD_TAG";

@@ -2,14 +2,9 @@ package im.threads.internal.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.util.ObjectsCompat;
 
-import im.threads.internal.utils.ObjectUtils;
-
-/**
- * Created by yuri on 13.06.2016.
- */
 public class FileDescription implements Parcelable {
-    private static final String TAG = "FileDescription ";
     private String from;
     private String filePath;
     private String downloadPath;
@@ -95,7 +90,7 @@ public class FileDescription implements Parcelable {
 
         if (size != that.size) return false;
         if (timeStamp != that.timeStamp) return false;
-        return from != null ? from.equals(that.from) : that.from == null;
+        return ObjectsCompat.equals(from, that.from);
 
     }
 
@@ -164,17 +159,15 @@ public class FileDescription implements Parcelable {
     }
 
     public boolean hasSameContent(FileDescription fileDescription) {
-
         if (fileDescription == null) {
             return false;
         }
-
-        return ObjectUtils.areEqual(this.from, fileDescription.from)
-                && ObjectUtils.areEqual(this.filePath, fileDescription.filePath)
-                && ObjectUtils.areEqual(this.timeStamp, fileDescription.timeStamp)
-                && ObjectUtils.areEqual(this.downloadPath, fileDescription.downloadPath)
-                && ObjectUtils.areEqual(this.size, fileDescription.size)
-                && ObjectUtils.areEqual(this.incomingName, fileDescription.incomingName)
-                && ObjectUtils.areEqual(this.downloadProgress, fileDescription.downloadProgress);
+        return ObjectsCompat.equals(this.from, fileDescription.from)
+                && ObjectsCompat.equals(this.filePath, fileDescription.filePath)
+                && ObjectsCompat.equals(this.timeStamp, fileDescription.timeStamp)
+                && ObjectsCompat.equals(this.downloadPath, fileDescription.downloadPath)
+                && ObjectsCompat.equals(this.size, fileDescription.size)
+                && ObjectsCompat.equals(this.incomingName, fileDescription.incomingName)
+                && ObjectsCompat.equals(this.downloadProgress, fileDescription.downloadProgress);
     }
 }

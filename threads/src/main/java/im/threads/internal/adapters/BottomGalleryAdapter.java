@@ -1,18 +1,15 @@
 package im.threads.internal.adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
-
-import im.threads.internal.holders.BottomGalleryImageHolder;
-import im.threads.internal.model.BottomGalleryItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by yuri on 30.06.2016.
- */
+import im.threads.internal.holders.BottomGalleryImageHolder;
+import im.threads.internal.model.BottomGalleryItem;
+
 public class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;
     private List<String> mChosenItems = new ArrayList<>();
@@ -23,32 +20,30 @@ public class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImag
         this.mOnChooseItemsListener = listener;
     }
 
+    @NonNull
     @Override
-    public BottomGalleryImageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BottomGalleryImageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new BottomGalleryImageHolder(parent);
     }
 
     @Override
-    public void onBindViewHolder(final BottomGalleryImageHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final BottomGalleryImageHolder holder, int position) {
         final BottomGalleryItem item = list.get(position);
-        holder.onBind(list.get(position), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (item.isChosen()) {
-                    item.setChosen(false);
-                } else if (!item.isChosen()) {//yes, i know;
-                    item.setChosen(true);
+        holder.onBind(list.get(position), v -> {
+            if (item.isChosen()) {
+                item.setChosen(false);
+            } else if (!item.isChosen()) {//yes, i know;
+                item.setChosen(true);
+            }
+            notifyItemChanged(holder.getAdapterPosition());
+            mChosenItems.clear();
+            for (BottomGalleryItem item1 : list) {
+                if (item1.isChosen()) {
+                    mChosenItems.add(item1.getImagePath());
                 }
-                notifyItemChanged(holder.getAdapterPosition());
-                mChosenItems.clear();
-                for (BottomGalleryItem item : list) {
-                    if (item.isChosen()) {
-                        mChosenItems.add(item.getImagePath());
-                    }
-                }
-                if (null != mOnChooseItemsListener) {
-                    mOnChooseItemsListener.onChosenItems(mChosenItems);
-                }
+            }
+            if (null != mOnChooseItemsListener) {
+                mOnChooseItemsListener.onChosenItems(mChosenItems);
             }
         });
     }

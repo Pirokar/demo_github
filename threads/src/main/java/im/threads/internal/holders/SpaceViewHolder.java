@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import im.threads.R;
 
 /**
- * Created by yuri on 14.06.2016.
  * layout/item_free_space.xml
  * app prototype determines different item spacing ,that depends on items sequence,
  * so this view holder do that job;
@@ -22,6 +21,6 @@ public class SpaceViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(int height) {
-        root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,height));
+        root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
     }
 }

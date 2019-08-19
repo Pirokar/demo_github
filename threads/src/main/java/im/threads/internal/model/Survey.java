@@ -2,12 +2,7 @@ package im.threads.internal.model;
 
 import java.util.List;
 
-/**
- * Created by Admin on 03.05.2017.
- */
-
 public class Survey implements ChatItem {
-
     private long sendingId;
     private List<QuestionDTO> questions;
     private Long hideAfter;
@@ -68,20 +63,15 @@ public class Survey implements ChatItem {
 
     @Override
     public boolean equals(Object obj) {
-
         if (this == obj) {
             return true;
-
         } else if (!(obj instanceof Survey)) {
             return false;
-
         } else {
             Survey otherSurvey = (Survey) obj;
-
             if (sendingId > 0) {
                 return sendingId == otherSurvey.sendingId;
             }
-
             return false;
         }
     }

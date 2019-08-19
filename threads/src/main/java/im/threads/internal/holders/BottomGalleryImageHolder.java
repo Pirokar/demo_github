@@ -9,15 +9,12 @@ import android.widget.ImageView;
 
 import java.io.File;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.BottomGalleryItem;
-import im.threads.ChatStyle;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 
-/**
- * Created by yuri on 30.06.2016.
- */
 public class BottomGalleryImageHolder extends BaseHolder {
     private ImageView image;
     private ImageView chosenMark;
@@ -25,8 +22,8 @@ public class BottomGalleryImageHolder extends BaseHolder {
 
     public BottomGalleryImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_bottom, parent, false));
-        image = (ImageView) itemView.findViewById(R.id.image);
-        chosenMark = (ImageView) itemView.findViewById(R.id.mark);
+        image = itemView.findViewById(R.id.image);
+        chosenMark = itemView.findViewById(R.id.mark);
         if (style == null) style = Config.instance.getChatStyle();
     }
 

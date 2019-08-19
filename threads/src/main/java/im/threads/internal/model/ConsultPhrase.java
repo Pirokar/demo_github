@@ -1,16 +1,15 @@
 package im.threads.internal.model;
 
+import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
 
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
-import im.threads.internal.utils.ObjectUtils;
 
 /**
- * Created by yuri on 10.06.2016.
  * сообщение оператора
  */
-public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsOnlyImage {
+public class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase, IsOnlyImage {
 
     private final String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
@@ -116,8 +115,7 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
 
     @Override
     public boolean isOnlyImage() {
-        return fileDescription != null
-                && TextUtils.isEmpty(phrase)
+        return TextUtils.isEmpty(phrase)
                 && quote == null
                 && FileUtils.isImage(fileDescription);
     }
@@ -159,39 +157,11 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
         } else {
             return false;
         }
-
-//        if (sex != that.sex) {
-//            return false;
-//        }
-//
-//        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null) {
-//            return false;
-//        }
-//        if (!TextUtils.isEmpty(phrase) ? !phrase.equals(that.phrase) : !TextUtils.isEmpty(that.phrase))  {
-//            return false;
-//        }
-//
-//        if (quote != null ? !quote.equals(that.quote) : that.quote != null) {
-//            return false;
-//        }
-//
-//        if (fileDescription != null && that.fileDescription != null) {
-//            return fileDescription.equals(that.fileDescription);
-//        }
-//
-//        return status != null ? status.equals(that.status) : that.status == null;
     }
 
     @Override
     public int hashCode() {
-        int result = uuid != null ? uuid.hashCode() : 0;
-//        int result = consultId != null ? consultId.hashCode() : 0;
-//        result = 31 * result + (sex ? 1 : 0);
-//        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
-//        result = 31 * result + (quote != null ? quote.hashCode() : 0);
-//        result = 31 * result + (fileDescription != null ? fileDescription.hashCode() : 0);
-//        result = 31 * result + (status != null ? status.hashCode() : 0);
-        return result;
+        return uuid != null ? uuid.hashCode() : 0;
     }
 
     @Override
@@ -219,16 +189,16 @@ public class ConsultPhrase extends ConsultChatPhrase  implements ChatPhrase, IsO
             return false;
         }
 
-        boolean hasSameContent = ObjectUtils.areEqual(this.uuid, consultPhrase.uuid)
-                && ObjectUtils.areEqual(this.phrase, consultPhrase.phrase)
-                && ObjectUtils.areEqual(this.providerId, consultPhrase.providerId)
-                && ObjectUtils.areEqual(this.timeStamp, consultPhrase.timeStamp)
-                && ObjectUtils.areEqual(this.isRead, consultPhrase.isRead)
-                && ObjectUtils.areEqual(this.getAvatarPath(), consultPhrase.getAvatarPath())
-                && ObjectUtils.areEqual(this.consultId, consultPhrase.consultId)
-                && ObjectUtils.areEqual(this.consultName, consultPhrase.consultName)
-                && ObjectUtils.areEqual(this.sex, consultPhrase.sex)
-                && ObjectUtils.areEqual(this.status, consultPhrase.status);
+        boolean hasSameContent = ObjectsCompat.equals(this.uuid, consultPhrase.uuid)
+                && ObjectsCompat.equals(this.phrase, consultPhrase.phrase)
+                && ObjectsCompat.equals(this.providerId, consultPhrase.providerId)
+                && ObjectsCompat.equals(this.timeStamp, consultPhrase.timeStamp)
+                && ObjectsCompat.equals(this.isRead, consultPhrase.isRead)
+                && ObjectsCompat.equals(this.getAvatarPath(), consultPhrase.getAvatarPath())
+                && ObjectsCompat.equals(this.consultId, consultPhrase.consultId)
+                && ObjectsCompat.equals(this.consultName, consultPhrase.consultName)
+                && ObjectsCompat.equals(this.sex, consultPhrase.sex)
+                && ObjectsCompat.equals(this.status, consultPhrase.status);
 
         if (this.fileDescription != null) {
             hasSameContent = hasSameContent && this.fileDescription.hasSameContent(consultPhrase.fileDescription);

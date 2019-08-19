@@ -12,20 +12,16 @@ import im.threads.internal.picasso_url_connection_only.Picasso;
 
 import java.io.File;
 
-/**
- * Created by yuri on 06.07.2016.
- */
 public class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
-    private static final String TAG = "GalleryBucketImageHolder ";
     private ImageView mImageView;
     private TextView mNameTextView;
     private TextView mSizeTextView;
 
     public GalleryBucketImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_bucket, parent, false));
-        mImageView = (ImageView) itemView.findViewById(R.id.image);
-        mNameTextView = (TextView) itemView.findViewById(R.id.bucket_name);
-        mSizeTextView = (TextView) itemView.findViewById(R.id.photos_count);
+        mImageView = itemView.findViewById(R.id.image);
+        mNameTextView = itemView.findViewById(R.id.bucket_name);
+        mSizeTextView = itemView.findViewById(R.id.photos_count);
     }
 
     public void onBind(String title, String count, String imagePath, View.OnClickListener itemClickListener) {

@@ -11,28 +11,28 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.formatters.PushMessageTypes;
-import im.threads.internal.utils.ThreadsLogger;
-import im.threads.ChatStyle;
+import im.threads.internal.formatters.PushMessageType;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.picasso_url_connection_only.Callback;
 import im.threads.internal.picasso_url_connection_only.Picasso;
-import im.threads.internal.utils.CircleTransform;
+import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
+import im.threads.internal.utils.ThreadsLogger;
 
 /**
- * Created by yuri on 09.06.2016.
  * layout/item_consult_connected.xml
  */
 public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "CCViewHolder ";
-    public ImageView mConsultAvatar;
+    private ImageView mConsultAvatar;
     private TextView headerTextView;
     private TextView connectedMessage;
-    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private ChatStyle style;
 
     @DrawableRes
@@ -40,9 +40,9 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
 
     public ConsultConnectionMessageViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_consult_connected, parent, false));
-        mConsultAvatar = (ImageView) itemView.findViewById(R.id.image);
-        headerTextView = (TextView) itemView.findViewById(R.id.quote_header);
-        connectedMessage = (TextView) itemView.findViewById(R.id.text);
+        mConsultAvatar = itemView.findViewById(R.id.image);
+        headerTextView = itemView.findViewById(R.id.quote_header);
+        connectedMessage = itemView.findViewById(R.id.text);
         if (null == style) style = Config.instance.getChatStyle();
         headerTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
         connectedMessage.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
@@ -64,16 +64,16 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
             headerTextView.setText(consultConnectionMessage.getName());
         }
         String connectedText = "";
-        boolean isConnected = consultConnectionMessage.getConnectionType().equals(PushMessageTypes.OPERATOR_JOINED.name());
+        boolean isConnected = consultConnectionMessage.getConnectionType().equals(PushMessageType.OPERATOR_JOINED.name());
         boolean sex = consultConnectionMessage.getSex();
         long date = consultConnectionMessage.getTimeStamp();
         if (sex && isConnected) {
             connectedText = itemView.getContext().getResources().getString(R.string.threads_connected) + " " + sdf.format(new Date(date));
         } else if (!sex && isConnected) {
             connectedText = itemView.getContext().getResources().getString(R.string.threads_connected_female) + " " + sdf.format(new Date(date));
-        } else if (sex && !isConnected) {
+        } else if (sex) {
             connectedText = itemView.getContext().getResources().getString(R.string.threads_left_dialog) + " " + sdf.format(new Date(date));
-        } else if (!sex && !isConnected) {
+        } else {
             connectedText = itemView.getContext().getResources().getString(R.string.threads_left_female) + " " + sdf.format(new Date(date));
         }
         connectedMessage.setText(connectedText);
@@ -82,17 +82,16 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
             vg.getChildAt(i).setOnClickListener(listener);
         }
         if (consultConnectionMessage.hasAvatar()) {
-            String avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), consultConnectionMessage.getAvatarPath());
+            String avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultConnectionMessage.getAvatarPath());
             Picasso.with(itemView.getContext())
                     .load(avatarPath)
                     .centerInside()
                     .noPlaceholder()
                     .fit()
-                    .transform(new CircleTransform())
+                    .transform(new CircleTransformation())
                     .into(mConsultAvatar, new Callback() {
                         @Override
                         public void onSuccess() {
-
                         }
 
                         @Override
@@ -111,7 +110,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
                 .centerInside()
                 .noPlaceholder()
                 .fit()
-                .transform(new CircleTransform())
+                .transform(new CircleTransformation())
                 .into(mConsultAvatar);
     }
 }

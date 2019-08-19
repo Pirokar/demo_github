@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import im.threads.R;
 import im.threads.internal.Config;
@@ -22,23 +23,19 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.MaskedTransformation;
 
-/**
- * Created by yuri on 30.06.2016.
- */
 public class ImageFromUserViewHolder extends BaseHolder {
-    private static final String TAG = "ImageFromUserViewHolde ";
     private TextView mTimeStampTextView;
     private ImageView mImage;
     private MaskedTransformation maskedTransformation;
-    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private View filter;
     private View filterSecond;
     private ChatStyle style;
 
     public ImageFromUserViewHolder(ViewGroup parent, MaskedTransformation maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
-        mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
-        mImage = (ImageView) itemView.findViewById(R.id.image);
+        mTimeStampTextView = itemView.findViewById(R.id.timestamp);
+        mImage = itemView.findViewById(R.id.image);
         this.maskedTransformation = maskedTransformation;
         filter = itemView.findViewById(R.id.filter);
         filterSecond = itemView.findViewById(R.id.filter_second);

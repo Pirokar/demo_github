@@ -17,9 +17,6 @@ import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ThreadUtils;
 
-/**
- * Created by yuri on 05.08.2016.
- */
 public class ImagesAdapter extends PagerAdapter {
     private List<FileDescription> fileDescriptions;
 
@@ -57,11 +54,9 @@ public class ImagesAdapter extends PagerAdapter {
                 return f;
             }
         }
-
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
-
         Fragment fragment = getItem(position);
         ThreadsLogger.v(TAG, "Adding item #" + position + ": f=" + fragment);
         if (mSavedState.size() > position) {
@@ -116,14 +111,11 @@ public class ImagesAdapter extends PagerAdapter {
 
     @Override
     public void finishUpdate(ViewGroup container) {
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mCurTransaction != null) {
-                    mCurTransaction.commitAllowingStateLoss();
-                    mCurTransaction = null;
-                    mFragmentManager.executePendingTransactions();
-                }
+        ThreadUtils.runOnUiThread(() -> {
+            if (mCurTransaction != null) {
+                mCurTransaction.commitAllowingStateLoss();
+                mCurTransaction = null;
+                mFragmentManager.executePendingTransactions();
             }
         });
     }

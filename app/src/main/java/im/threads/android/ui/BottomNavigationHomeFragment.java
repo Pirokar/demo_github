@@ -14,9 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Пустой фрагмент для примера использования чата в качестве фрагмента в нижней навигации
- * Created by chybakut2004 on 12.04.17.
  */
-
 public class BottomNavigationHomeFragment extends BaseFragment {
 
     private TextView unreadMessagesCount;

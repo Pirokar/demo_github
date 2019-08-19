@@ -13,7 +13,6 @@ import java.io.Serializable;
  * Стиль чата.
  * Хранит в себе информацию о расцветках, иконках
  * и других кастомизациях чата.
- * Created by yuri on 08.11.2016.
  */
 public class ChatStyle implements Serializable {
 

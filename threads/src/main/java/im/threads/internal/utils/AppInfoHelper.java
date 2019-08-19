@@ -8,14 +8,10 @@ import android.content.pm.PackageManager;
 import im.threads.BuildConfig;
 
 public final class AppInfoHelper {
+
     private static final String TAG = AppInfoHelper.class.getSimpleName();
 
-    private static String getAppBundle() {
-        return BuildConfig.APPLICATION_ID;
-    }
-
     public static String getAppVersion(Context ctx) {
-
         PackageInfo pInfo = null;
         try {
             pInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
@@ -53,4 +49,3 @@ public final class AppInfoHelper {
         return "";
     }
 }
-

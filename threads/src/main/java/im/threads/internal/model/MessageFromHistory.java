@@ -9,12 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.internal.utils.DateHelper;
-
-/**
- * Created by Admin on 25.05.2017.
- */
+import im.threads.internal.utils.ThreadsLogger;
 
 public class MessageFromHistory implements ChatItem {
+    private static final String TAG = MessageFromHistory.class.getSimpleName();
 
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
@@ -50,7 +48,7 @@ public class MessageFromHistory implements ChatItem {
                 list = new Gson().fromJson(response, listType);
             }
         } catch (JsonSyntaxException e) {
-            e.printStackTrace();
+            ThreadsLogger.e(TAG, "getListMessageFromServerResponse", e);
         }
         return list;
     }

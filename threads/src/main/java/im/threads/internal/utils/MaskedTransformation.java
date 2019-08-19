@@ -11,12 +11,7 @@ import android.graphics.drawable.NinePatchDrawable;
 
 import im.threads.internal.picasso_url_connection_only.Transformation;
 
-/**
- * Created by yuri on 11.07.2016.
- */
 public class MaskedTransformation implements Transformation {
-
-    private static final String TAG = "MaskedTransformation ";
 
     private Drawable maskDrawable;
     private String cacheKey;
@@ -28,7 +23,6 @@ public class MaskedTransformation implements Transformation {
 
     @Override
     public Bitmap transform(Bitmap source) {
-        Bitmap original = source;
         Bitmap result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas mCanvas = new Canvas(result);
         BitmapFactory.Options o = new BitmapFactory.Options();
@@ -42,7 +36,7 @@ public class MaskedTransformation implements Transformation {
         
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-        mCanvas.drawBitmap(original, 0, 0, null);
+        mCanvas.drawBitmap(source, 0, 0, null);
         mCanvas.drawBitmap(mask, 0, 0, paint);
         paint.setXfermode(null);
         source.recycle();

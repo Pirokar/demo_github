@@ -1,10 +1,6 @@
 package im.threads.internal.utils;
 
-/**
- * Пара объектов
- * Created by yuri on 02.09.2016.
- */
-
+import android.support.v4.util.ObjectsCompat;
 
 public class Tuple<F, S> {
     public F first;
@@ -22,8 +18,8 @@ public class Tuple<F, S> {
 
         Tuple<?, ?> pair = (Tuple<?, ?>) o;
 
-        if (first != null ? !first.equals(pair.first) : pair.first != null) return false;
-        return second != null ? second.equals(pair.second) : pair.second == null;
+        if (!ObjectsCompat.equals(first, pair.first)) return false;
+        return ObjectsCompat.equals(second, pair.second);
     }
 
 

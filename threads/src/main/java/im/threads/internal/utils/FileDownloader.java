@@ -10,9 +10,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-/**
- * Created by yuri on 29.07.2016.
- */
 public abstract class FileDownloader {
     private static final String TAG = "FileDownloader ";
     private String path;

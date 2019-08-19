@@ -15,9 +15,6 @@ import com.google.gson.JsonSyntaxException;
 import im.threads.internal.Config;
 import im.threads.ChatStyle;
 
-/**
- * Created by yuri on 08.08.2016.
- */
 public class PrefUtils {
     private static final String TAG = "PrefUtils ";
     public static final String TAG_CLIENT_ID = "TAG_CLIENT_ID";

@@ -1,6 +1,7 @@
 package im.threads.internal.formatters;
 
 import android.content.Context;
+import android.support.v4.util.ObjectsCompat;
 
 import java.util.List;
 
@@ -17,15 +18,12 @@ import static im.threads.internal.utils.FileUtils.PDF;
 import static im.threads.internal.utils.FileUtils.PNG;
 import static im.threads.internal.utils.FileUtils.getExtensionFromFileDescription;
 
-/**
- * Created by yuri on 14.09.2016.
- */
-public class NugatMessageFormatter {
+public class NougatMessageFormatter {
     private Context ctx;
     List<ChatItem> unreadMessages;
     List<ChatItem> incomingPushes;
 
-    public NugatMessageFormatter(Context ctx, List<ChatItem> unreadMessages, List<ChatItem> incomingPushes) {
+    public NougatMessageFormatter(Context ctx, List<ChatItem> unreadMessages, List<ChatItem> incomingPushes) {
         this.ctx = ctx;
         this.unreadMessages = unreadMessages;
         this.incomingPushes = incomingPushes;
@@ -42,7 +40,6 @@ public class NugatMessageFormatter {
         String name = "";
         boolean sex = false;
         String docName = "";
-        ConnectionPhrase connectionPhrase = new ConnectionPhrase(ctx);
         for (ChatItem ci : incomingPushes) {
             if (ci instanceof ConsultConnectionMessage || ci instanceof ConsultPhrase)
                 unreadMessages.add(ci);
@@ -52,7 +49,7 @@ public class NugatMessageFormatter {
                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
                 name = ccm.getName();
                 overallPhrasesCount++;
-                phrase = connectionPhrase.getConnectionPhrase(ccm);
+                phrase = ConnectionPhrase.getConnectionPhrase(ctx, ccm);
                 sex = ccm.getSex();
                 avatarPath = ((ConsultConnectionMessage) ci).getAvatarPath();
             }
@@ -96,9 +93,9 @@ public class NugatMessageFormatter {
             if (isEmpty(phrase)) phrase = ctx.getString(R.string.threads_touch_to_look);
             String send = sex ? ctx.getString(R.string.threads_send_male) : ctx.getString(R.string.threads_send_female);
             titletext += " " +
-                        send +
-                        " " +
-                        ctx.getResources().getQuantityString(R.plurals.threads_images, imagesCount, imagesCount);
+                    send +
+                    " " +
+                    ctx.getResources().getQuantityString(R.plurals.threads_images, imagesCount, imagesCount);
         } else if (plainFilesCount != 0) {
             String send = sex ? ctx.getString(R.string.threads_send_male) : ctx.getString(R.string.threads_send_female);
             titletext += " " + send + " ";
@@ -108,7 +105,7 @@ public class NugatMessageFormatter {
             else if (isEmpty(phrase) && plainFilesCount != 1) {
                 phrase = ctx.getString(R.string.threads_touch_to_download);
             }
-        } else if (plainFilesCount == 0 && imagesCount == 0 && unreadMessages.size() > 1) {
+        } else if (unreadMessages.size() > 1) {
             titletext = ctx.getResources().getQuantityString(R.plurals.threads_new_messages, overallPhrasesCount, overallPhrasesCount);
         }
         PushContents pushContents = new PushContents(
@@ -160,21 +157,19 @@ public class NugatMessageFormatter {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof PushContents)) return false;
-
             PushContents that = (PushContents) o;
-
             if (hasAvatar != that.hasAvatar) return false;
             if (hasImage != that.hasImage) return false;
             if (imagesCount != that.imagesCount) return false;
             if (phrasesCount != that.phrasesCount) return false;
             if (hasPlainFiles != that.hasPlainFiles) return false;
-            if (titleText != null ? !titleText.equals(that.titleText) : that.titleText != null)
+            if (!ObjectsCompat.equals(titleText, that.titleText))
                 return false;
-            if (contentText != null ? !contentText.equals(that.contentText) : that.contentText != null)
+            if (!ObjectsCompat.equals(contentText, that.contentText))
                 return false;
-            if (avatarPath != null ? !avatarPath.equals(that.avatarPath) : that.avatarPath != null)
+            if (!ObjectsCompat.equals(avatarPath, that.avatarPath))
                 return false;
-            return lastImagePath != null ? lastImagePath.equals(that.lastImagePath) : that.lastImagePath == null;
+            return ObjectsCompat.equals(lastImagePath, that.lastImagePath);
 
         }
 

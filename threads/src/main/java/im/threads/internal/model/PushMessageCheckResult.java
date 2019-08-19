@@ -1,9 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by chybakut2004 on 25.04.17.
- */
-
 public class PushMessageCheckResult {
 
     private boolean detected = false;

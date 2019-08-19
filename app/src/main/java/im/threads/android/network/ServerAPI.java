@@ -14,17 +14,16 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ServerAPI {
+class ServerAPI {
 
     private static String TAG = ServerAPI.class.getSimpleName();
     private static IServerAPI serverAPI;
 
-    public static IServerAPI getAPI() {
+    static IServerAPI getAPI() {
         String serverBaseUrl = ThreadsDemoApplication.getAppContext().getString(R.string.serverBaseUrl);
         if (TextUtils.isEmpty(serverBaseUrl)) {
             Log.w(TAG, "Server base url is empty");
             return null;
-
         } else {
             if (serverAPI == null) {
                 serverAPI = createServerAPI(serverBaseUrl);

@@ -1,19 +1,16 @@
 package im.threads.internal.model;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.ObjectsCompat;
 
-import im.threads.internal.utils.ObjectUtils;
-
-/**
- * Created by yuri on 13.06.2016.
- */
 public class Quote {
     private String phraseOwnerTitle;
     private final String text;
     private FileDescription fileDescription;
     private final long timeStamp;
     private boolean isFromConsult;
-    @Nullable private String quotedPhraseConsultId;
+    @Nullable
+    private String quotedPhraseConsultId;
 
     private String uuid;
 
@@ -53,6 +50,7 @@ public class Quote {
     public FileDescription getFileDescription() {
         return fileDescription;
     }
+
     public String getPhraseOwnerTitle() {
         return phraseOwnerTitle;
     }
@@ -72,8 +70,8 @@ public class Quote {
 
         Quote quote = (Quote) o;
 
-        if (text != null ? !text.equals(quote.text) : quote.text != null) return false;
-        return fileDescription != null ? fileDescription.equals(quote.fileDescription) : quote.fileDescription == null;
+        if (!ObjectsCompat.equals(text, quote.text)) return false;
+        return ObjectsCompat.equals(fileDescription, quote.fileDescription);
 
     }
 
@@ -110,10 +108,10 @@ public class Quote {
             return false;
         }
 
-        boolean hasSameContent = ObjectUtils.areEqual(this.uuid, quote.uuid)
-                && ObjectUtils.areEqual(this.phraseOwnerTitle, quote.phraseOwnerTitle)
-                && ObjectUtils.areEqual(this.text, quote.text)
-                && ObjectUtils.areEqual(this.timeStamp, quote.timeStamp);
+        boolean hasSameContent = ObjectsCompat.equals(this.uuid, quote.uuid)
+                && ObjectsCompat.equals(this.phraseOwnerTitle, quote.phraseOwnerTitle)
+                && ObjectsCompat.equals(this.text, quote.text)
+                && ObjectsCompat.equals(this.timeStamp, quote.timeStamp);
 
         if (this.fileDescription != null) {
             hasSameContent = hasSameContent && this.fileDescription.hasSameContent(quote.fileDescription);

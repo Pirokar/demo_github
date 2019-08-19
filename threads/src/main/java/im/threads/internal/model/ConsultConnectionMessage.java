@@ -1,5 +1,7 @@
 package im.threads.internal.model;
 
+import android.support.v4.util.ObjectsCompat;
+
 import com.google.gson.annotations.SerializedName;
 
 public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
@@ -96,16 +98,9 @@ public class ConsultConnectionMessage extends ConsultChatPhrase implements ChatI
         if (uuid == null) return false;
         ConsultConnectionMessage that = (ConsultConnectionMessage) o;
         if (sex != that.sex) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-
-        try {
-            return uuid.equalsIgnoreCase(that.uuid);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return true;
-
+        if (!ObjectsCompat.equals(type, that.type)) return false;
+        if (!ObjectsCompat.equals(name, that.name)) return false;
+        return uuid.equalsIgnoreCase(that.uuid);
     }
 
     @Override

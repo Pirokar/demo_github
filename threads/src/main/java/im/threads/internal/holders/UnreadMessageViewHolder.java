@@ -6,27 +6,22 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
 import im.threads.internal.model.UnreadMessages;
 
-/**
- * Created by yuri on 24.08.2016.
- */
 public class UnreadMessageViewHolder extends RecyclerView.ViewHolder {
     private TextView mTextView;
-    private ChatStyle style;
 
     public UnreadMessageViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_unread_counter, parent, false));
-        mTextView = (TextView) itemView.findViewById(R.id.text);
-        if (style == null) style = Config.instance.getChatStyle();
+        mTextView = itemView.findViewById(R.id.text);
+        ChatStyle style = Config.instance.getChatStyle();
         mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
     }
 
     public void onBind(UnreadMessages unreadMessages) {
         mTextView.setText(unreadMessages.getMessage(mTextView.getContext()));
     }
-
 }

@@ -10,9 +10,6 @@ public class Card implements Serializable {
     private String appMarker;
     private String clientIdSignature;
 
-    public Card() {
-    }
-
     public Card(final String userId, final String userName, String appMarker, String clientIdSignature) {
         this.userId = userId;
         this.userName = userName;

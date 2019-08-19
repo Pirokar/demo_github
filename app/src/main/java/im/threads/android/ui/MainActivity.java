@@ -71,9 +71,7 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
 
         });
         binding.cardsView.setAdapter(cardsAdapter);
-
         showCards(PrefUtils.getCards(this));
-
         Fabric.with(this, new Crashlytics());
     }
 

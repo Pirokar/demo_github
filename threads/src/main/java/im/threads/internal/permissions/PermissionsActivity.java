@@ -16,11 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import im.threads.R;
 
 /**
- * Created by chybakut2004 on 07.06.17.
- *
- *  * Активити для разрешений
+ * Активити для разрешений
  */
-
 public class PermissionsActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 0;
@@ -28,13 +25,12 @@ public class PermissionsActivity extends AppCompatActivity {
     private static final String EXTRA_PERMISSION_TEXT = "EXTRA_PERMISSION_TEXT";   // Ключ для передачи разрешений
     private static final String PACKAGE_URL_SCHEME = "package:";           // Для открытия настроек
 
-    public static final int TEXT_DEFAULT = -1;
+    private static final int TEXT_DEFAULT = -1;
 
     public static final int RESPONSE_GRANTED = 10;
     public static final int RESPONSE_DENIED = 20;
     public static final int RESPONSE_NEVER_AGAIN = 30;
 
-    private PermissionsChecker checker; // Менеджер проверки резрешений
     private boolean requiresCheck;
 
     /**
@@ -69,19 +65,16 @@ public class PermissionsActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_permissions);
 
-        checker = new PermissionsChecker(this);
         requiresCheck = true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         if (requiresCheck) {
             String[] permissions = getPermissions();
-
             // Если разрешения не выданы, то нужно открыть диалог с разрешениями
-            if (checker.permissionsDenied(permissions)) {
+            if (PermissionsChecker.permissionsDenied(PermissionsActivity.this, permissions)) {
                 requestPermissions(permissions);
             } else {
                 // Если выданы, закрыть активити с положительным результатом
@@ -147,7 +140,7 @@ public class PermissionsActivity extends AppCompatActivity {
         dialogBuilder.setNegativeButton(R.string.threads_permissions_quit, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(checker.clickedNeverAskAgain(PermissionsActivity.this, getPermissions())) {
+                if (PermissionsChecker.clickedNeverAskAgain(PermissionsActivity.this, getPermissions())) {
                     // Если во всех кликнуто - БОЛЬШЕ НЕ ПОКАЗЫВАТЬ, то закрыть с соответствующим результатом
                     neverAskAgain();
                 } else {
@@ -182,7 +175,7 @@ public class PermissionsActivity extends AppCompatActivity {
     private int getPermissionText() {
         int textId = getIntent().getIntExtra(EXTRA_PERMISSION_TEXT, TEXT_DEFAULT);
 
-        if(textId == TEXT_DEFAULT) {
+        if (textId == TEXT_DEFAULT) {
             textId = R.string.threads_permissions_string_help_text;
         }
 

@@ -5,20 +5,18 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
-import im.threads.UserInfoBuilder;
-import im.threads.view.ChatFragment;
 import im.threads.ThreadsLib;
+import im.threads.UserInfoBuilder;
 import im.threads.android.R;
 import im.threads.android.utils.ChatStyleBuilderHelper;
+import im.threads.view.ChatFragment;
 
 /**
  * Пример активности с нижней навигацией,
@@ -130,10 +128,10 @@ public class BottomNavigationActivity extends AppCompatActivity {
         clientIdSignature = intent.getStringExtra(ARG_CLIENT_ID_SIGNATURE);
         chatDesign = (ChatStyleBuilderHelper.ChatDesign) intent.getSerializableExtra(ARG_CHAT_DESIGN);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        bottomNavigationView = findViewById(R.id.navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         // При открытии экрана из пуш уведомления нужно сразу открыть чат,
@@ -167,20 +165,15 @@ public class BottomNavigationActivity extends AppCompatActivity {
         if (newTabItem == null) {
             return;
         }
-
         showActionBar(newTabItem);
-
         final FragmentManager fm = getSupportFragmentManager();
         final Fragment currentFragment = fm.findFragmentById(R.id.content);
         if (currentFragment != null && selectedTab == newTabItem) {
             // не показываем повторно текущую вкладку
             return;
         }
-
         selectedTab = newTabItem;
-
         Fragment fragment = null;
-
         switch (newTabItem) {
             case TAB_HOME:
                 if (homeFragment == null) {
@@ -204,7 +197,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 fragment = chatFragment;
                 break;
         }
-
         // добавляем фрагмент в контейнер
         if (fragment != null) {
             fm.beginTransaction()
@@ -261,9 +253,5 @@ public class BottomNavigationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-    private void showError(@StringRes int errorMessageResId) {
-        Toast.makeText(this, errorMessageResId, Toast.LENGTH_SHORT).show();
     }
 }

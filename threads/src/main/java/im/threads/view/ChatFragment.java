@@ -57,22 +57,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.databinding.FragmentChatBinding;
 import im.threads.internal.Config;
 import im.threads.internal.activities.CameraActivity;
 import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
-import im.threads.internal.adapters.BottomGalleryAdapter;
 import im.threads.internal.adapters.ChatAdapter;
 import im.threads.internal.controllers.ChatController;
-import im.threads.databinding.FragmentChatBinding;
 import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
-import im.threads.ChatStyle;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ConsultConnectionMessage;
@@ -97,6 +95,7 @@ import im.threads.internal.utils.LateTextWatcher;
 import im.threads.internal.utils.MyFileFilter;
 import im.threads.internal.utils.PermissionChecker;
 import im.threads.internal.utils.PrefUtils;
+import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.views.BottomSheetView;
 import im.threads.internal.views.MySwipeRefreshLayout;
@@ -106,9 +105,7 @@ import io.reactivex.disposables.Disposable;
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
- * Created by chybakut2004 on 10.04.17.
  */
-
 public class ChatFragment extends Fragment implements
         BottomSheetView.ButtonsListener,
         ChatAdapter.AdapterInterface,
@@ -166,9 +163,9 @@ public class ChatFragment extends Fragment implements
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
-        appContext = activity.getApplicationContext();
+        appContext = Config.instance.context;
         style = Config.instance.getChatStyle();
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
 
@@ -199,7 +196,9 @@ public class ChatFragment extends Fragment implements
         super.onDestroyView();
         mChatController.unbindFragment();
         Activity activity = getActivity();
-        activity.unregisterReceiver(mChatReceiver);
+        if (activity != null) {
+            activity.unregisterReceiver(mChatReceiver);
+        }
 
         chatIsShown = false;
     }
@@ -233,7 +232,7 @@ public class ChatFragment extends Fragment implements
     }
 
     private void bindViews() {
-        binding.swipeRefresh.setmSwipeListener(new MySwipeRefreshLayout.SwipeListener() {
+        binding.swipeRefresh.setSwipeListener(new MySwipeRefreshLayout.SwipeListener() {
             @Override
             public void onSwipe() {
             }
@@ -436,7 +435,7 @@ public class ChatFragment extends Fragment implements
             }
 
             @Override
-            public void onFail(Throwable error) {
+            public void onError(Throwable error) {
             }
         });
     }
@@ -640,7 +639,7 @@ public class ChatFragment extends Fragment implements
     public void updateChatItem(ChatItem chatItem, boolean needsReordering) {
 
         if (needsReordering) {
-            mChatAdapter.reorder(chatItem);
+            mChatAdapter.reorder();
             mChatAdapter.notifyDataSetChangedOnUi();
         } else {
             mChatAdapter.notifyItemChangedOnUi(chatItem);
@@ -674,7 +673,7 @@ public class ChatFragment extends Fragment implements
 
         if (item.getItemId() == R.id.files_and_media) {
             if (isInMessageSearchMode) onActivityBackPressed();
-            startActivity(FilesActivity.getStartIntetent(activity));
+            startActivity(FilesActivity.getStartIntent(activity));
             return true;
         }
 
@@ -899,19 +898,11 @@ public class ChatFragment extends Fragment implements
         mChatController.fancySearch(request, forward, new CallbackNoError<List<ChatItem>>() {
             @Override
             public void onCall(final List<ChatItem> data) {
-                h.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        onSearchEnd(data, highlighted);
-                    }
-                });
-                h.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (highlighted[0] == null) return;
-                        int index = mChatAdapter.setItemHighlighted(highlighted[0]);
-                        if (index != -1) scrollToPosition(index);
-                    }
+                h.post(() -> onSearchEnd(data, highlighted));
+                h.postDelayed(() -> {
+                    if (highlighted[0] == null) return;
+                    int index = mChatAdapter.setItemHighlighted(highlighted[0]);
+                    if (index != -1) scrollToPosition(index);
                 }, 60);
             }
         });
@@ -997,15 +988,12 @@ public class ChatFragment extends Fragment implements
                 binding.bottomGallery.setVisibility(View.VISIBLE);
                 binding.bottomGallery.setAlpha(0.0f);
                 binding.bottomGallery.animate().alpha(1.0f).setDuration(200).start();
-                binding.bottomGallery.setImages(allItems, new BottomGalleryAdapter.OnChooseItemsListener() {
-                    @Override
-                    public void onChosenItems(List<String> items) {
-                        mAttachedImages = new ArrayList<>(items);
-                        if (mAttachedImages.size() > 0) {
-                            binding.fileInputSheet.setSelectedState(true);
-                        } else {
-                            binding.fileInputSheet.setSelectedState(false);
-                        }
+                binding.bottomGallery.setImages(allItems, items -> {
+                    mAttachedImages = new ArrayList<>(items);
+                    if (mAttachedImages.size() > 0) {
+                        binding.fileInputSheet.setSelectedState(true);
+                    } else {
+                        binding.fileInputSheet.setSelectedState(false);
                     }
                 });
             } else {
@@ -1133,7 +1121,6 @@ public class ChatFragment extends Fragment implements
                 }
             }
         }
-
         h.post(() -> {
             if (!isInMessageSearchMode)
                 scrollToPosition(mChatAdapter.getItemCount() - 1);
@@ -1142,7 +1129,6 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setStateConsultConnected(ConsultInfo info) {
-
         h.postDelayed(() -> {
             if (isAdded()) {
                 if (!isInMessageSearchMode) {
@@ -1166,16 +1152,13 @@ public class ChatFragment extends Fragment implements
     }
 
     public void setTitleStateDefault() {
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isInMessageSearchMode) {
-                    binding.subtitle.setVisibility(View.GONE);
-                    binding.consultName.setVisibility(View.VISIBLE);
-                    binding.searchLo.setVisibility(View.GONE);
-                    binding.search.setText("");
-                    binding.consultName.setText(style.chatTitleTextResId);
-                }
+        h.postDelayed(() -> {
+            if (!isInMessageSearchMode) {
+                binding.subtitle.setVisibility(View.GONE);
+                binding.consultName.setVisibility(View.VISIBLE);
+                binding.searchLo.setVisibility(View.GONE);
+                binding.search.setText("");
+                binding.consultName.setText(style.chatTitleTextResId);
             }
         }, 50);
     }

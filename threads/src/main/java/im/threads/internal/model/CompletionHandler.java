@@ -1,17 +1,12 @@
 package im.threads.internal.model;
 
-/**
- * Created by yuri on 24.06.2016.
- */
 public abstract class CompletionHandler<T> {
     private boolean isSuccessful;
     private String message;
 
-
     public void setSuccessful(boolean successful) {
         isSuccessful = successful;
     }
-
 
     public void setMessage(String message) {
         this.message = message;

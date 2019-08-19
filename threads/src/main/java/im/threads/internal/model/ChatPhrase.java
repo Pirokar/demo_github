@@ -1,8 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by yuri on 14.06.2016.
- */
 public interface ChatPhrase extends ChatItem {
     String getId();
 

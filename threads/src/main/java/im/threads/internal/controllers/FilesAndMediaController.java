@@ -2,7 +2,6 @@ package im.threads.internal.controllers;
 
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,12 +24,8 @@ import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
 
-/**
- * Created by yuri on 01.07.2016.
- */
 public class FilesAndMediaController extends Fragment {
     private FilesActivity activity;
-    private Context appContext;
 
     public static FilesAndMediaController getInstance() {
         return new FilesAndMediaController();
@@ -50,42 +45,35 @@ public class FilesAndMediaController extends Fragment {
 
     public void bindActivity(FilesActivity activity) {
         this.activity = activity;
-        appContext = activity.getApplicationContext();
     }
 
     public void unbindActivty() {
         activity = null;
-        appContext = null;
     }
 
-    public void getFilesAcync() {
+    public void getFilesAsync() {
         DatabaseHolder.getInstance(activity).getFilesAsync(new CompletionHandler<List<FileDescription>>() {
             @Override
             public void onComplete(final List<FileDescription> data) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (null != activity) {
-                            List<FileDescription> list = new ArrayList<>();
-                            for (FileDescription fd : data) {
-                                if (FileUtils.isImage(fd)) {
-                                    list.add(fd);
-                                }
-                                if (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PDF
-                                        ||FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.OTHER_DOC_FORMATS) {
-                                    list.add(fd);
-                                }
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (null != activity) {
+                        List<FileDescription> list = new ArrayList<>();
+                        for (FileDescription fd : data) {
+                            if (FileUtils.isImage(fd)) {
+                                list.add(fd);
                             }
-                         //   Collections.reverse(list);
-                            activity.onFileReceive(list);
+                            if (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PDF
+                                    || FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.OTHER_DOC_FORMATS) {
+                                list.add(fd);
+                            }
                         }
+                        activity.onFileReceive(list);
                     }
                 });
             }
 
             @Override
             public void onError(Throwable e, String message, List<FileDescription> data) {
-
             }
         });
     }
@@ -93,11 +81,9 @@ public class FilesAndMediaController extends Fragment {
     public void onFileClick(FileDescription fileDescription) {
         if (FileUtils.isImage(fileDescription)) {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
-
         } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
             Intent target = new Intent(Intent.ACTION_VIEW);
             File file = new File(fileDescription.getFilePath());
-
             target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
                     "application/pdf"
             );

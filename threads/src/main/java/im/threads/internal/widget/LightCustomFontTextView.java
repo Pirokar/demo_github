@@ -8,29 +8,21 @@ import android.util.AttributeSet;
 import im.threads.internal.Config;
 import im.threads.ChatStyle;
 
-/**
- * Created by Admin on 20.03.2017.
- */
-
 public class LightCustomFontTextView extends android.support.v7.widget.AppCompatTextView {
 
     public LightCustomFontTextView(Context context) {
         super(context);
-
         if (isInEditMode()) {
             return;
         }
-
         setTypefaceView(context);
     }
 
     public LightCustomFontTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         if (isInEditMode()) {
             return;
         }
-
         setTypefaceView(context);
     }
 
@@ -39,6 +31,5 @@ public class LightCustomFontTextView extends android.support.v7.widget.AppCompat
         if (!TextUtils.isEmpty(style.defaultFontLight)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontLight));
         }
-
     }
 }

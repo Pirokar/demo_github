@@ -1,8 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by yuri on 16.06.2016.
- */
 public class Space implements ChatItem {
     private final int height;
     private final long timeStamp;

@@ -37,8 +37,8 @@ import im.threads.ThreadsLib;
 import im.threads.internal.activities.TranslucentActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.IncomingMessageParser;
-import im.threads.internal.formatters.MarshmellowPushMessageFormatter;
-import im.threads.internal.formatters.NugatMessageFormatter;
+import im.threads.internal.formatters.MarshmallowPushMessageFormatter;
+import im.threads.internal.formatters.NougatMessageFormatter;
 import im.threads.view.ChatFragment;
 import im.threads.internal.Config;
 import im.threads.internal.utils.ThreadsLogger;
@@ -48,7 +48,7 @@ import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultChatPhrase;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.picasso_url_connection_only.Target;
-import im.threads.internal.utils.CircleTransform;
+import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.TargetNoError;
 import im.threads.internal.utils.Tuple;
@@ -57,7 +57,6 @@ import static android.text.TextUtils.isEmpty;
 
 /**
  * Отображает пуш уведомление, о котором скачана полная информация.
- * Created by yuri on 17.08.2016.
  */
 public class NotificationService extends Service {
 
@@ -160,7 +159,6 @@ public class NotificationService extends Service {
             notificationBuilder.setAutoCancel(true);
             h.postDelayed(() -> nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
         }
-
         return START_STICKY;
     }
 
@@ -190,8 +188,9 @@ public class NotificationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mBroadcastReceiver != null)
+        if (mBroadcastReceiver != null) {
             getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+        }
     }
 
     private void dismissUnreadMessagesNotification() {
@@ -226,7 +225,7 @@ public class NotificationService extends Service {
         if (unreadMessage) {
             final String operatorUrl = intent.getStringExtra(EXTRA_OPERATOR_URL);
             if (!isEmpty(operatorUrl)) {
-                showMstyleOperatorAvatar(FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), operatorUrl), pushSmall, pushBig);
+                showMstyleOperatorAvatar(FileUtils.convertRelativeUrlToAbsolute(operatorUrl), pushSmall, pushBig);
                 showMstyleSmallIcon(pushSmall, pushBig);
             } else {
                 final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
@@ -239,16 +238,12 @@ public class NotificationService extends Service {
                 pushSmall.setViewVisibility(R.id.attach_image, View.GONE);
                 pushBig.setViewVisibility(R.id.attach_image, View.GONE);
             }
-
             pushSmall.setTextViewText(R.id.text, message);
             pushBig.setTextViewText(R.id.text, message);
-
-
         } else {
-            final Tuple<Boolean, MarshmellowPushMessageFormatter.PushContents> pushText = new
-                    MarshmellowPushMessageFormatter(this, unreadMessages, items)
+            final Tuple<Boolean, MarshmallowPushMessageFormatter.PushContents> pushText = new
+                    MarshmallowPushMessageFormatter(this, unreadMessages, items)
                     .getFormattedMessageAsPushContents();
-
             String avatarPath = null;
             for (int i = unreadMessages.size() - 1; i >= 0; i--) {
                 if (unreadMessages.get(i) instanceof ConsultChatPhrase) {
@@ -257,7 +252,7 @@ public class NotificationService extends Service {
                 }
             }
             if (!isEmpty(avatarPath)) {
-                showMstyleOperatorAvatar(FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), avatarPath), pushSmall, pushBig);
+                showMstyleOperatorAvatar(FileUtils.convertRelativeUrlToAbsolute(avatarPath), pushSmall, pushBig);
                 showMstyleSmallIcon(pushSmall, pushBig);
             } else {
                 final Bitmap icon = BitmapFactory.decodeResource(getResources(), style.defPushIconResId);
@@ -284,7 +279,7 @@ public class NotificationService extends Service {
                 final Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.attach_file_grey_48x48);
                 pushSmall.setImageViewBitmap(R.id.attach_image, b);
                 pushBig.setImageViewBitmap(R.id.attach_image, b);
-            } else if (!pushText.second.isWithAttachments) {
+            } else {
                 pushSmall.setViewVisibility(R.id.attach_image, View.GONE);
                 pushBig.setViewVisibility(R.id.attach_image, View.GONE);
             }
@@ -300,7 +295,6 @@ public class NotificationService extends Service {
         builder.setContentIntent(pend);
         builder.setAutoCancel(true);
         builder.setContentIntent(pend);
-
         final Notification notification = builder.build();
         try {
             final int smallIconViewId = getResources().getIdentifier("right_icon", "id", android.R.class.getPackage().getName());
@@ -331,12 +325,10 @@ public class NotificationService extends Service {
 
             }
         };
-
         Picasso.with(this)
                 .load(operatorAvatarUrl)
-                .transform(new CircleTransform())
+                .transform(new CircleTransformation())
                 .into(target);
-
     }
 
     private void showMstyleSmallIcon(final RemoteViews pushSmall, final RemoteViews pushBig) {
@@ -356,20 +348,17 @@ public class NotificationService extends Service {
 
             @Override
             public void onPrepareLoad(final Drawable placeHolderDrawable) {
-
             }
         };
-
         Picasso.with(this)
                 .load(style.defPushIconResId)
-                .transform(new CircleTransform())
+                .transform(new CircleTransformation())
                 .into(smallPicTarget);
     }
 
 
     void getNstyleNotif(final Intent intent, final List<ChatItem> items, final CompletionHandler<Notification> completionHandler, final String message) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-
         final String appMarker = intent.getStringExtra(EXTRA_APP_MARKER);
         builder.setShowWhen(true);
         if (Build.VERSION.SDK_INT > 23) {
@@ -379,7 +368,6 @@ public class NotificationService extends Service {
         if (unreadMessage) {
             builder.setContentText(message);
             builder.setSmallIcon(style.defPushIconResId);
-
             final String operatorUrl = intent.getStringExtra(EXTRA_OPERATOR_URL);
             if (!TextUtils.isEmpty(operatorUrl)) {
                 final TargetNoError avatarTarget = new TargetNoError() {
@@ -388,30 +376,25 @@ public class NotificationService extends Service {
                         builder.setLargeIcon(bitmap);
                     }
                 };
-                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), operatorUrl);
+                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(operatorUrl);
                 Picasso
                         .with(this)
                         .load(avatarPath)
-                        .transform(new CircleTransform())
+                        .transform(new CircleTransformation())
                         .into(avatarTarget);
             }
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    builder.setContentIntent(getChatIntent(appMarker));
-                    builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
-                    completionHandler.onComplete(builder.build());
+            executor.execute(() -> {
+                builder.setContentIntent(getChatIntent(appMarker));
+                builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
+                completionHandler.onComplete(builder.build());
 
-                }
             });
         } else {
-            final Tuple<Boolean, NugatMessageFormatter.PushContents> out
-                    = new NugatMessageFormatter(this, unreadMessages, items).getFormattedMessageAsPushContents();
-            final NugatMessageFormatter.PushContents pushContents = out.second;
+            final Tuple<Boolean, NougatMessageFormatter.PushContents> out
+                    = new NougatMessageFormatter(this, unreadMessages, items).getFormattedMessageAsPushContents();
+            final NougatMessageFormatter.PushContents pushContents = out.second;
             builder.setContentTitle(pushContents.titleText);
-
-            if (!pushContents.hasImage && !pushContents.hasPlainFiles && pushContents.phrasesCount > 1) {
-            } else {
+            if (pushContents.hasImage || pushContents.hasPlainFiles || pushContents.phrasesCount <= 1) {
                 builder.setContentText(pushContents.contentText);
             }
             if (pushContents.hasAvatar) {
@@ -421,27 +404,23 @@ public class NotificationService extends Service {
                         builder.setLargeIcon(bitmap);
                     }
                 };
-                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(getApplicationContext(), pushContents.avatarPath);
+                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(pushContents.avatarPath);
                 Picasso
                         .with(this)
                         .load(avatarPath)
-                        .transform(new CircleTransform())
+                        .transform(new CircleTransformation())
                         .into(avatarTarget);
             }
             if (!pushContents.hasImage && !pushContents.hasPlainFiles) {
                 builder.setSmallIcon(style.defPushIconResId);
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        builder.setContentIntent(getChatIntent(appMarker));
-                        if (out.first) {
-                            builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
-                        }
-                        completionHandler.onComplete(builder.build());
-
+                executor.execute(() -> {
+                    builder.setContentIntent(getChatIntent(appMarker));
+                    if (out.first) {
+                        builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
                     }
-                });
+                    completionHandler.onComplete(builder.build());
 
+                });
                 return;
             }
             if (pushContents.hasImage
@@ -449,44 +428,35 @@ public class NotificationService extends Service {
                     && pushContents.imagesCount == 1) {
                 final NotificationCompat.BigPictureStyle pictureStyle
                         = new android.support.v4.app.NotificationCompat.BigPictureStyle();
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            final URLConnection url = new URL(pushContents.lastImagePath).openConnection();
-                            final Bitmap b = BitmapFactory.decodeStream(url.getInputStream());
-                            pictureStyle.bigPicture(b);
-                            builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
-                            builder.setStyle(pictureStyle);
-                            builder.setContentIntent(getChatIntent(appMarker));
-                            if (out.first) {
-                                builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
-                            }
-                            completionHandler.onComplete(builder.build());
-                        } catch (final IOException e) {
-                            ThreadsLogger.e(TAG, "getNstyleNotif", e);
+                executor.execute(() -> {
+                    try {
+                        final URLConnection url = new URL(pushContents.lastImagePath).openConnection();
+                        final Bitmap b = BitmapFactory.decodeStream(url.getInputStream());
+                        pictureStyle.bigPicture(b);
+                        builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
+                        builder.setStyle(pictureStyle);
+                        builder.setContentIntent(getChatIntent(appMarker));
+                        if (out.first) {
+                            builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
                         }
+                        completionHandler.onComplete(builder.build());
+                    } catch (final IOException e) {
+                        ThreadsLogger.e(TAG, "getNstyleNotif", e);
                     }
                 });
                 return;
             }
-            if ((pushContents.hasImage && pushContents.hasPlainFiles)
-                    || (pushContents.hasPlainFiles && !pushContents.hasImage)) {
+            if (pushContents.hasPlainFiles) {
                 builder.setSmallIcon(R.drawable.attach_file_grey_48x48);
-            } else if (pushContents.hasImage && !pushContents.hasPlainFiles) {
-                builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
             } else {
-                builder.setSmallIcon(R.drawable.default_push_icon);
+                builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
             }
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    builder.setContentIntent(getChatIntent(appMarker));
-                    if (out.first) {
-                        builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
-                    }
-                    completionHandler.onComplete(builder.build());
+            executor.execute(() -> {
+                builder.setContentIntent(getChatIntent(appMarker));
+                if (out.first) {
+                    builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
                 }
+                completionHandler.onComplete(builder.build());
             });
         }
     }
@@ -495,12 +465,11 @@ public class NotificationService extends Service {
         final Intent buttonIntent = new Intent(this, TranslucentActivity.class);
         buttonIntent.setFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK);
-        final PendingIntent buttonPend = PendingIntent.getActivity(
+        return PendingIntent.getActivity(
                 this,
                 1
                 , buttonIntent
                 , PendingIntent.FLAG_CANCEL_CURRENT);
-        return buttonPend;
     }
 
     private PendingIntent getChatIntent(String appMarker) {

@@ -41,16 +41,12 @@ public class OutgoingMessageCreator {
             formattedMessage.put(PushMessageAttributes.CLIENT_ID, clientId);
             final String phrase = upcomingUserMessage.getPhrase();
             formattedMessage.put(PushMessageAttributes.TEXT, phrase == null ? "" : phrase);
-
             if (threadId != null && threadId != -1) {
                 formattedMessage.put(PushMessageAttributes.THREAD_ID, String.valueOf(threadId));
             }
-
             formattedMessage.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
-
             if (quote != null) {
                 JSONArray quotes = new JSONArray();
-
                 formattedMessage.put(PushMessageAttributes.QUOTES, quotes);
                 JSONObject quoteJson = new JSONObject();
                 quotes.put(quoteJson);
@@ -121,7 +117,6 @@ public class OutgoingMessageCreator {
         } else if (fileDescription.getDownloadPath() != null) {
             attachments = attachmentsFromMfmsPath(fileDescription);
         }
-
         if (attachments != null) {
             attachments.getJSONObject(0).put("result", mfmsFilepath);
         }
@@ -145,11 +140,10 @@ public class OutgoingMessageCreator {
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
             object.put("libVersion", AppInfoHelper.getLibVersion());
             object.put("clientLocale", DeviceInfoHelper.getLocale(ctx));
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.CLIENT_INFO.name());
+            object.put(PushMessageAttributes.TYPE, PushMessageType.CLIENT_INFO.name());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createEnvironmentMessage", e);
         }
-
         return object.toString();
     }
 
@@ -157,7 +151,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.SURVEY_QUESTION_ANSWER.name());
+            object.put(PushMessageAttributes.TYPE, PushMessageType.SURVEY_QUESTION_ANSWER.name());
             object.put("sendingId", survey.getSendingId());
             object.put("questionId", survey.getQuestions().get(0).getId());
             object.put("rate", survey.getQuestions().get(0).getRate());
@@ -173,7 +167,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.SURVEY_PASSED.name());
+            object.put(PushMessageAttributes.TYPE, PushMessageType.SURVEY_PASSED.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
             object.put("sendingId", sendingId);
         } catch (JSONException e) {
@@ -186,7 +180,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.CLOSE_THREAD.name());
+            object.put(PushMessageAttributes.TYPE, PushMessageType.CLOSE_THREAD.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createResolveThreadMessage", e);
@@ -199,7 +193,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.REOPEN_THREAD.name());
+            object.put(PushMessageAttributes.TYPE, PushMessageType.REOPEN_THREAD.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createReopenThreadMessage", e);
@@ -212,13 +206,12 @@ public class OutgoingMessageCreator {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
-            jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.TYPING.name());
+            jsonObject.put(PushMessageAttributes.TYPE, PushMessageType.TYPING.name());
             jsonObject.put(PushMessageAttributes.TYPING_DRAFT, input);
             jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createMessageTyping", e);
         }
-
         return jsonObject.toString().replace("\\\\", "");
     }
 
@@ -226,12 +219,11 @@ public class OutgoingMessageCreator {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
-            jsonObject.put(PushMessageAttributes.TYPE, PushMessageTypes.CLIENT_OFFLINE.name());
+            jsonObject.put(PushMessageAttributes.TYPE, PushMessageType.CLIENT_OFFLINE.name());
             jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createMessageClientOffline", e);
         }
-
         return jsonObject.toString().replace("\\\\", "");
     }
 
@@ -252,7 +244,7 @@ public class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageTypes.INIT_CHAT.name());
+            object.put(PushMessageAttributes.TYPE, PushMessageType.INIT_CHAT.name());
             object.put(PushMessageAttributes.DATA, data);
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {

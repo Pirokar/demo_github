@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
-public class OGParser  {
+class OGParser {
 
     private static final String DECODE_UTF8 = "UTF-8";
     private static final String TITLE = "og:title";
@@ -24,7 +24,7 @@ public class OGParser  {
     private static final String META_START_TAG = "<meta";
     private static final String CONTENT_PROPERTY = "content=\"";
 
-    public static OGData parse(InputStream inputStream) throws IOException {
+    static OGData parse(InputStream inputStream) throws IOException {
         OGData ogData = new OGData();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, DECODE_UTF8);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);

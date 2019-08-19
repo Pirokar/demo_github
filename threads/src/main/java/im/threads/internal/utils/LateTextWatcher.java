@@ -3,9 +3,6 @@ package im.threads.internal.utils;
 import android.text.Editable;
 import android.text.TextWatcher;
 
-/**
- * Created by yuri on 09.09.2016.
- */
 public abstract class LateTextWatcher implements TextWatcher {
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {

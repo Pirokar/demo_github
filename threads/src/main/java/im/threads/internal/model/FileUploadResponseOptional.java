@@ -1,9 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by Admin on 28.03.2017.
- */
-
 class FileUploadResponseOptional {
     private String name;
     private String type;

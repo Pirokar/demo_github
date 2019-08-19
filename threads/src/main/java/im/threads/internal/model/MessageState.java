@@ -1,8 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by yuri on 10.06.2016.
- */
 public enum MessageState {
     STATE_SENDING,
     STATE_SENT,

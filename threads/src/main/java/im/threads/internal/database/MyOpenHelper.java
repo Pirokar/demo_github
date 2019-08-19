@@ -11,7 +11,6 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,14 +25,11 @@ import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.utils.FileUtils;
 
 /**
- * Created by yuri on 23.06.2016.
  * обертка для БД
  */
 class MyOpenHelper extends SQLiteOpenHelper {
-    private static final String TAG = "MyOpenHelper ";
     private static final int VERSION = 6;
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
@@ -85,16 +81,12 @@ class MyOpenHelper extends SQLiteOpenHelper {
     private static final String COLUMN_QUESTION_TEXT = "COLUMN_QUESTION_TEXT";
     private static final String COLUMN_QUESTION_SIMPLE = "COLUMN_QUESTION_SIMPLE";
 
-    private ArrayList<UserPhrase> cashedPhrases = new ArrayList<>();
-    private long lastPhraseRequest = System.currentTimeMillis();
-
     public MyOpenHelper(Context context) {
         super(context, "messages.db", null, VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         db.execSQL(String.format(Locale.US, "create table %s " +//messages table
                         "( %s integer primary key autoincrement," +//id column
                         " %s integer, " +//timestamp
@@ -121,7 +113,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 COLUMN_MESSAGE_UUID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID,
                 COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE,
                 COLUMN_IS_READ, COLUMN_PROVIDER_ID));
-
         db.execSQL("CREATE TABLE " + TABLE_QUOTE + "("
                 + COLUMN_QUOTE_UUID + " text,"
                 + COLUMN_QUOTE_FROM + " text, "
@@ -129,7 +120,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 + COLUMN_QUOTE_TIMESTAMP + " integer, "
                 + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " integer)" // message id
         );
-
         db.execSQL("CREATE TABLE " + TABLE_FILE_DESCRIPTION + " ( "
                 + COLUMN_FD_FROM + " text, "
                 + COLUMN_FD_PATH + " text, "
@@ -141,7 +131,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 + COLUMN_FD_FILENAME + " text,"
                 + COLUMN_FD_DOWNLOAD_PROGRESS + " integer)"
         );
-
         db.execSQL("CREATE TABLE " + TABLE_QUESTIONS + "("
                 + COLUMN_QUESTION_ID + " text,"
                 + COLUMN_QUESTION_SURVEY_SENDING_ID_EXT + " text,"
@@ -159,7 +148,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COLUMN_DISPLAY_MASSAGE + " INTEGER DEFAULT 0");
         }
-
         if (oldVersion < VERSION) {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUOTE);
@@ -167,7 +155,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTIONS);
             onCreate(db);
         }
-
         // VERSION 6 - quotes table uuid added, column names changed
         // dropping data with old file paths starting with "file://" prefix
     }
@@ -176,14 +163,12 @@ class MyOpenHelper extends SQLiteOpenHelper {
         if (phrase instanceof ConsultPhrase) {
             insertOrUpdateConsultPhrase((ConsultPhrase) phrase);
         }
-
         if (phrase instanceof UserPhrase) {
             insertOrUpdateUserPhrase((UserPhrase) phrase);
         }
     }
 
     private void insertOrUpdateConsultPhrase(ConsultPhrase phrase) {
-
         ContentValues cv = new ContentValues();
         boolean isDup = false;
         Cursor c;
@@ -216,7 +201,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     private void insertOrUpdateUserPhrase(UserPhrase phrase) {
-
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_UUID, phrase.getUuid());
         cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
@@ -224,17 +208,14 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_USER_PHRASE.ordinal());
         cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.getSentState().ordinal());
-
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_MESSAGE_UUID + " from " + TABLE_MESSAGES
                 + " where " + COLUMN_MESSAGE_UUID + " = ?", new String[]{phrase.getUuid()});
         boolean existsInDb = c.getCount() > 0;
-
         if (existsInDb) {
             getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_UUID + " = ? ", new String[]{phrase.getUuid()});
         } else {
             getWritableDatabase().insert(TABLE_MESSAGES, null, cv);
         }
-
         if (phrase.getFileDescription() != null) {
             putFd(phrase.getFileDescription(), phrase.getUuid(), false);
         }
@@ -248,12 +229,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_SEND_STATE, messageState.ordinal());
         getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_PROVIDER_ID + " = ?", new String[]{providerId});
-    }
-
-    void setUserPhraseProviderId(String uuid, String providerId) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLUMN_PROVIDER_ID, providerId);
-        getWritableDatabase().update(TABLE_MESSAGES, cv, COLUMN_MESSAGE_UUID + " = ?", new String[]{uuid});
     }
 
     void putConsultConnected(ConsultConnectionMessage consultConnectionMessage) {
@@ -278,7 +253,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         + " from " + TABLE_MESSAGES
                         + " where " + COLUMN_MESSAGE_UUID + " = ? and " + COLUMN_MESSAGE_TYPE + " = ? ",
                 new String[]{consultConnectionMessage.getUuid(), String.valueOf(MessageTypes.TYPE_CONSULT_CONNECTED.ordinal())});
-
         boolean isDuplicate = c.getCount() > 0;
         c.close();
         if (!isDuplicate) {
@@ -289,7 +263,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     public void insertOrUpdateSurvey(Survey survey) {
-
         Cursor cSurvey = getWritableDatabase().rawQuery("select " + COLUMN_SURVEY_SENDING_ID
                         + " from " + TABLE_MESSAGES
                         + " where " + COLUMN_SURVEY_SENDING_ID + " = ? and " + COLUMN_MESSAGE_TYPE + " = ? ",
@@ -297,37 +270,30 @@ class MyOpenHelper extends SQLiteOpenHelper {
 
         boolean surveyExists = cSurvey.getCount() > 0;
         cSurvey.close();
-
         ContentValues surveyValues = new ContentValues();
         surveyValues.put(COLUMN_MESSAGE_TYPE, MessageTypes.TYPE_SURVEY.ordinal());
         surveyValues.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
         surveyValues.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
         surveyValues.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
         surveyValues.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
-
         if (surveyExists) {
             getWritableDatabase().update(TABLE_MESSAGES, surveyValues,
                     COLUMN_SURVEY_SENDING_ID + " = ? ", new String[]{String.valueOf(survey.getSendingId())});
         } else {
             getWritableDatabase().insert(TABLE_MESSAGES, null, surveyValues);
         }
-
         for (QuestionDTO question : survey.getQuestions()) {
-
             Cursor cQuestion = getWritableDatabase().rawQuery("select " + COLUMN_QUESTION_SENDING_ID
                             + " from " + TABLE_QUESTIONS
                             + " where " + COLUMN_QUESTION_SENDING_ID + " = ? ",
                     new String[]{String.valueOf(question.getSendingId())});
-
             boolean questionExists = cQuestion.getCount() > 0;
             cQuestion.close();
-
             ContentValues questionValues = new ContentValues();
             questionValues.put(COLUMN_QUESTION_SURVEY_SENDING_ID_EXT, survey.getSendingId());
             questionValues.put(COLUMN_QUESTION_ID, question.getId());
             questionValues.put(COLUMN_QUESTION_SENDING_ID, question.getSendingId());
             questionValues.put(COLUMN_QUESTION_SCALE, question.getScale());
-
             //TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
             //Null is unanswered survey
             if (question.hasRate()) {
@@ -336,7 +302,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
             questionValues.put(COLUMN_QUESTION_TEXT, question.getText());
             questionValues.put(COLUMN_QUESTION_SIMPLE, question.isSimple());
             questionValues.put(COLUMN_TIMESTAMP, question.getTimeStamp());
-
             if (questionExists) {
                 getWritableDatabase().update(TABLE_QUESTIONS, questionValues,
                         COLUMN_QUESTION_SENDING_ID + " = ? ", new String[]{String.valueOf(question.getSendingId())});
@@ -346,38 +311,13 @@ class MyOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<ChatPhrase> getSortedPhrases(String query) {
-        List<ChatPhrase> list = new ArrayList<>();
-        if (query == null) return list;
-        List<ChatItem> chatItems = getChatItems(0, -1);
-        for (ChatItem chatItem : chatItems) {
-
-            if (chatItem instanceof UserPhrase) {
-                if (((UserPhrase) chatItem).getPhraseText() != null
-                        && ((UserPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
-                    list.add((UserPhrase) chatItem);
-                }
-            }
-            if (chatItem instanceof ConsultPhrase) {
-                if (((ConsultPhrase) chatItem).getPhraseText() != null
-                        && ((ConsultPhrase) chatItem).getPhraseText().toLowerCase().contains(query.toLowerCase())) {
-
-                    list.add((ConsultPhrase) chatItem);
-                }
-            }
-        }
-        return list;
-    }
-
     ConsultPhrase getLastUnreadPhrase() {
         Cursor c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES
                 + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageTypes.TYPE_CONSULT_PHRASE.ordinal()
                 + " and " + COLUMN_IS_READ + " = 0 order by " + COLUMN_TIMESTAMP + " desc", new String[]{});
         if (c.getCount() > 0) {
             c.moveToFirst();
-
             FileDescription fd = getFd(cGetString(c, COLUMN_MESSAGE_UUID));
-
             ConsultPhrase cp = new ConsultPhrase(
                     cGetString(c, COLUMN_MESSAGE_UUID),
                     cGetString(c, COLUMN_PROVIDER_ID),
@@ -407,13 +347,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
             c.close();
             return items;
         }
-
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-
             int type = cGetInt(c, COLUMN_MESSAGE_TYPE);
-
             if (type == MessageTypes.TYPE_CONSULT_CONNECTED.ordinal()) {
-
                 ConsultConnectionMessage cc = new ConsultConnectionMessage(
                         cGetString(c, COLUMN_MESSAGE_UUID),
                         cGetString(c, COLUMN_PROVIDER_ID),
@@ -427,13 +363,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         cGetString(c, COLUMN_CONSULT_TITLE),
                         cGetString(c, COLUMN_CONSULT_ORG_UNIT),
                         cGetBool(c, COLUMN_DISPLAY_MASSAGE));
-
                 items.add(cc);
-
             } else if (type == MessageTypes.TYPE_CONSULT_PHRASE.ordinal()) {
-
                 FileDescription fd = getFd(cGetString(c, COLUMN_MESSAGE_UUID));
-
                 ConsultPhrase cp = new ConsultPhrase(
                         cGetString(c, COLUMN_MESSAGE_UUID),
                         cGetString(c, COLUMN_PROVIDER_ID),
@@ -449,11 +381,8 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         cGetBool(c, COLUMN_SEX)
                 );
                 items.add(cp);
-
             } else if (type == MessageTypes.TYPE_USER_PHRASE.ordinal()) {
-
                 FileDescription fd = getFd(cGetString(c, COLUMN_MESSAGE_UUID));
-
                 UserPhrase up = new UserPhrase(
                         cGetString(c, COLUMN_MESSAGE_UUID),
                         cGetString(c, COLUMN_PROVIDER_ID),
@@ -461,24 +390,18 @@ class MyOpenHelper extends SQLiteOpenHelper {
                         getQuote(cGetString(c, COLUMN_MESSAGE_UUID)),
                         cGetLong(c, COLUMN_TIMESTAMP),
                         fd);
-
                 int sentState = cGetInt(c, COLUMN_MESSAGE_SEND_STATE);
                 up.setSentState(MessageState.fromOrdinal(sentState));
-
                 items.add(up);
             } else if (type == MessageTypes.TYPE_SURVEY.ordinal()) {
-
                 long surveySendingId = cGetLong(c, COLUMN_SURVEY_SENDING_ID);
-
                 Survey survey = new Survey(
                         surveySendingId,
                         cGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
                         cGetLong(c, COLUMN_TIMESTAMP),
                         MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
                 );
-
                 survey.setQuestions(Collections.singletonList(getQuestion(surveySendingId)));
-
                 items.add(survey);
             }
         }
@@ -494,11 +417,9 @@ class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_QUOTE_FROM, quote.getPhraseOwnerTitle());
         cv.put(COLUMN_QUOTE_BODY, quote.getText());
         cv.put(COLUMN_QUOTE_TIMESTAMP, quote.getTimeStamp());
-
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " from " + TABLE_QUOTE
                 + " where " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " = ?", new String[]{quotedByMessageUuid});
         boolean existsInDb = c.getCount() > 0;
-
         if (existsInDb) {
             getWritableDatabase().update(TABLE_QUOTE, cv,
                     COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " = ? ", new String[]{quotedByMessageUuid});
@@ -506,7 +427,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
             getWritableDatabase().insert(TABLE_QUOTE, null, cv);
         }
         c.close();
-
         if (quote.getFileDescription() != null) {
             putFd(quote.getFileDescription(), quote.getUuid(), true);
         }
@@ -522,33 +442,26 @@ class MyOpenHelper extends SQLiteOpenHelper {
             c.close();
             return null;
         }
-
         FileDescription quoteFd = getFd(cGetString(c, COLUMN_QUOTE_UUID));
-
         Quote q = new Quote(cGetString(c, COLUMN_QUOTE_UUID),
                 cGetString(c, COLUMN_QUOTE_FROM),
                 cGetString(c, COLUMN_QUOTE_BODY),
                 quoteFd,
                 cGetLong(c, COLUMN_QUOTE_TIMESTAMP));
-
         c.close();
         return q;
     }
 
     List<Quote> getQuotes() {
-
         String query = String.format(Locale.US, "select * from %s order by %s desc", TABLE_QUOTE, COLUMN_QUOTE_TIMESTAMP);
         List<Quote> list = new ArrayList<>();
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{});
-
         if (!c.moveToFirst()) {
             c.close();
             return list;
         }
-
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             FileDescription quoteFd = getFd(cGetString(c, COLUMN_QUOTE_UUID));
-
             Quote q = new Quote(cGetString(c, COLUMN_QUOTE_UUID),
                     cGetString(c, COLUMN_QUOTE_FROM),
                     cGetString(c, COLUMN_QUOTE_BODY),
@@ -561,75 +474,38 @@ class MyOpenHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public List<ChatPhrase> queryFiles(String query) {
-        List<ChatPhrase> list = getSortedPhrases("");
-        List<ChatPhrase> out = new ArrayList<>();
-        for (Iterator<ChatPhrase> iter = list.iterator(); iter.hasNext(); ) {
-            ChatPhrase cp = iter.next();
-            if (cp.getFileDescription() != null) {
-                FileDescription fd = cp.getFileDescription();
-                if (fd.getIncomingName() != null && fd.getIncomingName().toLowerCase().contains(query.toLowerCase())) {
-                    out.add(cp);
-                } else if (fd.getFilePath() != null
-                        && FileUtils.getLastPathSegment(fd.getFilePath()).toLowerCase().contains(query.toLowerCase())) {
-                    out.add(cp);
-                }
-            } else if (cp.getQuote() != null && cp.getQuote().getFileDescription() != null) {
-                FileDescription fd = cp.getQuote().getFileDescription();
-                if (fd.getIncomingName() != null && fd.getIncomingName().toLowerCase().contains(query.toLowerCase())) {
-                    out.add(cp);
-                } else if (fd.getFilePath() != null
-                        && FileUtils.getLastPathSegment(fd.getFilePath()).toLowerCase().contains(query.toLowerCase())) {
-                    out.add(cp);
-                }
-            }
-        }
-        return out;
-    }
-
     private FileDescription getFd(String messageUuid) {
-
         if (TextUtils.isEmpty(messageUuid)) {
             return null;
         }
-
         String query = String.format(Locale.US, "select * from %s where %s = ?", TABLE_FILE_DESCRIPTION, COLUMN_FD_MESSAGE_UUID_EXT);
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{messageUuid});
         if (!c.moveToFirst()) {
             c.close();
             return null;
         }
-
         Integer progress = cGetInt(c, COLUMN_FD_DOWNLOAD_PROGRESS);
-
         FileDescription fd = new FileDescription(cGetString(c, COLUMN_FD_FROM),
                 cGetString(c, COLUMN_FD_PATH),
                 cGetLong(c, COLUMN_FD_SIZE),
                 cGetLong(c, COLUMN_FD_TIMESTAMP));
-
         fd.setDownloadProgress(progress);
         fd.setDownloadPath(cGetString(c, COLUMN_FD_URL));
         fd.setIncomingName(cGetString(c, COLUMN_FD_FILENAME));
-        boolean isFromQuote = cGetBool(c, COLUMN_FD_IS_FROM_QUOTE);
-
         c.close();
         return fd;
     }
 
     List<FileDescription> getFd() {
-
         String query = String.format(Locale.US, "select * from %s order by %s desc", TABLE_FILE_DESCRIPTION, COLUMN_FD_TIMESTAMP);
         List<FileDescription> list = new ArrayList<>();
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{});
-
         if (!c.moveToFirst()) {
             c.close();
             return list;
         }
-
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             Integer progress = cGetInt(c, COLUMN_FD_DOWNLOAD_PROGRESS);
-
             FileDescription fd = new FileDescription(cGetString(c, COLUMN_FD_FROM),
                     cGetString(c, COLUMN_FD_PATH),
                     cGetLong(c, COLUMN_FD_SIZE),
@@ -638,7 +514,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
             fd.setDownloadProgress(progress);
             fd.setIncomingName(cGetString(c, COLUMN_FD_FILENAME));
             fd.setDownloadPath(cGetString(c, COLUMN_FD_URL));
-
             list.add(fd);
         }
         c.close();
@@ -646,14 +521,12 @@ class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     private QuestionDTO getQuestion(long surveySendingId) {
-
         String query = "select * from " + TABLE_QUESTIONS + " where " + COLUMN_QUESTION_SURVEY_SENDING_ID_EXT + " = ?";
         Cursor c = getWritableDatabase().rawQuery(query, new String[]{String.valueOf(surveySendingId)});
         if (!c.moveToFirst()) {
             c.close();
             return null;
         }
-
         QuestionDTO question = new QuestionDTO();
         question.setPhraseTimeStamp(cGetLong(c, COLUMN_TIMESTAMP));
         question.setId(cGetLong(c, COLUMN_QUESTION_ID));
@@ -661,7 +534,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         question.setSimple(cGetBool(c, COLUMN_QUESTION_SIMPLE));
         question.setText(cGetString(c, COLUMN_QUESTION_TEXT));
         question.setScale(cGetInt(c, COLUMN_QUESTION_SCALE));
-
         //TODO THREADS-3625. This is a workaround on rate = 0 is a negative answer in simple (binary) survey
         if (cIsNull(c, COLUMN_QUESTION_RATE)) {
             //Null is unanswered survey
@@ -669,7 +541,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         } else {
             question.setRate(cGetInt(c, COLUMN_QUESTION_RATE));
         }
-
         c.close();
         return question;
     }
@@ -703,7 +574,7 @@ class MyOpenHelper extends SQLiteOpenHelper {
         TYPE_CONSULT_CONNECTED,
         TYPE_CONSULT_PHRASE,
         TYPE_USER_PHRASE,
-        TYPE_SURVEY;
+        TYPE_SURVEY
     }
 
     void setAllRead() {
@@ -742,22 +613,18 @@ class MyOpenHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FD_MESSAGE_UUID_EXT, fdMessageUuid);
         cv.put(COLUMN_FD_FROM, fileDescription.getFileSentTo());
-
         if (!TextUtils.isEmpty(fileDescription.getFilePath())) {
             cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
         }
-
         cv.put(COLUMN_FD_URL, fileDescription.getDownloadPath());
         cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
         cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
         cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
         cv.put(COLUMN_FD_IS_FROM_QUOTE, isFromQuote);
         cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
-
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_FD_MESSAGE_UUID_EXT + " from " + TABLE_FILE_DESCRIPTION
                 + " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?", new String[]{fdMessageUuid});
         boolean existsInDb = c.getCount() > 0;
-
         if (existsInDb) {
             getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
                     COLUMN_FD_MESSAGE_UUID_EXT + " = ? ", new String[]{fdMessageUuid});
@@ -782,67 +649,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
                 new String[]{fileDescription.getIncomingName(), fileDescription.getDownloadPath()});
     }
 
-    ChatPhrase getChatphraseByDescription(FileDescription fileDescription) {
-
-        if (fileDescription == null) return null;
-
-        ChatPhrase cp = null;
-        Cursor c = getWritableDatabase().query(true, TABLE_FILE_DESCRIPTION,
-                new String[]{COLUMN_FD_MESSAGE_UUID_EXT},
-                COLUMN_FD_SIZE + " = " + fileDescription.getSize()
-                        + " and " + COLUMN_FD_URL + " like " + fileDescription.getDownloadPath()
-                        + " and " + COLUMN_FD_FROM + " like " + fileDescription.getFrom(),
-                new String[]{},
-                null, null, null, null);
-
-        if (c.getCount() > 0) {
-
-            c.moveToFirst();
-            String uuid = cGetString(c, COLUMN_FD_MESSAGE_UUID_EXT);
-
-            c = getWritableDatabase().rawQuery("select * from " + TABLE_MESSAGES
-                    + " where " + COLUMN_MESSAGE_UUID + " like " + uuid, new String[]{});
-
-            c.moveToFirst();
-
-            int type = cGetInt(c, COLUMN_MESSAGE_TYPE);
-
-            if (type == MessageTypes.TYPE_CONSULT_PHRASE.ordinal()) {
-                FileDescription fd = getFd(cGetString(c, COLUMN_MESSAGE_UUID));
-
-                cp = new ConsultPhrase(
-                        cGetString(c, COLUMN_MESSAGE_UUID),
-                        cGetString(c, COLUMN_PROVIDER_ID),
-                        fd,
-                        getQuote(cGetString(c, COLUMN_MESSAGE_UUID)),
-                        cGetString(c, COLUMN_NAME),
-                        cGetString(c, COLUMN_PHRASE),
-                        cGetLong(c, COLUMN_TIMESTAMP),
-                        cGetString(c, COLUMN_CONSULT_ID),
-                        cGetString(c, COLUMN_AVATAR_PATH),
-                        cGetBool(c, COLUMN_IS_READ),
-                        cGetString(c, COLUMN_CONSULT_STATUS),
-                        cGetBool(c, COLUMN_SEX));
-
-            } else if (type == MessageTypes.TYPE_USER_PHRASE.ordinal()) {
-                FileDescription fd = getFd(cGetString(c, COLUMN_MESSAGE_UUID));
-
-                cp = new UserPhrase(
-                        cGetString(c, COLUMN_MESSAGE_UUID),
-                        cGetString(c, COLUMN_PROVIDER_ID),
-                        cGetString(c, COLUMN_PHRASE),
-                        getQuote(cGetString(c, COLUMN_MESSAGE_UUID)),
-                        cGetLong(c, COLUMN_TIMESTAMP),
-                        fd);
-
-                int sentState = cGetInt(c, COLUMN_MESSAGE_SEND_STATE);
-                ((UserPhrase) cp).setSentState(MessageState.fromOrdinal(sentState));
-            }
-        }
-        c.close();
-        return cp;
-    }
-
     String getLastOperatorAvatar(String id) {
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_AVATAR_PATH
                 + " from " + TABLE_MESSAGES
@@ -854,12 +660,6 @@ class MyOpenHelper extends SQLiteOpenHelper {
         }
         c.moveToFirst();
         return cGetString(c, COLUMN_AVATAR_PATH);
-    }
-
-    void cleanDb() {
-        getWritableDatabase().execSQL("delete * from " + TABLE_MESSAGES);
-        getWritableDatabase().execSQL("delete * from " + TABLE_FILE_DESCRIPTION);
-        getWritableDatabase().execSQL("delete * from " + TABLE_QUOTE);
     }
 
     ConsultInfo getLastConsultInfo(@NonNull String id) {

@@ -56,5 +56,4 @@ public class WelcomeScreen extends LinearLayout {
         subTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(style.welcomeScreenSubtitleSizeInSp));
         subTitle.setText(style.welcomeScreenSubtitleTextResId);
     }
-
 }

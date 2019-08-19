@@ -5,36 +5,28 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import im.threads.internal.Config;
 import im.threads.ChatStyle;
-
-/**
- * Created by Admin on 20.03.2017.
- */
+import im.threads.internal.Config;
 
 public class CustomFontTextView extends android.support.v7.widget.AppCompatTextView {
 
     public CustomFontTextView(Context context) {
         super(context);
-
         if (isInEditMode()) {
             return;
         }
-
         setTypefaceView(context);
     }
 
     public CustomFontTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         if (isInEditMode()) {
             return;
         }
-
         setTypefaceView(context);
     }
 
-    public void setTypefaceView(Context context){
+    public void setTypefaceView(Context context) {
         ChatStyle style = Config.instance.getChatStyle();
         if (!TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));

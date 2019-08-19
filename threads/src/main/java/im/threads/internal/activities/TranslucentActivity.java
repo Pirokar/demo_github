@@ -20,9 +20,6 @@ import im.threads.ChatStyle;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
 
-/**
- * Created by yuri on 03.09.2016.
- */
 public class TranslucentActivity
         extends AppCompatActivity {
     private static final String TAG = "TranslucentActivity ";
@@ -73,7 +70,6 @@ public class TranslucentActivity
     protected void onStop() {
         super.onStop();
         controller.unBind();
-
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mQuickAnswerReceiver);
     }
 

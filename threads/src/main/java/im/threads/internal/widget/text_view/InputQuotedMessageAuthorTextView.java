@@ -9,11 +9,8 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.CustomFontTextView;
 
-/**
- * Created by Vit on 13.07.2017.
- */
-
 public class InputQuotedMessageAuthorTextView extends CustomFontTextView {
+
     public InputQuotedMessageAuthorTextView(Context context) {
         super(context);
     }

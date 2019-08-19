@@ -11,9 +11,9 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
 
 /**
  * Контрол для показа и изменения рейтинга
@@ -38,20 +38,14 @@ public class Rating extends LinearLayout {
         this.context = context;
         this.ratingCount = ratingCount;
         style = Config.instance.getChatStyle();
-
         countStars = starsCount;
-
         LayoutInflater inflater = LayoutInflater.from(context);
-
         // Чтобы при повторной инициализации не было в 2 раза больше звезд
         removeAllViews();
         viewsStar = new ArrayList<>();
-
         for (int i = 0; i < countStars; i++) {
             View view = inflater.inflate(R.layout.rating_star, this, false);
-
             setImage(view, i < ratingCount);
-
             viewsStar.add(view);
             addView(view);
         }
@@ -75,17 +69,13 @@ public class Rating extends LinearLayout {
     public void setClickListeners(final CallBackListener callBackListener) {
         for (int i = 0; i < countStars; i++) {
             final int index = i + 1;
-            viewsStar.get(i).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (Rating.this.isEnabled()) {
-                        for (int j = 0; j < countStars; j++) {
-                            setImage(viewsStar.get(j), j < index);
-                        }
-
-                        ratingCount = index;
-                        callBackListener.onStarClick(ratingCount);
+            viewsStar.get(i).setOnClickListener(v -> {
+                if (Rating.this.isEnabled()) {
+                    for (int j = 0; j < countStars; j++) {
+                        setImage(viewsStar.get(j), j < index);
                     }
+                    ratingCount = index;
+                    callBackListener.onStarClick(ratingCount);
                 }
             });
         }
@@ -104,24 +94,16 @@ public class Rating extends LinearLayout {
      * устанавливаем картинку в соответствие с рейтингом
      */
     public void setImage(View view, Boolean ratingState) {
-
-        ImageView star = (ImageView) view.findViewById(R.id.star);
-
+        ImageView star = view.findViewById(R.id.star);
         if (ratingState) {
             star.setImageResource(style.optionsSurveySelectedIconResId);
             star.setColorFilter(ContextCompat.getColor(context, style.surveySelectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
-
         } else {
             star.setImageResource(style.optionsSurveyUnselectedIconResId);
-
             if (ratingCount == 0) {
                 star.setColorFilter(ContextCompat.getColor(context, style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
             }
         }
-    }
-
-    public int getRating() {
-        return ratingCount;
     }
 
     public interface CallBackListener {

@@ -1,37 +1,33 @@
 package im.threads.internal.formatters;
 
+
 import android.content.Context;
 
 import im.threads.R;
 import im.threads.internal.model.ConsultConnectionMessage;
 
-/**
- * Created by yuri on 14.09.2016.
- */
-public class ConnectionPhrase {
-    final Context ctx;
+class ConnectionPhrase {
 
-    public ConnectionPhrase(Context ctx) {
-        this.ctx = ctx;
+    private ConnectionPhrase() {
     }
 
-    String getConnectionPhrase(ConsultConnectionMessage ccm) {
+    static String getConnectionPhrase(Context ctx, ConsultConnectionMessage ccm) {
         String out = "";
-        String temp = "";
+        String temp;
         if (!ccm.getSex()
-                && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
+                && ccm.getConnectionType().equalsIgnoreCase(PushMessageType.OPERATOR_JOINED.name())) {
             temp = ctx.getString(R.string.threads_push_connected_female);
-            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
+            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1));
         } else if (!ccm.getSex()
-                && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name())) {
+                && ccm.getConnectionType().equalsIgnoreCase(PushMessageType.OPERATOR_LEFT.name())) {
             temp = ctx.getString(R.string.threads_push_left_female);
-            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
-        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_JOINED.name())) {
+            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1));
+        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageType.OPERATOR_JOINED.name())) {
             temp = ctx.getString(R.string.threads_push_connected);
-            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
-        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageTypes.OPERATOR_LEFT.name())) {
+            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1));
+        } else if (ccm.getSex() && ccm.getConnectionType().equalsIgnoreCase(PushMessageType.OPERATOR_LEFT.name())) {
             temp = ctx.getString(R.string.threads_push_left);
-            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1, temp.length()));
+            out = temp.toUpperCase().substring(0, 1).concat(temp.substring(1));
         }
         return out;
     }

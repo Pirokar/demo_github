@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
@@ -12,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,7 +36,6 @@ public class FilePickerFragment extends DialogFragment
     private static final String STARTING_FOLDER_TAG = "start";
     private static final String PREVIOUS_FOLDER_DOTS = "...";
     private ListView mListView;
-    private Button mOkButton, mCancelButton, mDirectoryUpButton;
     private ArrayAdapter<String> mAnimatedArrayAdapter;
     private SelectedListener mSelectedListener;
     private FileFilter mFileFilter;
@@ -57,14 +56,13 @@ public class FilePickerFragment extends DialogFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         currentAbsoluteDir = (File) getArguments().getSerializable(STARTING_FOLDER_TAG);
-
         if (currentAbsoluteDir == null || currentAbsoluteDir.isFile()) {
             currentAbsoluteDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         }
         super.onCreate(savedInstanceState);
     }
 
-
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v;
@@ -77,15 +75,13 @@ public class FilePickerFragment extends DialogFragment
         builder.setNegativeButton(getString(R.string.threads_cancel), this);
         dialog = builder.create();
         v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_directory_picker, null);
-
         dialog.setView(v);
-        mListView = (ListView) v.findViewById(R.id.folder_list);
-        mAnimatedArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.item_filepicker, R.id.text);
+        mListView = v.findViewById(R.id.folder_list);
+        mAnimatedArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_filepicker, R.id.text);
         mListView.setAdapter(travelToFolder(currentAbsoluteDir, mAnimatedArrayAdapter));
         mListView.setOnItemClickListener(this);
         return dialog;
     }
-
 
     public void setFileFilter(FileFilter filefilter) {
         mFileFilter = filefilter;
@@ -173,7 +169,6 @@ public class FilePickerFragment extends DialogFragment
 
     @Override
     public void onClick(View v) {
-
     }
 
     @Override

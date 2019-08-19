@@ -10,19 +10,12 @@ import java.util.ArrayList;
  */
 public class MyFileFilter implements FileFilter, FilenameFilter {
     private static final ArrayList<IgnoreCaseString> acceptedPicFormats = new ArrayList<>();
-    private static final String TAG = "MyFileFilter";
 
     public MyFileFilter() {
         acceptedPicFormats.add(new IgnoreCaseString(".jpg"));
         acceptedPicFormats.add(new IgnoreCaseString(".jpeg"));
         acceptedPicFormats.add(new IgnoreCaseString(".png"));
         acceptedPicFormats.add(new IgnoreCaseString(".pdf"));
-       /* acceptedPicFormats.add(new IgnoreCaseString(".doc"));
-        acceptedPicFormats.add(new IgnoreCaseString(".docx"));
-        acceptedPicFormats.add(new IgnoreCaseString(".xls"));
-        acceptedPicFormats.add(new IgnoreCaseString(".xlsx"));
-        acceptedPicFormats.add(new IgnoreCaseString(".ppt"));
-        acceptedPicFormats.add(new IgnoreCaseString(".pptx"));*/
     }
 
     @Override
@@ -54,19 +47,20 @@ public class MyFileFilter implements FileFilter, FilenameFilter {
     private class IgnoreCaseString {
         private String str;
 
-        public IgnoreCaseString(String str) {
+        IgnoreCaseString(String str) {
             this.str = str;
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             IgnoreCaseString that = (IgnoreCaseString) o;
-
             return !(str != null ? !str.equalsIgnoreCase(that.str) : that.str != null);
-
         }
 
         @Override

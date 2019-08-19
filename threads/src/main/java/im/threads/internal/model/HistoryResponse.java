@@ -8,11 +8,9 @@ import java.util.List;
 import im.threads.internal.utils.ThreadsLogger;
 
 /**
- * Created by Vit on 23.06.2017.
  * ответ на запрос истории v2
  * в структуре появилась информация об операторе
  */
-
 public class HistoryResponse {
     private static final String TAG = HistoryResponse.class.getSimpleName();
 

@@ -14,16 +14,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
 import im.threads.internal.model.Survey;
 
 /**
  * ViewHolder для результатов опроса с рейтингом
- * Created by chybakut2004 on 17.04.17.
  */
-
 public class RatingStarsSentViewHolder extends BaseHolder {
 
     private ImageView star;
@@ -38,17 +36,15 @@ public class RatingStarsSentViewHolder extends BaseHolder {
 
     public RatingStarsSentViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rate_stars_sent, parent, false));
-
-        star = (ImageView) itemView.findViewById(R.id.star);
-        mTimeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
-        mHeader = (TextView) itemView.findViewById(R.id.header);
-        rateStarsCount = (TextView) itemView.findViewById(R.id.rate_stars_count);
-        from = (TextView) itemView.findViewById(R.id.from);
-        totalStarsCount = (TextView) itemView.findViewById(R.id.total_stars_count);
-        sdf = new SimpleDateFormat("HH:mm", Locale.US);
+        star = itemView.findViewById(R.id.star);
+        mTimeStampTextView = itemView.findViewById(R.id.timestamp);
+        mHeader = itemView.findViewById(R.id.header);
+        rateStarsCount = itemView.findViewById(R.id.rate_stars_count);
+        from = itemView.findViewById(R.id.from);
+        totalStarsCount = itemView.findViewById(R.id.total_stars_count);
+        sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         mBubble = itemView.findViewById(R.id.bubble);
-
-        if (style == null) style = Config.instance.getChatStyle();
+        style = Config.instance.getChatStyle();
         rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);

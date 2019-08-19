@@ -17,9 +17,6 @@ import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.ChatStyle;
 
-/**
- * Created by yuri on 01.07.2016.
- */
 public class FilesDateStampHolder extends RecyclerView.ViewHolder {
     private TextView mDateTextView;
     private SimpleDateFormat sdf;
@@ -27,12 +24,12 @@ public class FilesDateStampHolder extends RecyclerView.ViewHolder {
 
     public FilesDateStampHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_files_date_mark, parent, false));
-        mDateTextView = (TextView) itemView.findViewById(R.id.text);
+        mDateTextView = itemView.findViewById(R.id.text);
         LinearLayout linearLayout = (LinearLayout) itemView.findViewById(R.id.line);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             sdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {
-            sdf = new SimpleDateFormat("dd MMMM yyyy");
+            sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         }
         if (style == null) style = Config.instance.getChatStyle();
         mDateTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));

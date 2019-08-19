@@ -9,7 +9,7 @@ import com.mfms.android.push_lite.PushBroadcastReceiver;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.formatters.IncomingMessageParser;
-import im.threads.internal.formatters.PushMessageTypes;
+import im.threads.internal.formatters.PushMessageType;
 import im.threads.internal.utils.ThreadsLogger;
 
 /**
@@ -54,10 +54,10 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     }
 
     private boolean isChatSystemPush(final Bundle bundle) {
-        final PushMessageTypes messageType = PushMessageTypes.getKnownType(bundle);
-        return messageType == PushMessageTypes.TYPING
-                || messageType == PushMessageTypes.MESSAGES_READ
-                || messageType == PushMessageTypes.REMOVE_PUSHES
-                || messageType == PushMessageTypes.UNREAD_MESSAGE_NOTIFICATION;
+        final PushMessageType messageType = PushMessageType.getKnownType(bundle);
+        return messageType == PushMessageType.TYPING
+                || messageType == PushMessageType.MESSAGES_READ
+                || messageType == PushMessageType.REMOVE_PUSHES
+                || messageType == PushMessageType.UNREAD_MESSAGE_NOTIFICATION;
     }
 }

@@ -1,18 +1,14 @@
 package im.threads.internal.model;
 
+import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
 
 import java.util.UUID;
 
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
-import im.threads.internal.utils.ObjectUtils;
 
-/**
- * Created by yuri on 10.06.2016.
- */
 public class UserPhrase implements ChatPhrase, IsOnlyImage {
-
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
     private final String phrase;
@@ -21,7 +17,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     private long phraseTimeStamp;
     private FileDescription fileDescription;
     private boolean isChosen;
-    public boolean isCopy = false;
+    private boolean isCopy = false;
     //для поиска сообщений в чате
     private boolean found;
 
@@ -45,10 +41,6 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     public UserPhrase(String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
         this(UUID.randomUUID().toString(), "tempProviderId: " + UUID.randomUUID().toString(),
                 phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
-    }
-
-    public boolean isWithPhrase() {
-        return !TextUtils.isEmpty(phrase);
     }
 
     public boolean isCopy() {
@@ -85,41 +77,21 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         this.found = found;
     }
 
-    public boolean hasText() {
-        return !TextUtils.isEmpty(phrase);
-    }
-
-
-    public boolean hasQuote() {
-        return mQuote != null;
-
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserPhrase)) return false;
-
         UserPhrase that = (UserPhrase) o;
-
         if (!TextUtils.isEmpty(uuid)) {
             return uuid.equals(that.uuid);
         } else {
             return false;
         }
-
-//        if (fileDescription != null && that.fileDescription != null) {
-//            return fileDescription.equals(that.fileDescription);
-//        }
-//
-//        return !TextUtils.isEmpty(phrase) ? phrase.equals(that.phrase) : TextUtils.isEmpty(that.phrase);
     }
 
     @Override
     public int hashCode() {
-        int result = uuid != null ? uuid.hashCode() : 0;
-//        result = 31 * result + (phrase != null ? phrase.hashCode() : 0);
-        return result;
+        return uuid != null ? uuid.hashCode() : 0;
     }
 
     public String getUuid() {
@@ -155,16 +127,8 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
         return phrase;
     }
 
-    public boolean isWithFile() {
-        return fileDescription != null || (mQuote != null && mQuote.getFileDescription() != null);
-    }
-
     public void setFileDescription(FileDescription fileDescription) {
         this.fileDescription = fileDescription;
-    }
-
-    public boolean isWithQuote() {
-        return mQuote != null;
     }
 
     public MessageState getSentState() {
@@ -198,8 +162,7 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
     }
 
     public boolean isOnlyImage() {
-        return fileDescription != null
-                && TextUtils.isEmpty(phrase)
+        return TextUtils.isEmpty(phrase)
                 && mQuote == null
                 && FileUtils.isImage(fileDescription);
     }
@@ -218,11 +181,11 @@ public class UserPhrase implements ChatPhrase, IsOnlyImage {
             return false;
         }
 
-        boolean hasSameContent = ObjectUtils.areEqual(this.uuid, userPhrase.uuid)
-                && ObjectUtils.areEqual(this.phrase, userPhrase.phrase)
-                && ObjectUtils.areEqual(this.providerId, userPhrase.providerId)
-                && ObjectUtils.areEqual(this.phraseTimeStamp, userPhrase.phraseTimeStamp)
-                && ObjectUtils.areEqual(this.sentState, userPhrase.sentState);
+        boolean hasSameContent = ObjectsCompat.equals(this.uuid, userPhrase.uuid)
+                && ObjectsCompat.equals(this.phrase, userPhrase.phrase)
+                && ObjectsCompat.equals(this.providerId, userPhrase.providerId)
+                && ObjectsCompat.equals(this.phraseTimeStamp, userPhrase.phraseTimeStamp)
+                && ObjectsCompat.equals(this.sentState, userPhrase.sentState);
 
         if (this.fileDescription != null) {
             hasSameContent = hasSameContent && this.fileDescription.hasSameContent(userPhrase.fileDescription);

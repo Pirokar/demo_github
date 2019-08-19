@@ -33,7 +33,7 @@ import im.threads.internal.model.Quote;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.picasso_url_connection_only.Callback;
 import im.threads.internal.picasso_url_connection_only.Picasso;
-import im.threads.internal.utils.CircleTransform;
+import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
@@ -41,7 +41,6 @@ import im.threads.internal.views.CircularProgressButton;
 import static android.text.TextUtils.isEmpty;
 
 /**
- * Created by yuri on 08.06.2016.
  * layout/item_consultant_text_with_file.xml
  */
 public class ConsultPhraseHolder extends BaseHolder {
@@ -55,7 +54,7 @@ public class ConsultPhraseHolder extends BaseHolder {
     private TextView mTimeStampTextView;
     private TextView mPhraseTextView;
     private SimpleDateFormat quoteSdf;
-    private SimpleDateFormat timeStampSdf = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat timeStampSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     public ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterViewSecond;
@@ -94,7 +93,7 @@ public class ConsultPhraseHolder extends BaseHolder {
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {
-            quoteSdf = new SimpleDateFormat("dd MMMM yyyy");
+            quoteSdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         }
         mBubble = itemView.findViewById(R.id.bubble);
         if (style == null) style = Config.instance.getChatStyle();
@@ -236,14 +235,14 @@ public class ConsultPhraseHolder extends BaseHolder {
             mConsultAvatar.setVisibility(View.VISIBLE);
             mConsultAvatar.setOnClickListener(onAvatarClickListener);
             if (!isEmpty(avatarPath)) {
-                avatarPath = FileUtils.convertRelativeUrlToAbsolute(itemView.getContext(), avatarPath);
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
                 Picasso
                         .with(itemView.getContext())
                         .load(avatarPath)
                         .fit()
                         .noPlaceholder()
                         .centerCrop()
-                        .transform(new CircleTransform())
+                        .transform(new CircleTransformation())
                         .into(mConsultAvatar, new Callback() {
                             @Override
                             public void onSuccess() {
@@ -347,7 +346,7 @@ public class ConsultPhraseHolder extends BaseHolder {
                 .centerInside()
                 .noPlaceholder()
                 .fit()
-                .transform(new CircleTransform())
+                .transform(new CircleTransformation())
                 .into(mConsultAvatar);
     }
 }

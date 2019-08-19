@@ -32,9 +32,6 @@ import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 
-/**
- * Created by yuri on 08.07.2016.
- */
 public class CameraActivity extends BaseActivity {
     private static final String TAG = "CameraActivity ";
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
@@ -53,20 +50,15 @@ public class CameraActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        Toolbar t = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar t = findViewById(R.id.toolbar);
         setSupportActionBar(t);
-        t.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        t.setNavigationOnClickListener(v -> finish());
         t.setTitle("");
         initPreview();
     }
 
     private void initPreview() {
-        mSurfaceView = (SurfaceView) findViewById(R.id.camera_preview);
+        mSurfaceView = findViewById(R.id.camera_preview);
         mSurfaceView.setVisibility(View.VISIBLE);
         mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -88,7 +80,6 @@ public class CameraActivity extends BaseActivity {
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
             }
 
             @Override
@@ -103,112 +94,78 @@ public class CameraActivity extends BaseActivity {
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.VISIBLE);
         findViewById(R.id.toolbar).setVisibility(View.GONE);
         findViewById(R.id.bottom_buttons_image).setVisibility(View.GONE);
-        final ImageButton flashButton = (ImageButton) findViewById(R.id.flash_control);
-        final ImageButton takePhotoButton = (ImageButton) findViewById(R.id.take_photo);
-        ImageButton switchCamButton = (ImageButton) findViewById(R.id.switch_cams);
+        final ImageButton flashButton = findViewById(R.id.flash_control);
+        final ImageButton takePhotoButton = findViewById(R.id.take_photo);
+        ImageButton switchCamButton = findViewById(R.id.switch_cams);
         if (Camera.getNumberOfCameras() == 0) {
             Toast.makeText(this, getResources().getString(R.string.threads_no_cameras_detected), Toast.LENGTH_SHORT).show();
             finish();
         }
-        switchCamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Camera.CameraInfo currentCamInfo = new Camera.CameraInfo();
-                int currentCameraId = -1;
-                if (Camera.getNumberOfCameras() > 1) {
-                    releaseCamera();
-                    if (isFrontCamera) {
-                        currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
-                    } else {
-                        currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                    }
-                    isFrontCamera = !isFrontCamera;
-                    mCamera = Camera.open(currentCameraId);
-                    isCameraReleased = false;
-                    setUpCameraInitialParameters();
-                    try {
-                        mCamera.setPreviewDisplay(mSurfaceView.getHolder());
-                        mCamera.startPreview();
-                    } catch (IOException e) {
-                        ThreadsLogger.e(TAG, "error while switching cameras", e);
-                        finish();
-                    }
+        switchCamButton.setOnClickListener(v -> {
+            int currentCameraId;
+            if (Camera.getNumberOfCameras() > 1) {
+                releaseCamera();
+                if (isFrontCamera) {
+                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+                } else {
+                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                }
+                isFrontCamera = !isFrontCamera;
+                mCamera = Camera.open(currentCameraId);
+                isCameraReleased = false;
+                setUpCameraInitialParameters();
+                try {
+                    mCamera.setPreviewDisplay(mSurfaceView.getHolder());
+                    mCamera.startPreview();
+                } catch (IOException e) {
+                    ThreadsLogger.e(TAG, "error while switching cameras", e);
+                    finish();
                 }
             }
         });
         takePhotoButton.setEnabled(true);
-        takePhotoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                takePhotoButton.setEnabled(false);
-                mCamera.takePicture(new Camera.ShutterCallback() {
-                                        @Override
-                                        public void onShutter() {
-
-                                        }
-                                    }
-                        , new Camera.PictureCallback() {
-                            @Override
-                            public void onPictureTaken(byte[] data, Camera camera) {
-
-                            }
+        takePhotoButton.setOnClickListener(v -> {
+            takePhotoButton.setEnabled(false);
+            mCamera.takePicture(() -> {
+            }
+                    , (data, camera) -> {
+                    }
+                    , (data, camera) -> mExecutor.execute(() -> {
+                        Bitmap raw = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        Bitmap out = raw;
+                        if (raw.getWidth() > raw.getHeight() && !isFrontCamera) {
+                            Matrix m = new Matrix();
+                            m.setRotate(90);
+                            out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), m, false);
+                            raw.recycle();
+                        } else if (isFrontCamera && raw.getWidth() > raw.getHeight()) {
+                            float[] mirrorY = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
+                            Matrix matrix = new Matrix();
+                            Matrix matrixMirrorY = new Matrix();
+                            matrixMirrorY.setValues(mirrorY);
+                            matrix.postConcat(matrixMirrorY);
+                            matrix.postRotate(90);
+                            out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), matrix, true);
+                            raw.recycle();
                         }
-                        , new Camera.PictureCallback() {
-                            @Override
-                            public void onPictureTaken(final byte[] data, Camera camera) {
-                                mExecutor.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Bitmap raw = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                        Bitmap out = raw;
-                                        if (raw.getWidth() > raw.getHeight() && !isFrontCamera) {
-                                            Matrix m = new Matrix();
-                                            m.setRotate(90);
-                                            out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), m, false);
-                                            raw.recycle();
-                                        } else if (isFrontCamera && raw.getWidth() > raw.getHeight()) {
-                                            float[] mirrorY = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
-                                            Matrix matrix = new Matrix();
-                                            Matrix matrixMirrorY = new Matrix();
-                                            matrixMirrorY.setValues(mirrorY);
-                                            matrix.postConcat(matrixMirrorY);
-                                            matrix.postRotate(90);
-                                            out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), matrix, true);
-                                            raw.recycle();
-                                        }
-                                        File output = FileHelper.createImageFile(CameraActivity.this);
-                                        try {
-                                            FileOutputStream fio = new FileOutputStream(output);
-                                            out.compress(Bitmap.CompressFormat.JPEG, 100, fio);
-                                            try {
-                                                fio.flush();
-                                            } catch (IOException e) {
-                                                ThreadsLogger.e(TAG, "onPictureTaken", e);
-                                            }
-                                            mCurrentPhoto = output.getAbsolutePath();
-                                        } catch (FileNotFoundException e) {
-                                            ThreadsLogger.e(TAG, "error while saving image to disk", e);
-                                        }
-                                        final File finalOutput = output;
-                                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                setStateImagePreview(finalOutput.getAbsolutePath());
-                                            }
-                                        });
-                                    }
-                                });
+                        File output = FileHelper.createImageFile(CameraActivity.this);
+                        try {
+                            FileOutputStream fio = new FileOutputStream(output);
+                            out.compress(Bitmap.CompressFormat.JPEG, 100, fio);
+                            try {
+                                fio.flush();
+                            } catch (IOException e) {
+                                ThreadsLogger.e(TAG, "onPictureTaken", e);
                             }
-                        });
-            }
+                            mCurrentPhoto = output.getAbsolutePath();
+                        } catch (FileNotFoundException e) {
+                            ThreadsLogger.e(TAG, "error while saving image to disk", e);
+                        }
+                        final File finalOutput = output;
+                        new Handler(Looper.getMainLooper()).post(() -> setStateImagePreview(finalOutput.getAbsolutePath()));
+                    }));
         });
-        flashButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCamera.setParameters(setFlashState(mFlashMode, mCamera.getParameters()));
-            }
-        });
-
+        flashButton.setOnClickListener(v -> mCamera.setParameters(setFlashState(mFlashMode, mCamera.getParameters())));
     }
 
     private void releaseCamera() {
@@ -221,7 +178,7 @@ public class CameraActivity extends BaseActivity {
     }
 
     private Camera.Parameters setFlashState(int state, Camera.Parameters p) {
-        ImageButton flashButton = (ImageButton) findViewById(R.id.flash_control);
+        ImageButton flashButton = findViewById(R.id.flash_control);
         List<String> supportedFlashParams = mCamera.getParameters().getSupportedFlashModes();
         if (supportedFlashParams == null) {
             supportedFlashParams = new ArrayList<>();
@@ -254,37 +211,30 @@ public class CameraActivity extends BaseActivity {
 
     private void setStateImagePreview(String imagePath) {
         findViewById(R.id.label_top).setVisibility(View.GONE);
-        //   mSurfaceView.setVisibility(View.GONE);
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.GONE);
-        ImageView image = (ImageView) findViewById(R.id.photo_preview);
+        ImageView image = findViewById(R.id.photo_preview);
         image.setVisibility(View.VISIBLE);
         Picasso.with(this)
                 .load(new File(imagePath))
                 .fit()
                 .centerCrop()
                 .into(image);
-        Toolbar t = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar t = findViewById(R.id.toolbar);
         t.setVisibility(View.GONE);
         t.setTitle("");
         findViewById(R.id.bottom_buttons_image).setVisibility(View.VISIBLE);
-        Button retakeButton = (Button) findViewById(R.id.retake);
-        retakeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setStateCameraPreview();
-                mCamera.startPreview();
-                mCurrentPhoto = null;
-            }
+        Button retakeButton = findViewById(R.id.retake);
+        retakeButton.setOnClickListener(v -> {
+            setStateCameraPreview();
+            mCamera.startPreview();
+            mCurrentPhoto = null;
         });
-        Button sendButton = (Button) findViewById(R.id.send);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent();
-                i.putExtra(IMAGE_EXTRA, mCurrentPhoto);
-                setResult(RESULT_OK, i);
-                finish();
-            }
+        Button sendButton = findViewById(R.id.send);
+        sendButton.setOnClickListener(v -> {
+            Intent i = new Intent();
+            i.putExtra(IMAGE_EXTRA, mCurrentPhoto);
+            setResult(RESULT_OK, i);
+            finish();
         });
     }
 
@@ -294,7 +244,6 @@ public class CameraActivity extends BaseActivity {
         if (mSurfaceView.getVisibility() == View.VISIBLE) {
             if (mCamera == null) {
                 Toast.makeText(this, getString(R.string.threads_no_cameras_detected), Toast.LENGTH_SHORT).show();
-
             } else {
                 releaseCamera();
                 isCameraReleased = true;
@@ -357,27 +306,27 @@ public class CameraActivity extends BaseActivity {
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio = (double) h / w;
-
-        if (sizes == null) return null;
-
+        if (sizes == null) {
+            return null;
+        }
         Camera.Size optimalSize = null;
         double minDiff = Double.MAX_VALUE;
-        int targetHeight = h;
         for (Camera.Size size : sizes) {
             double ratio = (double) size.width / size.height;
-            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-            if (Math.abs(size.width - targetHeight) < minDiff) {
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) {
+                continue;
+            }
+            if (Math.abs(size.width - h) < minDiff) {
                 optimalSize = size;
-                minDiff = Math.abs(size.width - targetHeight);
+                minDiff = Math.abs(size.width - h);
             }
         }
-
         if (optimalSize == null) {
             minDiff = Double.MAX_VALUE;
             for (Camera.Size size : sizes) {
-                if (Math.abs(size.width - targetHeight) < minDiff) {
+                if (Math.abs(size.width - h) < minDiff) {
                     optimalSize = size;
-                    minDiff = Math.abs(size.width - targetHeight);
+                    minDiff = Math.abs(size.width - h);
                 }
             }
         }

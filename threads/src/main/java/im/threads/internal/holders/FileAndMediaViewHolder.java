@@ -13,37 +13,32 @@ import android.widget.TextView;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 
-/**
- * Created by yuri on 01.07.2016.
- */
 public class FileAndMediaViewHolder extends BaseHolder {
-    private static final String TAG = "FileAndMediaViewHolder ";
     private ImageButton mImageButton;
     private TextView fileHeaderTextView;
     private TextView fileSizeTextView;
     private TextView timeStampTextView;
-    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-    private ChatStyle style;
+    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private Drawable tintedDrawable;
 
     public FileAndMediaViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_and_media, parent, false));
-        mImageButton = (ImageButton) itemView.findViewById(R.id.file_button);
-        fileHeaderTextView = (TextView) itemView.findViewById(R.id.file_title);
-        fileSizeTextView = (TextView) itemView.findViewById(R.id.file_size);
-        timeStampTextView = (TextView) itemView.findViewById(R.id.timestamp);
+        mImageButton = itemView.findViewById(R.id.file_button);
+        fileHeaderTextView = itemView.findViewById(R.id.file_title);
+        fileSizeTextView = itemView.findViewById(R.id.file_size);
+        timeStampTextView = itemView.findViewById(R.id.timestamp);
         tintedDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
-        style = Config.instance.getChatStyle();
+        ChatStyle style = Config.instance.getChatStyle();
         tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
-
         fileSizeTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
         fileHeaderTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
         timeStampTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));

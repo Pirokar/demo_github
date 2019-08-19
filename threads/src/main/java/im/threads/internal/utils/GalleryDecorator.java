@@ -1,13 +1,11 @@
 package im.threads.internal.utils;
 
 import android.graphics.Rect;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 
-/**
- * Created by yuri on 07.07.2016.
- */
 public class GalleryDecorator extends RecyclerView.ItemDecoration {
     private int offset;
 
@@ -16,7 +14,7 @@ public class GalleryDecorator extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
         int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, offset, view.getContext().getResources().getDisplayMetrics());
         if (parent.getChildAdapterPosition(view) == 0) {

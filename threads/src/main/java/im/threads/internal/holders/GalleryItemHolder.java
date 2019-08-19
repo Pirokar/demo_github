@@ -13,9 +13,6 @@ import java.io.File;
 import im.threads.R;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 
-/**
- * Created by yuri on 07.07.2016.
- */
 public class GalleryItemHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
     private AppCompatCheckBox mCheckBox;
@@ -23,8 +20,8 @@ public class GalleryItemHolder extends RecyclerView.ViewHolder {
     public GalleryItemHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_image, parent, false));
 
-        mImageView = (ImageView) itemView.findViewById(R.id.image);
-        mCheckBox = (AppCompatCheckBox) itemView.findViewById(R.id.checkbox);
+        mImageView = itemView.findViewById(R.id.image);
+        mCheckBox = itemView.findViewById(R.id.checkbox);
         mCheckBox.setButtonDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.bk_checkbox_blue));
     }
 

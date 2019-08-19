@@ -1,17 +1,13 @@
 package im.threads.internal.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.List;
 
 import im.threads.internal.holders.GalleryBucketImageHolder;
 import im.threads.internal.model.PhotoBucketItem;
 
-import java.util.List;
-
-/**
- * Created by yuri on 06.07.2016.
- */
 public class PhotoBucketsGalleryAdapter extends RecyclerView.Adapter<GalleryBucketImageHolder> {
     private List<PhotoBucketItem> list;
     private OnItemClick mOnItemClick;
@@ -34,12 +30,9 @@ public class PhotoBucketsGalleryAdapter extends RecyclerView.Adapter<GalleryBuck
         holder.onBind(list.get(position).getBucketName()
                 , list.get(position).getBucketSize()
                 , list.get(position).getImagePath()
-                , new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (null != mOnItemClick)
-                            mOnItemClick.onPhotoBucketClick(list.get(holder.getAdapterPosition()));
-                    }
+                , v -> {
+                    if (null != mOnItemClick)
+                        mOnItemClick.onPhotoBucketClick(list.get(holder.getAdapterPosition()));
                 });
     }
 

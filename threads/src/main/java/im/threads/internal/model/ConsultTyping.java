@@ -1,8 +1,7 @@
 package im.threads.internal.model;
 
-/**
- * Created by yuri on 10.06.2016.
- */
+import android.support.v4.util.ObjectsCompat;
+
 public class ConsultTyping extends ConsultChatPhrase implements ChatItem {
     private long date;
 
@@ -26,15 +25,17 @@ public class ConsultTyping extends ConsultChatPhrase implements ChatItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ConsultTyping)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ConsultTyping)) {
+            return false;
+        }
 
         ConsultTyping that = (ConsultTyping) o;
 
         if (date != that.date) return false;
-        if (consultId != null ? !consultId.equals(that.consultId) : that.consultId != null)
-            return false;
-        return true;
+        return ObjectsCompat.equals(consultId, that.consultId);
     }
 
     @Override

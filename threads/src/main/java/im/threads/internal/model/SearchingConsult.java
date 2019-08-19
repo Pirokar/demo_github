@@ -1,8 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by yuri on 10.06.2016.
- */
 public class SearchingConsult implements ChatItem {
     private long date;
 
@@ -22,11 +19,8 @@ public class SearchingConsult implements ChatItem {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SearchingConsult)) return false;
-
         SearchingConsult that = (SearchingConsult) o;
-
         return date == that.date;
-
     }
 
     @Override

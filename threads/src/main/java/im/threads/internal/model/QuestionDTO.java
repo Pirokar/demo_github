@@ -1,9 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by Admin on 03.05.2017.
- */
-
 public class QuestionDTO implements ChatItem {
 
     private long id;
@@ -13,7 +9,6 @@ public class QuestionDTO implements ChatItem {
     private boolean simple;
     private Integer rate;
     private long phraseTimeStamp;
-
 
     public long getId() {
         return id;

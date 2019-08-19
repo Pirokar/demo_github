@@ -8,28 +8,20 @@ import android.util.AttributeSet;
 import im.threads.internal.Config;
 import im.threads.ChatStyle;
 
-/**
- * Created by Admin on 20.03.2017.
- */
-
 public class CustomFontButton extends android.support.v7.widget.AppCompatButton {
     public CustomFontButton(Context context) {
         super(context);
-
         if (isInEditMode()) {
             return;
         }
-
         setTypefaceView(context);
     }
 
     public CustomFontButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         if (isInEditMode()) {
             return;
         }
-
         setTypefaceView(context);
     }
 
@@ -38,6 +30,5 @@ public class CustomFontButton extends android.support.v7.widget.AppCompatButton 
         if (!TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));
         }
-
     }
 }

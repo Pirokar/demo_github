@@ -6,9 +6,7 @@ import java.util.TimeZone;
 
 /**
  * Информация о расписании
- * Created by chybakut2004 on 17.04.17.
  */
-
 public class ScheduleInfo implements ChatItem {
 
     private Long id;
@@ -65,23 +63,18 @@ public class ScheduleInfo implements ChatItem {
         if(intervals == null) {
             return false;
         }
-
         TimeZone timeZone = TimeZone.getTimeZone("UTC");
         Calendar now = Calendar.getInstance(timeZone);
-
         // Поиск интервала для текущего дня недели
         for(int i = 0; i < intervals.size(); i++) {
             Interval dayInterval = intervals.get(i);
             Integer dayOfWeek = dayInterval.getAndroidWeekDay();
-
             if(dayOfWeek != null) {
                 int nowDayOfWeek = now.get(Calendar.DAY_OF_WEEK);
-
                 // Текущий день недели найден в расписании
                 if(dayOfWeek == nowDayOfWeek) {
                     Integer start = dayInterval.getStartTime();
                     Integer end = dayInterval.getEndTime();
-
                     // Расписание корректно, указаны обе границы промежутка.
                     if (start != null && end != null) {
                         // Начало промежутка в текущем найденном дне
@@ -108,7 +101,6 @@ public class ScheduleInfo implements ChatItem {
                 }
             }
         }
-
         return false;
     }
 }

@@ -4,9 +4,6 @@ import android.content.Context;
 
 import im.threads.internal.model.FileDescription;
 
-/**
- * Created by yuri on 28.07.2016.
- */
 public abstract class DualFilePoster {
     private static final String TAG = "DualFilePoster ";
     private FileDescription fileDescription;
@@ -31,7 +28,7 @@ public abstract class DualFilePoster {
                             }
 
                             @Override
-                            public void onFail(Throwable error) {
+                            public void onError(Throwable error) {
                                 poster.onError(error);
                             }
                         });
@@ -39,11 +36,11 @@ public abstract class DualFilePoster {
                 }
 
                 @Override
-                public void onFail(Throwable error) {
+                public void onError(Throwable error) {
                     poster.onError(error);
                 }
             });
-        } else if (fileDescription == null && quoteFileDescription != null) {
+        } else if (quoteFileDescription != null) {
             new FilePoster(quoteFileDescription, ctx).post(new Callback<String, Throwable>() {
                 @Override
                 public void onSuccess(String result) {
@@ -51,7 +48,7 @@ public abstract class DualFilePoster {
                 }
 
                 @Override
-                public void onFail(Throwable error) {
+                public void onError(Throwable error) {
                     poster.onError(error);
                 }
             });
@@ -69,5 +66,4 @@ public abstract class DualFilePoster {
     public abstract void onResult(String mfmsFilePath, String mfmsQuoteFilePath);
 
     public abstract void onError(Throwable e);
-
 }

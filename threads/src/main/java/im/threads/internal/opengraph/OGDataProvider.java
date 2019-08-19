@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.internal.Config;
+import im.threads.internal.utils.Callback;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.retrofit.ServiceGenerator;
 import okhttp3.Interceptor;
@@ -39,7 +40,6 @@ public class OGDataProvider {
             clientBuilder.addInterceptor(new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BASIC));
         }
-
         //Preventing redirects to mobile versions without OpenGraph
         Interceptor userAgentInterceptor = chain -> {
             Request original = chain.request();
@@ -49,20 +49,16 @@ public class OGDataProvider {
             reqBuilder.method(original.method(), original.body()).build();
             return chain.proceed(reqBuilder.build());
         };
-
         clientBuilder.addInterceptor(userAgentInterceptor);
         clientBuilder.connectTimeout(60, TimeUnit.SECONDS);
-
         client = clientBuilder.build();
     }
 
-    public static void getOGDataProxy(String url, final Callback<OGData> callback) {
-
+    public static void getOGDataProxy(String url, final Callback<OGData, Throwable> callback) {
         //Workaround - proxy doesn't understand scheme-less urls
         if (!url.startsWith("http")) {
             url = "http://" + url;
         }
-
         ServiceGenerator.getThreadsApi().getOGDataProxy(url).enqueue(new retrofit2.Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
@@ -84,29 +80,24 @@ public class OGDataProvider {
 
 
     public static void getOGData(String url, final retrofit2.Callback<OGData> callback) {
-
         //Workaround - retrofit will add baseUrl for scheme-less urls
         if (!url.startsWith("http")) {
             url = "http://" + url;
         }
-
         ServiceGenerator.getThreadsApi().getOGData(url).enqueue(callback);
     }
 
-    public static void getOGData(final String url, final Callback<OGData> callback) {
-
+    public static void getOGData(final String url, final Callback<OGData, Throwable> callback) {
         getInstance().mExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 final String finalUrl;
-
                 //Adding http for urls without scheme
                 if (!url.startsWith("http")) {
                     finalUrl = "http://" + url;
                 } else {
                     finalUrl = url;
                 }
-
                 try {
                     Request request = new Request.Builder().url(finalUrl).build();
                     Response response = getInstance().client.newCall(request).execute();
@@ -117,11 +108,4 @@ public class OGDataProvider {
             }
         });
     }
-
-    public interface Callback<T> {
-        void onSuccess(T data);
-
-        void onError(Throwable error);
-    }
-
 }

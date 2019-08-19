@@ -1,9 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by Admin on 25.05.2017.
- */
-
 public class Client {
     private Long id;
     private String name;

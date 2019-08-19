@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 
 import im.threads.R;
 import im.threads.ThreadsLib;
+import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
@@ -37,11 +38,9 @@ import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.IncomingMessageParser;
 import im.threads.internal.formatters.OutgoingMessageCreator;
 import im.threads.internal.formatters.PushMessageAttributes;
-import im.threads.internal.formatters.PushMessageTypes;
+import im.threads.internal.formatters.PushMessageType;
 import im.threads.view.ChatFragment;
 import im.threads.internal.helpers.FileProviderHelper;
-import im.threads.internal.Config;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ClearThreadIdChatItem;
@@ -76,11 +75,11 @@ import im.threads.internal.utils.DualFilePoster;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
+import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.Transport;
 import im.threads.internal.utils.UrlUtils;
 
 /**
- * Created by yuri on 08.06.2016.
  * controller for chat Fragment. all bells and whistles in fragment,
  * all work here
  * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
@@ -121,10 +120,8 @@ public class ChatController {
     private long activeSurveySendingId;
 
     private DatabaseHolder mDatabaseHolder;
-    private int currentOffset = 0;
     private Long lastMessageTimestamp;
     private boolean isActive;
-    private long lastUserTypingSend = System.currentTimeMillis();
     private ConsultWriter mConsultWriter;
     private List<ChatItem> lastItems = new ArrayList<>();
     private Seeker seeker = new Seeker();
@@ -166,11 +163,8 @@ public class ChatController {
         if (mConsultWriter == null) {
             mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
         }
-
         ServiceGenerator.setUserAgent(OutgoingMessageCreator.getUserAgent(ctx));
-
         resendTimeInterval = ctx.getResources().getInteger(R.integer.check_internet_interval_ms);
-
         mUnsendMessageHandler = new Handler(msg -> {
             if (msg.what == RESEND_MSG) {
                 if (!unsendMessages.isEmpty()) {
@@ -198,7 +192,6 @@ public class ChatController {
         String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(survey,
                 PrefUtils.getClientID(),
                 PrefUtils.getAppMarker());
-
         Transport.sendMessageMFMSAsync(ratingDoneMessage, false,
                 new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
                     @Override
@@ -384,8 +377,8 @@ public class ChatController {
         boolean isCurrentClientId = IncomingMessageParser.checkId(bundle, PrefUtils.getClientID());
         String appMarker = bundle.getString(PushMessageAttributes.APP_MARKER_KEY);
         final long currentTimeMillis = System.currentTimeMillis();
-        final PushMessageTypes pushMessageTypes = PushMessageTypes.getKnownType(bundle);
-        switch (pushMessageTypes) {
+        final PushMessageType pushMessageType = PushMessageType.getKnownType(bundle);
+        switch (pushMessageType) {
             case TYPING:
                 if (isCurrentClientId) {
                     addMessage(new ConsultTyping(mConsultWriter.getCurrentConsultId(), currentTimeMillis, mConsultWriter.getCurrentPhotoUrl()));
@@ -469,7 +462,7 @@ public class ChatController {
 
     public void loadOgData(final ChatItem chatItem, final List<String> urls) {
         final String url = urls.get(0);
-        OGDataProvider.getOGData(url, new OGDataProvider.Callback<OGData>() {
+        OGDataProvider.getOGData(url, new Callback<OGData, Throwable>() {
             @Override
             public void onSuccess(OGData ogData) {
                 ThreadsLogger.d(TAG, "OGData for url: " + url
@@ -511,7 +504,7 @@ public class ChatController {
         // remove close request from the history
         if (chatItem instanceof EmptyChatItem) {
             if (isResolveRequestVisible &&
-                    PushMessageTypes.THREAD_CLOSED.name().equalsIgnoreCase(((EmptyChatItem) chatItem).getType())) {
+                    PushMessageType.THREAD_CLOSED.name().equalsIgnoreCase(((EmptyChatItem) chatItem).getType())) {
                 new Handler(Looper.getMainLooper()).post(this::removeResolveRequest);
             }
         }
@@ -646,8 +639,6 @@ public class ChatController {
                             fragment.setStateConsultConnected(info);
                         }
                     }
-                    currentOffset = serverItems.size();
-
                 } catch (final Exception e) {
                     ThreadsLogger.e(TAG, "onSettingClientId", e);
                 }
@@ -677,15 +668,10 @@ public class ChatController {
         return firstUnreadProviderId;
     }
 
-    public String getConsultNameById(final String id) {
-        return mConsultWriter.getName(id);
-    }
-
     public void bindFragment(final ChatFragment f) {
         ThreadsLogger.i(TAG, "bindFragment:");
         fragment = f;
         final Activity activity = f.getActivity();
-        currentOffset = 0;
         if (mConsultWriter == null) {
             mConsultWriter = new ConsultWriter(appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE));
         }
@@ -812,7 +798,6 @@ public class ChatController {
                     instance.fragment.setStateConsultConnected(info);
                 }
             }
-
             instance.checkAndLoadOgData(phrases);
             PrefUtils.setClientIdWasSet(true);
         } catch (final Exception e) {
@@ -834,7 +819,6 @@ public class ChatController {
         if (activeSurveySendingId == -1) {
             return;
         }
-
         if (fragment != null) {
             final boolean removed = fragment.removeSurvey(activeSurveySendingId);
             if (removed) {
@@ -855,12 +839,7 @@ public class ChatController {
     }
 
     private void updateChatItemsOnBindAsync() {
-        mExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                updateChatItemsOnBind();
-            }
-        });
+        mExecutor.execute(() -> updateChatItemsOnBind());
     }
 
     private void updateChatItemsOnBind() {
@@ -873,7 +852,6 @@ public class ChatController {
                 }
             });
             checkAndLoadOgData(items);
-            currentOffset = items.size();
 
             final List<UserPhrase> unsendUserPhrase = mDatabaseHolder.getUnsendUserPhrase(historyLoadingCount);
             if (!unsendUserPhrase.isEmpty()) {
@@ -949,22 +927,14 @@ public class ChatController {
             onSentMessageException(userPhrase, e);
             proceedSendingQueue();
         }
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (fragment != null)
-                            try {
-                                Transport.getPushControllerInstance().notifyMessageUpdateNeeded();
-                            } catch (final Exception e) {
-                                ThreadsLogger.e(TAG, "sendMessage", e);
-                            }
-                    }
-                }).start();
-            }
-        }, 60000);
+        h.postDelayed(() -> new Thread(() -> {
+            if (fragment != null)
+                try {
+                    Transport.getPushControllerInstance().notifyMessageUpdateNeeded();
+                } catch (final Exception e) {
+                    ThreadsLogger.e(TAG, "sendMessage", e);
+                }
+        }).start(), 60000);
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
@@ -1081,7 +1051,6 @@ public class ChatController {
                         isAllMessagesDownloaded = true;
                     } else {
                         lastMessageTimestamp = items.get(0).getTimeStamp();
-                        currentOffset += items.size();
                         isAllMessagesDownloaded = items.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
                         final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
                         mDatabaseHolder.putMessagesSync(chatItems);
@@ -1156,7 +1125,6 @@ public class ChatController {
         if (fragment != null) fragment.cleanChat();
         mConsultWriter.setCurrentConsultLeft();
         mConsultWriter.setSearchingConsult(false);
-        currentOffset = 0;
         h.removeCallbacksAndMessages(null);
         appContext.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
         notifyUnreadMessagesCountChanged();

@@ -23,17 +23,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.view.ChatFragment;
-import im.threads.internal.utils.ThreadsLogger;
-import im.threads.ChatStyle;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
+import im.threads.internal.utils.ThreadsLogger;
+import im.threads.view.ChatFragment;
 
-/**
- * Created by yuri on 01.07.2016.
- */
 public class ConsultActivity extends BaseActivity {
     private static final String TAG = "ConsultActivity ";
     private TextView mConsulHeaderTextView;
@@ -41,6 +38,14 @@ public class ConsultActivity extends BaseActivity {
     private ImageView mConsultImageView;
     private Toolbar mToolbar;
     private ChatStyle style;
+
+    public static Intent getStartIntent(Activity activity, String avatarPath, String name, String status) {
+        Intent i = new Intent(activity, ConsultActivity.class);
+        i.putExtra("imagePath", avatarPath);
+        i.putExtra("title", name);
+        i.putExtra("moto", status);
+        return i;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,20 +57,18 @@ public class ConsultActivity extends BaseActivity {
             getWindow().setStatusBarColor(getResources().getColor(R.color.threads_black_transparent));
         }
         setContentView(R.layout.activity_consult_page);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
         style = Config.instance.getChatStyle();
-        mConsulHeaderTextView = (TextView) findViewById(R.id.consult_title);
-        mConsultMotoTextView = (TextView) findViewById(R.id.consult_moto);
-        mConsultImageView = (ImageView) findViewById(R.id.image);
-
+        mConsulHeaderTextView = findViewById(R.id.consult_title);
+        mConsultMotoTextView = findViewById(R.id.consult_moto);
+        mConsultImageView = findViewById(R.id.image);
         mConsultImageView.setBackground(AppCompatResources.getDrawable(this, style.defaultOperatorAvatar));
-
         Intent i = getIntent();
         String imagePath = i.getStringExtra("imagePath");
         String title = i.getStringExtra("title");
         String moto = i.getStringExtra("moto");
         if (!TextUtils.isEmpty(imagePath)) {
-            imagePath = FileUtils.convertRelativeUrlToAbsolute(this, imagePath);
+            imagePath = FileUtils.convertRelativeUrlToAbsolute(imagePath);
             Picasso.with(this)
                     .load(imagePath)
                     .into(mConsultImageView);
@@ -77,12 +80,7 @@ public class ConsultActivity extends BaseActivity {
             mConsultMotoTextView.setText(moto);
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        mToolbar.setNavigationOnClickListener(v -> finish());
         mToolbar.showOverflowMenu();
         Drawable overflowDrawable = mToolbar.getOverflowIcon();
         try {
@@ -99,6 +97,7 @@ public class ConsultActivity extends BaseActivity {
     }
 
     protected void setActivityStyle(@NonNull ChatStyle style) {
+        //TODO https://track.brooma.ru/issue/THREADS-5811
         findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
         mConsulHeaderTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
         mConsultMotoTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
@@ -113,12 +112,10 @@ public class ConsultActivity extends BaseActivity {
         SpannableString s = new SpannableString(searchMenuItem.getTitle());
         s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s.length(), 0);
         searchMenuItem.setTitle(s);
-
         MenuItem filesAndMedia = menu.getItem(1);
         SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
         s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, style.menuItemTextColorResId)), 0, s2.length(), 0);
         filesAndMedia.setTitle(s2);
-
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -128,18 +125,10 @@ public class ConsultActivity extends BaseActivity {
         return true;
     }
 
-    public static Intent getStartIntent(Activity activity, String avatarPath, String name, String status) {
-        Intent i = new Intent(activity, ConsultActivity.class);
-        i.putExtra("imagePath", avatarPath);
-        i.putExtra("title", name);
-        i.putExtra("moto", status);
-        return i;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.files_and_media) {
-            startActivity(FilesActivity.getStartIntetent(this));
+            startActivity(FilesActivity.getStartIntent(this));
             return true;
         }
         if (item.getItemId() == R.id.search) {

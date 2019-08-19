@@ -16,7 +16,6 @@ import im.threads.internal.formatters.RussianFormatSymbols;
 import im.threads.ChatStyle;
 
 /**
- * Created by yuri on 08.06.2016.
  * layout/item_date.xml
  */
 public class DateViewHolder extends RecyclerView.ViewHolder {
@@ -25,12 +24,12 @@ public class DateViewHolder extends RecyclerView.ViewHolder {
 
     public DateViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_date, parent, false));
-        mTextView = (TextView) itemView.findViewById(R.id.text);
+        mTextView = itemView.findViewById(R.id.text);
         ChatStyle style = Config.instance.getChatStyle();
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             sdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {
-            sdf = new SimpleDateFormat("dd MMMM yyyy");
+            sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         }
         mTextView.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
     }

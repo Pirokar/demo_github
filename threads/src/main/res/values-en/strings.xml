@@ -2,8 +2,6 @@
     <string name="threads_push_title">Threads</string>
     <string name="threads_searching_operator">Searching operator...</string>
     <string name="threads_input_hint">Your message...</string>
-    <string name="threads_no_connection">No internet connection</string>
-    <string name="threads_no_connection_details">Turn on mobile data or use WI-FI to resend message</string>
     <string name="threads_close">Close</string>
     <string name="threads_camera">Camera</string>
     <string name="threads_gallery">Gallery</string>

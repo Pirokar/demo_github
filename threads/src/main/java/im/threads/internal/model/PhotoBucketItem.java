@@ -1,8 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by yuri on 06.07.2016.
- */
 public class PhotoBucketItem {
     private final String bucketName;
     private final String bucketSize;

@@ -1,7 +1,6 @@
 package im.threads.internal.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -17,11 +16,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MediaAndFileItem;
 import im.threads.internal.utils.FileUtils;
 
-/**
- * Created by yuri on 01.07.2016.
- */
 public class FilesAndMediaAdapter extends RecyclerView.Adapter {
-    private static final String TAG = "FilesAndMediaAdapter ";
     private static final int TYPE_DATE_ROW = 1;
     private static final int TYPE_FILE_AND_MEDIA_ROW = 2;
     private OnFileClick mOnFileClick;
@@ -72,13 +67,10 @@ public class FilesAndMediaAdapter extends RecyclerView.Adapter {
             final FileAndMediaViewHolder h = (FileAndMediaViewHolder) holder;
             FileAndMediaItem item = (FileAndMediaItem) list.get(position);
             h.onBind(item.getFileDescription()
-                    , new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (null != mOnFileClick) {
-                                FileAndMediaItem item = (FileAndMediaItem) list.get(h.getAdapterPosition());
-                                mOnFileClick.onFileClick(item.getFileDescription());
-                            }
+                    , v -> {
+                        if (null != mOnFileClick) {
+                            FileAndMediaItem item1 = (FileAndMediaItem) list.get(h.getAdapterPosition());
+                            mOnFileClick.onFileClick(item1.getFileDescription());
                         }
                     });
         }
@@ -110,7 +102,7 @@ public class FilesAndMediaAdapter extends RecyclerView.Adapter {
                 if (((FileAndMediaItem) maf).getFileDescription() != null) {
                     FileDescription fd = ((FileAndMediaItem) maf).getFileDescription();
                     if (FileUtils.getLastPathSegment(fd.getFilePath()).toLowerCase().contains(filter.toLowerCase())
-                            ) {
+                    ) {
                         filteredItems.add(fd);
                     } else if (((FileAndMediaItem) maf).getFileDescription() != null && ((FileAndMediaItem) maf).getFileDescription().getIncomingName() != null) {
                         String name = ((FileAndMediaItem) maf).getFileDescription().getIncomingName();

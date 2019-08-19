@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 
 /**
  * Родитель для всех Activity библиотеки
- * Created by yuri on 27.09.2016.
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -26,9 +25,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         invalidateOptionsMenu();
     }
 
-    protected
     @ColorInt
-    int getColorInt(@ColorRes int color) {
+    protected int getColorInt(@ColorRes int color) {
         return ContextCompat.getColor(this, color);
     }
 }

@@ -5,29 +5,18 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
 
-/**
- *
- */
 public class MyCircleProgress extends View {
     private Paint finishedPaint;
-    private Paint innerCirclePaint;
-    protected Paint textPaint;
     private RectF finishedOuterRect = new RectF();
     private int progress = 0;
     private int max = 100;
-    private int finishedStrokeColor;
-    private float finishedStrokeWidth;
-
-    private final int min_size;
-
-    private ChatStyle style;
+    private float finishedStrokeSize;
+    private final int minSize;
 
     public MyCircleProgress(Context context) {
         this(context, null);
@@ -39,83 +28,38 @@ public class MyCircleProgress extends View {
 
     public MyCircleProgress(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        finishedStrokeWidth = getContext().getResources().getDisplayMetrics().density;
-        min_size = 100;
-        initPainters();
+        finishedStrokeSize = getContext().getResources().getDisplayMetrics().density;
+        minSize = 100;
+        initPaint();
     }
-
-    protected void initPainters() {
-        textPaint = new TextPaint();
-        finishedPaint = new Paint();
-
-        style = Config.instance.getChatStyle();
-
-        finishedPaint.setColor(ContextCompat.getColor(getContext(), style.chatToolbarColorResId));
-        finishedPaint.setStyle(Paint.Style.STROKE);
-        finishedPaint.setAntiAlias(true);
-        finishedPaint.setStrokeWidth(finishedStrokeWidth);
-
-        innerCirclePaint = new Paint();
-        innerCirclePaint.setAntiAlias(true);
-        this.setRotation(-90.0f);
-    }
-
 
     @Override
     public void invalidate() {
-        initPainters();
+        initPaint();
         super.invalidate();
     }
 
-    public float getFinishedStrokeWidth() {
-        return finishedStrokeWidth;
-    }
-
-    public void setFinishedStrokeWidth(float finishedStrokeWidth) {
-        this.finishedStrokeWidth = finishedStrokeWidth;
-        this.invalidate();
-    }
-
-    private float getProgressAngle() {
-        return getProgress() / (float) max * 360f;
-    }
-
-    public int getProgress() {
-        return progress;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-        if (this.progress > getMax()) {
-            this.progress %= getMax();
-        }
-        invalidate();
-    }
-
-    public int getMax() {
-        return max;
-    }
-
-    public void setMax(int max) {
-        if (max > 0) {
-            this.max = max;
-            invalidate();
-        }
-    }
-
-
-    public int getFinishedStrokeColor() {
-        return finishedStrokeColor;
-    }
-
-    public void setFinishedStrokeColor(int finishedStrokeColor) {
-        this.finishedStrokeColor = finishedStrokeColor;
-        this.invalidate();
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        finishedOuterRect.set(finishedStrokeSize,
+                finishedStrokeSize,
+                getWidth() - finishedStrokeSize,
+                getHeight() - finishedStrokeSize);
+        canvas.drawArc(finishedOuterRect, 0, -getProgressAngle(), false, finishedPaint);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(measure(widthMeasureSpec), measure(heightMeasureSpec));
+    }
+
+    void setProgress(int progress) {
+        this.progress = progress;
+        if (this.progress > max) {
+            this.progress %= max;
+        }
+        invalidate();
     }
 
     private int measure(int measureSpec) {
@@ -125,7 +69,7 @@ public class MyCircleProgress extends View {
         if (mode == MeasureSpec.EXACTLY) {
             result = size;
         } else {
-            result = min_size;
+            result = minSize;
             if (mode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, size);
             }
@@ -133,13 +77,16 @@ public class MyCircleProgress extends View {
         return result;
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        finishedOuterRect.set(finishedStrokeWidth,
-                finishedStrokeWidth,
-                getWidth() - finishedStrokeWidth,
-                getHeight() - finishedStrokeWidth);
-        canvas.drawArc(finishedOuterRect, 0, -getProgressAngle(), false, finishedPaint);
+    private float getProgressAngle() {
+        return progress / (float) max * 360f;
+    }
+
+    private void initPaint() {
+        finishedPaint = new Paint();
+        finishedPaint.setColor(ContextCompat.getColor(getContext(), Config.instance.getChatStyle().chatToolbarColorResId));
+        finishedPaint.setStyle(Paint.Style.STROKE);
+        finishedPaint.setAntiAlias(true);
+        finishedPaint.setStrokeWidth(finishedStrokeSize);
+        this.setRotation(-90.0f);
     }
 }

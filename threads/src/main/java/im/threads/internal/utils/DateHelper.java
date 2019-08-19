@@ -6,15 +6,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * Created by broomaservice on 06/03/2018.
- */
-
 public class DateHelper {
     private static final String TAG = DateHelper.class.getSimpleName();
 
-    public static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public static String SERVER_DATE_TIMEZONE = "UTC";
+    private static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private static String SERVER_DATE_TIMEZONE = "UTC";
 
     private static SimpleDateFormat sdf = new SimpleDateFormat(SERVER_DATE_FORMAT, Locale.getDefault());
 
@@ -23,7 +19,6 @@ public class DateHelper {
     }
 
     public static long getMessageTimestampFromDateString(String dateString) {
-
         Date date = new Date();
         try {
             date = sdf.parse(dateString);
@@ -36,5 +31,4 @@ public class DateHelper {
     public static String getMessageDateStringFromTimestamp(long timestamp) {
         return sdf.format(new Date(timestamp));
     }
-
 }

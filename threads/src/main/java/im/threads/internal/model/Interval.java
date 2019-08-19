@@ -2,9 +2,7 @@ package im.threads.internal.model;
 
 /**
  * Интервал расписания
- * Created by chybakut2004 on 21.04.17.
  */
-
 public class Interval {
 
     private Integer weekDay;

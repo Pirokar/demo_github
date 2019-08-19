@@ -22,21 +22,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.TranslucentActivity;
-import im.threads.ChatStyle;
 import im.threads.internal.picasso_url_connection_only.Picasso;
-import im.threads.internal.utils.CircleTransform;
+import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 
-/**
- * Created by yuri on 02.09.2016.
- */
 public class QuickAnswerFragment extends DialogFragment {
     private EditText mEditText;
-    private static final String TAG = "QuickAnswerFragment ";
-    private ChatStyle style;
 
     public static QuickAnswerFragment getInstance(
             String avatarPath,
@@ -54,21 +49,18 @@ public class QuickAnswerFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        style = Config.instance.getChatStyle();
+        ChatStyle style = Config.instance.getChatStyle();
         View v = inflater.inflate(R.layout.dialog_fast_answer, container, false);
-        TextView consultNameTextView = (TextView) v.findViewById(R.id.consult_name);
-        TextView textView = (TextView) v.findViewById(R.id.question);
-        mEditText = (EditText) v.findViewById(R.id.answer);
-        ImageView imageView = (ImageView) v.findViewById(R.id.consult_image);
-        ImageButton imageButton = (ImageButton) v.findViewById(R.id.send);
-        v.findViewById(R.id.close_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
-                Intent answerIntent = new Intent(TranslucentActivity.ACTION_CANCEL);
-                manager.sendBroadcast(answerIntent);
-                dismiss();
-            }
+        TextView consultNameTextView = v.findViewById(R.id.consult_name);
+        TextView textView = v.findViewById(R.id.question);
+        mEditText = v.findViewById(R.id.answer);
+        ImageView imageView = v.findViewById(R.id.consult_image);
+        ImageButton imageButton = v.findViewById(R.id.send);
+        v.findViewById(R.id.close_button).setOnClickListener(v1 -> {
+            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
+            Intent answerIntent = new Intent(TranslucentActivity.ACTION_CANCEL);
+            manager.sendBroadcast(answerIntent);
+            dismiss();
         });
         Bundle arguments = getArguments();
         if (null != arguments) {
@@ -76,12 +68,12 @@ public class QuickAnswerFragment extends DialogFragment {
             String consultName = arguments.getString("consultName");
             String consultPhrase = arguments.getString("consultPhrase");
             if (null != avatarPath && !avatarPath.equals("null")) {
-                avatarPath = FileUtils.convertRelativeUrlToAbsolute(getActivity(), avatarPath);
+                avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
                 Picasso
                         .with(getActivity())
                         .load(avatarPath)
                         .fit()
-                        .transform(new CircleTransform())
+                        .transform(new CircleTransformation())
                         .into(imageView);
             }
             if (null != consultName && !consultName.equals("null"))
@@ -90,16 +82,13 @@ public class QuickAnswerFragment extends DialogFragment {
                 textView.setText(consultPhrase);
 
         }
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
-                Intent answerIntent = new Intent(TranslucentActivity.ACTION_ANSWER);
-                answerIntent.putExtra(TranslucentActivity.ACTION_ANSWER, mEditText.getText().toString());
-                manager.sendBroadcast(answerIntent);
-                mEditText.setText("");
-                dismiss();
-            }
+        imageButton.setOnClickListener(v12 -> {
+            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
+            Intent answerIntent = new Intent(TranslucentActivity.ACTION_ANSWER);
+            answerIntent.putExtra(TranslucentActivity.ACTION_ANSWER, mEditText.getText().toString());
+            manager.sendBroadcast(answerIntent);
+            mEditText.setText("");
+            dismiss();
         });
         v.findViewById(R.id.layout_root).setBackgroundColor(getColorInt(style.chatBackgroundColor));
         v.findViewById(R.id.header).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
@@ -120,8 +109,8 @@ public class QuickAnswerFragment extends DialogFragment {
         return v;
     }
 
-    private @ColorInt
-    int getColorInt(@ColorRes int colorResId) {
+    @ColorInt
+    private int getColorInt(@ColorRes int colorResId) {
         return ContextCompat.getColor(getActivity(), colorResId);
     }
 
@@ -134,13 +123,12 @@ public class QuickAnswerFragment extends DialogFragment {
         return d;
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
         Dialog d = getDialog();
         if (null != d) {
-            int width = (int) (getResources().getDisplayMetrics().widthPixels);
+            int width = getResources().getDisplayMetrics().widthPixels;
             d.getWindow().setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT);
             d.setCancelable(false);
         }
@@ -153,6 +141,5 @@ public class QuickAnswerFragment extends DialogFragment {
             mEditText.requestFocus();
             getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
-
     }
 }

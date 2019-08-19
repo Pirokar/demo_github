@@ -1,17 +1,12 @@
 package im.threads.internal.utils;
 
+import java.util.List;
+
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 
-import java.util.List;
-
-/**
- *
- */
-
 public class Seeker {
     private String lastQuery = "";
-    private static final String TAG = "Seeker ";
 
     public List<ChatItem> seek(List<ChatItem> target,
                                boolean forward,
@@ -41,24 +36,21 @@ public class Seeker {
             if (ci instanceof ChatPhrase) if (((ChatPhrase) ci).isHighlight())
                 ((ChatPhrase) ci).setHighLighted(false);
         }
-        lastQuery = new String(query);
-
+        lastQuery = query;
         //для поиска сообщений в чате - пробегаемся по всем сообщениям и отмечаем
         //те, которые соответствуют запросу
         for (ChatItem chatItem : target) {
-            if(chatItem instanceof ChatPhrase) {
+            if (chatItem instanceof ChatPhrase) {
                 ((ChatPhrase) chatItem).setFound(
                         ((ChatPhrase) chatItem).getPhraseText() != null
                                 && ((ChatPhrase) chatItem).getPhraseText().toLowerCase().contains(query));
             }
         }
-
         if (forward) {
             if (lastChosenIndex == 0) {//if it is last
                 ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
                 return target;
             } else {
-                boolean isFound = false;
                 int initial = lastChosenIndex == -1 ? target.size() - 1 : lastChosenIndex - 1;
                 for (int i = initial; i >= 0; i--) {
                     if (target.get(i) instanceof ChatPhrase
@@ -68,9 +60,9 @@ public class Seeker {
                         return target;
                     }
                 }
-                if (!isFound && lastChosenIndex == -1) {
+                if (lastChosenIndex == -1) {
                     return target;
-                } else if (!isFound) {
+                } else {
                     ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
                     return target;
                 }
@@ -87,11 +79,6 @@ public class Seeker {
                 }
                 return target;
             }
-//            if ((lastChosenIndex - 1) < 0) {
-//                ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
-//                return target;
-//            }
-            boolean isFound = false;
             for (int i = lastChosenIndex + 1; i < target.size(); i++) {
                 if (target.get(i) instanceof ChatPhrase
                         && ((ChatPhrase) target.get(i)).getPhraseText() != null
@@ -100,13 +87,8 @@ public class Seeker {
                     return target;
                 }
             }
-            if (!isFound && lastChosenIndex == -1) {
-                return target;
-            } else if (!isFound) {
-                ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
-                return target;
-            }
+            ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
+            return target;
         }
-        return target;
     }
 }

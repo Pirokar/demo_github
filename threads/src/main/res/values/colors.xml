@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="threads_green_dark">#00786c</color>
-    <color name="threads_green_light">#009788</color>
     <color name="threads_white_dark">#eff2f7</color>
     <color name="threads_gray_text">#617d8b</color>
     <color name="threads_black">#000000</color>
     <color name="threads_black_transparent">#30000000</color>
     <color name="threads_blue">#3299de</color>
     <color name="threads_blue_transparent">#303299de</color>
-    <color name="threads_orange">#ff9600</color>
     <color name="threads_disabled_text_color">#9a9a9a</color>
     <color name="threads_toolbar_gray">#333333</color>
     <color name="threads_white">#ffffff</color>
@@ -19,14 +17,11 @@
     <color name="threads_teal_004D40">#004D40</color>
     <color name="threads_blue_eff3f8">#eff3f8</color>
     <color name="threads_grey_aaa">#AAAAAA</color>
-    <color name="threads_grey_555">#555555</color>
     <color name="threads_blue_0F87FF">#0F87FF</color>
     <color name="threads_blue_transparent_700F87FF">#700F87FF</color>
     <color name="threads_blue_3598dc">#3598DC</color>
     <color name="threads_blue_grey_607d8b">#607d8b</color>
-    <color name="threads_orange_ff9800">#ff9800</color>
     <color name="threads_cian_b2dfdb">#b2dfdb</color>
-    <color name="threads_blue_e6e6ec">#e6e6ec</color>
     <color name="threads_red_f44336">#f44336</color>
 
     <!-- Цвета для кастомизации -->

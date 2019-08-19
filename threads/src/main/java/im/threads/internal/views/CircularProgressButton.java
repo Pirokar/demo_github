@@ -11,18 +11,12 @@ import android.support.v7.content.res.AppCompatResources;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import im.threads.R;
 import im.threads.internal.utils.ViewUtils;
 
-
-/**
- *
- */
 public class CircularProgressButton extends FrameLayout {
-    private static final String TAG = "CircularProgressButton ";
     private MyCircleProgress mcp;
     private View mImageLabel;
     private View background;
@@ -43,33 +37,20 @@ public class CircularProgressButton extends FrameLayout {
 
     private void init(Context context, AttributeSet attributeSet) {
         ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_progress_button, this, true);
-        mcp = (MyCircleProgress) findViewById(R.id.circular_progress);
+        mcp = findViewById(R.id.circular_progress);
         mImageLabel = findViewById(R.id.label_image);
         TypedArray ta = getContext().getTheme().obtainStyledAttributes(
                 attributeSet,
                 R.styleable.CircularProgressButton,
                 0, 0);
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
             inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
             startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
-
         } else {
-
-//            try {
-//                completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
-//                inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
-//                startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
-//            } catch (Resources.NotFoundException e) {
-//                Log.w(TAG, "Vector Drawable compatibility issue");
-//            }
-
             final int completedDrawableId = ta.getResourceId(R.styleable.CircularProgressButton_completed_drawable, -1);
             final int inProgressId = ta.getResourceId(R.styleable.CircularProgressButton_in_progress_label, -1);
             final int startDownloadDrawableId = ta.getResourceId(R.styleable.CircularProgressButton_start_download_label, -1);
-
             if (completedDrawableId != -1)
                 completedDrawable = AppCompatResources.getDrawable(context, completedDrawableId);
             if (inProgressId != -1)
@@ -77,8 +58,6 @@ public class CircularProgressButton extends FrameLayout {
             if (startDownloadDrawableId != -1)
                 startDownloadDrawable = AppCompatResources.getDrawable(context, startDownloadDrawableId);
         }
-
-
         background = findViewById(R.id.background);
         ta.recycle();
         mImageLabel.setVisibility(View.VISIBLE);
@@ -106,7 +85,6 @@ public class CircularProgressButton extends FrameLayout {
             if (getBackground() != null) {
                 setBackground(null);
             }
-
         } else if (progress > 99) {
             mcp.setVisibility(INVISIBLE);
             mImageLabel.setVisibility(INVISIBLE);
@@ -121,49 +99,24 @@ public class CircularProgressButton extends FrameLayout {
         }
     }
 
-    public int getProgress() {
-        return mcp.getProgress();
-    }
-
-
-    public View getImageLabel() {
-        return mImageLabel;
-    }
-
-    public void setImageLabel(View mImageLabel) {
-        this.mImageLabel = mImageLabel;
-    }
-
-    public Drawable getCompletedDrawable() {
-        return completedDrawable;
-    }
-
     public void setCompletedDrawable(Drawable completedDrawable) {
         this.completedDrawable = completedDrawable;
-    }
-
-    public Drawable getInProgress() {
-        return inProgress;
     }
 
     public void setInProgress(Drawable inProgress) {
         this.inProgress = inProgress;
     }
 
-    public Drawable getStartDownloadDrawable() {
-        return startDownloadDrawable;
-    }
-
     public void setStartDownloadDrawable(Drawable startDownloadDrawable) {
         this.startDownloadDrawable = startDownloadDrawable;
     }
 
+    @Override
     public void setOnClickListener(View.OnClickListener ocl) {
-        ViewUtils.setClickListener((ViewGroup) findViewById(R.id.frame), ocl);
+        ViewUtils.setClickListener(findViewById(R.id.frame), ocl);
     }
 
     public void setBackgroundColorResId(@ColorRes int colorResourceIntId) {
         progressBackgroundDrawable.setColorFilter(ContextCompat.getColor(this.getContext(), colorResourceIntId), PorterDuff.Mode.SRC_ATOP);
     }
 }
-

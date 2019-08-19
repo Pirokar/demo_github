@@ -23,9 +23,6 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 
-/**
- * Created by yuri on 23.06.2016.
- */
 public class DatabaseHolder {
     private static final String TAG = DatabaseHolder.class.getSimpleName();
 
@@ -77,21 +74,6 @@ public class DatabaseHolder {
         return userPhrases;
     }
 
-    public void getChatItemsAsync(final int offset, final int limit, final CompletionHandler<List<ChatItem>> completionHandler) {
-        executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                List<ChatItem> items = mMyOpenHelper.getChatItems(offset, limit);
-                if (items == null) {
-                    completionHandler.setSuccessful(true);
-                    completionHandler.onComplete(new ArrayList<ChatItem>());
-                } else {
-                    completionHandler.onComplete(items);
-                }
-            }
-        });
-    }
-
     public boolean putChatItem(ChatItem chatItem) {
         if (chatItem instanceof ConsultConnectionMessage) {
             mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) chatItem);
@@ -115,15 +97,6 @@ public class DatabaseHolder {
         return mMyOpenHelper.getMessagesCount();
     }
 
-    public void getMessagesCountAsync(final CompletionHandler<Integer> response) {
-        executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                response.onComplete(mMyOpenHelper.getMessagesCount());
-            }
-        });
-    }
-
     public void cleanDatabase() {
         mMyOpenHelper.cleanFD();
         mMyOpenHelper.cleanMessagesTable();
@@ -142,59 +115,6 @@ public class DatabaseHolder {
     public void updateFileDescription(FileDescription fileDescription) {
         if (fileDescription == null) return;
         mMyOpenHelper.updateFd(fileDescription);
-    }
-
-    public void queryChatPhrasesAsync(final String query, final CompletionHandler<List<ChatPhrase>> callback) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                List<ChatPhrase> list = mMyOpenHelper.getSortedPhrases(query);
-                if (query == null)
-                    callback.onError(new IllegalArgumentException(), "query is null", new ArrayList<ChatPhrase>());
-                callback.onComplete(list);
-            }
-        });
-    }
-
-    public List<ChatPhrase> queryChatPhrasesSync(final String query) {
-        return mMyOpenHelper.getSortedPhrases(query);
-    }
-
-    public void queryFilesAsync(final String query, final CompletionHandler<List<ChatPhrase>> callback) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                List<ChatPhrase> list = mMyOpenHelper.queryFiles(query);
-                if (query == null)
-                    callback.onError(new IllegalArgumentException(), "query is null", new ArrayList<ChatPhrase>());
-                callback.onComplete(list);
-            }
-        });
-    }
-
-    public List<ChatPhrase> queryFilesSync(final String query) {
-        return mMyOpenHelper.queryFiles(query);
-    }
-
-    public void putMessagesAsync(final List<ChatItem> items, final CompletionHandler<Void> completionHandler) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                mMyOpenHelper.getWritableDatabase().beginTransaction();
-                for (ChatItem item : items) {
-                    if (item instanceof ChatPhrase) {
-                        mMyOpenHelper.putChatPhrase((ChatPhrase) item);
-                    }
-                    if (item instanceof ConsultConnectionMessage) {
-                        mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
-                    }
-                }
-                mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
-                mMyOpenHelper.getWritableDatabase().endTransaction();
-                completionHandler.onComplete(null);
-            }
-        });
-
     }
 
     public void putMessagesSync(final List<ChatItem> items) {
@@ -219,36 +139,12 @@ public class DatabaseHolder {
         }
     }
 
-    public void setUserPhraseProviderId(String uuid, String providerId) {
-        mMyOpenHelper.setUserPhraseProviderId(uuid, providerId);
-    }
-
-    public void cleanDbAsync(final CompletionHandler<Void> onComplete) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                mMyOpenHelper.cleanDb();
-                onComplete.onComplete(null);
-            }
-        });
-    }
-
     public void setAllMessagesRead(final CompletionHandler<Void> handler) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 mMyOpenHelper.setAllRead();
                 handler.onComplete(null);
-            }
-        });
-    }
-
-    public void getChatItemByFileDescription(final FileDescription fileDescription, final CompletionHandler<ChatItem> handler) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                ChatPhrase cp = mMyOpenHelper.getChatphraseByDescription(fileDescription);
-                handler.onComplete(cp);
             }
         });
     }

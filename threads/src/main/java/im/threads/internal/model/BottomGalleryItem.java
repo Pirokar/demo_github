@@ -1,8 +1,5 @@
 package im.threads.internal.model;
 
-/**
- * Created by yuri on 30.06.2016.
- */
 public class BottomGalleryItem {
     private boolean isChosen;
     private String imagePath;

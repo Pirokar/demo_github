@@ -10,9 +10,6 @@ import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
 
-/**
- * Created by yuri on 19.09.2016.
- */
 public class QuickAnswerController extends Fragment {
     private static final String TAG = "QuickAnswerController ";
     private TranslucentActivity activity;

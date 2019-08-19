@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -27,21 +26,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.internal.adapters.GalleryAdaper;
+import im.threads.internal.adapters.GalleryAdapter;
 import im.threads.internal.adapters.PhotoBucketsGalleryAdapter;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.model.MediaPhoto;
 import im.threads.internal.model.PhotoBucketItem;
 import im.threads.internal.utils.BucketsGalleryDecorator;
 import im.threads.internal.utils.GalleryDecorator;
+import im.threads.internal.utils.ThreadsLogger;
 
-/**
- * Created by yuri on 06.07.2016.
- */
 public class GalleryActivity extends BaseActivity
         implements
         PhotoBucketsGalleryAdapter.OnItemClick
-        , GalleryAdaper.OnGalleryItemClick {
+        , GalleryAdapter.OnGalleryItemClick {
     private RecyclerView mRecyclerView;
     private static final String TAG = "GalleryActivity ";
     private ArrayList<ArrayList<MediaPhoto>> lists = new ArrayList<>();
@@ -50,7 +46,7 @@ public class GalleryActivity extends BaseActivity
     private BucketsGalleryDecorator mBucketsGalleryDecorator = new BucketsGalleryDecorator(4);
     private GalleryDecorator mGalleryDecorator = new GalleryDecorator(4);
     private EditText mSearchEdiText;
-    private List<MediaPhoto> chosentItems;
+    private List<MediaPhoto> chosenItems;
     private Button mSendButton;
     public static final String PHOTOS_REQUEST_CODE_TAG = "PHOTOS_REQUEST_CODE_TAG";
     public static final String PHOTOS_TAG = "PHOTOS_TAG";
@@ -59,43 +55,28 @@ public class GalleryActivity extends BaseActivity
     private ImageButton mClearButton;
     private View mBottomButton;
 
+    public static Intent getStartIntent(Context ctx, int requestCode) {
+        Intent i = new Intent(ctx, GalleryActivity.class);
+        i.putExtra(PHOTOS_REQUEST_CODE_TAG, requestCode);
+        return i;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //Workaround on vectors not working in background selector
         // - see GalleryItemHolder mCheckBox.setButtonDrawable R.drawable.bk_checkbox_blue
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-
         setContentView(R.layout.activity_gallery);
         initViews();
-        /*ChatStyle style = ChatStyle.getChatStyle();
-        findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
-        mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
-        mToolbar.setTitleTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
-        mToolbar.getOverflowIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
-        mToolbar.getNavigationIcon().setColorFilter(new PorterDuffColorFilter(getResources().getColor(style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP));
-        */
     }
 
     private void initViews() {
-        final Context ctx = this;
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
-        findViewById(R.id.search_photo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setStateSearchingPhoto();
-            }
-        });
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mRecyclerView = findViewById(R.id.recycler);
+        findViewById(R.id.search_photo).setOnClickListener(v -> setStateSearchingPhoto());
+        mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         //  t.showOverflowMenu();
         Drawable overflowDrawable = mToolbar.getOverflowIcon();
         try {
@@ -103,11 +84,10 @@ public class GalleryActivity extends BaseActivity
         } catch (Resources.NotFoundException e) {
             ThreadsLogger.e(TAG, "initViews", e);
         }
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
-        mSendButton = (Button) findViewById(R.id.send);
-
-        mNothingFoundLabel = (TextView) findViewById(R.id.nothing_found_label);
-        mClearButton = (ImageButton) findViewById(R.id.clear_search_button);
+        mRecyclerView = findViewById(R.id.recycler);
+        mSendButton = findViewById(R.id.send);
+        mNothingFoundLabel = findViewById(R.id.nothing_found_label);
+        mClearButton = findViewById(R.id.clear_search_button);
         mBottomButton = findViewById(R.id.bottom_buttons);
 
         mBucketsGalleryDecorator = new BucketsGalleryDecorator(4);
@@ -115,28 +95,20 @@ public class GalleryActivity extends BaseActivity
         mRecyclerView.setAdapter(new PhotoBucketsGalleryAdapter(bucketItems, this));
         mRecyclerView.addItemDecoration(mBucketsGalleryDecorator);
         isInBuckets = true;
-        mSearchEdiText = (EditText) findViewById(R.id.search_edit_text);
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getIntent().getIntExtra(PHOTOS_REQUEST_CODE_TAG, -1) == -1) {
-                    finish();
-                } else {
-                    ArrayList<String> list1 = new ArrayList<String>();
-                    for (MediaPhoto mp : chosentItems) {
-                        list1.add(mp.getImagePath());
-                    }
-                    Intent i = new Intent();
-                    i.putStringArrayListExtra(PHOTOS_TAG, list1);
-                    setResult(RESULT_OK, i);
-                    finish();
+        mSearchEdiText = findViewById(R.id.search_edit_text);
+        findViewById(R.id.cancel).setOnClickListener(v -> onBackPressed());
+        mSendButton.setOnClickListener(v -> {
+            if (getIntent().getIntExtra(PHOTOS_REQUEST_CODE_TAG, -1) == -1) {
+                finish();
+            } else {
+                ArrayList<String> list1 = new ArrayList<>();
+                for (MediaPhoto mp : chosenItems) {
+                    list1.add(mp.getImagePath());
                 }
+                Intent i = new Intent();
+                i.putStringArrayListExtra(PHOTOS_TAG, list1);
+                setResult(RESULT_OK, i);
+                finish();
             }
         });
         String[] projection = new String[]{MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA};
@@ -148,7 +120,6 @@ public class GalleryActivity extends BaseActivity
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             allItems.add(new MediaPhoto(c.getString(DATA), c.getString(BUCKET_DISPLAY_NAME)));
         }
-
         ArrayList<MediaPhoto> list = new ArrayList<>();
         list.add(allItems.get(0));
         lists.add(list);
@@ -171,20 +142,13 @@ public class GalleryActivity extends BaseActivity
         }
     }
 
-    public static Intent getStartIntent(Context ctx, int requestCode) {
-        Intent i = new Intent(ctx, GalleryActivity.class);
-        i.putExtra(PHOTOS_REQUEST_CODE_TAG, requestCode);
-        return i;
-    }
-
-
     @Override
     public void onPhotoBucketClick(PhotoBucketItem item) {
         setStateGallery(item.getBucketName(), item);
     }
 
     private void setStateGallery(String title, PhotoBucketItem item) {
-        chosentItems = null;
+        chosenItems = null;
         isInBuckets = false;
         checkSendButtonState();
         ((Toolbar) findViewById(R.id.toolbar)).setTitle(title);
@@ -201,17 +165,19 @@ public class GalleryActivity extends BaseActivity
                 break;
             }
         }
-        for (MediaPhoto photo : photos) {
-            photo.setChecked(false);
+        if (photos != null) {
+            for (MediaPhoto photo : photos) {
+                photo.setChecked(false);
+            }
         }
-        mRecyclerView.setAdapter(new GalleryAdaper(photos, this));
+        mRecyclerView.setAdapter(new GalleryAdapter(photos, this));
         mRecyclerView.addItemDecoration(mGalleryDecorator);
 
     }
 
     private void setStatePhotoBuckets() {
         isInBuckets = true;
-        chosentItems = null;
+        chosenItems = null;
         ((Toolbar) findViewById(R.id.toolbar)).setTitle(getResources().getString(R.string.threads_photos));
         findViewById(R.id.search_label_layout).setVisibility(View.VISIBLE);
         findViewById(R.id.bottom_buttons).setVisibility(View.GONE);
@@ -226,7 +192,7 @@ public class GalleryActivity extends BaseActivity
 
     private void setStateSearchingPhoto() {
         isInBuckets = false;
-        chosentItems = null;
+        chosenItems = null;
         checkSendButtonState();
         findViewById(R.id.search_label_layout).setVisibility(View.GONE);
         findViewById(R.id.search_layout).setVisibility(View.VISIBLE);
@@ -236,23 +202,16 @@ public class GalleryActivity extends BaseActivity
         mRecyclerView.addItemDecoration(mGalleryDecorator);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mRecyclerView.setAdapter(null);
-        mClearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSearchEdiText.setText("");
-            }
-        });
+        mClearButton.setOnClickListener(v -> mSearchEdiText.setText(""));
         mBottomButton.setVisibility(View.GONE);
         mToolbar.hideOverflowMenu();
         mSearchEdiText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -264,25 +223,19 @@ public class GalleryActivity extends BaseActivity
                 search(searchString);
             }
         });
-
-        mSearchEdiText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    search(v.getText().toString());
-                    return true;
-                } else {
-                    return false;
-                }
+        mSearchEdiText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                search(v.getText().toString());
+                return true;
+            } else {
+                return false;
             }
         });
-
     }
 
     protected void search(String searchString) {
         clearCheckedStateOfItems();
-        chosentItems = null;
+        chosenItems = null;
         checkSendButtonState();
         if (searchString.trim().length() == 0) {
             mNothingFoundLabel.setVisibility(View.VISIBLE);
@@ -291,14 +244,14 @@ public class GalleryActivity extends BaseActivity
         } else {
             mNothingFoundLabel.setVisibility(View.GONE);
             List<MediaPhoto> list = new ArrayList<>();
-            for (List<MediaPhoto> photoes : lists) {
-                for (MediaPhoto mp : photoes) {
+            for (List<MediaPhoto> photos : lists) {
+                for (MediaPhoto mp : photos) {
                     if (mp.getImagePath().contains(searchString)) {
                         list.add(mp);
                     }
                 }
             }
-            mRecyclerView.setAdapter(new GalleryAdaper(list, this));
+            mRecyclerView.setAdapter(new GalleryAdapter(list, this));
             if (list.size() == 0) {
                 mBottomButton.setVisibility(View.GONE);
             } else {
@@ -309,7 +262,7 @@ public class GalleryActivity extends BaseActivity
 
     @Override
     public void onGalleryItemsChosen(List<MediaPhoto> chosenItems) {
-        this.chosentItems = chosenItems;
+        this.chosenItems = chosenItems;
         checkSendButtonState();
     }
 
@@ -334,7 +287,7 @@ public class GalleryActivity extends BaseActivity
     }
 
     private void checkSendButtonState() {
-        if (null != chosentItems && chosentItems.size() > 0) {
+        if (null != chosenItems && chosenItems.size() > 0) {
             mSendButton.setEnabled(true);
             mSendButton.setTextColor(getResources().getColor(android.R.color.white));
         } else {

@@ -7,17 +7,15 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import im.threads.R;
 import im.threads.internal.adapters.BottomGalleryAdapter;
 import im.threads.internal.model.BottomGalleryItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Created by yuri on 30.06.2016.
- */
 public class BottomGallery extends FrameLayout {
+
     private RecyclerView mRecyclerView;
 
     public BottomGallery(Context context) {
@@ -37,7 +35,7 @@ public class BottomGallery extends FrameLayout {
 
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.view_bottom_gallery, this, true);
-        mRecyclerView = (RecyclerView) findViewById(R.id.bottom_gallery_recycler);
+        mRecyclerView = findViewById(R.id.bottom_gallery_recycler);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 

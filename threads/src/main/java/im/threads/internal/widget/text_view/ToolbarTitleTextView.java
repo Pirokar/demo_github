@@ -9,11 +9,8 @@ import im.threads.internal.Config;
 import im.threads.ChatStyle;
 import im.threads.internal.widget.CustomFontTextView;
 
-/**
- * Created by Vit on 10.07.2017.
- */
-
 public class ToolbarTitleTextView extends CustomFontTextView {
+
     public ToolbarTitleTextView(Context context) {
         super(context);
     }
