@@ -1,19 +1,10 @@
 package im.threads.internal.model;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.internal.utils.DateHelper;
-import im.threads.internal.utils.ThreadsLogger;
 
 public class MessageFromHistory implements ChatItem {
-    private static final String TAG = MessageFromHistory.class.getSimpleName();
-
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
     private String clientId;
@@ -38,20 +29,6 @@ public class MessageFromHistory implements ChatItem {
     private Integer rate;
     private Integer scale;
     private boolean simple;
-
-    public static List<MessageFromHistory> getListMessageFromServerResponse(String response) {
-        List<MessageFromHistory> list = null;
-        try {
-            if (response != null) {
-                Type listType = new TypeToken<ArrayList<MessageFromHistory>>() {
-                }.getType();
-                list = new Gson().fromJson(response, listType);
-            }
-        } catch (JsonSyntaxException e) {
-            ThreadsLogger.e(TAG, "getListMessageFromServerResponse", e);
-        }
-        return list;
-    }
 
     public String getUuid() {
         return uuid;

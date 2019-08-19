@@ -21,8 +21,8 @@ import static im.threads.internal.utils.FileUtils.getExtensionFromFileDescriptio
 
 public class MarshmallowPushMessageFormatter {
     private Context ctx;
-    List<ChatItem> unreadMessages;
-    List<ChatItem> incomingPushes;
+    private List<ChatItem> unreadMessages;
+    private List<ChatItem> incomingPushes;
 
     public MarshmallowPushMessageFormatter(
             Context ctx
@@ -132,7 +132,7 @@ public class MarshmallowPushMessageFormatter {
         public final boolean isWithAttachments;
         public final boolean isOnlyImages;
 
-        public PushContents(String consultName, String contentDescription, boolean isWithAttachments, boolean isOnlyImages) {
+        PushContents(String consultName, String contentDescription, boolean isWithAttachments, boolean isOnlyImages) {
             this.consultName = consultName;
             this.contentDescription = contentDescription;
             this.isWithAttachments = isWithAttachments;

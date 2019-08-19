@@ -1,6 +1,5 @@
 package im.threads.internal.formatters;
 
-
 import android.content.Context;
 
 import im.threads.R;

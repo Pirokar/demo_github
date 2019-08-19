@@ -25,7 +25,7 @@ public class FilesDateStampHolder extends RecyclerView.ViewHolder {
     public FilesDateStampHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_files_date_mark, parent, false));
         mDateTextView = itemView.findViewById(R.id.text);
-        LinearLayout linearLayout = (LinearLayout) itemView.findViewById(R.id.line);
+        LinearLayout linearLayout = itemView.findViewById(R.id.line);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             sdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {

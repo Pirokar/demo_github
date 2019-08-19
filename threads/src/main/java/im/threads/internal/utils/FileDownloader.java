@@ -17,7 +17,7 @@ public abstract class FileDownloader {
     private Context ctx;
     private boolean isStopped;
 
-    public FileDownloader(String path, String filename, Context ctx) {
+    protected FileDownloader(String path, String filename, Context ctx) {
         this.path = path;
         this.ctx = ctx;
         this.fileName = filename;

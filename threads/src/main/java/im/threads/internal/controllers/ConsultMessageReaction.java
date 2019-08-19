@@ -6,16 +6,16 @@ import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.utils.ConsultWriter;
 
-public class ConsultMessageReaction {
+class ConsultMessageReaction {
     private ConsultWriter consultWriter;
     private ConsultMessageReactions reactions;
 
-    public ConsultMessageReaction(ConsultWriter consultWriter, ConsultMessageReactions reactions) {
+    ConsultMessageReaction(ConsultWriter consultWriter, ConsultMessageReactions reactions) {
         this.consultWriter = consultWriter;
         this.reactions = reactions;
     }
 
-    public synchronized void onPushMessage(ChatItem chatItem) {
+    void onPushMessage(ChatItem chatItem) {
         if (chatItem instanceof ConsultConnectionMessage) {
             ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
             if (ccm.getType().equalsIgnoreCase(PushMessageType.OPERATOR_JOINED.name())) {

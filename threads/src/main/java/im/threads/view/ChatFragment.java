@@ -26,7 +26,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -691,7 +690,7 @@ public class ChatFragment extends Fragment implements
         final Activity activity = getActivity();
         final Context ctx = activity.getApplicationContext();
 
-        unChooseItem(cp);
+        unChooseItem();
 
         if (cp == mChosenPhrase) {
             return;
@@ -799,7 +798,7 @@ public class ChatFragment extends Fragment implements
         cm.setPrimaryClip(new ClipData("", new String[]{"text/plain"}, new ClipData.Item(cp.getPhraseText())));
         hideCopyControls();
         PrefUtils.setLastCopyText(cp.getPhraseText());
-        if (null != mChosenPhrase) unChooseItem(mChosenPhrase);
+        if (null != mChosenPhrase) unChooseItem();
     }
 
     @Override
@@ -1059,7 +1058,6 @@ public class ChatFragment extends Fragment implements
         if (item instanceof ConsultPhrase) {
             mChatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
         }
-
         // do not scroll when consult is typing or write
         h.postDelayed(new Runnable() {
             @Override
@@ -1351,7 +1349,7 @@ public class ChatFragment extends Fragment implements
         }
     }
 
-    private void unChooseItem(ChatPhrase cp) {
+    private void unChooseItem() {
         hideCopyControls();
         mChatAdapter.setItemChosen(false, mChosenPhrase);
         mChosenPhrase = null;
@@ -1359,20 +1357,6 @@ public class ChatFragment extends Fragment implements
 
     public void removeSchedule(boolean checkSchedule) {
         mChatAdapter.removeSchedule(checkSchedule);
-    }
-
-    public void showFullError(String error) {
-        if (isAdded()) {
-            Activity activity = getActivity();
-            if (activity != null) {
-                AlertDialog d = new AlertDialog
-                        .Builder(getActivity())
-                        .setMessage(error)
-                        .setCancelable(true)
-                        .create();
-                d.show();
-            }
-        }
     }
 
     @Override
@@ -1406,7 +1390,7 @@ public class ChatFragment extends Fragment implements
             onHideClick();
             welcomeScreenVisibility(false);
             if (photos.size() == 0) return;
-            unChooseItem(mChosenPhrase);
+            unChooseItem();
             UpcomingUserMessage uum =
                     new UpcomingUserMessage(new FileDescription(appContext.getString(R.string.threads_I)
                             , photos.get(0)
@@ -1597,7 +1581,7 @@ public class ChatFragment extends Fragment implements
 
         if (binding.copyControls.getVisibility() == View.VISIBLE
                 && binding.searchLo.getVisibility() == View.VISIBLE) {
-            unChooseItem(mChosenPhrase);
+            unChooseItem();
             binding.search.requestFocus();
             h.postDelayed(new Runnable() {
                 @Override
@@ -1609,7 +1593,7 @@ public class ChatFragment extends Fragment implements
             return false;
         }
         if (binding.copyControls.getVisibility() == View.VISIBLE) {
-            unChooseItem(mChosenPhrase);
+            unChooseItem();
             hideBackButton();
             isNeedToClose = false;
         }
@@ -1714,7 +1698,7 @@ public class ChatFragment extends Fragment implements
                     binding.quoteLayout.setVisibility(View.GONE);
                     mQuote = null;
                     mFileDescription = null;
-                    unChooseItem(mChosenPhrase);
+                    unChooseItem();
                 }
             });
         }

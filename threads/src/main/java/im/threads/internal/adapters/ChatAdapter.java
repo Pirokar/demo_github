@@ -5,13 +5,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -61,8 +61,6 @@ import im.threads.internal.utils.MaskedTransformation;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
-import static android.text.TextUtils.isEmpty;
-
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "ChatAdapter ";
     private static final int TYPE_CONSULT_TYPING = 1;
@@ -84,9 +82,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_RATING_STARS_SENT = 17;
     private static final int TYPE_REQ_RESOLVE_THREAD = 18;
 
-    ChatStyle style;
-    ArrayList<ChatItem> list;
-    ArrayList<ChatItem> backupList = new ArrayList<>();
+    private ArrayList<ChatItem> list;
+    private ArrayList<ChatItem> backupList = new ArrayList<>();
     private final Context ctx;
     private AdapterInterface mAdapterInterface;
     private boolean isInSearchMode = false;
@@ -98,51 +95,71 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.list = list;
         if (this.list == null) this.list = new ArrayList<>();
         this.ctx = ctx;
-        style = Config.instance.getChatStyle();
+        ChatStyle style = Config.instance.getChatStyle();
         this.mAdapterInterface = adapterInterface;
         outgoingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.outgoingImageBubbleMask));
         incomingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.incomingImageBubbleMask));
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        if (viewType == TYPE_CONSULT_TYPING) return new ConsultIsTypingViewHolderNew(parent);
-        if (viewType == TYPE_DATE) return new DateViewHolder(parent);
-        if (viewType == TYPE_SEARCHING_CONSULT) return new SearchingConsultViewHolder(parent);
-        if (viewType == TYPE_CONSULT_CONNECTED)
-            return new ConsultConnectionMessageViewHolder(parent);
-        if (viewType == TYPE_CONSULT_PHRASE) return new ConsultPhraseHolder(parent);
-        if (viewType == TYPE_USER_PHRASE) return new UserPhraseViewHolder(parent);
-        if (viewType == TYPE_FREE_SPACE) return new SpaceViewHolder(parent);
-        if (viewType == TYPE_IMAGE_FROM_CONSULT)
-            return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation);
-        if (viewType == TYPE_IMAGE_FROM_USER)
-            return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation);
-        if (viewType == TYPE_FILE_FROM_CONSULT) return new ConsultFileViewHolder(parent);
-        if (viewType == TYPE_FILE_FROM_USER) return new UserFileViewHolder(parent);
-        if (viewType == TYPE_UNREAD_MESSAGES) return new UnreadMessageViewHolder(parent);
-        if (viewType == TYPE_SCHEDULE) return new ScheduleInfoViewHolder(parent);
-        if (viewType == TYPE_RATING_THUMBS) return new RatingThumbsViewHolder(parent);
-        if (viewType == TYPE_RATING_THUMBS_SENT) return new RatingThumbsSentViewHolder(parent);
-        if (viewType == TYPE_RATING_STARS) return new RatingStarsViewHolder(parent);
-        if (viewType == TYPE_RATING_STARS_SENT) return new RatingStarsSentViewHolder(parent);
-        if (viewType == TYPE_REQ_RESOLVE_THREAD) return new RequestResolveThreadViewHolder(parent);
-        return new EmptyViewHolder(parent);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+        switch (viewType) {
+            case TYPE_CONSULT_TYPING:
+                return new ConsultIsTypingViewHolderNew(parent);
+            case TYPE_DATE:
+                return new DateViewHolder(parent);
+            case TYPE_SEARCHING_CONSULT:
+                return new SearchingConsultViewHolder(parent);
+            case TYPE_CONSULT_CONNECTED:
+                return new ConsultConnectionMessageViewHolder(parent);
+            case TYPE_CONSULT_PHRASE:
+                return new ConsultPhraseHolder(parent);
+            case TYPE_USER_PHRASE:
+                return new UserPhraseViewHolder(parent);
+            case TYPE_FREE_SPACE:
+                return new SpaceViewHolder(parent);
+            case TYPE_IMAGE_FROM_CONSULT:
+                return new ImageFromConsultViewHolder(parent, incomingImageMaskTransformation);
+            case TYPE_IMAGE_FROM_USER:
+                return new ImageFromUserViewHolder(parent, outgoingImageMaskTransformation);
+            case TYPE_FILE_FROM_CONSULT:
+                return new ConsultFileViewHolder(parent);
+            case TYPE_FILE_FROM_USER:
+                return new UserFileViewHolder(parent);
+            case TYPE_UNREAD_MESSAGES:
+                return new UnreadMessageViewHolder(parent);
+            case TYPE_SCHEDULE:
+                return new ScheduleInfoViewHolder(parent);
+            case TYPE_RATING_THUMBS:
+                return new RatingThumbsViewHolder(parent);
+            case TYPE_RATING_THUMBS_SENT:
+                return new RatingThumbsSentViewHolder(parent);
+            case TYPE_RATING_STARS:
+                return new RatingStarsViewHolder(parent);
+            case TYPE_RATING_STARS_SENT:
+                return new RatingStarsSentViewHolder(parent);
+            case TYPE_REQ_RESOLVE_THREAD:
+                return new RequestResolveThreadViewHolder(parent);
+            default:
+                return new EmptyViewHolder(parent);
+        }
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ConsultConnectionMessageViewHolder) {
             final ConsultConnectionMessage cc = (ConsultConnectionMessage) list.get(position);
             ((ConsultConnectionMessageViewHolder) holder).onBind(
-                    cc
-                    , v -> {
+                    cc,
+                    v -> {
                         if (null != mAdapterInterface) {
                             final ConsultConnectionMessage cc1 = (ConsultConnectionMessage) list.get(holder.getAdapterPosition());
                             if (null != mAdapterInterface)
                                 mAdapterInterface.onConsultConnectionClick(cc1);
                         }
-                    });
+                    }
+            );
         }
         if (holder instanceof ConsultPhraseHolder) {
             final ConsultPhrase consultPhrase = (ConsultPhrase) list.get(position);
@@ -150,43 +167,45 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
             }
             ((ConsultPhraseHolder) holder)
-                    .onBind(consultPhrase, consultPhrase.getPhrase()
-                            , consultPhrase.getAvatarPath()
-                            , consultPhrase.getTimeStamp()
-                            , consultPhrase.isAvatarVisible()
-                            , consultPhrase.getQuote()
-                            , consultPhrase.getFileDescription()
-                            , v -> {
+                    .onBind(consultPhrase,
+                            consultPhrase.getPhrase(),
+                            consultPhrase.getAvatarPath(),
+                            consultPhrase.getTimeStamp(),
+                            consultPhrase.isAvatarVisible(),
+                            consultPhrase.getQuote(),
+                            consultPhrase.getFileDescription(),
+                            v -> {
                                 if (mAdapterInterface != null) {
                                     mAdapterInterface.onImageClick(consultPhrase);
                                 }
-                            }
-                            , v -> {
+                            },
+                            v -> {
                                 if (mAdapterInterface != null && consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
                                     mAdapterInterface.onFileClick(consultPhrase.getQuote().getFileDescription());
                                 }
                                 if (mAdapterInterface != null && consultPhrase.getFileDescription() != null) {
                                     mAdapterInterface.onFileClick(consultPhrase.getFileDescription());
                                 }
-                            }
-                            , v -> {
+                            },
+                            v -> {
                                 if (mAdapterInterface != null) {
                                     mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition());
                                     return true;
                                 }
                                 return false;
-                            }
-                            , v -> {
+                            },
+                            v -> {
                                 if (null != mAdapterInterface) {
                                     mAdapterInterface.onConsultAvatarClick(consultPhrase.getConsultId());
                                 }
-                            }
-                            , view -> {
+                            },
+                            v -> {
                                 if (mAdapterInterface != null) {
                                     mAdapterInterface.onOpenGraphClicked(consultPhrase.ogUrl, holder.getAdapterPosition());
                                 }
-                            }
-                            , consultPhrase.isChosen());
+                            },
+                            consultPhrase.isChosen()
+                    );
         }
         if (holder instanceof UserPhraseViewHolder) {
             final UserPhrase userPhrase = (UserPhrase) list.get(position);
@@ -194,41 +213,44 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
             }
             ((UserPhraseViewHolder) holder).onBind(userPhrase,
-                    userPhrase.getPhrase()
-                    , userPhrase.getTimeStamp()
-                    , userPhrase.getSentState()
-                    , userPhrase.getQuote()
-                    , userPhrase.getFileDescription()
-                    , v -> {
+                    userPhrase.getPhrase(),
+                    userPhrase.getTimeStamp(),
+                    userPhrase.getSentState(),
+                    userPhrase.getQuote(),
+                    userPhrase.getFileDescription(),
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onImageClick(userPhrase);
                         }
-                    }
-                    , v -> {
+                    },
+                    v -> {
                         if (mAdapterInterface != null && (userPhrase.getFileDescription() != null)) {
                             mAdapterInterface.onFileClick(userPhrase.getFileDescription());
-                        } else if (mAdapterInterface != null && userPhrase.getFileDescription() == null && userPhrase.getQuote() != null && userPhrase.getQuote().getFileDescription() != null) {
+                        } else if (mAdapterInterface != null && userPhrase.getQuote() != null && userPhrase.getQuote().getFileDescription() != null) {
                             mAdapterInterface.onFileClick(userPhrase.getQuote().getFileDescription());
                         }
-                    }
-                    , v -> {
+                    },
+                    v -> {
+
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onUserPhraseClick(userPhrase, holder.getAdapterPosition());
                         }
-                    }
-                    , v -> {
+                    },
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition());
                             return true;
                         }
                         return false;
-                    }
-                    , view -> {
+                    },
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onOpenGraphClicked(userPhrase.ogUrl, holder.getAdapterPosition());
                         }
-                    }
-                    , userPhrase.isChosen());
+
+                    },
+                    userPhrase.isChosen()
+            );
         }
         if (holder instanceof DateViewHolder) {
             final DateRow dateRow = (DateRow) list.get(position);
@@ -259,99 +281,100 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         if (holder instanceof ImageFromConsultViewHolder) {
             final ConsultPhrase consultPhrase = (ConsultPhrase) list.get(position);
-            if (mAdapterInterface != null && consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null)
+            if (mAdapterInterface != null && consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
                 mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
+            }
             ((ImageFromConsultViewHolder) holder).onBind(
-                    consultPhrase.getAvatarPath()
-                    , consultPhrase.getFileDescription()
-                    , consultPhrase.getTimeStamp()
-                    , v -> {
+                    consultPhrase.getAvatarPath(),
+                    consultPhrase.getFileDescription(),
+                    consultPhrase.getTimeStamp(),
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onImageClick(consultPhrase);
                         }
-                    }
-                    , v -> {
+                    },
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition());
                             return true;
                         }
                         return false;
-                    }, consultPhrase.getFileDescription().isDownlodadError()
-                    , consultPhrase.isChosen()
-                    , consultPhrase.isAvatarVisible());
+                    },
+                    consultPhrase.getFileDescription().isDownloadError(),
+                    consultPhrase.isChosen(),
+                    consultPhrase.isAvatarVisible()
+            );
 
         }
-
         if (holder instanceof ImageFromUserViewHolder) {
             final UserPhrase userPhrase = (UserPhrase) list.get(position);
             if (mAdapterInterface != null && userPhrase.getFileDescription() != null && userPhrase.getFileDescription().getFilePath() == null)
                 mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
             ((ImageFromUserViewHolder) holder).onBind(
-                    userPhrase.getFileDescription()
-                    , userPhrase.getTimeStamp()
-                    , v -> {
+                    userPhrase.getFileDescription(),
+                    userPhrase.getTimeStamp(),
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onImageClick(userPhrase);
                         }
-                    }
-                    , v -> {
+                    },
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition());
                             return true;
                         }
                         return false;
-                    }
-                    , userPhrase.getFileDescription().isDownlodadError()
-                    , userPhrase.isChosen()
-                    , userPhrase.getSentState());
+                    },
+                    userPhrase.getFileDescription().isDownloadError(),
+                    userPhrase.isChosen(),
+                    userPhrase.getSentState()
+            );
         }
-
         if (holder instanceof UserFileViewHolder) {
             final UserPhrase userPhrase = (UserPhrase) list.get(position);
             ((UserFileViewHolder) holder).onBind(
-                    userPhrase.getTimeStamp()
-                    , userPhrase.getFileDescription()
-                    , v -> {
+                    userPhrase.getTimeStamp(),
+                    userPhrase.getFileDescription(),
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onFileClick(userPhrase.getFileDescription());
                         }
-                    }, v -> {
+                    },
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onUserPhraseClick(userPhrase, holder.getAdapterPosition());
                         }
-                    }
-                    , v -> {
+                    },
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition());
                             return true;
                         }
                         return false;
-                    }
-                    , userPhrase.isChosen()
-                    , userPhrase.getSentState()
+                    }, userPhrase.isChosen(),
+                    userPhrase.getSentState()
             );
         }
-
         if (holder instanceof ConsultFileViewHolder) {
             final ConsultPhrase consultPhrase = (ConsultPhrase) list.get(position);
             ((ConsultFileViewHolder) holder).onBind(
-                    consultPhrase.getTimeStamp()
-                    , consultPhrase.getFileDescription()
-                    , consultPhrase.getAvatarPath()
-                    , v -> {
+                    consultPhrase.getTimeStamp(),
+                    consultPhrase.getFileDescription(),
+                    consultPhrase.getAvatarPath(),
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onFileClick(consultPhrase.getFileDescription());
                         }
-                    }
-                    , v -> {
+                    },
+                    v -> {
                         if (mAdapterInterface != null) {
                             mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition());
                             return true;
                         }
                         return false;
-                    }
-                    , consultPhrase.isAvatarVisible()
-                    , consultPhrase.isChosen()
+                    },
+                    consultPhrase.isAvatarVisible(),
+                    consultPhrase.isChosen()
             );
         }
         if (holder instanceof UnreadMessageViewHolder) {
@@ -399,13 +422,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setAvatar(final String consultId, String newAvatarImageUrl) {
-        if (isEmpty(consultId)) return;
+        if (TextUtils.isEmpty(consultId)) {
+            return;
+        }
         for (int i = 0; i < getOriginalList().size(); i++) {
             final ChatItem item = getOriginalList().get(i);
             if (item instanceof ConsultChatPhrase) {
                 final ConsultChatPhrase p = (ConsultChatPhrase) item;
-                if (p.getConsultId().equals(consultId) && isEmpty(newAvatarImageUrl) && !p.hasAvatar())
+                if (p.getConsultId().equals(consultId) && TextUtils.isEmpty(newAvatarImageUrl) && !p.hasAvatar()) {
                     continue;
+                }
                 if (p.getConsultId().equals(consultId)
                         && !p.hasAvatar()) {
                     p.setAvatarPath(newAvatarImageUrl);
@@ -442,14 +468,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         return index;
-    }
-
-    public boolean isConsultTyping() {
-        final ArrayList<ChatItem> list = getOriginalList();
-        for (int i = list.size() - 1; i > 0; i++) {
-            if (list.get(i) instanceof ConsultTyping) return true;
-        }
-        return false;
     }
 
     private void removeConsultIsTyping() {
@@ -547,18 +565,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    private void addItem(final List<? extends ChatItem> listoInsert, final boolean isBulk, final boolean forceNotSearchMode) {
-        final ArrayList<ChatItem> list;
-        if (isInSearchMode && !forceNotSearchMode) {
-            list = this.backupList;
-        } else {
-            list = this.list;
-        }
-        final ArrayList<ChatItem> l2 = new ArrayList<>(listoInsert);
-        new ChatMessagesOrderer().addAndOrder(list, l2);
-        if (!isBulk && !isInSearchMode) notifyItemInserted(list.size() - 1);
-    }
-
     public int getCurrentItemCount() {
         final ArrayList<ChatItem> list = getOriginalList();
         int count = 0;
@@ -577,52 +583,21 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (withTyping) {
             removeConsultIsTyping();
             viewHandler.removeCallbacksAndMessages(null);
-            viewHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    removeConsultIsTyping();
-                }
-            }, 8000);
+            viewHandler.postDelayed(this::removeConsultIsTyping, 8000);
         }
         if (items.size() == 1
                 && items.get(0) instanceof ConsultPhrase) {
             removeConsultIsTyping();
         }
         ChatMessagesOrderer.addAndOrder(getOriginalList(), items);
-        if (!isInSearchMode) notifyDataSetChangedOnUi();
+        if (!isInSearchMode) {
+            notifyDataSetChangedOnUi();
+        }
     }
 
     public int getUnreadCount() {
         final long lastUnreadStamp = getLastUnreadStamp(getOriginalList());
         return getUnreadCount(getOriginalList(), lastUnreadStamp);
-    }
-
-    public static int getUnreadCount(final List<ChatItem> listToInsertTo, final long lastUnreadStamp) {
-        int counter = 0;
-        for (final ChatItem ci : listToInsertTo) {
-            if (ci instanceof ConsultPhrase) {
-                final ConsultPhrase cp = ((ConsultPhrase) ci);
-                if (cp.getTimeStamp() > (lastUnreadStamp - 1)) {
-                    counter++;
-                }
-            }
-        }
-        return counter;
-    }
-
-    public static long getLastUnreadStamp(final List<ChatItem> listToInsertTo) {
-        long lastUnreadStamp = Long.MAX_VALUE;
-        for (final Iterator<ChatItem> iter = listToInsertTo.iterator(); iter.hasNext(); ) {
-            final ChatItem item = iter.next();
-            //if (item instanceof UnreadMessages) iter.remove();
-            if (item instanceof ConsultPhrase) {
-                final ConsultPhrase cp = ((ConsultPhrase) item);
-                if (!cp.isRead() && cp.getTimeStamp() < lastUnreadStamp) {
-                    lastUnreadStamp = cp.getTimeStamp();
-                }
-            }
-        }
-        return lastUnreadStamp;
     }
 
     public boolean hasSchedule() {
@@ -663,19 +638,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    private static void removeUnreadMessagesTitle(final List<ChatItem> list) {
-        if (list != null) {
-            for (final Iterator<ChatItem> iterator = list.iterator(); iterator.hasNext(); ) {
-                final ChatItem item = iterator.next();
-                if (item instanceof UnreadMessages) {
-                    iterator.remove();
-                    break;
-                }
-            }
-        }
-    }
-
-
     @Override
     public int getItemCount() {
         return list.size();
@@ -683,7 +645,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(final int position) {
-        Object o = null;
+        Object o;
         try {
             o = list.get(position);
         } catch (final IndexOutOfBoundsException e) {
@@ -693,11 +655,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (o instanceof ConsultPhrase) {
             final ConsultPhrase cp = (ConsultPhrase) o;
             final FileDescription fileDescription = cp.getFileDescription();
-            if (isEmpty(cp.getPhrase())
+            if (TextUtils.isEmpty(cp.getPhrase())
                     && (FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.JPEG
                     || FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PNG)) {
                 return TYPE_IMAGE_FROM_CONSULT;
-            } else if (isEmpty(cp.getPhrase())
+            } else if (TextUtils.isEmpty(cp.getPhrase())
                     && (FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PDF
                     || FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PDF)) {
                 return TYPE_FILE_FROM_CONSULT;
@@ -709,7 +671,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (o instanceof ConsultTyping) return TYPE_CONSULT_TYPING;
         if (o instanceof DateRow) return TYPE_DATE;
         if (o instanceof SearchingConsult) return TYPE_SEARCHING_CONSULT;
-
         if (o instanceof UserPhrase) {
             final UserPhrase up = (UserPhrase) o;
             if (up.getFileDescription() == null) return TYPE_USER_PHRASE;
@@ -722,7 +683,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } else if (up.getFileDescription().getIncomingName() != null) {
                 extension = FileUtils.getExtensionFromPath(up.getFileDescription().getIncomingName());
             }
-            if ((extension == FileUtils.PDF || extension == FileUtils.OTHER_DOC_FORMATS) && isEmpty(up.getPhrase())) {
+            if ((extension == FileUtils.PDF || extension == FileUtils.OTHER_DOC_FORMATS) && TextUtils.isEmpty(up.getPhrase())) {
                 return TYPE_FILE_FROM_USER;
             } else {
                 return TYPE_USER_PHRASE;
@@ -734,7 +695,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (o instanceof Survey) {
             final Survey survey = (Survey) o;
             final QuestionDTO questionDTO = survey.getQuestions().get(0);
-
             if (questionDTO.isSimple()) {
                 if (survey.getSentState() == MessageState.STATE_SENT || survey.getSentState() == MessageState.STATE_WAS_READ) {
                     return TYPE_RATING_THUMBS_SENT;
@@ -749,7 +709,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         }
-
         if (o instanceof RequestResolveThread) {
             return TYPE_REQ_RESOLVE_THREAD;
         }
@@ -790,7 +749,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
     }
-
 
     public void updateProgress(final FileDescription fileDescription) {
         for (int i = 0; i < list.size(); i++) {
@@ -867,7 +825,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         && cp.getFileDescription().equals(fileDescription)
                         && getItemViewType(i) == TYPE_IMAGE_FROM_USER
                         || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT) {
-                    cp.getFileDescription().setDownlodadError(true);
+                    cp.getFileDescription().setDownloadError(true);
                     notifyItemChanged(i);
                 }
             }
@@ -876,47 +834,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void reorder() {
         ChatMessagesOrderer.updateOrder(getOriginalList());
-    }
-
-    public interface AdapterInterface {
-        void onFileClick(FileDescription description);
-
-        void onPhraseLongClick(ChatPhrase chatPhrase, int position);
-
-        void onUserPhraseClick(UserPhrase userPhrase, int position);
-
-        void onConsultAvatarClick(String consultId);
-
-        void onImageClick(ChatPhrase chatPhrase);
-
-        void onImageDownloadRequest(FileDescription fileDescription);
-
-        void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
-
-        void onRatingClick(@NonNull Survey survey, int rating);
-
-        void onResolveThreadClick(boolean approveResolve);
-
-        void onOpenGraphClicked(String ogUrl, int adapterPosition);
-    }
-
-    private ArrayList<ChatItem> getOriginalList() {
-        final ArrayList<ChatItem> list;
-        if (isInSearchMode) {
-            list = this.backupList;
-        } else {
-            list = this.list;
-        }
-        return list;
-    }
-
-    public ConsultPhrase getLastConsultPhrase() {
-        for (int i = getOriginalList().size() - 1; i > 0; i--) {
-            if (getOriginalList().get(i) instanceof ConsultPhrase) {
-                return (ConsultPhrase) getOriginalList().get(i);
-            }
-        }
-        return null;
     }
 
     public void notifyAvatarChanged(final String newUrl, final String consultId) {
@@ -949,7 +866,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void notifyDataSetChangedOnUi() {
-        ThreadUtils.runOnUiThread(() -> notifyDataSetChanged());
+        ThreadUtils.runOnUiThread(this::notifyDataSetChanged);
     }
 
     public void notifyItemChangedOnUi(final ChatItem chatItem) {
@@ -959,20 +876,61 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
     }
 
-    public void notifyItemRemovedOnUi(final ChatItem chatItem) {
-        ThreadUtils.runOnUiThread(() -> {
-            final int position = list.indexOf(chatItem);
-            notifyItemRemoved(position);
-        });
+    private ArrayList<ChatItem> getOriginalList() {
+        final ArrayList<ChatItem> list;
+        if (isInSearchMode) {
+            list = this.backupList;
+        } else {
+            list = this.list;
+        }
+        return list;
     }
 
-    public void notifyItemRemoved(final ChatItem chatItem) {
+    private void notifyItemRemoved(final ChatItem chatItem) {
         notifyItemRemoved(list.indexOf(chatItem));
     }
 
-    public static class ChatMessagesOrderer {
+    private static int getUnreadCount(final List<ChatItem> listToInsertTo, final long lastUnreadStamp) {
+        int counter = 0;
+        for (final ChatItem ci : listToInsertTo) {
+            if (ci instanceof ConsultPhrase) {
+                final ConsultPhrase cp = ((ConsultPhrase) ci);
+                if (cp.getTimeStamp() > (lastUnreadStamp - 1)) {
+                    counter++;
+                }
+            }
+        }
+        return counter;
+    }
 
-        public static void addAndOrder(final List<ChatItem> listToInsertTo, final List<ChatItem> listToAdd) {
+    private static long getLastUnreadStamp(final List<ChatItem> listToInsertTo) {
+        long lastUnreadStamp = Long.MAX_VALUE;
+        for (final ChatItem item : listToInsertTo) {
+            if (item instanceof ConsultPhrase) {
+                final ConsultPhrase cp = ((ConsultPhrase) item);
+                if (!cp.isRead() && cp.getTimeStamp() < lastUnreadStamp) {
+                    lastUnreadStamp = cp.getTimeStamp();
+                }
+            }
+        }
+        return lastUnreadStamp;
+    }
+
+    private static void removeUnreadMessagesTitle(final List<ChatItem> list) {
+        if (list != null) {
+            for (final Iterator<ChatItem> iterator = list.iterator(); iterator.hasNext(); ) {
+                final ChatItem item = iterator.next();
+                if (item instanceof UnreadMessages) {
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+    }
+
+    private static class ChatMessagesOrderer {
+
+        static void addAndOrder(final List<ChatItem> listToInsertTo, final List<ChatItem> listToAdd) {
             if (listToInsertTo.containsAll(listToAdd)) return;
             for (int i = 0; i < listToAdd.size(); i++) {
                 if (!listToInsertTo.contains(listToAdd.get(i)))
@@ -981,10 +939,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             updateOrder(listToInsertTo);
         }
 
-        public static void updateOrder(List<ChatItem> items) {
-
-            Collections.sort(items, (lhs, rhs) -> Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp()));
-            if (items.size() == 0) return;
+        static void updateOrder(List<ChatItem> items) {
+            Collections.sort(items, (lhs, rhs) -> Long.compare(lhs.getTimeStamp(), rhs.getTimeStamp()));
+            if (items.size() == 0) {
+                return;
+            }
             items.add(0, new DateRow(items.get(0).getTimeStamp() - 2));
             final Calendar currentTimeStamp = Calendar.getInstance();
             final Calendar nextTimeStamp = Calendar.getInstance();
@@ -1007,7 +966,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (currentTimeStamp.get(Calendar.DAY_OF_YEAR) == nextTimeStamp.get(Calendar.DAY_OF_YEAR)) {
                     items.remove(daterows.get(i + 1));
                 }
-
                 //Removing daterow if it is a last item - may happen when message order has changed
                 DateRow lastDateRow = daterows.get(daterows.size() - 1);
                 if (lastDateRow == items.get(items.size() - 1)) {
@@ -1027,7 +985,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (ci instanceof SearchingConsult) sc = (SearchingConsult) ci;
             }
             if (sc != null) {
-                final int prevPos = items.lastIndexOf(sc);
                 items.remove(sc);
                 items.add(sc);
             }
@@ -1040,16 +997,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (hasUnread) {
                 final long lastUnreadStamp = getLastUnreadStamp(items);
                 final int counter = getUnreadCount(items, lastUnreadStamp);
-
                 removeUnreadMessagesTitle(items);
                 items.add(new UnreadMessages(lastUnreadStamp - 1, counter));
             }
-            Collections.sort(items, new Comparator<ChatItem>() {
-                @Override
-                public int compare(final ChatItem lhs, final ChatItem rhs) {
-                    return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
-                }
-            });
+            Collections.sort(items, (lhs, rhs) -> Long.compare(lhs.getTimeStamp(), rhs.getTimeStamp()));
             boolean isWithTyping = false;
             ConsultTyping ct = null;
             for (final ChatItem ci : items) {
@@ -1058,22 +1009,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     ct = (ConsultTyping) ci;
                 }
             }
-            if (isWithTyping
-                    && items.size() != 0
-                    && !(items.get(items.size() - 1) instanceof ConsultTyping)) {
+            if (isWithTyping && !(items.get(items.size() - 1) instanceof ConsultTyping)) {
                 ct.setDate(items.get(items.size() - 1).getTimeStamp() + 1);
             }
-
-            Collections.sort(items, new Comparator<ChatItem>() {
-                @Override
-                public int compare(final ChatItem lhs, final ChatItem rhs) {
-                    return Long.valueOf(lhs.getTimeStamp()).compareTo(rhs.getTimeStamp());
-                }
-            });
+            Collections.sort(items, (lhs, rhs) -> Long.compare(lhs.getTimeStamp(), rhs.getTimeStamp()));
             removeAllSpacings(items);
             for (int i = 0; i < items.size(); i++) {
                 if (i == 0) continue;
-                if (items.size() == 1) return;
                 final ChatItem prev = items.get(i - 1);
                 final ChatItem current = items.get(i);
                 if (prev instanceof ConsultPhrase
@@ -1082,7 +1024,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     ((ConsultPhrase) current).setAvatarVisible(true);
                 }
             }
-
             insertSpacing(items);
         }
 
@@ -1099,11 +1040,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (listToInsertTo.contains(itemToInsert)) {
                 return;
             }
-
             if (itemToInsert instanceof ConsultConnectionMessage && !((ConsultConnectionMessage) itemToInsert).isDisplayMessage()) {
                 return;
             }
-
             listToInsertTo.add(itemToInsert);
             final Calendar currentTimeStamp = Calendar.getInstance();
             final Calendar prevTimeStamp = Calendar.getInstance();
@@ -1122,7 +1061,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 }
             }
-
         }
 
         private static void insertSpacing(final List<ChatItem> listToInsertTo) {
@@ -1162,17 +1100,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
                     continue;
                 }
-                if (last instanceof UserPhrase && prev instanceof ConsultConnectionMessage) {
-                    listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
-                    continue;
-                }
                 if (last instanceof ConsultConnectionMessage && prev instanceof ConsultPhrase) {
                     listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
                     continue;
                 }
                 if (last instanceof ConsultTyping && !(prev instanceof Space)) {
                     listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
-                    continue;
                 }
             }
         }
@@ -1182,5 +1115,27 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (iter.next() instanceof Space) iter.remove();
             }
         }
+    }
+
+    public interface AdapterInterface {
+        void onFileClick(FileDescription description);
+
+        void onPhraseLongClick(ChatPhrase chatPhrase, int position);
+
+        void onUserPhraseClick(UserPhrase userPhrase, int position);
+
+        void onConsultAvatarClick(String consultId);
+
+        void onImageClick(ChatPhrase chatPhrase);
+
+        void onImageDownloadRequest(FileDescription fileDescription);
+
+        void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
+
+        void onRatingClick(@NonNull Survey survey, int rating);
+
+        void onResolveThreadClick(boolean approveResolve);
+
+        void onOpenGraphClicked(String ogUrl, int adapterPosition);
     }
 }

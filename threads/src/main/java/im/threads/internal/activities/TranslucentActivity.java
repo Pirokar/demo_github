@@ -28,6 +28,15 @@ public class TranslucentActivity
     private QuickAnswerReceiver mQuickAnswerReceiver;
     private QuickAnswerController controller;
 
+    public void setLastUnreadMessage(ConsultPhrase phrase) {
+        if (null != phrase) {
+            QuickAnswerFragment fr =
+                    QuickAnswerFragment.getInstance(phrase.getAvatarPath(),
+                            phrase.getConsultName(),
+                            phrase.getPhrase());
+            fr.show(getFragmentManager(), null);
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,16 +62,6 @@ public class TranslucentActivity
         filter.addAction(ACTION_ANSWER);
         filter.addAction(ACTION_CANCEL);
         manager.registerReceiver(mQuickAnswerReceiver, filter);
-    }
-
-    public void setLastUnreadMessage(ConsultPhrase phrase) {
-        if (null != phrase) {
-            QuickAnswerFragment fr =
-                    QuickAnswerFragment.getInstance(phrase.getAvatarPath(),
-                            phrase.getConsultName(),
-                            phrase.getPhrase());
-            fr.show(getFragmentManager(), null);
-        }
     }
 
 

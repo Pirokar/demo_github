@@ -32,18 +32,16 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.ThreadsLib;
+import im.threads.internal.Config;
 import im.threads.internal.activities.TranslucentActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.IncomingMessageParser;
 import im.threads.internal.formatters.MarshmallowPushMessageFormatter;
 import im.threads.internal.formatters.NougatMessageFormatter;
-import im.threads.view.ChatFragment;
-import im.threads.internal.Config;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.model.ChatItem;
-import im.threads.ChatStyle;
 import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultChatPhrase;
 import im.threads.internal.picasso_url_connection_only.Picasso;
@@ -51,7 +49,9 @@ import im.threads.internal.picasso_url_connection_only.Target;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.TargetNoError;
+import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.Tuple;
+import im.threads.view.ChatFragment;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -179,8 +179,7 @@ public class NotificationService extends Service {
             }
             ThreadsLib.UnreadMessagesCountListener l = Config.instance.unreadMessagesCountListener;
             if (l != null) {
-                DatabaseHolder.getInstance(getApplicationContext())
-                        .getUnreadMessagesCount(false, l);
+                DatabaseHolder.getInstance().getUnreadMessagesCount(false, l);
             }
         }
     }

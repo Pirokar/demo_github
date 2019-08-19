@@ -1,24 +1,23 @@
 package im.threads.internal.formatters;
 
 public class PushMessageAttributes {
-    public static final String APP_BUNDLE_KEY = "appBundle";
-    public static final String CLIENT_ID = "clientId";
-    public static final String CLIENT_ID_ENCRYPTED = "clientIdIsEncrypted";
-    public static final String TYPE = "type";
-    public static final String TEXT = "text";
-    public static final String DATA = "data";
-    public static final String TYPING_DRAFT = "draft";
-    public static final String RECEIVED_DATE = "receivedDate";
-    public static final String THREAD_ID = "threadId";
-    public static final String QUOTES = "quotes";
-    public static final String ATTACHMENTS = "attachments";
-    public static final String PROVIDER_ID = "providerId";
-    public static final String READ_PROVIDER_IDS = "readInMessageIds";
-    public static final String UUID = "uuid";
-    public static final String HIDE_AFTER = "hideAfter";
-    public static final String ORIGIN = "origin";
-    public static final String THREADS = "threads";
     public static final String APP_MARKER_KEY = "appMarker";
     public static final String OPERATOR_URL = "operatorPhotoUrl";
-    public static final String OPERATOR_ORG_UNIT = "organizationUnit";
+    static final String APP_BUNDLE_KEY = "appBundle";
+    static final String CLIENT_ID = "clientId";
+    static final String CLIENT_ID_ENCRYPTED = "clientIdIsEncrypted";
+    static final String TYPE = "type";
+    static final String TEXT = "text";
+    static final String DATA = "data";
+    static final String TYPING_DRAFT = "draft";
+    static final String RECEIVED_DATE = "receivedDate";
+    static final String THREAD_ID = "threadId";
+    static final String QUOTES = "quotes";
+    static final String ATTACHMENTS = "attachments";
+    static final String READ_PROVIDER_IDS = "readInMessageIds";
+    static final String UUID = "uuid";
+    static final String HIDE_AFTER = "hideAfter";
+    static final String ORIGIN = "origin";
+    static final String THREADS = "threads";
+    static final String OPERATOR_ORG_UNIT = "organizationUnit";
 }

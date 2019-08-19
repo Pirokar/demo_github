@@ -23,7 +23,7 @@ public class FilePoster {
     private FileDescription fileDescription;
     private Context context;
 
-    public FilePoster(FileDescription fileDescription, Context context) {
+    FilePoster(FileDescription fileDescription, Context context) {
         this.fileDescription = fileDescription;
         this.context = context;
     }

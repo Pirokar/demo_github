@@ -32,7 +32,7 @@ public class DatabaseHolderTest {
     @Before
     public void setup() {
         appContext = RuntimeEnvironment.application.getApplicationContext();
-        dbHolder = DatabaseHolder.getInstance(appContext);
+        dbHolder = DatabaseHolder.getInstance();
     }
 
     public DatabaseHolderTest(ChatItem chatItem) {

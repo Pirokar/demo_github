@@ -37,12 +37,13 @@ import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
 public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
+    private static final String TAG = "ImagesActivity ";
+    private static final int CODE_REQUEST_DOWNLOAD = 1;
+
     private Toolbar mToolbar;
     private int collectionSize;
-    private static final String TAG = "ImagesActivity ";
     private ViewPager mViewPager;
     private List<FileDescription> files;
-    public static final int CODE_REQUEST_DOWNLOAD = 1;
 
     public static Intent getStartIntent(Context context, FileDescription fileDescription) {
         Intent i = new Intent(context, ImagesActivity.class);
@@ -63,7 +64,7 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mToolbar.setTitle("");
-        DatabaseHolder.getInstance(this).getFilesAsync(new CompletionHandler<List<FileDescription>>() {
+        DatabaseHolder.getInstance().getFilesAsync(new CompletionHandler<List<FileDescription>>() {
             @Override
             public void onComplete(List<FileDescription> data) {
                 files = new ArrayList<>();
@@ -96,12 +97,26 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_gallery, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.download) {
             downloadImage();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CODE_REQUEST_DOWNLOAD && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+            downloadImage();
+        }
     }
 
     private void downloadImage() {
@@ -134,20 +149,6 @@ public class ImagesActivity extends BaseActivity implements ViewPager.OnPageChan
             ThreadsLogger.e(TAG, "downloadImage", e);
             Toast.makeText(this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CODE_REQUEST_DOWNLOAD && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
-            downloadImage();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_gallery, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package im.threads.internal.adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -20,20 +21,23 @@ public class PhotoBucketsGalleryAdapter extends RecyclerView.Adapter<GalleryBuck
         mOnItemClick = onItemClick;
     }
 
+    @NonNull
     @Override
-    public GalleryBucketImageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public GalleryBucketImageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new GalleryBucketImageHolder(parent);
     }
 
     @Override
-    public void onBindViewHolder(final GalleryBucketImageHolder holder, int position) {
-        holder.onBind(list.get(position).getBucketName()
-                , list.get(position).getBucketSize()
-                , list.get(position).getImagePath()
-                , v -> {
+    public void onBindViewHolder(@NonNull final GalleryBucketImageHolder holder, int position) {
+        holder.onBind(
+                list.get(position).getBucketName(),
+                list.get(position).getBucketSize(),
+                list.get(position).getImagePath(),
+                v -> {
                     if (null != mOnItemClick)
                         mOnItemClick.onPhotoBucketClick(list.get(holder.getAdapterPosition()));
-                });
+                }
+        );
     }
 
     @Override

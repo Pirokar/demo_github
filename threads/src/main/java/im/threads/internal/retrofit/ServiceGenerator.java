@@ -1,6 +1,5 @@
 package im.threads.internal.retrofit;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.internal.Config;
@@ -8,7 +7,6 @@ import im.threads.internal.opengraph.OGDataConverterFactory;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -37,15 +35,12 @@ public class ServiceGenerator {
                         .addConverterFactory(new OGDataConverterFactory())
                         .addConverterFactory(GsonConverterFactory.create());
 
-        Interceptor userAgentInterceptor = new Interceptor() {
-            @Override
-            public Response intercept(final Chain chain) throws IOException {
-                Request original = chain.request();
-                Request.Builder reqBuilder = original.newBuilder();
-                reqBuilder.header(USER_AGENT_HEADER, userAgent);
-                reqBuilder.method(original.method(), original.body()).build();
-                return chain.proceed(reqBuilder.build());
-            }
+        Interceptor userAgentInterceptor = chain -> {
+            Request original = chain.request();
+            Request.Builder reqBuilder = original.newBuilder();
+            reqBuilder.header(USER_AGENT_HEADER, userAgent);
+            reqBuilder.method(original.method(), original.body()).build();
+            return chain.proceed(reqBuilder.build());
         };
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();

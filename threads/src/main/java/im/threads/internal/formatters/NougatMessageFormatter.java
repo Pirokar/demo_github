@@ -20,8 +20,8 @@ import static im.threads.internal.utils.FileUtils.getExtensionFromFileDescriptio
 
 public class NougatMessageFormatter {
     private Context ctx;
-    List<ChatItem> unreadMessages;
-    List<ChatItem> incomingPushes;
+    private List<ChatItem> unreadMessages;
+    private List<ChatItem> incomingPushes;
 
     public NougatMessageFormatter(Context ctx, List<ChatItem> unreadMessages, List<ChatItem> incomingPushes) {
         this.ctx = ctx;
@@ -132,7 +132,7 @@ public class NougatMessageFormatter {
         public final String avatarPath;
         public final String lastImagePath;
 
-        public PushContents(
+        PushContents(
                 String titleText
                 , String contentText
                 , boolean hasAvatar

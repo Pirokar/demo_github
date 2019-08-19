@@ -55,7 +55,7 @@ public class ConsultPhraseHolder extends BaseHolder {
     private TextView mPhraseTextView;
     private SimpleDateFormat quoteSdf;
     private SimpleDateFormat timeStampSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    public ImageView mConsultAvatar;
+    private ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterViewSecond;
     private ChatStyle style;

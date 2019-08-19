@@ -17,18 +17,18 @@ import im.threads.ChatStyle;
 
 public class PrefUtils {
     private static final String TAG = "PrefUtils ";
-    public static final String TAG_CLIENT_ID = "TAG_CLIENT_ID";
-    public static final String TAG_CLIENT_ID_ENCRYPTED = "TAG_CLIENT_ID_ENCRYPTED";
+    private static final String TAG_CLIENT_ID = "TAG_CLIENT_ID";
+    private static final String TAG_CLIENT_ID_ENCRYPTED = "TAG_CLIENT_ID_ENCRYPTED";
     private static final String CLIENT_ID_SIGNATURE_KEY = "CLIENT_ID_SIGNATURE";
-    public static final String TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID";
-    public static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
-    public static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
-    public static final String EXTRA_DATA = "EXTRA_DATE";
-    public static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
-    public static final String APP_STYLE = "APP_STYLE";
-    public static final String TAG_THREAD_ID = "THREAD_ID";
-    public static final String SERVER_URL_META_INFO = "im.threads.getServerUrl";
-    public static final String APP_MARKER_KEY = "APP_MARKER";
+    private static final String TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID";
+    private static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
+    private static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
+    private static final String EXTRA_DATA = "EXTRA_DATE";
+    private static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
+    private static final String APP_STYLE = "APP_STYLE";
+    private static final String TAG_THREAD_ID = "THREAD_ID";
+    private static final String SERVER_URL_META_INFO = "im.threads.getServerUrl";
+    private static final String APP_MARKER_KEY = "APP_MARKER";
 
     private PrefUtils() {
     }

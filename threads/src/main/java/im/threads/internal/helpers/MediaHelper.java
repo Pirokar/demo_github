@@ -22,7 +22,7 @@ public class MediaHelper {
 
     public static int PHOTO_RESIZE_MAX_SIDE = 1600;
 
-    private static String IMAGE_RESIZE_CACHE_DIR_NAME = "imageResizeCache";
+    private static final String IMAGE_RESIZE_CACHE_DIR_NAME = "imageResizeCache";
 
     public static void grantPermissions(final Context context, final Intent intent, final Uri imageUri) {
         final List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);

@@ -158,7 +158,7 @@ public class ChatController {
     private ChatController(@NonNull final Context ctx) {
         appContext = ctx;
         if (mDatabaseHolder == null) {
-            mDatabaseHolder = DatabaseHolder.getInstance(ctx);
+            mDatabaseHolder = DatabaseHolder.getInstance();
         }
         if (mConsultWriter == null) {
             mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
@@ -460,34 +460,6 @@ public class ChatController {
         }
     }
 
-    public void loadOgData(final ChatItem chatItem, final List<String> urls) {
-        final String url = urls.get(0);
-        OGDataProvider.getOGData(url, new Callback<OGData, Throwable>() {
-            @Override
-            public void onSuccess(OGData ogData) {
-                ThreadsLogger.d(TAG, "OGData for url: " + url
-                        + "\n received: " + ogData);
-                if (ogData != null && !ogData.isEmpty()) {
-                    if (chatItem instanceof UserPhrase) {
-                        UserPhrase message = (UserPhrase) chatItem;
-                        message.ogData = ogData;
-                        message.ogUrl = url;
-                    } else if (chatItem instanceof ConsultPhrase) {
-                        ConsultPhrase message = (ConsultPhrase) chatItem;
-                        message.ogData = ogData;
-                        message.ogUrl = url;
-                    }
-                    updateChatItem(chatItem);
-                }
-            }
-
-            @Override
-            public void onError(Throwable error) {
-                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
-            }
-        });
-    }
-
     /**
      * @return true, если формат сообщения распознан и обработан чатом.
      * false, если push уведомление не относится к чату и никак им не обработано.
@@ -588,14 +560,6 @@ public class ChatController {
         return pushMessageCheckResult;
     }
 
-    public void setSurveyLifetime(final Survey survey) {
-        // delete survey after timeout if user doesn't vote
-        activeSurveySendingId = survey.getSendingId();
-        final Long hideAfter = survey.getHideAfter();
-        final Handler closeActiveSurveyHandler = new Handler(Looper.getMainLooper());
-        closeActiveSurveyHandler.postDelayed(this::removeActiveSurvey, hideAfter * 1000);
-    }
-
     public void onConsultChoose(final Activity activity, final String consultId) {
         if (consultId == null) {
             ThreadsLogger.w(TAG, "Can't show consult info: consultId == null");
@@ -605,45 +569,6 @@ public class ChatController {
             final Intent i = ConsultActivity.getStartIntent(activity, info.getPhotoUrl(), info.getName(), info.getStatus());
             activity.startActivity(i);
         }
-    }
-
-    public void getLastUnreadConsultPhrase(final CompletionHandler<ConsultPhrase> handler) {
-        mDatabaseHolder.getLastUnreadPhrase(handler);
-    }
-
-    public void onSettingClientId(final Context ctx) {
-        ThreadsLogger.i(TAG, "onSettingClientId:");
-        mExecutor.execute(() -> {
-            String newClientId = PrefUtils.getNewClientID();
-            if (fragment != null && !TextUtils.isEmpty(newClientId)) {
-                try {
-                    cleanAll();
-                    PrefUtils.setClientId(newClientId);
-                    PrefUtils.setClientIdWasSet(true);
-                    Transport.getPushControllerInstance().resetCounterSync();
-                    Transport.sendMessageMFMSSync(
-                            OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(),
-                                    newClientId,
-                                    PrefUtils.getClientIDEncrypted(),
-                                    PrefUtils.getData(),
-                                    ctx), true);
-                    final HistoryResponse response = Transport.getHistorySync(null, true);
-                    final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
-                    mDatabaseHolder.putMessagesSync(serverItems);
-                    if (fragment != null) {
-                        List<ChatItem> itemsWithLastAvatars = (List<ChatItem>) setLastAvatars(serverItems);
-                        fragment.addChatItems(itemsWithLastAvatars);
-                        checkAndLoadOgData(itemsWithLastAvatars);
-                        final ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                        if (info != null) {
-                            fragment.setStateConsultConnected(info);
-                        }
-                    }
-                } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "onSettingClientId", e);
-                }
-            }
-        });
     }
 
     public boolean isNeedToShowWelcome() {
@@ -679,7 +604,7 @@ public class ChatController {
             fragment.setStateSearchingConsult();
         }
         if (mDatabaseHolder == null) {
-            mDatabaseHolder = DatabaseHolder.getInstance(appContext);
+            mDatabaseHolder = DatabaseHolder.getInstance();
         }
         updateChatItemsOnBindAsync();
         Transport.sendMessageMFMSAsync(
@@ -736,7 +661,7 @@ public class ChatController {
     private void notifyUnreadMessagesCountChanged() {
         ThreadsLib.UnreadMessagesCountListener l = Config.instance.unreadMessagesCountListener;
         if (l != null) {
-            DatabaseHolder.getInstance(appContext)
+            DatabaseHolder.getInstance()
                     .getUnreadMessagesCount(false, l);
         }
     }
@@ -748,7 +673,7 @@ public class ChatController {
         }
         if (cxt == null) cxt = appContext;
         cxt.sendBroadcast(new Intent(NotificationService.ACTION_ALL_MESSAGES_WERE_READ));
-        DatabaseHolder.getInstance(cxt).setAllMessagesRead(new CompletionHandler<Void>() {
+        DatabaseHolder.getInstance().setAllMessagesRead(new CompletionHandler<Void>() {
             @Override
             public void onComplete(final Void data) {
                 notifyUnreadMessagesCountChanged();
@@ -1175,6 +1100,34 @@ public class ChatController {
         }
     }
 
+    private void loadOgData(final ChatItem chatItem, final List<String> urls) {
+        final String url = urls.get(0);
+        OGDataProvider.getOGData(url, new Callback<OGData, Throwable>() {
+            @Override
+            public void onSuccess(OGData ogData) {
+                ThreadsLogger.d(TAG, "OGData for url: " + url
+                        + "\n received: " + ogData);
+                if (ogData != null && !ogData.isEmpty()) {
+                    if (chatItem instanceof UserPhrase) {
+                        UserPhrase message = (UserPhrase) chatItem;
+                        message.ogData = ogData;
+                        message.ogUrl = url;
+                    } else if (chatItem instanceof ConsultPhrase) {
+                        ConsultPhrase message = (ConsultPhrase) chatItem;
+                        message.ogData = ogData;
+                        message.ogUrl = url;
+                    }
+                    updateChatItem(chatItem);
+                }
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
+            }
+        });
+    }
+
     private void updateChatItem(ChatItem chatItem) {
         if (fragment != null) {
             fragment.updateChatItem(chatItem, false);
@@ -1196,5 +1149,48 @@ public class ChatController {
         } catch (final PushServerErrorException e) {
             ThreadsLogger.e(TAG, "setConsultMessageRead", e);
         }
+    }
+
+    private void setSurveyLifetime(final Survey survey) {
+        // delete survey after timeout if user doesn't vote
+        activeSurveySendingId = survey.getSendingId();
+        final Long hideAfter = survey.getHideAfter();
+        final Handler closeActiveSurveyHandler = new Handler(Looper.getMainLooper());
+        closeActiveSurveyHandler.postDelayed(this::removeActiveSurvey, hideAfter * 1000);
+    }
+
+    private void onSettingClientId(final Context ctx) {
+        ThreadsLogger.i(TAG, "onSettingClientId:");
+        mExecutor.execute(() -> {
+            String newClientId = PrefUtils.getNewClientID();
+            if (fragment != null && !TextUtils.isEmpty(newClientId)) {
+                try {
+                    cleanAll();
+                    PrefUtils.setClientId(newClientId);
+                    PrefUtils.setClientIdWasSet(true);
+                    Transport.getPushControllerInstance().resetCounterSync();
+                    Transport.sendMessageMFMSSync(
+                            OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(),
+                                    newClientId,
+                                    PrefUtils.getClientIDEncrypted(),
+                                    PrefUtils.getData(),
+                                    ctx), true);
+                    final HistoryResponse response = Transport.getHistorySync(null, true);
+                    final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
+                    mDatabaseHolder.putMessagesSync(serverItems);
+                    if (fragment != null) {
+                        List<ChatItem> itemsWithLastAvatars = (List<ChatItem>) setLastAvatars(serverItems);
+                        fragment.addChatItems(itemsWithLastAvatars);
+                        checkAndLoadOgData(itemsWithLastAvatars);
+                        final ConsultInfo info = response != null ? response.getConsultInfo() : null;
+                        if (info != null) {
+                            fragment.setStateConsultConnected(info);
+                        }
+                    }
+                } catch (final Exception e) {
+                    ThreadsLogger.e(TAG, "onSettingClientId", e);
+                }
+            }
+        });
     }
 }

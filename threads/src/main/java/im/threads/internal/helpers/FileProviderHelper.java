@@ -8,7 +8,7 @@ import java.io.File;
 
 public class FileProviderHelper {
 
-    private static String AUTHORITY_POSTFIX = ".im.threads.fileprovider";
+    private static final String AUTHORITY_POSTFIX = ".im.threads.fileprovider";
 
     public static Uri getUriForFile(Context context, File file) {
         return FileProvider.getUriForFile(context,

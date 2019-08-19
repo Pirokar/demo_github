@@ -141,12 +141,12 @@ public class FilePickerFragment extends DialogFragment
 
     //swap data in adapter & (optional) update data in label
     private ArrayAdapter<String> travelToFolder(File absolutePathDir, ArrayAdapter<String> adapter) {
-        File[] fullNamedfolders = getFolderFiles(absolutePathDir);
-        if (fullNamedfolders == null) return adapter;
+        File[] fullNamedFolders = getFolderFiles(absolutePathDir);
+        if (fullNamedFolders == null) return adapter;
         String[] folders = getFolderLastPathNames(getFolderFiles(absolutePathDir));
         adapter.clear();
         adapter.addAll(Arrays.asList(folders));
-        if (absolutePathDir != null && getDialog() != null) {
+        if (getDialog() != null) {
             getDialog().setTitle(getString(R.string.threads_now_you_are_in_directory) + "\r\n" + absolutePathDir.getAbsolutePath());
         }
         adapter.notifyDataSetChanged();
@@ -219,12 +219,7 @@ public class FilePickerFragment extends DialogFragment
         super.onResume();
         //make dialog don't close after pushing neutral button.
         AlertDialog dialog = (AlertDialog) getDialog();
-        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                travelToParentDir(currentAbsoluteDir, mAnimatedArrayAdapter);
-            }
-        });
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> travelToParentDir(currentAbsoluteDir, mAnimatedArrayAdapter));
     }
 
     @Override

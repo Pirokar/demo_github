@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.internal.fragments.ImageFragment;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ThreadUtils;
+import im.threads.internal.utils.ThreadsLogger;
 
 public class ImagesAdapter extends PagerAdapter {
     private List<FileDescription> fileDescriptions;
@@ -34,16 +35,13 @@ public class ImagesAdapter extends PagerAdapter {
         this.mFragmentManager = mFragmentManager;
     }
 
-    public Fragment getItem(int position) {
-        return ImageFragment.getInstance(fileDescriptions.get(position));
+    @Override
+    public void startUpdate(@NonNull ViewGroup container) {
     }
 
+    @NonNull
     @Override
-    public void startUpdate(ViewGroup container) {
-    }
-
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
         // If we already have this item instantiated, there is nothing
         // to do.  This can happen when we are restoring the entire pager
         // from its saved state, where the fragment manager has already
@@ -76,9 +74,8 @@ public class ImagesAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         Fragment fragment = (Fragment) object;
-
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
@@ -86,31 +83,27 @@ public class ImagesAdapter extends PagerAdapter {
         while (mSavedState.size() <= position) {
             mSavedState.add(null);
         }
-        mSavedState.set(position, fragment.isAdded()
-                ? mFragmentManager.saveFragmentInstanceState(fragment) : null);
+        mSavedState.set(position, fragment.isAdded() ? mFragmentManager.saveFragmentInstanceState(fragment) : null);
         mFragments.set(position, null);
-
         mCurTransaction.remove(fragment);
     }
 
     @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+    public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         Fragment fragment = (Fragment) object;
         if (fragment != mCurrentPrimaryItem) {
             if (mCurrentPrimaryItem != null) {
                 mCurrentPrimaryItem.setMenuVisibility(false);
                 mCurrentPrimaryItem.setUserVisibleHint(false);
             }
-            if (fragment != null) {
-                fragment.setMenuVisibility(true);
-                fragment.setUserVisibleHint(true);
-            }
+            fragment.setMenuVisibility(true);
+            fragment.setUserVisibleHint(true);
             mCurrentPrimaryItem = fragment;
         }
     }
 
     @Override
-    public void finishUpdate(ViewGroup container) {
+    public void finishUpdate(@NonNull ViewGroup container) {
         ThreadUtils.runOnUiThread(() -> {
             if (mCurTransaction != null) {
                 mCurTransaction.commitAllowingStateLoss();
@@ -121,7 +114,7 @@ public class ImagesAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return ((Fragment) object).getView() == view;
     }
 
@@ -156,8 +149,8 @@ public class ImagesAdapter extends PagerAdapter {
             mSavedState.clear();
             mFragments.clear();
             if (fss != null) {
-                for (int i = 0; i < fss.length; i++) {
-                    mSavedState.add((Fragment.SavedState) fss[i]);
+                for (Parcelable fss1 : fss) {
+                    mSavedState.add((Fragment.SavedState) fss1);
                 }
             }
             Iterable<String> keys = bundle.keySet();
@@ -182,5 +175,9 @@ public class ImagesAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         return fileDescriptions.size();
+    }
+
+    private Fragment getItem(int position) {
+        return ImageFragment.getInstance(fileDescriptions.get(position));
     }
 }

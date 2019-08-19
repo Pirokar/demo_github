@@ -5,10 +5,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import im.threads.internal.activities.TranslucentActivity;
-import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.internal.utils.ThreadsLogger;
 
 public class QuickAnswerController extends Fragment {
     private static final String TAG = "QuickAnswerController ";
@@ -23,9 +24,8 @@ public class QuickAnswerController extends Fragment {
         if (activity == null) return;
         this.activity = activity;
         context = activity.getApplicationContext();
-        ChatController
-                .getInstance(activity)
-                .getLastUnreadConsultPhrase(new CompletionHandler<ConsultPhrase>() {
+        DatabaseHolder.getInstance()
+                .getLastUnreadPhrase(new CompletionHandler<ConsultPhrase>() {
                     @Override
                     public void onComplete(ConsultPhrase data) {
                         if (null != data) {

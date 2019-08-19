@@ -36,7 +36,7 @@ public final class ThreadsLib {
         instance = new ThreadsLib();
         PushController.getInstance(Config.instance.context).init();
         if (Config.instance.unreadMessagesCountListener != null) {
-            DatabaseHolder.getInstance(Config.instance.context)
+            DatabaseHolder.getInstance()
                     .getUnreadMessagesCount(false, Config.instance.unreadMessagesCountListener);
         }
     }

@@ -14,10 +14,11 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.picasso_url_connection_only.Callback;
 import im.threads.internal.picasso_url_connection_only.Picasso;
@@ -33,7 +34,7 @@ public class ConsultFileViewHolder extends BaseHolder {
     private ImageView mConsultAvatar;
     private View mFilterView;
     private View mFilterSecond;
-    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private View mBubble;
     private ChatStyle style;
 

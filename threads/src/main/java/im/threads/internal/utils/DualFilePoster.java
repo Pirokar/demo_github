@@ -9,7 +9,7 @@ public abstract class DualFilePoster {
     private FileDescription fileDescription;
     private FileDescription qoteFileDescription;
 
-    public DualFilePoster(final FileDescription fileDescription, final FileDescription quoteFileDescription, final Context ctx) {
+    protected DualFilePoster(final FileDescription fileDescription, final FileDescription quoteFileDescription, final Context ctx) {
         this.fileDescription = fileDescription;
         this.qoteFileDescription = quoteFileDescription;
         ThreadsLogger.i(TAG, "filePath = " + fileDescription + " quoteFilePath = " + quoteFileDescription);

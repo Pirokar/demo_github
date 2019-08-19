@@ -63,7 +63,7 @@ public class ConsultConnectionMessageViewHolder extends RecyclerView.ViewHolder 
         } else {
             headerTextView.setText(consultConnectionMessage.getName());
         }
-        String connectedText = "";
+        String connectedText;
         boolean isConnected = consultConnectionMessage.getConnectionType().equals(PushMessageType.OPERATOR_JOINED.name());
         boolean sex = consultConnectionMessage.getSex();
         long date = consultConnectionMessage.getTimeStamp();

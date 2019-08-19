@@ -21,11 +21,11 @@ public class FileDescription implements Parcelable {
         this.timeStamp = timeStamp;
     }
 
-    public boolean isDownlodadError() {
+    public boolean isDownloadError() {
         return downloadError;
     }
 
-    public void setDownlodadError(boolean downloadError) {
+    public void setDownloadError(boolean downloadError) {
         this.downloadError = downloadError;
     }
 

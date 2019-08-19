@@ -137,37 +137,21 @@ public class PermissionsActivity extends AppCompatActivity {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(PermissionsActivity.this);
         dialogBuilder.setTitle(R.string.threads_permissions_help);
         dialogBuilder.setMessage(getPermissionText());
-        dialogBuilder.setNegativeButton(R.string.threads_permissions_quit, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (PermissionsChecker.clickedNeverAskAgain(PermissionsActivity.this, getPermissions())) {
-                    // Если во всех кликнуто - БОЛЬШЕ НЕ ПОКАЗЫВАТЬ, то закрыть с соответствующим результатом
-                    neverAskAgain();
-                } else {
-                    // Если все запретили, то закрыть экран с соответствующим результатом
-                    allPermissionsDenied();
-                }
-            }
-        });
-        dialogBuilder.setPositiveButton(R.string.threads_permissions_settings, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startAppSettings();
-            }
-        });
-        dialogBuilder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
+        dialogBuilder.setNegativeButton(R.string.threads_permissions_quit, (dialog, which) -> {
+            if (PermissionsChecker.clickedNeverAskAgain(PermissionsActivity.this, getPermissions())) {
+                // Если во всех кликнуто - БОЛЬШЕ НЕ ПОКАЗЫВАТЬ, то закрыть с соответствующим результатом
+                neverAskAgain();
+            } else {
+                // Если все запретили, то закрыть экран с соответствующим результатом
                 allPermissionsDenied();
             }
         });
+        dialogBuilder.setPositiveButton(R.string.threads_permissions_settings, (dialog, which) -> startAppSettings());
+        dialogBuilder.setOnCancelListener(dialog -> allPermissionsDenied());
         final AlertDialog alertDialog = dialogBuilder.create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(PermissionsActivity.this, android.R.color.black));
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(PermissionsActivity.this, android.R.color.black));
-            }
+        alertDialog.setOnShowListener(dialog -> {
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(PermissionsActivity.this, android.R.color.black));
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(PermissionsActivity.this, android.R.color.black));
         });
         alertDialog.show();
     }

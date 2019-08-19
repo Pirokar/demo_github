@@ -1,7 +1,7 @@
 package im.threads.internal.model;
 
 public class FileAndMediaItem implements MediaAndFileItem {
-    private final   FileDescription fileDescription;
+    private final FileDescription fileDescription;
 
     public FileAndMediaItem(FileDescription fileDescription) {
         this.fileDescription = fileDescription;

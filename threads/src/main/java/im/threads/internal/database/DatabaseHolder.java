@@ -1,6 +1,5 @@
 package im.threads.internal.database;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -11,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import im.threads.ThreadsLib;
-import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.CompletionHandler;
@@ -22,6 +21,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
+import im.threads.internal.utils.ThreadsLogger;
 
 public class DatabaseHolder {
     private static final String TAG = DatabaseHolder.class.getSimpleName();
@@ -30,9 +30,9 @@ public class DatabaseHolder {
     private final MyOpenHelper mMyOpenHelper;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public static DatabaseHolder getInstance(Context context) {
+    public static DatabaseHolder getInstance() {
         if (instance == null) {
-            instance = new DatabaseHolder(context);
+            instance = new DatabaseHolder();
         }
         return instance;
     }
@@ -44,8 +44,8 @@ public class DatabaseHolder {
         instance = null;
     }
 
-    private DatabaseHolder(Context ctx) {
-        mMyOpenHelper = new MyOpenHelper(ctx);
+    private DatabaseHolder() {
+        mMyOpenHelper = new MyOpenHelper(Config.instance.context);
     }
 
     /**
@@ -104,12 +104,7 @@ public class DatabaseHolder {
     }
 
     public void getFilesAsync(final CompletionHandler<List<FileDescription>> handler) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                handler.onComplete(mMyOpenHelper.getFd());
-            }
-        });
+        executorService.execute(() -> handler.onComplete(mMyOpenHelper.getFd()));
     }
 
     public void updateFileDescription(FileDescription fileDescription) {
@@ -140,22 +135,16 @@ public class DatabaseHolder {
     }
 
     public void setAllMessagesRead(final CompletionHandler<Void> handler) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                mMyOpenHelper.setAllRead();
-                handler.onComplete(null);
-            }
+        executorService.execute(() -> {
+            mMyOpenHelper.setAllRead();
+            handler.onComplete(null);
         });
     }
 
     public void getLastUnreadPhrase(final CompletionHandler<ConsultPhrase> handler) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                ConsultPhrase cp = mMyOpenHelper.getLastUnreadPhrase();
-                handler.onComplete(cp);
-            }
+        executorService.execute(() -> {
+            ConsultPhrase cp = mMyOpenHelper.getLastUnreadPhrase();
+            handler.onComplete(cp);
         });
     }
 

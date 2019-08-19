@@ -34,10 +34,10 @@ import im.threads.internal.utils.BucketsGalleryDecorator;
 import im.threads.internal.utils.GalleryDecorator;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class GalleryActivity extends BaseActivity
-        implements
-        PhotoBucketsGalleryAdapter.OnItemClick
-        , GalleryAdapter.OnGalleryItemClick {
+public class GalleryActivity
+        extends BaseActivity
+        implements PhotoBucketsGalleryAdapter.OnItemClick, GalleryAdapter.OnGalleryItemClick {
+
     private RecyclerView mRecyclerView;
     private static final String TAG = "GalleryActivity ";
     private ArrayList<ArrayList<MediaPhoto>> lists = new ArrayList<>();
@@ -62,6 +62,17 @@ public class GalleryActivity extends BaseActivity
     }
 
     @Override
+    public void onPhotoBucketClick(PhotoBucketItem item) {
+        setStateGallery(item.getBucketName(), item);
+    }
+
+    @Override
+    public void onGalleryItemsChosen(List<MediaPhoto> chosenItems) {
+        this.chosenItems = chosenItems;
+        checkSendButtonState();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Workaround on vectors not working in background selector
@@ -77,7 +88,6 @@ public class GalleryActivity extends BaseActivity
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        //  t.showOverflowMenu();
         Drawable overflowDrawable = mToolbar.getOverflowIcon();
         try {
             overflowDrawable.setColorFilter(new PorterDuffColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP));
@@ -143,8 +153,15 @@ public class GalleryActivity extends BaseActivity
     }
 
     @Override
-    public void onPhotoBucketClick(PhotoBucketItem item) {
-        setStateGallery(item.getBucketName(), item);
+    public void onBackPressed() {
+        if (!isInBuckets) {
+            mSearchEdiText.setText("");
+            clearCheckedStateOfItems();
+            findViewById(R.id.nothing_found_label).setVisibility(View.GONE);
+            setStatePhotoBuckets();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void setStateGallery(String title, PhotoBucketItem item) {
@@ -233,7 +250,7 @@ public class GalleryActivity extends BaseActivity
         });
     }
 
-    protected void search(String searchString) {
+    private void search(String searchString) {
         clearCheckedStateOfItems();
         chosenItems = null;
         checkSendButtonState();
@@ -257,24 +274,6 @@ public class GalleryActivity extends BaseActivity
             } else {
                 mBottomButton.setVisibility(View.VISIBLE);
             }
-        }
-    }
-
-    @Override
-    public void onGalleryItemsChosen(List<MediaPhoto> chosenItems) {
-        this.chosenItems = chosenItems;
-        checkSendButtonState();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!isInBuckets) {
-            mSearchEdiText.setText("");
-            clearCheckedStateOfItems();
-            findViewById(R.id.nothing_found_label).setVisibility(View.GONE);
-            setStatePhotoBuckets();
-        } else {
-            super.onBackPressed();
         }
     }
 

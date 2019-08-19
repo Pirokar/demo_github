@@ -46,7 +46,7 @@ public class DownloadService extends Service {
             public void onProgress(double progress) {
                 if (progress < 1) progress = 1.0;
                 fileDescription.setDownloadProgress((int) progress);
-                DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
+                DatabaseHolder.getInstance().updateFileDescription(fileDescription);
                 sendDownloadProgressBroadcast(fileDescription);
             }
 
@@ -54,7 +54,7 @@ public class DownloadService extends Service {
             public void onComplete(final File file) {
                 fileDescription.setDownloadProgress(100);
                 fileDescription.setFilePath(file.getAbsolutePath());
-                DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
+                DatabaseHolder.getInstance().updateFileDescription(fileDescription);
                 runningDownloads.remove(fileDescription);
                 sendFinishBroadcast(fileDescription);
                 if (runningDownloads.size() == 0) stopSelf();
@@ -64,7 +64,7 @@ public class DownloadService extends Service {
             public void onFileDonwloaderError(final Exception e) {
                 ThreadsLogger.e(TAG, "error while downloading file ", e);
                 fileDescription.setDownloadProgress(0);
-                DatabaseHolder.getInstance(context).updateFileDescription(fileDescription);
+                DatabaseHolder.getInstance().updateFileDescription(fileDescription);
                 sendDownloadErrorBroadcast(fileDescription, e);
             }
         };
@@ -76,30 +76,20 @@ public class DownloadService extends Service {
                 tfileDownloader.stop();
                 fileDescription.setDownloadProgress(0);
                 sendDownloadProgressBroadcast(fileDescription);
-                DatabaseHolder.getInstance(this).updateFileDescription(fileDescription);
+                DatabaseHolder.getInstance().updateFileDescription(fileDescription);
                 return START_STICKY;
             } else {
                 runningDownloads.put(fileDescription, fileDownloader);
                 fileDescription.setDownloadProgress(1);
                 sendDownloadProgressBroadcast(fileDescription);
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        fileDownloader.download();
-                    }
-                });
+                executor.execute(fileDownloader::download);
             }
         } else if (intent.getAction().equals(START_DOWNLOAD_WITH_NO_STOP)) {
             if (!runningDownloads.containsKey(fileDescription)) {
                 runningDownloads.put(fileDescription, fileDownloader);
                 fileDescription.setDownloadProgress(1);
                 sendDownloadProgressBroadcast(fileDescription);
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        fileDownloader.download();
-                    }
-                });
+                executor.execute(fileDownloader::download);
             }
         }
         return START_STICKY;

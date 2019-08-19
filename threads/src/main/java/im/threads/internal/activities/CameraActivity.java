@@ -57,6 +57,28 @@ public class CameraActivity extends BaseActivity {
         initPreview();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setStateCameraPreview();
+        if (isCameraReleased) {
+            restoreCamera();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mSurfaceView.getVisibility() == View.VISIBLE) {
+            if (mCamera == null) {
+                Toast.makeText(this, getString(R.string.threads_no_cameras_detected), Toast.LENGTH_SHORT).show();
+            } else {
+                releaseCamera();
+                isCameraReleased = true;
+            }
+        }
+    }
+
     private void initPreview() {
         mSurfaceView = findViewById(R.id.camera_preview);
         mSurfaceView.setVisibility(View.VISIBLE);
@@ -236,28 +258,6 @@ public class CameraActivity extends BaseActivity {
             setResult(RESULT_OK, i);
             finish();
         });
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mSurfaceView.getVisibility() == View.VISIBLE) {
-            if (mCamera == null) {
-                Toast.makeText(this, getString(R.string.threads_no_cameras_detected), Toast.LENGTH_SHORT).show();
-            } else {
-                releaseCamera();
-                isCameraReleased = true;
-            }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setStateCameraPreview();
-        if (isCameraReleased) {
-            restoreCamera();
-        }
     }
 
     private void restoreCamera() {

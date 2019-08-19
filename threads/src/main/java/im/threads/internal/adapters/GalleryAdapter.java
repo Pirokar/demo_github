@@ -1,5 +1,6 @@
 package im.threads.internal.adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -12,39 +13,43 @@ import im.threads.internal.model.MediaPhoto;
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder> {
     private List<MediaPhoto> list;
     private List<MediaPhoto> chosenList = new ArrayList<>();
-    OnGalleryItemClick mOnGalleryItemClick;
+    private OnGalleryItemClick onGalleryItemClick;
 
     public GalleryAdapter(List<MediaPhoto> list, OnGalleryItemClick onGalleryItemClick) {
         this.list = list;
-        mOnGalleryItemClick = onGalleryItemClick;
+        this.onGalleryItemClick = onGalleryItemClick;
     }
 
+    @NonNull
     @Override
-    public GalleryItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public GalleryItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new GalleryItemHolder(parent);
     }
 
     @Override
-    public void onBindViewHolder(final GalleryItemHolder holder, int position) {
-        holder.onBind(list.get(position).getImagePath(), v -> {
-            MediaPhoto photo = list.get(holder.getAdapterPosition());
-            if (photo.isChecked()) {
-                photo.setChecked(false);
-            } else {
-                photo.setChecked(true);
-            }
-            if (null != mOnGalleryItemClick) {
-                chosenList.clear();
-                for (MediaPhoto mp : list
-                ) {
-                    if (mp.isChecked()) {
-                        chosenList.add(mp);
+    public void onBindViewHolder(@NonNull final GalleryItemHolder holder, int position) {
+        holder.onBind(
+                list.get(position).getImagePath(),
+                v -> {
+                    MediaPhoto photo = list.get(holder.getAdapterPosition());
+                    if (photo.isChecked()) {
+                        photo.setChecked(false);
+                    } else {
+                        photo.setChecked(true);
                     }
-                }
-                mOnGalleryItemClick.onGalleryItemsChosen(chosenList);
-            }
-            notifyItemChanged(holder.getAdapterPosition());
-        }, list.get(position).isChecked());
+                    if (null != onGalleryItemClick) {
+                        chosenList.clear();
+                        for (MediaPhoto mp : list) {
+                            if (mp.isChecked()) {
+                                chosenList.add(mp);
+                            }
+                        }
+                        onGalleryItemClick.onGalleryItemsChosen(chosenList);
+                    }
+                    notifyItemChanged(holder.getAdapterPosition());
+                },
+                list.get(position).isChecked()
+        );
     }
 
     @Override
