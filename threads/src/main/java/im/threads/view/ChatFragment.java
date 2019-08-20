@@ -23,7 +23,6 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.content.res.AppCompatResources;
@@ -66,6 +65,7 @@ import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.adapters.ChatAdapter;
 import im.threads.internal.controllers.ChatController;
+import im.threads.internal.fragments.BaseFragment;
 import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
@@ -99,13 +99,12 @@ import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.views.BottomSheetView;
 import im.threads.internal.views.MySwipeRefreshLayout;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
  */
-public class ChatFragment extends Fragment implements
+public class ChatFragment extends BaseFragment implements
         BottomSheetView.ButtonsListener,
         ChatAdapter.AdapterInterface,
         FilePickerFragment.SelectedListener,
@@ -128,6 +127,7 @@ public class ChatFragment extends Fragment implements
     private static final float ENABLED_ALPHA = 1.0f;
 
     private static final int INVISIBLE_MSGS_COUNT = 3;
+    private static final long INPUT_DELAY = 3000;
 
     private static boolean chatIsShown = false;
 
@@ -154,7 +154,6 @@ public class ChatFragment extends Fragment implements
 
     private Toast mToast;
     private File externalCameraPhotoFile;
-    private Disposable inputChangesSubscription;
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -189,9 +188,6 @@ public class ChatFragment extends Fragment implements
 
     @Override
     public void onDestroyView() {
-        if (inputChangesSubscription != null && !inputChangesSubscription.isDisposed()) {
-            inputChangesSubscription.dispose();
-        }
         super.onDestroyView();
         mChatController.unbindFragment();
         Activity activity = getActivity();
@@ -375,22 +371,15 @@ public class ChatFragment extends Fragment implements
     }
 
     private void configureInputChangesSubscription() {
-        inputChangesSubscription = RxTextView.textChanges(binding.input)
-                .skipWhile(charSequence -> charSequence.length() == 0)
-                .throttleLatest(3, TimeUnit.SECONDS)
+        subscribe(RxTextView.textChanges(binding.input)
+                .filter(charSequence -> charSequence.length() == 0)
+                .debounce(INPUT_DELAY, TimeUnit.MILLISECONDS)
                 .map(CharSequence::toString)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         input -> mChatController.onUserTyping(input)
-                );
-    }
-
-    private void resetInputChangesSubscription() {
-        if (inputChangesSubscription != null && !inputChangesSubscription.isDisposed()) {
-            inputChangesSubscription.dispose();
-        }
-
-        configureInputChangesSubscription();
+                )
+        );
     }
 
     private void showUnreadMsgsCount(int unreadCount) {
@@ -1033,8 +1022,6 @@ public class ChatFragment extends Fragment implements
                 mChosenPhrase = null;
             }
             if (isInMessageSearchMode) onActivityBackPressed();
-
-            resetInputChangesSubscription();
         }
     }
 
