@@ -213,6 +213,8 @@ public class ChatStyle implements Serializable {
     @ColorRes
     public int surveyChoicesTextColorResId = R.color.threads_survey_choices_text;
 
+    public int surveyCompletionDelay = 2000;
+
     // schedule message style
     @ColorRes
     public int scheduleMessageTextColorResId = R.color.threads_schedule_text;
@@ -790,6 +792,7 @@ public class ChatStyle implements Serializable {
          * @param surveyUnselectedColorFilterResId       - R.color.threads_survey_unselected_icon_tint
          * @param surveyTextColorResId                   - R.color.threads_chat_system_message
          * @param surveyChoicesTextColorResId            - R.color.threads_survey_choices_text
+         * @param surveyCompletionDelay                  - 2000 milis
          */
         public ChatStyleBuilder setSurveyStyle(@DrawableRes final int binarySurveyLikeUnselectedIconResId,
                                                @DrawableRes final int binarySurveyLikeSelectedIconResId,
@@ -800,7 +803,8 @@ public class ChatStyle implements Serializable {
                                                @ColorRes final int surveySelectedColorFilterResId,
                                                @ColorRes final int surveyUnselectedColorFilterResId,
                                                @ColorRes final int surveyTextColorResId,
-                                               @ColorRes int surveyChoicesTextColorResId) {
+                                               @ColorRes int surveyChoicesTextColorResId,
+                                               int surveyCompletionDelay) {
             chatStyle.binarySurveyLikeUnselectedIconResId = binarySurveyLikeUnselectedIconResId;
             chatStyle.binarySurveyLikeSelectedIconResId = binarySurveyLikeSelectedIconResId;
             chatStyle.binarySurveyDislikeUnselectedIconResId = binarySurveyDislikeUnselectedIconResId;
@@ -811,6 +815,7 @@ public class ChatStyle implements Serializable {
             chatStyle.surveyUnselectedColorFilterResId = surveyUnselectedColorFilterResId;
             chatStyle.surveyTextColorResId = surveyTextColorResId;
             chatStyle.surveyChoicesTextColorResId = surveyChoicesTextColorResId;
+            chatStyle.surveyCompletionDelay = surveyCompletionDelay;
             return this;
         }
 
