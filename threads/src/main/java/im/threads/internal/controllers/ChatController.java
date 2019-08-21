@@ -21,7 +21,7 @@ import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.Executor;
@@ -141,14 +141,14 @@ public final class ChatController {
     private int resendTimeInterval;
     private List<UserPhrase> sendQueue = new ArrayList<>();
 
-    private Handler mUnsendMessageHandler;
+    private Handler unsendMessageHandler;
     private String firstUnreadProviderId;
 
     private CompositeDisposable compositeDisposable;
 
-    public static ChatController getInstance(@NonNull final Context ctx) {
+    public static ChatController getInstance() {
         if (instance == null) {
-            instance = new ChatController(ctx);
+            instance = new ChatController();
         }
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
@@ -164,24 +164,24 @@ public final class ChatController {
         return instance;
     }
 
-    private ChatController(@NonNull final Context ctx) {
-        appContext = ctx;
+    private ChatController() {
+        appContext = Config.instance.context;
         if (mDatabaseHolder == null) {
             mDatabaseHolder = DatabaseHolder.getInstance();
         }
         if (mConsultWriter == null) {
-            mConsultWriter = new ConsultWriter(ctx.getSharedPreferences(TAG, Context.MODE_PRIVATE));
+            mConsultWriter = new ConsultWriter(appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE));
         }
-        ServiceGenerator.setUserAgent(OutgoingMessageCreator.getUserAgent(ctx));
-        resendTimeInterval = ctx.getResources().getInteger(R.integer.check_internet_interval_ms);
-        mUnsendMessageHandler = new Handler(msg -> {
+        ServiceGenerator.setUserAgent(OutgoingMessageCreator.getUserAgent(appContext));
+        resendTimeInterval = appContext.getResources().getInteger(R.integer.check_internet_interval_ms);
+        unsendMessageHandler = new Handler(msg -> {
             if (msg.what == RESEND_MSG) {
                 if (!unsendMessages.isEmpty()) {
-                    if (DeviceInfoHelper.hasNoInternet(ctx)) {
+                    if (DeviceInfoHelper.hasNoInternet(appContext)) {
                         scheduleResend();
                     } else {
                         // try to send all unsent messages
-                        mUnsendMessageHandler.removeMessages(RESEND_MSG);
+                        unsendMessageHandler.removeMessages(RESEND_MSG);
                         final ListIterator<UserPhrase> iterator = unsendMessages.listIterator();
                         while (iterator.hasNext()) {
                             final UserPhrase phrase = iterator.next();
@@ -424,12 +424,12 @@ public final class ChatController {
                     final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                     count = serverItems.size();
                     mDatabaseHolder.putMessagesSync(serverItems);
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
+                    final List<ChatItem> chatItems = setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                     currentOffset[0] += chatItems.size();
                     h.post(() -> callback.onSuccess(chatItems));
                 } catch (final Exception e) {
                     ThreadsLogger.e(TAG, "requestItems", e);
-                    final List<ChatItem> chatItems = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
+                    final List<ChatItem> chatItems = setLastAvatars(mDatabaseHolder.getChatItems(currentOffset[0], count));
                     currentOffset[0] += chatItems.size();
                     h.post(() -> callback.onSuccess(chatItems));
                 }
@@ -590,8 +590,11 @@ public final class ChatController {
 
     public void bindFragment(final ChatFragment f) {
         ThreadsLogger.i(TAG, "bindFragment:");
-        fragment = f;
         final Activity activity = f.getActivity();
+        if (activity == null) {
+            return;
+        }
+        fragment = f;
         if (mConsultWriter == null) {
             mConsultWriter = new ConsultWriter(appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE));
         }
@@ -684,7 +687,7 @@ public final class ChatController {
                                                 public void onResult(InMessageSend.Response response) {
                                                     new Handler(Looper.getMainLooper()).post(() -> {
                                                                 surveyCompletionInProgress = false;
-                                                                setSurveyState(survey, MessageState.STATE_SENT);
+                                                                setSurveyStateSent(survey);
                                                                 resetActiveSurvey();
                                                                 updateUi();
                                                             }
@@ -749,7 +752,7 @@ public final class ChatController {
             final HistoryResponse response = Transport.getHistorySync(null, true);
             final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
             instance.mDatabaseHolder.putMessagesSync(serverItems);
-            final ArrayList<ChatItem> phrases = (ArrayList<ChatItem>) instance.setLastAvatars(serverItems);
+            final List<ChatItem> phrases = instance.setLastAvatars(serverItems);
             if (instance.fragment != null) {
                 instance.fragment.addChatItems(phrases);
                 final ConsultInfo info = response != null ? response.getConsultInfo() : null;
@@ -798,13 +801,13 @@ public final class ChatController {
     }
 
     private void updateChatItemsOnBindAsync() {
-        mExecutor.execute(() -> updateChatItemsOnBind());
+        mExecutor.execute(this::updateChatItemsOnBind);
     }
 
     private void updateChatItemsOnBind() {
         if (null != fragment) {
             final int historyLoadingCount = Config.instance.historyLoadingCount;
-            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, historyLoadingCount));
+            final List<ChatItem> items = setLastAvatars(mDatabaseHolder.getChatItems(0, historyLoadingCount));
             h.post(() -> {
                 if (fragment != null) {
                     fragment.addChatItems(items);
@@ -837,7 +840,7 @@ public final class ChatController {
                         mDatabaseHolder.putMessagesSync(serverItems);
                         final int serverCount = serverItems.size();
                         h.post(() -> {
-                            final List<ChatItem> items = (List<ChatItem>) setLastAvatars(mDatabaseHolder.getChatItems(0, serverCount));
+                            final List<ChatItem> items = setLastAvatars(mDatabaseHolder.getChatItems(0, serverCount));
                             if (fragment != null) {
                                 fragment.addChatItems(items);
                                 checkAndLoadOgData(items);
@@ -856,7 +859,7 @@ public final class ChatController {
         }
     }
 
-    private List<? extends ChatItem> setLastAvatars(final List<? extends ChatItem> list) {
+    private List<ChatItem> setLastAvatars(final List<ChatItem> list) {
         for (final ChatItem ci : list) {
             if (ci instanceof ConsultConnectionMessage) {
                 final ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
@@ -987,8 +990,8 @@ public final class ChatController {
     }
 
     private void scheduleResend() {
-        if (!mUnsendMessageHandler.hasMessages(RESEND_MSG)) {
-            mUnsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendTimeInterval);
+        if (!unsendMessageHandler.hasMessages(RESEND_MSG)) {
+            unsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendTimeInterval);
         }
     }
 
@@ -1029,15 +1032,13 @@ public final class ChatController {
         mDatabaseHolder.putChatItem(cm);
         h.post(() -> {
             if (null != fragment) {
-                final ChatItem ci = setLastAvatars(Arrays.asList(new ChatItem[]{cm})).get(0);
-                if (!(ci instanceof ConsultConnectionMessage)
-                        || ((ConsultConnectionMessage) ci).isDisplayMessage()) {
+                final ChatItem ci = setLastAvatars(Collections.singletonList(cm)).get(0);
+                if (!(ci instanceof ConsultConnectionMessage) || ((ConsultConnectionMessage) ci).isDisplayMessage()) {
                     fragment.addChatItem(ci);
                     checkAndLoadOgData(ci);
                 }
                 if (ci instanceof ConsultChatPhrase) {
-                    fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath()
-                            , ((ConsultChatPhrase) ci).getConsultId());
+                    fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath(), ((ConsultChatPhrase) ci).getConsultId());
                 }
             }
         });
@@ -1097,8 +1098,8 @@ public final class ChatController {
         mDatabaseHolder.setStateOfUserPhraseByProviderId(up.getProviderId(), up.getSentState());
     }
 
-    private void setSurveyState(final Survey survey, final MessageState messageState) {
-        survey.setSentState(messageState);
+    private void setSurveyStateSent(final Survey survey) {
+        survey.setSentState(MessageState.STATE_SENT);
         if (fragment != null) {
             fragment.setSurveySentStatus(survey.getSendingId(), survey.getSentState());
         }
@@ -1213,7 +1214,7 @@ public final class ChatController {
                     final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
                     mDatabaseHolder.putMessagesSync(serverItems);
                     if (fragment != null) {
-                        List<ChatItem> itemsWithLastAvatars = (List<ChatItem>) setLastAvatars(serverItems);
+                        List<ChatItem> itemsWithLastAvatars = setLastAvatars(serverItems);
                         fragment.addChatItems(itemsWithLastAvatars);
                         checkAndLoadOgData(itemsWithLastAvatars);
                         final ConsultInfo info = response != null ? response.getConsultInfo() : null;

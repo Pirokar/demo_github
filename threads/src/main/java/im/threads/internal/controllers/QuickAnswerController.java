@@ -50,7 +50,7 @@ public final class QuickAnswerController extends Fragment {
             return;
         }
         final Context ctx = activity == null ? context : activity;
-        ChatController cc = ChatController.getInstance(ctx);
+        ChatController cc = ChatController.getInstance();
         cc.onUserInput(upcomingUserMessage);
         cc.setAllMessagesWereRead();
     }

@@ -28,7 +28,7 @@ public class ThreadsPushServerIntentService extends PushServerIntentService {
         for (int i = 0; i < list.size(); i++) {
             PushMessage pushMessage = list.get(i);
             if (IncomingMessageParser.isThreadsOriginPush(pushMessage)) {
-                ChatController chatController = ChatController.getInstance(getApplication());
+                ChatController chatController = ChatController.getInstance();
                 PushMessageCheckResult result = chatController.onFullMessage(pushMessage);
                 if (result.isDetected()) {
                     if (result.isNeedsShowIsStatusBar()) {

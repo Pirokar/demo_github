@@ -70,85 +70,70 @@ public final class IncomingMessageParser {
         final ArrayList<ChatItem> out = new ArrayList<>();
         try {
             for (final MessageFromHistory message : messages) {
-                if (message == null)
+                if (message == null) {
                     continue;
+                }
                 final String uuid = message.getUuid();
                 final String providerId = message.getProviderId();
                 final long timeStamp = message.getTimeStamp();
                 final Operator operator = message.getOperator();
                 String name = null;
-                if (operator != null && operator.getName() != null && !operator.getName().isEmpty()) {
-                    name = operator.getName();
-                }
                 String photoUrl = null;
-                if (operator != null && operator.getPhotoUrl() != null && !operator.getPhotoUrl().isEmpty()) {
-                    photoUrl = operator.getPhotoUrl();
-                }
                 String operatorId = null;
-                if (operator != null && operator.getId() != null) {
-                    operatorId = String.valueOf(operator.getId());
-                }
                 boolean sex = false;
-                if (operator != null && operator.getGender() != null) {
-                    sex = operator.getGender() == Operator.Gender.MALE;
-                }
-
                 String orgUnit = null;
                 if (operator != null) {
+                    name = !TextUtils.isEmpty(operator.getName()) ? operator.getName() : null;
+                    photoUrl = !TextUtils.isEmpty(operator.getPhotoUrl()) ? operator.getPhotoUrl() : null;
+                    operatorId = operator.getId() != null ? String.valueOf(operator.getId()) : null;
+                    sex = Operator.Gender.MALE.equals(operator.getGender());
                     orgUnit = operator.getOrgUnit();
                 }
-
-                if (!TextUtils.isEmpty(message.getType()) &&
-                        (message.getType().equalsIgnoreCase(PushMessageType.OPERATOR_JOINED.name()) ||
-                                message.getType().equalsIgnoreCase(PushMessageType.OPERATOR_LEFT.name()))) {
-                    final String type = message.getType();
-                    out.add(new ConsultConnectionMessage(uuid, providerId, operatorId, type, name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay()));
-
-                } else if (!TextUtils.isEmpty(message.getType())
-                        && message.getType().equalsIgnoreCase(PushMessageType.SURVEY.name())) {
-
-                    Survey survey = getSurveyFromJsonString(message.getText());
-
-                    if (survey != null) {
-                        survey.setPhraseTimeStamp(message.getTimeStamp());
-                        for (final QuestionDTO questionDTO : survey.getQuestions()) {
-                            questionDTO.setPhraseTimeStamp(message.getTimeStamp());
-                        }
-                        out.add(survey);
-                    }
-
-                } else if (!TextUtils.isEmpty(message.getType())
-                        && message.getType().equalsIgnoreCase(PushMessageType.SURVEY_QUESTION_ANSWER.name())) {
-
-                    Survey completedSurvey = getCompletedSurveyFromHistory(message);
-                    out.add(completedSurvey);
-
-                } else {
-                    final String phraseText = message.getText();
-                    final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
-                    if (fileDescription != null) {
-                        fileDescription.setFrom(name);
-                        fileDescription.setTimeStamp(timeStamp);
-                    }
-                    final Quote quote = message.getQuotes() != null ? quoteFromList(message.getQuotes()) : null;
-                    if (quote != null && quote.getFileDescription() != null)
-                        quote.getFileDescription().setTimeStamp(timeStamp);
-                    if (message.getOperator() != null) {
-                        out.add(new ConsultPhrase(uuid, providerId, fileDescription, quote, name, phraseText, timeStamp,
-                                operatorId, photoUrl, true, null, false));
-                    } else {
-                        if (fileDescription != null) {
-                            if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
-                                fileDescription.setFrom("Я");
-                            } else {
-                                fileDescription.setFrom("I");
+                PushMessageType type = PushMessageType.fromString(message.getType());
+                switch (type) {
+                    case OPERATOR_JOINED:
+                    case OPERATOR_LEFT:
+                        out.add(new ConsultConnectionMessage(uuid, providerId, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay()));
+                        break;
+                    case SURVEY:
+                        Survey survey = getSurveyFromJsonString(message.getText());
+                        if (survey != null) {
+                            survey.setPhraseTimeStamp(message.getTimeStamp());
+                            for (final QuestionDTO questionDTO : survey.getQuestions()) {
+                                questionDTO.setPhraseTimeStamp(message.getTimeStamp());
                             }
+                            out.add(survey);
                         }
-                        out.add(new UserPhrase(uuid, providerId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
-                    }
+                        break;
+                    case SURVEY_QUESTION_ANSWER:
+                        out.add(getCompletedSurveyFromHistory(message));
+                        break;
+                    default:
+                        final String phraseText = message.getText();
+                        final FileDescription fileDescription = message.getAttachments() != null ? fileDescriptionFromList(message.getAttachments()) : null;
+                        if (fileDescription != null) {
+                            fileDescription.setFrom(name);
+                            fileDescription.setTimeStamp(timeStamp);
+                        }
+                        final Quote quote = message.getQuotes() != null ? quoteFromList(message.getQuotes()) : null;
+                        if (quote != null && quote.getFileDescription() != null)
+                            quote.getFileDescription().setTimeStamp(timeStamp);
+                        if (message.getOperator() != null) {
+                            out.add(new ConsultPhrase(uuid, providerId, fileDescription, quote, name, phraseText, timeStamp,
+                                    operatorId, photoUrl, true, null, false));
+                        } else {
+                            if (fileDescription != null) {
+                                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
+                                    fileDescription.setFrom("Я");
+                                } else {
+                                    fileDescription.setFrom("I");
+                                }
+                            }
+                            out.add(new UserPhrase(uuid, providerId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
+                        }
                 }
             }
-            Collections.sort(out, (ci1, ci2) -> Long.valueOf(ci1.getTimeStamp()).compareTo(ci2.getTimeStamp()));
+            Collections.sort(out, (ci1, ci2) -> Long.compare(ci1.getTimeStamp(), ci2.getTimeStamp()));
         } catch (final Exception e) {
             ThreadsLogger.e(TAG, "error while formatting: " + messages, e);
         }
@@ -167,7 +152,6 @@ public final class IncomingMessageParser {
                 if (readInMessageIds != null) {
                     ids.addAll(readInMessageIds);
                 }
-
                 ThreadsLogger.e(TAG, "getReadIds = ");
             }
             if (readIds instanceof String) {

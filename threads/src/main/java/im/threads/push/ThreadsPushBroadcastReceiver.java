@@ -26,7 +26,7 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
         ThreadsLogger.i(TAG, "onNewPushNotification " + alert + " " + bundle);
         if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
             if (isChatSystemPush(bundle)) {
-                ChatController.getInstance(context).onSystemMessageFromServer(context, bundle, alert);
+                ChatController.getInstance().onSystemMessageFromServer(context, bundle, alert);
             }
         }
     }

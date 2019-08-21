@@ -1,6 +1,7 @@
 package im.threads.internal.formatters;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 public enum PushMessageType {
@@ -66,6 +67,7 @@ public enum PushMessageType {
         return UNKNOWN;
     }
 
+    @NonNull
     public static PushMessageType fromString(String name) {
         try {
             return valueOf(name);
@@ -73,7 +75,6 @@ public enum PushMessageType {
             return PushMessageType.UNKNOWN;
         }
     }
-
 }
 
 

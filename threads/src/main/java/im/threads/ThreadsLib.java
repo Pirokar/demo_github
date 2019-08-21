@@ -76,7 +76,7 @@ public final class ThreadsLib {
     }
 
     public void reloadHistory() {
-        ChatController.getInstance(Config.instance.context).loadHistory();
+        ChatController.getInstance().loadHistory();
     }
 
     /**
@@ -85,7 +85,7 @@ public final class ThreadsLib {
      * @return true, if message was successfully added to messaging queue, otherwise false
      */
     public boolean sendMessage(@Nullable String message, @Nullable File file) {
-        ChatController chatController = ChatController.getInstance(Config.instance.context);
+        ChatController chatController = ChatController.getInstance();
         if (PrefUtils.isClientIdNotEmpty()) {
             FileDescription fileDescription = null;
             if (file != null) {
