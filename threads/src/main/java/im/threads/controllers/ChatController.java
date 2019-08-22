@@ -98,8 +98,6 @@ public class ChatController {
     public static final int CONSULT_STATE_SEARCHING = 2;
     public static final int CONSULT_STATE_DEFAULT = 3;
 
-    public static final int SURVEY_CHANGE_STATE_TIMEOUT = 2;
-
     private static final long PER_PAGE_COUNT = 100;
     private static final int RESEND_MSG = 123;
 
@@ -256,6 +254,9 @@ public class ChatController {
      * @return true, если удалось добавить сообщение в очередь отправки, иначе false
      */
     public static boolean sendMessage(Context context, @Nullable String message, @Nullable File file) {
+
+        ChatController chatController = getInstance(context);
+
         if (PrefUtils.isClientIdNotEmpty(context)) {
             FileDescription fileDescription = null;
             if (file != null) {
@@ -265,8 +266,7 @@ public class ChatController {
                         System.currentTimeMillis());
             }
             UpcomingUserMessage msg = new UpcomingUserMessage(fileDescription, null, message, false);
-            getInstance(context)
-                    .onUserInput(msg);
+            chatController.onUserInput(msg);
             return true;
         }
         return false;
@@ -343,7 +343,7 @@ public class ChatController {
                             setSurveyState(survey, MessageState.STATE_SENT);
                             resetActiveSurvey();
                             updateUi();
-                        }, SURVEY_CHANGE_STATE_TIMEOUT * 1000);
+                        }, ChatStyle.getInstance().surveyCompletionDelay);
                     }
 
                     @Override
