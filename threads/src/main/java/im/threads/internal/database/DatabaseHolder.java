@@ -30,6 +30,7 @@ public final class DatabaseHolder {
     private final MyOpenHelper mMyOpenHelper;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    @NonNull
     public static DatabaseHolder getInstance() {
         if (instance == null) {
             instance = new DatabaseHolder();

@@ -20,8 +20,6 @@ public enum PushMessageType {
     UNREAD_MESSAGE_NOTIFICATION,
     OPERATOR_LOOKUP_STARTED,
     CLIENT_BLOCKED,
-    THREAD_OPENED,
-    THREAD_CLOSED,
     SCENARIO,
     CHAT_PUSH,
 
@@ -36,6 +34,7 @@ public enum PushMessageType {
 
     UNKNOWN;
 
+    @NonNull
     public static PushMessageType getKnownType(final Bundle bundle) {
         if (bundle == null) {
             return UNKNOWN;

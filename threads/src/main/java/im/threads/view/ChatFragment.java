@@ -1104,6 +1104,10 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.changeStateOfMessageByProviderId(providerId, state);
     }
 
+    public void setSurveySentStatus(long uuid, MessageState sentState) {
+        chatAdapter.changeStateOfSurvey(uuid, sentState);
+    }
+
     private boolean isCopy(String text) {
         if (TextUtils.isEmpty(text)) return false;
         if (TextUtils.isEmpty(PrefUtils.getLastCopyText())) return false;
@@ -1164,15 +1168,6 @@ public final class ChatFragment extends BaseFragment implements
 
     private void welcomeScreenVisibility(boolean show) {
         binding.welcome.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-
-
-    public void setSurveySentStatus(long uuid, MessageState sentState) {
-        chatAdapter.changeStateOfSurvey(uuid, sentState);
-    }
-
-    public void setPhraseSentStatusByProviderId(String providerId, MessageState messageState) {
-        chatAdapter.changeStateOfMessageByProviderId(providerId, messageState);
     }
 
     /**

@@ -4,7 +4,7 @@ public final class PushMessageAttributes {
     public static final String APP_MARKER_KEY = "appMarker";
     public static final String OPERATOR_URL = "operatorPhotoUrl";
     static final String APP_BUNDLE_KEY = "appBundle";
-    static final String CLIENT_ID = "clientId";
+    public static final String CLIENT_ID = "clientId";
     static final String CLIENT_ID_ENCRYPTED = "clientIdIsEncrypted";
     static final String TYPE = "type";
     static final String TEXT = "text";

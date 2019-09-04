@@ -1,7 +1,6 @@
 package im.threads.internal.controllers;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import im.threads.internal.activities.QuickAnswerActivity;
@@ -13,17 +12,12 @@ import im.threads.internal.utils.ThreadsLogger;
 
 public final class QuickAnswerController extends Fragment {
     private static final String TAG = "QuickAnswerController ";
-    private QuickAnswerActivity activity;
-    private Context context;
 
     public static QuickAnswerController getInstance() {
         return new QuickAnswerController();
     }
 
-    public void onBind(final QuickAnswerActivity activity) {
-        if (activity == null) return;
-        this.activity = activity;
-        context = activity.getApplicationContext();
+    public void onBind(@NonNull final QuickAnswerActivity activity) {
         DatabaseHolder.getInstance()
                 .getLastUnreadPhrase(new CompletionHandler<ConsultPhrase>() {
                     @Override
@@ -39,17 +33,8 @@ public final class QuickAnswerController extends Fragment {
                 });
     }
 
-    public void unBind() {
-        this.activity = null;
-    }
-
     public void onUserAnswer(@NonNull UpcomingUserMessage upcomingUserMessage) {
         ThreadsLogger.i(TAG, "onUserAnswer");
-        if (activity == null && context == null) {
-            ThreadsLogger.e(TAG, "onUserAnswer context is null");
-            return;
-        }
-        final Context ctx = activity == null ? context : activity;
         ChatController cc = ChatController.getInstance();
         cc.onUserInput(upcomingUserMessage);
         cc.setAllMessagesWereRead();

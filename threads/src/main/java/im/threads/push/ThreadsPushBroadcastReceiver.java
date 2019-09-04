@@ -6,15 +6,19 @@ import android.os.Bundle;
 
 import com.mfms.android.push_lite.PushBroadcastReceiver;
 
+import java.util.List;
+
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
-import im.threads.internal.controllers.ChatController;
+import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.IncomingMessageParser;
+import im.threads.internal.formatters.PushMessageAttributes;
 import im.threads.internal.formatters.PushMessageType;
+import im.threads.internal.services.NotificationService;
 import im.threads.internal.utils.ThreadsLogger;
 
 /**
  * Приемщик всех коротких пуш уведомлений,
- * т.е. просто всех уведомлений на прямую от GCM.
+ * т.е. просто всех уведомлений напрямую от GCM.
  * Полная информация о пуш уведомлениях скачивается отдельно
  * и доступна в {@link ThreadsPushServerIntentService}
  */
@@ -25,8 +29,29 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     protected void onNewPushNotification(final Context context, final String alert, final Bundle bundle) {
         ThreadsLogger.i(TAG, "onNewPushNotification " + alert + " " + bundle);
         if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
-            if (isChatSystemPush(bundle)) {
-                ChatController.getInstance().onSystemMessageFromServer(context, bundle, alert);
+            final PushMessageType pushMessageType = PushMessageType.getKnownType(bundle);
+            switch (pushMessageType) {
+                case TYPING:
+                    String clientId = bundle.getString(PushMessageAttributes.CLIENT_ID);
+                    if (clientId != null) {
+                        ChatUpdateProcessor.getInstance().postTyping(clientId);
+                    }
+                    break;
+                case MESSAGES_READ:
+                    final List<String> list = IncomingMessageParser.getReadIds(bundle);
+                    ThreadsLogger.i(TAG, "onSystemMessageFromServer: read messages " + list);
+                    for (final String readMessageProviderId : list) {
+                        ChatUpdateProcessor.getInstance().postMessageRead(readMessageProviderId);
+                    }
+                    break;
+                case REMOVE_PUSHES:
+                    NotificationService.removeNotification(context);
+                    break;
+                case UNREAD_MESSAGE_NOTIFICATION:
+                    String operatorUrl = bundle.getString(PushMessageAttributes.OPERATOR_URL);
+                    String appMarker = bundle.getString(PushMessageAttributes.APP_MARKER_KEY);
+                    NotificationService.addUnreadMessage(context, alert, operatorUrl, appMarker);
+                    break;
             }
         }
     }
@@ -51,13 +76,5 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     @Override
     public void onError(final Context context, final String s) {
         ThreadsLogger.e(TAG, "onFileDonwloaderError " + s);
-    }
-
-    private boolean isChatSystemPush(final Bundle bundle) {
-        final PushMessageType messageType = PushMessageType.getKnownType(bundle);
-        return messageType == PushMessageType.TYPING
-                || messageType == PushMessageType.MESSAGES_READ
-                || messageType == PushMessageType.REMOVE_PUSHES
-                || messageType == PushMessageType.UNREAD_MESSAGE_NOTIFICATION;
     }
 }

@@ -26,7 +26,6 @@ import im.threads.internal.model.Attachment;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
-import im.threads.internal.model.EmptyChatItem;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageFromHistory;
 import im.threads.internal.model.MessageState;
@@ -41,7 +40,7 @@ import im.threads.internal.utils.DateHelper;
 import im.threads.internal.utils.ThreadsLogger;
 
 public final class IncomingMessageParser {
-    private static final String TAG = "MessageFormatter ";
+    private static final String TAG = "IncomingMessageParser ";
 
     private IncomingMessageParser() {
     }
@@ -193,12 +192,6 @@ public final class IncomingMessageParser {
         return isCurrentClientId;
     }
 
-    public static boolean checkId(Bundle pushBundle, String currentClientId) {
-        return !TextUtils.isEmpty(currentClientId)
-                && pushBundle.containsKey(PushMessageAttributes.CLIENT_ID)
-                && currentClientId.equalsIgnoreCase(pushBundle.getString(PushMessageAttributes.CLIENT_ID));
-    }
-
     public static String getAppMarker(PushMessage pushMessage) {
         String appMarker = null;
         final JSONObject fullMessage = getFullMessage(pushMessage);
@@ -216,6 +209,7 @@ public final class IncomingMessageParser {
     /**
      * @return null, если не удалось распознать формат сообщения.
      */
+    @Nullable
     public static ChatItem format(final PushMessage pushMessage) {
         final JSONObject fullMessage = getFullMessage(pushMessage);
         // В пуше для чата должен быть fullMessage, и он должен соответствовать формату JSON.
@@ -238,18 +232,17 @@ public final class IncomingMessageParser {
                     return getRatingFromPush(pushMessage, fullMessage);
                 case REQUEST_CLOSE_THREAD:
                     return getCloseRequestFromPush(fullMessage);
-                case MESSAGE:
-                case ON_HOLD:
-                    // Либо в fullMessage должны содержаться ключи из списка:
-                    // "attachments", "text", "quotes"
-                    return checkMessageIsFull(pushMessage, fullMessage);
                 case NONE:
                 case MESSAGES_READ:
                 case OPERATOR_LOOKUP_STARTED:
                 case CLIENT_BLOCKED:
                 case SCENARIO:
-                    return new EmptyChatItem(type.name());
+                    return null;
+                case MESSAGE:
+                case ON_HOLD:
                 default:
+                    // Либо в fullMessage должны содержаться ключи из списка:
+                    // "attachments", "text", "quotes"
                     return checkMessageIsFull(pushMessage, fullMessage);
             }
         } catch (final IllegalArgumentException ex) {

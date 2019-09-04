@@ -80,7 +80,6 @@ public final class QuickAnswerActivity
     @Override
     protected void onStop() {
         super.onStop();
-        controller.unBind();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mQuickAnswerReceiver);
     }
 
