@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.formatters.IncomingMessageParser;
+import im.threads.internal.transport.mfms_push.IncomingMessageParser;
 import im.threads.internal.formatters.MessageFormatter;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ScheduleInfo;

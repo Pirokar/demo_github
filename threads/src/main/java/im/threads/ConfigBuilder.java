@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import im.threads.internal.Config;
+import im.threads.internal.transport.mfms_push.MFMSPushTransport;
+import im.threads.internal.transport.Transport;
 import im.threads.view.ChatActivity;
 
 public final class ConfigBuilder {
@@ -26,6 +28,8 @@ public final class ConfigBuilder {
     private int historyLoadingCount = 50;
 
     private int surveyCompletionDelay = 2000;
+
+    private Transport transport = new MFMSPushTransport();
 
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -63,7 +67,8 @@ public final class ConfigBuilder {
                 unreadMessagesCountListener,
                 isDebugLoggingEnabled,
                 historyLoadingCount,
-                surveyCompletionDelay
+                surveyCompletionDelay,
+                transport
         );
     }
 }

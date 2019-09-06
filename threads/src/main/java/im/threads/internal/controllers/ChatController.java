@@ -7,24 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.mfms.android.push_lite.RequestCallback;
-import com.mfms.android.push_lite.exception.PushServerErrorException;
-import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.R;
@@ -35,9 +28,7 @@ import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.formatters.IncomingMessageParser;
-import im.threads.internal.formatters.OutgoingMessageCreator;
-import im.threads.internal.formatters.PushMessageType;
+import im.threads.internal.formatters.ChatMessageType;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
@@ -49,7 +40,6 @@ import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.HistoryResponse;
-import im.threads.internal.model.MessageFromHistory;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
@@ -58,9 +48,10 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.opengraph.OGDataProvider;
-import im.threads.internal.retrofit.ServiceGenerator;
 import im.threads.internal.services.DownloadService;
 import im.threads.internal.services.NotificationService;
+import im.threads.internal.transport.HistoryFormatter;
+import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.utils.Callback;
 import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ConsultWriter;
@@ -70,14 +61,17 @@ import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
 import im.threads.internal.utils.ThreadsLogger;
-import im.threads.internal.utils.Transport;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.view.ChatFragment;
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
@@ -97,11 +91,6 @@ public final class ChatController {
     private static final int RESEND_MSG = 123;
 
     private static ChatController instance;
-    // Некоторые операции производятся в отдельном потоке через Executor.
-    // Чтобы отправить результат из него в UI Thread используется Handler.
-    private static final Handler h = new Handler(Looper.getMainLooper());
-    private final Executor mExecutor = Executors.newSingleThreadExecutor();
-    private final Executor mMessagesExecutor = Executors.newSingleThreadExecutor();
 
     private final PublishProcessor<Survey> surveyCompletionProcessor = PublishProcessor.create();
     private boolean surveyCompletionInProgress = false;
@@ -155,7 +144,15 @@ public final class ChatController {
         } else {
             final String clientId = newClientId;
             PrefUtils.setClientId(clientId);
-            instance.mExecutor.execute(() -> instance.onClientIdChanged(clientId));
+            instance.subscribe(
+                    Completable.fromAction(() -> instance.onClientIdChanged(clientId))
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    () -> {
+                                    },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
         }
         return instance;
     }
@@ -164,7 +161,6 @@ public final class ChatController {
         appContext = Config.instance.context;
         databaseHolder = DatabaseHolder.getInstance();
         consultWriter = new ConsultWriter(appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE));
-        ServiceGenerator.setUserAgent(OutgoingMessageCreator.getUserAgent(appContext));
         resendTimeInterval = appContext.getResources().getInteger(R.integer.check_internet_interval_ms);
         unsendMessageHandler = new Handler(msg -> {
             if (msg.what == RESEND_MSG) {
@@ -231,32 +227,28 @@ public final class ChatController {
     }
 
     public void onResolveThreadClick(final boolean approveResolve) {
-        // if user approve to resolve the thread - send CLOSE_THREAD push
-        // else if user doesn't approve to resolve the thread - send REOPEN_THREAD push
-        // and then delete the request from the chat history
-        final String clientID = PrefUtils.getClientID();
-        final String resolveThreadMessage = approveResolve ?
-                OutgoingMessageCreator.createResolveThreadMessage(clientID) :
-                OutgoingMessageCreator.createReopenThreadMessage(clientID);
-
-        Transport.sendMessageMFMSAsync(resolveThreadMessage, true,
-                new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
-                    @Override
-                    public void onResult(InMessageSend.Response response) {
-                        removeResolveRequest();
-                    }
-
-                    @Override
-                    public void onError(final PushServerErrorException e) {
-
-                    }
-                }, null);
+        subscribe(
+                Completable.fromAction(() -> Config.instance.transport.sendResolveThread(approveResolve))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                this::removeResolveRequest,
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
     }
 
     public void onUserTyping(String input) {
-        Transport.sendMessageMFMSAsync(
-                OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(), input),
-                true, null, null);
+        subscribe(
+                Completable.fromAction(() -> Config.instance.transport.sendUserTying(input))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
     }
 
     public void onUserInput(@NonNull final UpcomingUserMessage upcomingUserMessage) {
@@ -281,42 +273,44 @@ public final class ChatController {
         checkAndLoadOgData(um);
     }
 
-    public void fancySearch(final String query,
-                            final boolean forward,
-                            final CallbackNoError<List<ChatItem>> callback) {
+    public void fancySearch(final String query, final boolean forward, final CallbackNoError<List<ChatItem>> callback) {
         if (!isAllMessagesDownloaded) {
             downloadMessagesTillEnd();
         }
-        mExecutor.execute(() -> {
-            try {
-                if (System.currentTimeMillis() > (lastFancySearchDate + 3000)) {
-                    final List<ChatItem> fromDb = databaseHolder.getChatItems(0, -1);
-                    if (lastItems == null || lastItems.size() == 0) lastItems = fromDb;
-                    else {
-                        if (lastSearchQuery.equalsIgnoreCase(query)) {
-                            for (final ChatItem ci : lastItems) {
-                                if (ci instanceof ChatPhrase) {
-                                    if (((ChatPhrase) ci).isHighlight()) {
-                                        final ChatPhrase cp = (ChatPhrase) ci;
-                                        if (fromDb.contains(cp)) {
-                                            ((ChatPhrase) fromDb.get(fromDb.lastIndexOf(cp))).setHighLighted(true);
+        subscribe(Completable.fromAction(() -> {
+                    if (System.currentTimeMillis() > (lastFancySearchDate + 3000)) {
+                        final List<ChatItem> fromDb = databaseHolder.getChatItems(0, -1);
+                        if (lastItems == null || lastItems.size() == 0) lastItems = fromDb;
+                        else {
+                            if (lastSearchQuery.equalsIgnoreCase(query)) {
+                                for (final ChatItem ci : lastItems) {
+                                    if (ci instanceof ChatPhrase) {
+                                        if (((ChatPhrase) ci).isHighlight()) {
+                                            final ChatPhrase cp = (ChatPhrase) ci;
+                                            if (fromDb.contains(cp)) {
+                                                ((ChatPhrase) fromDb.get(fromDb.lastIndexOf(cp))).setHighLighted(true);
+                                            }
                                         }
                                     }
                                 }
                             }
+                            lastItems = fromDb;
                         }
-                        lastItems = fromDb;
+                        lastFancySearchDate = System.currentTimeMillis();
                     }
-                    lastFancySearchDate = System.currentTimeMillis();
-                }
-                if (query.isEmpty() || !query.equals(lastSearchQuery)) seeker = new Seeker();
-                lastSearchQuery = query;
-                final List<ChatItem> list = seeker.seek(lastItems, !forward, query);
-                callback.onCall(list);
-            } catch (final Exception e) {
-                ThreadsLogger.e(TAG, "fancySearch", e);
-            }
-        });
+                    if (query.isEmpty() || !query.equals(lastSearchQuery)) seeker = new Seeker();
+                    lastSearchQuery = query;
+                    final List<ChatItem> list = seeker.seek(lastItems, !forward, query);
+                    callback.onCall(list);
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
     }
 
     public void onFileClick(final FileDescription fileDescription) {
@@ -386,10 +380,16 @@ public final class ChatController {
                 }
             }
         }
-        if (isForeground) h.postDelayed(() -> {
-            appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-            notifyUnreadMessagesCountChanged();
-        }, 1500);
+        if (isActive) {
+            subscribe(
+                    Observable.timer(1500, TimeUnit.MILLISECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> {
+                                appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
+                                notifyUnreadMessagesCountChanged();
+                            })
+            );
+        }
     }
 
     public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
@@ -398,26 +398,33 @@ public final class ChatController {
             callback.onSuccess(new ArrayList<>());
             return;
         }
-        mExecutor.execute(() -> {
-            if (instance.fragment != null) {
-                final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
-                int count = Config.instance.historyLoadingCount;
-                try {
-                    final HistoryResponse response = Transport.getHistorySync(null, false);
-                    final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
-                    count = serverItems.size();
-                    databaseHolder.putMessagesSync(serverItems);
-                    final List<ChatItem> chatItems = setLastAvatars(databaseHolder.getChatItems(currentOffset[0], count));
-                    currentOffset[0] += chatItems.size();
-                    h.post(() -> callback.onSuccess(chatItems));
-                } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "requestItems", e);
-                    final List<ChatItem> chatItems = setLastAvatars(databaseHolder.getChatItems(currentOffset[0], count));
-                    currentOffset[0] += chatItems.size();
-                    h.post(() -> callback.onSuccess(chatItems));
-                }
-            }
-        });
+        if (instance.fragment != null) {
+            subscribe(
+                    Single.fromCallable(() -> {
+                        final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
+                        int count = Config.instance.historyLoadingCount;
+                        try {
+                            final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
+                            final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                            count = serverItems.size();
+                            databaseHolder.putMessagesSync(serverItems);
+                            final List<ChatItem> chatItems = setLastAvatars(databaseHolder.getChatItems(currentOffset[0], count));
+                            currentOffset[0] += chatItems.size();
+                            return chatItems;
+                        } catch (final Exception e) {
+                            ThreadsLogger.e(TAG, "requestItems", e);
+                            final List<ChatItem> chatItems = setLastAvatars(databaseHolder.getChatItems(currentOffset[0], count));
+                            currentOffset[0] += chatItems.size();
+                            return chatItems;
+                        }
+                    })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    callback::onSuccess,
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            ));
+        }
     }
 
     public void onImageDownloadRequest(final FileDescription fileDescription) {
@@ -485,21 +492,36 @@ public final class ChatController {
         if (consultWriter.istSearchingConsult()) {
             fragment.setStateSearchingConsult();
         }
-        updateChatItemsOnBindAsync();
-        Transport.sendMessageMFMSAsync(
-                OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(), PrefUtils.getData()),
-                true,
-                null,
-                null
+        subscribe(
+                Single.fromCallable(this::updateChatItemsOnBind)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                items -> {
+                                    if (fragment != null) {
+                                        fragment.addChatItems(items);
+                                    }
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
         );
-
-        final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(),
-                PrefUtils.getClientID(),
-                PrefUtils.getClientIDEncrypted(),
-                PrefUtils.getData(),
-                appContext);
-        Transport.sendMessageMFMSAsync(environmentMessage, true, null, null);
-
+        subscribe(
+                Completable.fromAction(() -> Config.instance.transport.sendInitChatMessage())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
+        subscribe(
+                Completable.fromAction(() -> Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(() -> {
+                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
+        );
         if (consultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo());
         } else if (consultWriter.istSearchingConsult()) {
@@ -540,8 +562,7 @@ public final class ChatController {
     private void notifyUnreadMessagesCountChanged() {
         ThreadsLib.UnreadMessagesCountListener l = Config.instance.unreadMessagesCountListener;
         if (l != null) {
-            DatabaseHolder.getInstance()
-                    .getUnreadMessagesCount(false, l);
+            DatabaseHolder.getInstance().getUnreadMessagesCount(false, l);
         }
     }
 
@@ -559,26 +580,11 @@ public final class ChatController {
                         .firstElement()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(survey -> {
-                                    String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(survey,
-                                            PrefUtils.getClientID(),
-                                            PrefUtils.getAppMarker());
-                                    Transport.sendMessageMFMSAsync(ratingDoneMessage, false,
-                                            new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
-                                                @Override
-                                                public void onResult(InMessageSend.Response response) {
-                                                    new Handler(Looper.getMainLooper()).post(() -> {
-                                                                surveyCompletionInProgress = false;
-                                                                setSurveyStateSent(survey);
-                                                                resetActiveSurvey();
-                                                                updateUi();
-                                                            }
-                                                    );
-                                                }
-
-                                                @Override
-                                                public void onError(final PushServerErrorException e) {
-                                                }
-                                            }, null);
+                                    Config.instance.transport.sendRatingDone(survey);
+                                    surveyCompletionInProgress = false;
+                                    setSurveyStateSent(survey);
+                                    resetActiveSurvey();
+                                    updateUi();
                                 }
                         )
         );
@@ -601,48 +607,26 @@ public final class ChatController {
         }
     }
 
-    private void onClientIdChanged(final String finalClientId) {
-        try {
-            Transport.getPushControllerInstance();
-        } catch (final PushServerErrorException e) {
-            ThreadsLogger.e(TAG, "device address was not set, returning");
-            return;
+    private void onClientIdChanged(final String finalClientId) throws Exception {
+        instance.cleanAll();
+        if (instance.fragment != null) {
+            instance.fragment.removeSearching();
         }
-        try {
-            instance.cleanAll();
-            if (instance.fragment != null) {
-                instance.fragment.removeSearching();
+        instance.consultWriter.setCurrentConsultLeft();
+        Config.instance.transport.onClientIdChanged(finalClientId);
+        final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
+        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+        instance.databaseHolder.putMessagesSync(serverItems);
+        final List<ChatItem> phrases = instance.setLastAvatars(serverItems);
+        if (instance.fragment != null) {
+            instance.fragment.addChatItems(phrases);
+            final ConsultInfo info = response != null ? response.getConsultInfo() : null;
+            if (info != null) {
+                instance.fragment.setStateConsultConnected(info);
             }
-            instance.consultWriter.setCurrentConsultLeft();
-            Transport.sendMessageMFMSSync(
-                    OutgoingMessageCreator.createInitChatMessage(finalClientId, PrefUtils.getData()),
-                    true
-            );
-            final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(
-                    PrefUtils.getUserName(),
-                    finalClientId,
-                    PrefUtils.getClientIDEncrypted(),
-                    PrefUtils.getData(),
-                    appContext
-            );
-            Transport.sendMessageMFMSSync(environmentMessage, true);
-            Transport.getPushControllerInstance().resetCounterSync();
-            final HistoryResponse response = Transport.getHistorySync(null, true);
-            final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
-            instance.databaseHolder.putMessagesSync(serverItems);
-            final List<ChatItem> phrases = instance.setLastAvatars(serverItems);
-            if (instance.fragment != null) {
-                instance.fragment.addChatItems(phrases);
-                final ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                if (info != null) {
-                    instance.fragment.setStateConsultConnected(info);
-                }
-            }
-            instance.checkAndLoadOgData(phrases);
-            PrefUtils.setClientIdWasSet(true);
-        } catch (final Exception e) {
-            ThreadsLogger.e(TAG, "onClientIdChanged", e);
         }
+        instance.checkAndLoadOgData(phrases);
+        PrefUtils.setClientIdWasSet(true);
     }
 
     private void removeResolveRequest() {
@@ -678,21 +662,12 @@ public final class ChatController {
         }
     }
 
-    private void updateChatItemsOnBindAsync() {
-        mExecutor.execute(this::updateChatItemsOnBind);
-    }
-
-    private void updateChatItemsOnBind() {
-        if (null != fragment) {
+    private List<ChatItem> updateChatItemsOnBind() {
+        List<ChatItem> items = new ArrayList<>();
+        if (fragment != null) {
             final int historyLoadingCount = Config.instance.historyLoadingCount;
-            final List<ChatItem> items = setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
-            h.post(() -> {
-                if (fragment != null) {
-                    fragment.addChatItems(items);
-                }
-            });
+            items = setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
             checkAndLoadOgData(items);
-
             final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
             if (!unsendUserPhrase.isEmpty()) {
                 unsendMessages.clear();
@@ -701,39 +676,64 @@ public final class ChatController {
             }
         }
         loadHistory();
+        return items;
+    }
+
+    public void logoutClient(@NonNull final String clientId) {
+        if (!TextUtils.isEmpty(clientId)) {
+            subscribe(
+                    Completable.fromAction(() -> Config.instance.transport.sendClientOffline(clientId))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    () -> {
+                                    },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
+        } else {
+            ThreadsLogger.i(getClass().getSimpleName(), "clientId must not be empty");
+        }
     }
 
     public void loadHistory() {
         if (!isDownloadingMessages) {
             isDownloadingMessages = true;
-            mExecutor.execute(() -> {
-                try {
-                    final int count = Config.instance.historyLoadingCount;
-                    final HistoryResponse response = Transport.getHistorySync(count, true);
-                    final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
-                    final ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                    final List<ChatItem> dbItems = databaseHolder.getChatItems(0, count);
-                    if (dbItems.size() != serverItems.size() || !dbItems.containsAll(serverItems)) {
-                        ThreadsLogger.d(TAG, "Local and downloaded history are not same");
-                        databaseHolder.putMessagesSync(serverItems);
-                        final int serverCount = serverItems.size();
-                        h.post(() -> {
-                            final List<ChatItem> items = setLastAvatars(databaseHolder.getChatItems(0, serverCount));
-                            if (fragment != null) {
-                                fragment.addChatItems(items);
-                                checkAndLoadOgData(items);
-                                if (info != null) {
-                                    fragment.setStateConsultConnected(info);
-                                }
-                            }
-                        });
-                    }
-                } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "loadHistory", e);
-                } finally {
-                    isDownloadingMessages = false;
-                }
-            });
+            subscribe(
+                    Single.fromCallable(() -> {
+                        final int count = Config.instance.historyLoadingCount;
+                        final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
+                        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                        final List<ChatItem> dbItems = databaseHolder.getChatItems(0, count);
+                        if (dbItems.size() != serverItems.size() || !dbItems.containsAll(serverItems)) {
+                            ThreadsLogger.d(TAG, "Local and downloaded history are not same");
+                            databaseHolder.putMessagesSync(serverItems);
+                        }
+                        return response;
+                    })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    response -> {
+                                        isDownloadingMessages = false;
+                                        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                                        final int serverCount = serverItems.size();
+                                        final List<ChatItem> items = setLastAvatars(databaseHolder.getChatItems(0, serverCount));
+                                        if (fragment != null) {
+                                            fragment.addChatItems(items);
+                                            checkAndLoadOgData(items);
+                                            final ConsultInfo info = response != null ? response.getConsultInfo() : null;
+                                            if (info != null) {
+                                                fragment.setStateConsultConnected(info);
+                                            }
+                                        }
+                                    },
+                                    e -> {
+                                        isDownloadingMessages = false;
+                                        ThreadsLogger.e(TAG, e.getMessage());
+                                    }
+                            )
+            );
         }
     }
 
@@ -762,33 +762,17 @@ public final class ChatController {
         } else {
             sendFileMessage(userPhrase, consultInfo);
         }
-        h.postDelayed(() -> new Thread(() -> {
-            if (fragment != null)
-                try {
-                    Transport.getPushControllerInstance().notifyMessageUpdateNeeded();
-                } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "sendMessage", e);
-                }
-        }).start(), 60000);
+        subscribe(
+                Completable.fromAction(() -> Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID()))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(() -> {
+                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
+        );
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        final String message = OutgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, null, null,
-                PrefUtils.getClientID(),
-                PrefUtils.getThreadID()
-        );
-        Transport.sendMessageMFMSAsync(message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
-            @Override
-            public void onResult(InMessageSend.Response response) {
-                long sentAt = response.getSentAt() == null ? 0 : response.getSentAt().getMillis();
-                onMessageSent(userPhrase, response.getMessageId(), sentAt);
-            }
-
-            @Override
-            public void onError(final PushServerErrorException e) {
-                onMessageSentError(userPhrase);
-            }
-        }, e -> onMessageSentError(userPhrase));
+        sendMessage(userPhrase, consultInfo, null, null);
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
@@ -797,35 +781,37 @@ public final class ChatController {
         new DualFilePoster(fileDescription, quoteFileDescription, appContext) {
             @Override
             public void onResult(final String mfmsFilePath, final String mfmsQuoteFilePath) {
-                onFileSent(userPhrase, consultInfo, mfmsFilePath, mfmsQuoteFilePath);
+                ThreadsLogger.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
+                sendMessage(userPhrase, consultInfo, mfmsFilePath, mfmsQuoteFilePath);
             }
 
             @Override
             public void onError(final Throwable e) {
-                onMessageSentError(userPhrase);
                 ThreadsLogger.w(TAG, "File send failed", e);
+                onMessageSentError(userPhrase);
             }
         };
     }
 
-    private void onFileSent(final UserPhrase userPhrase, final ConsultInfo consultInfo, final String mfmsFilePath, final String mfmsQuoteFilePath) {
-        ThreadsLogger.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
-        final String message = OutgoingMessageCreator.createUserPhraseMessage(userPhrase, consultInfo, mfmsQuoteFilePath, mfmsFilePath,
-                PrefUtils.getClientID(),
-                PrefUtils.getThreadID()
+    private void sendMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo, @Nullable final String mfmsFilePath, @Nullable final String mfmsQuoteFilePath) {
+        subscribe(
+                Single.fromCallable(() -> Config.instance.transport.sendMessage(userPhrase, consultInfo, mfmsFilePath, mfmsQuoteFilePath))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map(response -> {
+                            onMessageSent(userPhrase, response.messageId, response.sentAt);
+                            return response;
+                        })
+                        .observeOn(Schedulers.io())
+                        .delay(60000, TimeUnit.MILLISECONDS)
+                        .subscribe(
+                                response -> Config.instance.transport.notifyMessageUpdateNeeded(),
+                                e -> {
+                                    ThreadsLogger.e(TAG, e.getMessage());
+                                    onMessageSentError(userPhrase);
+                                }
+                        )
         );
-        Transport.sendMessageMFMSAsync(message, false, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
-            @Override
-            public void onResult(InMessageSend.Response response) {
-                long sentAt = response.getSentAt() == null ? 0 : response.getSentAt().getMillis();
-                onMessageSent(userPhrase, response.getMessageId(), sentAt);
-            }
-
-            @Override
-            public void onError(final PushServerErrorException e) {
-                onMessageSentError(userPhrase);
-            }
-        }, null);
     }
 
     private void onMessageSent(final UserPhrase userPhrase, String providerId, long sentAtTimestamp) {
@@ -871,77 +857,78 @@ public final class ChatController {
         if (!isDownloadingMessages && !isAllMessagesDownloaded) {
             isDownloadingMessages = true;
             ThreadsLogger.d(TAG, "downloadMessagesTillEnd");
-            mMessagesExecutor.execute(() -> {
-                try {
-                    final HistoryResponse response = Transport.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
-                    final List<MessageFromHistory> items = response != null ? response.getMessages() : null;
-                    if (items == null || items.isEmpty()) {
-                        isDownloadingMessages = false;
-                        isAllMessagesDownloaded = true;
-                    } else {
-                        lastMessageTimestamp = items.get(0).getTimeStamp();
-                        isAllMessagesDownloaded = items.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                        final List<ChatItem> chatItems = IncomingMessageParser.formatNew(items);
-                        databaseHolder.putMessagesSync(chatItems);
-                        isDownloadingMessages = false;
-                        if (!isAllMessagesDownloaded) {
-                            downloadMessagesTillEnd();
+            subscribe(
+                    Completable.fromAction(() -> {
+                        final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
+                        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                        if (serverItems.isEmpty()) {
+                            isDownloadingMessages = false;
+                            isAllMessagesDownloaded = true;
+                        } else {
+                            lastMessageTimestamp = serverItems.get(0).getTimeStamp();
+                            isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
+                            databaseHolder.putMessagesSync(serverItems);
+                            isDownloadingMessages = false;
+                            if (!isAllMessagesDownloaded) {
+                                downloadMessagesTillEnd();
+                            }
                         }
-                    }
-                } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "downloadMessagesTillEnd", e);
-                }
-            });
+                    })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    () -> {
+                                    },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
         }
     }
 
     private void onNewMessage(ChatItem chatItem) {
         if (chatItem instanceof Survey) {
             final Survey survey = (Survey) chatItem;
-            final String ratingDoneMessage = OutgoingMessageCreator.createRatingReceivedMessage(
-                    survey.getSendingId(),
-                    PrefUtils.getClientID()
+            activeSurveySendingId = survey.getSendingId();
+            subscribe(
+                    Completable.fromAction(() -> Config.instance.transport.sendRatingReceived(survey.getSendingId()))
+                            .delay(survey.getHideAfter(), TimeUnit.SECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    this::removeActiveSurvey,
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
             );
-            Transport.sendMessageMFMSAsync(ratingDoneMessage, true, new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
-                @Override
-                public void onResult(InMessageSend.Response response) {
-                    setSurveyLifetime(survey);
-                }
-
-                @Override
-                public void onError(final PushServerErrorException e) {
-                }
-            }, null);
         }
         if (chatItem instanceof RequestResolveThread) {
             isResolveRequestVisible = true;
             final RequestResolveThread resolveThread = (RequestResolveThread) chatItem;
             // if thread is closed by timeout
             // remove close request from the history
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                if (isResolveRequestVisible) {
-                    removeResolveRequest();
-                }
-            }, resolveThread.getHideAfter() * 1000);
+            subscribe(
+                    Observable.timer(resolveThread.getHideAfter(), TimeUnit.SECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> {
+                                if (isResolveRequestVisible) {
+                                    removeResolveRequest();
+                                }
+                            })
+            );
         }
         if (chatItem instanceof ScheduleInfo) {
             final ScheduleInfo schedule = (ScheduleInfo) chatItem;
             isChatWorking = schedule.isChatWorking();
             updateInputEnable(isChatWorking || schedule.isSendDuringInactive());
             consultWriter.setSearchingConsult(false);
-            h.post(() -> {
-                if (null != fragment) {
-                    fragment.removeSearching();
-                    fragment.setTitleStateDefault();
-                }
-            });
+            fragment.removeSearching();
+            fragment.setTitleStateDefault();
         }
         if (chatItem instanceof UserPhrase || chatItem instanceof ConsultPhrase) {
             checkAndLoadOgData(chatItem);
         }
         if (chatItem instanceof ConsultConnectionMessage) {
             ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
-            if (ccm.getType().equalsIgnoreCase(PushMessageType.OPERATOR_JOINED.name())) {
+            if (ccm.getType().equalsIgnoreCase(ChatMessageType.OPERATOR_JOINED.name())) {
                 consultWriter.setSearchingConsult(false);
                 consultWriter.setCurrentConsultInfo(ccm);
                 if (fragment != null) {
@@ -967,38 +954,37 @@ public final class ChatController {
 
     private void addMessage(final ChatItem cm) {
         databaseHolder.putChatItem(cm);
-        h.post(() -> {
-            if (null != fragment) {
-                final ChatItem ci = setLastAvatars(Collections.singletonList(cm)).get(0);
-                if (!(ci instanceof ConsultConnectionMessage) || ((ConsultConnectionMessage) ci).isDisplayMessage()) {
-                    fragment.addChatItem(ci);
-                    checkAndLoadOgData(ci);
-                }
-                if (ci instanceof ConsultChatPhrase) {
-                    fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath(), ((ConsultChatPhrase) ci).getConsultId());
-                }
+        if (fragment != null) {
+            final ChatItem ci = setLastAvatars(Collections.singletonList(cm)).get(0);
+            if (!(ci instanceof ConsultConnectionMessage) || ((ConsultConnectionMessage) ci).isDisplayMessage()) {
+                fragment.addChatItem(ci);
+                checkAndLoadOgData(ci);
             }
-        });
+            if (ci instanceof ConsultChatPhrase) {
+                fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath(), ((ConsultChatPhrase) ci).getConsultId());
+            }
+        }
         if (cm instanceof ConsultPhrase && isActive) {
             final String providerId = ((ConsultPhrase) cm).getProviderId();
             setConsultMessageRead(providerId);
         }
-        h.postDelayed(() -> {
-            if (isActive) {
-                appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-                notifyUnreadMessagesCountChanged();
-            }
-        }, 1500);
+        if (isActive) {
+            subscribe(
+                    Observable.timer(1500, TimeUnit.MILLISECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> {
+                                appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
+                                notifyUnreadMessagesCountChanged();
+                            })
+            );
+        }
         // Если пришло сообщение от оператора,
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
-        if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage
-                || (cm instanceof ScheduleInfo && ((ScheduleInfo) cm).isChatWorking())) {
-            h.post(() -> {
-                if (fragment != null && fragment.isAdded()) {
-                    fragment.removeSchedule(false);
-                }
-            });
+        if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage || (cm instanceof ScheduleInfo && ((ScheduleInfo) cm).isChatWorking())) {
+            if (fragment != null && fragment.isAdded()) {
+                fragment.removeSchedule(false);
+            }
         }
     }
 
@@ -1019,10 +1005,11 @@ public final class ChatController {
     private void cleanAll() {
         ThreadsLogger.i(TAG, "cleanAll: ");
         databaseHolder.cleanDatabase();
-        if (fragment != null) fragment.cleanChat();
+        if (fragment != null) {
+            fragment.cleanChat();
+        }
         consultWriter.setCurrentConsultLeft();
         consultWriter.setSearchingConsult(false);
-        h.removeCallbacksAndMessages(null);
         appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
         notifyUnreadMessagesCountChanged();
     }
@@ -1107,62 +1094,54 @@ public final class ChatController {
     }
 
     private void updateInputEnable(final boolean enabled) {
-        h.post(() -> {
-            if (fragment != null) {
-                fragment.updateInputEnable(enabled);
-            }
-        });
-    }
-
-    private void setConsultMessageRead(final String providerId) {
-        try {
-            Transport.getPushControllerInstance().notifyMessageRead(providerId);
-            databaseHolder.setMessageWereRead(providerId);
-        } catch (final PushServerErrorException e) {
-            ThreadsLogger.e(TAG, "setConsultMessageRead", e);
+        if (fragment != null) {
+            fragment.updateInputEnable(enabled);
         }
     }
 
-    private void setSurveyLifetime(final Survey survey) {
-        // delete survey after timeout if user doesn't vote
-        activeSurveySendingId = survey.getSendingId();
-        final Long hideAfter = survey.getHideAfter();
-        final Handler closeActiveSurveyHandler = new Handler(Looper.getMainLooper());
-        closeActiveSurveyHandler.postDelayed(this::removeActiveSurvey, hideAfter * 1000);
+    private void setConsultMessageRead(final String providerId) {
+        subscribe(
+                Completable.fromAction(() -> Config.instance.transport.sendMessageRead(providerId))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> databaseHolder.setMessageWereRead(providerId),
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
     }
 
-    private void onSettingClientId(final Context ctx) {
+    private void onSettingClientId() {
         ThreadsLogger.i(TAG, "onSettingClientId:");
-        mExecutor.execute(() -> {
-            String newClientId = PrefUtils.getNewClientID();
-            if (fragment != null && !TextUtils.isEmpty(newClientId)) {
-                try {
-                    cleanAll();
-                    PrefUtils.setClientId(newClientId);
-                    PrefUtils.setClientIdWasSet(true);
-                    Transport.getPushControllerInstance().resetCounterSync();
-                    Transport.sendMessageMFMSSync(
-                            OutgoingMessageCreator.createEnvironmentMessage(PrefUtils.getUserName(),
-                                    newClientId,
-                                    PrefUtils.getClientIDEncrypted(),
-                                    PrefUtils.getData(),
-                                    ctx), true);
-                    final HistoryResponse response = Transport.getHistorySync(null, true);
-                    final List<ChatItem> serverItems = Transport.getChatItemFromHistoryResponse(response);
-                    databaseHolder.putMessagesSync(serverItems);
-                    if (fragment != null) {
-                        List<ChatItem> itemsWithLastAvatars = setLastAvatars(serverItems);
-                        fragment.addChatItems(itemsWithLastAvatars);
-                        checkAndLoadOgData(itemsWithLastAvatars);
-                        final ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                        if (info != null) {
-                            fragment.setStateConsultConnected(info);
+        subscribe(
+                Completable.fromAction(() -> {
+                    String newClientId = PrefUtils.getNewClientID();
+                    if (fragment != null && !TextUtils.isEmpty(newClientId)) {
+                        cleanAll();
+                        PrefUtils.setClientId(newClientId);
+                        PrefUtils.setClientIdWasSet(true);
+                        Config.instance.transport.onSettingClientId(newClientId);
+                        final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
+                        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                        databaseHolder.putMessagesSync(serverItems);
+                        if (fragment != null) {
+                            List<ChatItem> itemsWithLastAvatars = setLastAvatars(serverItems);
+                            fragment.addChatItems(itemsWithLastAvatars);
+                            checkAndLoadOgData(itemsWithLastAvatars);
+                            final ConsultInfo info = response != null ? response.getConsultInfo() : null;
+                            if (info != null) {
+                                fragment.setStateConsultConnected(info);
+                            }
                         }
                     }
-                } catch (final Exception e) {
-                    ThreadsLogger.e(TAG, "onSettingClientId", e);
-                }
-            }
-        });
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
     }
 }

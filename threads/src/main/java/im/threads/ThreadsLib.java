@@ -4,21 +4,16 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
-
-import com.mfms.android.push_lite.PushController;
 
 import java.io.File;
 
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.formatters.OutgoingMessageCreator;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
-import im.threads.internal.utils.Transport;
 
 public final class ThreadsLib {
 
@@ -34,7 +29,7 @@ public final class ThreadsLib {
         }
         Config.instance = configBuilder.build();
         instance = new ThreadsLib();
-        PushController.getInstance(Config.instance.context).init();
+        Config.instance.transport.init();
         if (Config.instance.unreadMessagesCountListener != null) {
             DatabaseHolder.getInstance()
                     .getUnreadMessagesCount(false, Config.instance.unreadMessagesCountListener);
@@ -68,11 +63,7 @@ public final class ThreadsLib {
      * Used to stop receiving messages for user with provided clientId
      */
     public void logoutClient(@NonNull final String clientId) {
-        if (!TextUtils.isEmpty(clientId)) {
-            Transport.sendMessageMFMSAsync(OutgoingMessageCreator.createMessageClientOffline(clientId), true, null, null);
-        } else {
-            ThreadsLogger.i(getClass().getSimpleName(), "clientId must not be empty");
-        }
+        ChatController.getInstance().logoutClient(clientId);
     }
 
     public void reloadHistory() {

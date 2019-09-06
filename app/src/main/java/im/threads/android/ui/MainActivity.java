@@ -202,12 +202,9 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
 
     @Override
     public void onOkClicked(final int requestCode) {
-
         List<Card> cards = cardsAdapter.getCards();
-
         if (cards.contains(cardForDelete)) {
             cards.remove(cardForDelete);
-
             showCards(cards);
             PrefUtils.storeCards(this, cards);
             ThreadsLib.getInstance().logoutClient(cardForDelete.getUserId());

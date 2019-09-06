@@ -3,6 +3,8 @@ package im.threads.push;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.mfms.android.push_lite.PushBroadcastReceiver;
 
@@ -10,9 +12,9 @@ import java.util.List;
 
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.formatters.IncomingMessageParser;
-import im.threads.internal.formatters.PushMessageAttributes;
-import im.threads.internal.formatters.PushMessageType;
+import im.threads.internal.formatters.ChatMessageType;
+import im.threads.internal.transport.mfms_push.IncomingMessageParser;
+import im.threads.internal.transport.mfms_push.PushMessageAttributes;
 import im.threads.internal.services.NotificationService;
 import im.threads.internal.utils.ThreadsLogger;
 
@@ -29,8 +31,8 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     protected void onNewPushNotification(final Context context, final String alert, final Bundle bundle) {
         ThreadsLogger.i(TAG, "onNewPushNotification " + alert + " " + bundle);
         if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
-            final PushMessageType pushMessageType = PushMessageType.getKnownType(bundle);
-            switch (pushMessageType) {
+            final ChatMessageType chatMessageType = getKnownType(bundle);
+            switch (chatMessageType) {
                 case TYPING:
                     String clientId = bundle.getString(PushMessageAttributes.CLIENT_ID);
                     if (clientId != null) {
@@ -76,5 +78,37 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     @Override
     public void onError(final Context context, final String s) {
         ThreadsLogger.e(TAG, "onFileDonwloaderError " + s);
+    }
+
+    @NonNull
+    private ChatMessageType getKnownType(final Bundle bundle) {
+        if (bundle == null) {
+            return ChatMessageType.UNKNOWN;
+        }
+        if (bundle.containsKey(PushMessageAttributes.READ_PROVIDER_IDS)) {
+            return ChatMessageType.MESSAGES_READ;
+        }
+        final String pushType = bundle.getString(PushMessageAttributes.TYPE);
+        if (!TextUtils.isEmpty(pushType)) {
+            final ChatMessageType chatMessageType = ChatMessageType.fromString(pushType);
+            if (chatMessageType == ChatMessageType.OPERATOR_JOINED ||
+                    chatMessageType == ChatMessageType.OPERATOR_LEFT ||
+                    chatMessageType == ChatMessageType.TYPING ||
+                    chatMessageType == ChatMessageType.SCHEDULE ||
+                    chatMessageType == ChatMessageType.SURVEY ||
+                    chatMessageType == ChatMessageType.REQUEST_CLOSE_THREAD ||
+                    chatMessageType == ChatMessageType.REMOVE_PUSHES ||
+                    chatMessageType == ChatMessageType.UNREAD_MESSAGE_NOTIFICATION) {
+                return chatMessageType;
+            }
+        }
+        // old push format
+        if (pushType == null && bundle.getString("alert") != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null) {
+            return ChatMessageType.MESSAGE;
+        }
+        if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
+            return ChatMessageType.CHAT_PUSH;
+        }
+        return ChatMessageType.UNKNOWN;
     }
 }

@@ -36,7 +36,6 @@ import im.threads.ThreadsLib;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.formatters.IncomingMessageParser;
 import im.threads.internal.formatters.MessageFormatter;
 import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.picasso_url_connection_only.Picasso;
@@ -162,7 +161,7 @@ public final class NotificationService extends Service {
                     }
                     break;
                 case ACTION_ADD_UNREAD_MESSAGE_LIST:
-                    final MessageFormatter.MessageContent messageContent = (MessageFormatter.MessageContent) IncomingMessageParser.formatMessages(intent.getParcelableExtra(EXTRA_MESSAGE_CONTENT));
+                    final MessageFormatter.MessageContent messageContent = intent.getParcelableExtra(EXTRA_MESSAGE_CONTENT);
                     if (Build.VERSION.SDK_INT < 24) {
                         final Notification notification = getPreNStyleNotification(intent, messageContent, null);
                         notifyUnreadMessagesCountChanged(nm, notification);

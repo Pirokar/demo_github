@@ -28,7 +28,7 @@ public final class DateHelper {
         return date.getTime();
     }
 
-    static String getMessageDateStringFromTimestamp(long timestamp) {
+    public static String getMessageDateStringFromTimestamp(long timestamp) {
         return sdf.format(new Date(timestamp));
     }
 }

@@ -1,6 +1,8 @@
-package im.threads.internal.formatters;
+package im.threads.internal.transport.mfms_push;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
@@ -10,7 +12,7 @@ import org.json.JSONObject;
 import java.io.File;
 
 import im.threads.R;
-import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.formatters.ChatMessageType;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Quote;
@@ -19,9 +21,11 @@ import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.PrefUtils;
+import im.threads.internal.utils.ThreadsLogger;
 
-public final class OutgoingMessageCreator {
-    private static final String TAG = "MessageFormatter ";
+final class OutgoingMessageCreator {
+
+    private static final String TAG = "OutgoingMessageCreator ";
 
     private static final String ERROR_FORMATTING_JSON = "error formatting json";
 
@@ -30,9 +34,12 @@ public final class OutgoingMessageCreator {
     private OutgoingMessageCreator() {
     }
 
-    public static String createUserPhraseMessage(UserPhrase upcomingUserMessage, ConsultInfo consultInfo,
-                                                 String quoteMfmsFilePath, String mfmsFilePath,
-                                                 String clientId, Long threadId) {
+    static String createUserPhraseMessage(@NonNull UserPhrase upcomingUserMessage,
+                                          @Nullable ConsultInfo consultInfo,
+                                          @Nullable String quoteMfmsFilePath,
+                                          @Nullable String mfmsFilePath,
+                                          @Nullable String clientId,
+                                          @Nullable Long threadId) {
         try {
             Quote quote = upcomingUserMessage.getQuote();
             FileDescription fileDescription = upcomingUserMessage.getFileDescription();
@@ -53,7 +60,7 @@ public final class OutgoingMessageCreator {
                 if (!TextUtils.isEmpty(quote.getText())) {
                     quoteJson.put(PushMessageAttributes.TEXT, quote.getText());
                 }
-                if (null != consultInfo)
+                if (consultInfo != null)
                     quoteJson.put("operator", consultInfo.toJson());//TODO #THREADS-5270 What is it for?
                 if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                     quoteJson.put(PushMessageAttributes.ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
@@ -125,7 +132,7 @@ public final class OutgoingMessageCreator {
         return attachments;
     }
 
-    public static String createEnvironmentMessage(String clientName, String clientId, boolean clientIdEncrypted, String data, Context ctx) {
+    static String createEnvironmentMessage(String clientName, String clientId, boolean clientIdEncrypted, String data, Context ctx) {
         JSONObject object = new JSONObject();
         try {
             object.put("name", clientName);
@@ -142,18 +149,18 @@ public final class OutgoingMessageCreator {
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
             object.put("libVersion", AppInfoHelper.getLibVersion());
             object.put("clientLocale", DeviceInfoHelper.getLocale(ctx));
-            object.put(PushMessageAttributes.TYPE, PushMessageType.CLIENT_INFO.name());
+            object.put(PushMessageAttributes.TYPE, ChatMessageType.CLIENT_INFO.name());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createEnvironmentMessage", e);
         }
         return object.toString();
     }
 
-    public static String createRatingDoneMessage(Survey survey, String clientId, String appMarker) {
+    static String createRatingDoneMessage(Survey survey, String clientId, String appMarker) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageType.SURVEY_QUESTION_ANSWER.name());
+            object.put(PushMessageAttributes.TYPE, ChatMessageType.SURVEY_QUESTION_ANSWER.name());
             object.put("sendingId", survey.getSendingId());
             object.put("questionId", survey.getQuestions().get(0).getId());
             object.put("rate", survey.getQuestions().get(0).getRate());
@@ -165,11 +172,11 @@ public final class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createRatingReceivedMessage(long sendingId, String clientId) {
+    static String createRatingReceivedMessage(long sendingId, String clientId) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageType.SURVEY_PASSED.name());
+            object.put(PushMessageAttributes.TYPE, ChatMessageType.SURVEY_PASSED.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
             object.put("sendingId", sendingId);
         } catch (JSONException e) {
@@ -178,11 +185,11 @@ public final class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createResolveThreadMessage(String clientId) {
+    static String createResolveThreadMessage(String clientId) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageType.CLOSE_THREAD.name());
+            object.put(PushMessageAttributes.TYPE, ChatMessageType.CLOSE_THREAD.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createResolveThreadMessage", e);
@@ -191,11 +198,11 @@ public final class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createReopenThreadMessage(String clientId) {
+    static String createReopenThreadMessage(String clientId) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageType.REOPEN_THREAD.name());
+            object.put(PushMessageAttributes.TYPE, ChatMessageType.REOPEN_THREAD.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createReopenThreadMessage", e);
@@ -204,11 +211,11 @@ public final class OutgoingMessageCreator {
         return object.toString();
     }
 
-    public static String createMessageTyping(String clientId, String input) {
+    static String createMessageTyping(String clientId, String input) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
-            jsonObject.put(PushMessageAttributes.TYPE, PushMessageType.TYPING.name());
+            jsonObject.put(PushMessageAttributes.TYPE, ChatMessageType.TYPING.name());
             jsonObject.put(PushMessageAttributes.TYPING_DRAFT, input);
             jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
@@ -217,11 +224,11 @@ public final class OutgoingMessageCreator {
         return jsonObject.toString().replace("\\\\", "");
     }
 
-    public static String createMessageClientOffline(String clientId) {
+    static String createMessageClientOffline(String clientId) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
-            jsonObject.put(PushMessageAttributes.TYPE, PushMessageType.CLIENT_OFFLINE.name());
+            jsonObject.put(PushMessageAttributes.TYPE, ChatMessageType.CLIENT_OFFLINE.name());
             jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createMessageClientOffline", e);
@@ -229,7 +236,7 @@ public final class OutgoingMessageCreator {
         return jsonObject.toString().replace("\\\\", "");
     }
 
-    public static String getUserAgent(Context ctx) {
+    static String getUserAgent(Context ctx) {
         if (TextUtils.isEmpty(userAgent)) {
             userAgent = String.format(ctx.getResources().getString(R.string.threads_user_agent),
                     DeviceInfoHelper.getOsVersion(),
@@ -242,11 +249,11 @@ public final class OutgoingMessageCreator {
         return userAgent;
     }
 
-    public static String createInitChatMessage(String clientId, String data) {
+    static String createInitChatMessage(String clientId, String data) {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, PushMessageType.INIT_CHAT.name());
+            object.put(PushMessageAttributes.TYPE, ChatMessageType.INIT_CHAT.name());
             object.put(PushMessageAttributes.DATA, data);
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
