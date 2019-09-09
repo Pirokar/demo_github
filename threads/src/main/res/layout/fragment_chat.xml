@@ -179,6 +179,7 @@
                 <im.threads.widget.CustomFontEditText
                     android:id="@+id/input"
                     style="@style/InputEditTextStyle"
+                    android:inputType="textCapSentences"
                     android:hint="@string/threads_input_hint"
                     android:maxLines="7"/>
 
