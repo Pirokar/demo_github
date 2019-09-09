@@ -372,8 +372,8 @@ public final class ChatFragment extends BaseFragment implements
 
     private void configureInputChangesSubscription() {
         subscribe(RxTextView.textChanges(binding.input)
-                .filter(charSequence -> charSequence.length() == 0)
                 .debounce(INPUT_DELAY, TimeUnit.MILLISECONDS)
+                .filter(charSequence -> charSequence.length() > 0)
                 .map(CharSequence::toString)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
