@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import im.threads.R;
 import im.threads.ThreadsLib;
@@ -39,7 +40,6 @@ import im.threads.internal.formatters.IncomingMessageParser;
 import im.threads.internal.formatters.OutgoingMessageCreator;
 import im.threads.internal.formatters.PushMessageAttributes;
 import im.threads.internal.formatters.PushMessageType;
-import im.threads.view.ChatFragment;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
@@ -78,6 +78,12 @@ import im.threads.internal.utils.Seeker;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.Transport;
 import im.threads.internal.utils.UrlUtils;
+import im.threads.view.ChatFragment;
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.processors.PublishProcessor;
 
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
@@ -102,6 +108,9 @@ public final class ChatController {
     private static final Handler h = new Handler(Looper.getMainLooper());
     private Executor mExecutor = Executors.newSingleThreadExecutor();
     private Executor mMessagesExecutor = Executors.newSingleThreadExecutor();
+
+    private final PublishProcessor<Survey> surveyCompletionProcessor = PublishProcessor.create();
+    private boolean surveyCompletionInProgress = false;
 
     @NonNull
     private final Context appContext;
@@ -135,6 +144,8 @@ public final class ChatController {
 
     private Handler mUnsendMessageHandler;
     private String firstUnreadProviderId;
+
+    private CompositeDisposable compositeDisposable;
 
     public static ChatController getInstance(@NonNull final Context ctx) {
         if (instance == null) {
@@ -188,26 +199,12 @@ public final class ChatController {
 
     public void onRatingClick(@NonNull final Survey survey) {
 //        final ChatItem chatItem = convertRatingItem(survey); //TODO THREADS-3395 Figure out what is this for
-        addMessage(survey);
-        String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(survey,
-                PrefUtils.getClientID(),
-                PrefUtils.getAppMarker());
-        Transport.sendMessageMFMSAsync(ratingDoneMessage, false,
-                new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
-                    @Override
-                    public void onResult(InMessageSend.Response response) {
-                        // Change survey view after 2 seconds
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                            setSurveyState(survey, MessageState.STATE_SENT);
-                            resetActiveSurvey();
-                            updateUi();
-                        }, Config.instance.surveyCompletionDelay);
-                    }
-
-                    @Override
-                    public void onError(final PushServerErrorException e) {
-                    }
-                }, null);
+        if (!surveyCompletionInProgress) {
+            surveyCompletionInProgress = true;
+            subscribeToSurveyCompletion();
+            addMessage(survey);
+        }
+        surveyCompletionProcessor.onNext(survey);
     }
 
     public void onResolveThreadClick(final boolean approveResolve) {
@@ -664,6 +661,45 @@ public final class ChatController {
             DatabaseHolder.getInstance()
                     .getUnreadMessagesCount(false, l);
         }
+    }
+
+    private boolean subscribe(final Disposable event) {
+        if (compositeDisposable == null || compositeDisposable.isDisposed()) {
+            compositeDisposable = new CompositeDisposable();
+        }
+        return compositeDisposable.add(event);
+    }
+
+    private void subscribeToSurveyCompletion() {
+        subscribe(
+                Flowable.fromPublisher(surveyCompletionProcessor)
+                        .throttleLast(Config.instance.surveyCompletionDelay, TimeUnit.MILLISECONDS)
+                        .firstElement()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(survey -> {
+                                    String ratingDoneMessage = OutgoingMessageCreator.createRatingDoneMessage(survey,
+                                            PrefUtils.getClientID(),
+                                            PrefUtils.getAppMarker());
+                                    Transport.sendMessageMFMSAsync(ratingDoneMessage, false,
+                                            new RequestCallback<InMessageSend.Response, PushServerErrorException>() {
+                                                @Override
+                                                public void onResult(InMessageSend.Response response) {
+                                                    new Handler(Looper.getMainLooper()).post(() -> {
+                                                                surveyCompletionInProgress = false;
+                                                                setSurveyState(survey, MessageState.STATE_SENT);
+                                                                resetActiveSurvey();
+                                                                updateUi();
+                                                            }
+                                                    );
+                                                }
+
+                                                @Override
+                                                public void onError(final PushServerErrorException e) {
+                                                }
+                                            }, null);
+                                }
+                        )
+        );
     }
 
     void setAllMessagesWereRead() {
