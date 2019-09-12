@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.text.Collator;
 import java.util.Arrays;
 
 import im.threads.R;
@@ -102,7 +103,27 @@ public class FilePickerFragment extends DialogFragment
 
     // get all dirs in current path
     private File[] getFolderFiles(File pathname) {
-        return pathname.listFiles(this);
+        File[] files = pathname.listFiles(this);
+        Collator collator = Collator.getInstance();
+        if (files != null) {
+            Arrays.sort(files, (o1, o2) -> {
+                int i = collator.compare(o1.getName(), o2.getName());
+                if (o1.isDirectory()) {
+                    if (o2.isDirectory()) {
+                        return i;
+                    } else {
+                        return -1;
+                    }
+                } else {
+                    if (o2.isDirectory()) {
+                        return 1;
+                    } else {
+                        return i;
+                    }
+                }
+            });
+        }
+        return files;
     }
 
     //convert dirs into conventional array of String[] for ArrayAdapter
