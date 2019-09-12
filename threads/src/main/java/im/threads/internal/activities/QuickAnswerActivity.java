@@ -62,7 +62,7 @@ public final class QuickAnswerActivity
         }
         mQuickAnswerReceiver = new QuickAnswerReceiver();
         controller = QuickAnswerController.getInstance();
-
+        Config.instance.transport.setLifecycle(getLifecycle());
     }
 
     @Override
@@ -75,7 +75,6 @@ public final class QuickAnswerActivity
         filter.addAction(ACTION_CANCEL);
         manager.registerReceiver(mQuickAnswerReceiver, filter);
     }
-
 
     @Override
     protected void onStop() {

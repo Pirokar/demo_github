@@ -2,21 +2,21 @@ package im.threads.internal.model;
 
 import java.util.List;
 
-public final class Survey implements ChatItem {
+public final class Survey implements ChatItem, Hidable {
     private long sendingId;
     private List<QuestionDTO> questions;
     private Long hideAfter;
     private long phraseTimeStamp;
     private MessageState sentState;
 
-    public Survey(Long surveySendingId, Long hideAfter, long phraseTimeStamp, MessageState messageState) {
+    public Survey(long surveySendingId, Long hideAfter, long phraseTimeStamp, MessageState messageState) {
         this.sendingId = surveySendingId;
         this.hideAfter = hideAfter;
         this.phraseTimeStamp = phraseTimeStamp;
         this.sentState = messageState;
     }
 
-    public Survey(Long surveySendingId, long phraseTimeStamp, MessageState messageState) {
+    public Survey(long surveySendingId, long phraseTimeStamp, MessageState messageState) {
         this(surveySendingId, null, phraseTimeStamp, messageState);
     }
 

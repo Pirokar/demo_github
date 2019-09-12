@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.transport.mfms_push.IncomingMessageParser;
+import im.threads.internal.transport.mfms_push.MFMSPushMessageParser;
 import im.threads.internal.formatters.MessageFormatter;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ScheduleInfo;
@@ -31,9 +31,9 @@ public class ThreadsPushServerIntentService extends PushServerIntentService {
         List<PushMessage> toShow = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             PushMessage pushMessage = list.get(i);
-            if (IncomingMessageParser.isThreadsOriginPush(pushMessage)) {
-                boolean isCurrentClientId = IncomingMessageParser.checkId(pushMessage, PrefUtils.getClientID());
-                final ChatItem chatItem = IncomingMessageParser.format(pushMessage);
+            if (MFMSPushMessageParser.isThreadsOriginPush(pushMessage)) {
+                boolean isCurrentClientId = MFMSPushMessageParser.checkId(pushMessage, PrefUtils.getClientID());
+                final ChatItem chatItem = MFMSPushMessageParser.format(pushMessage);
                 if (chatItem != null) {
                     if (isCurrentClientId) {
                         ChatUpdateProcessor.getInstance().postNewMessage(chatItem);
@@ -47,14 +47,14 @@ public class ThreadsPushServerIntentService extends PushServerIntentService {
         if (toShow.size() > 0) {
             HashMap<String, ArrayList<PushMessage>> appMarkerMessagesMap = new HashMap<>();
             for (PushMessage pushMessage : toShow) {
-                String appMarker = IncomingMessageParser.getAppMarker(pushMessage);
+                String appMarker = MFMSPushMessageParser.getAppMarker(pushMessage);
                 if (!appMarkerMessagesMap.containsKey(appMarker)) {
                     appMarkerMessagesMap.put(appMarker, new ArrayList<>());
                 }
                 appMarkerMessagesMap.get(appMarker).add(pushMessage);
             }
             for (String appMarker : appMarkerMessagesMap.keySet()) {
-                List<ChatItem> chatItems = IncomingMessageParser.formatMessages(appMarkerMessagesMap.get(appMarker));
+                List<ChatItem> chatItems = MFMSPushMessageParser.formatMessages(appMarkerMessagesMap.get(appMarker));
                 MessageFormatter.MessageContent messageContent = MessageFormatter.parseMessageContent(getApplicationContext(), chatItems);
                 NotificationService.addUnreadMessageList(getApplicationContext(), appMarker, messageContent);
             }

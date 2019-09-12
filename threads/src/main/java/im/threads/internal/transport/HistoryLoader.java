@@ -30,7 +30,7 @@ public final class HistoryLoader {
     @WorkerThread
     public static HistoryResponse getHistorySync(Long beforeTimestamp, Integer count) throws Exception {
         String token = Config.instance.transport.getToken();
-        String url = PrefUtils.getServerUrlMetaInfo();
+        String url = PrefUtils.getDatastoreUrl();
         if (count == null) {
             count = Config.instance.historyLoadingCount;
         }

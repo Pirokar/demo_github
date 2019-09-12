@@ -62,6 +62,19 @@
             android:name=".internal.services.NotificationService"
             android:exported="false"/>
 
+
+        <service android:name=".push.ThreadsPushFcmIntentService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".push.ThreadsPushInstanceIDListenerService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
         <provider
             android:name=".internal.utils.ThreadsFileProvider"
             android:authorities="${applicationId}.im.threads.fileprovider"

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.gson.Gson;
+
 import im.threads.ChatStyle;
 import im.threads.ThreadsLib;
 import im.threads.internal.transport.Transport;
@@ -32,6 +34,8 @@ public final class Config {
     public final int historyLoadingCount;
 
     public final int surveyCompletionDelay;
+
+    public final Gson gson = new Gson();
 
     public Config(@NonNull Context context,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
@@ -70,5 +74,10 @@ public final class Config {
             }
         }
         return localInstance;
+    }
+
+    public enum TransportType {
+        MFMS_PUSH,
+        THREADS_GATE
     }
 }

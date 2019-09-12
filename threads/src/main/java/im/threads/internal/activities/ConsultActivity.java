@@ -47,6 +47,10 @@ public final class ConsultActivity extends BaseActivity {
         return i;
     }
 
+    public static Intent getStartIntent(Activity activity) {
+        return new Intent(activity, ConsultActivity.class);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

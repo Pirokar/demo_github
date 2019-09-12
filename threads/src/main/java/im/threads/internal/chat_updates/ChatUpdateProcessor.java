@@ -2,7 +2,10 @@ package im.threads.internal.chat_updates;
 
 import android.support.annotation.NonNull;
 
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.transport.ChatItemProviderData;
+import im.threads.internal.transport.TransportException;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -11,8 +14,15 @@ public class ChatUpdateProcessor {
     private static ChatUpdateProcessor instance;
 
     private final FlowableProcessor<String> typingProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> messageReadProcessor = PublishProcessor.create();
+    private final FlowableProcessor<String> userMessageReadProcessor = PublishProcessor.create();
+    private final FlowableProcessor<String> consultMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
+    private final FlowableProcessor<ChatItemProviderData> messageSendSuccessProcessor = PublishProcessor.create();
+    private final FlowableProcessor<String> messageSendErrorProcessor = PublishProcessor.create();
+    private final FlowableProcessor<ChatItemType> removeChatItemProcessor = PublishProcessor.create();
+    private final FlowableProcessor<Long> surveySendSuccessProcessor = PublishProcessor.create();
+
+    private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
 
     public static ChatUpdateProcessor getInstance() {
         if (instance == null) {
@@ -25,23 +35,71 @@ public class ChatUpdateProcessor {
         typingProcessor.onNext(clientId);
     }
 
-    public void postMessageRead(@NonNull String messageId) {
-        messageReadProcessor.onNext(messageId);
+    public void postUserMessageWasRead(@NonNull String messageId) {
+        userMessageReadProcessor.onNext(messageId);
+    }
+
+    public void postConsultMessageWasRead(@NonNull String messageId) {
+        consultMessageReadProcessor.onNext(messageId);
     }
 
     public void postNewMessage(@NonNull ChatItem chatItem) {
         newMessageProcessor.onNext(chatItem);
     }
 
+    public void postChatItemSendSuccess(@NonNull ChatItemProviderData chatItemProviderData) {
+        messageSendSuccessProcessor.onNext(chatItemProviderData);
+    }
+
+    public void postChatItemSendError(@NonNull String uuid) {
+        messageSendErrorProcessor.onNext(uuid);
+    }
+
+    public void postRemoveChatItem(@NonNull ChatItemType chatItemType) {
+        removeChatItemProcessor.onNext(chatItemType);
+    }
+
+    public void postSurveySendSuccess(long sendingId) {
+        surveySendSuccessProcessor.onNext(sendingId);
+    }
+
+    public void postError(@NonNull TransportException error) {
+        errorProcessor.onNext(error);
+    }
+
     public FlowableProcessor<String> getTypingProcessor() {
         return typingProcessor;
     }
 
-    public FlowableProcessor<String> getMessageReadProcessor() {
-        return messageReadProcessor;
+    public FlowableProcessor<String> getUserMessageReadProcessor() {
+        return userMessageReadProcessor;
+    }
+
+    public FlowableProcessor<String> getConsultMessageReadProcessor() {
+        return consultMessageReadProcessor;
     }
 
     public FlowableProcessor<ChatItem> getNewMessageProcessor() {
         return newMessageProcessor;
+    }
+
+    public FlowableProcessor<ChatItemProviderData> getMessageSendSuccessProcessor() {
+        return messageSendSuccessProcessor;
+    }
+
+    public FlowableProcessor<String> getMessageSendErrorProcessor() {
+        return messageSendErrorProcessor;
+    }
+
+    public FlowableProcessor<ChatItemType> getRemoveChatItemProcessor() {
+        return removeChatItemProcessor;
+    }
+
+    public FlowableProcessor<Long> getSurveySendSuccessProcessor() {
+        return surveySendSuccessProcessor;
+    }
+
+    public FlowableProcessor<TransportException> getErrorProcessor() {
+        return errorProcessor;
     }
 }

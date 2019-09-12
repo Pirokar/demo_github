@@ -716,10 +716,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void reorder() {
-        ChatMessagesOrderer.updateOrder(list);
-    }
-
     public void notifyAvatarChanged(final String newUrl, final String consultId) {
         if (newUrl == null || consultId == null) {
             return;
@@ -750,11 +746,35 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return list;
     }
 
+    /**
+     * TODO THREADS-6290:
+     * It might be not that obvious what is happening here.
+     * Why do we look for an item and then replacing it with itself?
+     * Well, look no further than at equals implementation of some ChatItems (i.e. UserPhrase, ConsultPhrase, Survey).
+     * They are equal if their ids are equal. So we look for the item with the same id to replace it with the updated version of itself.
+     */
+    public void updateChatItem(ChatItem chatItem, boolean needsReordering) {
+        int i = list.indexOf(chatItem);
+        if (i != -1) {
+            list.set(i, chatItem);
+            if (needsReordering) {
+                reorder();
+                notifyDataSetChangedOnUi();
+            } else {
+                notifyItemChangedOnUi(chatItem);
+            }
+        }
+    }
+
     public void notifyDataSetChangedOnUi() {
         ThreadUtils.runOnUiThread(this::notifyDataSetChanged);
     }
 
-    public void notifyItemChangedOnUi(final ChatItem chatItem) {
+    private void reorder() {
+        ChatMessagesOrderer.updateOrder(list);
+    }
+
+    private void notifyItemChangedOnUi(final ChatItem chatItem) {
         ThreadUtils.runOnUiThread(() -> {
             int position = list.indexOf(chatItem);
             notifyItemChanged(position);

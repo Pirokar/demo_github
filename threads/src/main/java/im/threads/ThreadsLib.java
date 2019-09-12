@@ -34,6 +34,7 @@ public final class ThreadsLib {
             DatabaseHolder.getInstance()
                     .getUnreadMessagesCount(false, Config.instance.unreadMessagesCountListener);
         }
+        ChatController.getInstance();
     }
 
     public static ThreadsLib getInstance() {

@@ -13,9 +13,9 @@ import java.util.List;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
-import im.threads.internal.transport.mfms_push.IncomingMessageParser;
-import im.threads.internal.transport.mfms_push.PushMessageAttributes;
 import im.threads.internal.services.NotificationService;
+import im.threads.internal.transport.mfms_push.MFMSPushMessageParser;
+import im.threads.internal.transport.mfms_push.PushMessageAttributes;
 import im.threads.internal.utils.ThreadsLogger;
 
 /**
@@ -30,9 +30,9 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     @Override
     protected void onNewPushNotification(final Context context, final String alert, final Bundle bundle) {
         ThreadsLogger.i(TAG, "onNewPushNotification " + alert + " " + bundle);
-        if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
-            final ChatItemType chatItemType = getKnownType(bundle);
-            switch (chatItemType) {
+        if (MFMSPushMessageParser.isThreadsOriginPush(bundle)) {
+            final ChatItemType chatMessageType = getKnownType(bundle);
+            switch (chatMessageType) {
                 case TYPING:
                     String clientId = bundle.getString(PushMessageAttributes.CLIENT_ID);
                     if (clientId != null) {
@@ -40,10 +40,10 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
                     }
                     break;
                 case MESSAGES_READ:
-                    final List<String> list = IncomingMessageParser.getReadIds(bundle);
+                    final List<String> list = MFMSPushMessageParser.getReadIds(bundle);
                     ThreadsLogger.i(TAG, "onSystemMessageFromServer: read messages " + list);
                     for (final String readMessageProviderId : list) {
-                        ChatUpdateProcessor.getInstance().postMessageRead(readMessageProviderId);
+                        ChatUpdateProcessor.getInstance().postUserMessageWasRead(readMessageProviderId);
                     }
                     break;
                 case REMOVE_PUSHES:
@@ -106,7 +106,7 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
         if (pushType == null && bundle.getString("alert") != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null) {
             return ChatItemType.MESSAGE;
         }
-        if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
+        if (MFMSPushMessageParser.isThreadsOriginPush(bundle)) {
             return ChatItemType.CHAT_PUSH;
         }
         return ChatItemType.UNKNOWN;

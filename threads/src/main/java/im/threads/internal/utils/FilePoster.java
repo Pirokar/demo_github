@@ -20,6 +20,9 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 
+/**
+ * TODO THREADS-6288: this class needs refactoring, it contains one static method that does a lot of things making it untestable
+ */
 public final class FilePoster {
 
     private static final String UPLOAD_FILE_URL = "https://datastore.threads.im/";

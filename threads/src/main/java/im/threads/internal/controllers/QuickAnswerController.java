@@ -19,10 +19,10 @@ public final class QuickAnswerController extends Fragment {
 
     public void onBind(@NonNull final QuickAnswerActivity activity) {
         DatabaseHolder.getInstance()
-                .getLastUnreadPhrase(new CompletionHandler<ConsultPhrase>() {
+                .getLastConsultPhrase(new CompletionHandler<ConsultPhrase>() {
                     @Override
                     public void onComplete(ConsultPhrase data) {
-                        if (null != data) {
+                        if (data != null) {
                             activity.setLastUnreadMessage(data);
                         }
                     }

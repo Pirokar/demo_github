@@ -7,8 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import im.threads.internal.Config;
-import im.threads.internal.transport.mfms_push.MFMSPushTransport;
 import im.threads.internal.transport.Transport;
+import im.threads.internal.transport.mfms_push.MFMSPushTransport;
+import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
 import im.threads.view.ChatActivity;
 
 public final class ConfigBuilder {
@@ -29,7 +30,7 @@ public final class ConfigBuilder {
 
     private int surveyCompletionDelay = 2000;
 
-    private Transport transport = new MFMSPushTransport();
+    private Config.TransportType transportType = Config.TransportType.MFMS_PUSH;
 
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -55,12 +56,27 @@ public final class ConfigBuilder {
         return this;
     }
 
-    public ConfigBuilder surveyCompletionDelay(final int  surveyCompletionDelay) {
+    public ConfigBuilder surveyCompletionDelay(final int surveyCompletionDelay) {
         this.surveyCompletionDelay = surveyCompletionDelay;
         return this;
     }
 
+    public ConfigBuilder transportType(final Config.TransportType transportType) {
+        this.transportType = transportType;
+        return this;
+    }
+
     final Config build() {
+        Transport transport;
+        switch (transportType) {
+            case THREADS_GATE:
+                transport = new ThreadsGateTransport();
+                break;
+            case MFMS_PUSH:
+            default:
+                transport = new MFMSPushTransport();
+                break;
+        }
         return new Config(
                 context,
                 pendingIntentCreator,

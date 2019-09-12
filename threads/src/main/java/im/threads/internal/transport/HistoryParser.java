@@ -3,7 +3,6 @@ package im.threads.internal.transport;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
@@ -103,7 +102,7 @@ public final class HistoryParser {
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
                             out.add(new ConsultPhrase(uuid, providerId, fileDescription, quote, name, phraseText, timeStamp,
-                                    operatorId, photoUrl, true, null, false));
+                                    operatorId, photoUrl, message.isRead(), null, false));
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
@@ -121,7 +120,7 @@ public final class HistoryParser {
 
     private static Survey getSurveyFromJsonString(@NonNull String text) {
         try {
-            Survey survey = new Gson().fromJson(text, Survey.class);
+            Survey survey = Config.instance.gson.fromJson(text, Survey.class);
             final long time = new Date().getTime();
             survey.setPhraseTimeStamp(time);
             survey.setSentState(MessageState.STATE_NOT_SENT);

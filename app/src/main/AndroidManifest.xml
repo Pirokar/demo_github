@@ -56,6 +56,14 @@
             android:name="im.threads.getServerUrl"
             android:value="@string/datastore_url"/>
 
+        <meta-data
+            android:name="im.threads.threadsGateUrl"
+            android:value="@string/threadsGateUrl"/>
+
+        <meta-data
+            android:name="im.threads.threadsGateProviderUid"
+            android:value="@string/threadsGateProviderUid"/>
+
         <!-- Default implementation can be used instead (see im.threads.push.ThreadsPushServerIntentService) -->
         <meta-data
             android:name="com.pushserver.android.service"

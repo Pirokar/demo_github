@@ -577,12 +577,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void updateChatItem(ChatItem chatItem, boolean needsReordering) {
-        if (needsReordering) {
-            chatAdapter.reorder();
-            chatAdapter.notifyDataSetChangedOnUi();
-        } else {
-            chatAdapter.notifyItemChangedOnUi(chatItem);
-        }
+        chatAdapter.updateChatItem(chatItem, needsReordering);
     }
 
     private void showPopup() {
@@ -1429,7 +1424,6 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onStop() {
         super.onStop();
-        mChatController.setActivityIsForeground(false);
         isResumed = false;
         chatIsShown = false;
         isInMessageSearchMode = false;
@@ -1656,5 +1650,4 @@ public final class ChatFragment extends BaseFragment implements
             }
         }
     }
-
 }
