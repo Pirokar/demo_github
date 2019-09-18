@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import im.threads.internal.formatters.ChatMessageType;
+import im.threads.R;
+import im.threads.internal.Config;
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.Attachment;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
@@ -29,14 +30,27 @@ import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.DateHelper;
 import im.threads.internal.utils.ThreadsLogger;
 
-public class HistoryFormatter {
-    private static final String TAG = "HistoryFormatter ";
+public final class HistoryParser {
+    private static final String TAG = "HistoryParser ";
 
-    private HistoryFormatter(){
+    private HistoryParser() {
     }
 
-    private static ArrayList<ChatItem> formatNew(final List<MessageFromHistory> messages) {
-        final ArrayList<ChatItem> out = new ArrayList<>();
+    @NonNull
+    public static List<ChatItem> getChatItems(HistoryResponse response) {
+        List<ChatItem> list = new ArrayList<>();
+        if (response != null) {
+            List<MessageFromHistory> responseList = response.getMessages();
+            if (responseList != null) {
+                list = getChatItems(responseList);
+                HistoryLoader.setupLastItemIdFromHistory(responseList);
+            }
+        }
+        return list;
+    }
+
+    private static List<ChatItem> getChatItems(final List<MessageFromHistory> messages) {
+        final List<ChatItem> out = new ArrayList<>();
         try {
             for (final MessageFromHistory message : messages) {
                 if (message == null) {
@@ -58,7 +72,7 @@ public class HistoryFormatter {
                     sex = Operator.Gender.MALE.equals(operator.getGender());
                     orgUnit = operator.getOrgUnit();
                 }
-                ChatMessageType type = ChatMessageType.fromString(message.getType());
+                ChatItemType type = ChatItemType.fromString(message.getType());
                 switch (type) {
                     case OPERATOR_JOINED:
                     case OPERATOR_LEFT:
@@ -92,11 +106,7 @@ public class HistoryFormatter {
                                     operatorId, photoUrl, true, null, false));
                         } else {
                             if (fileDescription != null) {
-                                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
-                                    fileDescription.setFrom("Я");
-                                } else {
-                                    fileDescription.setFrom("I");
-                                }
+                                fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
                             }
                             out.add(new UserPhrase(uuid, providerId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
                         }
@@ -159,11 +169,7 @@ public class HistoryFormatter {
             if (quoteFromHistory.getOperator() != null) {
                 authorName = quoteFromHistory.getOperator().getName();
             } else {
-                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
-                    authorName = "Я";
-                } else {
-                    authorName = "I";
-                }
+                authorName = Config.instance.context.getString(R.string.threads_I);
             }
             if (quoteString != null || quoteFileDescription != null) {
                 quote = new Quote(quoteFromHistory.getUuid(), authorName, quoteString, quoteFileDescription, timestamp);
@@ -183,27 +189,15 @@ public class HistoryFormatter {
                 header = attachments.get(0).getOptional().getName();
             }
             fileDescription = new FileDescription(
-                    null
-                    , null
-                    , attachments.get(0).getOptional().getSize()
-                    , 0);
+                    null,
+                    null,
+                    attachments.get(0).getOptional().getSize(),
+                    0
+            );
             fileDescription.setDownloadPath(attachments.get(0).getResult());
             fileDescription.setIncomingName(header);
             fileDescription.setSelfie(attachments.get(0).isSelfie());
         }
         return fileDescription;
-    }
-
-    @NonNull
-    public static List<ChatItem> getChatItemFromHistoryResponse(HistoryResponse response) {
-        List<ChatItem> list = new ArrayList<>();
-        if (response != null) {
-            List<MessageFromHistory> responseList = response.getMessages();
-            if (responseList != null) {
-                list = formatNew(responseList);
-                HistoryLoader.setupLastItemIdFromHistory(responseList);
-            }
-        }
-        return list;
     }
 }

@@ -2,7 +2,7 @@ package im.threads.internal.formatters;
 
 import android.support.annotation.NonNull;
 
-public enum ChatMessageType {
+public enum ChatItemType {
     TYPING,
     // incoming
     OPERATOR_JOINED,
@@ -33,11 +33,11 @@ public enum ChatMessageType {
     UNKNOWN;
 
     @NonNull
-    public static ChatMessageType fromString(String name) {
+    public static ChatItemType fromString(String name) {
         try {
             return valueOf(name);
         } catch (IllegalArgumentException ex) {
-            return ChatMessageType.UNKNOWN;
+            return ChatItemType.UNKNOWN;
         }
     }
 }

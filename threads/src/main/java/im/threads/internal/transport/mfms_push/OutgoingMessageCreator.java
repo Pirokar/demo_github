@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.io.File;
 
 import im.threads.R;
-import im.threads.internal.formatters.ChatMessageType;
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Quote;
@@ -149,7 +149,7 @@ final class OutgoingMessageCreator {
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
             object.put("libVersion", AppInfoHelper.getLibVersion());
             object.put("clientLocale", DeviceInfoHelper.getLocale(ctx));
-            object.put(PushMessageAttributes.TYPE, ChatMessageType.CLIENT_INFO.name());
+            object.put(PushMessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createEnvironmentMessage", e);
         }
@@ -160,7 +160,7 @@ final class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, ChatMessageType.SURVEY_QUESTION_ANSWER.name());
+            object.put(PushMessageAttributes.TYPE, ChatItemType.SURVEY_QUESTION_ANSWER.name());
             object.put("sendingId", survey.getSendingId());
             object.put("questionId", survey.getQuestions().get(0).getId());
             object.put("rate", survey.getQuestions().get(0).getRate());
@@ -176,7 +176,7 @@ final class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, ChatMessageType.SURVEY_PASSED.name());
+            object.put(PushMessageAttributes.TYPE, ChatItemType.SURVEY_PASSED.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
             object.put("sendingId", sendingId);
         } catch (JSONException e) {
@@ -189,7 +189,7 @@ final class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, ChatMessageType.CLOSE_THREAD.name());
+            object.put(PushMessageAttributes.TYPE, ChatItemType.CLOSE_THREAD.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createResolveThreadMessage", e);
@@ -202,7 +202,7 @@ final class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, ChatMessageType.REOPEN_THREAD.name());
+            object.put(PushMessageAttributes.TYPE, ChatItemType.REOPEN_THREAD.name());
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createReopenThreadMessage", e);
@@ -215,7 +215,7 @@ final class OutgoingMessageCreator {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
-            jsonObject.put(PushMessageAttributes.TYPE, ChatMessageType.TYPING.name());
+            jsonObject.put(PushMessageAttributes.TYPE, ChatItemType.TYPING.name());
             jsonObject.put(PushMessageAttributes.TYPING_DRAFT, input);
             jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
@@ -228,7 +228,7 @@ final class OutgoingMessageCreator {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(PushMessageAttributes.CLIENT_ID, clientId);
-            jsonObject.put(PushMessageAttributes.TYPE, ChatMessageType.CLIENT_OFFLINE.name());
+            jsonObject.put(PushMessageAttributes.TYPE, ChatItemType.CLIENT_OFFLINE.name());
             jsonObject.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {
             ThreadsLogger.e(TAG, "createMessageClientOffline", e);
@@ -253,7 +253,7 @@ final class OutgoingMessageCreator {
         JSONObject object = new JSONObject();
         try {
             object.put(PushMessageAttributes.CLIENT_ID, clientId);
-            object.put(PushMessageAttributes.TYPE, ChatMessageType.INIT_CHAT.name());
+            object.put(PushMessageAttributes.TYPE, ChatItemType.INIT_CHAT.name());
             object.put(PushMessageAttributes.DATA, data);
             object.put(PushMessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         } catch (JSONException e) {

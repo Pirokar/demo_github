@@ -18,17 +18,11 @@ public interface Transport {
 
     void sendEnvironmentMessage(String clientId) throws TransportException;
 
-    void onClientIdChanged(String clientId) throws TransportException;
-
     void sendMessageRead(String messageId) throws TransportException;
 
-    SendMessageResponse sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, final String mfmsFilePath, final String mfmsQuoteFilePath) throws TransportException;
+    SendMessageResponse sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, final String filePath, final String quoteFilePath) throws TransportException;
 
     void sendRatingReceived(long sendingId) throws TransportException;
-
-    void onSettingClientId(String clientId) throws TransportException;
-
-    void notifyMessageUpdateNeeded() throws TransportException;
 
     void sendClientOffline(String clientId) throws TransportException;
 

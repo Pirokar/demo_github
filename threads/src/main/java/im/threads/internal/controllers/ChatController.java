@@ -28,7 +28,7 @@ import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.formatters.ChatMessageType;
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
@@ -50,13 +50,13 @@ import im.threads.internal.opengraph.OGData;
 import im.threads.internal.opengraph.OGDataProvider;
 import im.threads.internal.services.DownloadService;
 import im.threads.internal.services.NotificationService;
-import im.threads.internal.transport.HistoryFormatter;
 import im.threads.internal.transport.HistoryLoader;
+import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.Callback;
 import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ConsultWriter;
 import im.threads.internal.utils.DeviceInfoHelper;
-import im.threads.internal.utils.DualFilePoster;
+import im.threads.internal.utils.FilePoster;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
@@ -405,7 +405,7 @@ public final class ChatController {
                         int count = Config.instance.historyLoadingCount;
                         try {
                             final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
-                            final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                            final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                             count = serverItems.size();
                             databaseHolder.putMessagesSync(serverItems);
                             final List<ChatItem> chatItems = setLastAvatars(databaseHolder.getChatItems(currentOffset[0], count));
@@ -506,7 +506,10 @@ public final class ChatController {
                         )
         );
         subscribe(
-                Completable.fromAction(() -> Config.instance.transport.sendInitChatMessage())
+                Completable.fromAction(() -> {
+                    Config.instance.transport.sendInitChatMessage();
+                    Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID());
+                })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -514,13 +517,6 @@ public final class ChatController {
                                 },
                                 e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
-        );
-        subscribe(
-                Completable.fromAction(() -> Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID()))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {
-                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
         );
         if (consultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo());
@@ -613,9 +609,10 @@ public final class ChatController {
             instance.fragment.removeSearching();
         }
         instance.consultWriter.setCurrentConsultLeft();
-        Config.instance.transport.onClientIdChanged(finalClientId);
+        Config.instance.transport.sendInitChatMessage();
+        Config.instance.transport.sendEnvironmentMessage(finalClientId);
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
-        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
         instance.databaseHolder.putMessagesSync(serverItems);
         final List<ChatItem> phrases = instance.setLastAvatars(serverItems);
         if (instance.fragment != null) {
@@ -703,7 +700,7 @@ public final class ChatController {
                     Single.fromCallable(() -> {
                         final int count = Config.instance.historyLoadingCount;
                         final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
-                        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                         final List<ChatItem> dbItems = databaseHolder.getChatItems(0, count);
                         if (dbItems.size() != serverItems.size() || !dbItems.containsAll(serverItems)) {
                             ThreadsLogger.d(TAG, "Local and downloaded history are not same");
@@ -716,7 +713,7 @@ public final class ChatController {
                             .subscribe(
                                     response -> {
                                         isDownloadingMessages = false;
-                                        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                                         final int serverCount = serverItems.size();
                                         final List<ChatItem> items = setLastAvatars(databaseHolder.getChatItems(0, serverCount));
                                         if (fragment != null) {
@@ -772,45 +769,43 @@ public final class ChatController {
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        sendMessage(userPhrase, consultInfo, null, null);
-    }
-
-    private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
-        final FileDescription fileDescription = userPhrase.getFileDescription();
-        final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
-        new DualFilePoster(fileDescription, quoteFileDescription, appContext) {
-            @Override
-            public void onResult(final String mfmsFilePath, final String mfmsQuoteFilePath) {
-                ThreadsLogger.i(TAG, "onResult mfmsFilePath =" + mfmsFilePath + " mfmsQuoteFilePath = " + mfmsQuoteFilePath);
-                sendMessage(userPhrase, consultInfo, mfmsFilePath, mfmsQuoteFilePath);
-            }
-
-            @Override
-            public void onError(final Throwable e) {
-                ThreadsLogger.w(TAG, "File send failed", e);
-                onMessageSentError(userPhrase);
-            }
-        };
-    }
-
-    private void sendMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo, @Nullable final String mfmsFilePath, @Nullable final String mfmsQuoteFilePath) {
         subscribe(
-                Single.fromCallable(() -> Config.instance.transport.sendMessage(userPhrase, consultInfo, mfmsFilePath, mfmsQuoteFilePath))
+                Single.fromCallable(() -> Config.instance.transport.sendMessage(userPhrase, consultInfo, null, null))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .map(response -> {
-                            onMessageSent(userPhrase, response.messageId, response.sentAt);
-                            return response;
-                        })
-                        .observeOn(Schedulers.io())
-                        .delay(60000, TimeUnit.MILLISECONDS)
                         .subscribe(
-                                response -> Config.instance.transport.notifyMessageUpdateNeeded(),
+                                response -> onMessageSent(userPhrase, response.messageId, response.sentAt),
                                 e -> {
                                     ThreadsLogger.e(TAG, e.getMessage());
                                     onMessageSentError(userPhrase);
                                 }
                         )
+        );
+    }
+
+    private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
+        final FileDescription fileDescription = userPhrase.getFileDescription();
+        final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
+        subscribe(
+                Single.fromCallable(() -> {
+                    String filePath = null;
+                    String quoteFilePath = null;
+                    if (fileDescription != null) {
+                        filePath = FilePoster.post(fileDescription);
+                    }
+                    if (quoteFileDescription != null) {
+                        quoteFilePath = FilePoster.post(quoteFileDescription);
+                    }
+                    return Config.instance.transport.sendMessage(userPhrase, consultInfo, filePath, quoteFilePath);
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                response -> onMessageSent(userPhrase, response.messageId, response.sentAt),
+                                e -> {
+                                    ThreadsLogger.e(TAG, "File send failed", e);
+                                    onMessageSentError(userPhrase);
+                                })
         );
     }
 
@@ -860,7 +855,7 @@ public final class ChatController {
             subscribe(
                     Completable.fromAction(() -> {
                         final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
-                        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                         if (serverItems.isEmpty()) {
                             isDownloadingMessages = false;
                             isAllMessagesDownloaded = true;
@@ -891,11 +886,19 @@ public final class ChatController {
             activeSurveySendingId = survey.getSendingId();
             subscribe(
                     Completable.fromAction(() -> Config.instance.transport.sendRatingReceived(survey.getSendingId()))
-                            .delay(survey.getHideAfter(), TimeUnit.SECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    () -> {
+                                    },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
+            subscribe(
+                    Observable.timer(survey.getHideAfter(), TimeUnit.SECONDS)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    this::removeActiveSurvey,
+                                    aLong -> removeActiveSurvey(),
                                     e -> ThreadsLogger.e(TAG, e.getMessage())
                             )
             );
@@ -928,7 +931,7 @@ public final class ChatController {
         }
         if (chatItem instanceof ConsultConnectionMessage) {
             ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
-            if (ccm.getType().equalsIgnoreCase(ChatMessageType.OPERATOR_JOINED.name())) {
+            if (ccm.getType().equalsIgnoreCase(ChatItemType.OPERATOR_JOINED.name())) {
                 consultWriter.setSearchingConsult(false);
                 consultWriter.setCurrentConsultInfo(ccm);
                 if (fragment != null) {
@@ -1120,9 +1123,10 @@ public final class ChatController {
                         cleanAll();
                         PrefUtils.setClientId(newClientId);
                         PrefUtils.setClientIdWasSet(true);
-                        Config.instance.transport.onSettingClientId(newClientId);
+                        Config.instance.transport.sendInitChatMessage();
+                        Config.instance.transport.sendEnvironmentMessage(newClientId);
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
-                        final List<ChatItem> serverItems = HistoryFormatter.getChatItemFromHistoryResponse(response);
+                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                         databaseHolder.putMessagesSync(serverItems);
                         if (fragment != null) {
                             List<ChatItem> itemsWithLastAvatars = setLastAvatars(serverItems);

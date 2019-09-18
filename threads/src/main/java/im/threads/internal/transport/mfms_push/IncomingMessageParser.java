@@ -18,10 +18,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
-import im.threads.internal.formatters.ChatMessageType;
+import im.threads.R;
+import im.threads.internal.Config;
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
@@ -93,9 +94,7 @@ public final class IncomingMessageParser {
     }
 
     /**
-     * метод проверяет наличие поля clientId во входящем сообщении
-     *
-     * @return true если нет поля clientId или оно совпадает с текущим clientId
+     * @return true if pushMessage has clientId and it equals to currentClientId, otherwise false
      */
     public static boolean checkId(final PushMessage pushMessage, final String currentClientId) {
 
@@ -130,12 +129,11 @@ public final class IncomingMessageParser {
     }
 
     /**
-     * @return null, если не удалось распознать формат сообщения.
+     * @return either corresponding ChatItem, or null if it fails to parse pushMessage
      */
     @Nullable
     public static ChatItem format(final PushMessage pushMessage) {
         final JSONObject fullMessage = getFullMessage(pushMessage);
-        // В пуше для чата должен быть fullMessage, и он должен соответствовать формату JSON.
         if (fullMessage == null) {
             return null;
         }
@@ -144,7 +142,7 @@ public final class IncomingMessageParser {
             return null;
         }
         try {
-            final ChatMessageType type = ChatMessageType.fromString(typeStr);
+            final ChatItemType type = ChatItemType.fromString(typeStr);
             switch (type) {
                 case OPERATOR_JOINED:
                 case OPERATOR_LEFT:
@@ -164,12 +162,11 @@ public final class IncomingMessageParser {
                 case MESSAGE:
                 case ON_HOLD:
                 default:
-                    // Либо в fullMessage должны содержаться ключи из списка:
-                    // "attachments", "text", "quotes"
+                    // TODO: switch should not have default case
                     return checkMessageIsFull(pushMessage, fullMessage);
             }
         } catch (final IllegalArgumentException ex) {
-            // pass
+            ThreadsLogger.e(TAG, ex.getMessage());
         }
         return null;
     }
@@ -418,11 +415,7 @@ public final class IncomingMessageParser {
                     ThreadsLogger.e(TAG, "" + quotes, e);
                 }
             } else {
-                if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
-                    authorName = "Я";
-                } else {
-                    authorName = "I";
-                }
+                authorName = Config.instance.context.getString(R.string.threads_I);
             }
             if (quoteUuid != null && (quoteString != null || quoteFileDescription != null)) {
                 quote = new Quote(quoteUuid, authorName, quoteString, quoteFileDescription, timestamp);

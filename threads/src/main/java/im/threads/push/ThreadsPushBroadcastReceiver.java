@@ -12,7 +12,7 @@ import java.util.List;
 
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.formatters.ChatMessageType;
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.transport.mfms_push.IncomingMessageParser;
 import im.threads.internal.transport.mfms_push.PushMessageAttributes;
 import im.threads.internal.services.NotificationService;
@@ -31,8 +31,8 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     protected void onNewPushNotification(final Context context, final String alert, final Bundle bundle) {
         ThreadsLogger.i(TAG, "onNewPushNotification " + alert + " " + bundle);
         if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
-            final ChatMessageType chatMessageType = getKnownType(bundle);
-            switch (chatMessageType) {
+            final ChatItemType chatItemType = getKnownType(bundle);
+            switch (chatItemType) {
                 case TYPING:
                     String clientId = bundle.getString(PushMessageAttributes.CLIENT_ID);
                     if (clientId != null) {
@@ -81,34 +81,34 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     }
 
     @NonNull
-    private ChatMessageType getKnownType(final Bundle bundle) {
+    private ChatItemType getKnownType(final Bundle bundle) {
         if (bundle == null) {
-            return ChatMessageType.UNKNOWN;
+            return ChatItemType.UNKNOWN;
         }
         if (bundle.containsKey(PushMessageAttributes.READ_PROVIDER_IDS)) {
-            return ChatMessageType.MESSAGES_READ;
+            return ChatItemType.MESSAGES_READ;
         }
         final String pushType = bundle.getString(PushMessageAttributes.TYPE);
         if (!TextUtils.isEmpty(pushType)) {
-            final ChatMessageType chatMessageType = ChatMessageType.fromString(pushType);
-            if (chatMessageType == ChatMessageType.OPERATOR_JOINED ||
-                    chatMessageType == ChatMessageType.OPERATOR_LEFT ||
-                    chatMessageType == ChatMessageType.TYPING ||
-                    chatMessageType == ChatMessageType.SCHEDULE ||
-                    chatMessageType == ChatMessageType.SURVEY ||
-                    chatMessageType == ChatMessageType.REQUEST_CLOSE_THREAD ||
-                    chatMessageType == ChatMessageType.REMOVE_PUSHES ||
-                    chatMessageType == ChatMessageType.UNREAD_MESSAGE_NOTIFICATION) {
-                return chatMessageType;
+            final ChatItemType chatItemType = ChatItemType.fromString(pushType);
+            if (chatItemType == ChatItemType.OPERATOR_JOINED ||
+                    chatItemType == ChatItemType.OPERATOR_LEFT ||
+                    chatItemType == ChatItemType.TYPING ||
+                    chatItemType == ChatItemType.SCHEDULE ||
+                    chatItemType == ChatItemType.SURVEY ||
+                    chatItemType == ChatItemType.REQUEST_CLOSE_THREAD ||
+                    chatItemType == ChatItemType.REMOVE_PUSHES ||
+                    chatItemType == ChatItemType.UNREAD_MESSAGE_NOTIFICATION) {
+                return chatItemType;
             }
         }
         // old push format
         if (pushType == null && bundle.getString("alert") != null && bundle.getString("advisa") == null && bundle.getString("GEO_FENCING") == null) {
-            return ChatMessageType.MESSAGE;
+            return ChatItemType.MESSAGE;
         }
         if (IncomingMessageParser.isThreadsOriginPush(bundle)) {
-            return ChatMessageType.CHAT_PUSH;
+            return ChatItemType.CHAT_PUSH;
         }
-        return ChatMessageType.UNKNOWN;
+        return ChatItemType.UNKNOWN;
     }
 }

@@ -96,22 +96,6 @@ public final class MFMSPushTransport implements Transport {
         }
     }
 
-    @WorkerThread
-    @Override
-    public void onClientIdChanged(String clientId) throws TransportException {
-        try {
-            getPushControllerInstance();
-            sendMessageMFMSSync(
-                    OutgoingMessageCreator.createInitChatMessage(clientId, PrefUtils.getData()),
-                    true
-            );
-            sendEnvironmentMessage(clientId);
-            getPushControllerInstance().resetCounterSync();
-        } catch (final PushServerErrorException e) {
-            throw new TransportException(e.getMessage());
-        }
-    }
-
     @Override
     public void sendMessageRead(String messageId) throws TransportException {
         try {
@@ -122,12 +106,12 @@ public final class MFMSPushTransport implements Transport {
     }
 
     @Override
-    public SendMessageResponse sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, @Nullable String mfmsFilePath, @Nullable String mfmsQuoteFilePath) throws TransportException {
+    public SendMessageResponse sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, @Nullable String filePath, @Nullable String quoteFilePath) throws TransportException {
         final String message = OutgoingMessageCreator.createUserPhraseMessage(
                 userPhrase,
                 consultInfo,
-                mfmsQuoteFilePath,
-                mfmsFilePath,
+                quoteFilePath,
+                filePath,
                 PrefUtils.getClientID(),
                 PrefUtils.getThreadID()
         );
@@ -148,25 +132,6 @@ public final class MFMSPushTransport implements Transport {
         );
         try {
             sendMessageMFMSSync(message, true);
-        } catch (final PushServerErrorException e) {
-            throw new TransportException(e.getMessage());
-        }
-    }
-
-    @Override
-    public void onSettingClientId(String clientId) throws TransportException {
-        try {
-            getPushControllerInstance().resetCounterSync();
-            sendEnvironmentMessage(clientId);
-        } catch (final PushServerErrorException e) {
-            throw new TransportException(e.getMessage());
-        }
-    }
-
-    @Override
-    public void notifyMessageUpdateNeeded() throws TransportException {
-        try {
-            getPushControllerInstance().notifyMessageUpdateNeeded();
         } catch (final PushServerErrorException e) {
             throw new TransportException(e.getMessage());
         }
