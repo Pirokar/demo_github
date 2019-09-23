@@ -493,13 +493,24 @@ public final class ChatController {
             fragment.setStateSearchingConsult();
         }
         subscribe(
-                Single.fromCallable(this::updateChatItemsOnBind)
+                Single.fromCallable(() -> {
+                    final int historyLoadingCount = Config.instance.historyLoadingCount;
+                    final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
+                    if (!unsendUserPhrase.isEmpty()) {
+                        unsendMessages.clear();
+                        unsendMessages.addAll(unsendUserPhrase);
+                        scheduleResend();
+                    }
+                    return setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
+                })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 items -> {
                                     if (fragment != null) {
+                                        checkAndLoadOgData(items);
                                         fragment.addChatItems(items);
+                                        loadHistory();
                                     }
                                 },
                                 e -> ThreadsLogger.e(TAG, e.getMessage())
@@ -657,23 +668,6 @@ public final class ChatController {
         if (fragment != null) {
             fragment.updateUi();
         }
-    }
-
-    private List<ChatItem> updateChatItemsOnBind() {
-        List<ChatItem> items = new ArrayList<>();
-        if (fragment != null) {
-            final int historyLoadingCount = Config.instance.historyLoadingCount;
-            items = setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
-            checkAndLoadOgData(items);
-            final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
-            if (!unsendUserPhrase.isEmpty()) {
-                unsendMessages.clear();
-                unsendMessages.addAll(unsendUserPhrase);
-                scheduleResend();
-            }
-        }
-        loadHistory();
-        return items;
     }
 
     public void logoutClient(@NonNull final String clientId) {

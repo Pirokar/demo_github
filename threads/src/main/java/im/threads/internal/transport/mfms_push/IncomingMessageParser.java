@@ -162,7 +162,7 @@ public final class IncomingMessageParser {
                 case MESSAGE:
                 case ON_HOLD:
                 default:
-                    // TODO: switch should not have default case
+                    // TODO: switch should not have default case THREADS-6020
                     return checkMessageIsFull(pushMessage, fullMessage);
             }
         } catch (final IllegalArgumentException ex) {
