@@ -139,7 +139,7 @@ public class GalleryActivity extends BaseActivity
             }
         });
         String[] projection = new String[]{MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA};
-        Cursor c = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " desc");
+        Cursor c = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_TAKEN + " desc");
         int BUCKET_DISPLAY_NAME = c.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
         int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
         if (c.getCount() == 0) return;
