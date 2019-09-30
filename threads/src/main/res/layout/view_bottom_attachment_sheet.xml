@@ -4,22 +4,22 @@
     android:layout_height="100dp"
     android:orientation="horizontal">
 
-    <im.threads.widget.CustomFontButton
+    <im.threads.internal.widget.CustomFontButton
         android:id="@+id/camera"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:text="@string/threads_camera" />
 
-    <im.threads.widget.CustomFontButton
+    <im.threads.internal.widget.CustomFontButton
         android:id="@+id/gallery"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:text="@string/threads_gallery" />
 
-    <im.threads.widget.CustomFontButton
+    <im.threads.internal.widget.CustomFontButton
         android:id="@+id/file"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:text="@string/threads_file" />
 
-    <im.threads.widget.CustomFontButton
+    <im.threads.internal.widget.CustomFontButton
         android:id="@+id/bmsheet_hide"
         style="@style/Base.Widget.AppCompat.Button.Borderless.BottomSheetButtonsStyle"
         android:text="@string/threads_hide" />

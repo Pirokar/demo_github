@@ -33,7 +33,7 @@
         android:scaleType="fitCenter" />
 
 
-    <im.threads.widget.text_view.BubbleTimeTextView
+    <im.threads.internal.widget.text_view.BubbleTimeTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

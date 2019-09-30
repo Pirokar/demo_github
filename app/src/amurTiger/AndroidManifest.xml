@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="im.threads.android">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="im.threads.android">
 
     <application
         android:allowBackup="true"
@@ -11,4 +11,5 @@
         tools:replace="android:label">
 
     </application>
+
 </manifest>

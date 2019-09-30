@@ -1,9 +1,5 @@
 <resources>
     <string name="threads_searching_operator">Поиск оператора...</string>
-    <string name="threads_no_connection">Отсутствует
-       \nсоединение с интернетом</string>
-    <string name="threads_no_connection_details">Включите передачу даннх
-       \nили воспользуйтесь WI_FI для\nотправки сообщения</string>
     <string name="threads_close">Закрыть</string>
     <string name="threads_camera">Камера</string>
     <string name="threads_gallery">Галерея</string>
@@ -73,32 +69,30 @@
     <string name="threads_permissions_quit">Закрыть</string>
     <string name="threads_permissions_settings">Настройки</string>
 
-    <string name="threads_invalid_client_id">Минимальная длина client id - 5 символов</string>
-
     <string name="threads_user_agent" formatted="false" translatable="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
 
-    <plurals  name="threads_unread_messages">
+    <plurals name="threads_unread_messages">
         <item quantity="one">%d непрочитанное сообщение</item>
         <item quantity="few">%d непрочитанных сообщения</item>
         <item quantity="many">%d непрочитанных сообщений</item>
         <item quantity="other">%d непрочитанных сообщений</item>
     </plurals>
 
-    <plurals  name="threads_new_messages">
+    <plurals name="threads_new_messages">
         <item quantity="one">%d новое сообщение</item>
         <item quantity="few">%d новых сообщения</item>
         <item quantity="many">%d новых сообщений</item>
         <item quantity="other">%d новых сообщений</item>
     </plurals>
 
-    <plurals  name="threads_images">
+    <plurals name="threads_images">
         <item quantity="one">%d изображение</item>
         <item quantity="few">%d изображения</item>
         <item quantity="many">%d изображений</item>
         <item quantity="other">%d изображений</item>
     </plurals>
 
-    <plurals  name="threads_files">
+    <plurals name="threads_files">
         <item quantity="one">%d файл</item>
         <item quantity="few">%d файла</item>
         <item quantity="many">%d файлов</item>
