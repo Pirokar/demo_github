@@ -28,8 +28,8 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
 
-        versionCode 86
-        versionName "2.48.7"
+        versionCode 87
+        versionName "2.49"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName)
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
@@ -168,13 +168,6 @@ dependencies {
         transitive = true
     }
 
-    /*
-    * Threads depends on:
-    * +--- com.squareup.retrofit2:converter-gson:2.4.0
-    * |    +--- com.squareup.retrofit2:retrofit:2.4.0 (*)
-    * |    \--- com.google.code.gson:gson:2.8.2
-    *
-    */
     implementation 'com.google.code.gson:gson:2.8.2'
 
     implementation 'com.azoft.carousellayoutmanager:carousel:1.2.1'
