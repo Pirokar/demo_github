@@ -5,7 +5,7 @@
     android:id="@+id/activity_root"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="im.threads.activities.ImagesActivity">
+    tools:context=".internal.activities.ImagesActivity">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"

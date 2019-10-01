@@ -14,7 +14,7 @@
         tools:src="@drawable/threads_operator_avatar_placeholder"
         android:layout_centerVertical="true"/>
 
-    <im.threads.widget.text_view.SpecialistConnectTitleTextView
+    <im.threads.internal.widget.text_view.SpecialistConnectTitleTextView
         android:id="@+id/quote_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         android:textColor="@color/threads_chat_connection_message"
         android:textSize="18sp" />
 
-    <im.threads.widget.text_view.SpecialistConnectSubtitleTextView
+    <im.threads.internal.widget.text_view.SpecialistConnectSubtitleTextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

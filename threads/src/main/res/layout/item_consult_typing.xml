@@ -12,7 +12,7 @@
         android:scaleType="centerCrop"
         android:visibility="gone" />
 
-    <im.threads.widget.text_view.TypingTextView
+    <im.threads.internal.widget.text_view.TypingTextView
         android:id="@+id/typing_in_progress"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

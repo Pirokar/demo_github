@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 import androidx.test.InstrumentationRegistry;
-import im.threads.helpers.FileProviderHelper;
-import im.threads.utils.FileDownloader;
+import im.threads.internal.helpers.FileProviderHelper;
+import im.threads.internal.utils.FileDownloader;
 
 public class FileProviderHelperTest {
 
@@ -32,5 +32,4 @@ public class FileProviderHelperTest {
         Assert.assertNotNull(uri);
         Assert.assertNotEquals("File uri is empty", uri, Uri.EMPTY);
     }
-
 }
