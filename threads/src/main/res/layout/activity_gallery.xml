@@ -24,7 +24,7 @@
             android:orientation="horizontal"
             android:visibility="gone">
 
-            <im.threads.widget.CustomFontEditText
+            <im.threads.internal.widget.CustomFontEditText
                 android:id="@+id/search_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -67,7 +67,7 @@
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_search_white_24dp"/>
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.internal.widget.CustomFontTextView
             android:id="@+id/search_photo_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
             android:textAllCaps="true"
             android:textColor="@android:color/white"/>
 
-        <im.threads.widget.CustomFontTextView
+        <im.threads.internal.widget.CustomFontTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/search_photo_title"
@@ -96,7 +96,7 @@
         android:layout_above="@+id/bottom_buttons"
         android:layout_below="@+id/search_label_layout"/>
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.internal.widget.CustomFontTextView
         android:id="@+id/nothing_found_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -118,14 +118,14 @@
         android:background="#333333"
         android:visibility="gone">
 
-        <im.threads.widget.CustomFontButton
+        <im.threads.internal.widget.CustomFontButton
 
             android:id="@+id/cancel"
             style="@style/bottomButtonTransparent"
             android:layout_gravity="left"
             android:text="@string/threads_cancel"/>
 
-        <im.threads.widget.CustomFontButton
+        <im.threads.internal.widget.CustomFontButton
             android:id="@+id/send"
 
             style="@style/bottomButtonTransparent"

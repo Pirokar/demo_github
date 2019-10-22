@@ -27,7 +27,7 @@
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"/>
 
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.internal.widget.CustomFontTextView
         android:id="@+id/consult_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:textSize="@dimen/text_medium"
         />
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.internal.widget.CustomFontTextView
         android:id="@+id/consult_moto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

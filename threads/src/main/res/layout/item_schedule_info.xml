@@ -25,7 +25,7 @@
             app:srcCompat="@drawable/threads_schedule_icon"/>
     </FrameLayout>
 
-    <im.threads.widget.text_view.ScheduleAlertTextView
+    <im.threads.internal.widget.text_view.ScheduleAlertTextView
         android:id="@+id/schedule_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

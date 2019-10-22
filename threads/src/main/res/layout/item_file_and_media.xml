@@ -16,7 +16,7 @@
         android:scaleType="centerInside"
         app:srcCompat="@drawable/ic_insert_file_blue_42dp"/>
 
-    <im.threads.widget.BoldCustomFontTextView
+    <im.threads.internal.widget.BoldCustomFontTextView
         android:id="@+id/file_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         android:textStyle="bold"
         tools:text="Название файла"/>
 
-    <im.threads.widget.LightCustomFontTextView
+    <im.threads.internal.widget.LightCustomFontTextView
         android:id="@+id/file_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:textColor="@color/threads_files_list"
         tools:text="2.3 Мб"/>
 
-    <im.threads.widget.LightCustomFontTextView
+    <im.threads.internal.widget.LightCustomFontTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
