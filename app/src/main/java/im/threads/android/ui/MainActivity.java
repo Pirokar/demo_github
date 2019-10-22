@@ -33,9 +33,6 @@ import im.threads.android.data.Card;
 import im.threads.android.databinding.ActivityMainBinding;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PrefUtils;
-import im.threads.controllers.ChatController;
-import im.threads.utils.AppInfoHelper;
-import im.threads.utils.PermissionChecker;
 import im.threads.view.ChatActivity;
 import io.fabric.sdk.android.Fabric;
 
