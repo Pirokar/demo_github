@@ -6,6 +6,8 @@ import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.MediaHelper;
@@ -54,21 +56,26 @@ public final class FilePoster {
                     mimeType = "*/*";
                 }
                 RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
-                MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
-                Call<FileUploadResponse> call = threadsApi.upload(body, token);
-                call.enqueue(new retrofit2.Callback<FileUploadResponse>() {
-                    @Override
-                    public void onResponse(Call<FileUploadResponse> call, retrofit2.Response<FileUploadResponse> response) {
-                        if (response.body() != null && response.body().getResult() != null && !response.body().getResult().isEmpty()) {
-                            callback.onSuccess(response.body().getResult());
+                try {
+                    MultipartBody.Part body = MultipartBody.Part.createFormData("file", URLEncoder.encode(file.getName(), "utf-8"), requestFile);
+                    Call<FileUploadResponse> call = threadsApi.upload(body, token);
+                    call.enqueue(new retrofit2.Callback<FileUploadResponse>() {
+                        @Override
+                        public void onResponse(Call<FileUploadResponse> call, retrofit2.Response<FileUploadResponse> response) {
+                            if (response.body() != null && response.body().getResult() != null && !response.body().getResult().isEmpty()) {
+                                callback.onSuccess(response.body().getResult());
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<FileUploadResponse> call, Throwable t) {
-                        callback.onError(t);
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<FileUploadResponse> call, Throwable t) {
+                            callback.onError(t);
+                        }
+                    });
+                } catch (UnsupportedEncodingException e) {
+                    callback.onError(e);
+                }
+
             } else if (fileDescription.getFilePath() != null && !new File(fileDescription.getFilePath()).exists()) {
                 if (fileDescription.getDownloadPath() != null) {
                     callback.onSuccess(fileDescription.getDownloadPath());
