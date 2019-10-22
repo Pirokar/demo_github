@@ -29,7 +29,7 @@
         app:title="@string/threads_files_and_media"
         app:titleTextColor="@color/threads_chat_toolbar_text">
 
-        <im.threads.widget.CustomFontEditText
+        <im.threads.internal.widget.CustomFontEditText
             android:id="@+id/search_edit_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

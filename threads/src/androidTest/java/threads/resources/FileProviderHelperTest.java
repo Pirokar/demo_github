@@ -11,8 +11,8 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import im.threads.helpers.FileProviderHelper;
-import im.threads.utils.FileDownloader;
+import im.threads.internal.helpers.FileProviderHelper;
+import im.threads.internal.utils.FileDownloader;
 
 public class FileProviderHelperTest {
 

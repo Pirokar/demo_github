@@ -15,7 +15,7 @@
         android:scaleType="centerInside"
         app:srcCompat="@android:drawable/ic_delete"/>
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.internal.widget.CustomFontTextView
         android:id="@+id/from"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -26,7 +26,7 @@
         android:textColor="@color/threads_attachments_author_text_color"
         android:textSize="@dimen/threads_attachments_author_text_size"/>
 
-    <im.threads.widget.CustomFontTextView
+    <im.threads.internal.widget.CustomFontTextView
         android:id="@+id/date"
         android:layout_width="match_parent"
         android:layout_height="0dp"

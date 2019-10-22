@@ -21,7 +21,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/margin_half" />
 
-        <im.threads.widget.text_view.BubbleMessageTextView
+        <im.threads.internal.widget.text_view.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             tools:text="@string/threads_item_user_rate_header"
             android:textColor="@color/threads_outgoing_message_text" />
 
-        <im.threads.widget.text_view.BubbleTimeTextView
+        <im.threads.internal.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
             style="@style/timestamp"
             android:layout_alignParentRight="true"
