@@ -1,6 +1,5 @@
 package im.threads.android.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,26 +16,22 @@ import android.widget.Toast;
 import com.azoft.carousellayoutmanager.CarouselLayoutManager;
 import com.azoft.carousellayoutmanager.CarouselZoomPostLayoutListener;
 import com.azoft.carousellayoutmanager.CenterScrollListener;
-import com.mfms.android.push_lite.PushBroadcastReceiver;
-import com.mfms.android.push_lite.PushController;
-import com.mfms.android.push_lite.PushServerIntentService;
-import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import im.threads.activities.ChatActivity;
+import im.threads.ThreadsLib;
+import im.threads.UserInfoBuilder;
 import im.threads.android.R;
 import im.threads.android.data.Card;
 import im.threads.android.databinding.ActivityMainBinding;
-import im.threads.android.utils.ChatBuilderHelper;
+import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PrefUtils;
-import im.threads.controllers.ChatController;
-import im.threads.utils.AppInfoHelper;
-import im.threads.utils.PermissionChecker;
+import im.threads.view.ChatActivity;
 
 /**
  * Активность с примерами открытия чата:
@@ -46,7 +40,6 @@ import im.threads.utils.PermissionChecker;
  */
 public class MainActivity extends AppCompatActivity implements AddCardDialog.AddCardDialogActionsListener, YesNoDialog.YesNoDialogActionListener {
 
-    private static final int CHAT_PERMISSIONS_REQUEST_CODE = 123;
     private static final int YES_NO_DIALOG_REQUEST_CODE = 323;
 
     private CardsAdapter cardsAdapter;
@@ -57,15 +50,10 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Перед работой с чатом должна быть настроена библиотека пуш уведомлений
-        PushController.getInstance(this).init();
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setViewModel(this);
         TextView versionView = findViewById(R.id.version_name);
-        versionView.setText(getString(R.string.lib_version, AppInfoHelper.getLibVersion()));
-
+        versionView.setText(getString(R.string.lib_version, ThreadsLib.getLibVersion()));
         final CarouselLayoutManager layoutManager = new CarouselLayoutManager(CarouselLayoutManager.HORIZONTAL);
         layoutManager.setPostLayoutListener(new CarouselZoomPostLayoutListener());
         binding.cardsView.setLayoutManager(layoutManager);
@@ -81,29 +69,21 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
 
         });
         binding.cardsView.setAdapter(cardsAdapter);
-
-        updateViews();
-
-        // Отслеживание Push-уведомлений, нераспознанных чатом.
-        ChatController.setFullPushListener(new CustomFullPushListener());
-        ChatController.setShortPushListener(new CustomShortPushListener());
+        showCards(PrefUtils.getCards(this));
     }
 
-    private void updateViews() {
-        updateViews(PrefUtils.getCards(this));
-    }
+    private void showCards(List<Card> cards) {
 
-    private void updateViews(List<Card> cards) {
         boolean hasCards = cards != null && !cards.isEmpty();
-        binding.cardsView.setVisibility(hasCards ? View.VISIBLE : View.GONE);
+
         binding.addCard.setVisibility(!hasCards ? View.VISIBLE : View.GONE);
         binding.addCardHint.setVisibility(!hasCards ? View.VISIBLE : View.GONE);
+
+        binding.cardsView.setVisibility(hasCards ? View.VISIBLE : View.GONE);
         binding.chatActivityButton.setVisibility(hasCards ? View.VISIBLE : View.GONE);
         binding.chatFragmentButton.setVisibility(hasCards ? View.VISIBLE : View.GONE);
-
-        if (hasCards) {
-            cardsAdapter.setCards(cards);
-        }
+        binding.sendMessageButton.setVisibility(hasCards ? View.VISIBLE : View.GONE);
+        cardsAdapter.setCards(hasCards ? cards : new ArrayList<>());
     }
 
     /**
@@ -111,23 +91,18 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
      */
     public void navigateToChatActivity() {
         Card currentCard = getCurrentCard();
-        // При открытии чата нужно проверить, выданы ли необходимые разрешения.
-        if (!PermissionChecker.checkPermissions(this)) {
-            PermissionChecker.requestPermissionsAndInit(CHAT_PERMISSIONS_REQUEST_CODE, this);
+        if (currentCard.getUserId() != null) {
+            ThreadsLib.getInstance().initUser(
+                    new UserInfoBuilder(currentCard.getUserId())
+                            .setClientIdSignature(currentCard.getClientIdSignature())
+                            .setUserName(currentCard.getUserName())
+                            .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
+                            .setAppMarker(currentCard.getAppMarker())
+            );
+            ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(getCurrentDesign()));
+            startActivity(new Intent(this, ChatActivity.class));
         } else {
-            String data = "{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}";
-            if (currentCard.getUserId() != null) {
-                ChatBuilderHelper.buildChatStyle(this,
-                        currentCard.getAppMarker(),
-                        currentCard.getUserId(),
-                        currentCard.getClientIdSignature(),
-                        currentCard.getUserName(),
-                        data,
-                        getCurrentDesign());
-                startActivity(new Intent(this, ChatActivity.class));
-            } else {
-                displayError(R.string.error_empty_userid);
-            }
+            displayError(R.string.error_empty_userid);
         }
     }
 
@@ -161,32 +136,31 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         } catch (FileNotFoundException ignored) {
         } catch (IOException ignored) {
         }
-        if (ChatController.sendMessage(this, getString(R.string.test_message), imageFile)) {
+        Card currentCard = getCurrentCard();
+        boolean messageSent = false;
+        if (currentCard.getUserId() != null) {
+            UserInfoBuilder userInfoBuilder = new UserInfoBuilder(currentCard.getUserId())
+                    .setClientIdSignature(currentCard.getClientIdSignature())
+                    .setUserName(currentCard.getUserName())
+                    .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
+                    .setAppMarker(currentCard.getAppMarker());
+            ThreadsLib.getInstance().initUser(userInfoBuilder);
+            messageSent = ThreadsLib.getInstance().sendMessage(getString(R.string.test_message), imageFile);
+        }
+        if (messageSent) {
             Toast.makeText(this, R.string.send_text_message_success, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, R.string.send_text_message_error, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private ChatBuilderHelper.ChatDesign getCurrentDesign() {
-        return ChatBuilderHelper.ChatDesign.enumOf(this, (String) binding.designSpinner.getSelectedItem());
+    private ChatStyleBuilderHelper.ChatDesign getCurrentDesign() {
+        return ChatStyleBuilderHelper.ChatDesign.enumOf(this, (String) binding.designSpinner.getSelectedItem());
     }
 
     private Card getCurrentCard() {
         final CarouselLayoutManager layoutManager = (CarouselLayoutManager) binding.cardsView.getLayoutManager();
         return cardsAdapter.getCard(layoutManager.getCenterItemPosition());
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CHAT_PERMISSIONS_REQUEST_CODE) {
-            if (PermissionChecker.checkGrantResult(grantResults)) {
-                navigateToChatActivity();
-            } else {
-                Toast.makeText(this, "Without that permissions, application may not work properly", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override
@@ -207,30 +181,33 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
 
     @Override
     public void onCardAdded(Card newCard) {
-        List<Card> cards = PrefUtils.getCards(this);
+
+        List<Card> cards = cardsAdapter.getCards();
+
         if (cards.contains(newCard)) {
             Toast.makeText(this, R.string.client_id_already_exist, Toast.LENGTH_LONG).show();
         } else {
             cards.add(newCard);
-            updateViews(cards);
+            showCards(cards);
             PrefUtils.storeCards(this, cards);
         }
     }
 
     @Override
     public void onCancel() {
-
     }
 
     @Override
     public void onOkClicked(final int requestCode) {
-        List<Card> cards = PrefUtils.getCards(this);
+
+        List<Card> cards = cardsAdapter.getCards();
+
         if (cards.contains(cardForDelete)) {
             cards.remove(cardForDelete);
-            updateViews(cards);
-            PrefUtils.storeCards(this, cards);
 
-            ChatController.logoutClient(this, cardForDelete.getUserId());
+            showCards(cards);
+            PrefUtils.storeCards(this, cards);
+            ThreadsLib.getInstance().logoutClient(cardForDelete.getUserId());
         }
         cardForDelete = null;
     }
@@ -240,27 +217,6 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         cardForDelete = null;
     }
 
-    public static class CustomShortPushListener implements ChatController.ShortPushListener {
-
-        public static final String TAG = "CustomShortPushListener";
-
-        @Override
-        public void onNewShortPushNotification(PushBroadcastReceiver pushBroadcastReceiver, Context context, String s, Bundle bundle) {
-            Log.i(TAG, "Short push not accepted by chat: " + bundle.toString());
-            Toast.makeText(context, "Short push not accepted by chat: " + bundle.toString(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public static class CustomFullPushListener implements ChatController.FullPushListener {
-
-        public static final String TAG = "CustomFullPushListener";
-
-        @Override
-        public void onNewFullPushNotification(PushServerIntentService pushServerIntentService, PushMessage pushMessage) {
-            Toast.makeText(pushServerIntentService.getApplicationContext(), "Full push not accepted by chat: " + String.valueOf(pushMessage), Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "Full push not accepted by chat: " + String.valueOf(pushMessage));
-        }
-    }
 
     private void displayError(final @StringRes int errorTextRes) {
         displayError(getString(errorTextRes));
@@ -269,5 +225,4 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
     private void displayError(final @NonNull String errorText) {
         Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show();
     }
-
 }
