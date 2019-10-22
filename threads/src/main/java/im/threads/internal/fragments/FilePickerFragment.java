@@ -198,7 +198,7 @@ public final class FilePickerFragment extends DialogFragment
             this.mSelectedListener = getDirectory;
         }
     }
-asdadsda
+
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
