@@ -1,9 +1,11 @@
 package im.threads.internal.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -28,13 +31,15 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import im.threads.R;
+import im.threads.internal.Config;
 import im.threads.internal.helpers.FileHelper;
-import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.picasso_url_connection_only.Picasso;
+import im.threads.internal.utils.ThreadsLogger;
 
 public final class CameraActivity extends BaseActivity {
     private static final String TAG = "CameraActivity ";
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
+    private static final String SELFIE_MODE_EXTRA = "SELFIE_MODE_EXTRA";
     private Camera mCamera;
     private SurfaceView mSurfaceView;
     private int mFlashMode = 3;
@@ -45,10 +50,19 @@ public final class CameraActivity extends BaseActivity {
     private boolean isCameraReleased = false;
     private String mCurrentPhoto;
     private Executor mExecutor = Executors.newSingleThreadExecutor();
+    private boolean selfieMode = false;
+
+    public static Intent getStartIntent(Context context, boolean selfieMode) {
+        Intent intent = new Intent(context, CameraActivity.class);
+        intent.putExtra(SELFIE_MODE_EXTRA, selfieMode);
+        return intent;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        selfieMode = getIntent().getBooleanExtra(SELFIE_MODE_EXTRA, false);
+        isFrontCamera = selfieMode;
         setContentView(R.layout.activity_camera);
         Toolbar t = findViewById(R.id.toolbar);
         setSupportActionBar(t);
@@ -112,7 +126,15 @@ public final class CameraActivity extends BaseActivity {
 
     private void setStateCameraPreview() {
         findViewById(R.id.photo_preview).setVisibility(View.GONE);
-        findViewById(R.id.label_top).setVisibility(View.VISIBLE);
+        if (selfieMode) {
+            findViewById(R.id.label_top_selfie).setVisibility(View.VISIBLE);
+            findViewById(R.id.ll_selfie_mask).setVisibility(View.VISIBLE);
+            findViewById(R.id.label_top).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.label_top).setVisibility(View.VISIBLE);
+            findViewById(R.id.label_top_selfie).setVisibility(View.GONE);
+            findViewById(R.id.ll_selfie_mask).setVisibility(View.GONE);
+        }
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.VISIBLE);
         findViewById(R.id.toolbar).setVisibility(View.GONE);
         findViewById(R.id.bottom_buttons_image).setVisibility(View.GONE);
@@ -122,6 +144,10 @@ public final class CameraActivity extends BaseActivity {
         if (Camera.getNumberOfCameras() == 0) {
             Toast.makeText(this, getResources().getString(R.string.threads_no_cameras_detected), Toast.LENGTH_SHORT).show();
             finish();
+        }
+        if (selfieMode) {
+            switchCamButton.setVisibility(View.INVISIBLE);
+            flashButton.setVisibility(View.INVISIBLE);
         }
         switchCamButton.setOnClickListener(v -> {
             int currentCameraId;
@@ -149,7 +175,7 @@ public final class CameraActivity extends BaseActivity {
         takePhotoButton.setOnClickListener(v -> {
             takePhotoButton.setEnabled(false);
             mCamera.takePicture(() -> {
-            }
+                    }
                     , (data, camera) -> {
                     }
                     , (data, camera) -> mExecutor.execute(() -> {
@@ -233,6 +259,8 @@ public final class CameraActivity extends BaseActivity {
 
     private void setStateImagePreview(String imagePath) {
         findViewById(R.id.label_top).setVisibility(View.GONE);
+        findViewById(R.id.label_top_selfie).setVisibility(View.GONE);
+        findViewById(R.id.ll_selfie_mask).setVisibility(View.GONE);
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.GONE);
         ImageView image = findViewById(R.id.photo_preview);
         image.setVisibility(View.VISIBLE);

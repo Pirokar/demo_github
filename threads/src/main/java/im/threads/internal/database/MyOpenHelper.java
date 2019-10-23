@@ -30,7 +30,7 @@ import im.threads.internal.model.UserPhrase;
  * обертка для БД
  */
 final class MyOpenHelper extends SQLiteOpenHelper {
-    private static final int VERSION = 6;
+    private static final int VERSION = 7;
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
     private static final String COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID";
@@ -68,6 +68,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
     private static final String COLUMN_FD_IS_FROM_QUOTE = "COLUMN_FD_IS_FROM_QUOTE";
     private static final String COLUMN_FD_FILENAME = "COLUMN_FD_FILENAME";
     private static final String COLUMN_FD_MESSAGE_UUID_EXT = "COLUMN_FD_MESSAGE_UUID_EXT";
+    private static final String COLUMN_FD_SELFIE = "COLUMN_FD_SELFIE";
 
     private static final String COLUMN_SURVEY_SENDING_ID = "COLUMN_SURVEY_SENDING_ID";
     private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
@@ -129,7 +130,8 @@ final class MyOpenHelper extends SQLiteOpenHelper {
                 + COLUMN_FD_SIZE + " integer, "
                 + COLUMN_FD_IS_FROM_QUOTE + " integer, "
                 + COLUMN_FD_FILENAME + " text,"
-                + COLUMN_FD_DOWNLOAD_PROGRESS + " integer)"
+                + COLUMN_FD_DOWNLOAD_PROGRESS + " integer, "
+                + COLUMN_FD_SELFIE + " integer)"
         );
         db.execSQL("CREATE TABLE " + TABLE_QUESTIONS + "("
                 + COLUMN_QUESTION_ID + " text,"
@@ -492,6 +494,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         fd.setDownloadProgress(progress);
         fd.setDownloadPath(cGetString(c, COLUMN_FD_URL));
         fd.setIncomingName(cGetString(c, COLUMN_FD_FILENAME));
+        fd.setSelfie(cGetBool(c, COLUMN_FD_SELFIE));
         c.close();
         return fd;
     }
@@ -514,6 +517,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
             fd.setDownloadProgress(progress);
             fd.setIncomingName(cGetString(c, COLUMN_FD_FILENAME));
             fd.setDownloadPath(cGetString(c, COLUMN_FD_URL));
+            fd.setSelfie(cGetBool(c, COLUMN_FD_SELFIE));
             list.add(fd);
         }
         c.close();
@@ -604,7 +608,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
     private void putFd(FileDescription fileDescription, String fdMessageUuid, boolean isFromQuote) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FD_MESSAGE_UUID_EXT, fdMessageUuid);
-        cv.put(COLUMN_FD_FROM, fileDescription.getFileSentTo());
+        cv.put(COLUMN_FD_FROM, fileDescription.getFrom());
         if (!TextUtils.isEmpty(fileDescription.getFilePath())) {
             cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
         }
@@ -614,6 +618,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
         cv.put(COLUMN_FD_IS_FROM_QUOTE, isFromQuote);
         cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
+        cv.put(COLUMN_FD_SELFIE, fileDescription.isSelfie());
         Cursor c = getWritableDatabase().rawQuery("select " + COLUMN_FD_MESSAGE_UUID_EXT + " from " + TABLE_FILE_DESCRIPTION
                 + " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?", new String[]{fdMessageUuid});
         boolean existsInDb = c.getCount() > 0;
@@ -628,13 +633,14 @@ final class MyOpenHelper extends SQLiteOpenHelper {
 
     void updateFd(FileDescription fileDescription) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_FD_FROM, fileDescription.getFileSentTo());
+        cv.put(COLUMN_FD_FROM, fileDescription.getFrom());
         cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
         cv.put(COLUMN_FD_URL, fileDescription.getDownloadPath());
         cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
         cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
         cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
         cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
+        cv.put(COLUMN_FD_SELFIE, fileDescription.isSelfie());
         getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
                 "" + COLUMN_FD_FILENAME
                         + " like ? and " + COLUMN_FD_URL + " like ?",
