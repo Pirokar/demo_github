@@ -45,7 +45,7 @@ public final class RatingStarsViewHolder extends BaseHolder {
         rating.initRating(itemView.getContext(), rate, scale);
         askForRate.setText(survey.getQuestions().get(0).getText());
         boolean hasRate = survey.getQuestions().get(0).hasRate();
-        rating.setListenerClick(hasRate ? null : callBackListener);
+        rating.setListenerClick(callBackListener);
         thanksForRate.setVisibility(hasRate ? View.VISIBLE : View.GONE);
     }
 }

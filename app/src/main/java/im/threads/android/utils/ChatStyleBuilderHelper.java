@@ -3,8 +3,8 @@ package im.threads.android.utils;
 import android.content.Context;
 import android.support.annotation.StringRes;
 
-import im.threads.android.R;
 import im.threads.ChatStyle;
+import im.threads.android.R;
 
 public class ChatStyleBuilderHelper {
 
@@ -150,6 +150,5 @@ public class ChatStyleBuilderHelper {
                         R.color.alt_threads_survey_unselected_icon_tint,
                         R.color.alt_threads_chat_system_message,
                         R.color.alt_threads_survey_choices_text);
-
     }
 }
