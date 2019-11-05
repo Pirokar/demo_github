@@ -28,8 +28,7 @@ public class ThreadsDemoApplication extends MultiDexApplication {
         ConfigBuilder configBuilder = new ConfigBuilder(this)
                 .pendingIntentCreator(new CustomPendingIntentCreator())
                 .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count))
-                .isDebugLoggingEnabled(true)
-                .surveyCompletionDelay(2000);
+                .isDebugLoggingEnabled(true);
         ThreadsLib.init(configBuilder);
     }
 
