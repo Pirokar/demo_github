@@ -599,6 +599,7 @@ public final class IncomingMessageParser {
                     , 0);
             fileDescription.setDownloadPath(jsonArray.getJSONObject(0).getString("result"));
             fileDescription.setIncomingName(header);
+            fileDescription.setSelfie(jsonArray.getJSONObject(0).getBoolean("isSelfie"));
         }
         return fileDescription;
     }
@@ -617,6 +618,7 @@ public final class IncomingMessageParser {
                     , 0);
             fileDescription.setDownloadPath(attachments.get(0).getResult());
             fileDescription.setIncomingName(header);
+            fileDescription.setSelfie(attachments.get(0).isSelfie());
         }
         return fileDescription;
     }

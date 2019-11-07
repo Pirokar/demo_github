@@ -7,12 +7,13 @@ import android.support.v4.util.ObjectsCompat;
 public final class FileDescription implements Parcelable {
     private String from;
     private String filePath;
-    private String downloadPath;
-    private String incomingName;
     private final long size;
     private long timeStamp;
+    private String downloadPath;
+    private String incomingName;
     private int downloadProgress;
     private boolean downloadError = false;
+    private boolean selfie = false;
 
     public FileDescription(String from, String filePath, long size, long timeStamp) {
         this.from = from;
@@ -21,20 +22,32 @@ public final class FileDescription implements Parcelable {
         this.timeStamp = timeStamp;
     }
 
-    public boolean isDownloadError() {
-        return downloadError;
+    public String getFrom() {
+        return from;
     }
 
-    public void setDownloadError(boolean downloadError) {
-        this.downloadError = downloadError;
+    public void setFrom(String header) {
+        this.from = header;
     }
 
-    public String getIncomingName() {
-        return incomingName;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setIncomingName(String incomingName) {
-        this.incomingName = incomingName;
+    public void setFilePath(String text) {
+        this.filePath = text;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public String getDownloadPath() {
@@ -45,6 +58,14 @@ public final class FileDescription implements Parcelable {
         this.downloadPath = downloadPath;
     }
 
+    public String getIncomingName() {
+        return incomingName;
+    }
+
+    public void setIncomingName(String incomingName) {
+        this.incomingName = incomingName;
+    }
+
     public int getDownloadProgress() {
         return downloadProgress;
     }
@@ -53,32 +74,20 @@ public final class FileDescription implements Parcelable {
         this.downloadProgress = downloadProgress;
     }
 
-    public void setFrom(String header) {
-        this.from = header;
+    public boolean isDownloadError() {
+        return downloadError;
     }
 
-    public void setFilePath(String text) {
-        this.filePath = text;
+    public void setDownloadError(boolean downloadError) {
+        this.downloadError = downloadError;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public boolean isSelfie() {
+        return selfie;
     }
 
-    public String getFileSentTo() {
-        return from;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public long getSize() {
-        return size;
+    public void setSelfie(boolean selfie) {
+        this.selfie = selfie;
     }
 
     @Override
@@ -116,6 +125,7 @@ public final class FileDescription implements Parcelable {
         dest.writeLong(size);
         dest.writeLong(timeStamp);
         dest.writeInt(downloadProgress);
+        dest.writeInt(selfie ? 1 : 0);
     }
 
     public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<FileDescription>() {
@@ -128,10 +138,12 @@ public final class FileDescription implements Parcelable {
             long size = source.readLong();
             long timeStamp = source.readLong();
             int progress = source.readInt();
+            boolean selfie = source.readInt() == 1;
             FileDescription fd = new FileDescription(from, filePath, size, timeStamp);
             fd.setIncomingName(incomingName);
             fd.setDownloadPath(downloadPath);
             fd.setDownloadProgress(progress);
+            fd.setSelfie(selfie);
             return fd;
         }
 
@@ -140,10 +152,6 @@ public final class FileDescription implements Parcelable {
             return new FileDescription[size];
         }
     };
-
-    public String getFrom() {
-        return from;
-    }
 
     @Override
     public String toString() {
@@ -168,6 +176,7 @@ public final class FileDescription implements Parcelable {
                 && ObjectsCompat.equals(this.downloadPath, fileDescription.downloadPath)
                 && ObjectsCompat.equals(this.size, fileDescription.size)
                 && ObjectsCompat.equals(this.incomingName, fileDescription.incomingName)
-                && ObjectsCompat.equals(this.downloadProgress, fileDescription.downloadProgress);
+                && ObjectsCompat.equals(this.downloadProgress, fileDescription.downloadProgress)
+                && ObjectsCompat.equals(this.selfie, fileDescription.selfie);
     }
 }
