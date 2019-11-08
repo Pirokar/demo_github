@@ -5,20 +5,19 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -31,7 +30,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import im.threads.R;
-import im.threads.internal.Config;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.ThreadsLogger;
@@ -64,10 +62,6 @@ public final class CameraActivity extends BaseActivity {
         selfieMode = getIntent().getBooleanExtra(SELFIE_MODE_EXTRA, false);
         isFrontCamera = selfieMode;
         setContentView(R.layout.activity_camera);
-        Toolbar t = findViewById(R.id.toolbar);
-        setSupportActionBar(t);
-        t.setNavigationOnClickListener(v -> finish());
-        t.setTitle("");
         initPreview();
     }
 
@@ -94,6 +88,10 @@ public final class CameraActivity extends BaseActivity {
     }
 
     private void initPreview() {
+        FrameLayout flCamera = findViewById(R.id.fl_camera);
+        ViewGroup.LayoutParams lp = flCamera.getLayoutParams();
+        lp.width = getTargetWidth();
+        lp.height = getTargetHeight();
         mSurfaceView = findViewById(R.id.camera_preview);
         mSurfaceView.setVisibility(View.VISIBLE);
         mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
@@ -136,7 +134,6 @@ public final class CameraActivity extends BaseActivity {
             findViewById(R.id.ll_selfie_mask).setVisibility(View.GONE);
         }
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.VISIBLE);
-        findViewById(R.id.toolbar).setVisibility(View.GONE);
         findViewById(R.id.bottom_buttons_image).setVisibility(View.GONE);
         final ImageButton flashButton = findViewById(R.id.flash_control);
         final ImageButton takePhotoButton = findViewById(R.id.take_photo);
@@ -259,7 +256,6 @@ public final class CameraActivity extends BaseActivity {
 
     private void setStateImagePreview(String imagePath) {
         findViewById(R.id.label_top).setVisibility(View.GONE);
-        findViewById(R.id.label_top_selfie).setVisibility(View.GONE);
         findViewById(R.id.ll_selfie_mask).setVisibility(View.GONE);
         findViewById(R.id.bottom_buttons_photo).setVisibility(View.GONE);
         ImageView image = findViewById(R.id.photo_preview);
@@ -267,11 +263,7 @@ public final class CameraActivity extends BaseActivity {
         Picasso.with(this)
                 .load(new File(imagePath))
                 .fit()
-                .centerCrop()
                 .into(image);
-        Toolbar t = findViewById(R.id.toolbar);
-        t.setVisibility(View.GONE);
-        t.setTitle("");
         findViewById(R.id.bottom_buttons_image).setVisibility(View.VISIBLE);
         Button retakeButton = findViewById(R.id.retake);
         retakeButton.setOnClickListener(v -> {
@@ -322,9 +314,7 @@ public final class CameraActivity extends BaseActivity {
             }
         }
         List<Camera.Size> sizes = cp.getSupportedPreviewSizes();
-        Camera.Size optimalSize = getOptimalPreviewSize(sizes,
-                getResources().getDisplayMetrics().widthPixels,
-                getResources().getDisplayMetrics().heightPixels);
+        Camera.Size optimalSize = getOptimalPreviewSize(sizes, getTargetWidth(), getTargetHeight());
         cp.setPreviewSize(optimalSize.width, optimalSize.height);
         cp.setPictureSize(optimalSize.width, optimalSize.height);
         mCamera.setParameters(cp);
@@ -359,5 +349,13 @@ public final class CameraActivity extends BaseActivity {
             }
         }
         return optimalSize;
+    }
+
+    private int getTargetWidth() {
+        return getResources().getDisplayMetrics().widthPixels;
+    }
+
+    private int getTargetHeight() {
+        return getResources().getDisplayMetrics().widthPixels * 4 / 3;
     }
 }
