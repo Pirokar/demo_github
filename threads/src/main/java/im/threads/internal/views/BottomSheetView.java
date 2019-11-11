@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import im.threads.R;
+import im.threads.internal.Config;
 import im.threads.internal.utils.ViewUtils;
 
 public final class BottomSheetView extends LinearLayout {
@@ -64,11 +65,15 @@ public final class BottomSheetView extends LinearLayout {
         });
         selfie = findViewById(R.id.selfie);
         ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(selfie, R.drawable.ic_camera_front_42dp, ViewUtils.DrawablePosition.TOP);
-        selfie.setOnClickListener(v -> {
-            if (buttonsListener != null) {
-                buttonsListener.onSelfieClick();
-            }
-        });
+        if (Config.instance.getChatStyle().selfieEnabled) {
+            selfie.setOnClickListener(v -> {
+                if (buttonsListener != null) {
+                    buttonsListener.onSelfieClick();
+                }
+            });
+        } else {
+            selfie.setVisibility(GONE);
+        }
         send = findViewById(R.id.send);
         ViewUtils.setCompoundDrawablesWithIntrinsicBoundsCompat(send, R.drawable.ic_send_blue_42dp, ViewUtils.DrawablePosition.TOP);
         send.setOnClickListener(v -> {
@@ -115,7 +120,9 @@ public final class BottomSheetView extends LinearLayout {
                             animateShow(file);
                             animateShow(camera);
                             animateShow(gallery);
-                            animateShow(selfie);
+                            if (Config.instance.getChatStyle().selfieEnabled) {
+                                animateShow(selfie);
+                            }
                         }
                     });
         }
@@ -125,7 +132,9 @@ public final class BottomSheetView extends LinearLayout {
         if (send.getVisibility() == GONE) {
             animateHide(camera);
             animateHide(gallery);
-            animateHide(selfie);
+            if (Config.instance.getChatStyle().selfieEnabled) {
+                animateHide(selfie);
+            }
             file.animate()
                     .alpha(0.0f)
                     .setListener(new AnimatorListenerAdapter() {
