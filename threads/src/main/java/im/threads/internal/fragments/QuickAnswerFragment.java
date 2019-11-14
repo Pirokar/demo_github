@@ -25,7 +25,7 @@ import android.widget.TextView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.activities.TranslucentActivity;
+import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
@@ -58,7 +58,7 @@ public final class QuickAnswerFragment extends DialogFragment {
         ImageButton imageButton = v.findViewById(R.id.send);
         v.findViewById(R.id.close_button).setOnClickListener(v1 -> {
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
-            Intent answerIntent = new Intent(TranslucentActivity.ACTION_CANCEL);
+            Intent answerIntent = new Intent(QuickAnswerActivity.ACTION_CANCEL);
             manager.sendBroadcast(answerIntent);
             dismiss();
         });
@@ -84,8 +84,8 @@ public final class QuickAnswerFragment extends DialogFragment {
         }
         imageButton.setOnClickListener(v12 -> {
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
-            Intent answerIntent = new Intent(TranslucentActivity.ACTION_ANSWER);
-            answerIntent.putExtra(TranslucentActivity.ACTION_ANSWER, mEditText.getText().toString());
+            Intent answerIntent = new Intent(QuickAnswerActivity.ACTION_ANSWER);
+            answerIntent.putExtra(QuickAnswerActivity.ACTION_ANSWER, mEditText.getText().toString());
             manager.sendBroadcast(answerIntent);
             mEditText.setText("");
             dismiss();

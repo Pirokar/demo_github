@@ -4,7 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import im.threads.internal.activities.TranslucentActivity;
+import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultPhrase;
@@ -13,14 +13,14 @@ import im.threads.internal.utils.ThreadsLogger;
 
 public final class QuickAnswerController extends Fragment {
     private static final String TAG = "QuickAnswerController ";
-    private TranslucentActivity activity;
+    private QuickAnswerActivity activity;
     private Context context;
 
     public static QuickAnswerController getInstance() {
         return new QuickAnswerController();
     }
 
-    public void onBind(final TranslucentActivity activity) {
+    public void onBind(final QuickAnswerActivity activity) {
         if (activity == null) return;
         this.activity = activity;
         context = activity.getApplicationContext();
