@@ -176,7 +176,7 @@
                     android:id="@+id/input"
                     style="@style/InputEditTextStyle"
                     android:hint="@string/threads_input_hint"
-                    android:inputType="textCapSentences"
+                    android:inputType="textCapSentences|textMultiLine"
                     android:maxLines="7" />
 
                 <ImageButton
