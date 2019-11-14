@@ -112,4 +112,7 @@
     <string name="threads_welcome_screen_title_text">Добро пожаловать</string>
     <string name="threads_welcome_screen_subtitle_text">Отправьте ваш вопрос</string>
     <string name="threads_input_hint">Ваше сообщение...</string>
+    <string name="threads_selfie">Селфи</string>
+    <string name="threads_selfie_hint">Убедитесь, что на фото ваше лицо размещено прямо и его отчетливо видно</string>
+
 </resources>

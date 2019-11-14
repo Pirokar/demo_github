@@ -229,6 +229,8 @@ public final class ChatStyle implements Serializable {
 
     public boolean useExternalCameraApp = false;
 
+    public boolean selfieEnabled = false;
+
     // specify fonts
     @Nullable
     public String defaultFontBold;
@@ -299,6 +301,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setUseExternalCameraApp(final boolean useExternal) {
         this.useExternalCameraApp = useExternal;
+        return this;
+    }
+
+    public ChatStyle setSelfieEnabled(final boolean selfieEnabled) {
+        this.selfieEnabled = selfieEnabled;
         return this;
     }
 

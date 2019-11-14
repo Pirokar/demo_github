@@ -2,6 +2,7 @@ package im.threads.internal.model;
 
 public final class Attachment {
     private String result;
+    private boolean isSelfie;
     private Optional optional;
 
     public String getResult() {
@@ -18,5 +19,13 @@ public final class Attachment {
 
     public void setOptional(Optional optional) {
         this.optional = optional;
+    }
+
+    public boolean isSelfie() {
+        return isSelfie;
+    }
+
+    public void setSelfie(boolean selfie) {
+        isSelfie = selfie;
     }
 }
