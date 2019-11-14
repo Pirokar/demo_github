@@ -83,6 +83,9 @@ public final class QuickAnswerFragment extends DialogFragment {
 
         }
         imageButton.setOnClickListener(v12 -> {
+            if (mEditText.getText().toString().trim().length() == 0) {
+                return;
+            }
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
             Intent answerIntent = new Intent(QuickAnswerActivity.ACTION_ANSWER);
             answerIntent.putExtra(QuickAnswerActivity.ACTION_ANSWER, mEditText.getText().toString());
