@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -65,6 +64,7 @@ import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.adapters.ChatAdapter;
 import im.threads.internal.controllers.ChatController;
+import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
 import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.helpers.FileHelper;
@@ -96,7 +96,6 @@ import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.ThreadsPermissionChecker;
 import im.threads.internal.utils.UrlUtils;
-import im.threads.internal.views.BottomSheetView;
 import im.threads.internal.views.MySwipeRefreshLayout;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -105,7 +104,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
  */
 public final class ChatFragment extends BaseFragment implements
-        BottomSheetView.ButtonsListener,
+        AttachmentBottomSheetDialogFragment.Callback,
         ChatAdapter.AdapterInterface,
         FilePickerFragment.SelectedListener,
         PopupMenu.OnMenuItemClickListener {
@@ -114,10 +113,12 @@ public final class ChatFragment extends BaseFragment implements
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
+    public static final int REQUEST_CODE_SELFIE = 106;
     public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 105;
     public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 102;
     public static final int REQUEST_PERMISSION_CAMERA = 103;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
+    public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 107;
 
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
@@ -142,7 +143,6 @@ public final class ChatFragment extends BaseFragment implements
     private Quote mQuote = null;
     private FileDescription mFileDescription = null;
     private ChatPhrase mChosenPhrase = null;
-    private List<String> mAttachedImages = new ArrayList<>();
     private ChatReceiver mChatReceiver;
 
     private boolean isInMessageSearchMode;
@@ -153,7 +153,13 @@ public final class ChatFragment extends BaseFragment implements
     private FragmentChatBinding binding;
 
     private Toast mToast;
+
     private File externalCameraPhotoFile;
+
+    @Nullable
+    private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
+
+    private List<String> mAttachedImages = new ArrayList<>();
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -172,7 +178,6 @@ public final class ChatFragment extends BaseFragment implements
         }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
-
         initViews();
         bindViews();
         initToolbar();
@@ -214,7 +219,6 @@ public final class ChatFragment extends BaseFragment implements
         Activity activity = getActivity();
 
         mQuoteLayoutHolder = new QuoteLayoutHolder();
-        binding.fileInputSheet.setButtonsListener(this);
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         binding.recycler.setLayoutManager(mLayoutManager);
@@ -453,8 +457,6 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setBackgroundColor(activity, binding.chatRoot, style.chatBackgroundColor);
 
         ColorsHelper.setBackgroundColor(activity, binding.inputLayout, style.chatMessageInputColor);
-        ColorsHelper.setBackgroundColor(activity, binding.fileInputSheet, style.chatMessageInputColor);
-        ColorsHelper.setBackgroundColor(activity, binding.bottomGallery, style.chatMessageInputColor);
         ColorsHelper.setBackgroundColor(activity, binding.bottomLayout, style.chatMessageInputColor);
 
         ColorsHelper.setDrawableColor(activity, binding.searchUpIb.getDrawable(), style.chatToolbarTextColorResId);
@@ -508,7 +510,6 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.sendMessage, style.chatBodyIconsTint);
         ColorsHelper.setTint(activity, binding.addAttachment, style.chatBodyIconsTint);
         ColorsHelper.setTint(activity, binding.quoteClear, style.chatBodyIconsTint);
-        binding.fileInputSheet.setButtonsTint(style.chatBodyIconsTint);
 
         ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
 
@@ -545,8 +546,7 @@ public final class ChatFragment extends BaseFragment implements
 
             } else {
                 setBottomStateDefault();
-                binding.bottomGallery.setVisibility(View.GONE);
-                startActivityForResult(new Intent(activity, CameraActivity.class), REQUEST_CODE_PHOTO);
+                startActivityForResult(CameraActivity.getStartIntent(activity, false), REQUEST_CODE_PHOTO);
             }
         } else {
             ArrayList<String> permissions = new ArrayList<>();
@@ -560,6 +560,16 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onGalleryClick() {
         startActivityForResult(GalleryActivity.getStartIntent(getActivity(), REQUEST_CODE_PHOTOS), REQUEST_CODE_PHOTOS);
+    }
+
+    @Override
+    public void onImageSelectionChanged(List<String> imageList) {
+        mAttachedImages = new ArrayList<>(imageList);
+    }
+
+    @Override
+    public void onBottomSheetDetached() {
+        bottomSheetDialogFragment = null;
     }
 
     @Override
@@ -813,22 +823,29 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Override
-    public void onHideClick() {
-        binding.bottomGallery.setVisibility(View.GONE);
-        binding.fileInputSheet.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                binding.fileInputSheet.setVisibility(View.GONE);
-                binding.inputLayout.setVisibility(View.VISIBLE);
+    public void onSelfieClick() {
+        Activity activity = getActivity();
+        boolean isCameraGranted = ThreadsPermissionChecker.isCameraPermissionGranted(activity);
+        boolean isWriteGranted = ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
+        ThreadsLogger.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
+        if (isCameraGranted && isWriteGranted) {
+            setBottomStateDefault();
+            startActivityForResult(CameraActivity.getStartIntent(activity, true), REQUEST_CODE_SELFIE);
+        } else {
+            ArrayList<String> permissions = new ArrayList<>();
+            if (!isCameraGranted) {
+                permissions.add(android.Manifest.permission.CAMERA);
             }
-        });
+            if (!isWriteGranted) {
+                permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_SELFIE_CAMERA, R.string.threads_permissions_camera_and_write_external_storage_help_text, permissions.toArray(new String[]{}));
+        }
     }
 
     @Override
     public void onSendClick() {
-        if (mAttachedImages == null || mAttachedImages.size() == 0) {
-            binding.bottomGallery.setVisibility(View.GONE);
-        } else {
+        if (mAttachedImages != null && mAttachedImages.size() != 0) {
             List<UpcomingUserMessage> messages = new ArrayList<>();
             messages.add(new UpcomingUserMessage(
                     new FileDescription(
@@ -846,12 +863,25 @@ public final class ChatFragment extends BaseFragment implements
                         mAttachedImages.get(i),
                         new File(mAttachedImages.get(i)).length(),
                         System.currentTimeMillis());
-
                 UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
                         fileDescription, null, null, false);
                 messages.add(upcomingUserMessage);
             }
             sendMessage(messages, true);
+        }
+    }
+
+    public void hideBottomSheet() {
+        if (bottomSheetDialogFragment != null) {
+            bottomSheetDialogFragment.dismiss();
+            bottomSheetDialogFragment = null;
+        }
+    }
+
+    public void showBottomSheet() {
+        if (bottomSheetDialogFragment == null) {
+            bottomSheetDialogFragment = new AttachmentBottomSheetDialogFragment();
+            bottomSheetDialogFragment.show(getChildFragmentManager(), AttachmentBottomSheetDialogFragment.TAG);
         }
     }
 
@@ -949,48 +979,11 @@ public final class ChatFragment extends BaseFragment implements
     private void openBottomSheetAndGallery() {
         if (ThreadsPermissionChecker.isReadExternalPermissionGranted(getActivity())) {
             setTitleStateCurrentOperatorConnected();
-
-            if (binding.fileInputSheet.getVisibility() == View.GONE) {
-                binding.fileInputSheet.setVisibility(View.VISIBLE);
-                binding.fileInputSheet.setAlpha(0.0f);
-                binding.fileInputSheet.animate().alpha(1.0f).setDuration(300).withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        binding.fileInputSheet.setVisibility(View.VISIBLE);
-                    }
-                });
-                binding.inputLayout.setVisibility(View.GONE);
+            if (bottomSheetDialogFragment == null) {
+                showBottomSheet();
                 scrollToPosition(mChatAdapter.getItemCount() - 1);
-                String[] projection = new String[]{MediaStore.Images.Media.DATA};
-
-                ArrayList<String> allItems = new ArrayList<>();
-                Cursor c = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_TAKEN + " desc");
-                if (c != null) {
-                    int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
-                    if (c.getCount() == 0) return;
-
-                    for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                        allItems.add(c.getString(DATA));
-                    }
-                }
-                binding.bottomGallery.setVisibility(View.VISIBLE);
-                binding.bottomGallery.setAlpha(0.0f);
-                binding.bottomGallery.animate().alpha(1.0f).setDuration(200).start();
-                binding.bottomGallery.setImages(allItems, items -> {
-                    mAttachedImages = new ArrayList<>(items);
-                    if (mAttachedImages.size() > 0) {
-                        binding.fileInputSheet.setSelectedState(true);
-                    } else {
-                        binding.fileInputSheet.setSelectedState(false);
-                    }
-                });
             } else {
-                binding.fileInputSheet.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        binding.fileInputSheet.setVisibility(View.GONE);
-                    }
-                });
+                hideBottomSheet();
             }
         } else {
             PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY, R.string.threads_permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -1007,7 +1000,7 @@ public final class ChatFragment extends BaseFragment implements
         if (null != mQuoteLayoutHolder)
             mQuoteLayoutHolder.setIsVisible(false);
         if (null != mChatAdapter) mChatAdapter.setAllMessagesRead();
-        binding.fileInputSheet.setSelectedState(false);
+        //binding.fileInputSheet.setSelectedState(false);
         if (clearInput) {
             binding.input.setText("");
             if (!isInMessageSearchMode) mQuoteLayoutHolder.setIsVisible(false);
@@ -1016,7 +1009,6 @@ public final class ChatFragment extends BaseFragment implements
             setBottomStateDefault();
             hideCopyControls();
             mAttachedImages.clear();
-            binding.bottomGallery.setVisibility(View.GONE);
             if (mChosenPhrase != null && mChatAdapter != null) {
                 mChatAdapter.setItemChosen(false, mChosenPhrase);
                 mChosenPhrase = null;
@@ -1192,16 +1184,9 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void setBottomStateDefault() {
-        binding.fileInputSheet.animate().alpha(0.0f).setDuration(300).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                binding.fileInputSheet.setVisibility(View.GONE);
-                binding.inputLayout.setVisibility(View.VISIBLE);
-            }
-        });
+        hideBottomSheet();
         if (!isInMessageSearchMode) binding.searchLo.setVisibility(View.GONE);
         if (!isInMessageSearchMode) binding.search.setText("");
-        binding.bottomGallery.setVisibility(View.GONE);
     }
 
 
@@ -1371,10 +1356,9 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == REQUEST_CODE_PHOTOS && resultCode == Activity.RESULT_OK) {
             ArrayList<String> photos = data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG);
-            onHideClick();
+            hideBottomSheet();
             welcomeScreenVisibility(false);
             if (photos.size() == 0) return;
             unChooseItem();
@@ -1424,12 +1408,21 @@ public final class ChatFragment extends BaseFragment implements
                     System.currentTimeMillis());
             UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
             sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
-
+        } else if (requestCode == REQUEST_CODE_SELFIE && resultCode == Activity.RESULT_OK) {
+            mFileDescription = new FileDescription(appContext.getString(R.string.threads_image),
+                    data.getStringExtra(CameraActivity.IMAGE_EXTRA),
+                    new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA)).length(),
+                    System.currentTimeMillis());
+            mFileDescription.setSelfie(true);
+            UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
+            sendMessage(Arrays.asList(new UpcomingUserMessage[]{uum}), true);
         } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
             openBottomSheetAndGallery();
 
         } else if (requestCode == REQUEST_PERMISSION_CAMERA && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
             onCameraClick();
+        } else if (requestCode == REQUEST_PERMISSION_SELFIE_CAMERA && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+            onSelfieClick();
         } else if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
             FilePickerFragment picker = FilePickerFragment.newInstance(null);
             picker.setFileFilter(new MyFileFilter());
@@ -1553,18 +1546,10 @@ public final class ChatFragment extends BaseFragment implements
     public boolean onBackPressed() {
         if (null != mChatAdapter) mChatAdapter.removeHighlight();
         boolean isNeedToClose = true;
-        if (binding.fileInputSheet.getVisibility() == View.VISIBLE && binding.bottomGallery.getVisibility() == View.VISIBLE) {
-            binding.fileInputSheet.setVisibility(View.GONE);
-            binding.inputLayout.setVisibility(View.VISIBLE);
-            onHideClick();
+        if (bottomSheetDialogFragment != null) {
+            hideBottomSheet();
             return false;
         }
-        if (binding.fileInputSheet.getVisibility() == View.VISIBLE) {
-            binding.fileInputSheet.setVisibility(View.GONE);
-            binding.inputLayout.setVisibility(View.VISIBLE);
-            return false;
-        }
-
         if (binding.copyControls.getVisibility() == View.VISIBLE
                 && binding.searchLo.getVisibility() == View.VISIBLE) {
             unChooseItem();
@@ -1590,10 +1575,6 @@ public final class ChatFragment extends BaseFragment implements
                 scrollToPosition(mChatAdapter.getItemCount() - 1);
             }
         }
-        if (binding.bottomGallery.getVisibility() == View.VISIBLE) {
-            onHideClick();
-            return false;
-        }
         if (mQuoteLayoutHolder.isVisible()) {
             mQuoteLayoutHolder.setIsVisible(false);
             if (mChatAdapter != null && mChosenPhrase != null) {
@@ -1610,12 +1591,9 @@ public final class ChatFragment extends BaseFragment implements
         setMenuVisibility(true);
         isInMessageSearchMode = false;
         binding.search.setText("");
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(binding.search.getWindowToken(), 0);
-            }
+        h.postDelayed(() -> {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(binding.search.getWindowToken(), 0);
         }, 100);
 
         binding.searchMore.setVisibility(View.GONE);

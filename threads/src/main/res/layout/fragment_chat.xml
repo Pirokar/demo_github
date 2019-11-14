@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-    </data>
+    <data />
 
     <RelativeLayout
         android:id="@+id/chat_root"
@@ -22,7 +20,7 @@
             android:layout_marginRight="@dimen/margin_big"
             android:background="@android:color/transparent"
             android:text="@string/threads_search_more"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <FrameLayout
             android:id="@+id/chat_content"
@@ -40,14 +38,14 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
             </im.threads.internal.views.MySwipeRefreshLayout>
 
             <im.threads.internal.views.WelcomeScreen
                 android:id="@+id/welcome"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
         </FrameLayout>
 
@@ -66,14 +64,14 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginTop="14dp"
-                app:srcCompat="@drawable/threads_scroll_down_btn_back"/>
+                app:srcCompat="@drawable/threads_scroll_down_btn_back" />
 
             <View
                 android:id="@+id/unread_msg_sticker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/circle_red"/>
+                android:background="@drawable/circle_red" />
 
             <im.threads.internal.widget.CustomFontTextView
                 android:id="@+id/unread_msg_count"
@@ -83,7 +81,7 @@
                 android:gravity="center"
                 android:textColor="@color/threads_chat_unread_msg_count_text"
                 android:textSize="@dimen/text_small"
-                tools:text="1"/>
+                tools:text="1" />
         </RelativeLayout>
 
         <LinearLayout
@@ -108,7 +106,7 @@
                     android:layout_marginTop="@dimen/margin_three_fourth"
                     android:layout_toRightOf="@+id/quote_image"
                     android:textColor="@color/threads_incoming_message_text"
-                    android:textSize="@dimen/text_medium"/>
+                    android:textSize="@dimen/text_medium" />
 
                 <im.threads.internal.widget.text_view.InputQuotedMessageTextView
                     android:id="@+id/quote_text"
@@ -121,7 +119,7 @@
                     android:layout_toRightOf="@+id/quote_image"
                     android:ellipsize="end"
                     android:lines="1"
-                    android:textColor="@color/threads_incoming_message_text"/>
+                    android:textColor="@color/threads_incoming_message_text" />
 
                 <ImageButton
                     android:id="@+id/quote_past"
@@ -129,8 +127,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:background="@null"
-                    app:srcCompat="@drawable/ic_reply_gray_24dp"/>
-
+                    app:srcCompat="@drawable/ic_reply_gray_24dp" />
 
                 <ImageView
                     android:id="@+id/quote_image"
@@ -140,7 +137,7 @@
                     android:minWidth="1dp"
                     android:padding="@dimen/margin_half"
                     android:scaleType="centerCrop"
-                    android:visibility="visible"/>
+                    android:visibility="visible" />
 
                 <ImageButton
                     android:id="@+id/quote_clear"
@@ -148,7 +145,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:background="@null"
-                    app:srcCompat="@drawable/ic_clear_blue_user_36dp"/>
+                    app:srcCompat="@drawable/ic_clear_blue_user_36dp" />
 
                 <View
                     android:id="@+id/delimeter"
@@ -156,9 +153,8 @@
                     android:layout_height="1dp"
                     android:layout_alignParentBottom="true"
                     android:background="#e5e5e5"
-                    android:visibility="visible"/>
+                    android:visibility="visible" />
             </RelativeLayout>
-
 
             <LinearLayout
                 android:id="@+id/input_layout"
@@ -174,14 +170,14 @@
                     android:layout_width="60dp"
                     android:layout_height="64dp"
                     android:background="@android:color/transparent"
-                    app:srcCompat="@drawable/threads_ic_attachment_button"/>
+                    app:srcCompat="@drawable/threads_ic_attachment_button" />
 
                 <im.threads.internal.widget.CustomFontEditText
                     android:id="@+id/input"
                     style="@style/InputEditTextStyle"
-                    android:inputType="textCapSentences"
                     android:hint="@string/threads_input_hint"
-                    android:maxLines="7"/>
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLines="7" />
 
                 <ImageButton
                     android:id="@+id/send_message"
@@ -189,28 +185,16 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:background="@android:color/transparent"
-                    app:srcCompat="@drawable/threads_ic_send_button"/>
+                    app:srcCompat="@drawable/threads_ic_send_button" />
+
             </LinearLayout>
 
-            <im.threads.internal.views.BottomGallery
-                android:id="@+id/bottom_gallery"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/threads_input_background"
-                android:visibility="gone"/>
-
-            <im.threads.internal.views.BottomSheetView
-                android:id="@+id/file_input_sheet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/threads_input_background"
-                android:visibility="gone"/>
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="63dp"
-            android:background="@drawable/toolbar_shadow"/>
+            android:background="@drawable/toolbar_shadow" />
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -234,7 +218,7 @@
                     android:paddingRight="16dp"
                     android:visibility="gone"
                     app:srcCompat="@drawable/ic_arrow_back_white_24dp"
-                    tools:visibility="visible"/>
+                    tools:visibility="visible" />
 
                 <LinearLayout
                     android:id="@+id/copy_controls"
@@ -243,8 +227,8 @@
                     android:gravity="center_horizontal"
                     android:orientation="horizontal"
                     android:paddingLeft="36dp"
-                    tools:visibility="visible"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <ImageButton
                         android:id="@+id/reply"
@@ -252,7 +236,7 @@
                         android:layout_height="30dp"
                         android:layout_marginLeft="-60dp"
                         android:background="@null"
-                        app:srcCompat="@drawable/ic_reply_blue_30dp"/>
+                        app:srcCompat="@drawable/ic_reply_blue_30dp" />
 
                     <ImageButton
                         android:id="@+id/content_copy"
@@ -260,7 +244,8 @@
                         android:layout_height="30dp"
                         android:layout_marginLeft="@dimen/margin_big"
                         android:background="@null"
-                        app:srcCompat="@drawable/ic_content_copy_blue_24dp"/>
+                        app:srcCompat="@drawable/ic_content_copy_blue_24dp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -284,7 +269,7 @@
                         android:lines="1"
                         android:textColor="@color/threads_chat_toolbar_text"
                         android:textSize="@dimen/text_big"
-                        tools:text="@string/threads_searching_operator"/>
+                        tools:text="@string/threads_searching_operator" />
 
                     <im.threads.internal.widget.text_view.ToolbarSubtitleTextView
                         android:id="@+id/subtitle"
@@ -295,7 +280,7 @@
                         android:maxLines="1"
                         android:textColor="@color/threads_chat_toolbar_text"
                         android:textSize="@dimen/text_regular"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
 
                     <RelativeLayout
                         android:id="@+id/search_lo"
@@ -319,7 +304,7 @@
                             android:textColorHint="@color/threads_chat_toolbar_hint"
                             android:textCursorDrawable="@null"
                             android:textSize="@dimen/text_big"
-                            android:visibility="visible"/>
+                            android:visibility="visible" />
 
                         <androidx.appcompat.widget.AppCompatImageButton
                             android:id="@+id/search_up_ib"
@@ -328,7 +313,7 @@
                             android:layout_toLeftOf="@+id/search_down_ib"
                             android:alpha="0.5"
                             app:backgroundTint="@android:color/transparent"
-                            app:srcCompat="@drawable/ic_expand_more_white_24dp"/>
+                            app:srcCompat="@drawable/ic_expand_more_white_24dp" />
 
                         <androidx.appcompat.widget.AppCompatImageButton
                             android:id="@+id/search_down_ib"
@@ -338,8 +323,10 @@
                             android:layout_marginRight="@dimen/margin_half"
                             android:alpha="0.5"
                             app:backgroundTint="@android:color/transparent"
-                            app:srcCompat="@drawable/ic_expand_less_white_24dp"/>
+                            app:srcCompat="@drawable/ic_expand_less_white_24dp" />
+
                     </RelativeLayout>
+
                 </LinearLayout>
 
                 <ImageButton
@@ -349,11 +336,12 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
-                    app:srcCompat="@drawable/ic_more_vert_white_24dp_chat"/>
+                    app:srcCompat="@drawable/ic_more_vert_white_24dp_chat" />
 
             </LinearLayout>
 
         </androidx.appcompat.widget.Toolbar>
 
     </RelativeLayout>
+
 </layout>
