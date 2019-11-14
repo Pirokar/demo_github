@@ -202,7 +202,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 if (fileClickListener != null) {
                     mCircularProgressButton.setOnClickListener(fileClickListener);
                 }
-                rightTextHeader.setText(fileDescription.getFileSentTo() == null ? "" : fileDescription.getFileSentTo());
+                rightTextHeader.setText(fileDescription.getFrom() == null ? "" : fileDescription.getFrom());
                 if (!isEmpty(rightTextHeader.getText())) {
                     rightTextHeader.setVisibility(View.VISIBLE);
                 } else {

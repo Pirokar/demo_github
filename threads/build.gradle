@@ -21,8 +21,8 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
 
-        versionCode 87
-        versionName "2.49"
+        versionCode 88
+        versionName "3.0.1"
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -51,6 +51,7 @@ dependencies {
     implementation "com.android.support:support-media-compat:$supportVersion"
     implementation "com.android.support:support-v4:$supportVersion"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
+    implementation "com.android.support:design:$supportVersion"
 
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'

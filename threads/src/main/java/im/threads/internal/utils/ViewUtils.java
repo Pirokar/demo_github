@@ -50,7 +50,6 @@ public final class ViewUtils {
                 drawablePosition == DrawablePosition.TOP ? drawable : null,
                 drawablePosition == DrawablePosition.RIGHT ? drawable : null,
                 drawablePosition == DrawablePosition.BOTTOM ? drawable : null);
-
     }
 
     @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})

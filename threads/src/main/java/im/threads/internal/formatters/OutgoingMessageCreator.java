@@ -72,11 +72,25 @@ public final class OutgoingMessageCreator {
         return "";
     }
 
-    private static JSONArray attachmentsFromFileDescription(File file) throws JSONException {
+    private static JSONArray attachmentsFromFileDescription(FileDescription fileDescription, String mfmsFilepath) throws JSONException {
+        JSONArray attachments = null;
+        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath()).exists()) {
+            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath()), fileDescription.isSelfie());
+        } else if (fileDescription.getDownloadPath() != null) {
+            attachments = attachmentsFromMfmsPath(fileDescription);
+        }
+        if (attachments != null) {
+            attachments.getJSONObject(0).put("result", mfmsFilepath);
+        }
+        return attachments;
+    }
+
+    private static JSONArray attachmentsFromFileDescription(File file, boolean isSelfie) throws JSONException {
         JSONArray attachments = new JSONArray();
         JSONObject attachment = new JSONObject();
         attachments.put(attachment);
         JSONObject optional = new JSONObject();
+        attachment.put("isSelfie", isSelfie);
         attachment.put("optional", optional);
         String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(".") + 1).toLowerCase();
         String type = null;
@@ -95,6 +109,7 @@ public final class OutgoingMessageCreator {
         JSONObject attachment = new JSONObject();
         attachments.put(attachment);
         JSONObject optional = new JSONObject();
+        attachment.put("isSelfie", fileDescription.isSelfie());
         attachment.put("optional", optional);
         if (fileDescription.getIncomingName() != null) {
             String extension = fileDescription.getIncomingName().substring(fileDescription.getIncomingName().lastIndexOf(".") + 1).toLowerCase();
@@ -107,19 +122,6 @@ public final class OutgoingMessageCreator {
         optional.put("name", fileDescription.getIncomingName());
         optional.put("size", fileDescription.getSize());
         optional.put("lastModified", System.currentTimeMillis());
-        return attachments;
-    }
-
-    private static JSONArray attachmentsFromFileDescription(FileDescription fileDescription, String mfmsFilepath) throws JSONException {
-        JSONArray attachments = null;
-        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath()).exists()) {
-            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath()));
-        } else if (fileDescription.getDownloadPath() != null) {
-            attachments = attachmentsFromMfmsPath(fileDescription);
-        }
-        if (attachments != null) {
-            attachments.getJSONObject(0).put("result", mfmsFilepath);
-        }
         return attachments;
     }
 
