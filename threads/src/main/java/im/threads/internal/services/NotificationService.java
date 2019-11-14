@@ -36,7 +36,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.ThreadsLib;
 import im.threads.internal.Config;
-import im.threads.internal.activities.TranslucentActivity;
+import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.IncomingMessageParser;
 import im.threads.internal.formatters.MarshmallowPushMessageFormatter;
@@ -284,8 +284,7 @@ public final class NotificationService extends Service {
             }
             if (pushText.first) {
                 builder.setCustomBigContentView(pushBig);
-                final PendingIntent buttonPend = getFastAnswerIntent();
-                pushBig.setOnClickPendingIntent(R.id.reply, buttonPend);
+                pushBig.setOnClickPendingIntent(R.id.reply, QuickAnswerActivity.createPendingIntent(this));
             }
         }
         pushBig.setTextViewText(R.id.reply, getString(R.string.threads_reply));
@@ -384,7 +383,7 @@ public final class NotificationService extends Service {
             }
             executor.execute(() -> {
                 builder.setContentIntent(getChatIntent(appMarker));
-                builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
+                builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
                 completionHandler.onComplete(builder.build());
 
             });
@@ -415,7 +414,7 @@ public final class NotificationService extends Service {
                 executor.execute(() -> {
                     builder.setContentIntent(getChatIntent(appMarker));
                     if (out.first) {
-                        builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
+                        builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
                     }
                     completionHandler.onComplete(builder.build());
 
@@ -436,7 +435,7 @@ public final class NotificationService extends Service {
                         builder.setStyle(pictureStyle);
                         builder.setContentIntent(getChatIntent(appMarker));
                         if (out.first) {
-                            builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
+                            builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
                         }
                         completionHandler.onComplete(builder.build());
                     } catch (final IOException e) {
@@ -453,22 +452,11 @@ public final class NotificationService extends Service {
             executor.execute(() -> {
                 builder.setContentIntent(getChatIntent(appMarker));
                 if (out.first) {
-                    builder.addAction(0, getString(R.string.threads_answer), getFastAnswerIntent());
+                    builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
                 }
                 completionHandler.onComplete(builder.build());
             });
         }
-    }
-
-    private PendingIntent getFastAnswerIntent() {
-        final Intent buttonIntent = new Intent(this, TranslucentActivity.class);
-        buttonIntent.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(
-                this,
-                1
-                , buttonIntent
-                , PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private PendingIntent getChatIntent(String appMarker) {
