@@ -17,8 +17,6 @@ import com.azoft.carousellayoutmanager.CarouselLayoutManager;
 import com.azoft.carousellayoutmanager.CarouselZoomPostLayoutListener;
 import com.azoft.carousellayoutmanager.CenterScrollListener;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,7 +32,6 @@ import im.threads.android.databinding.ActivityMainBinding;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PrefUtils;
 import im.threads.view.ChatActivity;
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Активность с примерами открытия чата:
@@ -73,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         });
         binding.cardsView.setAdapter(cardsAdapter);
         showCards(PrefUtils.getCards(this));
-        Fabric.with(this, new Crashlytics());
     }
 
     private void showCards(List<Card> cards) {
