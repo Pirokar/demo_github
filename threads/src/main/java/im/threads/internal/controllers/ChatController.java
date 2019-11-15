@@ -1,6 +1,5 @@
 package im.threads.internal.controllers;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -121,7 +120,7 @@ public final class ChatController {
     // Для приема сообщений из сервиса по скачиванию файлов
     private ProgressReceiver mProgressReceiver;
     // Было получено сообщение, что чат не работает
-    private boolean isScheduleInfoReceived;
+    private boolean isChatWorking;
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean isResolveRequestVisible;
 
@@ -165,7 +164,6 @@ public final class ChatController {
         return instance;
     }
 
-    @SuppressLint("all")
     private ChatController(@NonNull final Context ctx) {
         appContext = ctx;
         if (mDatabaseHolder == null) {
@@ -248,7 +246,7 @@ public final class ChatController {
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um);
-        if (!isScheduleInfoReceived && !mConsultWriter.isConsultConnected()) {
+        if (isChatWorking && !mConsultWriter.isConsultConnected()) {
             if (fragment != null) {
                 fragment.setStateSearchingConsult();
             }
@@ -516,8 +514,8 @@ public final class ChatController {
             }
             if (chatItem instanceof ScheduleInfo) {
                 final ScheduleInfo schedule = (ScheduleInfo) chatItem;
-                updateInputEnable(schedule.isChatWorking() || schedule.isSendDuringInactive());
-                isScheduleInfoReceived = true;
+                isChatWorking = schedule.isChatWorking();
+                updateInputEnable(isChatWorking || schedule.isSendDuringInactive());
                 if (null != mConsultWriter) mConsultWriter.setSearchingConsult(false);
                 h.post(() -> {
                     if (null != fragment) {
@@ -579,7 +577,7 @@ public final class ChatController {
     }
 
     public boolean isConsultFound() {
-        return !isScheduleInfoReceived && mConsultWriter.isConsultConnected();
+        return isChatWorking && mConsultWriter.isConsultConnected();
     }
 
     public ConsultInfo getCurrentConsultInfo() {
