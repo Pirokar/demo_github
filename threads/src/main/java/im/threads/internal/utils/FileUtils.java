@@ -48,7 +48,7 @@ public final class FileUtils {
         if (TextUtils.isEmpty(relativeUrl) || relativeUrl.startsWith("http")) {
             return relativeUrl;
         }
-        return PrefUtils.getServerUrlMetaInfo() + "files/" + relativeUrl;
+        return PrefUtils.getDatastoreUrl() + "files/" + relativeUrl;
     }
 
     public static boolean isImage(final FileDescription fileDescription) {

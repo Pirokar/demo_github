@@ -1,6 +1,6 @@
 package im.threads.push;
 
-import android.content.Intent;
+import android.text.TextUtils;
 
 import com.mfms.android.push_lite.PushServerIntentService;
 import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
@@ -9,11 +9,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import im.threads.internal.controllers.ChatController;
-import im.threads.internal.formatters.IncomingMessageParser;
-import im.threads.internal.utils.ThreadsLogger;
-import im.threads.internal.model.PushMessageCheckResult;
+import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.transport.mfms_push.MFMSPushMessageParser;
+import im.threads.internal.formatters.MessageFormatter;
+import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ScheduleInfo;
+import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.NotificationService;
+import im.threads.internal.utils.PrefUtils;
+import im.threads.internal.utils.ThreadsLogger;
 
 public class ThreadsPushServerIntentService extends PushServerIntentService {
 
@@ -27,11 +31,14 @@ public class ThreadsPushServerIntentService extends PushServerIntentService {
         List<PushMessage> toShow = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             PushMessage pushMessage = list.get(i);
-            if (IncomingMessageParser.isThreadsOriginPush(pushMessage)) {
-                ChatController chatController = ChatController.getInstance(getApplication());
-                PushMessageCheckResult result = chatController.onFullMessage(pushMessage);
-                if (result.isDetected()) {
-                    if (result.isNeedsShowIsStatusBar()) {
+            if (MFMSPushMessageParser.isThreadsOriginPush(pushMessage)) {
+                boolean isCurrentClientId = MFMSPushMessageParser.checkId(pushMessage, PrefUtils.getClientID());
+                final ChatItem chatItem = MFMSPushMessageParser.format(pushMessage);
+                if (chatItem != null) {
+                    if (isCurrentClientId) {
+                        ChatUpdateProcessor.getInstance().postNewMessage(chatItem);
+                    }
+                    if (!(chatItem instanceof ScheduleInfo) && !(chatItem instanceof UserPhrase) && !TextUtils.isEmpty(pushMessage.shortMessage)) {
                         toShow.add(pushMessage);
                     }
                 }
@@ -40,19 +47,16 @@ public class ThreadsPushServerIntentService extends PushServerIntentService {
         if (toShow.size() > 0) {
             HashMap<String, ArrayList<PushMessage>> appMarkerMessagesMap = new HashMap<>();
             for (PushMessage pushMessage : toShow) {
-                String appMarker = IncomingMessageParser.getAppMarker(pushMessage);
+                String appMarker = MFMSPushMessageParser.getAppMarker(pushMessage);
                 if (!appMarkerMessagesMap.containsKey(appMarker)) {
                     appMarkerMessagesMap.put(appMarker, new ArrayList<>());
                 }
                 appMarkerMessagesMap.get(appMarker).add(pushMessage);
             }
             for (String appMarker : appMarkerMessagesMap.keySet()) {
-                Intent intent = new Intent(getApplicationContext(), NotificationService.class);
-                ArrayList<PushMessage> al = new ArrayList<>(appMarkerMessagesMap.get(appMarker));
-                intent.putParcelableArrayListExtra(NotificationService.ACTION_ADD_UNREAD_MESSAGE, al);
-                intent.putExtra(NotificationService.EXTRA_APP_MARKER, appMarker);
-                intent.setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE);
-                startService(intent);
+                List<ChatItem> chatItems = MFMSPushMessageParser.formatMessages(appMarkerMessagesMap.get(appMarker));
+                MessageFormatter.MessageContent messageContent = MessageFormatter.parseMessageContent(getApplicationContext(), chatItems);
+                NotificationService.addUnreadMessageList(getApplicationContext(), appMarker, messageContent);
             }
         }
         return true;

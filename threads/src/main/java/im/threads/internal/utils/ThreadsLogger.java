@@ -11,41 +11,41 @@ public final class ThreadsLogger {
 
     public static void v(String tag, String msg) {
         if (Config.instance.isDebugLoggingEnabled) {
-            Log.v(tag, msg);
+            Log.v(tag, msg != null ? msg : "");
         }
     }
 
     public static void d(String tag, String msg) {
         if (Config.instance.isDebugLoggingEnabled) {
-            Log.d(tag, msg);
+            Log.d(tag, msg != null ? msg : "");
         }
     }
 
     public static void d(String tag, String msg, Throwable tr) {
         if (Config.instance.isDebugLoggingEnabled) {
-            Log.d(tag, msg, tr);
+            Log.d(tag, msg != null ? msg : "", tr);
         }
     }
 
     public static void i(String tag, String msg) {
         if (Config.instance.isDebugLoggingEnabled) {
-            Log.i(tag, msg);
+            Log.i(tag, msg != null ? msg : "");
         }
     }
 
     public static void w(String tag, String msg) {
-        Log.w(tag, msg);
+        Log.w(tag, msg != null ? msg : "");
     }
 
     public static void w(String tag, String msg, Throwable tr) {
-        Log.w(tag, msg, tr);
+        Log.w(tag, msg != null ? msg : "", tr);
     }
 
     public static void e(String tag, String msg) {
-        Log.e(tag, msg);
+        Log.e(tag, msg != null ? msg : "");
     }
 
     public static void e(String tag, String msg, Throwable tr) {
-        Log.e(tag, msg, tr);
+        Log.e(tag, msg != null ? msg : "", tr);
     }
 }

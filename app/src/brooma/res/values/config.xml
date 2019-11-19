@@ -2,4 +2,6 @@
 <resources>
     <string name="datastore_url" translatable="false">https://datastore.threads.im/</string>
     <string name="serverBaseUrl" translatable="false">https://threads.brooma.ru</string>
+    <string name="threadsGateUrl" translatable="false">https://threads.brooma.ru/socket</string>
+    <string name="threadsGateProviderUid" translatable="false"></string>
 </resources>

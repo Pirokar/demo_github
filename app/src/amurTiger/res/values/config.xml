@@ -2,4 +2,6 @@
 <resources>
     <string name="datastore_url" translatable="false">https://amurtigerstore.threads.im/</string>
     <string name="serverBaseUrl" translatable="false">https://amurtiger.threads.im</string>
+    <string name="threadsGateUrl" translatable="false">https://amurtiger.threads.im/socket</string>
+    <string name="threadsGateProviderUid" translatable="false"></string>
 </resources>

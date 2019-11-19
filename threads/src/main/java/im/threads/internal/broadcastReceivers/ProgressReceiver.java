@@ -65,12 +65,12 @@ public final class ProgressReceiver extends BroadcastReceiver {
                 break;
             }
             case DEVICE_ID_IS_SET_BROADCAST:
-                deviceIdChangedListener.get().onSettingClientId(context);
+                deviceIdChangedListener.get().onSettingClientId();
                 break;
         }
     }
 
     public interface DeviceIdChangedListener {
-        void onSettingClientId(final Context ctx);
+        void onSettingClientId();
     }
 }

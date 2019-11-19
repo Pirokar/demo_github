@@ -7,13 +7,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import im.threads.internal.Config;
 import im.threads.ChatStyle;
+import im.threads.internal.Config;
 
 public final class PrefUtils {
     private static final String TAG = "PrefUtils ";
@@ -27,8 +28,14 @@ public final class PrefUtils {
     private static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
     private static final String APP_STYLE = "APP_STYLE";
     private static final String TAG_THREAD_ID = "THREAD_ID";
-    private static final String SERVER_URL_META_INFO = "im.threads.getServerUrl";
     private static final String APP_MARKER_KEY = "APP_MARKER";
+    private static final String FCM_TOKEN = "FCM_TOKEN";
+    private static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
+    private static final String DEVICE_UID = "DEVICE_UID";
+
+    private static final String DATASTORE_URL = "im.threads.getServerUrl";
+    private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
+    private static final String THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid";
 
     private PrefUtils() {
     }
@@ -142,7 +149,7 @@ public final class PrefUtils {
     public static void setIncomingStyle(@NonNull ChatStyle style) {
         getDefaultSharedPreferences()
                 .edit()
-                .putString(APP_STYLE, new Gson().toJson(style))
+                .putString(APP_STYLE, Config.instance.gson.toJson(style))
                 .commit();
     }
 
@@ -153,7 +160,7 @@ public final class PrefUtils {
             SharedPreferences sharedPreferences = getDefaultSharedPreferences();
             if (sharedPreferences.getString(APP_STYLE, null) != null) {
                 String sharedPreferencesString = sharedPreferences.getString(APP_STYLE, null);
-                style = new Gson().fromJson(sharedPreferencesString, ChatStyle.class);
+                style = Config.instance.gson.fromJson(sharedPreferencesString, ChatStyle.class);
             }
         } catch (IllegalStateException | JsonSyntaxException ex) {
             ThreadsLogger.w(TAG, "getIncomingStyle failed: ", ex);
@@ -161,8 +168,16 @@ public final class PrefUtils {
         return style;
     }
 
-    public static String getServerUrlMetaInfo() {
-        return getMetaData(SERVER_URL_META_INFO);
+    public static String getDatastoreUrl() {
+        return getMetaData(DATASTORE_URL);
+    }
+
+    public static String getThreadsGateUrl() {
+        return getMetaData(THREADS_GATE_URL);
+    }
+
+    public static String getThreadsGateProviderUid() {
+        return getMetaData(THREADS_GATE_PROVIDER_UID);
     }
 
     public static void setAppMarker(String appMarker) {
@@ -175,6 +190,42 @@ public final class PrefUtils {
     public static String getAppMarker() {
         String appMarker = getDefaultSharedPreferences().getString(PrefUtils.class + APP_MARKER_KEY, "");
         return appMarker.length() > 0 ? appMarker : null;
+    }
+
+    public static void setFcmToken(String fcmToken) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(PrefUtils.class + FCM_TOKEN, fcmToken)
+                .commit();
+    }
+
+    public static String getFcmToken() {
+        String fcmToken = getDefaultSharedPreferences().getString(PrefUtils.class + FCM_TOKEN, "");
+        return fcmToken.length() > 0 ? fcmToken : null;
+    }
+
+    public static void setDeviceAddress(String deviceAddress) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(PrefUtils.class + DEVICE_ADDRESS, deviceAddress)
+                .commit();
+    }
+
+    public static String getDeviceAddress() {
+        String deviceAddress = getDefaultSharedPreferences().getString(PrefUtils.class + DEVICE_ADDRESS, "");
+        return deviceAddress.length() > 0 ? deviceAddress : null;
+    }
+
+    public static synchronized String getDeviceUid() {
+        String deviceUid = getDefaultSharedPreferences().getString(PrefUtils.class + DEVICE_UID, "");
+        if (deviceUid.length() <= 0) {
+            deviceUid = UUID.randomUUID().toString();
+            getDefaultSharedPreferences()
+                    .edit()
+                    .putString(PrefUtils.class + DEVICE_UID, deviceUid)
+                    .commit();
+        }
+        return deviceUid;
     }
 
     @Nullable

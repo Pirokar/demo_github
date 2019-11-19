@@ -84,7 +84,7 @@ public class DatabaseHolderTest {
             dbHolder.putChatItem(this.chatItem);
             dbHolder.putChatItem(this.chatItem);
 
-            List<FileDescription> fileDescriptions = dbHolder.getMyOpenHelper().getFd();
+            List<FileDescription> fileDescriptions = dbHolder.getMyOpenHelper().getAllFileDescriptions();
 
             Assert.assertEquals("Duplicate file descriptions in DB. ", 1, fileDescriptions.size());
         }
