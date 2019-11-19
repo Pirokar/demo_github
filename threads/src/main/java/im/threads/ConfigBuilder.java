@@ -51,7 +51,7 @@ public final class ConfigBuilder {
         return this;
     }
 
-    public ConfigBuilder setHistoryLoadingCount(final int historyLoadingCount) {
+    public ConfigBuilder historyLoadingCount(final int historyLoadingCount) {
         this.historyLoadingCount = historyLoadingCount;
         return this;
     }

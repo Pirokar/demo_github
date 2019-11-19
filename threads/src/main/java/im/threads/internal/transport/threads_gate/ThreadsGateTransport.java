@@ -120,7 +120,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     @Override
     public void sendMessageRead(String messageId) {
         if (webSocket == null) {
-            openWebSocketIfResumed();
+            openWebSocketIfStarted();
             return;
         }
         ArrayList<UpdateStatusesRequest.MessageStatusData> messageIds = new ArrayList<>();
@@ -198,7 +198,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     private void sendMessage(JsonObject content, boolean important, String correlationId) {
         if (webSocket == null) {
             processMessageSendError(correlationId);
-            openWebSocketIfResumed();
+            openWebSocketIfStarted();
             return;
         }
         webSocket.send(
@@ -211,15 +211,15 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         );
     }
 
-    private void openWebSocketIfResumed() {
+    private void openWebSocketIfStarted() {
         if (lifecycle != null) {
-            if (lifecycle.getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+            if (lifecycle.getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
                 openWebSocket();
             }
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private synchronized void openWebSocket() {
         if (webSocket == null) {
             webSocket = client.newWebSocket(request, listener);
@@ -248,7 +248,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     private synchronized void closeWebSocket() {
         if (webSocket != null) {
             webSocket.close(WebSocketListener.NORMAL_CLOSURE_STATUS, null);

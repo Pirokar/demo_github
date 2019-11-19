@@ -329,11 +329,6 @@ public final class ChatController {
                     } else {
                         firstUnreadProviderId = null;
                     }
-                    if (unreadProviderIds != null) {
-                        for (final String providerId : unreadProviderIds) {
-                            Config.instance.transport.sendMessageRead(providerId);
-                        }
-                    }
                 }
             }
         }
@@ -607,6 +602,14 @@ public final class ChatController {
                         if (dbItems.size() != serverItems.size() || !dbItems.containsAll(serverItems)) {
                             ThreadsLogger.d(TAG, "Local and downloaded history are not same");
                             databaseHolder.putMessagesSync(serverItems);
+                        }
+                        if (fragment != null && isActive) {
+                            final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
+                            if (unreadProviderIds != null) {
+                                for (final String providerId : unreadProviderIds) {
+                                    Config.instance.transport.sendMessageRead(providerId);
+                                }
+                            }
                         }
                         return response;
                     })
