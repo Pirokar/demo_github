@@ -101,7 +101,7 @@ public final class ConsultActivity extends BaseActivity {
     }
 
     protected void setActivityStyle(@NonNull ChatStyle style) {
-        //TODO https://track.brooma.ru/issue/THREADS-5811
+        //TODO THREADS-5811 unused code
         findViewById(R.id.activity_root).setBackgroundColor(ContextCompat.getColor(this, style.chatBackgroundColor));
         mConsulHeaderTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
         mConsultMotoTextView.setTextColor(ContextCompat.getColor(this, style.chatToolbarTextColorResId));
