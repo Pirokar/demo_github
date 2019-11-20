@@ -19,9 +19,9 @@ import im.threads.internal.utils.FileDownloader;
 
 public final class DownloadService extends Service {
     private static final String TAG = "DownloadService ";
-    public static final String START_DOWNLOAD_FD_TAG = "com.sequenia.threads.services.START_DOWNLOAD_FD_TAG";
-    public static final String FD_TAG = "com.sequenia.threads.services.FD_TAG";
-    public static final String START_DOWNLOAD_WITH_NO_STOP = "com.sequenia.threads.services.START_DOWNLOAD_WITH_NO_STOP";
+    public static final String START_DOWNLOAD_FD_TAG = "im.threads.internal.services.DownloadService.START_DOWNLOAD_FD_TAG";
+    public static final String FD_TAG = "im.threads.internal.services.DownloadService.FD_TAG";
+    public static final String START_DOWNLOAD_WITH_NO_STOP = "im.threads.internal.services.DownloadService.START_DOWNLOAD_WITH_NO_STOP";
     Executor executor = Executors.newFixedThreadPool(3);
     private static HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();
 
