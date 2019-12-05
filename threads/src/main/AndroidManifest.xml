@@ -62,16 +62,13 @@
             android:name=".internal.services.NotificationService"
             android:exported="false"/>
 
+        <meta-data
+            android:name="com.pushserver.android.service"
+            android:value="im.threads.push.ThreadsPushServerIntentService"/>
 
         <service android:name=".push.ThreadsPushFcmIntentService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <service android:name=".push.ThreadsPushInstanceIDListenerService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
