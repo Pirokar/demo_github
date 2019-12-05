@@ -67,6 +67,7 @@
         <!-- Default implementation can be used instead (see im.threads.push.ThreadsPushServerIntentService) -->
         <meta-data
             android:name="com.pushserver.android.service"
+            tools:replace="android:value"
             android:value="im.threads.android.services.CustomPushServerIntentService"/>
 
         <meta-data

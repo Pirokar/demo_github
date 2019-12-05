@@ -9,7 +9,6 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 
-
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 
@@ -146,7 +145,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':threads')
 
-    implementation 'com.google.firebase:firebase-messaging:17.3.1'
     implementation 'com.android.support:multidex:1.0.3'
 
     implementation "com.android.support:appcompat-v7:$supportVersion"
@@ -169,12 +167,8 @@ dependencies {
         transitive = true
     }
 
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
-    implementation 'com.azoft.carousellayoutmanager:carousel:1.2.1'
-
-//    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
-//    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
-    implementation 'com.mfms.android:push-lite-release:2.6.21'
+    implementation 'com.mfms.android:push-lite-release:2.8.7'
 }
 apply plugin: 'com.google.gms.google-services'

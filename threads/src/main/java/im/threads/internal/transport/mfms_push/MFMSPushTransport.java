@@ -245,7 +245,7 @@ public final class MFMSPushTransport implements Transport {
         if (deviceAddress != null && !deviceAddress.isEmpty()) {
             return controller;
         } else {
-            throw new PushServerErrorException(PushServerErrorException.DEVICE_ADDRESS_INVALID);
+            throw new PushServerErrorException("DEVICE_ADDRESS_INVALID");
         }
     }
 
