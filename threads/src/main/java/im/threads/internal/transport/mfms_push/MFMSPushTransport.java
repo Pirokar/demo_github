@@ -9,6 +9,7 @@ import com.mfms.android.push_lite.PushController;
 import com.mfms.android.push_lite.exception.PushServerErrorException;
 import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
 
+import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
@@ -207,8 +208,8 @@ public final class MFMSPushTransport implements Transport {
     }
 
     @Override
-    public Config.TransportType getType() {
-        return Config.TransportType.MFMS_PUSH;
+    public ConfigBuilder.TransportType getType() {
+        return ConfigBuilder.TransportType.MFMS_PUSH;
     }
 
     @NonNull
