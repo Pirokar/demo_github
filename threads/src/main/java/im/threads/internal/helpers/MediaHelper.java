@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -81,6 +85,18 @@ public final class MediaHelper {
             return null;
         }
 
+    }
+
+    @Nullable
+    public static Cursor getAllPhotos(@NonNull Context context) {
+        String[] projection = new String[]{MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA};
+        String sortOrder = MediaStore.Images.Media.DATE_TAKEN + " desc";
+        String selection = MediaStore.Images.Media.MIME_TYPE + " = ? OR " + MediaStore.Images.Media.MIME_TYPE + " = ?";
+        String[] selectionArgs = new String[]{
+                "image/png",
+                "image/jpeg"
+        };
+        return context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, sortOrder);
     }
 
     private static File getImageResizeCacheDir(Context context) {

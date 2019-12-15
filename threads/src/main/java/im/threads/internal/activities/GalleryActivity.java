@@ -22,6 +22,7 @@ import im.threads.R;
 import im.threads.databinding.ActivityGalleryBinding;
 import im.threads.internal.adapters.GalleryAdapter;
 import im.threads.internal.adapters.PhotoBucketsGalleryAdapter;
+import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.MediaPhoto;
 import im.threads.internal.model.PhotoBucketItem;
 import im.threads.internal.utils.BucketsGalleryDecorator;
@@ -148,9 +149,7 @@ public final class GalleryActivity
     }
 
     private void initData() {
-        String[] projection = new String[]{MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA};
-        String sortOrder = MediaStore.Images.Media.DATE_TAKEN + " desc";
-        try (Cursor c = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, sortOrder)) {
+        try (Cursor c = MediaHelper.getAllPhotos(this)) {
             if (c == null) {
                 return;
             }
