@@ -277,11 +277,7 @@ public final class ChatController {
             if (activity != null) {
 
                 if (fileDescription.getFilePath() == null) {
-                    final Intent i = new Intent(activity, DownloadService.class);
-                    i.setAction(DownloadService.START_DOWNLOAD_FD_TAG);
-                    i.putExtra(DownloadService.FD_TAG, fileDescription);
-                    activity.startService(i);
-
+                    DownloadService.startDownloadFD(activity, fileDescription);
                 } else if (FileUtils.isImage(fileDescription) && fileDescription.getFilePath() != null) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
 
@@ -384,10 +380,7 @@ public final class ChatController {
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-                final Intent i = new Intent(activity, DownloadService.class);
-                i.setAction(DownloadService.START_DOWNLOAD_WITH_NO_STOP);
-                i.putExtra(DownloadService.FD_TAG, fileDescription);
-                activity.startService(i);
+                DownloadService.startDownloadWithNoStop(activity, fileDescription);
             }
         }
     }
