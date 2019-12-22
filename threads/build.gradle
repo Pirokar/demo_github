@@ -57,6 +57,7 @@ dependencies {
     implementation "com.android.support:support-v4:$supportVersion"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
     implementation "com.android.support:design:$supportVersion"
+    implementation "com.android.support:preference-v7:$supportVersion"
 
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
