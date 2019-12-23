@@ -62,16 +62,21 @@ public final class DatabaseHolder {
         return mMyOpenHelper.getChatItems(offset, limit);
     }
 
-    public List<UserPhrase> getUnsendUserPhrase(int count) {
+    public List<UserPhrase> getNotSentOrSendingUserPhrase(int count) {
+        List<String> typeList = new ArrayList<>();
+        typeList.add(String.valueOf(MyOpenHelper.MessageType.USER_PHRASE.ordinal()));
+        List<String> stateList = new ArrayList<>();
+        stateList.add(String.valueOf(MessageState.STATE_NOT_SENT.ordinal()));
+        stateList.add(String.valueOf(MessageState.STATE_SENDING.ordinal()));
+        List<ChatItem> chatItems = mMyOpenHelper.getChatItems(0, count, typeList, stateList);
+
         List<UserPhrase> userPhrases = new ArrayList<>();
-        List<ChatItem> chatItems = mMyOpenHelper.getChatItems(0, count);
         for (ChatItem chatItem : chatItems) {
             if (chatItem instanceof UserPhrase) {
-                if (((UserPhrase) chatItem).getSentState() == MessageState.STATE_NOT_SENT) {
-                    userPhrases.add((UserPhrase) chatItem);
-                }
+                userPhrases.add((UserPhrase) chatItem);
             }
         }
+
         return userPhrases;
     }
 

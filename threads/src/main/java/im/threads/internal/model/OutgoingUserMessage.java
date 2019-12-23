@@ -2,29 +2,26 @@ package im.threads.internal.model;
 
 import android.support.annotation.Nullable;
 
-public final class UpcomingUserMessage {
+public final class OutgoingUserMessage {
     @Nullable
     public final String text;
     @Nullable
     public final Quote quote;
     @Nullable
     public final FileDescription fileDescription;
-    public final boolean copyied;
 
-    public UpcomingUserMessage(@Nullable FileDescription fileDescription, @Nullable Quote quote, @Nullable String text, boolean copyied) {
+    public OutgoingUserMessage(@Nullable FileDescription fileDescription, @Nullable Quote quote, @Nullable String text) {
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.text = text;
-        this.copyied = copyied;
     }
 
     @Override
     public String toString() {
-        return "UpcomingUserMessage{" +
+        return "OutgoingUserMessage{" +
                 "text='" + text + '\'' +
                 ", quote=" + quote +
                 ", fileDescription=" + fileDescription +
-                ", copyied=" + copyied +
                 '}';
     }
 }

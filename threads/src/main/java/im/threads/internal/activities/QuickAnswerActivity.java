@@ -18,7 +18,7 @@ import im.threads.internal.Config;
 import im.threads.internal.controllers.QuickAnswerController;
 import im.threads.internal.fragments.QuickAnswerFragment;
 import im.threads.internal.model.ConsultPhrase;
-import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.internal.model.OutgoingUserMessage;
 import im.threads.internal.utils.ThreadsLogger;
 
 public final class QuickAnswerActivity
@@ -89,7 +89,7 @@ public final class QuickAnswerActivity
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
                 ThreadsLogger.i(TAG, "onReceive: ACTION_ANSWER");
-                controller.onUserAnswer(new UpcomingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER), false));
+                controller.onUserAnswer(new OutgoingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER)));
                 finish();
             }
         }

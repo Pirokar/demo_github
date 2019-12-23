@@ -109,18 +109,18 @@ public final class OutgoingMessageCreator {
         return jsonObject;
     }
 
-    public static JsonObject createUserPhraseMessage(@NonNull UserPhrase upcomingUserMessage,
+    public static JsonObject createUserPhraseMessage(@NonNull UserPhrase userPhrase,
                                                      @Nullable ConsultInfo consultInfo,
                                                      @Nullable String quoteMfmsFilePath,
                                                      @Nullable String mfmsFilePath,
                                                      @Nullable String clientId,
                                                      @Nullable Long threadId) {
-        Quote quote = upcomingUserMessage.getQuote();
-        FileDescription fileDescription = upcomingUserMessage.getFileDescription();
+        Quote quote = userPhrase.getQuote();
+        FileDescription fileDescription = userPhrase.getFileDescription();
         JsonObject formattedMessage = new JsonObject();
-        formattedMessage.addProperty(MessageAttributes.UUID, upcomingUserMessage.getUuid());
+        formattedMessage.addProperty(MessageAttributes.UUID, userPhrase.getUuid());
         formattedMessage.addProperty(MessageAttributes.CLIENT_ID, clientId);
-        final String phrase = upcomingUserMessage.getPhrase();
+        final String phrase = userPhrase.getPhrase();
         formattedMessage.addProperty(MessageAttributes.TEXT, phrase == null ? "" : phrase);
         if (threadId != null && threadId != -1) {
             formattedMessage.addProperty(MessageAttributes.THREAD_ID, String.valueOf(threadId));
@@ -140,8 +140,8 @@ public final class OutgoingMessageCreator {
             if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                 quoteJson.add(MessageAttributes.ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
             }
-            if (upcomingUserMessage.getQuote().getUuid() != null) {
-                quoteJson.addProperty(MessageAttributes.UUID, upcomingUserMessage.getQuote().getUuid());
+            if (userPhrase.getQuote().getUuid() != null) {
+                quoteJson.addProperty(MessageAttributes.UUID, userPhrase.getQuote().getUuid());
             }
         }
         if (fileDescription != null && mfmsFilePath != null) {

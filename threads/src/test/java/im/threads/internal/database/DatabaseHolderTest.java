@@ -238,17 +238,15 @@ public class DatabaseHolderTest {
     }
 
     private static UserPhrase getUserPhrase() {
-
-        UserPhrase phrase = new UserPhrase(
+        return new UserPhrase(
                 "e68c0567-6181-45bf-aed2-1ffd583b1b6e",
                 "tempProviderId: be907fd6-3c01-4b9a-b618-5ca44f37fd38",
                 "dtmutmi78om8",
                 null,
                 1559814297374L,
-                null);
-        phrase.setSentState(MessageState.STATE_SENDING);
-
-        return phrase;
+                null,
+                MessageState.STATE_SENDING
+        );
     }
 
     private static UserPhrase getUserPhraseWithFile() {
@@ -263,16 +261,15 @@ public class DatabaseHolderTest {
         fileDesc.setDownloadPath(null);
         fileDesc.setIncomingName(null);
 
-        UserPhrase phrase = new UserPhrase(
+        return new UserPhrase(
                 "9058775a-99ea-40a3-bc49-f0bf3e68790b",
                 "tempProviderId: ef78a30a-6d96-46d2-ac42-af7f9fc11b72",
                 "",
                 null,
                 1559811194722L,
-                fileDesc);
-        phrase.setSentState(MessageState.STATE_SENDING);
-
-        return phrase;
+                fileDesc,
+                MessageState.STATE_SENDING
+        );
     }
 
     private static UserPhrase getUserPhraseWithQuote() {
@@ -283,15 +280,15 @@ public class DatabaseHolderTest {
                 null,
                 1559803597204L);
 
-        UserPhrase phrase = new UserPhrase(
+        return new UserPhrase(
                 "14195234-f1a4-41e9-9c59-8b54cb31a890",
                 "1699305502774881052",
                 "dtm6i7",
                 quote,
                 1559803612915L,
-                null);
-        phrase.setSentState(MessageState.STATE_WAS_READ);
-        return phrase;
+                null,
+                MessageState.STATE_WAS_READ
+        );
     }
 
     private static UserPhrase getUserPhraseWithQuoteOfFile() {
@@ -311,17 +308,14 @@ public class DatabaseHolderTest {
                 "",
                 fileDesc,
                 1559899069192L);
-
-        UserPhrase phrase = new UserPhrase(
+        return new UserPhrase(
                 "31887680-4baa-47b1-bf23-ad560c1c2535",
                 "tempProviderId: fe27e6ec-8bb4-440c-9bdd-c3e4c34ff175",
                 "dt6nut7i8",
                 quote,
                 1559899078246L,
-                null);
-        phrase.setSentState(MessageState.STATE_SENDING);
-
-        return phrase;
+                null,
+                MessageState.STATE_SENDING
+        );
     }
-
 }

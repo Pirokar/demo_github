@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -43,10 +42,10 @@ import im.threads.internal.model.Hidable;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.OperatorLookupStarted;
+import im.threads.internal.model.OutgoingUserMessage;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
-import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.DownloadService;
 import im.threads.internal.services.NotificationService;
@@ -216,15 +215,15 @@ public final class ChatController {
         Config.instance.transport.sendUserTying(input);
     }
 
-    public void onUserInput(@NonNull final UpcomingUserMessage upcomingUserMessage) {
-        ThreadsLogger.i(TAG, "onUserInput: " + upcomingUserMessage);
+    public void onUserInput(@NonNull final OutgoingUserMessage outgoingUserMessage) {
+        ThreadsLogger.i(TAG, "onUserInput: " + outgoingUserMessage);
         // If user has written a message while the request to resolve the thread is visible
         // we should make invisible the resolve request
         removeResolveRequest();
         // If user has written a message while the active survey is visible
         // we should make invisible the survey
         removeActiveSurvey();
-        final UserPhrase um = convert(upcomingUserMessage);
+        final UserPhrase um = convert(outgoingUserMessage);
         addMessage(um);
         queueMessageSending(um);
     }
@@ -296,11 +295,13 @@ public final class ChatController {
     }
 
     public void checkAndResendPhrase(final UserPhrase userPhrase) {
-        if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
-            if (fragment != null) {
-                fragment.setMessageState(userPhrase.getProviderId(), MessageState.STATE_SENDING);
-            }
-            queueMessageSending(userPhrase);
+        switch (userPhrase.getSentState()) {
+            case STATE_NOT_SENT:
+                if (fragment != null) {
+                    fragment.setMessageState(userPhrase.getProviderId(), MessageState.STATE_SENDING);
+                }
+            case STATE_SENDING:
+                queueMessageSending(userPhrase);
         }
     }
 
@@ -435,10 +436,10 @@ public final class ChatController {
         subscribe(
                 Single.fromCallable(() -> {
                     final int historyLoadingCount = Config.instance.historyLoadingCount;
-                    final List<UserPhrase> unsendUserPhrase = databaseHolder.getUnsendUserPhrase(historyLoadingCount);
-                    if (!unsendUserPhrase.isEmpty()) {
+                    final List<UserPhrase> notSentOrSendingUserPhraseList = databaseHolder.getNotSentOrSendingUserPhrase(historyLoadingCount);
+                    if (!notSentOrSendingUserPhraseList.isEmpty()) {
                         unsendMessages.clear();
-                        unsendMessages.addAll(unsendUserPhrase);
+                        unsendMessages.addAll(notSentOrSendingUserPhraseList);
                         scheduleResend();
                     }
                     return setLastAvatars(databaseHolder.getChatItems(0, historyLoadingCount));
@@ -1048,18 +1049,14 @@ public final class ChatController {
         databaseHolder.putChatItem(survey);
     }
 
-    private UserPhrase convert(@Nullable final UpcomingUserMessage message) {
-        if (message == null) {
-            return new UserPhrase(null, null, System.currentTimeMillis(), null);
-        }
-        final UserPhrase up = new UserPhrase(
+    private UserPhrase convert(@NonNull final OutgoingUserMessage message) {
+        return new UserPhrase(
                 message.text,
                 message.quote,
                 System.currentTimeMillis(),
-                message.fileDescription
+                message.fileDescription,
+                MessageState.STATE_SENDING
         );
-        up.setCopy(message.copyied);
-        return up;
     }
 
     private void updateInputEnable(final boolean enabled) {

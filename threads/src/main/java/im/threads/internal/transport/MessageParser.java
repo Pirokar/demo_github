@@ -162,8 +162,7 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), null, sentAt);
             }
-            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription);
-            userPhrase.setSentState(MessageState.STATE_SENT);
+            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription, MessageState.STATE_SENT);
             return userPhrase;
         }
     }
