@@ -16,6 +16,7 @@ import androidx.core.util.ObjectsCompat;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
+import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
@@ -166,8 +167,8 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     }
 
     @Override
-    public Config.TransportType getType() {
-        return Config.TransportType.THREADS_GATE;
+    public ConfigBuilder.TransportType getType() {
+        return ConfigBuilder.TransportType.THREADS_GATE;
     }
 
     @NonNull

@@ -9,6 +9,7 @@ import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
@@ -207,8 +208,8 @@ public final class MFMSPushTransport implements Transport {
     }
 
     @Override
-    public Config.TransportType getType() {
-        return Config.TransportType.MFMS_PUSH;
+    public ConfigBuilder.TransportType getType() {
+        return ConfigBuilder.TransportType.MFMS_PUSH;
     }
 
     @NonNull
@@ -245,7 +246,7 @@ public final class MFMSPushTransport implements Transport {
         if (deviceAddress != null && !deviceAddress.isEmpty()) {
             return controller;
         } else {
-            throw new PushServerErrorException(PushServerErrorException.DEVICE_ADDRESS_INVALID);
+            throw new PushServerErrorException("DEVICE_ADDRESS_INVALID");
         }
     }
 

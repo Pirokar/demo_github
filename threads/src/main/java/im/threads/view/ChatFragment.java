@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,8 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
-
-import com.jakewharton.rxbinding3.widget.RxTextView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,6 +45,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -86,9 +86,9 @@ import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.Keyboard;
-import im.threads.internal.utils.LateTextWatcher;
 import im.threads.internal.utils.MyFileFilter;
 import im.threads.internal.utils.PrefUtils;
+import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.ThreadsPermissionChecker;
 import im.threads.internal.utils.UrlUtils;
@@ -151,6 +151,8 @@ public final class ChatFragment extends BaseFragment implements
 
     private File externalCameraPhotoFile;
 
+    private ObservableField<String> inputTextObservable = new ObservableField<>();
+
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
 
@@ -172,6 +174,7 @@ public final class ChatFragment extends BaseFragment implements
         }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
+        binding.setInputTextObservable(inputTextObservable);
         initViews();
         bindViews();
         initToolbar();
@@ -257,7 +260,17 @@ public final class ChatFragment extends BaseFragment implements
             }
             doFancySearch(binding.search.getText().toString(), false);
         });
-        binding.search.addTextChangedListener(new LateTextWatcher() {
+        binding.search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
             @Override
             public void afterTextChanged(Editable s) {
                 if (!isInMessageSearchMode) {
@@ -322,14 +335,12 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void configureInputChangesSubscription() {
-        subscribe(RxTextView.textChanges(binding.input)
+        subscribe(RxUtils.toObservable(inputTextObservable)
                 .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
                 .filter(charSequence -> charSequence.length() > 0)
                 .map(CharSequence::toString)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        input -> mChatController.onUserTyping(input)
-                )
+                .subscribe(input -> mChatController.onUserTyping(input))
         );
     }
 
@@ -343,7 +354,8 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void onSendButtonClick() {
-        if (binding.input.getText() == null || binding.input.getText().toString().trim().length() == 0 && mFileDescription == null) {
+        String inputText = inputTextObservable.get();
+        if (inputText == null || inputText.trim().length() == 0 && mFileDescription == null) {
             return;
         }
         welcomeScreenVisibility(false);
@@ -351,8 +363,8 @@ public final class ChatFragment extends BaseFragment implements
         UpcomingUserMessage message = new UpcomingUserMessage(
                 mFileDescription,
                 mQuote,
-                binding.input.getText().toString().trim(),
-                isCopy(binding.input.getText().toString())
+                inputText.trim(),
+                isCopy(inputText)
         );
         input.add(message);
         sendMessage(input);
@@ -778,8 +790,9 @@ public final class ChatFragment extends BaseFragment implements
     public void onSendClick() {
         if (mAttachedImages != null && mAttachedImages.size() != 0) {
             List<UpcomingUserMessage> messages = new ArrayList<>();
-            Editable editable = binding.input.getText();
-            if (editable == null) {
+
+            String inputText = inputTextObservable.get();
+            if (inputText == null) {
                 return;
             }
             messages.add(new UpcomingUserMessage(
@@ -789,8 +802,8 @@ public final class ChatFragment extends BaseFragment implements
                             new File(mAttachedImages.get(0)).length(),
                             System.currentTimeMillis()),
                     mQuote,
-                    editable.toString().trim(),
-                    isCopy(editable.toString()))
+                    inputText.trim(),
+                    isCopy(inputText))
             );
             for (int i = 1; i < mAttachedImages.size(); i++) {
                 FileDescription fileDescription = new FileDescription(
@@ -936,7 +949,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void clearInput() {
-        binding.input.setText("");
+        inputTextObservable.set("");
         if (!isInMessageSearchMode) {
             mQuoteLayoutHolder.setIsVisible(false);
         }
@@ -1293,8 +1306,8 @@ public final class ChatFragment extends BaseFragment implements
             ArrayList<String> photos = data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG);
             hideBottomSheet();
             welcomeScreenVisibility(false);
-            Editable editable = binding.input.getText();
-            if (photos.size() == 0 || editable == null) {
+            String inputText = inputTextObservable.get();
+            if (photos.size() == 0 || inputText == null) {
                 return;
             }
             unChooseItem();
@@ -1307,11 +1320,11 @@ public final class ChatFragment extends BaseFragment implements
                                     System.currentTimeMillis()
                             ),
                             null,
-                            editable.toString().trim(),
-                            isCopy(editable.toString())
+                            inputText.trim(),
+                            isCopy(inputText)
                     );
             mChatController.onUserInput(uum);
-            binding.input.setText("");
+            inputTextObservable.set("");
             mQuoteLayoutHolder.setIsVisible(false);
             mQuote = null;
             mFileDescription = null;

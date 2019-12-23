@@ -30,7 +30,7 @@ public final class ConfigBuilder {
 
     private int surveyCompletionDelay = 2000;
 
-    private Config.TransportType transportType = Config.TransportType.MFMS_PUSH;
+    private TransportType transportType = TransportType.MFMS_PUSH;
 
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -61,7 +61,7 @@ public final class ConfigBuilder {
         return this;
     }
 
-    public ConfigBuilder transportType(final Config.TransportType transportType) {
+    public ConfigBuilder transportType(final TransportType transportType) {
         this.transportType = transportType;
         return this;
     }
@@ -86,5 +86,10 @@ public final class ConfigBuilder {
                 surveyCompletionDelay,
                 transport
         );
+    }
+
+    public enum TransportType {
+        MFMS_PUSH,
+        THREADS_GATE
     }
 }

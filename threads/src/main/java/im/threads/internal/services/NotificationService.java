@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -49,7 +48,7 @@ import im.threads.view.ChatFragment;
 /**
  * Отображает пуш уведомление, о котором скачана полная информация.
  */
-public final class NotificationService extends Service {
+public final class NotificationService extends ThreadsService {
 
     private static final String TAG = "NotificationService";
     private static final String CHANNEL_ID = "im.threads.internal.services.NotificationService.CHANNEL_ID";
@@ -79,33 +78,29 @@ public final class NotificationService extends Service {
     }
 
     public static void removeNotification(final @NonNull Context context) {
-        Intent intent = new Intent(context, NotificationService.class)
-                .setAction(NotificationService.ACTION_REMOVE_NOTIFICATION);
-        context.startService(intent);
+        startService(context, new Intent(context, NotificationService.class)
+                .setAction(NotificationService.ACTION_REMOVE_NOTIFICATION));
     }
 
     public static void addUnreadMessage(final @NonNull Context context, String message, String operatorUrl, String appMarker) {
-        final Intent intent = new Intent(context, NotificationService.class)
+        startService(context, new Intent(context, NotificationService.class)
                 .setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE)
                 .putExtra(NotificationService.EXTRA_MESSAGE, message)
                 .putExtra(NotificationService.EXTRA_OPERATOR_URL, operatorUrl)
-                .putExtra(NotificationService.EXTRA_APP_MARKER, appMarker);
-        context.startService(intent);
+                .putExtra(NotificationService.EXTRA_APP_MARKER, appMarker));
     }
 
     public static void addUnreadMessageList(final @NonNull Context context, String appMarker, MessageFormatter.MessageContent messageContent) {
-        Intent intent = new Intent(context, NotificationService.class)
+        startService(context, new Intent(context, NotificationService.class)
                 .setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE_LIST)
                 .putExtra(NotificationService.EXTRA_APP_MARKER, appMarker)
-                .putExtra(NotificationService.EXTRA_MESSAGE_CONTENT, messageContent);
-        context.startService(intent);
+                .putExtra(NotificationService.EXTRA_MESSAGE_CONTENT, messageContent));
     }
 
     public static void addUnsentMessage(final @NonNull Context context, String appMarker) {
-        final Intent i = new Intent(context, NotificationService.class)
+        startService(context, new Intent(context, NotificationService.class)
                 .setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE)
-                .putExtra(NotificationService.EXTRA_APP_MARKER, appMarker);
-        context.startService(i);
+                .putExtra(NotificationService.EXTRA_APP_MARKER, appMarker));
     }
 
     @Nullable

@@ -76,8 +76,4 @@ public final class Config {
         return localInstance;
     }
 
-    public enum TransportType {
-        MFMS_PUSH,
-        THREADS_GATE
-    }
 }

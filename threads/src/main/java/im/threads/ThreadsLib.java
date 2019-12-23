@@ -29,6 +29,7 @@ public final class ThreadsLib {
         }
         Config.instance = configBuilder.build();
         instance = new ThreadsLib();
+        PrefUtils.migrateToSeparateStorageIfNeeded();
         Config.instance.transport.init();
         if (Config.instance.unreadMessagesCountListener != null) {
             DatabaseHolder.getInstance()

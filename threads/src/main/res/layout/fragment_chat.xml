@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data />
+    <data>
+        <variable name="inputTextObservable" type="androidx.databinding.ObservableField&lt;String>"/>
+    </data>
 
     <RelativeLayout
         android:id="@+id/chat_root"
@@ -177,6 +179,7 @@
                     style="@style/InputEditTextStyle"
                     android:hint="@string/threads_input_hint"
                     android:inputType="textCapSentences|textMultiLine"
+                    android:text="@={inputTextObservable}"
                     android:maxLines="7" />
 
                 <ImageButton

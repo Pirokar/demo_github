@@ -11,9 +11,9 @@ import im.threads.internal.holders.GalleryItemHolder;
 import im.threads.internal.model.MediaPhoto;
 
 public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder> {
-    private List<MediaPhoto> list;
-    private List<MediaPhoto> chosenList = new ArrayList<>();
-    private OnGalleryItemClick onGalleryItemClick;
+    private final List<MediaPhoto> list;
+    private final List<MediaPhoto> chosenList = new ArrayList<>();
+    private final OnGalleryItemClick onGalleryItemClick;
 
     public GalleryAdapter(List<MediaPhoto> list, OnGalleryItemClick onGalleryItemClick) {
         this.list = list;
