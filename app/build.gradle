@@ -57,7 +57,7 @@ android {
         }
     }
 
-    flavorDimensions "server"
+    flavorDimensions "server", "transport"
     productFlavors {
         // АРМ = threads.brooma.ru
         brooma {
@@ -110,11 +110,18 @@ android {
             applicationId "com.brooma.threads.android.amurtiger"
             resValue "string", "app_name1", "THR AmurTiger"
         }
-
         gatetest18048 {
             dimension "server"
             applicationId "com.threads.android.gatetest18048"
             resValue "string", "app_name1", "THR Gatetest18048"
+        }
+        pushLib {
+            dimension "transport"
+            buildConfigField "im.threads.ConfigBuilder.TransportType", "TRANSPORT_TYPE", "im.threads.ConfigBuilder.TransportType.MFMS_PUSH"
+        }
+        threadsGate {
+            dimension "transport"
+            buildConfigField "im.threads.ConfigBuilder.TransportType", "TRANSPORT_TYPE", "im.threads.ConfigBuilder.TransportType.THREADS_GATE"
         }
     }
 

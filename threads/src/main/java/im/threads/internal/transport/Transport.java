@@ -3,7 +3,7 @@ package im.threads.internal.transport;
 import android.arch.lifecycle.Lifecycle;
 import android.support.annotation.NonNull;
 
-import im.threads.internal.Config;
+import im.threads.ConfigBuilder;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
@@ -33,7 +33,7 @@ public interface Transport {
 
     void sendClientOffline(String clientId);
 
-    Config.TransportType getType();
+    ConfigBuilder.TransportType getType();
 
     @NonNull
     String getToken() throws TransportException;

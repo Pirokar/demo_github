@@ -27,6 +27,7 @@ import java.util.List;
 
 import im.threads.ThreadsLib;
 import im.threads.UserInfoBuilder;
+import im.threads.android.BuildConfig;
 import im.threads.android.R;
 import im.threads.android.data.Card;
 import im.threads.android.databinding.ActivityMainBinding;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setViewModel(this);
         TextView versionView = findViewById(R.id.version_name);
-        versionView.setText(getString(R.string.lib_version, ThreadsLib.getLibVersion()));
+        versionView.setText(getString(R.string.lib_version, ThreadsLib.getLibVersion(), BuildConfig.TRANSPORT_TYPE.toString()));
         cardsSnapHelper = new CardsSnapHelper();
         cardsSnapHelper.attachToRecyclerView(binding.cardsView);
         binding.cardsView.setLayoutManager(new CardsLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));

@@ -5,7 +5,7 @@
     <string name="title_chat">Чат</string>
     <string name="unread_messages_count">Количество непрочитанных сообщений:&#032;</string>
 
-    <string name="lib_version">lib v.%s</string>
+    <string name="lib_version">lib v.%s %s</string>
     <string name="client_id_hint">Client ID *</string>
     <string name="client_name_hint">Client name</string>
     <string name="app_marker_hint">App Marker</string>
