@@ -1,5 +1,7 @@
 package im.threads.internal.model;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.JsonSyntaxException;
 
 import java.util.List;
@@ -21,8 +23,20 @@ public final class HistoryResponse {
         this.messages = messages;
     }
 
+    @Nullable
     public ConsultInfo getConsultInfo() {
-        return agentInfo != null ? agentInfo.getAgent() : null;
+        if (agentInfo != null) {
+            im.threads.internal.transport.models.Operator operator = agentInfo.getAgent();
+            return new ConsultInfo(
+                    operator.getAliasOrName(),
+                    String.valueOf(operator.getId()),
+                    operator.getStatus(),
+                    operator.getOrganizationUnit(),
+                    operator.getPhotoUrl()
+
+            );
+        }
+        return null;
     }
 
     public List<MessageFromHistory> getMessages() {
@@ -43,9 +57,9 @@ public final class HistoryResponse {
     }
 
     private class AgentInfo {
-        ConsultInfo agent;
+        im.threads.internal.transport.models.Operator agent;
 
-        public ConsultInfo getAgent() {
+        public im.threads.internal.transport.models.Operator getAgent() {
             return agent;
         }
     }
