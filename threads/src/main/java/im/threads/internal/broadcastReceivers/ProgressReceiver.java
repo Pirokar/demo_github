@@ -3,10 +3,10 @@ package im.threads.internal.broadcastReceivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.NonNull;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.services.DownloadService;
 import im.threads.internal.utils.ThreadsLogger;
