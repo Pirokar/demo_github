@@ -111,7 +111,7 @@ public final class ChatController {
     private ChatFragment fragment;
 
     // Для приема сообщений из сервиса по скачиванию файлов
-    private ProgressReceiver mProgressReceiver;
+    private ProgressReceiver progressReceiver;
     // Было получено сообщение, что чат не работает
     private boolean isChatWorking;
     // this flag is keeping the visibility state of the request to resolve thread
@@ -329,6 +329,8 @@ public final class ChatController {
             }
         }
         if (isActive) {
+            Config.instance.transport.sendInitChatMessage();
+            Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID());
             subscribe(
                     Observable.timer(1500, TimeUnit.MILLISECONDS)
                             .observeOn(AndroidSchedulers.mainThread())
@@ -465,9 +467,6 @@ public final class ChatController {
                                 e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
         );
-
-        Config.instance.transport.sendInitChatMessage();
-        Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID());
         if (consultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo());
         } else if (consultWriter.istSearchingConsult()) {
@@ -475,20 +474,19 @@ public final class ChatController {
         } else {
             fragment.setTitleStateDefault();
         }
-        mProgressReceiver = new ProgressReceiver(fragment, this::onSettingClientId);
+        progressReceiver = new ProgressReceiver(fragment);
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ProgressReceiver.PROGRESS_BROADCAST);
         intentFilter.addAction(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST);
         intentFilter.addAction(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST);
-        intentFilter.addAction(ProgressReceiver.DEVICE_ID_IS_SET_BROADCAST);
-        activity.registerReceiver(mProgressReceiver, intentFilter);
+        activity.registerReceiver(progressReceiver, intentFilter);
     }
 
     public void unbindFragment() {
         if (fragment != null) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-                activity.unregisterReceiver(mProgressReceiver);
+                activity.unregisterReceiver(progressReceiver);
             }
         }
         fragment = null;
@@ -706,6 +704,7 @@ public final class ChatController {
         subscribeToMessageSendError();
         subscribeToSurveySendSuccess();
         subscribeToRemoveChatItem();
+        subscribeToDeviceAddressChanged();
     }
 
     private void subscribeToTyping() {
@@ -916,6 +915,15 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .filter(chatItemType -> chatItemType.equals(ChatItemType.REQUEST_CLOSE_THREAD))
                         .subscribe(chatItemType -> removeResolveRequest())
+        );
+    }
+
+
+    private void subscribeToDeviceAddressChanged() {
+        subscribe(
+                Flowable.fromPublisher(chatUpdateProcessor.getDeviceAddressChangedProcessor())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(chatItemType -> onSettingClientId())
         );
     }
 

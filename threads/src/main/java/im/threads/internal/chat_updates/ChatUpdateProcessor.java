@@ -20,6 +20,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<String> messageSendErrorProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemType> removeChatItemProcessor = PublishProcessor.create();
     private final FlowableProcessor<Long> surveySendSuccessProcessor = PublishProcessor.create();
+    private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
 
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
 
@@ -62,6 +63,10 @@ public class ChatUpdateProcessor {
         surveySendSuccessProcessor.onNext(sendingId);
     }
 
+    public void postDeviceAddressChanged(String deviceAddress) {
+        deviceAddressChangedProcessor.onNext(deviceAddress);
+    }
+
     public void postError(@NonNull TransportException error) {
         errorProcessor.onNext(error);
     }
@@ -100,5 +105,9 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<TransportException> getErrorProcessor() {
         return errorProcessor;
+    }
+
+    public FlowableProcessor<String> getDeviceAddressChangedProcessor() {
+        return deviceAddressChangedProcessor;
     }
 }

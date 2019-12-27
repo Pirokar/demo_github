@@ -66,8 +66,7 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
     @Override
     public void onDeviceAddressChanged(final Context context, final String s) {
         ThreadsLogger.i(TAG, "onDeviceAddressChanged " + s);
-        new Thread(() -> context.sendBroadcast(new Intent(ProgressReceiver.DEVICE_ID_IS_SET_BROADCAST)))
-                .start();
+        ChatUpdateProcessor.getInstance().postDeviceAddressChanged(s);
     }
 
     @Override
