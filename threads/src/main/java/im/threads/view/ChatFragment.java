@@ -151,7 +151,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private File externalCameraPhotoFile;
 
-    private ObservableField<String> inputTextObservable = new ObservableField<>();
+    private ObservableField<String> inputTextObservable = new ObservableField<>("");
 
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
