@@ -329,6 +329,8 @@ public final class ChatController {
             }
         }
         if (isActive) {
+            Config.instance.transport.sendInitChatMessage();
+            Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID());
             subscribe(
                     Observable.timer(1500, TimeUnit.MILLISECONDS)
                             .observeOn(AndroidSchedulers.mainThread())
@@ -465,9 +467,6 @@ public final class ChatController {
                                 e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
         );
-
-        Config.instance.transport.sendInitChatMessage();
-        Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID());
         if (consultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo());
         } else if (consultWriter.istSearchingConsult()) {

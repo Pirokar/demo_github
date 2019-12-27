@@ -196,7 +196,6 @@ public final class ChatFragment extends BaseFragment implements
         if (activity != null) {
             activity.unregisterReceiver(mChatReceiver);
         }
-
         chatIsShown = false;
     }
 
