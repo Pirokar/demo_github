@@ -2,4 +2,6 @@
 <resources>
     <string name="datastore_url" translatable="false">https://winlabstore.threads.im/</string>
     <string name="serverBaseUrl" translatable="false">http://winlab.threads.im</string>
+    <string name="threadsGateUrl" translatable="false">http://winlab.threads.im/socket</string>
+    <string name="threadsGateProviderUid" translatable="false"></string>
 </resources>

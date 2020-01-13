@@ -64,7 +64,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mToolbar.setTitle("");
-        DatabaseHolder.getInstance().getFilesAsync(new CompletionHandler<List<FileDescription>>() {
+        DatabaseHolder.getInstance().getAllFileDescriptions(new CompletionHandler<List<FileDescription>>() {
             @Override
             public void onComplete(List<FileDescription> data) {
                 files = new ArrayList<>();

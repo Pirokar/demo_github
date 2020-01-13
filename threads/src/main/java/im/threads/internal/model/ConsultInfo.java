@@ -1,13 +1,8 @@
 package im.threads.internal.model;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import im.threads.internal.utils.ThreadsLogger;
+import com.google.gson.JsonObject;
 
 public final class ConsultInfo {
-
-    private static final String TAG = ConsultInfo.class.getSimpleName();
 
     private final String name;
     private final String id;
@@ -54,16 +49,12 @@ public final class ConsultInfo {
         return photoUrl;
     }
 
-    public JSONObject toJson() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("name", name);
-            jsonObject.put("status", status);
-            jsonObject.put("id", id);
-            jsonObject.put("photoUrl", photoUrl);
-        } catch (JSONException e) {
-            ThreadsLogger.e(TAG, "toJson", e);
-        }
+    public JsonObject toJson() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("name", name);
+        jsonObject.addProperty("status", status);
+        jsonObject.addProperty("id", id);
+        jsonObject.addProperty("photoUrl", photoUrl);
         return jsonObject;
     }
 }

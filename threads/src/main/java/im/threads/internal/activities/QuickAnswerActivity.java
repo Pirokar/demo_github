@@ -1,5 +1,6 @@
 package im.threads.internal.activities;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,21 +13,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.controllers.QuickAnswerController;
 import im.threads.internal.fragments.QuickAnswerFragment;
-import im.threads.internal.utils.ThreadsLogger;
-import im.threads.ChatStyle;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.internal.utils.ThreadsLogger;
 
-public final class TranslucentActivity
+public final class QuickAnswerActivity
         extends AppCompatActivity {
-    private static final String TAG = "TranslucentActivity ";
+    private static final String TAG = "QuickAnswerActivity ";
     public static final String ACTION_ANSWER = "im.threads.ACTION_ANSWER";
     public static final String ACTION_CANCEL = "im.threads.ACTION_CANCEL";
     private QuickAnswerReceiver mQuickAnswerReceiver;
     private QuickAnswerController controller;
+
+    public static PendingIntent createPendingIntent(Context context) {
+        final Intent buttonIntent = new Intent(context, QuickAnswerActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        return PendingIntent.getActivity(
+                context,
+                1,
+                buttonIntent,
+                0
+        );
+    }
 
     public void setLastUnreadMessage(ConsultPhrase phrase) {
         if (null != phrase) {
@@ -50,7 +62,7 @@ public final class TranslucentActivity
         }
         mQuickAnswerReceiver = new QuickAnswerReceiver();
         controller = QuickAnswerController.getInstance();
-
+        Config.instance.transport.setLifecycle(getLifecycle());
     }
 
     @Override
@@ -64,11 +76,9 @@ public final class TranslucentActivity
         manager.registerReceiver(mQuickAnswerReceiver, filter);
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
-        controller.unBind();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mQuickAnswerReceiver);
     }
 

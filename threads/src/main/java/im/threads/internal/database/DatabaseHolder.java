@@ -3,6 +3,8 @@ package im.threads.internal.database;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +14,7 @@ import java.util.concurrent.Executors;
 import im.threads.ThreadsLib;
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
-import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.CompletionHandler;
-import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
@@ -30,6 +30,7 @@ public final class DatabaseHolder {
     private final MyOpenHelper mMyOpenHelper;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    @NonNull
     public static DatabaseHolder getInstance() {
         if (instance == null) {
             instance = new DatabaseHolder();
@@ -74,82 +75,34 @@ public final class DatabaseHolder {
         return userPhrases;
     }
 
-    public boolean putChatItem(ChatItem chatItem) {
-        if (chatItem instanceof ConsultConnectionMessage) {
-            mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) chatItem);
-            return true;
-        }
-        if (chatItem instanceof ChatPhrase) {
-            mMyOpenHelper.putChatPhrase((ChatPhrase) chatItem);
-            return true;
-        }
-        if (chatItem instanceof Survey) {
-            mMyOpenHelper.insertOrUpdateSurvey((Survey) chatItem);
-        }
-        return false;
-    }
-
-    public void setStateOfUserPhraseByProviderId(String providerId, MessageState messageState) {
-        mMyOpenHelper.setUserPhraseStateByProviderId(providerId, messageState);
-    }
-
-    public int getMessagesCount() {
-        return mMyOpenHelper.getMessagesCount();
-    }
-
-    public void cleanDatabase() {
-        mMyOpenHelper.cleanFD();
-        mMyOpenHelper.cleanMessagesTable();
-        mMyOpenHelper.cleanQuotes();
-    }
-
-    public void getFilesAsync(final CompletionHandler<List<FileDescription>> handler) {
-        executorService.execute(() -> handler.onComplete(mMyOpenHelper.getFd()));
-    }
-
-    public void updateFileDescription(FileDescription fileDescription) {
-        if (fileDescription == null) return;
-        mMyOpenHelper.updateFd(fileDescription);
-    }
-
-    public void putMessagesSync(final List<ChatItem> items) {
-        try {
-            mMyOpenHelper.getWritableDatabase().beginTransaction();
-            for (ChatItem item : items) {
-                if (item instanceof ChatPhrase) {
-                    mMyOpenHelper.putChatPhrase((ChatPhrase) item);
-                }
-                if (item instanceof ConsultConnectionMessage) {
-                    mMyOpenHelper.putConsultConnected((ConsultConnectionMessage) item);
-                }
-                if (item instanceof Survey) {
-                    mMyOpenHelper.insertOrUpdateSurvey((Survey) item);
-                }
-            }
-            mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
-        } catch (Exception e) {
-            ThreadsLogger.e(TAG, "putMessagesSync", e);
-        } finally {
-            mMyOpenHelper.getWritableDatabase().endTransaction();
-        }
-    }
-
-    public void setAllMessagesRead(final CompletionHandler<Void> handler) {
+    public void getLastConsultPhrase(final CompletionHandler<ConsultPhrase> handler) {
         executorService.execute(() -> {
-            mMyOpenHelper.setAllRead();
-            handler.onComplete(null);
-        });
-    }
-
-    public void getLastUnreadPhrase(final CompletionHandler<ConsultPhrase> handler) {
-        executorService.execute(() -> {
-            ConsultPhrase cp = mMyOpenHelper.getLastUnreadPhrase();
+            ConsultPhrase cp = mMyOpenHelper.getLastConsultPhrase();
             handler.onComplete(cp);
         });
     }
 
+    @Nullable
+    public ChatItem getChatItem(String messageUuid) {
+        return mMyOpenHelper.getChatItem(messageUuid);
+    }
+
+    @Nullable
+    public Survey getSurvey(long sendingId) {
+        return mMyOpenHelper.getSurvey(sendingId);
+    }
+
+    @Nullable
+    public ConsultInfo getConsultInfo(@NonNull String id) {
+        return mMyOpenHelper.getLastConsultInfo(id);
+    }
+
     public List<String> getUnreadMessagesProviderIds() {
         return mMyOpenHelper.getUnreadMessagesProviderIds();
+    }
+
+    public int getMessagesCount() {
+        return mMyOpenHelper.getMessagesCount();
     }
 
     // let the DB time to write the incoming message
@@ -162,20 +115,53 @@ public final class DatabaseHolder {
         }
     }
 
+    public void putMessagesSync(final List<ChatItem> items) {
+        try {
+            mMyOpenHelper.getWritableDatabase().beginTransaction();
+            for (ChatItem item : items) {
+                mMyOpenHelper.putChatItem(item);
+            }
+            mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
+        } catch (Exception e) {
+            ThreadsLogger.e(TAG, "putMessagesSync", e);
+        } finally {
+            mMyOpenHelper.getWritableDatabase().endTransaction();
+        }
+    }
+
+    public boolean putChatItem(ChatItem chatItem) {
+        return mMyOpenHelper.putChatItem(chatItem);
+    }
+
+    @WorkerThread
+    public void setStateOfUserPhraseByProviderId(String providerId, MessageState messageState) {
+        mMyOpenHelper.setUserPhraseStateByProviderId(providerId, messageState);
+    }
+
+    public void setAllConsultMessagesWereRead(final CompletionHandler<Void> handler) {
+        executorService.execute(() -> {
+            mMyOpenHelper.setAllConsultMessagesWereRead();
+            handler.onComplete(null);
+        });
+    }
+
+    public void setConsultMessageWasRead(String providerId) {
+        mMyOpenHelper.setConsultMessageWasRead(providerId);
+    }
+
+    public void getAllFileDescriptions(final CompletionHandler<List<FileDescription>> handler) {
+        executorService.execute(() -> handler.onComplete(mMyOpenHelper.getAllFileDescriptions()));
+    }
+
+    public void updateFileDescription(@NonNull FileDescription fileDescription) {
+        mMyOpenHelper.updateFileDescription(fileDescription);
+    }
+
+    public void cleanDatabase() {
+        mMyOpenHelper.cleanDatabase();
+    }
+
     private void getUnreadMessagesCount(@NonNull final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
         unreadMessagesCountListener.onUnreadMessagesCountChanged(mMyOpenHelper.getUnreadMessagesProviderIds().size());
-    }
-
-    public void setMessageWereRead(String providerId) {
-        mMyOpenHelper.setMessageWereRead(providerId);
-    }
-
-    public String getLastConsultAvatarPathSync(String id) {
-        if (id == null) return null;
-        return mMyOpenHelper.getLastOperatorAvatar(id);
-    }
-
-    public ConsultInfo getConsultInfoSync(@NonNull String id) {
-        return mMyOpenHelper.getLastConsultInfo(id);
     }
 }

@@ -1,10 +1,10 @@
 package im.threads.internal.model;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.util.List;
 
+import im.threads.internal.Config;
 import im.threads.internal.utils.ThreadsLogger;
 
 /**
@@ -33,7 +33,7 @@ public final class HistoryResponse {
         HistoryResponse historyResponse = null;
         try {
             if (response != null) {
-                historyResponse = new Gson().fromJson(response, HistoryResponse.class);
+                historyResponse = Config.instance.gson.fromJson(response, HistoryResponse.class);
             }
         } catch (JsonSyntaxException e) {
             ThreadsLogger.e(TAG, "getHistoryFromServerResponse", e);

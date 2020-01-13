@@ -4,8 +4,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import im.threads.ThreadsLib;
+import com.google.gson.Gson;
+
 import im.threads.ChatStyle;
+import im.threads.ThreadsLib;
+import im.threads.internal.transport.Transport;
 import im.threads.internal.utils.PrefUtils;
 
 public final class Config {
@@ -21,6 +24,8 @@ public final class Config {
     public final ThreadsLib.PendingIntentCreator pendingIntentCreator;
     @Nullable
     public final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener;
+    @NonNull
+    public final Transport transport;
 
     public final boolean isDebugLoggingEnabled;
     /**
@@ -30,18 +35,22 @@ public final class Config {
 
     public final int surveyCompletionDelay;
 
+    public final Gson gson = new Gson();
+
     public Config(@NonNull Context context,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
-                  int surveyCompletionDelay) {
+                  int surveyCompletionDelay,
+                  @NonNull Transport transport) {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
+        this.transport = transport;
     }
 
     public void applyChatStyle(ChatStyle chatStyle) {
@@ -66,4 +75,5 @@ public final class Config {
         }
         return localInstance;
     }
+
 }

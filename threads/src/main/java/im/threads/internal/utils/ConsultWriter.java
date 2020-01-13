@@ -30,17 +30,12 @@ public final class ConsultWriter {
     public void setCurrentConsultInfo(ConsultConnectionMessage message) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String consultId = message.getConsultId();
-        if (consultId != null) setCurrentConsultId(consultId);
+        editor.putString(OPERATOR_ID, consultId).commit();
         editor.putString(OPERATOR_STATUS + consultId, message.getStatus()).commit();
         editor.putString(OPERATOR_NAME + consultId, message.getName()).commit();
         editor.putString(OPERATOR_TITLE + consultId, message.getTitle()).commit();
         editor.putString(OPERATOR_ORG_UNIT + consultId, message.getOrgUnit()).commit();
         editor.putString(OPERATOR_PHOTO + consultId, message.getAvatarPath()).commit();
-        setCurrentConsultId(consultId);
-    }
-
-    private void setCurrentConsultId(String consultId) {
-        sharedPreferences.edit().putString(OPERATOR_ID, consultId).commit();
     }
 
     public String getName(String id) {
@@ -60,10 +55,8 @@ public final class ConsultWriter {
     }
 
     public String getCurrentPhotoUrl() {
-        if (getCurrentConsultId() == null) return null;
-        return getPhotoUrl(getCurrentConsultId());
+        return getCurrentConsultId() != null ? getPhotoUrl(getCurrentConsultId()) : null;
     }
-
 
     public String getCurrentConsultId() {
         return sharedPreferences.getString(OPERATOR_ID, null);
@@ -74,8 +67,7 @@ public final class ConsultWriter {
     }
 
     public boolean isConsultConnected() {
-        String id = sharedPreferences.getString(OPERATOR_ID, null);
-        return id != null;
+        return sharedPreferences.getString(OPERATOR_ID, null) != null;
     }
 
     public ConsultInfo getConsultInfo(String id) {

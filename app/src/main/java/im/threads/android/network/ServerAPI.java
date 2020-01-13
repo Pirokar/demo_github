@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 class ServerAPI {
 
-    private static String TAG = ServerAPI.class.getSimpleName();
+    private static final String TAG = ServerAPI.class.getSimpleName();
     private static IServerAPI serverAPI;
 
     static IServerAPI getAPI() {
