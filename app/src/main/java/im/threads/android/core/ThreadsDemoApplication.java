@@ -9,7 +9,6 @@ import java.util.List;
 
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
-import im.threads.android.BuildConfig;
 import im.threads.android.data.Card;
 import im.threads.android.ui.BottomNavigationActivity;
 import im.threads.android.utils.ChatStyleBuilderHelper;
@@ -29,7 +28,6 @@ public class ThreadsDemoApplication extends MultiDexApplication {
         ConfigBuilder configBuilder = new ConfigBuilder(this)
                 .pendingIntentCreator(new CustomPendingIntentCreator())
                 .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count))
-                .transportType(BuildConfig.TRANSPORT_TYPE)
                 .surveyCompletionDelay(2000)
                 .historyLoadingCount(50)
                 .isDebugLoggingEnabled(true);
