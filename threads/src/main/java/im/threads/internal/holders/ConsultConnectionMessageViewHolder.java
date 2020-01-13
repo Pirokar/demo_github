@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.formatters.PushMessageType;
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.picasso_url_connection_only.Callback;
 import im.threads.internal.picasso_url_connection_only.Picasso;
@@ -64,7 +64,7 @@ public final class ConsultConnectionMessageViewHolder extends RecyclerView.ViewH
             headerTextView.setText(consultConnectionMessage.getName());
         }
         String connectedText;
-        boolean isConnected = consultConnectionMessage.getConnectionType().equals(PushMessageType.OPERATOR_JOINED.name());
+        boolean isConnected = consultConnectionMessage.getConnectionType().equals(ChatItemType.OPERATOR_JOINED.name());
         boolean sex = consultConnectionMessage.getSex();
         long date = consultConnectionMessage.getTimeStamp();
         if (sex && isConnected) {

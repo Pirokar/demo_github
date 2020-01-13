@@ -9,7 +9,6 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 
-
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 
@@ -28,8 +27,8 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
 
-        versionCode 88
-        versionName "3.1.0"
+        versionCode 89
+        versionName "3.2.0"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName)
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
@@ -58,7 +57,7 @@ android {
         }
     }
 
-    flavorDimensions "server"
+    flavorDimensions "server", "transport"
     productFlavors {
         // АРМ = threads.brooma.ru
         brooma {
@@ -111,11 +110,18 @@ android {
             applicationId "com.brooma.threads.android.amurtiger"
             resValue "string", "app_name1", "THR AmurTiger"
         }
-
         gatetest18048 {
             dimension "server"
             applicationId "com.threads.android.gatetest18048"
             resValue "string", "app_name1", "THR Gatetest18048"
+        }
+        pushLib {
+            dimension "transport"
+            buildConfigField "im.threads.ConfigBuilder.TransportType", "TRANSPORT_TYPE", "im.threads.ConfigBuilder.TransportType.MFMS_PUSH"
+        }
+        threadsGate {
+            dimension "transport"
+            buildConfigField "im.threads.ConfigBuilder.TransportType", "TRANSPORT_TYPE", "im.threads.ConfigBuilder.TransportType.THREADS_GATE"
         }
     }
 
@@ -146,7 +152,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':threads')
 
-    implementation 'com.google.firebase:firebase-messaging:17.3.1'
     implementation 'com.android.support:multidex:1.0.3'
 
     implementation "androidx.appcompat:appcompat:$androidXVersion"
@@ -168,12 +173,8 @@ dependencies {
         transitive = true
     }
 
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
-    implementation 'com.azoft.carousellayoutmanager:carousel:1.2.1'
-
-//    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
-//    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
-    implementation 'com.mfms.android:push-lite-release:2.6.21'
+    implementation 'com.mfms.android:push-lite-release:2.8.7'
 }
 apply plugin: 'com.google.gms.google-services'

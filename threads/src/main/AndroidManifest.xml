@@ -40,9 +40,10 @@
             android:name=".internal.activities.ImagesActivity"
             android:theme="@style/ThreadsGalleryStyle"/>
         <activity
-            android:name=".internal.activities.TranslucentActivity"
+            android:name=".internal.activities.QuickAnswerActivity"
             android:label=""
             android:launchMode="singleInstance"
+            android:taskAffinity=""
             android:screenOrientation="unspecified"
             android:theme="@style/Translucent"/>
         <activity
@@ -60,6 +61,16 @@
         <service
             android:name=".internal.services.NotificationService"
             android:exported="false"/>
+
+        <meta-data
+            android:name="com.pushserver.android.service"
+            android:value="im.threads.push.ThreadsPushServerIntentService"/>
+
+        <service android:name=".push.ThreadsPushFcmIntentService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <provider
             android:name=".internal.utils.ThreadsFileProvider"

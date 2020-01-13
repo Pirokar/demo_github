@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.NonNull;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.services.DownloadService;
 import im.threads.internal.utils.ThreadsLogger;
@@ -22,14 +23,11 @@ public final class ProgressReceiver extends BroadcastReceiver {
     public static final String PROGRESS_BROADCAST = "im.threads.internal.controllers.PROGRESS_BROADCAST";
     public static final String DOWNLOADED_SUCCESSFULLY_BROADCAST = "im.threads.internal.controllers.DOWNLOADED_SUCCESSFULLY_BROADCAST";
     public static final String DOWNLOAD_ERROR_BROADCAST = "im.threads.internal.controllers.DOWNLOAD_ERROR_BROADCAST";
-    public static final String DEVICE_ID_IS_SET_BROADCAST = "im.threads.internal.controllers.DEVICE_ID_IS_SET_BROADCAST";
 
-    private WeakReference<ChatFragment> fragment;
-    private WeakReference<DeviceIdChangedListener> deviceIdChangedListener;
+    private final WeakReference<ChatFragment> fragment;
 
-    public ProgressReceiver(ChatFragment fragment, DeviceIdChangedListener deviceIdChangedListener) {
+    public ProgressReceiver(@NonNull ChatFragment fragment) {
         this.fragment = new WeakReference<>(fragment);
-        this.deviceIdChangedListener = new WeakReference<>(deviceIdChangedListener);
     }
 
     @Override
@@ -43,34 +41,29 @@ public final class ProgressReceiver extends BroadcastReceiver {
             case PROGRESS_BROADCAST: {
                 ThreadsLogger.i(TAG, "onReceive: PROGRESS_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
-                if (fragment != null && fileDescription != null)
+                if (fragment.get() != null && fileDescription != null) {
                     fragment.get().updateProgress(fileDescription);
+                }
                 break;
             }
             case DOWNLOADED_SUCCESSFULLY_BROADCAST: {
                 ThreadsLogger.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
                 fileDescription.setDownloadProgress(100);
-                if (fragment != null)
+                if (fragment.get() != null) {
                     fragment.get().updateProgress(fileDescription);
+                }
                 break;
             }
             case DOWNLOAD_ERROR_BROADCAST: {
                 ThreadsLogger.e(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(DownloadService.FD_TAG);
-                if (fragment != null && fileDescription != null) {
+                if (fragment.get() != null && fileDescription != null) {
                     Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
                     fragment.get().onDownloadError(fileDescription, t);
                 }
                 break;
             }
-            case DEVICE_ID_IS_SET_BROADCAST:
-                deviceIdChangedListener.get().onSettingClientId(context);
-                break;
         }
-    }
-
-    public interface DeviceIdChangedListener {
-        void onSettingClientId(final Context ctx);
     }
 }

@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.views.BottomGallery;
 import im.threads.internal.views.BottomSheetView;
@@ -76,8 +77,7 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
         if (context != null) {
             ColorsHelper.setBackgroundColor(context, fileInputSheet, Config.instance.getChatStyle().chatMessageInputColor);
             ColorsHelper.setBackgroundColor(context, bottomGallery, Config.instance.getChatStyle().chatMessageInputColor);
-            String[] projection = new String[]{MediaStore.Images.Media.DATA};
-            try (Cursor c = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, MediaStore.Images.Media.DATE_TAKEN + " desc")) {
+            try (Cursor c = MediaHelper.getAllPhotos(context)) {
                 if (c != null) {
                     int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
                     for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {

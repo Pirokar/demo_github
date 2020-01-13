@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public final class RequestResolveThread implements ChatItem {
+public final class RequestResolveThread implements ChatItem, Hidable {
     private Long hideAfter;
     private long phraseTimeStamp;
 
@@ -9,6 +9,7 @@ public final class RequestResolveThread implements ChatItem {
         this.phraseTimeStamp = phraseTimeStamp;
     }
 
+    @Override
     public Long getHideAfter() {
         return hideAfter;
     }

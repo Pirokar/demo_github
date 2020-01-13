@@ -84,7 +84,7 @@ public class DatabaseHolderTest {
             dbHolder.putChatItem(this.chatItem);
             dbHolder.putChatItem(this.chatItem);
 
-            List<FileDescription> fileDescriptions = dbHolder.getMyOpenHelper().getFd();
+            List<FileDescription> fileDescriptions = dbHolder.getMyOpenHelper().getAllFileDescriptions();
 
             Assert.assertEquals("Duplicate file descriptions in DB. ", 1, fileDescriptions.size());
         }
@@ -162,7 +162,7 @@ public class DatabaseHolderTest {
                 1559810598957L);
 
         fileDesc.setDownloadProgress(0);
-        fileDesc.setDownloadPath("https://polarbearstore.threads.im/files/c485bfc9-0c6a-4747-97e5-45ee3b73ec43");
+        fileDesc.setDownloadPath("https://datastore.threads.im/files/c485bfc9-0c6a-4747-97e5-45ee3b73ec43");
         fileDesc.setIncomingName("pdf-sample.pdf");
 
         return new ConsultPhrase(
@@ -213,7 +213,7 @@ public class DatabaseHolderTest {
                 1559897546447L);
 
         fileDesc.setDownloadProgress(0);
-        fileDesc.setDownloadPath("https://polarbearstore.threads.im/files/ecc3654d-de6f-4ccb-8c0e-32d953bc0eb1");
+        fileDesc.setDownloadPath("https://datastore.threads.im/files/ecc3654d-de6f-4ccb-8c0e-32d953bc0eb1");
         fileDesc.setIncomingName("pdf-sample.pdf");
 
         Quote quote = new Quote("9058775a-99ea-40a3-bc49-f0bf3e68790b",
@@ -303,7 +303,7 @@ public class DatabaseHolderTest {
                 1559810598957L);
 
         fileDesc.setDownloadProgress(0);
-        fileDesc.setDownloadPath("https://polarbearstore.threads.im/files/c485bfc9-0c6a-4747-97e5-45ee3b73ec43");
+        fileDesc.setDownloadPath("https://datastore.threads.im/files/c485bfc9-0c6a-4747-97e5-45ee3b73ec43");
         fileDesc.setIncomingName("pdf-sample.pdf");
 
         Quote quote = new Quote("b613fe15-b920-4586-8e90-0909274eec3b",

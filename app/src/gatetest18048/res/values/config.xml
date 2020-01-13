@@ -2,4 +2,6 @@
 <resources>
     <string name="datastore_url" translatable="false"></string>
     <string name="serverBaseUrl" translatable="false"></string>
+    <string name="threadsGateUrl" translatable="false"></string>
+    <string name="threadsGateProviderUid" translatable="false"></string>
 </resources>

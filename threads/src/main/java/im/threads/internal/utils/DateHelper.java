@@ -18,7 +18,7 @@ public final class DateHelper {
         sdf.setTimeZone(TimeZone.getTimeZone(SERVER_DATE_TIMEZONE));
     }
 
-    public static long getMessageTimestampFromDateString(String dateString) {
+    public static synchronized long getMessageTimestampFromDateString(String dateString) {
         Date date = new Date();
         try {
             date = sdf.parse(dateString);
@@ -28,7 +28,7 @@ public final class DateHelper {
         return date.getTime();
     }
 
-    static String getMessageDateStringFromTimestamp(long timestamp) {
+    public static synchronized String getMessageDateStringFromTimestamp(long timestamp) {
         return sdf.format(new Date(timestamp));
     }
 }

@@ -1,14 +1,14 @@
 package im.threads.internal.utils;
 
 import android.accounts.NetworkErrorException;
-import android.content.Context;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.URLEncoder;
 
+import im.threads.internal.Config;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.FileDescription;
@@ -20,17 +20,17 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 
+/**
+ * TODO THREADS-6288: this class needs refactoring, it contains one static method that does a lot of things making it untestable
+ */
 public final class FilePoster {
-    private static final String UPLOAD_FILE_URL = "https://datastore.threads.im/";
-    private FileDescription fileDescription;
-    private Context context;
 
-    FilePoster(FileDescription fileDescription, Context context) {
-        this.fileDescription = fileDescription;
-        this.context = context;
+    private static final String UPLOAD_FILE_URL = "https://datastore.threads.im/";
+
+    private FilePoster() {
     }
 
-    public void post(final Callback<String, Throwable> callback) {
+    public static String post(FileDescription fileDescription) throws IOException, NetworkErrorException {
         String token = PrefUtils.getClientID();
         if (!token.isEmpty()) {
             File file = null;
@@ -39,7 +39,7 @@ public final class FilePoster {
             }
             if (file != null && file.exists() && file.isFile() && file.canRead()) {
                 if (FileHelper.isThreadsImage(file)) {
-                    File downsizedImageFile = MediaHelper.downsizeImage(context, file, MediaHelper.PHOTO_RESIZE_MAX_SIDE);
+                    File downsizedImageFile = MediaHelper.downsizeImage(Config.instance.context, file, MediaHelper.PHOTO_RESIZE_MAX_SIDE);
                     if (downsizedImageFile != null) {
                         file = downsizedImageFile;
                     }
@@ -56,37 +56,22 @@ public final class FilePoster {
                     mimeType = "*/*";
                 }
                 RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
-                try {
-                    MultipartBody.Part body = MultipartBody.Part.createFormData("file", URLEncoder.encode(file.getName(), "utf-8"), requestFile);
-                    Call<FileUploadResponse> call = threadsApi.upload(body, token);
-                    call.enqueue(new retrofit2.Callback<FileUploadResponse>() {
-                        @Override
-                        public void onResponse(Call<FileUploadResponse> call, retrofit2.Response<FileUploadResponse> response) {
-                            if (response.body() != null && response.body().getResult() != null && !response.body().getResult().isEmpty()) {
-                                callback.onSuccess(response.body().getResult());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<FileUploadResponse> call, Throwable t) {
-                            callback.onError(t);
-                        }
-                    });
-                } catch (UnsupportedEncodingException e) {
-                    callback.onError(e);
+                MultipartBody.Part part = MultipartBody.Part.createFormData("file", URLEncoder.encode(file.getName(), "utf-8"), requestFile);
+                Call<FileUploadResponse> call = threadsApi.upload(part, token);
+                FileUploadResponse body = call.execute().body();
+                if (body != null) {
+                    return body.getResult();
                 }
-
             } else if (fileDescription.getFilePath() != null && !new File(fileDescription.getFilePath()).exists()) {
                 if (fileDescription.getDownloadPath() != null) {
-                    callback.onSuccess(fileDescription.getDownloadPath());
+                    return fileDescription.getDownloadPath();
                 } else {
-                    callback.onError(new FileNotFoundException());
+                    throw new FileNotFoundException();
                 }
             } else if (fileDescription.getFilePath() == null && fileDescription.getDownloadPath() != null) {
-                callback.onSuccess(fileDescription.getDownloadPath());
+                return fileDescription.getDownloadPath();
             }
-        } else {
-            callback.onError(new NetworkErrorException());
         }
+        throw new NetworkErrorException();
     }
 }

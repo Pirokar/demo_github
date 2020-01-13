@@ -1,19 +1,16 @@
 package im.threads.internal.activities;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -26,12 +23,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.adapters.FilesAndMediaAdapter;
 import im.threads.internal.controllers.FilesAndMediaController;
-import im.threads.ChatStyle;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.utils.Keyboard;
 
 public final class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.OnFileClick {
     private static final String TAG = "FilesActivity ";
@@ -41,8 +39,8 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
     private Toolbar mToolbar;
     private FilesAndMediaAdapter mFilesAndMediaAdapter;
 
-    public static Intent getStartIntent(Activity activity) {
-        return new Intent(activity, FilesActivity.class);
+    public static Intent getStartIntent(@NonNull Context context) {
+        return new Intent(context, FilesActivity.class);
     }
 
     public void onFileReceive(List<FileDescription> descriptions) {
@@ -97,10 +95,7 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
                 mToolbar.setTitle("");
                 if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.backupAndClear();
                 mSearchEditText.setText("");
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(mSearchEditText, InputMethodManager.SHOW_IMPLICIT);
-                }, 100);
+                Keyboard.show(this, mSearchEditText, 100);
             }
         });
         mSearchEditText.addTextChangedListener(new TextWatcher() {

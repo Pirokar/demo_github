@@ -52,7 +52,7 @@ public final class FilesAndMediaController extends Fragment {
     }
 
     public void getFilesAsync() {
-        DatabaseHolder.getInstance().getFilesAsync(new CompletionHandler<List<FileDescription>>() {
+        DatabaseHolder.getInstance().getAllFileDescriptions(new CompletionHandler<List<FileDescription>>() {
             @Override
             public void onComplete(final List<FileDescription> data) {
                 new Handler(Looper.getMainLooper()).post(() -> {

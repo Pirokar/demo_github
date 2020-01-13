@@ -2,9 +2,6 @@ package im.threads;
 
 import android.app.PendingIntent;
 import android.content.Context;
-import android.text.TextUtils;
-
-import com.mfms.android.push_lite.PushController;
 
 import java.io.File;
 
@@ -13,12 +10,10 @@ import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.formatters.OutgoingMessageCreator;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
-import im.threads.internal.utils.Transport;
 
 public final class ThreadsLib {
 
@@ -34,11 +29,13 @@ public final class ThreadsLib {
         }
         Config.instance = configBuilder.build();
         instance = new ThreadsLib();
-        PushController.getInstance(Config.instance.context).init();
+        PrefUtils.migrateToSeparateStorageIfNeeded();
+        Config.instance.transport.init();
         if (Config.instance.unreadMessagesCountListener != null) {
             DatabaseHolder.getInstance()
                     .getUnreadMessagesCount(false, Config.instance.unreadMessagesCountListener);
         }
+        ChatController.getInstance();
     }
 
     public static ThreadsLib getInstance() {
@@ -68,15 +65,11 @@ public final class ThreadsLib {
      * Used to stop receiving messages for user with provided clientId
      */
     public void logoutClient(@NonNull final String clientId) {
-        if (!TextUtils.isEmpty(clientId)) {
-            Transport.sendMessageMFMSAsync(OutgoingMessageCreator.createMessageClientOffline(clientId), true, null, null);
-        } else {
-            ThreadsLogger.i(getClass().getSimpleName(), "clientId must not be empty");
-        }
+        ChatController.getInstance().logoutClient(clientId);
     }
 
     public void reloadHistory() {
-        ChatController.getInstance(Config.instance.context).loadHistory();
+        ChatController.getInstance().loadHistory();
     }
 
     /**
@@ -85,7 +78,7 @@ public final class ThreadsLib {
      * @return true, if message was successfully added to messaging queue, otherwise false
      */
     public boolean sendMessage(@Nullable String message, @Nullable File file) {
-        ChatController chatController = ChatController.getInstance(Config.instance.context);
+        ChatController chatController = ChatController.getInstance();
         if (PrefUtils.isClientIdNotEmpty()) {
             FileDescription fileDescription = null;
             if (file != null) {
