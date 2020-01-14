@@ -42,6 +42,7 @@ import im.threads.internal.transport.threads_gate.responses.SendMessageData;
 import im.threads.internal.transport.threads_gate.responses.UpdateStatusesData;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
+import im.threads.internal.utils.MetaDataUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import okhttp3.OkHttpClient;
@@ -71,7 +72,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     @Override
     public void init() {
         this.request = new Request.Builder()
-                .url(PrefUtils.getThreadsGateUrl())
+                .url(MetaDataUtils.getThreadsGateUrl(Config.instance.context))
                 .build();
     }
 
@@ -229,7 +230,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
             RegisterDeviceRequest.Data data = new RegisterDeviceRequest.Data(
                     AppInfoHelper.getAppId(),
                     AppInfoHelper.getAppVersion(),
-                    PrefUtils.getThreadsGateProviderUid(),
+                    MetaDataUtils.getThreadsGateProviderUid(Config.instance.context),
                     PrefUtils.getFcmToken(),
                     PrefUtils.getDeviceUid(),
                     "Android",
