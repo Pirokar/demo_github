@@ -65,6 +65,11 @@
             android:name="im.threads.threadsGateProviderUid"
             android:value="@string/threadsGateProviderUid"/>
 
+        <meta-data
+            android:name="im.threads.threadsTransportType"
+            tools:replace="android:value"
+            android:value="@string/transport_type"/>
+
         <!-- Default implementation can be used instead (see im.threads.push.ThreadsPushServerIntentService) -->
         <meta-data
             android:name="com.pushserver.android.service"
