@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
+import im.threads.internal.exceptions.MetaConfigurationException;
 import im.threads.internal.transport.Transport;
 import im.threads.internal.transport.mfms_push.MFMSPushTransport;
 import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
@@ -95,7 +96,15 @@ public final class Config {
             ThreadsLogger.e(TAG, "Transport type value is not set (correct values: MFMS_PUSH, THREADS_GATE). Default to MFMS_PUSH");
         }
         if (ConfigBuilder.TransportType.THREADS_GATE == transportType) {
-            return new ThreadsGateTransport();
+            String threadsGateUrl = MetaDataUtils.getThreadsGateUrl(this.context);
+            if (TextUtils.isEmpty(threadsGateUrl)) {
+                throw new MetaConfigurationException("Threads gate url is not set");
+            }
+            String threadsGateProviderUid = MetaDataUtils.getThreadsGateProviderUid(this.context);
+            if (TextUtils.isEmpty(threadsGateProviderUid)) {
+                throw new MetaConfigurationException("Threads gate provider uid is not set");
+            }
+            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid);
         }
         return new MFMSPushTransport();
     }
