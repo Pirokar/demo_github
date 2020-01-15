@@ -7,9 +7,6 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import im.threads.internal.Config;
-import im.threads.internal.transport.Transport;
-import im.threads.internal.transport.mfms_push.MFMSPushTransport;
-import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
 import im.threads.view.ChatActivity;
 
 public final class ConfigBuilder {
@@ -29,8 +26,6 @@ public final class ConfigBuilder {
     private int historyLoadingCount = 50;
 
     private int surveyCompletionDelay = 2000;
-
-    private TransportType transportType = TransportType.MFMS_PUSH;
 
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -61,35 +56,24 @@ public final class ConfigBuilder {
         return this;
     }
 
-    public ConfigBuilder transportType(final TransportType transportType) {
-        this.transportType = transportType;
-        return this;
-    }
-
     final Config build() {
-        Transport transport;
-        switch (transportType) {
-            case THREADS_GATE:
-                transport = new ThreadsGateTransport();
-                break;
-            case MFMS_PUSH:
-            default:
-                transport = new MFMSPushTransport();
-                break;
-        }
         return new Config(
                 context,
                 pendingIntentCreator,
                 unreadMessagesCountListener,
                 isDebugLoggingEnabled,
                 historyLoadingCount,
-                surveyCompletionDelay,
-                transport
+                surveyCompletionDelay
         );
     }
 
     public enum TransportType {
         MFMS_PUSH,
-        THREADS_GATE
+        THREADS_GATE;
+
+        @NonNull
+        public static TransportType fromString(@NonNull String name) {
+            return valueOf(name);
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -57,22 +58,26 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
 
     private final OkHttpClient client;
     private final WebSocketListener listener;
-    private Request request;
+    private final Request request;
+    private final String threadsGateProviderUid;
     @Nullable
     private WebSocket webSocket;
     @Nullable
     private Lifecycle lifecycle;
 
-    public ThreadsGateTransport() {
+    private final List<String> messageInProcessIds = new ArrayList<>();
+
+    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid) {
         this.client = new OkHttpClient.Builder().build();
         this.listener = new WebSocketListener();
+        this.request = new Request.Builder()
+                .url(threadsGateUrl)
+                .build();
+        this.threadsGateProviderUid = threadsGateProviderUid;
     }
 
     @Override
     public void init() {
-        this.request = new Request.Builder()
-                .url(PrefUtils.getThreadsGateUrl())
-                .build();
     }
 
     @Override
@@ -121,15 +126,17 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     @Override
     public void sendMessageRead(String messageId) {
         if (webSocket == null) {
-            openWebSocketIfStarted();
-            return;
+            openWebSocket();
+            if (webSocket == null) {
+                return;
+            }
         }
         ArrayList<UpdateStatusesRequest.MessageStatusData> messageIds = new ArrayList<>();
         messageIds.add(new UpdateStatusesRequest.MessageStatusData(messageId, MessageStatus.READ));
         webSocket.send(
                 Config.instance.gson.toJson(
                         new UpdateStatusesRequest(
-                                "string",
+                                UUID.randomUUID().toString(),
                                 new UpdateStatusesRequest.Data(PrefUtils.getDeviceAddress(), messageIds)
                         )
                 )
@@ -197,9 +204,13 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     }
 
     private void sendMessage(JsonObject content, boolean important, String correlationId) {
+        synchronized (messageInProcessIds) {
+            messageInProcessIds.add(correlationId);
+        }
         if (webSocket == null) {
-            processMessageSendError(correlationId);
-            openWebSocketIfStarted();
+            openWebSocket();
+        }
+        if (webSocket == null) {
             return;
         }
         webSocket.send(
@@ -212,14 +223,6 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         );
     }
 
-    private void openWebSocketIfStarted() {
-        if (lifecycle != null) {
-            if (lifecycle.getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
-                openWebSocket();
-            }
-        }
-    }
-
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private synchronized void openWebSocket() {
         if (webSocket == null) {
@@ -229,7 +232,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
             RegisterDeviceRequest.Data data = new RegisterDeviceRequest.Data(
                     AppInfoHelper.getAppId(),
                     AppInfoHelper.getAppVersion(),
-                    PrefUtils.getThreadsGateProviderUid(),
+                    threadsGateProviderUid,
                     PrefUtils.getFcmToken(),
                     PrefUtils.getDeviceUid(),
                     "Android",
@@ -242,14 +245,22 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
             );
             webSocket.send(
                     Config.instance.gson.toJson(
-                            new RegisterDeviceRequest("string", data)
+                            new RegisterDeviceRequest(UUID.randomUUID().toString(), data)
                     )
             );
-            sendEnvironmentMessage(PrefUtils.getClientID());
         }
     }
 
+    /**
+     * Closes websocket connection if there are no messages left to send and user is not interacting with chat screen
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    private void closeWebSocketIfNeeded() {
+        if (messageInProcessIds.isEmpty() && (lifecycle == null || !lifecycle.getCurrentState().isAtLeast(Lifecycle.State.STARTED))) {
+            closeWebSocket();
+        }
+    }
+
     private synchronized void closeWebSocket() {
         if (webSocket != null) {
             webSocket.close(WebSocketListener.NORMAL_CLOSURE_STATUS, null);
@@ -273,6 +284,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
             ThreadsLogger.i(TAG, "OnOpen : " + response);
+            sendEnvironmentMessage(PrefUtils.getClientID());
         }
 
         @Override
@@ -280,11 +292,9 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
             ThreadsLogger.i(TAG, "Receiving : " + text);
             BaseResponse response = Config.instance.gson.fromJson(text, BaseResponse.class);
             Action action = response.getAction();
-            if (response.getAction() != null) {
-                if (response.getData().has("error")) {
-                    ChatUpdateProcessor.getInstance().postError(new TransportException(response.getData().get("error").getAsString()));
-                    return;
-                }
+            if (response.getData().has("error")) {
+                ChatUpdateProcessor.getInstance().postError(new TransportException(response.getData().get("error").getAsString()));
+            } else if (action != null) {
                 if (action.equals(Action.REGISTER_DEVICE)) {
                     RegisterDeviceData data = Config.instance.gson.fromJson(response.getData().toString(), RegisterDeviceData.class);
                     PrefUtils.setDeviceAddress(data.getDeviceAddress());
@@ -342,6 +352,10 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
                     }
                 }
             }
+            synchronized (messageInProcessIds) {
+                messageInProcessIds.remove(response.getCorrelationId());
+            }
+            closeWebSocketIfNeeded();
         }
 
         @Override
@@ -351,14 +365,20 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
 
         @Override
         public void onClosing(WebSocket webSocket, int code, String reason) {
-            webSocket.close(NORMAL_CLOSURE_STATUS, null);
             ThreadsLogger.i(TAG, "Closing : " + code + " / " + reason);
+            webSocket.close(NORMAL_CLOSURE_STATUS, null);
         }
 
         @Override
         public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-            ChatUpdateProcessor.getInstance().postError(new TransportException(t.getMessage()));
             ThreadsLogger.i(TAG, "Error : " + t.getMessage());
+            ChatUpdateProcessor.getInstance().postError(new TransportException(t.getMessage()));
+            synchronized (messageInProcessIds) {
+                for (String messageId : messageInProcessIds) {
+                    processMessageSendError(messageId);
+                }
+                messageInProcessIds.clear();
+            }
             closeWebSocket();
         }
     }

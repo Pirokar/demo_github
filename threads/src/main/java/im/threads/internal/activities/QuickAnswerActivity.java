@@ -62,7 +62,6 @@ public final class QuickAnswerActivity
         }
         mQuickAnswerReceiver = new QuickAnswerReceiver();
         controller = QuickAnswerController.getInstance();
-        Config.instance.transport.setLifecycle(getLifecycle());
     }
 
     @Override
