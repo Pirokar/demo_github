@@ -117,11 +117,11 @@ android {
         }
         pushLib {
             dimension "transport"
-            buildConfigField "im.threads.ConfigBuilder.TransportType", "TRANSPORT_TYPE", "im.threads.ConfigBuilder.TransportType.MFMS_PUSH"
+            resValue "string", "transport_type", "MFMS_PUSH"
         }
         threadsGate {
             dimension "transport"
-            buildConfigField "im.threads.ConfigBuilder.TransportType", "TRANSPORT_TYPE", "im.threads.ConfigBuilder.TransportType.THREADS_GATE"
+            resValue "string", "transport_type", "THREADS_GATE"
         }
     }
 

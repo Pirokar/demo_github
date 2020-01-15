@@ -2,6 +2,7 @@ package im.threads.internal.utils;
 
 import android.text.TextUtils;
 
+import im.threads.internal.Config;
 import im.threads.internal.model.FileDescription;
 
 public final class FileUtils {
@@ -48,7 +49,7 @@ public final class FileUtils {
         if (TextUtils.isEmpty(relativeUrl) || relativeUrl.startsWith("http")) {
             return relativeUrl;
         }
-        return PrefUtils.getDatastoreUrl() + "files/" + relativeUrl;
+        return MetaDataUtils.getDatastoreUrl(Config.instance.context) + "files/" + relativeUrl;
     }
 
     public static boolean isImage(final FileDescription fileDescription) {

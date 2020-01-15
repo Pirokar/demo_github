@@ -2,9 +2,6 @@ package im.threads.internal.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -34,10 +31,6 @@ public final class PrefUtils {
     private static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String MIGRATED = "MIGRATED";
-
-    private static final String DATASTORE_URL = "im.threads.getServerUrl";
-    private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
-    private static final String THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid";
 
     private static final String STORE_NAME = "im.threads.internal.utils.PrefStore";
 
@@ -220,18 +213,6 @@ public final class PrefUtils {
         return deviceUid;
     }
 
-    public static String getDatastoreUrl() {
-        return getMetaData(DATASTORE_URL);
-    }
-
-    public static String getThreadsGateUrl() {
-        return getMetaData(THREADS_GATE_URL);
-    }
-
-    public static String getThreadsGateProviderUid() {
-        return getMetaData(THREADS_GATE_PROVIDER_UID);
-    }
-
     public static void migrateToSeparateStorageIfNeeded() {
         SharedPreferences newSharedPreferences = getDefaultSharedPreferences();
         if (!newSharedPreferences.getBoolean(MIGRATED, false)) {
@@ -253,19 +234,6 @@ public final class PrefUtils {
                     .putString(DEVICE_UID, oldSharedPreferences.getString(PrefUtils.class + DEVICE_UID, ""))
                     .putBoolean(MIGRATED, true)
                     .commit();
-        }
-    }
-
-    @Nullable
-    private static String getMetaData(String key) {
-        try {
-            Context context = Config.instance.context;
-            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-            Bundle bundle = ai.metaData;
-            return bundle.getString(key);
-        } catch (PackageManager.NameNotFoundException e) {
-            ThreadsLogger.e(TAG, "Failed to load self applicationInfo - that's really weird. ", e);
-            return null;
         }
     }
 
