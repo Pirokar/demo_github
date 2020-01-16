@@ -322,6 +322,9 @@ public final class ChatController {
                     final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                     if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
                         firstUnreadProviderId = unreadProviderIds.get(0); // для скролла к первому непрочитанному сообщению
+                        for (final String providerId : unreadProviderIds) {
+                            Config.instance.transport.sendMessageRead(providerId);
+                        }
                     } else {
                         firstUnreadProviderId = null;
                     }
