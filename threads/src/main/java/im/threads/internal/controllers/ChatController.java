@@ -768,8 +768,10 @@ public final class ChatController {
                                 isChatWorking = schedule.isChatWorking();
                                 updateInputEnable(isChatWorking || schedule.isSendDuringInactive());
                                 consultWriter.setSearchingConsult(false);
-                                fragment.removeSearching();
-                                fragment.setTitleStateDefault();
+                                if (fragment != null) {
+                                    fragment.removeSearching();
+                                    fragment.setTitleStateDefault();
+                                }
                             }
                             if (chatItem instanceof UserPhrase || chatItem instanceof ConsultPhrase) {
                                 checkAndLoadOgData(chatItem);
@@ -1047,6 +1049,7 @@ public final class ChatController {
 
     private void cleanAll() {
         ThreadsLogger.i(TAG, "cleanAll: ");
+        sendQueue.clear();
         databaseHolder.cleanDatabase();
         if (fragment != null) {
             fragment.cleanChat();
