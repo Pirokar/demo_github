@@ -342,7 +342,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
                                 if (content.getClientId() != null) {
                                     ChatUpdateProcessor.getInstance().postTyping(content.getClientId());
                                 }
-                            } else {
+                            } else if (ThreadsGateMessageParser.checkId(message, PrefUtils.getClientID())) {
                                 ChatItem chatItem = ThreadsGateMessageParser.format(message);
                                 if (chatItem != null) {
                                     ChatUpdateProcessor.getInstance().postNewMessage(chatItem);
