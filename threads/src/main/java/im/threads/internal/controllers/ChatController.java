@@ -322,6 +322,9 @@ public final class ChatController {
                     final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                     if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
                         firstUnreadProviderId = unreadProviderIds.get(0); // для скролла к первому непрочитанному сообщению
+                        for (final String providerId : unreadProviderIds) {
+                            Config.instance.transport.sendMessageRead(providerId);
+                        }
                     } else {
                         firstUnreadProviderId = null;
                     }
@@ -589,11 +592,7 @@ public final class ChatController {
                         final int count = Config.instance.historyLoadingCount;
                         final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        final List<ChatItem> dbItems = databaseHolder.getChatItems(0, count);
-                        if (dbItems.size() != serverItems.size() || !dbItems.containsAll(serverItems)) {
-                            ThreadsLogger.d(TAG, "Local and downloaded history are not same");
-                            databaseHolder.putMessagesSync(serverItems);
-                        }
+                        databaseHolder.putMessagesSync(serverItems);
                         if (fragment != null && isActive) {
                             final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                             if (unreadProviderIds != null) {

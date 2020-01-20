@@ -824,12 +824,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static class ChatMessagesOrderer {
 
         static void addAndOrder(@NonNull final List<ChatItem> listToInsertTo, @NonNull final List<ChatItem> listToAdd) {
-            if (listToInsertTo.containsAll(listToAdd)) {
-                return;
-            }
             for (int i = 0; i < listToAdd.size(); i++) {
-                if (!listToInsertTo.contains(listToAdd.get(i))) {
-                    addItemInternal(listToInsertTo, listToAdd.get(i));
+                ChatItem currentItem = listToAdd.get(i);
+                if (!listToInsertTo.contains(currentItem)) {
+                    addItemInternal(listToInsertTo, currentItem);
+                } else {
+                    listToInsertTo.set(listToInsertTo.indexOf(currentItem), currentItem);
                 }
             }
             updateOrder(listToInsertTo);

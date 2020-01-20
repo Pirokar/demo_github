@@ -1,7 +1,6 @@
 package im.threads.internal.transport.mfms_push;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.google.gson.JsonObject;
 import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
@@ -73,17 +72,8 @@ public final class MFMSPushMessageParser {
         return ids;
     }
 
-    /**
-     * метод проверяет наличие поля clientId во входящем сообщении
-     *
-     * @return true если нет поля clientId или оно совпадает с текущим clientId
-     */
     public static boolean checkId(final PushMessage pushMessage, final String currentClientId) {
-        final JsonObject fullMessage = getFullMessage(pushMessage);
-        return !TextUtils.isEmpty(currentClientId)
-                && fullMessage != null
-                && fullMessage.has(PushMessageAttributes.CLIENT_ID)
-                && currentClientId.equalsIgnoreCase(fullMessage.get(PushMessageAttributes.CLIENT_ID).getAsString());
+        return MessageParser.checkId(getFullMessage(pushMessage), currentClientId);
     }
 
     public static String getAppMarker(PushMessage pushMessage) {

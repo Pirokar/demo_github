@@ -107,7 +107,8 @@ public final class HistoryParser {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
                             }
-                            out.add(new UserPhrase(uuid, providerId, phraseText, quote, timeStamp, fileDescription, MessageState.STATE_WAS_READ));
+                            MessageState sentState = message.isRead() ? MessageState.STATE_WAS_READ : MessageState.STATE_SENT;
+                            out.add(new UserPhrase(uuid, providerId, phraseText, quote, timeStamp, fileDescription, sentState));
                         }
                 }
             }
