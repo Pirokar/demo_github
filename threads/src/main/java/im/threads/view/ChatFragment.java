@@ -703,12 +703,11 @@ public final class ChatFragment extends BaseFragment implements
             mQuote.setQuotedPhraseConsultId(consultPhrase.getConsultId());
         }
         mFileDescription = null;
-        if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.JPEG
-                || FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PNG) {
+        if (FileUtils.isImage(cp.getFileDescription())) {
             mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
                     cp.getFileDescription().getFilePath());
-        } else if (FileUtils.getExtensionFromFileDescription(cp.getFileDescription()) == FileUtils.PDF) {
+        } else if (FileUtils.isDoc(cp.getFileDescription())) {
             String fileName = "";
             try {
                 fileName = cp.getFileDescription().getIncomingName() == null

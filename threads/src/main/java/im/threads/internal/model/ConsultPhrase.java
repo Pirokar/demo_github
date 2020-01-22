@@ -9,7 +9,7 @@ import im.threads.internal.utils.FileUtils;
 /**
  * сообщение оператора
  */
-public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase, IsOnlyImage {
+public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase {
 
     private final String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
@@ -108,16 +108,14 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         return uuid;
     }
 
-    public boolean hasFile() {
-        return getFileDescription() != null ||
-                (getQuote() != null && getQuote().getFileDescription() != null);
-    }
-
-    @Override
     public boolean isOnlyImage() {
         return TextUtils.isEmpty(phrase)
                 && quote == null
                 && FileUtils.isImage(fileDescription);
+    }
+
+    public boolean isOnlyDoc() {
+        return TextUtils.isEmpty(phrase) && FileUtils.isDoc(fileDescription);
     }
 
     @Override
