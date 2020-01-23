@@ -582,38 +582,23 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (o instanceof ConsultPhrase) {
             final ConsultPhrase cp = (ConsultPhrase) o;
-            final FileDescription fileDescription = cp.getFileDescription();
-            if (TextUtils.isEmpty(cp.getPhrase())
-                    && (FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.JPEG
-                    || FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PNG)) {
+            if (cp.isOnlyImage()) {
                 return TYPE_IMAGE_FROM_CONSULT;
-            } else if (TextUtils.isEmpty(cp.getPhrase())
-                    && (FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PDF
-                    || FileUtils.getExtensionFromFileDescription(fileDescription) == FileUtils.PDF)) {
-                return TYPE_FILE_FROM_CONSULT;
-            } else {
-                return TYPE_CONSULT_PHRASE;
             }
+            if (cp.isOnlyDoc()) {
+                return TYPE_FILE_FROM_CONSULT;
+            }
+            return TYPE_CONSULT_PHRASE;
         }
         if (o instanceof UserPhrase) {
             final UserPhrase up = (UserPhrase) o;
-            if (up.getFileDescription() == null) {
-                return TYPE_USER_PHRASE;
-            }
             if (up.isOnlyImage()) {
                 return TYPE_IMAGE_FROM_USER;
             }
-            int extension = -1;
-            if (up.getFileDescription().getFilePath() != null) {
-                extension = FileUtils.getExtensionFromPath(up.getFileDescription().getFilePath());
-            } else if (up.getFileDescription().getIncomingName() != null) {
-                extension = FileUtils.getExtensionFromPath(up.getFileDescription().getIncomingName());
-            }
-            if ((extension == FileUtils.PDF || extension == FileUtils.OTHER_DOC_FORMATS) && TextUtils.isEmpty(up.getPhrase())) {
+            if (up.isOnlyDoc()) {
                 return TYPE_FILE_FROM_USER;
-            } else {
-                return TYPE_USER_PHRASE;
             }
+            return TYPE_USER_PHRASE;
         }
         if (o instanceof Survey) {
             final Survey survey = (Survey) o;

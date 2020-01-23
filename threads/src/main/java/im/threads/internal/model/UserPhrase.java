@@ -8,7 +8,7 @@ import java.util.UUID;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
 
-public final class UserPhrase implements ChatPhrase, IsOnlyImage {
+public final class UserPhrase implements ChatPhrase {
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
     private final String phrase;
@@ -49,12 +49,6 @@ public final class UserPhrase implements ChatPhrase, IsOnlyImage {
 
     public void setCopy(boolean copy) {
         isCopy = copy;
-    }
-
-    public boolean hasFile() {
-        return fileDescription != null
-                || (mQuote != null
-                && mQuote.getFileDescription() != null);
     }
 
     @Override
@@ -165,6 +159,16 @@ public final class UserPhrase implements ChatPhrase, IsOnlyImage {
         return TextUtils.isEmpty(phrase)
                 && mQuote == null
                 && FileUtils.isImage(fileDescription);
+    }
+
+    public boolean isOnlyDoc() {
+        return TextUtils.isEmpty(phrase) && FileUtils.isDoc(fileDescription);
+    }
+
+    public boolean hasFile() {
+        return fileDescription != null
+                || (mQuote != null
+                && mQuote.getFileDescription() != null);
     }
 
     @Override

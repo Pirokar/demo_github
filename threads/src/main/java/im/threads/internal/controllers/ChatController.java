@@ -278,17 +278,12 @@ public final class ChatController {
 
                 if (fileDescription.getFilePath() == null) {
                     DownloadService.startDownloadFD(activity, fileDescription);
-                } else if (FileUtils.isImage(fileDescription) && fileDescription.getFilePath() != null) {
+                } else if (FileUtils.isImage(fileDescription)) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
-
-                } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
+                } else if (FileUtils.isDoc(fileDescription)) {
                     final Intent target = new Intent(Intent.ACTION_VIEW);
-
                     final File file = new File(fileDescription.getFilePath());
-
-                    target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
-                            "application/pdf"
-                    );
+                    target.setDataAndType(FileProviderHelper.getUriForFile(activity, file), FileUtils.getMimeType(file));
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     try {
                         activity.startActivity(target);

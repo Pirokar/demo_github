@@ -46,15 +46,7 @@ public final class FilePoster {
                 }
                 ServiceGenerator.setUrl(UPLOAD_FILE_URL);
                 ThreadsApi threadsApi = ServiceGenerator.getThreadsApi();
-                String path = file.getPath();
-                String mimeType = null;
-                if (path.contains(".")) {
-                    String extension = file.getPath().substring(file.getPath().lastIndexOf(".") + 1);
-                    mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-                }
-                if (mimeType == null) {
-                    mimeType = "*/*";
-                }
+                String mimeType = FileUtils.getMimeType(file);
                 RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
                 MultipartBody.Part part = MultipartBody.Part.createFormData("file", URLEncoder.encode(file.getName(), "utf-8"), requestFile);
                 Call<FileUploadResponse> call = threadsApi.upload(part, token);
