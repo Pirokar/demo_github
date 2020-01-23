@@ -1,6 +1,5 @@
 package im.threads.push;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.RemoteMessage;
 import com.mfms.android.push_lite.PushFcmIntentService;
 
@@ -18,7 +17,7 @@ public class ThreadsPushFcmIntentService extends PushFcmIntentService {
         if (Config.instance.transport.getType() == ConfigBuilder.TransportType.MFMS_PUSH) {
             super.onNewToken(token);
         }
-        PrefUtils.setFcmToken(FirebaseInstanceId.getInstance().getToken());
+        PrefUtils.setFcmToken(token);
     }
 
     @Override
