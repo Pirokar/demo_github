@@ -149,23 +149,20 @@ android {
 dependencies {
     def final androidXVersion = "1.0.0"
 
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':threads')
 
     implementation 'com.android.support:multidex:1.0.3'
 
-    implementation "androidx.appcompat:appcompat:$androidXVersion"
-    implementation "com.google.android.material:material:$androidXVersion"
     implementation "androidx.legacy:legacy-support-v4:$androidXVersion"
-    implementation "androidx.vectordrawable:vectordrawable:$androidXVersion"
-    implementation "androidx.media:media:$androidXVersion"
+    implementation "com.google.android.material:material:$androidXVersion"
+    implementation "androidx.preference:preference:$androidXVersion"
 
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation "io.reactivex.rxjava2:rxjava:2.2.11"
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
