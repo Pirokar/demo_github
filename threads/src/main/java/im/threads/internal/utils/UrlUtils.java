@@ -3,6 +3,7 @@ package im.threads.internal.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Patterns;
 
@@ -12,7 +13,7 @@ import java.util.regex.Matcher;
 
 public final class UrlUtils {
 
-    public static List<String> extractLinks(String text) {
+    public static List<String> extractLinks(@NonNull String text) {
         List<String> links = new ArrayList<>();
         Matcher m = Patterns.WEB_URL.matcher(text);
         while (m.find()) {
