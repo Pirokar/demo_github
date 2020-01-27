@@ -112,10 +112,10 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     }
 
     @Override
-    public void sendEnvironmentMessage(String clientId) {
+    public void sendEnvironmentMessage() {
         final JsonObject content = OutgoingMessageCreator.createEnvironmentMessage(
                 PrefUtils.getUserName(),
-                clientId,
+                PrefUtils.getClientID(),
                 PrefUtils.getClientIDEncrypted(),
                 PrefUtils.getData(),
                 Config.instance.context
@@ -284,7 +284,6 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
             ThreadsLogger.i(TAG, "OnOpen : " + response);
-            sendEnvironmentMessage(PrefUtils.getClientID());
         }
 
         @Override
@@ -298,6 +297,8 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
                 if (action.equals(Action.REGISTER_DEVICE)) {
                     RegisterDeviceData data = Config.instance.gson.fromJson(response.getData().toString(), RegisterDeviceData.class);
                     PrefUtils.setDeviceAddress(data.getDeviceAddress());
+                    sendInitChatMessage();
+                    sendEnvironmentMessage();
                 }
                 if (action.equals(Action.SEND_MESSAGE)) {
                     SendMessageData data = Config.instance.gson.fromJson(response.getData().toString(), SendMessageData.class);

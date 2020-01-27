@@ -20,7 +20,7 @@ public interface Transport {
 
     void sendInitChatMessage();
 
-    void sendEnvironmentMessage(String clientId);
+    void sendEnvironmentMessage();
 
     void sendMessageRead(String messageId);
 
