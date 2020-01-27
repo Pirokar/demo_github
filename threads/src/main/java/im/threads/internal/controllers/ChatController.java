@@ -142,15 +142,14 @@ public final class ChatController {
         }
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
-        ThreadsLogger.i(TAG, "getChatStyle newClientId = " + newClientId + ", oldClientClientId = " + oldClientId);
+        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
         if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
             // clientId has not changed
             PrefUtils.setNewClientId("");
         } else {
-            final String clientId = newClientId;
-            PrefUtils.setClientId(clientId);
+            PrefUtils.setClientId(newClientId);
             instance.subscribe(
-                    Completable.fromAction(() -> instance.onClientIdChanged(clientId))
+                    Completable.fromAction(() -> instance.onClientIdChanged())
                             .subscribeOn(Schedulers.io())
                             .subscribe(
                                     () -> {
@@ -189,6 +188,15 @@ public final class ChatController {
                 })
         );
         subscribeToChatEvents();
+        subscribe(
+                Completable.fromAction(PrefUtils::migrateTransportIfNeeded)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage()))
+        );
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
@@ -332,8 +340,6 @@ public final class ChatController {
             }
         }
         if (isActive) {
-            Config.instance.transport.sendInitChatMessage();
-            Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID());
             subscribe(
                     Observable.timer(1500, TimeUnit.MILLISECONDS)
                             .observeOn(AndroidSchedulers.mainThread())
@@ -547,14 +553,12 @@ public final class ChatController {
         }
     }
 
-    private void onClientIdChanged(final String finalClientId) throws Exception {
+    private void onClientIdChanged() throws Exception {
         cleanAll();
         if (fragment != null) {
             fragment.removeSearching();
         }
         consultWriter.setCurrentConsultLeft();
-        Config.instance.transport.sendInitChatMessage();
-        Config.instance.transport.sendEnvironmentMessage(finalClientId);
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
         databaseHolder.putMessagesSync(serverItems);
@@ -1146,7 +1150,7 @@ public final class ChatController {
                         PrefUtils.setClientId(newClientId);
                         PrefUtils.setClientIdWasSet(true);
                         Config.instance.transport.sendInitChatMessage();
-                        Config.instance.transport.sendEnvironmentMessage(newClientId);
+                        Config.instance.transport.sendEnvironmentMessage();
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                         databaseHolder.putMessagesSync(serverItems);

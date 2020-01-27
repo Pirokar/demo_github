@@ -4,13 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
+import android.support.v4.util.ObjectsCompat;
 import android.support.v7.preference.PreferenceManager;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import im.threads.ChatStyle;
+import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 
 public final class PrefUtils {
@@ -29,6 +34,7 @@ public final class PrefUtils {
     private static final String APP_MARKER_KEY = "APP_MARKER";
     private static final String FCM_TOKEN = "FCM_TOKEN";
     private static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
+    private static final String TRANSPORT_TYPE = "TRANSPORT_TYPE";
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String MIGRATED = "MIGRATED";
 
@@ -235,6 +241,27 @@ public final class PrefUtils {
                     .putBoolean(MIGRATED, true)
                     .commit();
         }
+    }
+
+    @WorkerThread
+    public static void migrateTransportIfNeeded() throws IOException {
+        if (!ObjectsCompat.equals(getTransportType(), Config.instance.transport.getType().toString())) {
+            setTransportType(Config.instance.transport.getType().toString());
+            FirebaseInstanceId.getInstance().deleteInstanceId();
+            setFcmToken(null);
+        }
+    }
+
+    private static void setTransportType(String transportType) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(TRANSPORT_TYPE, transportType)
+                .commit();
+    }
+
+    private static String getTransportType() {
+        String transportType = getDefaultSharedPreferences().getString(TRANSPORT_TYPE, "");
+        return transportType.length() > 0 ? transportType : null;
     }
 
     private static SharedPreferences getDefaultSharedPreferences() {
