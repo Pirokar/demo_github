@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import androidx.annotation.NonNull;
+
 public final class UrlUtils {
 
-    public static List<String> extractLinks(String text) {
+    public static List<String> extractLinks(@NonNull String text) {
         List<String> links = new ArrayList<>();
         Matcher m = Patterns.WEB_URL.matcher(text);
         while (m.find()) {

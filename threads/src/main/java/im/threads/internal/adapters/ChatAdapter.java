@@ -166,7 +166,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
             }
             ((ConsultPhraseHolder) holder)
-                    .onBind(consultPhrase,
+                    .onBind(
+                            consultPhrase,
                             consultPhrase.getPhrase(),
                             consultPhrase.getAvatarPath(),
                             consultPhrase.getTimeStamp(),
@@ -187,7 +188,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 return true;
                             },
                             v -> mAdapterInterface.onConsultAvatarClick(consultPhrase.getConsultId()),
-                            v -> mAdapterInterface.onOpenGraphClicked(consultPhrase.ogUrl, holder.getAdapterPosition()),
+                            () -> notifyItemChangedOnUi(consultPhrase),
                             consultPhrase.isChosen()
                     );
         }
@@ -196,7 +197,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (userPhrase.getFileDescription() != null && userPhrase.getFileDescription().getFilePath() == null) {
                 mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
             }
-            ((UserPhraseViewHolder) holder).onBind(userPhrase,
+            ((UserPhraseViewHolder) holder).onBind(
+                    userPhrase,
                     userPhrase.getPhrase(),
                     userPhrase.getTimeStamp(),
                     userPhrase.getSentState(),
@@ -215,7 +217,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition());
                         return true;
                     },
-                    v -> mAdapterInterface.onOpenGraphClicked(userPhrase.ogUrl, holder.getAdapterPosition()),
+                    () -> notifyItemChangedOnUi(userPhrase),
                     userPhrase.isChosen()
             );
         }
@@ -1039,7 +1041,5 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onRatingClick(@NonNull Survey survey, int rating);
 
         void onResolveThreadClick(boolean approveResolve);
-
-        void onOpenGraphClicked(String ogUrl, int adapterPosition);
     }
 }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.DrawableRes;
@@ -22,19 +23,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
-import im.threads.internal.utils.ThreadsLogger;
-import im.threads.ChatStyle;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Quote;
 import im.threads.internal.opengraph.OGData;
+import im.threads.internal.opengraph.OGDataProvider;
 import im.threads.internal.picasso_url_connection_only.Callback;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
+import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
 
@@ -61,12 +64,12 @@ public final class ConsultPhraseHolder extends BaseHolder {
     private ChatStyle style;
     private View mBubble;
     private View mPhraseFrame;
-    private ViewGroup mOgDataLayout;
-    private ImageView mOgImage;
-    private TextView mOgTitle;
-    private TextView mOgDescription;
-    private TextView mOgUrl;
-    private TextView mOgTimestamp;
+    private ViewGroup ogDataLayout;
+    private ImageView ogImage;
+    private TextView ogTitle;
+    private TextView ogDescription;
+    private TextView ogUrl;
+    private TextView ogTimestamp;
     @DrawableRes
     private int defIcon;
 
@@ -84,12 +87,12 @@ public final class ConsultPhraseHolder extends BaseHolder {
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mPhraseFrame = itemView.findViewById(R.id.phrase_frame);
-        mOgDataLayout = itemView.findViewById(R.id.og_data_layout);
-        mOgImage = itemView.findViewById(R.id.og_image);
-        mOgTitle = itemView.findViewById(R.id.og_title);
-        mOgDescription = itemView.findViewById(R.id.og_description);
-        mOgUrl = itemView.findViewById(R.id.og_url);
-        mOgTimestamp = itemView.findViewById(R.id.og_timestamp);
+        ogDataLayout = itemView.findViewById(R.id.og_data_layout);
+        ogImage = itemView.findViewById(R.id.og_image);
+        ogTitle = itemView.findViewById(R.id.og_title);
+        ogDescription = itemView.findViewById(R.id.og_description);
+        ogUrl = itemView.findViewById(R.id.og_url);
+        ogTimestamp = itemView.findViewById(R.id.og_timestamp);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
             quoteSdf = new SimpleDateFormat("dd MMMM yyyy", new RussianFormatSymbols());
         } else {
@@ -106,7 +109,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 rightTextFileStamp}, style.incomingMessageTextColor);
 
         mTimeStampTextView.setTextColor(getColorInt(style.incomingMessageTimeColor));
-        mOgTimestamp.setTextColor(getColorInt(style.incomingMessageTimeColor));
+        ogTimestamp.setTextColor(getColorInt(style.incomingMessageTimeColor));
 
         mPhraseTextView.setLinkTextColor(getColorInt(style.incomingMessageLinkColor));
 
@@ -122,41 +125,50 @@ public final class ConsultPhraseHolder extends BaseHolder {
         mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
     }
 
-
-    public void onBind(ConsultPhrase message, String phrase
-            , String avatarPath
-            , long timeStamp
-            , boolean isAvatarVisible
-            , Quote quote
-            , FileDescription fileDescription
-            , final View.OnClickListener imageClickListener
-            , @Nullable View.OnClickListener fileClickListener
-            , View.OnLongClickListener onRowLongClickListener
-            , View.OnClickListener onAvatarClickListener
-            , View.OnClickListener onOgClickListener, boolean isChosen) {
-
+    public void onBind(ConsultPhrase consultPhrase,
+                       String phrase,
+                       String avatarPath,
+                       long timeStamp,
+                       boolean isAvatarVisible,
+                       Quote quote,
+                       FileDescription fileDescription,
+                       final View.OnClickListener imageClickListener,
+                       @Nullable View.OnClickListener fileClickListener,
+                       View.OnLongClickListener onRowLongClickListener,
+                       View.OnClickListener onAvatarClickListener,
+                       Runnable onItemChangedListener,
+                       boolean isChosen) {
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
-
         mConsultAvatar.setImageBitmap(null);
         if (phrase == null) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(phrase);
+            List<String> urls = UrlUtils.extractLinks(phrase);
+            if (!urls.isEmpty()) {
+                final String url = urls.get(0);
+                if (consultPhrase.ogData == null) {
+                    loadOGData(onItemChangedListener, consultPhrase, url);
+                } else {
+                    if (!consultPhrase.ogData.areTextsEmpty()) {
+                        bindOGData(consultPhrase.ogData, url);
+                        showOGView();
+                    } else {
+                        hideOGView();
+                    }
+                }
+                ViewUtils.setClickListener(ogDataLayout, v -> {
+                    UrlUtils.openUrl(itemView.getContext(), url);
+                });
+            } else {
+                hideOGView();
+            }
         }
-
-        OGData ogData = message.ogData;
-        if (ogData == null || ogData.isEmpty()) {
-            mOgDataLayout.setVisibility(View.GONE);
-            mTimeStampTextView.setVisibility(View.VISIBLE);
-        } else {
-            bindOGData(ogData, message.ogUrl, onOgClickListener);
-        }
-
         mImage.setVisibility(View.GONE);
         String timeText = timeStampSdf.format(new Date(timeStamp));
         mTimeStampTextView.setText(timeText);
-        mOgTimestamp.setText(timeText);
+        ogTimestamp.setText(timeText);
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
@@ -275,71 +287,6 @@ public final class ConsultPhraseHolder extends BaseHolder {
         mFilterViewSecond.setVisibility(isChosen && isAvatarVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private void bindOGData(@NonNull final OGData ogData, String ogUrl, final View.OnClickListener onOgClickListener) {
-
-        if (ogData.areTextsEmpty()) {
-            mOgDataLayout.setVisibility(View.GONE);
-            mTimeStampTextView.setVisibility(View.VISIBLE);
-        } else {
-            mOgDataLayout.setVisibility(View.VISIBLE);
-            mTimeStampTextView.setVisibility(View.GONE);
-
-            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
-
-            if (TextUtils.isEmpty(ogData.title)) {
-                mOgTitle.setVisibility(View.GONE);
-            } else {
-                mOgTitle.setText(ogData.title);
-                mOgTitle.setTypeface(mOgTitle.getTypeface(), Typeface.BOLD);
-            }
-
-            if (TextUtils.isEmpty(ogData.description)) {
-                mOgDescription.setVisibility(View.GONE);
-            } else {
-                mOgDescription.setText(ogData.description);
-            }
-
-            if (TextUtils.isEmpty(ogData.url)) {
-                mOgUrl.setText(ogUrl);
-            } else {
-                mOgUrl.setText(ogData.url);
-            }
-        }
-
-        if (TextUtils.isEmpty(ogData.image)) {
-            mOgImage.setVisibility(View.GONE);
-        } else {
-            Picasso.with(itemView.getContext())
-                    .load(ogData.image)
-                    .fetch(new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            mOgDataLayout.setVisibility(View.VISIBLE);
-                            mTimeStampTextView.setVisibility(View.GONE);
-                            mOgImage.setVisibility(View.VISIBLE);
-                            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
-
-                            Picasso.with(itemView.getContext())
-                                    .load(ogData.image)
-                                    .error(style.imagePlaceholder)
-                                    .fit()
-                                    .centerCrop()
-                                    .into(mOgImage);
-                        }
-
-                        @Override
-                        public void onError() {
-                            ThreadsLogger.d(TAG, "Could not load OpenGraph image");
-                            mOgImage.setVisibility(View.GONE);
-                            if (TextUtils.isEmpty(ogData.title) && TextUtils.isEmpty(ogData.description) && TextUtils.isEmpty(ogData.url)) {
-                                mOgDataLayout.setVisibility(View.GONE);
-                                mTimeStampTextView.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
-        }
-    }
-
     private void showDefIcon() {
         Picasso.with(itemView.getContext())
                 .load(defIcon)
@@ -348,5 +295,75 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 .fit()
                 .transform(new CircleTransformation())
                 .into(mConsultAvatar);
+    }
+
+    private void loadOGData(Runnable onItemChangedListener, final ConsultPhrase chatItem, final String url) {
+        OGDataProvider.getOGData(url, new im.threads.internal.utils.Callback<OGData, Throwable>() {
+            @Override
+            public void onSuccess(OGData ogData) {
+                ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
+                if (ogData != null && !ogData.isEmpty()) {
+                    chatItem.ogData = ogData;
+                    chatItem.ogUrl = url;
+                    onItemChangedListener.run();
+                }
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
+            }
+        });
+    }
+
+    private void bindOGData(@NonNull final OGData ogData, String url) {
+        if (!TextUtils.isEmpty(ogData.title)) {
+            ogTitle.setVisibility(View.VISIBLE);
+            ogTitle.setText(ogData.title);
+            ogTitle.setTypeface(ogTitle.getTypeface(), Typeface.BOLD);
+        } else {
+            ogTitle.setVisibility(View.GONE);
+        }
+        if (!TextUtils.isEmpty(ogData.description)) {
+            ogDescription.setVisibility(View.VISIBLE);
+            ogDescription.setText(ogData.description);
+        } else {
+            ogDescription.setVisibility(View.GONE);
+        }
+        ogUrl.setText(!TextUtils.isEmpty(ogData.url) ? ogData.url : url);
+        if (TextUtils.isEmpty(ogData.image)) {
+            ogImage.setVisibility(View.GONE);
+        } else {
+            Picasso.with(itemView.getContext())
+                    .load(ogData.image)
+                    .fetch(new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            ogImage.setVisibility(View.VISIBLE);
+                            Picasso.with(itemView.getContext())
+                                    .load(ogData.image)
+                                    .error(style.imagePlaceholder)
+                                    .fit()
+                                    .centerInside()
+                                    .into(ogImage);
+                        }
+
+                        @Override
+                        public void onError() {
+                            ogImage.setVisibility(View.GONE);
+                            ThreadsLogger.d(TAG, "Could not load OpenGraph image");
+                        }
+                    });
+        }
+    }
+
+    private void showOGView() {
+        ogDataLayout.setVisibility(View.VISIBLE);
+        mTimeStampTextView.setVisibility(View.GONE);
+    }
+
+    private void hideOGView() {
+        ogDataLayout.setVisibility(View.GONE);
+        mTimeStampTextView.setVisibility(View.VISIBLE);
     }
 }

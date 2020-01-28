@@ -47,8 +47,6 @@ import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.opengraph.OGData;
-import im.threads.internal.opengraph.OGDataProvider;
 import im.threads.internal.services.DownloadService;
 import im.threads.internal.services.NotificationService;
 import im.threads.internal.transport.HistoryLoader;
@@ -63,7 +61,6 @@ import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
-import im.threads.internal.utils.UrlUtils;
 import im.threads.view.ChatFragment;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -235,7 +232,6 @@ public final class ChatController {
             consultWriter.setSearchingConsult(true);
         }
         queueMessageSending(um);
-        checkAndLoadOgData(um);
     }
 
     public void fancySearch(final String query, final boolean forward, final CallbackNoError<List<ChatItem>> callback) {
@@ -396,12 +392,6 @@ public final class ChatController {
         }
     }
 
-    public void checkAndLoadOgData(List<ChatItem> chatItems) {
-        for (ChatItem chatItem : chatItems) {
-            checkAndLoadOgData(chatItem);
-        }
-    }
-
     public void onConsultChoose(final Activity activity, final String consultId) {
         if (consultId == null) {
             ThreadsLogger.w(TAG, "Can't show consult info: consultId == null");
@@ -468,7 +458,6 @@ public final class ChatController {
                         .subscribe(
                                 items -> {
                                     if (fragment != null) {
-                                        checkAndLoadOgData(items);
                                         fragment.addChatItems(items);
                                         loadHistory();
                                     }
@@ -570,7 +559,6 @@ public final class ChatController {
                 fragment.setStateConsultConnected(info);
             }
         }
-        checkAndLoadOgData(phrases);
         PrefUtils.setClientIdWasSet(true);
     }
 
@@ -617,7 +605,6 @@ public final class ChatController {
                                         final List<ChatItem> items = setLastAvatars(databaseHolder.getChatItems(0, serverCount));
                                         if (fragment != null) {
                                             fragment.addChatItems(items);
-                                            checkAndLoadOgData(items);
                                             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                                             if (info != null) {
                                                 fragment.setStateConsultConnected(info);
@@ -775,9 +762,6 @@ public final class ChatController {
                                     fragment.removeSearching();
                                     fragment.setTitleStateDefault();
                                 }
-                            }
-                            if (chatItem instanceof UserPhrase || chatItem instanceof ConsultPhrase) {
-                                checkAndLoadOgData(chatItem);
                             }
                             if (chatItem instanceof ConsultConnectionMessage) {
                                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
@@ -1006,7 +990,6 @@ public final class ChatController {
             final ChatItem ci = setLastAvatars(Collections.singletonList(cm)).get(0);
             if (!(ci instanceof ConsultConnectionMessage) || ((ConsultConnectionMessage) ci).isDisplayMessage()) {
                 fragment.addChatItem(ci);
-                checkAndLoadOgData(ci);
             }
             if (ci instanceof ConsultChatPhrase) {
                 fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath(), ((ConsultChatPhrase) ci).getConsultId());
@@ -1085,55 +1068,6 @@ public final class ChatController {
         return up;
     }
 
-    private void checkAndLoadOgData(ChatItem chatItem) {
-        String phrase = null;
-        if (chatItem instanceof UserPhrase) {
-            phrase = ((UserPhrase) chatItem).getPhrase();
-        } else if (chatItem instanceof ConsultPhrase) {
-            phrase = ((ConsultPhrase) chatItem).getPhrase();
-        }
-        if (phrase != null) {
-            List<String> urls = UrlUtils.extractLinks(phrase);
-            if (!urls.isEmpty()) {
-                loadOgData(chatItem, urls);
-            }
-        }
-    }
-
-    private void loadOgData(final ChatItem chatItem, final List<String> urls) {
-        final String url = urls.get(0);
-        OGDataProvider.getOGData(url, new Callback<OGData, Throwable>() {
-            @Override
-            public void onSuccess(OGData ogData) {
-                ThreadsLogger.d(TAG, "OGData for url: " + url
-                        + "\n received: " + ogData);
-                if (ogData != null && !ogData.isEmpty()) {
-                    if (chatItem instanceof UserPhrase) {
-                        UserPhrase message = (UserPhrase) chatItem;
-                        message.ogData = ogData;
-                        message.ogUrl = url;
-                    } else if (chatItem instanceof ConsultPhrase) {
-                        ConsultPhrase message = (ConsultPhrase) chatItem;
-                        message.ogData = ogData;
-                        message.ogUrl = url;
-                    }
-                    updateChatItem(chatItem);
-                }
-            }
-
-            @Override
-            public void onError(Throwable error) {
-                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
-            }
-        });
-    }
-
-    private void updateChatItem(ChatItem chatItem) {
-        if (fragment != null) {
-            fragment.updateChatItem(chatItem, false);
-        }
-    }
-
     private void updateInputEnable(final boolean enabled) {
         if (fragment != null) {
             fragment.updateInputEnable(enabled);
@@ -1157,7 +1091,6 @@ public final class ChatController {
                         if (fragment != null) {
                             List<ChatItem> itemsWithLastAvatars = setLastAvatars(serverItems);
                             fragment.addChatItems(itemsWithLastAvatars);
-                            checkAndLoadOgData(itemsWithLastAvatars);
                             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                             if (info != null) {
                                 fragment.setStateConsultConnected(info);
