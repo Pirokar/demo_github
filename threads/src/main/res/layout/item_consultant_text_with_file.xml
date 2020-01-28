@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <View
         android:id="@+id/filter"
@@ -11,14 +11,14 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/bubble"
         android:layout_alignParentTop="true"
-        android:background="@color/threads_chat_highlighting"/>
+        android:background="@color/threads_chat_highlighting" />
 
     <View
         android:id="@+id/filter_bottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/filter_offset_size"
         android:layout_below="@+id/bubble"
-        android:background="@color/threads_chat_highlighting"/>
+        android:background="@color/threads_chat_highlighting" />
 
     <ImageView
         android:id="@+id/consult_avatar"
@@ -27,7 +27,7 @@
         android:layout_below="@+id/bubble"
         android:layout_marginLeft="@dimen/margin_half"
         android:layout_marginTop="@dimen/consultant_photo_offset_size"
-        tools:src="@drawable/threads_operator_avatar_placeholder"/>
+        tools:src="@drawable/threads_operator_avatar_placeholder" />
 
     <LinearLayout
         android:id="@+id/bubble"
@@ -42,7 +42,7 @@
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="240dp"
-            android:minWidth="240dp"/>
+            android:minWidth="240dp" />
 
         <LinearLayout
             android:id="@+id/right_text_row"
@@ -59,7 +59,7 @@
                 android:background="@color/threads_chat_background"
                 app:completed_drawable="@drawable/file_image_consult"
                 app:in_progress_label="@drawable/ic_clear_blue_consult_36dp"
-                app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp"/>
+                app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp" />
 
             <View
                 android:id="@+id/delimeter"
@@ -67,7 +67,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/margin_half"
                 android:layout_marginTop="@dimen/margin_half"
-                android:background="@color/threads_chat_icons_tint"/>
+                android:background="@color/threads_chat_icons_tint" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,7 +83,7 @@
                     android:paddingRight="80dp"
                     android:text="Иван Петров"
                     android:textColor="@color/threads_incoming_message_text"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <im.threads.internal.widget.text_view.QuoteMessageTextView
                     android:id="@+id/file_specs"
@@ -92,7 +92,7 @@
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf"
-                    android:textColor="@color/threads_incoming_message_text"/>
+                    android:textColor="@color/threads_incoming_message_text" />
 
                 <im.threads.internal.widget.text_view.QuoteTimeTextView
                     android:id="@+id/send_at"
@@ -102,7 +102,7 @@
                     android:layout_marginTop="2dp"
                     android:text="отправлено 21 апр 2016"
                     android:textColor="@color/threads_incoming_message_text"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -125,7 +125,7 @@
                 android:textColor="@color/threads_incoming_message_text"
                 android:textColorLink="@color/threads_incoming_message_link"
                 android:textSize="16sp"
-                app:last_line_padding_symbols="10"/>
+                app:last_line_padding_symbols="10" />
 
             <im.threads.internal.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
@@ -134,14 +134,15 @@
                 android:layout_gravity="bottom|right"
                 android:paddingRight="4dp"
                 android:text="10:19"
-                android:textColor="@color/threads_operator_message_timestamp"/>
+                android:textColor="@color/threads_operator_message_timestamp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:id="@+id/og_data_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -152,7 +153,7 @@
                     android:id="@+id/og_image"
                     android:layout_width="match_parent"
                     android:layout_height="125dp"
-                    android:minWidth="240dp"/>
+                    android:minWidth="240dp" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/og_title"
@@ -165,7 +166,7 @@
                     android:textColor="@color/threads_incoming_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="My Awesome Site Title"/>
+                    tools:text="My Awesome Site Title" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/og_description"
@@ -176,7 +177,7 @@
                     android:maxLines="2"
                     android:textColor="@color/threads_incoming_message_text"
                     android:textSize="16sp"
-                    tools:text="My Awesome Site Descripton. Here I would write all awesome info"/>
+                    tools:text="My Awesome Site Descripton. Here I would write all awesome info" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/og_url"
@@ -190,7 +191,7 @@
                     android:textColor="@color/threads_incoming_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="http://my.awesome.site.com"/>
+                    tools:text="http://my.awesome.site.com" />
             </LinearLayout>
 
             <im.threads.internal.widget.text_view.BubbleTimeTextView
@@ -200,7 +201,7 @@
                 android:layout_gravity="bottom|right"
                 android:paddingRight="4dp"
                 android:text="10:19"
-                android:textColor="@color/threads_operator_message_timestamp"/>
+                android:textColor="@color/threads_operator_message_timestamp" />
         </FrameLayout>
     </LinearLayout>
 </RelativeLayout>
