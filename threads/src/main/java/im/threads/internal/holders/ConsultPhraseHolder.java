@@ -41,8 +41,6 @@ import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
 
-import static android.text.TextUtils.isEmpty;
-
 /**
  * layout/item_consultant_text_with_file.xml
  */
@@ -175,7 +173,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
             rightTextHeader.setText(quote.getPhraseOwnerTitle());
             mRightTextDescr.setText(quote.getText());
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
-            if (isEmpty(quote.getPhraseOwnerTitle())) {
+            if (TextUtils.isEmpty(quote.getPhraseOwnerTitle())) {
                 rightTextHeader.setVisibility(View.GONE);
             } else {
                 rightTextHeader.setVisibility(View.VISIBLE);
@@ -215,7 +213,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                     mCircularProgressButton.setOnClickListener(fileClickListener);
                 }
                 rightTextHeader.setText(fileDescription.getFrom() == null ? "" : fileDescription.getFrom());
-                if (!isEmpty(rightTextHeader.getText())) {
+                if (!TextUtils.isEmpty(rightTextHeader.getText())) {
                     rightTextHeader.setVisibility(View.VISIBLE);
                 } else {
                     rightTextHeader.setVisibility(View.GONE);
@@ -246,7 +244,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
 
             mConsultAvatar.setVisibility(View.VISIBLE);
             mConsultAvatar.setOnClickListener(onAvatarClickListener);
-            if (!isEmpty(avatarPath)) {
+            if (!TextUtils.isEmpty(avatarPath)) {
                 avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
                 Picasso
                         .with(itemView.getContext())

@@ -515,7 +515,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public int getUnreadCount() {
-        return getUnreadCount(list, getLastUnreadStamp(list));
+        return getUnreadCount(list);
     }
 
     public boolean hasSchedule() {
@@ -787,12 +787,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyItemRemoved(list.indexOf(chatItem));
     }
 
-    private static int getUnreadCount(final List<ChatItem> listToInsertTo, final long lastUnreadStamp) {
+    private static int getUnreadCount(final List<ChatItem> list) {
         int counter = 0;
-        for (final ChatItem ci : listToInsertTo) {
+        for (final ChatItem ci : list) {
             if (ci instanceof ConsultPhrase) {
                 final ConsultPhrase cp = ((ConsultPhrase) ci);
-                if (cp.getTimeStamp() > (lastUnreadStamp - 1)) {
+                if (!cp.isRead()) {
                     counter++;
                 }
             }
@@ -898,7 +898,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             if (hasUnread) {
                 final long lastUnreadStamp = getLastUnreadStamp(items);
-                final int counter = getUnreadCount(items, lastUnreadStamp);
+                final int counter = getUnreadCount(items);
                 removeUnreadMessagesTitle(items);
                 items.add(new UnreadMessages(lastUnreadStamp - 1, counter));
             }
