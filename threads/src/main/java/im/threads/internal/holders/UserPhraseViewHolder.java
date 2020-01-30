@@ -20,6 +20,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
@@ -31,10 +32,12 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.opengraph.OGData;
+import im.threads.internal.opengraph.OGDataProvider;
 import im.threads.internal.picasso_url_connection_only.Callback;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
 
@@ -58,12 +61,12 @@ public final class UserPhraseViewHolder extends BaseHolder {
     private View mFilterViewSecond;
     private ChatStyle style;
     private View mBubble;
-    private ViewGroup mOgDataLayout;
-    private ImageView mOgImage;
-    private TextView mOgTitle;
-    private TextView mOgDescription;
-    private TextView mOgUrl;
-    private TextView mOgTimestamp;
+    private ViewGroup ogDataLayout;
+    private ImageView ogImage;
+    private TextView ogTitle;
+    private TextView ogDescription;
+    private TextView ogUrl;
+    private TextView ogTimestamp;
 
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -74,12 +77,12 @@ public final class UserPhraseViewHolder extends BaseHolder {
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mFileImageButton = itemView.findViewById(R.id.button_download);
         mPhraseFrame = itemView.findViewById(R.id.phrase_frame);
-        mOgDataLayout = itemView.findViewById(R.id.og_data_layout);
-        mOgImage = itemView.findViewById(R.id.og_image);
-        mOgTitle = itemView.findViewById(R.id.og_title);
-        mOgDescription = itemView.findViewById(R.id.og_description);
-        mOgUrl = itemView.findViewById(R.id.og_url);
-        mOgTimestamp = itemView.findViewById(R.id.og_timestamp);
+        ogDataLayout = itemView.findViewById(R.id.og_data_layout);
+        ogImage = itemView.findViewById(R.id.og_image);
+        ogTitle = itemView.findViewById(R.id.og_title);
+        ogDescription = itemView.findViewById(R.id.og_description);
+        ogUrl = itemView.findViewById(R.id.og_url);
+        ogTimestamp = itemView.findViewById(R.id.og_timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mRightTextHeader = itemView.findViewById(R.id.to);
@@ -97,7 +100,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
-        mOgTimestamp.setTextColor(getColorInt(style.outgoingMessageTimeColor));
+        ogTimestamp.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mFileImageButton.setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mPhraseTextView.setLinkTextColor(getColorInt(style.outgoingMessageLinkColor));
@@ -106,16 +109,18 @@ public final class UserPhraseViewHolder extends BaseHolder {
         mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
     }
 
-    public void onBind(UserPhrase message, final String phrase
-            , final long timeStamp
-            , final MessageState sentState
-            , final Quote quote
-            , final FileDescription fileDescription
-            , final View.OnClickListener imageClickListener
-            , @Nullable final View.OnClickListener fileClickListener
-            , final View.OnClickListener onRowClickListener
-            , final View.OnLongClickListener onLongClickListener
-            , View.OnClickListener onOgClickListener, final boolean isChosen) {
+    public void onBind(final UserPhrase userPhrase,
+                       final String phrase,
+                       final long timeStamp,
+                       final MessageState sentState,
+                       final Quote quote,
+                       final FileDescription fileDescription,
+                       final View.OnClickListener imageClickListener,
+                       @Nullable final View.OnClickListener fileClickListener,
+                       final View.OnClickListener onRowClickListener,
+                       final View.OnLongClickListener onLongClickListener,
+                       Runnable onItemChangedListener,
+                       final boolean isChosen) {
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
         if (phrase == null || phrase.length() == 0) {
@@ -123,18 +128,27 @@ public final class UserPhraseViewHolder extends BaseHolder {
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(phrase);
-        }
-        OGData ogData = message.ogData;
-        if (ogData == null || ogData.isEmpty()) {
-            mOgDataLayout.setVisibility(View.GONE);
-            mTimeStampTextView.setVisibility(View.VISIBLE);
-        } else {
-            bindOGData(ogData, message.ogUrl, onOgClickListener);
+            List<String> urls = UrlUtils.extractLinks(phrase);
+            if (!urls.isEmpty()) {
+                final String url = urls.get(0);
+                if (userPhrase.ogData == null) {
+                    loadOGData(onItemChangedListener, userPhrase, url);
+                } else {
+                    if (!userPhrase.ogData.areTextsEmpty()) {
+                        bindOGData(userPhrase.ogData, url);
+                        showOGView();
+                    } else {
+                        hideOGView();
+                    }
+                }
+            } else {
+                hideOGView();
+            }
         }
         mImage.setVisibility(View.GONE);
         String timeText = sdf.format(new Date(timeStamp));
         mTimeStampTextView.setText(timeText);
-        mOgTimestamp.setText(timeText);
+        ogTimestamp.setText(timeText);
         if (fileDescription == null && quote == null) {
             mRightTextRow.setVisibility(View.GONE);
         }
@@ -223,24 +237,24 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                mOgTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENT:
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_sent);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_sent_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                mOgTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_NOT_SENT:
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_waiting);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_not_send_icon), PorterDuff.Mode.SRC_ATOP);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                mOgTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
             case STATE_SENDING:
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.empty_space_24dp);
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
-                mOgTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+                ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
         }
         if (isChosen) {
@@ -252,63 +266,74 @@ public final class UserPhraseViewHolder extends BaseHolder {
         }
     }
 
-    private void bindOGData(@NonNull final OGData ogData, String ogUrl, final View.OnClickListener onOgClickListener) {
-        if (ogData.areTextsEmpty()) {
-            mOgDataLayout.setVisibility(View.GONE);
-            mTimeStampTextView.setVisibility(View.VISIBLE);
-        } else {
-            mOgDataLayout.setVisibility(View.VISIBLE);
-            mTimeStampTextView.setVisibility(View.GONE);
-            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
-            if (TextUtils.isEmpty(ogData.title)) {
-                mOgTitle.setVisibility(View.GONE);
-            } else {
-                mOgTitle.setText(ogData.title);
-                mOgTitle.setTypeface(mOgTitle.getTypeface(), Typeface.BOLD);
+    private void loadOGData(Runnable onItemChangedListener, final UserPhrase chatItem, final String url) {
+        OGDataProvider.getOGData(url, new im.threads.internal.utils.Callback<OGData, Throwable>() {
+            @Override
+            public void onSuccess(OGData ogData) {
+                ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
+                if (ogData != null && !ogData.isEmpty()) {
+                    chatItem.ogData = ogData;
+                    chatItem.ogUrl = url;
+                    onItemChangedListener.run();
+                }
             }
-            if (TextUtils.isEmpty(ogData.description)) {
-                mOgDescription.setVisibility(View.GONE);
-            } else {
-                mOgDescription.setText(ogData.description);
-            }
-            if (TextUtils.isEmpty(ogData.url)) {
-                mOgUrl.setText(ogUrl);
-            } else {
-                mOgUrl.setText(ogData.url);
-            }
-        }
 
+            @Override
+            public void onError(Throwable error) {
+                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
+            }
+        });
+    }
+
+    private void bindOGData(@NonNull final OGData ogData, String url) {
+        if (!TextUtils.isEmpty(ogData.title)) {
+            ogTitle.setVisibility(View.VISIBLE);
+            ogTitle.setText(ogData.title);
+            ogTitle.setTypeface(ogTitle.getTypeface(), Typeface.BOLD);
+        } else {
+            ogTitle.setVisibility(View.GONE);
+        }
+        if (!TextUtils.isEmpty(ogData.description)) {
+            ogDescription.setVisibility(View.VISIBLE);
+            ogDescription.setText(ogData.description);
+        } else {
+            ogDescription.setVisibility(View.GONE);
+        }
+        ogUrl.setText(!TextUtils.isEmpty(ogData.url) ? ogData.url : url);
         if (TextUtils.isEmpty(ogData.image)) {
-            mOgImage.setVisibility(View.GONE);
+            ogImage.setVisibility(View.GONE);
         } else {
             Picasso.with(itemView.getContext())
                     .load(ogData.image)
                     .fetch(new Callback() {
                         @Override
                         public void onSuccess() {
-                            mOgDataLayout.setVisibility(View.VISIBLE);
-                            mTimeStampTextView.setVisibility(View.GONE);
-                            mOgImage.setVisibility(View.VISIBLE);
-                            ViewUtils.setClickListener(mOgDataLayout, onOgClickListener);
+                            ogImage.setVisibility(View.VISIBLE);
                             Picasso.with(itemView.getContext())
                                     .load(ogData.image)
                                     .error(style.imagePlaceholder)
                                     .fit()
-                                    .centerCrop()
-                                    .into(mOgImage);
+                                    .centerInside()
+                                    .into(ogImage);
                         }
 
                         @Override
                         public void onError() {
+                            ogImage.setVisibility(View.GONE);
                             ThreadsLogger.d(TAG, "Could not load OpenGraph image");
-                            mOgImage.setVisibility(View.GONE);
-                            if (TextUtils.isEmpty(ogData.title) && TextUtils.isEmpty(ogData.description) && TextUtils.isEmpty(ogData.url)) {
-                                mOgDataLayout.setVisibility(View.GONE);
-                                mTimeStampTextView.setVisibility(View.VISIBLE);
-                            }
                         }
                     });
         }
+    }
+
+    private void showOGView() {
+        ogDataLayout.setVisibility(View.VISIBLE);
+        mTimeStampTextView.setVisibility(View.GONE);
+    }
+
+    private void hideOGView() {
+        ogDataLayout.setVisibility(View.GONE);
+        mTimeStampTextView.setVisibility(View.VISIBLE);
     }
 }
 

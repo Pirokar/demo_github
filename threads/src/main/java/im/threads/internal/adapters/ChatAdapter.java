@@ -166,7 +166,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
             }
             ((ConsultPhraseHolder) holder)
-                    .onBind(consultPhrase,
+                    .onBind(
+                            consultPhrase,
                             consultPhrase.getPhrase(),
                             consultPhrase.getAvatarPath(),
                             consultPhrase.getTimeStamp(),
@@ -187,7 +188,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 return true;
                             },
                             v -> mAdapterInterface.onConsultAvatarClick(consultPhrase.getConsultId()),
-                            v -> mAdapterInterface.onOpenGraphClicked(consultPhrase.ogUrl, holder.getAdapterPosition()),
+                            () -> notifyItemChangedOnUi(consultPhrase),
                             consultPhrase.isChosen()
                     );
         }
@@ -196,7 +197,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (userPhrase.getFileDescription() != null && userPhrase.getFileDescription().getFilePath() == null) {
                 mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
             }
-            ((UserPhraseViewHolder) holder).onBind(userPhrase,
+            ((UserPhraseViewHolder) holder).onBind(
+                    userPhrase,
                     userPhrase.getPhrase(),
                     userPhrase.getTimeStamp(),
                     userPhrase.getSentState(),
@@ -215,7 +217,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition());
                         return true;
                     },
-                    v -> mAdapterInterface.onOpenGraphClicked(userPhrase.ogUrl, holder.getAdapterPosition()),
+                    () -> notifyItemChangedOnUi(userPhrase),
                     userPhrase.isChosen()
             );
         }
@@ -513,7 +515,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public int getUnreadCount() {
-        return getUnreadCount(list, getLastUnreadStamp(list));
+        return getUnreadCount(list);
     }
 
     public boolean hasSchedule() {
@@ -770,12 +772,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyItemRemoved(list.indexOf(chatItem));
     }
 
-    private static int getUnreadCount(final List<ChatItem> listToInsertTo, final long lastUnreadStamp) {
+    private static int getUnreadCount(final List<ChatItem> list) {
         int counter = 0;
-        for (final ChatItem ci : listToInsertTo) {
+        for (final ChatItem ci : list) {
             if (ci instanceof ConsultPhrase) {
                 final ConsultPhrase cp = ((ConsultPhrase) ci);
-                if (cp.getTimeStamp() > (lastUnreadStamp - 1)) {
+                if (!cp.isRead()) {
                     counter++;
                 }
             }
@@ -809,12 +811,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static class ChatMessagesOrderer {
 
         static void addAndOrder(@NonNull final List<ChatItem> listToInsertTo, @NonNull final List<ChatItem> listToAdd) {
-            if (listToInsertTo.containsAll(listToAdd)) {
-                return;
-            }
             for (int i = 0; i < listToAdd.size(); i++) {
-                if (!listToInsertTo.contains(listToAdd.get(i))) {
-                    addItemInternal(listToInsertTo, listToAdd.get(i));
+                ChatItem currentItem = listToAdd.get(i);
+                if (!listToInsertTo.contains(currentItem)) {
+                    addItemInternal(listToInsertTo, currentItem);
+                } else {
+                    listToInsertTo.set(listToInsertTo.indexOf(currentItem), currentItem);
                 }
             }
             updateOrder(listToInsertTo);
@@ -881,7 +883,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             if (hasUnread) {
                 final long lastUnreadStamp = getLastUnreadStamp(items);
-                final int counter = getUnreadCount(items, lastUnreadStamp);
+                final int counter = getUnreadCount(items);
                 removeUnreadMessagesTitle(items);
                 items.add(new UnreadMessages(lastUnreadStamp - 1, counter));
             }
@@ -1024,7 +1026,5 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onRatingClick(@NonNull Survey survey, int rating);
 
         void onResolveThreadClick(boolean approveResolve);
-
-        void onOpenGraphClicked(String ogUrl, int adapterPosition);
     }
 }

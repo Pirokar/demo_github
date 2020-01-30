@@ -63,6 +63,7 @@ public final class GalleryActivity
         binding.setViewModel(this);
         initViews();
         initData();
+        showBucketListState();
     }
 
     @Override
@@ -119,7 +120,6 @@ public final class GalleryActivity
 
     private void initViews() {
         setSupportActionBar(binding.toolbar);
-        showBucketListState();
         binding.searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

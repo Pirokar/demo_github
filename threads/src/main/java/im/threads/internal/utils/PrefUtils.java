@@ -2,18 +2,20 @@ package im.threads.internal.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
+import android.support.v4.util.ObjectsCompat;
 import android.support.v7.preference.PreferenceManager;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import im.threads.ChatStyle;
+import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 
 public final class PrefUtils {
@@ -32,12 +34,9 @@ public final class PrefUtils {
     private static final String APP_MARKER_KEY = "APP_MARKER";
     private static final String FCM_TOKEN = "FCM_TOKEN";
     private static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
+    private static final String TRANSPORT_TYPE = "TRANSPORT_TYPE";
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String MIGRATED = "MIGRATED";
-
-    private static final String DATASTORE_URL = "im.threads.getServerUrl";
-    private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
-    private static final String THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid";
 
     private static final String STORE_NAME = "im.threads.internal.utils.PrefStore";
 
@@ -220,18 +219,6 @@ public final class PrefUtils {
         return deviceUid;
     }
 
-    public static String getDatastoreUrl() {
-        return getMetaData(DATASTORE_URL);
-    }
-
-    public static String getThreadsGateUrl() {
-        return getMetaData(THREADS_GATE_URL);
-    }
-
-    public static String getThreadsGateProviderUid() {
-        return getMetaData(THREADS_GATE_PROVIDER_UID);
-    }
-
     public static void migrateToSeparateStorageIfNeeded() {
         SharedPreferences newSharedPreferences = getDefaultSharedPreferences();
         if (!newSharedPreferences.getBoolean(MIGRATED, false)) {
@@ -256,17 +243,25 @@ public final class PrefUtils {
         }
     }
 
-    @Nullable
-    private static String getMetaData(String key) {
-        try {
-            Context context = Config.instance.context;
-            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-            Bundle bundle = ai.metaData;
-            return bundle.getString(key);
-        } catch (PackageManager.NameNotFoundException e) {
-            ThreadsLogger.e(TAG, "Failed to load self applicationInfo - that's really weird. ", e);
-            return null;
+    @WorkerThread
+    public static void migrateTransportIfNeeded() throws IOException {
+        if (!ObjectsCompat.equals(getTransportType(), Config.instance.transport.getType().toString())) {
+            setTransportType(Config.instance.transport.getType().toString());
+            FirebaseInstanceId.getInstance().deleteInstanceId();
+            setFcmToken(null);
         }
+    }
+
+    private static void setTransportType(String transportType) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(TRANSPORT_TYPE, transportType)
+                .commit();
+    }
+
+    private static String getTransportType() {
+        String transportType = getDefaultSharedPreferences().getString(TRANSPORT_TYPE, "");
+        return transportType.length() > 0 ? transportType : null;
     }
 
     private static SharedPreferences getDefaultSharedPreferences() {

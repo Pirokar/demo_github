@@ -91,7 +91,6 @@ import im.threads.internal.utils.PermissionChecker;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsLogger;
-import im.threads.internal.utils.UrlUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
@@ -151,7 +150,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private File externalCameraPhotoFile;
 
-    private ObservableField<String> inputTextObservable = new ObservableField<>();
+    private ObservableField<String> inputTextObservable = new ObservableField<>("");
 
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
@@ -196,7 +195,6 @@ public final class ChatFragment extends BaseFragment implements
         if (activity != null) {
             activity.unregisterReceiver(mChatReceiver);
         }
-
         chatIsShown = false;
     }
 
@@ -386,7 +384,6 @@ public final class ChatFragment extends BaseFragment implements
 
     private void afterRefresh(List<ChatItem> result) {
         int itemsBefore = chatAdapter.getItemCount();
-        mChatController.checkAndLoadOgData(result);
         chatAdapter.addItems(result);
         int itemsAfter = chatAdapter.getItemCount();
         scrollToPosition(itemsAfter - itemsBefore);
@@ -572,11 +569,6 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onImageDownloadRequest(FileDescription fileDescription) {
         mChatController.onImageDownloadRequest(fileDescription);
-    }
-
-    @Override
-    public void onOpenGraphClicked(String ogUrl, int adapterPosition) {
-        UrlUtils.openUrl(getContext(), ogUrl);
     }
 
     @Override

@@ -12,7 +12,7 @@ import im.threads.internal.retrofit.ServiceGenerator;
 import im.threads.internal.retrofit.ThreadsApi;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DateHelper;
-import im.threads.internal.utils.PrefUtils;
+import im.threads.internal.utils.MetaDataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -30,7 +30,7 @@ public final class HistoryLoader {
     @WorkerThread
     public static HistoryResponse getHistorySync(Long beforeTimestamp, Integer count) throws Exception {
         String token = Config.instance.transport.getToken();
-        String url = PrefUtils.getDatastoreUrl();
+        String url = MetaDataUtils.getDatastoreUrl(Config.instance.context);
         if (count == null) {
             count = Config.instance.historyLoadingCount;
         }

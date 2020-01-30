@@ -47,8 +47,6 @@ import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.opengraph.OGData;
-import im.threads.internal.opengraph.OGDataProvider;
 import im.threads.internal.services.DownloadService;
 import im.threads.internal.services.NotificationService;
 import im.threads.internal.transport.HistoryLoader;
@@ -63,7 +61,6 @@ import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
-import im.threads.internal.utils.UrlUtils;
 import im.threads.view.ChatFragment;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -111,7 +108,7 @@ public final class ChatController {
     private ChatFragment fragment;
 
     // Для приема сообщений из сервиса по скачиванию файлов
-    private ProgressReceiver mProgressReceiver;
+    private ProgressReceiver progressReceiver;
     // Было получено сообщение, что чат не работает
     private boolean isChatWorking;
     // this flag is keeping the visibility state of the request to resolve thread
@@ -142,15 +139,14 @@ public final class ChatController {
         }
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
-        ThreadsLogger.i(TAG, "getChatStyle newClientId = " + newClientId + ", oldClientClientId = " + oldClientId);
+        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
         if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
             // clientId has not changed
             PrefUtils.setNewClientId("");
         } else {
-            final String clientId = newClientId;
-            PrefUtils.setClientId(clientId);
+            PrefUtils.setClientId(newClientId);
             instance.subscribe(
-                    Completable.fromAction(() -> instance.onClientIdChanged(clientId))
+                    Completable.fromAction(() -> instance.onClientIdChanged())
                             .subscribeOn(Schedulers.io())
                             .subscribe(
                                     () -> {
@@ -189,6 +185,15 @@ public final class ChatController {
                 })
         );
         subscribeToChatEvents();
+        subscribe(
+                Completable.fromAction(PrefUtils::migrateTransportIfNeeded)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage()))
+        );
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
@@ -227,7 +232,6 @@ public final class ChatController {
             consultWriter.setSearchingConsult(true);
         }
         queueMessageSending(um);
-        checkAndLoadOgData(um);
     }
 
     public void fancySearch(final String query, final boolean forward, final CallbackNoError<List<ChatItem>> callback) {
@@ -317,6 +321,9 @@ public final class ChatController {
                     final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                     if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
                         firstUnreadProviderId = unreadProviderIds.get(0); // для скролла к первому непрочитанному сообщению
+                        for (final String providerId : unreadProviderIds) {
+                            Config.instance.transport.sendMessageRead(providerId);
+                        }
                     } else {
                         firstUnreadProviderId = null;
                     }
@@ -377,12 +384,6 @@ public final class ChatController {
             if (activity != null) {
                 DownloadService.startDownloadWithNoStop(activity, fileDescription);
             }
-        }
-    }
-
-    public void checkAndLoadOgData(List<ChatItem> chatItems) {
-        for (ChatItem chatItem : chatItems) {
-            checkAndLoadOgData(chatItem);
         }
     }
 
@@ -452,7 +453,6 @@ public final class ChatController {
                         .subscribe(
                                 items -> {
                                     if (fragment != null) {
-                                        checkAndLoadOgData(items);
                                         fragment.addChatItems(items);
                                         loadHistory();
                                     }
@@ -460,9 +460,6 @@ public final class ChatController {
                                 e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
         );
-
-        Config.instance.transport.sendInitChatMessage();
-        Config.instance.transport.sendEnvironmentMessage(PrefUtils.getClientID());
         if (consultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo());
         } else if (consultWriter.istSearchingConsult()) {
@@ -470,20 +467,19 @@ public final class ChatController {
         } else {
             fragment.setTitleStateDefault();
         }
-        mProgressReceiver = new ProgressReceiver(fragment, this::onSettingClientId);
+        progressReceiver = new ProgressReceiver(fragment);
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ProgressReceiver.PROGRESS_BROADCAST);
         intentFilter.addAction(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST);
         intentFilter.addAction(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST);
-        intentFilter.addAction(ProgressReceiver.DEVICE_ID_IS_SET_BROADCAST);
-        activity.registerReceiver(mProgressReceiver, intentFilter);
+        activity.registerReceiver(progressReceiver, intentFilter);
     }
 
     public void unbindFragment() {
         if (fragment != null) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-                activity.unregisterReceiver(mProgressReceiver);
+                activity.unregisterReceiver(progressReceiver);
             }
         }
         fragment = null;
@@ -541,14 +537,12 @@ public final class ChatController {
         }
     }
 
-    private void onClientIdChanged(final String finalClientId) throws Exception {
+    private void onClientIdChanged() throws Exception {
         cleanAll();
         if (fragment != null) {
             fragment.removeSearching();
         }
         consultWriter.setCurrentConsultLeft();
-        Config.instance.transport.sendInitChatMessage();
-        Config.instance.transport.sendEnvironmentMessage(finalClientId);
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
         databaseHolder.putMessagesSync(serverItems);
@@ -560,7 +554,6 @@ public final class ChatController {
                 fragment.setStateConsultConnected(info);
             }
         }
-        checkAndLoadOgData(phrases);
         PrefUtils.setClientIdWasSet(true);
     }
 
@@ -586,11 +579,7 @@ public final class ChatController {
                         final int count = Config.instance.historyLoadingCount;
                         final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        final List<ChatItem> dbItems = databaseHolder.getChatItems(0, count);
-                        if (dbItems.size() != serverItems.size() || !dbItems.containsAll(serverItems)) {
-                            ThreadsLogger.d(TAG, "Local and downloaded history are not same");
-                            databaseHolder.putMessagesSync(serverItems);
-                        }
+                        databaseHolder.putMessagesSync(serverItems);
                         if (fragment != null && isActive) {
                             final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                             if (unreadProviderIds != null) {
@@ -611,7 +600,6 @@ public final class ChatController {
                                         final List<ChatItem> items = setLastAvatars(databaseHolder.getChatItems(0, serverCount));
                                         if (fragment != null) {
                                             fragment.addChatItems(items);
-                                            checkAndLoadOgData(items);
                                             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                                             if (info != null) {
                                                 fragment.setStateConsultConnected(info);
@@ -701,6 +689,7 @@ public final class ChatController {
         subscribeToMessageSendError();
         subscribeToSurveySendSuccess();
         subscribeToRemoveChatItem();
+        subscribeToDeviceAddressChanged();
     }
 
     private void subscribeToTyping() {
@@ -764,11 +753,10 @@ public final class ChatController {
                                 isChatWorking = schedule.isChatWorking();
                                 updateInputEnable(isChatWorking || schedule.isSendDuringInactive());
                                 consultWriter.setSearchingConsult(false);
-                                fragment.removeSearching();
-                                fragment.setTitleStateDefault();
-                            }
-                            if (chatItem instanceof UserPhrase || chatItem instanceof ConsultPhrase) {
-                                checkAndLoadOgData(chatItem);
+                                if (fragment != null) {
+                                    fragment.removeSearching();
+                                    fragment.setTitleStateDefault();
+                                }
                             }
                             if (chatItem instanceof ConsultConnectionMessage) {
                                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
@@ -914,6 +902,15 @@ public final class ChatController {
         );
     }
 
+
+    private void subscribeToDeviceAddressChanged() {
+        subscribe(
+                Flowable.fromPublisher(chatUpdateProcessor.getDeviceAddressChangedProcessor())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(chatItemType -> onSettingClientId())
+        );
+    }
+
     private void removeResolveRequest() {
         if (isResolveRequestVisible && fragment != null) {
             if (fragment.removeResolveRequest()) {
@@ -988,7 +985,6 @@ public final class ChatController {
             final ChatItem ci = setLastAvatars(Collections.singletonList(cm)).get(0);
             if (!(ci instanceof ConsultConnectionMessage) || ((ConsultConnectionMessage) ci).isDisplayMessage()) {
                 fragment.addChatItem(ci);
-                checkAndLoadOgData(ci);
             }
             if (ci instanceof ConsultChatPhrase) {
                 fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath(), ((ConsultChatPhrase) ci).getConsultId());
@@ -1034,6 +1030,7 @@ public final class ChatController {
 
     private void cleanAll() {
         ThreadsLogger.i(TAG, "cleanAll: ");
+        sendQueue.clear();
         databaseHolder.cleanDatabase();
         if (fragment != null) {
             fragment.cleanChat();
@@ -1066,55 +1063,6 @@ public final class ChatController {
         return up;
     }
 
-    private void checkAndLoadOgData(ChatItem chatItem) {
-        String phrase = null;
-        if (chatItem instanceof UserPhrase) {
-            phrase = ((UserPhrase) chatItem).getPhrase();
-        } else if (chatItem instanceof ConsultPhrase) {
-            phrase = ((ConsultPhrase) chatItem).getPhrase();
-        }
-        if (phrase != null) {
-            List<String> urls = UrlUtils.extractLinks(phrase);
-            if (!urls.isEmpty()) {
-                loadOgData(chatItem, urls);
-            }
-        }
-    }
-
-    private void loadOgData(final ChatItem chatItem, final List<String> urls) {
-        final String url = urls.get(0);
-        OGDataProvider.getOGData(url, new Callback<OGData, Throwable>() {
-            @Override
-            public void onSuccess(OGData ogData) {
-                ThreadsLogger.d(TAG, "OGData for url: " + url
-                        + "\n received: " + ogData);
-                if (ogData != null && !ogData.isEmpty()) {
-                    if (chatItem instanceof UserPhrase) {
-                        UserPhrase message = (UserPhrase) chatItem;
-                        message.ogData = ogData;
-                        message.ogUrl = url;
-                    } else if (chatItem instanceof ConsultPhrase) {
-                        ConsultPhrase message = (ConsultPhrase) chatItem;
-                        message.ogData = ogData;
-                        message.ogUrl = url;
-                    }
-                    updateChatItem(chatItem);
-                }
-            }
-
-            @Override
-            public void onError(Throwable error) {
-                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
-            }
-        });
-    }
-
-    private void updateChatItem(ChatItem chatItem) {
-        if (fragment != null) {
-            fragment.updateChatItem(chatItem, false);
-        }
-    }
-
     private void updateInputEnable(final boolean enabled) {
         if (fragment != null) {
             fragment.updateInputEnable(enabled);
@@ -1131,14 +1079,13 @@ public final class ChatController {
                         PrefUtils.setClientId(newClientId);
                         PrefUtils.setClientIdWasSet(true);
                         Config.instance.transport.sendInitChatMessage();
-                        Config.instance.transport.sendEnvironmentMessage(newClientId);
+                        Config.instance.transport.sendEnvironmentMessage();
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                         databaseHolder.putMessagesSync(serverItems);
                         if (fragment != null) {
                             List<ChatItem> itemsWithLastAvatars = setLastAvatars(serverItems);
                             fragment.addChatItems(itemsWithLastAvatars);
-                            checkAndLoadOgData(itemsWithLastAvatars);
                             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                             if (info != null) {
                                 fragment.setStateConsultConnected(info);

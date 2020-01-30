@@ -32,7 +32,7 @@ public final class FileUtils {
         if (TextUtils.isEmpty(relativeUrl) || relativeUrl.startsWith("http")) {
             return relativeUrl;
         }
-        return PrefUtils.getDatastoreUrl() + "files/" + relativeUrl;
+        return MetaDataUtils.getDatastoreUrl(Config.instance.context) + "files/" + relativeUrl;
     }
 
     public static boolean isSupportedFile(@Nullable final FileDescription fileDescription) {
