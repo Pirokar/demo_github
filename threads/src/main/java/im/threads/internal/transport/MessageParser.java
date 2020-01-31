@@ -84,7 +84,7 @@ public final class MessageParser {
                 messageId,
                 String.valueOf(operator.getId()),
                 content.getType(),
-                operator.getName(),
+                operator.getAliasOrName(),
                 "male".equalsIgnoreCase(operator.getGender()),
                 sentAt,
                 operator.getPhotoUrl(),
@@ -132,7 +132,7 @@ public final class MessageParser {
         Operator operator = content.getOperator();
         if (operator != null) {
             String operatorId = String.valueOf(operator.getId());
-            String name = operator.getName();
+            String name = operator.getAliasOrName();
             String photoUrl = operator.getPhotoUrl();
             String status = operator.getStatus();
             boolean gender = operator.getGender() == null || "male".equalsIgnoreCase(operator.getGender());
@@ -185,7 +185,7 @@ public final class MessageParser {
     private static Quote getQuote(final List<im.threads.internal.transport.models.Quote> quotes) {
         if (!quotes.isEmpty() && quotes.get(0) != null) {
             im.threads.internal.transport.models.Quote quote = quotes.get(0);
-            String authorName = quote.getOperator() != null ? quote.getOperator().getName() : null;
+            String authorName = quote.getOperator() != null ? quote.getOperator().getAliasOrName() : null;
             long timestamp = quote.getReceivedDate() != null ? quote.getReceivedDate().getTime() : System.currentTimeMillis();
             FileDescription fileDescription = null;
             if (quote.getAttachments() != null) {

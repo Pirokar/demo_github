@@ -15,11 +15,7 @@ import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
-
-import static im.threads.internal.utils.FileUtils.JPEG;
-import static im.threads.internal.utils.FileUtils.PDF;
-import static im.threads.internal.utils.FileUtils.PNG;
-import static im.threads.internal.utils.FileUtils.getExtensionFromFileDescription;
+import im.threads.internal.utils.FileUtils;
 
 public final class MessageFormatter {
 
@@ -62,22 +58,20 @@ public final class MessageFormatter {
                 }
                 if (consultPhrase.getFileDescription() != null) {
                     FileDescription fileDescription = consultPhrase.getFileDescription();
-                    int extension = getExtensionFromFileDescription(fileDescription);
-                    if (extension == PNG || extension == JPEG) {
+                    if (FileUtils.isImage(fileDescription)) {
                         imagesCount++;
                         imagePath = fileDescription.getDownloadPath();
-                    } else if (extension == PDF) {
+                    } else if (FileUtils.isDoc(fileDescription)) {
                         plainFilesCount++;
                         docName = fileDescription.getIncomingName();
                     }
                 }
                 if (consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
                     FileDescription fileDescription = consultPhrase.getQuote().getFileDescription();
-                    int extension = getExtensionFromFileDescription(fileDescription);
-                    if (extension == PNG || extension == JPEG) {
+                    if (FileUtils.isImage(fileDescription)) {
                         imagesCount++;
                         imagePath = fileDescription.getDownloadPath();
-                    } else if (extension == PDF) {
+                    } else if (FileUtils.isDoc(fileDescription)) {
                         plainFilesCount++;
                         docName = fileDescription.getIncomingName();
                     }

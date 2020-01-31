@@ -62,7 +62,7 @@ public final class ImageFragment extends Fragment {
         } else {
             date.setText("");
         }
-        if (fd.getFilePath() != null && (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.JPEG || FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PNG)) {
+        if (FileUtils.isImage(fd)) {
             Picasso
                     .with(getActivity())
                     .load(new File(fd.getFilePath()))

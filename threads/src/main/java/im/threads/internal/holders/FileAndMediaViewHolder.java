@@ -44,16 +44,9 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         timeStampTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
     }
 
-    public void onBind(
-            FileDescription fileDescription
-            , View.OnClickListener fileClickListener) {
-        int extension = FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.UNKNOWN ?
-                FileUtils.getExtensionFromPath(fileDescription.getIncomingName())
-                : FileUtils.getExtensionFromPath(fileDescription.getFilePath());
-        Picasso p = Picasso.with(itemView.getContext());
-        if (extension == FileUtils.PDF || extension == FileUtils.OTHER_DOC_FORMATS) {
-            mImageButton.setImageDrawable(tintedDrawable);
-        } else if (extension == FileUtils.JPEG || extension == FileUtils.PNG) {
+    public void onBind(FileDescription fileDescription, View.OnClickListener fileClickListener) {
+        if (FileUtils.isImage(fileDescription)) {
+            Picasso p = Picasso.with(itemView.getContext());
             if (fileDescription.getFilePath() != null) {
                 p
                         .load(new File(fileDescription.getFilePath()))

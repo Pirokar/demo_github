@@ -36,9 +36,4 @@ public interface ThreadsApi {
             @Query("libVersion") String version
     );
 
-    @GET()
-    Call<OGData> getOGData(@Url String url);
-
-    @GET("/proxy")
-    Call<ResponseBody> getOGDataProxy(@Query("href") String url);
 }

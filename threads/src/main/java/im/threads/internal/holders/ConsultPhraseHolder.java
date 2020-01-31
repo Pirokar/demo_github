@@ -296,7 +296,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
     }
 
     private void loadOGData(Runnable onItemChangedListener, final ConsultPhrase chatItem, final String url) {
-        OGDataProvider.getOGData(url, new im.threads.internal.utils.Callback<OGData, Throwable>() {
+        OGDataProvider.getInstance().getOGData(url, new im.threads.internal.utils.Callback<OGData, Throwable>() {
             @Override
             public void onSuccess(OGData ogData) {
                 ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);

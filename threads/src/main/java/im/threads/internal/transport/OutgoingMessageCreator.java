@@ -18,6 +18,7 @@ import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
+import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 
 public final class OutgoingMessageCreator {
@@ -156,18 +157,7 @@ public final class OutgoingMessageCreator {
         JsonObject optional = new JsonObject();
         attachment.addProperty("isSelfie", isSelfie);
         attachment.add("optional", optional);
-        String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(".") + 1).toLowerCase();
-        String type = null;
-        if (extension.equals("jpg")) {
-            type = "image/jpg";
-        }
-        if (extension.equals("png")) {
-            type = "image/png";
-        }
-        if (extension.equals("pdf")) {
-            type = "text/pdf";
-        }
-        optional.addProperty(MessageAttributes.TYPE, type);
+        optional.addProperty(MessageAttributes.TYPE, FileUtils.getMimeType(file));
         optional.addProperty("name", file.getName());
         optional.addProperty("size", file.length());
         optional.addProperty("lastModified", file.lastModified());
@@ -182,18 +172,7 @@ public final class OutgoingMessageCreator {
         attachment.addProperty("isSelfie", fileDescription.isSelfie());
         attachment.add("optional", optional);
         if (fileDescription.getIncomingName() != null) {
-            String extension = fileDescription.getIncomingName().substring(fileDescription.getIncomingName().lastIndexOf(".") + 1).toLowerCase();
-            String type = null;
-            if (extension.equals("jpg")) {
-                type = "image/jpg";
-            }
-            if (extension.equals("png")) {
-                type = "image/png";
-            }
-            if (extension.equals("pdf")) {
-                type = "text/pdf";
-            }
-            optional.addProperty(MessageAttributes.TYPE, type);
+            optional.addProperty(MessageAttributes.TYPE, FileUtils.getMimeType(new File(fileDescription.getIncomingName())));
         }
         optional.addProperty("name", fileDescription.getIncomingName());
         optional.addProperty("size", fileDescription.getSize());

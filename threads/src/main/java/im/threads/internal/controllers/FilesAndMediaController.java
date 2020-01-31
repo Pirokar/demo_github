@@ -59,11 +59,7 @@ public final class FilesAndMediaController extends Fragment {
                     if (null != activity) {
                         List<FileDescription> list = new ArrayList<>();
                         for (FileDescription fd : data) {
-                            if (FileUtils.isImage(fd)) {
-                                list.add(fd);
-                            }
-                            if (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PDF
-                                    || FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.OTHER_DOC_FORMATS) {
+                            if (FileUtils.isSupportedFile(fd)) {
                                 list.add(fd);
                             }
                         }
@@ -81,12 +77,10 @@ public final class FilesAndMediaController extends Fragment {
     public void onFileClick(FileDescription fileDescription) {
         if (FileUtils.isImage(fileDescription)) {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
-        } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
+        } else if (FileUtils.isDoc(fileDescription)) {
             Intent target = new Intent(Intent.ACTION_VIEW);
             File file = new File(fileDescription.getFilePath());
-            target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
-                    "application/pdf"
-            );
+            target.setDataAndType(FileProviderHelper.getUriForFile(activity, file), FileUtils.getMimeType(file));
             target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             try {
                 activity.startActivity(target);

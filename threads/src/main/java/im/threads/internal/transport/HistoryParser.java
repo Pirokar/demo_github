@@ -65,7 +65,7 @@ public final class HistoryParser {
                 boolean sex = false;
                 String orgUnit = null;
                 if (operator != null) {
-                    name = !TextUtils.isEmpty(operator.getName()) ? operator.getName() : null;
+                    name = operator.getAliasOrName();
                     photoUrl = !TextUtils.isEmpty(operator.getPhotoUrl()) ? operator.getPhotoUrl() : null;
                     operatorId = operator.getId() != null ? String.valueOf(operator.getId()) : null;
                     sex = Operator.Gender.MALE.equals(operator.getGender());
@@ -167,7 +167,7 @@ public final class HistoryParser {
                 quoteFileDescription = fileDescriptionFromList(quoteFromHistory.getAttachments());
             }
             if (quoteFromHistory.getOperator() != null) {
-                authorName = quoteFromHistory.getOperator().getName();
+                authorName = quoteFromHistory.getOperator().getAliasOrName();
             } else {
                 authorName = Config.instance.context.getString(R.string.threads_I);
             }
