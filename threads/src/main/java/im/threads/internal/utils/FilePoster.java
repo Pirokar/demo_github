@@ -1,7 +1,6 @@
 package im.threads.internal.utils;
 
 import android.accounts.NetworkErrorException;
-import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +12,7 @@ import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.FileUploadResponse;
-import im.threads.internal.retrofit.ServiceGenerator;
+import im.threads.internal.retrofit.ApiGenerator;
 import im.threads.internal.retrofit.ThreadsApi;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -24,8 +23,6 @@ import retrofit2.Call;
  * TODO THREADS-6288: this class needs refactoring, it contains one static method that does a lot of things making it untestable
  */
 public final class FilePoster {
-
-    private static final String UPLOAD_FILE_URL = "https://datastore.threads.im/";
 
     private FilePoster() {
     }
@@ -44,8 +41,7 @@ public final class FilePoster {
                         file = downsizedImageFile;
                     }
                 }
-                ServiceGenerator.setUrl(UPLOAD_FILE_URL);
-                ThreadsApi threadsApi = ServiceGenerator.getThreadsApi();
+                ThreadsApi threadsApi = ApiGenerator.getThreadsApi();
                 String mimeType = FileUtils.getMimeType(file);
                 RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
                 MultipartBody.Part part = MultipartBody.Part.createFormData("file", URLEncoder.encode(file.getName(), "utf-8"), requestFile);

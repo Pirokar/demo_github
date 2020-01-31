@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import im.threads.internal.utils.Callback;
 import im.threads.internal.utils.ThreadsLogger;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -28,7 +29,7 @@ public class OGDataProviderTest {
     public void getOGData() {
         final CountDownLatch signal = new CountDownLatch(1);
 
-        OGDataProvider.getOGData(url, new OGDataProvider.Callback<OGData>() {
+        OGDataProvider.getInstance().getOGData(url, new Callback<OGData, Throwable>() {
             @Override
             public void onSuccess(OGData data) {
                 Assert.assertTrue(mustSucceed);

@@ -8,11 +8,10 @@ import java.util.List;
 import im.threads.internal.Config;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageFromHistory;
-import im.threads.internal.retrofit.ServiceGenerator;
+import im.threads.internal.retrofit.ApiGenerator;
 import im.threads.internal.retrofit.ThreadsApi;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DateHelper;
-import im.threads.internal.utils.MetaDataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -30,13 +29,11 @@ public final class HistoryLoader {
     @WorkerThread
     public static HistoryResponse getHistorySync(Long beforeTimestamp, Integer count) throws Exception {
         String token = Config.instance.transport.getToken();
-        String url = MetaDataUtils.getDatastoreUrl(Config.instance.context);
         if (count == null) {
             count = Config.instance.historyLoadingCount;
         }
-        if (url != null && !url.isEmpty() && !token.isEmpty()) {
-            ServiceGenerator.setUrl(url);
-            ThreadsApi threadsApi = ServiceGenerator.getThreadsApi();
+        if (!token.isEmpty()) {
+            ThreadsApi threadsApi = ApiGenerator.getThreadsApi();
             String beforeDate = beforeTimestamp == null ? null : DateHelper.getMessageDateStringFromTimestamp(beforeTimestamp);
             Call<HistoryResponse> call = threadsApi.history(token, beforeDate, count, AppInfoHelper.getLibVersion());
             Response<HistoryResponse> response = call.execute();
