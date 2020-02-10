@@ -42,6 +42,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Hidable;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.OperatorLookupStarted;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
@@ -225,12 +226,6 @@ public final class ChatController {
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um);
-        if (isChatWorking && !consultWriter.isConsultConnected()) {
-            if (fragment != null) {
-                fragment.setStateSearchingConsult();
-            }
-            consultWriter.setSearchingConsult(true);
-        }
         queueMessageSending(um);
     }
 
@@ -780,6 +775,10 @@ public final class ChatController {
                                         fragment.setTitleStateDefault();
                                     }
                                 }
+                            }
+                            if (chatItem instanceof OperatorLookupStarted) {
+                                consultWriter.setSearchingConsult(true);
+                                fragment.setStateSearchingConsult();
                             }
                             addMessage(chatItem);
                         })
