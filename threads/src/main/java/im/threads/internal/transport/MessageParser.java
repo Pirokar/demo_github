@@ -15,6 +15,7 @@ import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.OperatorLookupStarted;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
@@ -49,9 +50,10 @@ public final class MessageParser {
                 return getRating(sentAt, fullMessage);
             case REQUEST_CLOSE_THREAD:
                 return getRequestResolveThread(fullMessage);
+            case OPERATOR_LOOKUP_STARTED:
+                return new OperatorLookupStarted(System.currentTimeMillis());
             case NONE:
             case MESSAGES_READ:
-            case OPERATOR_LOOKUP_STARTED:
             case CLIENT_BLOCKED:
             case SCENARIO:
                 return null;
@@ -113,6 +115,7 @@ public final class MessageParser {
         return survey;
     }
 
+    @Nullable
     private static RequestResolveThread getRequestResolveThread(final JsonObject fullMessage) {
         RequestResolveThreadContent content = Config.instance.gson.fromJson(fullMessage, RequestResolveThreadContent.class);
         return content.getHideAfter() > 0 ? new RequestResolveThread(content.getHideAfter(), System.currentTimeMillis()) : null;

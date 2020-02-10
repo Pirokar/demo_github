@@ -27,14 +27,15 @@ public final class HistoryResponse {
     public ConsultInfo getConsultInfo() {
         if (agentInfo != null) {
             im.threads.internal.transport.models.Operator operator = agentInfo.getAgent();
-            return new ConsultInfo(
-                    operator.getAliasOrName(),
-                    String.valueOf(operator.getId()),
-                    operator.getStatus(),
-                    operator.getOrganizationUnit(),
-                    operator.getPhotoUrl()
-
-            );
+            if (operator != null) {
+                return new ConsultInfo(
+                        operator.getAliasOrName(),
+                        String.valueOf(operator.getId()),
+                        operator.getStatus(),
+                        operator.getOrganizationUnit(),
+                        operator.getPhotoUrl()
+                );
+            }
         }
         return null;
     }
