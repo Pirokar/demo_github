@@ -431,6 +431,9 @@ final class MyOpenHelper extends SQLiteOpenHelper {
                 cGetLong(c, COLUMN_TIMESTAMP),
                 MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
         );
+        if (survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis()) {
+            return null;
+        }
         survey.setQuestions(Collections.singletonList(getQuestion(surveySendingId)));
         return survey;
     }

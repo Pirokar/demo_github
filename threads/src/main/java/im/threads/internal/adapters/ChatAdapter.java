@@ -352,8 +352,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             }
             if (item instanceof UnreadMessages) {
+                try {
+                    notifyItemRemoved(list.lastIndexOf(item));
+                } catch (final Exception e) {
+                    ThreadsLogger.e(TAG, "setAllMessagesRead", e);
+                }
                 iter.remove();
-                notifyItemRemoved(item);
             }
         }
     }
@@ -480,6 +484,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
              iter.hasNext(); ) {
             final ChatItem ch = iter.next();
             if (ch instanceof SearchingConsult) {
+                try {
+                    notifyItemRemoved(list.lastIndexOf(ch));
+                } catch (final Exception e) {
+                    ThreadsLogger.e(TAG, "removeConsultSearching", e);
+                }
                 iter.remove();
             }
         }
