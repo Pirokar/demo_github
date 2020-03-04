@@ -73,11 +73,11 @@ import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.OutgoingUserMessage;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UnreadMessages;
-import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.picasso_url_connection_only.Picasso;
@@ -357,12 +357,11 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         welcomeScreenVisibility(false);
-        List<UpcomingUserMessage> input = new ArrayList<>();
-        UpcomingUserMessage message = new UpcomingUserMessage(
+        List<OutgoingUserMessage> input = new ArrayList<>();
+        OutgoingUserMessage message = new OutgoingUserMessage(
                 mFileDescription,
                 mQuote,
-                inputText.trim(),
-                isCopy(inputText)
+                inputText.trim()
         );
         input.add(message);
         sendMessage(input);
@@ -780,21 +779,23 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onSendClick() {
         if (mAttachedImages != null && mAttachedImages.size() != 0) {
-            List<UpcomingUserMessage> messages = new ArrayList<>();
+            List<OutgoingUserMessage> messages = new ArrayList<>();
 
             String inputText = inputTextObservable.get();
             if (inputText == null) {
                 return;
             }
-            messages.add(new UpcomingUserMessage(
-                    new FileDescription(
-                            appContext.getString(R.string.threads_I),
-                            mAttachedImages.get(0),
-                            new File(mAttachedImages.get(0)).length(),
-                            System.currentTimeMillis()),
-                    mQuote,
-                    inputText.trim(),
-                    isCopy(inputText))
+            messages.add(
+                    new OutgoingUserMessage(
+                            new FileDescription(
+                                    appContext.getString(R.string.threads_I),
+                                    mAttachedImages.get(0),
+                                    new File(mAttachedImages.get(0)).length(),
+                                    System.currentTimeMillis()
+                            ),
+                            mQuote,
+                            inputText.trim()
+                    )
             );
             for (int i = 1; i < mAttachedImages.size(); i++) {
                 FileDescription fileDescription = new FileDescription(
@@ -803,10 +804,10 @@ public final class ChatFragment extends BaseFragment implements
                         new File(mAttachedImages.get(i)).length(),
                         System.currentTimeMillis()
                 );
-                UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
-                        fileDescription, null, null, false
+                OutgoingUserMessage outgoingUserMessage = new OutgoingUserMessage(
+                        fileDescription, null, null
                 );
-                messages.add(upcomingUserMessage);
+                messages.add(outgoingUserMessage);
             }
             sendMessage(messages);
         }
@@ -924,10 +925,10 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
-    private void sendMessage(List<UpcomingUserMessage> messages) {
+    private void sendMessage(List<OutgoingUserMessage> messages) {
         ThreadsLogger.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) return;
-        for (UpcomingUserMessage message : messages) {
+        for (OutgoingUserMessage message : messages) {
             mChatController.onUserInput(message);
         }
         if (null != mQuoteLayoutHolder) {
@@ -1105,12 +1106,6 @@ public final class ChatFragment extends BaseFragment implements
 
     public void setSurveySentStatus(long uuid, MessageState sentState) {
         chatAdapter.changeStateOfSurvey(uuid, sentState);
-    }
-
-    private boolean isCopy(String text) {
-        if (TextUtils.isEmpty(text)) return false;
-        if (TextUtils.isEmpty(PrefUtils.getLastCopyText())) return false;
-        return text.contains(PrefUtils.getLastCopyText());
     }
 
     private void hideCopyControls() {
@@ -1302,8 +1297,8 @@ public final class ChatFragment extends BaseFragment implements
                 return;
             }
             unChooseItem();
-            UpcomingUserMessage uum =
-                    new UpcomingUserMessage(
+            OutgoingUserMessage uum =
+                    new OutgoingUserMessage(
                             new FileDescription(
                                     appContext.getString(R.string.threads_I),
                                     photos.get(0),
@@ -1311,8 +1306,7 @@ public final class ChatFragment extends BaseFragment implements
                                     System.currentTimeMillis()
                             ),
                             null,
-                            inputText.trim(),
-                            isCopy(inputText)
+                            inputText.trim()
                     );
             mChatController.onUserInput(uum);
             inputTextObservable.set("");
@@ -1321,14 +1315,14 @@ public final class ChatFragment extends BaseFragment implements
             mFileDescription = null;
             for (int i = 1; i < photos.size(); i++) {
                 uum =
-                        new UpcomingUserMessage(
+                        new OutgoingUserMessage(
                                 new FileDescription(appContext.getString(R.string.threads_I),
                                         photos.get(i),
                                         new File(photos.get(i)).length(),
                                         System.currentTimeMillis())
                                 , null
                                 , null
-                                , false);
+                        );
                 mChatController.onUserInput(uum);
             }
 
@@ -1339,7 +1333,7 @@ public final class ChatFragment extends BaseFragment implements
                         externalCameraPhotoFile.getAbsolutePath(),
                         externalCameraPhotoFile.length(), System.currentTimeMillis()
                 );
-                UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
+                OutgoingUserMessage uum = new OutgoingUserMessage(mFileDescription, null, null);
                 sendMessage(Collections.singletonList(uum));
             }
             externalCameraPhotoFile = null;
@@ -1350,7 +1344,7 @@ public final class ChatFragment extends BaseFragment implements
                     new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA)).length(),
                     System.currentTimeMillis()
             );
-            UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
+            OutgoingUserMessage uum = new OutgoingUserMessage(mFileDescription, null, null);
             sendMessage(Collections.singletonList(uum));
         } else if (requestCode == REQUEST_CODE_SELFIE && resultCode == Activity.RESULT_OK) {
             mFileDescription = new FileDescription(appContext.getString(R.string.threads_image),
@@ -1358,7 +1352,7 @@ public final class ChatFragment extends BaseFragment implements
                     new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA)).length(),
                     System.currentTimeMillis());
             mFileDescription.setSelfie(true);
-            UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
+            OutgoingUserMessage uum = new OutgoingUserMessage(mFileDescription, null, null);
             sendMessage(Collections.singletonList(uum));
         } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
             openBottomSheetAndGallery();

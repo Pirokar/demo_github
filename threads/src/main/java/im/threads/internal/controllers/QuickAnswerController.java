@@ -7,7 +7,7 @@ import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultPhrase;
-import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.internal.model.OutgoingUserMessage;
 import im.threads.internal.utils.ThreadsLogger;
 
 public final class QuickAnswerController extends Fragment {
@@ -33,10 +33,10 @@ public final class QuickAnswerController extends Fragment {
                 });
     }
 
-    public void onUserAnswer(@NonNull UpcomingUserMessage upcomingUserMessage) {
+    public void onUserAnswer(@NonNull OutgoingUserMessage outgoingUserMessage) {
         ThreadsLogger.i(TAG, "onUserAnswer");
         ChatController cc = ChatController.getInstance();
-        cc.onUserInput(upcomingUserMessage);
+        cc.onUserInput(outgoingUserMessage);
         cc.setAllMessagesWereRead();
     }
 }

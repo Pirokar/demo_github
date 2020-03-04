@@ -11,7 +11,7 @@ import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.internal.model.OutgoingUserMessage;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
@@ -87,7 +87,7 @@ public final class ThreadsLib {
                         file.length(),
                         System.currentTimeMillis());
             }
-            UpcomingUserMessage msg = new UpcomingUserMessage(fileDescription, null, message, false);
+            OutgoingUserMessage msg = new OutgoingUserMessage(fileDescription, null, message);
             chatController.onUserInput(msg);
             return true;
         } else {

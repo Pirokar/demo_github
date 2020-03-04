@@ -3,6 +3,7 @@ package im.threads.internal.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
@@ -48,7 +49,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
     private static final String COLUMN_CONSULT_ORG_UNIT = "COLUMN_CONSULT_ORG_UNIT";
     private static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
     private static final String COLUMN_IS_READ = "COLUMN_IS_READ";
-    private static final String COLUMN_DISPLAY_MASSAGE = "COLUMN_DISPLAY_MESSAGE";
+    private static final String COLUMN_DISPLAY_MESSAGE = "COLUMN_DISPLAY_MESSAGE";
     private static final String COLUMN_SURVEY_SENDING_ID = "COLUMN_SURVEY_SENDING_ID";
     private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
 
@@ -104,7 +105,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
                         "%s text," +//connection type
                         "%s integer," + //isRead
                         "%s text" //COLUMN_BACKEND_ID
-                        + ", " + COLUMN_DISPLAY_MASSAGE + " integer"
+                        + ", " + COLUMN_DISPLAY_MESSAGE + " integer"
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
                         + ")",
@@ -147,7 +148,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
-            db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COLUMN_DISPLAY_MASSAGE + " INTEGER DEFAULT 0");
+            db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COLUMN_DISPLAY_MESSAGE + " INTEGER DEFAULT 0");
         }
         if (oldVersion < VERSION) {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
@@ -165,9 +166,23 @@ final class MyOpenHelper extends SQLiteOpenHelper {
      */
 
     List<ChatItem> getChatItems(int offset, int limit) {
+        return getChatItems(offset, limit, "");
+    }
+
+    List<ChatItem> getChatItems(int offset, int limit, List<String> typeList, List<String> stateList) {
+        return getChatItems(offset, limit, "where " + COLUMN_MESSAGE_TYPE + " in (" + joinParams(typeList) + ")" + " and " + COLUMN_MESSAGE_SEND_STATE + " in (" + joinParams(stateList) + ")");
+    }
+
+    private List<ChatItem> getChatItems(int offset, int limit, String condition) {
         List<ChatItem> items = new ArrayList<>();
-        String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc",
-                TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset), COLUMN_TIMESTAMP);
+        String query = String.format(
+                Locale.US,
+                "select * from %s " + condition + " order by %s asc limit %s offset %s",
+                TABLE_MESSAGES,
+                COLUMN_TIMESTAMP,
+                String.valueOf(limit),
+                String.valueOf(offset)
+        );
         try (Cursor c = getWritableDatabase().rawQuery(query, null)) {
             if (c.getCount() == 0) {
                 return items;
@@ -383,7 +398,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
                     cGetString(c, COLUMN_CONSULT_STATUS),
                     cGetString(c, COLUMN_CONSULT_TITLE),
                     cGetString(c, COLUMN_CONSULT_ORG_UNIT),
-                    cGetBool(c, COLUMN_DISPLAY_MASSAGE));
+                    cGetBool(c, COLUMN_DISPLAY_MESSAGE));
         } else if (type == MessageType.CONSULT_PHRASE.ordinal()) {
             return getConsultPhrase(c);
         } else if (type == MessageType.USER_PHRASE.ordinal()) {
@@ -448,7 +463,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.getTitle());
         cv.put(COLUMN_CONSULT_ORG_UNIT, consultConnectionMessage.getOrgUnit());
         cv.put(COLUMN_MESSAGE_UUID, consultConnectionMessage.getUuid());
-        cv.put(COLUMN_DISPLAY_MASSAGE, consultConnectionMessage.isDisplayMessage());
+        cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage());
         insertOrUpdateMessage(cv);
     }
 
@@ -760,7 +775,18 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         return cIsNull(c, columnName) ? 0 : c.getInt(c.getColumnIndex(columnName));
     }
 
-    private enum MessageType {
+    private String joinParams(final List<String> params) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        String divider = "";
+        for (String param : params) {
+            stringBuilder.append(divider);
+            DatabaseUtils.appendEscapedSQLString(stringBuilder, param);
+            divider = ", ";
+        }
+        return stringBuilder.toString();
+    }
+
+    enum MessageType {
         UNKNOWN,
         CONSULT_CONNECTED,
         CONSULT_PHRASE,

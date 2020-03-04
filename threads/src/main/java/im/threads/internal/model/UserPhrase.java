@@ -13,42 +13,39 @@ public final class UserPhrase implements ChatPhrase {
     private String providerId; //This this a mfms messageId required for read status updates
     private final String phrase;
     private MessageState sentState;
-    private final Quote mQuote;
+    private final Quote quote;
     private long phraseTimeStamp;
     private FileDescription fileDescription;
     private boolean isChosen;
-    private boolean isCopy = false;
     //для поиска сообщений в чате
     private boolean found;
 
     public OGData ogData;
     public String ogUrl;
 
-    public UserPhrase(String uuid, String providerId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
+    public UserPhrase(String uuid,
+                      String providerId,
+                      String phrase,
+                      Quote quote,
+                      long phraseTimeStamp,
+                      FileDescription fileDescription,
+                      MessageState sentState) {
         this.uuid = uuid;
         this.providerId = providerId;
         this.phrase = phrase;
-        this.mQuote = mQuote;
+        this.quote = quote;
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
         this.sentState = sentState;
     }
 
-    public UserPhrase(String uuid, String providerId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
-        this(uuid, providerId, phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
-    }
-
-    public UserPhrase(String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
+    public UserPhrase(String phrase,
+                      Quote quote,
+                      long phraseTimeStamp,
+                      FileDescription fileDescription,
+                      MessageState sentState) {
         this(UUID.randomUUID().toString(), "tempProviderId: " + UUID.randomUUID().toString(),
-                phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
-    }
-
-    public boolean isCopy() {
-        return isCopy;
-    }
-
-    public void setCopy(boolean copy) {
-        isCopy = copy;
+                phrase, quote, phraseTimeStamp, fileDescription, sentState);
     }
 
     @Override
@@ -69,23 +66,6 @@ public final class UserPhrase implements ChatPhrase {
     @Override
     public void setFound(boolean found) {
         this.found = found;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserPhrase)) return false;
-        UserPhrase that = (UserPhrase) o;
-        if (!TextUtils.isEmpty(uuid)) {
-            return uuid.equals(that.uuid);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid != null ? uuid.hashCode() : 0;
     }
 
     public String getUuid() {
@@ -114,7 +94,7 @@ public final class UserPhrase implements ChatPhrase {
     }
 
     public Quote getQuote() {
-        return mQuote;
+        return quote;
     }
 
     public String getPhrase() {
@@ -156,9 +136,9 @@ public final class UserPhrase implements ChatPhrase {
     }
 
     public boolean isOnlyImage() {
-        return TextUtils.isEmpty(phrase)
-                && mQuote == null
-                && FileUtils.isImage(fileDescription);
+        return TextUtils.isEmpty(phrase) &&
+                quote == null &&
+                FileUtils.isImage(fileDescription);
     }
 
     public boolean isOnlyDoc() {
@@ -167,8 +147,8 @@ public final class UserPhrase implements ChatPhrase {
 
     public boolean hasFile() {
         return fileDescription != null
-                || (mQuote != null
-                && mQuote.getFileDescription() != null);
+                || (quote != null
+                && quote.getFileDescription() != null);
     }
 
     @Override
@@ -179,26 +159,42 @@ public final class UserPhrase implements ChatPhrase {
                 '}' + "\n";
     }
 
-    public boolean hasSameContent(UserPhrase userPhrase) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserPhrase)) {
+            return false;
+        }
+        UserPhrase that = (UserPhrase) o;
+        if (!TextUtils.isEmpty(uuid)) {
+            return uuid.equals(that.uuid);
+        } else {
+            return false;
+        }
+    }
 
+    @Override
+    public int hashCode() {
+        return uuid != null ? uuid.hashCode() : 0;
+    }
+
+    public boolean hasSameContent(UserPhrase userPhrase) {
         if (userPhrase == null) {
             return false;
         }
-
         boolean hasSameContent = ObjectsCompat.equals(this.uuid, userPhrase.uuid)
                 && ObjectsCompat.equals(this.phrase, userPhrase.phrase)
                 && ObjectsCompat.equals(this.providerId, userPhrase.providerId)
                 && ObjectsCompat.equals(this.phraseTimeStamp, userPhrase.phraseTimeStamp)
                 && ObjectsCompat.equals(this.sentState, userPhrase.sentState);
-
         if (this.fileDescription != null) {
             hasSameContent = hasSameContent && this.fileDescription.hasSameContent(userPhrase.fileDescription);
         }
-
-        if (this.mQuote != null) {
-            hasSameContent = hasSameContent && this.mQuote.hasSameContent(userPhrase.mQuote);
+        if (this.quote != null) {
+            hasSameContent = hasSameContent && this.quote.hasSameContent(userPhrase.quote);
         }
-
         return hasSameContent;
     }
 }

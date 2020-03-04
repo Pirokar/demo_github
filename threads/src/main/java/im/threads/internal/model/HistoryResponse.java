@@ -25,7 +25,7 @@ public final class HistoryResponse {
 
     @Nullable
     public ConsultInfo getConsultInfo() {
-        if (agentInfo != null) {
+        if (agentInfo != null && agentInfo.getAgent() != null) {
             im.threads.internal.transport.models.Operator operator = agentInfo.getAgent();
             if (operator != null) {
                 return new ConsultInfo(

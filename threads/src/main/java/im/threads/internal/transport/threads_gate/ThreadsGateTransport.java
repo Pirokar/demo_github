@@ -370,6 +370,10 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
             webSocket.close(NORMAL_CLOSURE_STATUS, null);
         }
 
+        public void onClosed(WebSocket webSocket, int code, String reason) {
+            ThreadsLogger.i(TAG, "OnClosed : " + code + " / " + reason);
+        }
+
         @Override
         public void onFailure(WebSocket webSocket, Throwable t, Response response) {
             ThreadsLogger.i(TAG, "Error : " + t.getMessage());
