@@ -7,6 +7,7 @@ import im.threads.internal.utils.DateHelper;
 public final class MessageFromHistory implements ChatItem {
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
+    private List<String> providerIds;
     private String clientId;
     private Long threadId;
     private Operator operator;
@@ -42,8 +43,8 @@ public final class MessageFromHistory implements ChatItem {
         return providerId;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public List<String> getProviderIds() {
+        return providerIds;
     }
 
     public String getClientId() {

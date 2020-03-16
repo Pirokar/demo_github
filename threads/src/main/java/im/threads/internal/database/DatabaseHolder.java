@@ -162,6 +162,6 @@ public final class DatabaseHolder {
     }
 
     private void getUnreadMessagesCount(@NonNull final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
-        unreadMessagesCountListener.onUnreadMessagesCountChanged(mMyOpenHelper.getUnreadMessagesProviderIds().size());
+        unreadMessagesCountListener.onUnreadMessagesCountChanged(mMyOpenHelper.getUnreadMessagesCount());
     }
 }

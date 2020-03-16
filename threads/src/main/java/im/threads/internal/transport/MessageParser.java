@@ -77,11 +77,15 @@ public final class MessageParser {
     }
 
     private static ConsultConnectionMessage getConsultConnection(final String messageId, final long sentAt, final String shortMessage, final JsonObject fullMessage) {
+        //TODO: проверить
+
+
         OperatorJoinedContent content = Config.instance.gson.fromJson(fullMessage, OperatorJoinedContent.class);
         Operator operator = content.getOperator();
         return new ConsultConnectionMessage(
                 content.getUuid(),
                 messageId,
+                null,
                 String.valueOf(operator.getId()),
                 content.getType(),
                 operator.getName(),
@@ -140,9 +144,11 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), name, sentAt);
             }
+            // TODO: проверить что приходит
             return new ConsultPhrase(
                     content.getUuid(),
                     messageId,
+                    null,
                     fileDescription,
                     quote,
                     name,
