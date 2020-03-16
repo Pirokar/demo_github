@@ -13,8 +13,10 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
@@ -214,11 +216,10 @@ final class MyOpenHelper extends SQLiteOpenHelper {
     }
 
     int getUnreadMessagesCount() {
-        String sql = "select " + COLUMN_PROVIDER_ID +
+        String sql = "select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
                 " from " + TABLE_MESSAGES +
                 " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc";
-        ArrayList<String> ids = new ArrayList<>();
         try (Cursor c = getWritableDatabase().rawQuery(sql, null)) {
             return c.getCount();
         }
@@ -229,14 +230,14 @@ final class MyOpenHelper extends SQLiteOpenHelper {
                 " from " + TABLE_MESSAGES +
                 " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc";
-        ArrayList<String> ids = new ArrayList<>();
+        Set<String> ids = new HashSet<>();
         try (Cursor c = getWritableDatabase().rawQuery(sql, null)) {
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
                 ids.add(cGetString(c, COLUMN_PROVIDER_ID));
                 ids.addAll(stringToList(cGetString(c, COLUMN_PROVIDER_IDS)));
             }
         }
-        return ids;
+        return new ArrayList<>(ids);
     }
 
     int getMessagesCount() {
