@@ -8,6 +8,7 @@ public class MessageContent {
     private String text;
     private Date receivedDate;
     private Operator operator;
+    private List<String> providerIds;
     private List<Attachment> attachments;
     private List<Quote> quotes;
 
@@ -25,6 +26,10 @@ public class MessageContent {
 
     public Operator getOperator() {
         return operator;
+    }
+
+    public List<String> getProviderIds() {
+        return providerIds;
     }
 
     public List<Attachment> getAttachments() {

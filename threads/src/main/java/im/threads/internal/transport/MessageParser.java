@@ -82,6 +82,7 @@ public final class MessageParser {
         return new ConsultConnectionMessage(
                 content.getUuid(),
                 messageId,
+                content.getProviderIds(),
                 String.valueOf(operator.getId()),
                 content.getType(),
                 operator.getName(),
@@ -143,6 +144,7 @@ public final class MessageParser {
             return new ConsultPhrase(
                     content.getUuid(),
                     messageId,
+                    content.getProviderIds(),
                     fileDescription,
                     quote,
                     name,

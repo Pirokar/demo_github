@@ -8,9 +8,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,11 +33,12 @@ import im.threads.internal.model.UserPhrase;
  * обертка для БД
  */
 final class MyOpenHelper extends SQLiteOpenHelper {
-    private static final int VERSION = 7;
+    private static final int VERSION = 8;
     private static final String TABLE_MESSAGES = "TABLE_MESSAGES";
     private static final String COLUMN_TABLE_ID = "TABLE_ID";
     private static final String COLUMN_MESSAGE_UUID = "COLUMN_MESSAGE_UUID";
     private static final String COLUMN_PROVIDER_ID = "COLUMN_PROVIDER_ID";
+    private static final String COLUMN_PROVIDER_IDS = "COLUMN_PROVIDER_IDS";
     private static final String COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP";
     private static final String COLUMN_PHRASE = "COLUMN_PHRASE";
     private static final String COLUMN_MESSAGE_TYPE = "COLUMN_MESSAGE_TYPE";
@@ -103,7 +107,8 @@ final class MyOpenHelper extends SQLiteOpenHelper {
                         + ", " + COLUMN_CONSULT_ORG_UNIT + " text," +//COLUMN_CONSULT_ORG_UNIT
                         "%s text," +//connection type
                         "%s integer," + //isRead
-                        "%s text" //COLUMN_BACKEND_ID
+                        "%s text, " + //COLUMN_PROVIDER_ID
+                        "%s text " //COLUMN_PROVIDER_IDS
                         + ", " + COLUMN_DISPLAY_MASSAGE + " integer"
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
@@ -112,7 +117,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
                 , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
                 COLUMN_MESSAGE_UUID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID,
                 COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE,
-                COLUMN_IS_READ, COLUMN_PROVIDER_ID));
+                COLUMN_IS_READ, COLUMN_PROVIDER_ID, COLUMN_PROVIDER_IDS));
         db.execSQL("CREATE TABLE " + TABLE_QUOTE + "("
                 + COLUMN_QUOTE_UUID + " text,"
                 + COLUMN_QUOTE_FROM + " text, "
@@ -210,18 +215,29 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    List<String> getUnreadMessagesProviderIds() {
-        String sql = "select " + COLUMN_PROVIDER_ID +
+    int getUnreadMessagesCount() {
+        String sql = "select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
                 " from " + TABLE_MESSAGES +
                 " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc";
-        ArrayList<String> ids = new ArrayList<>();
+        try (Cursor c = getWritableDatabase().rawQuery(sql, null)) {
+            return c.getCount();
+        }
+    }
+
+    List<String> getUnreadMessagesProviderIds() {
+        String sql = "select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
+                " from " + TABLE_MESSAGES +
+                " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = 0" +
+                " order by " + COLUMN_TIMESTAMP + " asc";
+        Set<String> ids = new HashSet<>();
         try (Cursor c = getWritableDatabase().rawQuery(sql, null)) {
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                ids.add(c.getString(0));
+                ids.add(cGetString(c, COLUMN_PROVIDER_ID));
+                ids.addAll(stringToList(cGetString(c, COLUMN_PROVIDER_IDS)));
             }
         }
-        return ids;
+        return new ArrayList<>(ids);
     }
 
     int getMessagesCount() {
@@ -374,6 +390,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
             return new ConsultConnectionMessage(
                     cGetString(c, COLUMN_MESSAGE_UUID),
                     cGetString(c, COLUMN_PROVIDER_ID),
+                    stringToList(cGetString(c, COLUMN_PROVIDER_IDS)),
                     cGetString(c, COLUMN_CONSULT_ID),
                     cGetString(c, COLUMN_CONNECTION_TYPE),
                     cGetString(c, COLUMN_NAME),
@@ -398,6 +415,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         return new ConsultPhrase(
                 cGetString(c, COLUMN_MESSAGE_UUID),
                 cGetString(c, COLUMN_PROVIDER_ID),
+                stringToList(cGetString(c, COLUMN_PROVIDER_IDS)),
                 getFileDescription(cGetString(c, COLUMN_MESSAGE_UUID)),
                 getQuote(cGetString(c, COLUMN_MESSAGE_UUID)),
                 cGetString(c, COLUMN_NAME),
@@ -415,6 +433,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         return new UserPhrase(
                 cGetString(c, COLUMN_MESSAGE_UUID),
                 cGetString(c, COLUMN_PROVIDER_ID),
+                stringToList(cGetString(c, COLUMN_PROVIDER_IDS)),
                 cGetString(c, COLUMN_PHRASE),
                 getQuote(cGetString(c, COLUMN_MESSAGE_UUID)),
                 cGetLong(c, COLUMN_TIMESTAMP),
@@ -467,6 +486,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_CONSULT_STATUS, phrase.getStatus());
         cv.put(COLUMN_NAME, phrase.getConsultName());
         cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
+        cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.getProviderIds()));
         cv.put(COLUMN_SEX, phrase.getSex());
         insertOrUpdateMessage(cv);
         if (phrase.getFileDescription() != null) {
@@ -481,6 +501,7 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_UUID, phrase.getUuid());
         cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
+        cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.getProviderIds()));
         cv.put(COLUMN_PHRASE, phrase.getPhrase());
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal());
@@ -770,4 +791,25 @@ final class MyOpenHelper extends SQLiteOpenHelper {
         USER_PHRASE,
         SURVEY
     }
+
+    private List<String> stringToList(String text) {
+        if (text == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(text.split(";"));
+    }
+
+    private String listToString(List<String> list) {
+        if (list == null) {
+            return null;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        String divider = "";
+        for(String item: list) {
+            stringBuilder.append(divider).append(item);
+            divider = ";";
+        }
+        return stringBuilder.toString();
+    }
+
 }
