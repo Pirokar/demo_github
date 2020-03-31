@@ -3,17 +3,20 @@ package im.threads.internal.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.gson.JsonSyntaxException;
-
-import java.io.IOException;
-import java.util.UUID;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.ObjectsCompat;
 import androidx.preference.PreferenceManager;
+
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.JsonSyntaxException;
+import com.mfms.android.push_lite.utils.CommonUtils;
+
+import java.io.IOException;
+import java.util.UUID;
+
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 
@@ -243,12 +246,24 @@ public final class PrefUtils {
     }
 
     @WorkerThread
-    public static void migrateTransportIfNeeded() throws IOException {
+    public static void migrateTransportIfNeeded() {
         if (!ObjectsCompat.equals(getTransportType(), Config.instance.transport.getType().toString())) {
             setTransportType(Config.instance.transport.getType().toString());
-            FirebaseInstanceId.getInstance().deleteInstanceId();
-            setFcmToken(null);
+            resetPushToken();
         }
+    }
+
+    private static void resetPushToken() {
+        new Thread(() -> {
+            try {
+                String senderId = CommonUtils.getStringResourceByName( Config.instance.context, "gcm_defaultSenderId");
+                FirebaseInstanceId.getInstance().deleteToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE);
+                setFcmToken(null);
+                setFcmToken(FirebaseInstanceId.getInstance().getToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private static void setTransportType(String transportType) {
