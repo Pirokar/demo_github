@@ -2,6 +2,7 @@ package im.threads.internal.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import im.threads.ChatStyle;
+import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 
 public final class PrefUtils {
@@ -247,9 +249,19 @@ public final class PrefUtils {
 
     @WorkerThread
     public static void migrateTransportIfNeeded() {
-        if (!ObjectsCompat.equals(getTransportType(), Config.instance.transport.getType().toString())) {
-            setTransportType(Config.instance.transport.getType().toString());
-            resetPushToken();
+        String transportType = getTransportType();
+        if (TextUtils.isEmpty(transportType)) {
+            if ("THREADS_GATE".equals(Config.instance.transport.getType().toString())) {
+                setTransportType(Config.instance.transport.getType().toString());
+                resetPushToken();
+            } else {
+                setTransportType(ConfigBuilder.TransportType.MFMS_PUSH.toString());
+            }
+        } else {
+            if (!ObjectsCompat.equals(transportType, Config.instance.transport.getType().toString())) {
+                setTransportType(Config.instance.transport.getType().toString());
+                resetPushToken();
+            }
         }
     }
 
