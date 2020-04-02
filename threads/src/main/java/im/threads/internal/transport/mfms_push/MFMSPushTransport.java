@@ -9,6 +9,8 @@ import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
@@ -27,11 +29,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class MFMSPushTransport implements Transport {
+public final class MFMSPushTransport implements Transport, LifecycleObserver {
 
     private final ChatUpdateProcessor chatUpdateProcessor = ChatUpdateProcessor.getInstance();
 
     private CompositeDisposable compositeDisposable;
+    @Nullable
+    private Lifecycle lifecycle;
 
     @Override
     public void init() {
@@ -111,12 +115,12 @@ public final class MFMSPushTransport implements Transport {
     }
 
     @Override
-    public void sendEnvironmentMessage(String clientId) {
+    public void sendEnvironmentMessage() {
         subscribe(
                 Completable.fromAction(() -> {
                     final String message = OutgoingMessageCreator.createEnvironmentMessage(
                             PrefUtils.getUserName(),
-                            clientId,
+                            PrefUtils.getClientID(),
                             PrefUtils.getClientIDEncrypted(),
                             PrefUtils.getData(),
                             Config.instance.context
@@ -225,8 +229,20 @@ public final class MFMSPushTransport implements Transport {
     }
 
     @Override
-    public void setLifecycle(Lifecycle lifecycle) {
+    public synchronized void setLifecycle(@NonNull Lifecycle lifecycle) {
+        if (this.lifecycle != null) {
+            this.lifecycle.removeObserver(this);
+        }
+        this.lifecycle = lifecycle;
+        this.lifecycle.addObserver(this);
     }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void sendUserInfo() {
+        sendInitChatMessage();
+        sendEnvironmentMessage();
+    }
+
 
     /**
      * Метод-обертка над методом mfms sendMessage

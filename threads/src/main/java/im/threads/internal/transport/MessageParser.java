@@ -1,5 +1,7 @@
 package im.threads.internal.transport;
 
+import android.text.TextUtils;
+
 import com.google.gson.JsonObject;
 
 import java.util.Date;
@@ -64,12 +66,23 @@ public final class MessageParser {
         return fullMessage.get(MessageAttributes.TYPE).getAsString();
     }
 
+    /**
+     * @return true если в fullMessage есть поле clientId и оно совпадает с currentClientId
+     */
+    public static boolean checkId(final JsonObject fullMessage, final String currentClientId) {
+        return !TextUtils.isEmpty(currentClientId)
+                && fullMessage != null
+                && fullMessage.has(MessageAttributes.CLIENT_ID)
+                && currentClientId.equalsIgnoreCase(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString());
+    }
+
     private static ConsultConnectionMessage getConsultConnection(final String messageId, final long sentAt, final String shortMessage, final JsonObject fullMessage) {
         OperatorJoinedContent content = Config.instance.gson.fromJson(fullMessage, OperatorJoinedContent.class);
         Operator operator = content.getOperator();
         return new ConsultConnectionMessage(
                 content.getUuid(),
                 messageId,
+                content.getProviderIds(),
                 String.valueOf(operator.getId()),
                 content.getType(),
                 operator.getName(),
@@ -131,6 +144,7 @@ public final class MessageParser {
             return new ConsultPhrase(
                     content.getUuid(),
                     messageId,
+                    content.getProviderIds(),
                     fileDescription,
                     quote,
                     name,
