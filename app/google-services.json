@@ -1,0 +1,371 @@
+{
+  "project_info": {
+    "project_number": "158671513869",
+    "firebase_url": "https://thr-threads.firebaseio.com",
+    "project_id": "thr-threads",
+    "storage_bucket": "thr-threads.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:8e761a7deba980f5b02844",
+        "android_client_info": {
+          "package_name": "com.brooma.threads.android.amurtiger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:06967d11fb7af0f9b02844",
+        "android_client_info": {
+          "package_name": "com.sequenia.appwithchat.beta4"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:e49ec35e48f7e5c5b02844",
+        "android_client_info": {
+          "package_name": "com.sequenia.appwithchat.beta4.channel2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:1c5e58aba5e9f451b02844",
+        "android_client_info": {
+          "package_name": "com.sequenia.appwithchat.polarbear"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:9e72be52409a6adbb02844",
+        "android_client_info": {
+          "package_name": "com.sequenia.appwithchat.polarbear.channel2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:f2646027e78bacb9b02844",
+        "android_client_info": {
+          "package_name": "com.sequenia.appwithchatdev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:1f82582c5c39ec12b02844",
+        "android_client_info": {
+          "package_name": "com.threads.android.beta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:8f0e5c95c932eab7b02844",
+        "android_client_info": {
+          "package_name": "com.threads.android.bobtail"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:e125773233b030e8b02844",
+        "android_client_info": {
+          "package_name": "com.threads.android.gatetest18048"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:efd5aa4bae3b4154b02844",
+        "android_client_info": {
+          "package_name": "com.threads.android.winlab0"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.winlab2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

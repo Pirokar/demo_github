@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
@@ -49,6 +50,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
+import okhttp3.logging.HttpLoggingInterceptor;
 import okio.ByteString;
 
 public class ThreadsGateTransport implements Transport, LifecycleObserver {
@@ -67,8 +69,14 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
 
     private final List<String> messageInProcessIds = new ArrayList<>();
 
-    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid) {
-        this.client = new OkHttpClient.Builder().build();
+    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid, boolean isDebugLoggingEnabled) {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .pingInterval(10_000, TimeUnit.MILLISECONDS);
+        if (isDebugLoggingEnabled) {
+            clientBuilder.addInterceptor(new HttpLoggingInterceptor()
+                    .setLevel(HttpLoggingInterceptor.Level.BODY));
+        }
+        this.client = clientBuilder.build();
         this.listener = new WebSocketListener();
         this.request = new Request.Builder()
                 .url(threadsGateUrl)
@@ -112,10 +120,10 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     }
 
     @Override
-    public void sendEnvironmentMessage(String clientId) {
+    public void sendEnvironmentMessage() {
         final JsonObject content = OutgoingMessageCreator.createEnvironmentMessage(
                 PrefUtils.getUserName(),
-                clientId,
+                PrefUtils.getClientID(),
                 PrefUtils.getClientIDEncrypted(),
                 PrefUtils.getData(),
                 Config.instance.context
@@ -284,7 +292,6 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
             ThreadsLogger.i(TAG, "OnOpen : " + response);
-            sendEnvironmentMessage(PrefUtils.getClientID());
         }
 
         @Override
@@ -298,6 +305,8 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
                 if (action.equals(Action.REGISTER_DEVICE)) {
                     RegisterDeviceData data = Config.instance.gson.fromJson(response.getData().toString(), RegisterDeviceData.class);
                     PrefUtils.setDeviceAddress(data.getDeviceAddress());
+                    sendInitChatMessage();
+                    sendEnvironmentMessage();
                 }
                 if (action.equals(Action.SEND_MESSAGE)) {
                     SendMessageData data = Config.instance.gson.fromJson(response.getData().toString(), SendMessageData.class);
@@ -342,7 +351,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
                                 if (content.getClientId() != null) {
                                     ChatUpdateProcessor.getInstance().postTyping(content.getClientId());
                                 }
-                            } else {
+                            } else if (ThreadsGateMessageParser.checkId(message, PrefUtils.getClientID())) {
                                 ChatItem chatItem = ThreadsGateMessageParser.format(message);
                                 if (chatItem != null) {
                                     ChatUpdateProcessor.getInstance().postNewMessage(chatItem);

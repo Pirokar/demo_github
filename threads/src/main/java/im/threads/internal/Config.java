@@ -57,7 +57,7 @@ public final class Config {
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
-        this.transport = getTransport();
+        this.transport = getTransport(isDebugLoggingEnabled);
     }
 
     public void applyChatStyle(ChatStyle chatStyle) {
@@ -83,7 +83,7 @@ public final class Config {
         return localInstance;
     }
 
-    private Transport getTransport() {
+    private Transport getTransport(boolean isDebugLoggingEnabled) {
         ConfigBuilder.TransportType transportType = ConfigBuilder.TransportType.MFMS_PUSH;
         String transportTypeValue = MetaDataUtils.getThreadsTransportType(this.context);
         if (!TextUtils.isEmpty(transportTypeValue)) {
@@ -104,7 +104,7 @@ public final class Config {
             if (TextUtils.isEmpty(threadsGateProviderUid)) {
                 throw new MetaConfigurationException("Threads gate provider uid is not set");
             }
-            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid);
+            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, isDebugLoggingEnabled);
         }
         return new MFMSPushTransport();
     }
