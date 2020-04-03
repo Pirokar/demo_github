@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,6 +50,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
+import okhttp3.logging.HttpLoggingInterceptor;
 import okio.ByteString;
 
 public class ThreadsGateTransport implements Transport, LifecycleObserver {
@@ -67,8 +69,14 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
 
     private final List<String> messageInProcessIds = new ArrayList<>();
 
-    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid) {
-        this.client = new OkHttpClient.Builder().build();
+    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid, boolean isDebugLoggingEnabled) {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .pingInterval(10_000, TimeUnit.MILLISECONDS);
+        if (isDebugLoggingEnabled) {
+            clientBuilder.addInterceptor(new HttpLoggingInterceptor()
+                    .setLevel(HttpLoggingInterceptor.Level.BODY));
+        }
+        this.client = clientBuilder.build();
         this.listener = new WebSocketListener();
         this.request = new Request.Builder()
                 .url(threadsGateUrl)

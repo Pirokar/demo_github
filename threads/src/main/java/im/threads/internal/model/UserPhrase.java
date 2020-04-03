@@ -2,6 +2,7 @@ package im.threads.internal.model;
 
 import android.text.TextUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 import androidx.core.util.ObjectsCompat;
@@ -11,6 +12,7 @@ import im.threads.internal.utils.FileUtils;
 public final class UserPhrase implements ChatPhrase {
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
+    private List<String> providerIds;
     private final String phrase;
     private MessageState sentState;
     private final Quote mQuote;
@@ -24,9 +26,10 @@ public final class UserPhrase implements ChatPhrase {
     public OGData ogData;
     public String ogUrl;
 
-    public UserPhrase(String uuid, String providerId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
+    public UserPhrase(String uuid, String providerId, List<String> providerIds, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
         this.uuid = uuid;
         this.providerId = providerId;
+        this.providerIds = providerIds;
         this.phrase = phrase;
         this.mQuote = mQuote;
         this.phraseTimeStamp = phraseTimeStamp;
@@ -35,11 +38,11 @@ public final class UserPhrase implements ChatPhrase {
     }
 
     public UserPhrase(String uuid, String providerId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
-        this(uuid, providerId, phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
+        this(uuid, providerId, null, phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
     }
 
     public UserPhrase(String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
-        this(UUID.randomUUID().toString(), "tempProviderId: " + UUID.randomUUID().toString(),
+        this(UUID.randomUUID().toString(), "tempProviderId: " + UUID.randomUUID().toString(), null,
                 phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
     }
 
@@ -98,6 +101,10 @@ public final class UserPhrase implements ChatPhrase {
 
     public String getProviderId() {
         return providerId;
+    }
+
+    public List<String> getProviderIds() {
+        return providerIds;
     }
 
     public void setProviderId(String providerId) {

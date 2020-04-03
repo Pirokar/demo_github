@@ -2,6 +2,8 @@ package im.threads.internal.model;
 
 import android.text.TextUtils;
 
+import java.util.List;
+
 import androidx.core.util.ObjectsCompat;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
@@ -13,6 +15,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
     private final String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
+    private List<String> providerIds;
     private final boolean sex;
     private final long timeStamp;
     private final String phrase;
@@ -29,7 +32,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     public OGData ogData;
     public String ogUrl;
 
-    public ConsultPhrase(String uuid, String providerId, FileDescription fileDescription, Quote quote, String consultName,
+    public ConsultPhrase(String uuid, String providerId, List<String> providerIds, FileDescription fileDescription, Quote quote, String consultName,
                          String phrase, long timeStamp, String consultId, String avatarPath,
                          boolean isRead, String status, boolean sex) {
 
@@ -37,6 +40,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
         this.uuid = uuid;
         this.providerId = providerId;
+        this.providerIds = providerIds;
         this.fileDescription = fileDescription;
         this.quote = quote;
         this.consultName = consultName;
@@ -55,8 +59,8 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         return providerId;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public List<String> getProviderIds() {
+        return providerIds;
     }
 
     public String getStatus() {

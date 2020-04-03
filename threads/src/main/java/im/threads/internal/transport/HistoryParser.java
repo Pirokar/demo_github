@@ -57,6 +57,7 @@ public final class HistoryParser {
                 }
                 final String uuid = message.getUuid();
                 final String providerId = message.getProviderId();
+                final List<String> providerIds = message.getProviderIds();
                 final long timeStamp = message.getTimeStamp();
                 final Operator operator = message.getOperator();
                 String name = null;
@@ -75,7 +76,7 @@ public final class HistoryParser {
                 switch (type) {
                     case OPERATOR_JOINED:
                     case OPERATOR_LEFT:
-                        out.add(new ConsultConnectionMessage(uuid, providerId, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay()));
+                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay()));
                         break;
                     case SURVEY:
                         Survey survey = getSurveyFromJsonString(message.getText());
@@ -101,14 +102,14 @@ public final class HistoryParser {
                         if (quote != null && quote.getFileDescription() != null)
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
-                            out.add(new ConsultPhrase(uuid, providerId, fileDescription, quote, name, phraseText, timeStamp,
+                            out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, timeStamp,
                                     operatorId, photoUrl, message.isRead(), null, false));
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
                             }
                             MessageState sentState = message.isRead() ? MessageState.STATE_WAS_READ : MessageState.STATE_SENT;
-                            out.add(new UserPhrase(uuid, providerId, phraseText, quote, timeStamp, fileDescription, sentState));
+                            out.add(new UserPhrase(uuid, providerId, providerIds, phraseText, quote, timeStamp, fileDescription, sentState));
                         }
                 }
             }
