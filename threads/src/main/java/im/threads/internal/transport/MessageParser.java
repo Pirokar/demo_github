@@ -84,6 +84,7 @@ public final class MessageParser {
         return new ConsultConnectionMessage(
                 content.getUuid(),
                 messageId,
+                content.getProviderIds(),
                 String.valueOf(operator.getId()),
                 content.getType(),
                 operator.getAliasOrName(),
@@ -146,6 +147,7 @@ public final class MessageParser {
             return new ConsultPhrase(
                     content.getUuid(),
                     messageId,
+                    content.getProviderIds(),
                     fileDescription,
                     quote,
                     name,
@@ -162,8 +164,7 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), null, sentAt);
             }
-            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription, MessageState.STATE_SENT);
-            return userPhrase;
+            return new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription, MessageState.STATE_SENT);
         }
     }
 

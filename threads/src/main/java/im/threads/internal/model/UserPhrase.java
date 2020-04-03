@@ -3,6 +3,7 @@ package im.threads.internal.model;
 import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 import im.threads.internal.opengraph.OGData;
@@ -11,6 +12,7 @@ import im.threads.internal.utils.FileUtils;
 public final class UserPhrase implements ChatPhrase {
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
+    private List<String> providerIds;
     private final String phrase;
     private MessageState sentState;
     private final Quote quote;
@@ -25,6 +27,7 @@ public final class UserPhrase implements ChatPhrase {
 
     public UserPhrase(String uuid,
                       String providerId,
+                      List<String> providerIds,
                       String phrase,
                       Quote quote,
                       long phraseTimeStamp,
@@ -32,6 +35,7 @@ public final class UserPhrase implements ChatPhrase {
                       MessageState sentState) {
         this.uuid = uuid;
         this.providerId = providerId;
+        this.providerIds = providerIds;
         this.phrase = phrase;
         this.quote = quote;
         this.phraseTimeStamp = phraseTimeStamp;
@@ -39,13 +43,22 @@ public final class UserPhrase implements ChatPhrase {
         this.sentState = sentState;
     }
 
+    public UserPhrase(String uuid,
+                      String providerId,
+                      String phrase,
+                      Quote quote,
+                      long phraseTimeStamp,
+                      FileDescription fileDescription,
+                      MessageState sentState) {
+        this(uuid, providerId, null, phrase, quote, phraseTimeStamp, fileDescription, sentState);
+    }
+
     public UserPhrase(String phrase,
                       Quote quote,
                       long phraseTimeStamp,
                       FileDescription fileDescription,
                       MessageState sentState) {
-        this(UUID.randomUUID().toString(), "tempProviderId: " + UUID.randomUUID().toString(),
-                phrase, quote, phraseTimeStamp, fileDescription, sentState);
+        this(UUID.randomUUID().toString(), "tempProviderId: " + UUID.randomUUID().toString(), phrase, quote, phraseTimeStamp, fileDescription, sentState);
     }
 
     @Override
@@ -78,6 +91,10 @@ public final class UserPhrase implements ChatPhrase {
 
     public String getProviderId() {
         return providerId;
+    }
+
+    public List<String> getProviderIds() {
+        return providerIds;
     }
 
     public void setProviderId(String providerId) {

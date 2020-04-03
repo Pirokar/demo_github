@@ -4,10 +4,13 @@ import android.support.v4.util.ObjectsCompat;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
 
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
+    private List<String> providerIds;
     private final String type;
     private final String name;
     private final boolean sex;
@@ -17,12 +20,13 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     private String orgUnit;
     private boolean displayMessage;
 
-    public ConsultConnectionMessage(String uuid, String providerId, String consultId, String type, String name, boolean sex, long date,
+    public ConsultConnectionMessage(String uuid, String providerId, List<String> providerIds, String consultId, String type, String name, boolean sex, long date,
                                     String avatarPath, String status, String title, String orgUnit, boolean displayMessage) {
 
         super(avatarPath, consultId);
         this.uuid = uuid;
         this.providerId = providerId;
+        this.providerIds = providerIds;
         this.type = type;
         this.name = name;
         this.sex = sex;
