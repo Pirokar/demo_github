@@ -11,16 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
 import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.helpers.FileProviderHelper;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
 
@@ -47,14 +47,8 @@ public final class FilesAndMediaController extends Fragment {
         this.activity = activity;
     }
 
-    public void unbindActivty() {
-        activity = null;
-    }
-
     public void getFilesAsync() {
-        DatabaseHolder.getInstance().getAllFileDescriptions(new CompletionHandler<List<FileDescription>>() {
-            @Override
-            public void onComplete(final List<FileDescription> data) {
+        DatabaseHolder.getInstance().getAllFileDescriptions(data ->
                 new Handler(Looper.getMainLooper()).post(() -> {
                     if (null != activity) {
                         List<FileDescription> list = new ArrayList<>();
@@ -65,13 +59,7 @@ public final class FilesAndMediaController extends Fragment {
                         }
                         activity.onFileReceive(list);
                     }
-                });
-            }
-
-            @Override
-            public void onError(Throwable e, String message, List<FileDescription> data) {
-            }
-        });
+                }));
     }
 
     public void onFileClick(FileDescription fileDescription) {

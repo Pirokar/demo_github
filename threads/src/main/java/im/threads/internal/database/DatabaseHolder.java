@@ -3,18 +3,19 @@ package im.threads.internal.database;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.core.util.Consumer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import im.threads.ThreadsLib;
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
@@ -30,6 +31,10 @@ public final class DatabaseHolder {
     private final MyOpenHelper mMyOpenHelper;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    private DatabaseHolder() {
+        mMyOpenHelper = new MyOpenHelper(Config.instance.context);
+    }
+
     @NonNull
     public static DatabaseHolder getInstance() {
         if (instance == null) {
@@ -43,10 +48,6 @@ public final class DatabaseHolder {
      */
     static void eraseInstance() {
         instance = null;
-    }
-
-    private DatabaseHolder() {
-        mMyOpenHelper = new MyOpenHelper(Config.instance.context);
     }
 
     /**
@@ -75,10 +76,10 @@ public final class DatabaseHolder {
         return userPhrases;
     }
 
-    public void getLastConsultPhrase(final CompletionHandler<ConsultPhrase> handler) {
+    public void getLastConsultPhrase(final Consumer<ConsultPhrase> handler) {
         executorService.execute(() -> {
             ConsultPhrase cp = mMyOpenHelper.getLastConsultPhrase();
-            handler.onComplete(cp);
+            handler.accept(cp);
         });
     }
 
@@ -138,10 +139,10 @@ public final class DatabaseHolder {
         mMyOpenHelper.setUserPhraseStateByProviderId(providerId, messageState);
     }
 
-    public void setAllConsultMessagesWereRead(final CompletionHandler<Void> handler) {
+    public void setAllConsultMessagesWereRead(final Consumer<Void> handler) {
         executorService.execute(() -> {
             mMyOpenHelper.setAllConsultMessagesWereRead();
-            handler.onComplete(null);
+            handler.accept(null);
         });
     }
 
@@ -149,8 +150,8 @@ public final class DatabaseHolder {
         mMyOpenHelper.setConsultMessageWasRead(providerId);
     }
 
-    public void getAllFileDescriptions(final CompletionHandler<List<FileDescription>> handler) {
-        executorService.execute(() -> handler.onComplete(mMyOpenHelper.getAllFileDescriptions()));
+    public void getAllFileDescriptions(final Consumer<List<FileDescription>> handler) {
+        executorService.execute(() -> handler.accept(mMyOpenHelper.getAllFileDescriptions()));
     }
 
     public void updateFileDescription(@NonNull FileDescription fileDescription) {

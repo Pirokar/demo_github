@@ -20,15 +20,17 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.util.Consumer;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.ThreadsLib;
@@ -36,7 +38,6 @@ import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.MessageFormatter;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.picasso_url_connection_only.Target;
 import im.threads.internal.utils.CircleTransformation;
@@ -143,16 +144,7 @@ public final class NotificationService extends ThreadsService {
                         final Notification notification = getPreNStyleNotification(intent, null, message);
                         notifyUnreadMessagesCountChanged(nm, notification);
                     } else {
-                        getNStyleNotification(intent, null, new CompletionHandler<Notification>() {
-                            @Override
-                            public void onComplete(final Notification notification) {
-                                notifyUnreadMessagesCountChanged(nm, notification);
-                            }
-
-                            @Override
-                            public void onError(final Throwable e, final String message, final Notification data) {
-                            }
-                        }, message);
+                        getNStyleNotification(intent, null, notification -> notifyUnreadMessagesCountChanged(nm, notification), message);
                     }
                     break;
                 case ACTION_ADD_UNREAD_MESSAGE_LIST:
@@ -161,16 +153,7 @@ public final class NotificationService extends ThreadsService {
                         final Notification notification = getPreNStyleNotification(intent, messageContent, null);
                         notifyUnreadMessagesCountChanged(nm, notification);
                     } else {
-                        getNStyleNotification(intent, messageContent, new CompletionHandler<Notification>() {
-                            @Override
-                            public void onComplete(final Notification notification) {
-                                notifyUnreadMessagesCountChanged(nm, notification);
-                            }
-
-                            @Override
-                            public void onError(final Throwable e, final String message, final Notification data) {
-                            }
-                        }, null);
+                        getNStyleNotification(intent, messageContent, notification -> notifyUnreadMessagesCountChanged(nm, notification), null);
                     }
                     break;
                 case ACTION_ADD_UNSENT_MESSAGE:
@@ -362,7 +345,7 @@ public final class NotificationService extends ThreadsService {
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    private void getNStyleNotification(final Intent intent, @Nullable final MessageFormatter.MessageContent messageContent, final CompletionHandler<Notification> completionHandler, @Nullable final String message) {
+    private void getNStyleNotification(final Intent intent, @Nullable final MessageFormatter.MessageContent messageContent, final Consumer<Notification> completionHandler, @Nullable final String message) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         final String appMarker = intent.getStringExtra(EXTRA_APP_MARKER);
         builder.setShowWhen(true);
@@ -389,7 +372,7 @@ public final class NotificationService extends ThreadsService {
             executor.execute(() -> {
                 builder.setContentIntent(getChatIntent(appMarker));
                 builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
-                completionHandler.onComplete(builder.build());
+                completionHandler.accept(builder.build());
 
             });
         } else if (messageContent != null) {
@@ -418,7 +401,7 @@ public final class NotificationService extends ThreadsService {
                     if (messageContent.isNeedAnswer) {
                         builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
                     }
-                    completionHandler.onComplete(builder.build());
+                    completionHandler.accept(builder.build());
 
                 });
                 return;
@@ -436,7 +419,7 @@ public final class NotificationService extends ThreadsService {
                         if (messageContent.isNeedAnswer) {
                             builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
                         }
-                        completionHandler.onComplete(builder.build());
+                        completionHandler.accept(builder.build());
                     } catch (final IOException e) {
                         ThreadsLogger.e(TAG, "getNStyleNotification", e);
                     }
@@ -453,7 +436,7 @@ public final class NotificationService extends ThreadsService {
                 if (messageContent.isNeedAnswer) {
                     builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
                 }
-                completionHandler.onComplete(builder.build());
+                completionHandler.accept(builder.build());
             });
         }
     }

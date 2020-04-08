@@ -31,14 +31,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -49,6 +41,15 @@ import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -99,11 +100,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  */
 public final class ChatFragment extends BaseFragment implements
         AttachmentBottomSheetDialogFragment.Callback,
-        ChatAdapter.AdapterInterface,
         FilePickerFragment.SelectedListener,
         PopupMenu.OnMenuItemClickListener {
-
-    private static final String TAG = ChatFragment.class.getSimpleName();
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -113,11 +111,10 @@ public final class ChatFragment extends BaseFragment implements
     public static final int REQUEST_PERMISSION_CAMERA = 103;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
     public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 107;
-
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
-
+    private static final String TAG = ChatFragment.class.getSimpleName();
     private static final float DISABLED_ALPHA = 0.5f;
     private static final float ENABLED_ALPHA = 1.0f;
 
@@ -133,6 +130,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private ChatController mChatController;
     private ChatAdapter chatAdapter;
+    private ChatAdapter.Callback chatAdapterCallback;
     private QuoteLayoutHolder mQuoteLayoutHolder;
     private Quote mQuote = null;
     private FileDescription mFileDescription = null;
@@ -161,12 +159,17 @@ public final class ChatFragment extends BaseFragment implements
         return new ChatFragment();
     }
 
+    public static boolean isShown() {
+        return chatIsShown;
+    }
+
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
         appContext = Config.instance.context;
         style = Config.instance.getChatStyle();
+
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
         if (activity instanceof ChatActivity) {
             ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
@@ -179,6 +182,7 @@ public final class ChatFragment extends BaseFragment implements
         initToolbar();
         setHasOptionsMenu(true);
         initController();
+        chatAdapterCallback = new ChatFragment.AdapterCallback();
         setFragmentStyle(style);
 
         updateInputEnable(true);
@@ -221,7 +225,7 @@ public final class ChatFragment extends BaseFragment implements
         mQuoteLayoutHolder = new QuoteLayoutHolder();
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         binding.recycler.setLayoutManager(mLayoutManager);
-        chatAdapter = new ChatAdapter(activity, this);
+        chatAdapter = new ChatAdapter(activity, chatAdapterCallback);
         RecyclerView.ItemAnimator itemAnimator = binding.recycler.getItemAnimator();
         if (itemAnimator != null) {
             itemAnimator.setChangeDuration(0);
@@ -239,12 +243,12 @@ public final class ChatFragment extends BaseFragment implements
         binding.sendMessage.setOnClickListener(v -> onSendButtonClick());
         binding.consultName.setOnClickListener(v -> {
             if (mChatController.isConsultFound()) {
-                onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
+                chatAdapterCallback.onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
             }
         });
         binding.subtitle.setOnClickListener(v -> {
             if (mChatController.isConsultFound()) {
-                onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
+                chatAdapterCallback.onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
             }
         });
         configureInputChangesSubscription();
@@ -523,59 +527,6 @@ public final class ChatFragment extends BaseFragment implements
         bottomSheetDialogFragment = null;
     }
 
-    @Override
-    public void onFileClick(FileDescription filedescription) {
-        mChatController.onFileClick(filedescription);
-    }
-
-    @Override
-    public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
-        if (Config.instance.getChatStyle().canShowSpecialistInfo) {
-            mChatController.onConsultChoose(getActivity(), consultConnectionMessage.getConsultId());
-        }
-    }
-
-    @Override
-    public void onRatingClick(@NonNull Survey survey, int rating) {
-        if (getActivity() != null) {
-            survey.getQuestions().get(0).setRate(rating);
-            mChatController.onRatingClick(survey);
-        }
-    }
-
-    @Override
-    public void onResolveThreadClick(boolean approveResolve) {
-        if (getActivity() != null) {
-            mChatController.onResolveThreadClick(approveResolve);
-        }
-    }
-
-    @Override
-    public void onImageClick(ChatPhrase chatPhrase) {
-        Activity activity = getActivity();
-        if (chatPhrase.getFileDescription().getFilePath() == null) return;
-        if (chatPhrase instanceof UserPhrase) {
-            if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_WAS_READ) {
-                mChatController.checkAndResendPhrase((UserPhrase) chatPhrase);
-            }
-            if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
-                startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));
-            }
-        } else if (chatPhrase instanceof ConsultPhrase) {
-            startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));
-        }
-    }
-
-    @Override
-    public void onImageDownloadRequest(FileDescription fileDescription) {
-        mChatController.onImageDownloadRequest(fileDescription);
-    }
-
-    @Override
-    public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
-        mChatController.checkAndResendPhrase(userPhrase);
-    }
-
     public void updateUi() {
         chatAdapter.notifyDataSetChangedOnUi();
     }
@@ -631,43 +582,6 @@ public final class ChatFragment extends BaseFragment implements
             }
         }
         return false;
-    }
-
-    @Override
-    public void onPhraseLongClick(final ChatPhrase cp, final int position) {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        unChooseItem();
-        if (cp == mChosenPhrase) {
-            return;
-        }
-        Drawable d = AppCompatResources.getDrawable(activity, R.drawable.ic_arrow_back_blue_24dp);
-
-        ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
-        ColorsHelper.setDrawableColor(activity, d, style.chatBodyIconsTint);
-        binding.chatBackButton.setImageDrawable(d);
-
-        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, style.chatToolbarTextColorResId);
-
-        binding.copyControls.setVisibility(View.VISIBLE);
-        binding.consultName.setVisibility(View.GONE);
-        binding.subtitle.setVisibility(View.GONE);
-
-        if (binding.chatBackButton.getVisibility() == View.GONE) {
-            binding.chatBackButton.setVisibility(View.VISIBLE);
-        }
-        binding.contentCopy.setOnClickListener(v -> {
-            onCopyClick(activity, cp);
-            hideBackButton();
-        });
-        binding.reply.setOnClickListener(v -> {
-            onReplyClick(cp, position);
-            hideBackButton();
-        });
-        mChosenPhrase = cp;
-        chatAdapter.setItemChosen(true, cp);
     }
 
     private void onReplyClick(ChatPhrase cp, int position) {
@@ -728,13 +642,6 @@ public final class ChatFragment extends BaseFragment implements
         PrefUtils.setLastCopyText(cp.getPhraseText());
         if (null != mChosenPhrase) {
             unChooseItem();
-        }
-    }
-
-    @Override
-    public void onConsultAvatarClick(String consultId) {
-        if (Config.instance.getChatStyle().canShowSpecialistInfo) {
-            mChatController.onConsultChoose(getActivity(), consultId);
         }
     }
 
@@ -926,7 +833,9 @@ public final class ChatFragment extends BaseFragment implements
 
     private void sendMessage(List<UpcomingUserMessage> messages) {
         ThreadsLogger.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
-        if (mChatController == null) return;
+        if (mChatController == null) {
+            return;
+        }
         for (UpcomingUserMessage message : messages) {
             mChatController.onUserInput(message);
         }
@@ -1156,7 +1065,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         h.post(() -> {
-            chatAdapter = new ChatAdapter(activity, ChatFragment.this);
+            chatAdapter = new ChatAdapter(activity, chatAdapterCallback);
             binding.recycler.setAdapter(chatAdapter);
             setTitleStateDefault();
             welcomeScreenVisibility(false);
@@ -1339,8 +1248,7 @@ public final class ChatFragment extends BaseFragment implements
                         externalCameraPhotoFile.getAbsolutePath(),
                         externalCameraPhotoFile.length(), System.currentTimeMillis()
                 );
-                UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
-                sendMessage(Collections.singletonList(uum));
+                sendMessage(Collections.singletonList(new UpcomingUserMessage(mFileDescription, null, null, false)));
             }
             externalCameraPhotoFile = null;
         } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == Activity.RESULT_OK) {
@@ -1350,8 +1258,7 @@ public final class ChatFragment extends BaseFragment implements
                     new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA)).length(),
                     System.currentTimeMillis()
             );
-            UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
-            sendMessage(Collections.singletonList(uum));
+            sendMessage(Collections.singletonList(new UpcomingUserMessage(mFileDescription, null, null, false)));
         } else if (requestCode == REQUEST_CODE_SELFIE && resultCode == Activity.RESULT_OK) {
             mFileDescription = new FileDescription(appContext.getString(R.string.threads_image),
                     data.getStringExtra(CameraActivity.IMAGE_EXTRA),
@@ -1559,10 +1466,6 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
-    public static boolean isShown() {
-        return chatIsShown;
-    }
-
     private void search(final boolean searchInFiles) {
         Activity activity = getActivity();
         if (activity == null) {
@@ -1578,6 +1481,42 @@ public final class ChatFragment extends BaseFragment implements
         Keyboard.show(activity, binding.search, 100);
         binding.swipeRefresh.setEnabled(false);
         binding.searchMore.setVisibility(View.GONE);
+    }
+
+    private void updateUIonPhraseLongClick(ChatPhrase chatPhrase, int position) {
+        unChooseItem();
+        if (chatPhrase == mChosenPhrase) {
+            return;
+        }
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        Drawable d = AppCompatResources.getDrawable(activity, R.drawable.ic_arrow_back_blue_24dp);
+
+        ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
+        ColorsHelper.setDrawableColor(activity, d, style.chatBodyIconsTint);
+        binding.chatBackButton.setImageDrawable(d);
+
+        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, style.chatToolbarTextColorResId);
+
+        binding.copyControls.setVisibility(View.VISIBLE);
+        binding.consultName.setVisibility(View.GONE);
+        binding.subtitle.setVisibility(View.GONE);
+
+        if (binding.chatBackButton.getVisibility() == View.GONE) {
+            binding.chatBackButton.setVisibility(View.VISIBLE);
+        }
+        binding.contentCopy.setOnClickListener(v -> {
+            onCopyClick(activity, chatPhrase);
+            hideBackButton();
+        });
+        binding.reply.setOnClickListener(v -> {
+            onReplyClick(chatPhrase, position);
+            hideBackButton();
+        });
+        mChosenPhrase = chatPhrase;
+        chatAdapter.setItemChosen(true, chatPhrase);
     }
 
     private class QuoteLayoutHolder {
@@ -1640,6 +1579,89 @@ public final class ChatFragment extends BaseFragment implements
                 setImage(imagePath);
             } else {
                 removeImage();
+            }
+        }
+    }
+
+    private class AdapterCallback implements ChatAdapter.Callback {
+
+        @Override
+        public void onFileClick(FileDescription filedescription) {
+            mChatController.onFileClick(filedescription);
+        }
+
+        @Override
+        public void onPhraseLongClick(final ChatPhrase chatPhrase, final int position) {
+            updateUIonPhraseLongClick(chatPhrase, position);
+        }
+
+        @Override
+        public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
+            mChatController.checkAndResendPhrase(userPhrase);
+        }
+
+        @Override
+        public void onConsultAvatarClick(String consultId) {
+            if (Config.instance.getChatStyle().canShowSpecialistInfo) {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    mChatController.onConsultChoose(activity, consultId);
+                }
+            }
+        }
+
+        @Override
+        public void onImageClick(ChatPhrase chatPhrase) {
+            if (chatPhrase.getFileDescription().getFilePath() == null) {
+                return;
+            }
+            if (chatPhrase instanceof UserPhrase) {
+                if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_WAS_READ) {
+                    mChatController.checkAndResendPhrase((UserPhrase) chatPhrase);
+                }
+                if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));
+                    }
+                }
+            } else if (chatPhrase instanceof ConsultPhrase) {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.startActivity(ImagesActivity.getStartIntent(activity, chatPhrase.getFileDescription()));
+                }
+            }
+        }
+
+        @Override
+        public void onImageDownloadRequest(FileDescription fileDescription) {
+            mChatController.onImageDownloadRequest(fileDescription);
+        }
+
+        @Override
+        public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
+            if (Config.instance.getChatStyle().canShowSpecialistInfo) {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    mChatController.onConsultChoose(activity, consultConnectionMessage.getConsultId());
+                }
+            }
+        }
+
+        @Override
+        public void onRatingClick(@NonNull Survey survey, int rating) {
+            Activity activity = getActivity();
+            if (activity != null) {
+                survey.getQuestions().get(0).setRate(rating);
+                mChatController.onRatingClick(survey);
+            }
+        }
+
+        @Override
+        public void onResolveThreadClick(boolean approveResolve) {
+            Activity activity = getActivity();
+            if (activity != null) {
+                mChatController.onResolveThreadClick(approveResolve);
             }
         }
     }

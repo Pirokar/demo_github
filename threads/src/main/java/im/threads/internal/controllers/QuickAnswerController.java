@@ -3,10 +3,9 @@ package im.threads.internal.controllers;
 import android.app.Fragment;
 
 import androidx.annotation.NonNull;
+
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.model.CompletionHandler;
-import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.utils.ThreadsLogger;
 
@@ -19,16 +18,9 @@ public final class QuickAnswerController extends Fragment {
 
     public void onBind(@NonNull final QuickAnswerActivity activity) {
         DatabaseHolder.getInstance()
-                .getLastConsultPhrase(new CompletionHandler<ConsultPhrase>() {
-                    @Override
-                    public void onComplete(ConsultPhrase data) {
-                        if (data != null) {
-                            activity.setLastUnreadMessage(data);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e, String message, ConsultPhrase data) {
+                .getLastConsultPhrase(consultPhrase -> {
+                    if (consultPhrase != null) {
+                        activity.setLastUnreadMessage(consultPhrase);
                     }
                 });
     }

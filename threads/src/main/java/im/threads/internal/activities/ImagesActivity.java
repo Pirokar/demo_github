@@ -11,6 +11,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.PermissionChecker;
+import androidx.viewpager.widget.ViewPager;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,16 +26,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.PermissionChecker;
-import androidx.viewpager.widget.ViewPager;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.adapters.ImagesAdapter;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.utils.FileUtils;
@@ -64,34 +64,26 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mToolbar.setTitle("");
-        DatabaseHolder.getInstance().getAllFileDescriptions(new CompletionHandler<List<FileDescription>>() {
-            @Override
-            public void onComplete(List<FileDescription> data) {
-                files = new ArrayList<>();
-                for (FileDescription fd : data) {
-                    if (FileUtils.isImage(fd) && fd.getFilePath() != null) {
-                        files.add(fd);
+        DatabaseHolder.getInstance().getAllFileDescriptions(data -> {
+            files = new ArrayList<>();
+            for (FileDescription fd : data) {
+                if (FileUtils.isImage(fd) && fd.getFilePath() != null) {
+                    files.add(fd);
+                }
+            }
+            collectionSize = files.size();
+            ThreadUtils.runOnUiThread(() -> {
+                mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
+                FileDescription fd = getIntent().getParcelableExtra("FileDescription");
+                if (fd != null) {
+                    int page = files.indexOf(fd);
+                    if (page != -1) {
+                        mViewPager.setCurrentItem(page);
+                        onPageSelected(page);
                     }
                 }
-                collectionSize = files.size();
-                ThreadUtils.runOnUiThread(() -> {
-                    mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
-                    FileDescription fd = getIntent().getParcelableExtra("FileDescription");
-                    if (fd != null) {
-                        int page = files.indexOf(fd);
-                        if (page != -1) {
-                            mViewPager.setCurrentItem(page);
-                            onPageSelected(page);
-                        }
-                    }
-                    onPageSelected(0);
-                });
-            }
-
-            @Override
-            public void onError(Throwable e, String message, List<FileDescription> data) {
-                finish();
-            }
+                onPageSelected(0);
+            });
         });
         mToolbar.setBackgroundColor(getColorInt(Config.instance.getChatStyle().imagesScreenToolbarColor));
     }

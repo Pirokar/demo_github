@@ -56,7 +56,7 @@
             android:name="im.threads.push.ThreadsPushServerIntentService"
             android:exported="false"/>
         <service
-            android:name=".internal.services.DownloadService"
+            android:name=".internal.services.FileDownloadService"
             android:exported="false"/>
         <service
             android:name=".internal.services.NotificationService"

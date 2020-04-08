@@ -3,41 +3,16 @@ package im.threads.internal.opengraph;
 import android.text.TextUtils;
 
 public final class OGData {
-    public String title;
-    public String description;
-    public String image;
-    public String url;
+    public final String title;
+    public final String description;
+    public final String image;
+    public final String url;
 
-    public void setTitle(String title) {
+    private OGData(String title, String description, String image, String url) {
         this.title = title;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void setImage(String image) {
         this.image = image;
-    }
-
-    public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public boolean isEmpty() {
@@ -59,5 +34,39 @@ public final class OGData {
                 ", desc:" + description +
                 ", image:" + image +
                 ", url:" + url + "]";
+    }
+
+    public static final class Builder {
+        private String title;
+        private String description;
+        private String image;
+        private String url;
+
+        public Builder() {
+        }
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder image(String image) {
+            this.image = image;
+            return this;
+        }
+
+        public Builder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public OGData build() {
+            return new OGData(title, description, image, url);
+        }
     }
 }

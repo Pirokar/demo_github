@@ -10,6 +10,10 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,9 +21,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.ObjectsCompat;
 import im.threads.R;
 import im.threads.ThreadsLib;
 import im.threads.internal.Config;
@@ -32,7 +33,6 @@ import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultChatPhrase;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
@@ -47,7 +47,7 @@ import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.services.DownloadService;
+import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.services.NotificationService;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
@@ -279,9 +279,8 @@ public final class ChatController {
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-
                 if (fileDescription.getFilePath() == null) {
-                    DownloadService.startDownloadFD(activity, fileDescription);
+                    FileDownloadService.startDownloadFD(activity, fileDescription);
                 } else if (FileUtils.isImage(fileDescription)) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
                 } else if (FileUtils.isDoc(fileDescription)) {
@@ -382,7 +381,7 @@ public final class ChatController {
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-                DownloadService.startDownloadWithNoStop(activity, fileDescription);
+                FileDownloadService.startDownloadWithNoStop(activity, fileDescription);
             }
         }
     }
@@ -522,16 +521,7 @@ public final class ChatController {
 
     void setAllMessagesWereRead() {
         appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-        DatabaseHolder.getInstance().setAllConsultMessagesWereRead(new CompletionHandler<Void>() {
-            @Override
-            public void onComplete(final Void data) {
-                notifyUnreadMessagesCountChanged();
-            }
-
-            @Override
-            public void onError(final Throwable e, final String message, final Void data) {
-            }
-        });
+        DatabaseHolder.getInstance().setAllConsultMessagesWereRead(data -> notifyUnreadMessagesCountChanged());
         if (fragment != null) {
             fragment.setAllMessagesWereRead();
         }

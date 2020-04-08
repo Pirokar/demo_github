@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
@@ -45,7 +46,7 @@ public final class RatingThumbsViewHolder extends BaseHolder {
         thumbDown.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.surveyUnselectedColorFilterResId), PorterDuff.Mode.SRC_ATOP);
     }
 
-    public void bind(final Survey survey, final ChatAdapter.AdapterInterface adapterInterface) {
+    public void bind(final Survey survey, final ChatAdapter.Callback callback) {
         askForRate.setText(survey.getQuestions().get(0).getText());
         boolean hasRate = survey.getQuestions().get(0).hasRate();
         if (hasRate && survey.getQuestions().get(0).getRate() == 1) {
@@ -72,8 +73,8 @@ public final class RatingThumbsViewHolder extends BaseHolder {
         }
         thanksForRate.setVisibility(hasRate ? View.VISIBLE : View.GONE);
         if (!hasRate) {
-            thumbUp.setOnClickListener(view -> adapterInterface.onRatingClick(survey, 1));
-            thumbDown.setOnClickListener(view -> adapterInterface.onRatingClick(survey, 0));
+            thumbUp.setOnClickListener(view -> callback.onRatingClick(survey, 1));
+            thumbDown.setOnClickListener(view -> callback.onRatingClick(survey, 0));
         }
     }
 }
