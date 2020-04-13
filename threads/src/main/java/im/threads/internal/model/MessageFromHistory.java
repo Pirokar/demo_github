@@ -17,6 +17,7 @@ public final class MessageFromHistory implements ChatItem {
     private boolean read;
     private String text;
     private List<Attachment> attachments;
+    private List<QuickReply> quickReplies;
     private List<MessageFromHistory> quotes;
     private String type;
     private boolean display;
@@ -117,6 +118,14 @@ public final class MessageFromHistory implements ChatItem {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public List<QuickReply> getQuickReplies() {
+        return quickReplies;
+    }
+
+    public void setQuickReplies(List<QuickReply> quickReplies) {
+        this.quickReplies = quickReplies;
     }
 
     public List<MessageFromHistory> getQuotes() {

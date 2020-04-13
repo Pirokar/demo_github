@@ -3,6 +3,8 @@ package im.threads.internal.transport.models;
 import java.util.Date;
 import java.util.List;
 
+import im.threads.internal.model.QuickReply;
+
 public class MessageContent {
     private String uuid;
     private String text;
@@ -11,6 +13,7 @@ public class MessageContent {
     private List<String> providerIds;
     private List<Attachment> attachments;
     private List<Quote> quotes;
+    private List<QuickReply> quickReplies;
 
     public String getUuid() {
         return uuid;
@@ -38,5 +41,9 @@ public class MessageContent {
 
     public List<Quote> getQuotes() {
         return quotes;
+    }
+
+    public List<QuickReply> getQuickReplies() {
+        return quickReplies;
     }
 }

@@ -188,7 +188,7 @@ public final class NotificationService extends ThreadsService {
             }
             ThreadsLib.UnreadMessagesCountListener l = Config.instance.unreadMessagesCountListener;
             if (l != null) {
-                DatabaseHolder.getInstance().getUnreadMessagesCount(false, l);
+                DatabaseHolder.getInstance().getUnreadMessagesCount( l);
             }
         }
     }

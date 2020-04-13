@@ -104,9 +104,6 @@ public class DatabaseHolderTest {
             dbHolder.putChatItem(this.chatItem);
             dbHolder.putChatItem(this.chatItem);
             dbHolder.putChatItem(this.chatItem);
-
-            List<Quote> quotes = dbHolder.getMyOpenHelper().getQuotes();
-            Assert.assertEquals("Duplicate quotes in DB. ", 1, quotes.size());
         }
     }
 
@@ -142,6 +139,7 @@ public class DatabaseHolderTest {
                 "3:1699351548172962899",
                 null,
                 null,
+                null,
                 "Оператор4 Андреевич",
                 "dt6nu6i",
                 1559814333687L,
@@ -149,7 +147,8 @@ public class DatabaseHolderTest {
                 "055b27bc-7455-4d42-a043-70bdbfa09aa6",
                 false,
                 null,
-                true
+                true,
+                null
         );
     }
 
@@ -168,6 +167,7 @@ public class DatabaseHolderTest {
         return new ConsultPhrase(
                 "b613fe15-b920-4586-8e90-0909274eec3b",
                 "3:1699335510765079574",
+                null,
                 fileDesc,
                 null,
                 "Оператор4 Андреевич",
@@ -177,7 +177,8 @@ public class DatabaseHolderTest {
                 "055b27bc-7455-4d42-a043-70bdbfa09aa6",
                 false,
                 null,
-                true
+                true,
+                null
         );
     }
 
@@ -193,6 +194,7 @@ public class DatabaseHolderTest {
                 "0bf12ad6-6267-47ed-b01d-6e6b3030ce58",
                 "3:1699335781348019232",
                 null,
+                null,
                 quote,
                 "Оператор4 Андреевич",
                 "e56un67",
@@ -201,7 +203,9 @@ public class DatabaseHolderTest {
                 "055b27bc-7455-4d42-a043-70bdbfa09aa6",
                 false,
                 null,
-                true);
+                true,
+                null
+        );
     }
 
     private static ConsultPhrase getConsultPhraseWithQuoteOfFile() {
@@ -226,6 +230,7 @@ public class DatabaseHolderTest {
                 "d8bcbe1f-6d6f-48b8-bf73-02e915def139",
                 "38aa703d-93b3-4ab1-96b7-edcb23457ec5",
                 null,
+                null,
                 quote,
                 "Оператор4 Андреевич",
                 "d6n7dtm6iu0[e95",
@@ -234,7 +239,9 @@ public class DatabaseHolderTest {
                 "055b27bc-7455-4d42-a043-70bdbfa09aa6",
                 true,
                 null,
-                false);
+                false,
+                null
+        );
     }
 
     private static UserPhrase getUserPhrase() {

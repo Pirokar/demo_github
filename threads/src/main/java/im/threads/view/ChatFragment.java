@@ -177,12 +177,12 @@ public final class ChatFragment extends BaseFragment implements
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
         binding.setInputTextObservable(inputTextObservable);
+        chatAdapterCallback = new ChatFragment.AdapterCallback();
         initViews();
         bindViews();
         initToolbar();
         setHasOptionsMenu(true);
         initController();
-        chatAdapterCallback = new ChatFragment.AdapterCallback();
         setFragmentStyle(style);
 
         updateInputEnable(true);

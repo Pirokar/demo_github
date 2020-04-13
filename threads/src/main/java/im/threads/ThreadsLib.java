@@ -3,10 +3,11 @@ package im.threads;
 import android.app.PendingIntent;
 import android.content.Context;
 
-import java.io.File;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.File;
+
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.database.DatabaseHolder;
@@ -33,7 +34,7 @@ public final class ThreadsLib {
         Config.instance.transport.init();
         if (Config.instance.unreadMessagesCountListener != null) {
             DatabaseHolder.getInstance()
-                    .getUnreadMessagesCount(false, Config.instance.unreadMessagesCountListener);
+                    .getUnreadMessagesCount(Config.instance.unreadMessagesCountListener);
         }
         ChatController.getInstance();
     }

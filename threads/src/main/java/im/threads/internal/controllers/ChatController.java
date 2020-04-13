@@ -356,7 +356,7 @@ public final class ChatController {
                             final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                             count = serverItems.size();
-                            databaseHolder.putMessagesSync(serverItems);
+                            databaseHolder.putChatItems(serverItems);
                             final List<ChatItem> chatItems = setLastAvatars(databaseHolder.getChatItems(currentOffset[0], count));
                             currentOffset[0] += chatItems.size();
                             return chatItems;
@@ -498,7 +498,7 @@ public final class ChatController {
     private void notifyUnreadMessagesCountChanged() {
         ThreadsLib.UnreadMessagesCountListener l = Config.instance.unreadMessagesCountListener;
         if (l != null) {
-            DatabaseHolder.getInstance().getUnreadMessagesCount(false, l);
+            DatabaseHolder.getInstance().getUnreadMessagesCount(l);
         }
     }
 
@@ -521,7 +521,9 @@ public final class ChatController {
 
     void setAllMessagesWereRead() {
         appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-        DatabaseHolder.getInstance().setAllConsultMessagesWereRead(data -> notifyUnreadMessagesCountChanged());
+        subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereRead()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::notifyUnreadMessagesCountChanged));
         if (fragment != null) {
             fragment.setAllMessagesWereRead();
         }
@@ -535,7 +537,7 @@ public final class ChatController {
         consultWriter.setCurrentConsultLeft();
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-        databaseHolder.putMessagesSync(serverItems);
+        databaseHolder.putChatItems(serverItems);
         final List<ChatItem> phrases = setLastAvatars(serverItems);
         if (fragment != null) {
             fragment.addChatItems(phrases);
@@ -569,7 +571,7 @@ public final class ChatController {
                         final int count = Config.instance.historyLoadingCount;
                         final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        databaseHolder.putMessagesSync(serverItems);
+                        databaseHolder.putChatItems(serverItems);
                         if (fragment != null && isActive) {
                             final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                             if (unreadProviderIds != null) {
@@ -951,7 +953,7 @@ public final class ChatController {
                         } else {
                             lastMessageTimestamp = serverItems.get(0).getTimeStamp();
                             isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                            databaseHolder.putMessagesSync(serverItems);
+                            databaseHolder.putChatItems(serverItems);
                             isDownloadingMessages = false;
                             if (!isAllMessagesDownloaded) {
                                 downloadMessagesTillEnd();
@@ -1072,7 +1074,7 @@ public final class ChatController {
                         Config.instance.transport.sendEnvironmentMessage();
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        databaseHolder.putMessagesSync(serverItems);
+                        databaseHolder.putChatItems(serverItems);
                         if (fragment != null) {
                             List<ChatItem> itemsWithLastAvatars = setLastAvatars(serverItems);
                             fragment.addChatItems(itemsWithLastAvatars);
