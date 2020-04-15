@@ -32,10 +32,7 @@ public final class ThreadsLib {
         instance = new ThreadsLib();
         PrefUtils.migrateToSeparateStorageIfNeeded();
         Config.instance.transport.init();
-        if (Config.instance.unreadMessagesCountListener != null) {
-            DatabaseHolder.getInstance()
-                    .getUnreadMessagesCount(Config.instance.unreadMessagesCountListener);
-        }
+        DatabaseHolder.getInstance().refreshUnreadMessagesCount(Config.instance.unreadMessagesCountListener);
         ChatController.getInstance();
     }
 

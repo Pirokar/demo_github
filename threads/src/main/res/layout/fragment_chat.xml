@@ -158,6 +158,11 @@
                     android:visibility="visible" />
             </RelativeLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/quick_replies_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
             <LinearLayout
                 android:id="@+id/input_layout"
                 android:layout_width="match_parent"
@@ -175,7 +180,7 @@
                     app:srcCompat="@drawable/threads_ic_attachment_button" />
 
                 <im.threads.internal.widget.CustomFontEditText
-                    android:id="@+id/input"
+                    android:id="@+id/input_edit_view"
                     style="@style/InputEditTextStyle"
                     android:hint="@string/threads_input_hint"
                     android:inputType="textCapSentences|textMultiLine"

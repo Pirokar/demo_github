@@ -61,6 +61,7 @@ public class QuickRepliesTable extends Table {
                 quickReply.setText(cGetString(c, COLUMN_QUICK_REPLIES_TEXT));
                 quickReply.setImageUrl(cGetString(c, COLUMN_QUICK_REPLIES_IMAGE_URL));
                 quickReply.setUrl(cGetString(c, COLUMN_QUICK_REPLIES_URL));
+                items.add(quickReply);
             }
             return items;
         }
@@ -86,7 +87,7 @@ public class QuickRepliesTable extends Table {
     private void putQuickReply(SQLiteOpenHelper sqlHelper, String messageUUID, QuickReply quickReply) {
         ContentValues quickReplyCv = new ContentValues();
         quickReplyCv.put(COLUMN_QUICK_REPLIES_SERVER_ID, quickReply.getId());
-        quickReplyCv.put(COLUMN_QUICK_REPLIES_SERVER_ID, messageUUID);
+        quickReplyCv.put(COLUMN_QUICK_REPLIES_MESSAGE_UUID, messageUUID);
         quickReplyCv.put(COLUMN_QUICK_REPLIES_TYPE, quickReply.getType());
         quickReplyCv.put(COLUMN_QUICK_REPLIES_TEXT, quickReply.getText());
         quickReplyCv.put(COLUMN_QUICK_REPLIES_IMAGE_URL, quickReply.getImageUrl());

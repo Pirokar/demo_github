@@ -115,9 +115,11 @@ public final class DatabaseHolder {
     }
 
     // let the DB time to write the incoming message
-    public void getUnreadMessagesCount(@NonNull final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
+    public void refreshUnreadMessagesCount(@Nullable final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
         // Почему именно 1000 не знает никто...
-        new Handler(Looper.getMainLooper()).postDelayed(() -> unreadMessagesCountListener.onUnreadMessagesCountChanged(mMyOpenHelper.getUnreadMessagesCount()), 1000);
+        if (unreadMessagesCountListener != null) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> unreadMessagesCountListener.onUnreadMessagesCountChanged(mMyOpenHelper.getUnreadMessagesCount()), 1000);
+        }
     }
 
     public List<String> getUnreadMessagesProviderIds() {

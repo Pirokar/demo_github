@@ -59,6 +59,7 @@ import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.adapters.ChatAdapter;
+import im.threads.internal.adapters.QuickRepliesAdapter;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
@@ -74,6 +75,7 @@ import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
@@ -82,7 +84,6 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.picasso_url_connection_only.Picasso;
-import im.threads.internal.utils.Callback;
 import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
@@ -373,24 +374,17 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void onRefresh() {
-        mChatController.requestItems(new Callback<List<ChatItem>, Throwable>() {
-            @Override
-            public void onSuccess(final List<ChatItem> result) {
-                final Handler h = new Handler(Looper.getMainLooper());
-                h.postDelayed(() -> afterRefresh(result), 500);
-            }
-
-            @Override
-            public void onError(Throwable error) {
-            }
-        });
+        //TODO: не знаю почему 500 mills так было
+        subscribe(mChatController.requestItems()
+                .delay(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::afterRefresh));
     }
 
     private void afterRefresh(List<ChatItem> result) {
         int itemsBefore = chatAdapter.getItemCount();
         chatAdapter.addItems(result);
-        int itemsAfter = chatAdapter.getItemCount();
-        scrollToPosition(itemsAfter - itemsBefore);
+        scrollToPosition(chatAdapter.getItemCount() - itemsBefore);
         for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
             h.postDelayed(() -> {
                 binding.swipeRefresh.setRefreshing(false);
@@ -424,9 +418,9 @@ public final class ChatFragment extends BaseFragment implements
 
         binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
 
-        binding.input.setMinHeight((int) activity.getResources().getDimension(style.inputHeight));
-        binding.input.setBackground(AppCompatResources.getDrawable(activity, style.inputBackground));
-        binding.input.setHint(style.inputHint);
+        binding.inputEditView.setMinHeight((int) activity.getResources().getDimension(style.inputHeight));
+        binding.inputEditView.setBackground(AppCompatResources.getDrawable(activity, style.inputBackground));
+        binding.inputEditView.setHint(style.inputHint);
 
         binding.addAttachment.setImageResource(style.attachmentsIconResId);
 
@@ -441,16 +435,16 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
         ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
 
-        ColorsHelper.setHintTextColor(activity, binding.input, style.chatMessageInputHintTextColor);
+        ColorsHelper.setHintTextColor(activity, binding.inputEditView, style.chatMessageInputHintTextColor);
 
         ColorsHelper.setHintTextColor(activity, binding.search, style.chatToolbarHintTextColor);
 
-        ColorsHelper.setTextColor(activity, binding.input, style.inputTextColor);
+        ColorsHelper.setTextColor(activity, binding.inputEditView, style.inputTextColor);
 
         if (!TextUtils.isEmpty(style.inputTextFont)) {
             try {
                 Typeface custom_font = Typeface.createFromAsset(getActivity().getAssets(), style.inputTextFont);
-                this.binding.input.setTypeface(custom_font);
+                this.binding.inputEditView.setTypeface(custom_font);
             } catch (Exception e) {
                 ThreadsLogger.e(TAG, "setFragmentStyle", e);
             }
@@ -874,11 +868,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         boolean isUserSeesMessage = (chatAdapter.getItemCount() - layoutManager.findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT;
         if (item instanceof ConsultPhrase) {
-            if (isUserSeesMessage && isResumed && !isInMessageSearchMode) {
-                ((ConsultPhrase) item).setRead(true);
-            } else {
-                ((ConsultPhrase) item).setRead(false);
-            }
+            ((ConsultPhrase) item).setRead(isUserSeesMessage && isResumed && !isInMessageSearchMode);
         }
         if (needsAddMessage(item)) {
             welcomeScreenVisibility(false);
@@ -1017,8 +1007,12 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private boolean isCopy(String text) {
-        if (TextUtils.isEmpty(text)) return false;
-        if (TextUtils.isEmpty(PrefUtils.getLastCopyText())) return false;
+        if (TextUtils.isEmpty(text)) {
+            return false;
+        }
+        if (TextUtils.isEmpty(PrefUtils.getLastCopyText())) {
+            return false;
+        }
         return text.contains(PrefUtils.getLastCopyText());
     }
 
@@ -1069,7 +1063,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.recycler.setAdapter(chatAdapter);
             setTitleStateDefault();
             welcomeScreenVisibility(false);
-            binding.input.clearFocus();
+            binding.inputEditView.clearFocus();
             welcomeScreenVisibility(true);
         });
     }
@@ -1191,7 +1185,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void updateInputEnable(boolean enabled) {
-        binding.input.setEnabled(enabled);
+        binding.inputEditView.setEnabled(enabled);
         binding.addAttachment.setEnabled(enabled);
         binding.sendMessage.setEnabled(enabled);
 
@@ -1581,6 +1575,31 @@ public final class ChatFragment extends BaseFragment implements
                 removeImage();
             }
         }
+    }
+
+    public void showQuickReplies(List<QuickReply> quickReplies) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        updateInputEnable(false);
+        binding.quickRepliesRv.setVisibility(View.VISIBLE);
+        binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
+            String text = quickReply.getText();
+            sendMessage(Collections.singletonList(new UpcomingUserMessage(
+                    mFileDescription,
+                    mQuote,
+                    text.trim(),
+                    isCopy(text)
+            )));
+            hideQuickReplies();
+        }));
+        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
+    }
+
+    public void hideQuickReplies() {
+        updateInputEnable(true);
+        binding.quickRepliesRv.setVisibility(View.GONE);
     }
 
     private class AdapterCallback implements ChatAdapter.Callback {

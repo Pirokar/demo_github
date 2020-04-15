@@ -33,7 +33,6 @@ import java.util.concurrent.Executors;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.ThreadsLib;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
@@ -186,10 +185,7 @@ public final class NotificationService extends ThreadsService {
             if (!fixPushCrash) {
                 nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
             }
-            ThreadsLib.UnreadMessagesCountListener l = Config.instance.unreadMessagesCountListener;
-            if (l != null) {
-                DatabaseHolder.getInstance().getUnreadMessagesCount( l);
-            }
+            DatabaseHolder.getInstance().refreshUnreadMessagesCount(Config.instance.unreadMessagesCountListener);
         }
     }
 

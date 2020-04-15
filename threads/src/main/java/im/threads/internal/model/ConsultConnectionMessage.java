@@ -1,10 +1,10 @@
 package im.threads.internal.model;
 
+import androidx.core.util.ObjectsCompat;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
-
-import androidx.core.util.ObjectsCompat;
 
 public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
 
@@ -22,7 +22,6 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
 
     public ConsultConnectionMessage(String uuid, String providerId, List<String> providerIds, String consultId, String type, String name, boolean sex, long date,
                                     String avatarPath, String status, String title, String orgUnit, boolean displayMessage) {
-
         super(avatarPath, consultId);
         this.uuid = uuid;
         this.providerId = providerId;
