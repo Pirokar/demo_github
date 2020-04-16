@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
@@ -97,8 +98,8 @@ public final class QuickAnswerFragment extends DialogFragment {
         v.findViewById(R.id.header).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
 
         consultNameTextView.setTextColor(getColorInt(style.chatToolbarTextColorResId));
-        textView.setTextColor(getColorInt(style.quickReplyMessageTextColor));
-        textView.setBackgroundColor(getColorInt(style.quickReplyMessageBackgroundColor));
+        textView.setTextColor(getColorInt(style.notificationQuickReplyMessageTextColor));
+        textView.setBackgroundColor(getColorInt(style.notificationQuickReplyMessageBackgroundColor));
         mEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
         v.findViewById(R.id.answer_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
 

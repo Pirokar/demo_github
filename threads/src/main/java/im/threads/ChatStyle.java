@@ -1,13 +1,13 @@
 package im.threads;
 
-import java.io.Serializable;
-
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
+
+import java.io.Serializable;
 
 /**
  * Стиль чата.
@@ -170,9 +170,9 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int nougatPushAccentColorResId = R.color.threads_nougat_push_accent;
     @ColorRes
-    public int quickReplyMessageBackgroundColor = R.color.threads_quick_reply_message_background;
+    public int notificationQuickReplyMessageBackgroundColor = R.color.threads_notification_quick_reply_message_background;
     @ColorRes
-    public int quickReplyMessageTextColor = R.color.threads_quick_reply_message_text_color;
+    public int notificationQuickReplyMessageTextColor = R.color.threads_notification_quick_reply_message_text_color;
 
     // resolve thread request style
     @StringRes
@@ -611,23 +611,23 @@ public final class ChatStyle implements Serializable {
      * @param defTitleResId                    - R.string.threads_push_title
      * @param pushBackgroundColorResId         - R.color.threads_push_background
      * @param nougatPushAccentColorResId       - R.color.threads_nougat_push_accent
-     * @param quickReplyMessageBackgroundColor = R.color.threads_quick_reply_message_background;
-     * @param quickReplyMessageTextColor       = R.color.threads_quick_reply_message_text_color;
+     * @param notificationQuickReplyMessageBackgroundColor = R.color.threads_quick_reply_message_background;
+     * @param notificationQuickReplyMessageTextColor       = R.color.threads_quick_reply_message_text_color;
      * @return Builder
      */
     public ChatStyle setPushNotificationStyle(@DrawableRes final int defPushIconResId,
                                               @StringRes final int defTitleResId,
                                               @ColorRes final int pushBackgroundColorResId,
                                               @ColorRes final int nougatPushAccentColorResId,
-                                              @ColorRes int quickReplyMessageBackgroundColor,
-                                              @ColorRes int quickReplyMessageTextColor) {
+                                              @ColorRes int notificationQuickReplyMessageBackgroundColor,
+                                              @ColorRes int notificationQuickReplyMessageTextColor) {
 
         this.defPushIconResId = defPushIconResId;
         this.defTitleResId = defTitleResId;
         this.pushBackgroundColorResId = pushBackgroundColorResId;
         this.nougatPushAccentColorResId = nougatPushAccentColorResId;
-        this.quickReplyMessageBackgroundColor = quickReplyMessageBackgroundColor;
-        this.quickReplyMessageTextColor = quickReplyMessageTextColor;
+        this.notificationQuickReplyMessageBackgroundColor = notificationQuickReplyMessageBackgroundColor;
+        this.notificationQuickReplyMessageTextColor = notificationQuickReplyMessageTextColor;
         return this;
     }
 

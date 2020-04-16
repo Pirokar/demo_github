@@ -33,8 +33,7 @@ public class QuickRepliesAdapter extends RecyclerView.Adapter<QuickRepliesAdapte
     @Override
     public void onBindViewHolder(@NonNull QuickReplyVH holder, int position) {
         final QuickReply bindQuickReply = quickReplies.get(position);
-        holder.bind(bindQuickReply);
-        holder.itemView.setOnClickListener(view -> quickReplyConsumer.accept(bindQuickReply));
+        holder.bind(bindQuickReply, () -> quickReplyConsumer.accept(bindQuickReply));
     }
 
     @Override
@@ -51,8 +50,10 @@ public class QuickRepliesAdapter extends RecyclerView.Adapter<QuickRepliesAdapte
             this.binding = binding;
         }
 
-        void bind(QuickReply quickReply) {
+        void bind(QuickReply quickReply, Runnable clickRunnable) {
             binding.setQuickReply(quickReply);
+            binding.getRoot().setOnClickListener(v -> clickRunnable.run());
+            binding.quickReplyBtn.setOnClickListener(v -> clickRunnable.run());
             binding.executePendingBindings();
         }
     }
