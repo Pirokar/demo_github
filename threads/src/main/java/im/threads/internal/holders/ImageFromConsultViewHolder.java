@@ -12,6 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.ContextCompat;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,8 +25,6 @@ import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.picasso_url_connection_only.Callback;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.MaskedTransformation;
@@ -81,7 +82,7 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
         });
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !fileDescription.isDownloadError()) {
-            Picasso.with(itemView.getContext())
+            Picasso.get()
                     .load(new File(fileDescription.getFilePath()))
                     .fit()
                     .centerCrop()
@@ -92,7 +93,7 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(Exception e) {
                             mImage.setImageResource(style.imagePlaceholder);
                         }
                     });
@@ -116,7 +117,7 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
             mImage.setLayoutParams(lp);
             mConsultAvatar.setVisibility(View.VISIBLE);
             if (avatarPath != null) {
-                Picasso.with(itemView.getContext())
+                Picasso.get()
                         .load(FileUtils.convertRelativeUrlToAbsolute(avatarPath))
                         .error(style.defaultOperatorAvatar)
                         .fit()
@@ -125,7 +126,7 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
                         .noPlaceholder()
                         .into(mConsultAvatar);
             } else {
-                Picasso.with(itemView.getContext())
+                Picasso.get()
                         .load(resId)
                         .fit()
                         .noPlaceholder()

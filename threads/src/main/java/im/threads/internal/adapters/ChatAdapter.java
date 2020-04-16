@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.core.util.ObjectsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -56,7 +58,6 @@ import im.threads.internal.model.Space;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.MaskedTransformation;
@@ -231,7 +232,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             final ConsultTyping consultTyping = (ConsultTyping) list.get(holder.getAdapterPosition());
             ((ConsultIsTypingViewHolderNew) holder).onBind(v -> mAdapterInterface.onConsultAvatarClick(consultTyping.getConsultId()));
             final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultTyping.getAvatarPath());
-            Picasso.with(ctx)
+            Picasso.get()
                     .load(avatarPath)
                     .fit()
                     .error(style.defaultOperatorAvatar)

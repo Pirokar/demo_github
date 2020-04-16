@@ -6,11 +6,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.R;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 
 public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
@@ -30,8 +32,7 @@ public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
             if (null != itemClickListener)
                 vg.getChildAt(i).setOnClickListener(itemClickListener);
         }
-        Picasso
-                .with(itemView.getContext())
+        Picasso.get()
                 .load(new File(imagePath))
                 .fit()
                 .centerCrop()

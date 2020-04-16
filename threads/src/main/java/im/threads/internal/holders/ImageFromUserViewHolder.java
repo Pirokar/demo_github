@@ -13,6 +13,8 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +26,6 @@ import im.threads.internal.Config;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.MaskedTransformation;
 
 public final class ImageFromUserViewHolder extends BaseHolder {
@@ -77,7 +78,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         });
         mImage.setImageResource(0);
         if (fileDescription.getFilePath() != null && !isDownloadError) {
-            Picasso.with(itemView.getContext())
+            Picasso.get()
                     .load(new File(fileDescription.getFilePath()))
                     .error(style.imagePlaceholder)
                     .fit()

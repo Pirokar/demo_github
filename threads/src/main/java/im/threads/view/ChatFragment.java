@@ -31,14 +31,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -49,6 +41,17 @@ import androidx.databinding.ObservableField;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -80,7 +83,6 @@ import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.Callback;
 import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ColorsHelper;
@@ -1615,8 +1617,7 @@ public final class ChatFragment extends BaseFragment implements
                 return;
             }
             binding.quoteImage.setVisibility(View.VISIBLE);
-            Picasso
-                    .with(activity)
+            Picasso.get()
                     .load(new File(path))
                     .fit()
                     .centerCrop()

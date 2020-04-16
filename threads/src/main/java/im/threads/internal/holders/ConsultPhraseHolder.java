@@ -13,16 +13,20 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
@@ -32,8 +36,6 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Quote;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.opengraph.OGDataProvider;
-import im.threads.internal.picasso_url_connection_only.Callback;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -198,8 +200,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 mCircularProgressButton.setVisibility(View.GONE);
                 mImage.setVisibility(View.VISIBLE);
                 mImage.setOnClickListener(imageClickListener);
-
-                Picasso.with(itemView.getContext())
+                Picasso.get()
                         .load(fileDescription.getDownloadPath())
                         .error(style.imagePlaceholder)
                         .fit()
@@ -246,8 +247,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
             mConsultAvatar.setOnClickListener(onAvatarClickListener);
             if (!TextUtils.isEmpty(avatarPath)) {
                 avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
-                Picasso
-                        .with(itemView.getContext())
+                Picasso.get()
                         .load(avatarPath)
                         .fit()
                         .noPlaceholder()
@@ -259,7 +259,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                             }
 
                             @Override
-                            public void onError() {
+                            public void onError(Exception e) {
                                 showDefIcon();
                             }
                         });
@@ -286,7 +286,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
     }
 
     private void showDefIcon() {
-        Picasso.with(itemView.getContext())
+        Picasso.get()
                 .load(defIcon)
                 .centerInside()
                 .noPlaceholder()
@@ -332,13 +332,13 @@ public final class ConsultPhraseHolder extends BaseHolder {
         if (TextUtils.isEmpty(ogData.image)) {
             ogImage.setVisibility(View.GONE);
         } else {
-            Picasso.with(itemView.getContext())
+            Picasso.get()
                     .load(ogData.image)
                     .fetch(new Callback() {
                         @Override
                         public void onSuccess() {
                             ogImage.setVisibility(View.VISIBLE);
-                            Picasso.with(itemView.getContext())
+                            Picasso.get()
                                     .load(ogData.image)
                                     .error(style.imagePlaceholder)
                                     .fit()
@@ -347,9 +347,9 @@ public final class ConsultPhraseHolder extends BaseHolder {
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(Exception e) {
                             ogImage.setVisibility(View.GONE);
-                            ThreadsLogger.d(TAG, "Could not load OpenGraph image");
+                            ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.getMessage());
                         }
                     });
         }

@@ -13,16 +13,20 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
@@ -33,8 +37,6 @@ import im.threads.internal.model.Quote;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.opengraph.OGDataProvider;
-import im.threads.internal.picasso_url_connection_only.Callback;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.UrlUtils;
@@ -182,14 +184,14 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 mImage.setOnClickListener(imageClickListener);
                 // User image can be already available locally
                 if (TextUtils.isEmpty(fileDescription.getFilePath())) {
-                    Picasso.with(itemView.getContext())
+                    Picasso.get()
                             .load(fileDescription.getDownloadPath())
                             .error(style.imagePlaceholder)
                             .fit()
                             .centerCrop()
                             .into(mImage);
                 } else {
-                    Picasso.with(itemView.getContext())
+                    Picasso.get()
                             .load(new File(fileDescription.getFilePath()))
                             .error(style.imagePlaceholder)
                             .fit()
@@ -303,13 +305,13 @@ public final class UserPhraseViewHolder extends BaseHolder {
         if (TextUtils.isEmpty(ogData.image)) {
             ogImage.setVisibility(View.GONE);
         } else {
-            Picasso.with(itemView.getContext())
+            Picasso.get()
                     .load(ogData.image)
                     .fetch(new Callback() {
                         @Override
                         public void onSuccess() {
                             ogImage.setVisibility(View.VISIBLE);
-                            Picasso.with(itemView.getContext())
+                            Picasso.get()
                                     .load(ogData.image)
                                     .error(style.imagePlaceholder)
                                     .fit()
@@ -318,9 +320,9 @@ public final class UserPhraseViewHolder extends BaseHolder {
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(Exception e) {
                             ogImage.setVisibility(View.GONE);
-                            ThreadsLogger.d(TAG, "Could not load OpenGraph image");
+                            ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.getLocalizedMessage());
                         }
                     });
         }

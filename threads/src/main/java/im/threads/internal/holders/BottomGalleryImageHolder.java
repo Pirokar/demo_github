@@ -6,14 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.BottomGalleryItem;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 
 public final class BottomGalleryImageHolder extends BaseHolder {
     private ImageView image;
@@ -40,8 +42,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
             d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_panorama_fish_eye_white_36dp);
         }
         chosenMark.setBackground(d);
-        Picasso
-                .with(itemView.getContext())
+        Picasso.get()
                 .load(new File(item.getImagePath()))
                 .fit()
                 .centerCrop()
