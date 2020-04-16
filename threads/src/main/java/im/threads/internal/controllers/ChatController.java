@@ -106,8 +106,6 @@ public final class ChatController {
 
     // Для приема сообщений из сервиса по скачиванию файлов
     private ProgressReceiver progressReceiver;
-    // Было получено сообщение, что чат не работает
-    private boolean isChatWorking;
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean isResolveRequestVisible;
 
@@ -130,6 +128,9 @@ public final class ChatController {
     private List<UserPhrase> sendQueue = new ArrayList<>();
     private Handler unsendMessageHandler;
     private String firstUnreadProviderId;
+
+    private ScheduleInfo currentScheduleInfo = new ScheduleInfo();
+    private boolean hasNotAnsweredQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
 
     private CompositeDisposable compositeDisposable;
 
@@ -208,7 +209,7 @@ public final class ChatController {
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um);
-        if (isChatWorking && !consultWriter.isConsultConnected()) {
+        if (currentScheduleInfo.isChatWorking() && !consultWriter.isConsultConnected()) {
             if (fragment != null) {
                 fragment.setStateSearchingConsult();
             }
@@ -384,7 +385,7 @@ public final class ChatController {
     }
 
     public boolean isConsultFound() {
-        return isChatWorking && consultWriter.isConsultConnected();
+        return currentScheduleInfo.isChatWorking() && consultWriter.isConsultConnected();
     }
 
     public ConsultInfo getCurrentConsultInfo() {
@@ -731,9 +732,8 @@ public final class ChatController {
                                 isResolveRequestVisible = true;
                             }
                             if (chatItem instanceof ScheduleInfo) {
-                                final ScheduleInfo schedule = (ScheduleInfo) chatItem;
-                                isChatWorking = schedule.isChatWorking();
-                                updateInputEnable(isChatWorking || schedule.isSendDuringInactive());
+                                currentScheduleInfo = (ScheduleInfo) chatItem;
+                                refreshUserInputState();
                                 consultWriter.setSearchingConsult(false);
                                 if (fragment != null) {
                                     fragment.removeSearching();
@@ -1049,12 +1049,6 @@ public final class ChatController {
         return up;
     }
 
-    private void updateInputEnable(final boolean enabled) {
-        if (fragment != null) {
-            fragment.updateInputEnable(enabled);
-        }
-    }
-
     private void onSettingClientId() {
         ThreadsLogger.i(TAG, "onSettingClientId:");
         subscribe(
@@ -1085,14 +1079,26 @@ public final class ChatController {
         );
     }
 
+    private void refreshUserInputState() {
+        if (hasNotAnsweredQuickReplies) {
+            chatUpdateProcessor.postUserInputEnableChanged(false);
+        } else {
+            chatUpdateProcessor.postUserInputEnableChanged(
+                    currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive());
+        }
+    }
+
     private void handleQuickReplies(List<ChatItem> chatItems) {
         List<QuickReply> quickReplies = getQuickReplies(chatItems);
         if (fragment != null) {
             if (quickReplies == null || quickReplies.isEmpty()) {
+                hasNotAnsweredQuickReplies = false;
                 fragment.hideQuickReplies();
             } else {
+                hasNotAnsweredQuickReplies = true;
                 fragment.showQuickReplies(quickReplies);
             }
+            refreshUserInputState();
         }
     }
 

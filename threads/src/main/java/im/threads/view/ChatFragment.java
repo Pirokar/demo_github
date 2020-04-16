@@ -60,6 +60,7 @@ import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.adapters.ChatAdapter;
 import im.threads.internal.adapters.QuickRepliesAdapter;
+import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
@@ -186,7 +187,7 @@ public final class ChatFragment extends BaseFragment implements
         initController();
         setFragmentStyle(style);
 
-        updateInputEnable(true);
+        initUserInputState();
         chatIsShown = true;
 
         return binding.getRoot();
@@ -234,6 +235,12 @@ public final class ChatFragment extends BaseFragment implements
         binding.recycler.setAdapter(chatAdapter);
         binding.searchDownIb.setAlpha(DISABLED_ALPHA);
         binding.searchUpIb.setAlpha(DISABLED_ALPHA);
+    }
+
+    private void initUserInputState() {
+        subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::updateInputEnable));
     }
 
     private void bindViews() {
@@ -1582,7 +1589,6 @@ public final class ChatFragment extends BaseFragment implements
         if (activity == null) {
             return;
         }
-        updateInputEnable(false);
         binding.quickRepliesRv.setVisibility(View.VISIBLE);
         binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
             String text = quickReply.getText();
@@ -1598,7 +1604,6 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void hideQuickReplies() {
-        updateInputEnable(true);
         binding.quickRepliesRv.setVisibility(View.GONE);
     }
 
