@@ -7,6 +7,10 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -14,9 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.holders.ConsultConnectionMessageViewHolder;
@@ -250,37 +251,20 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
             }
             ((ImageFromConsultViewHolder) holder).onBind(
-                    consultPhrase.getAvatarPath(),
-                    consultPhrase.getFileDescription(),
-                    consultPhrase.getTimeStamp(),
-                    v -> mAdapterInterface.onImageClick(consultPhrase),
-                    v -> {
-                        mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition());
-                        return true;
-                    },
-                    consultPhrase.getFileDescription().isDownloadError(),
-                    consultPhrase.isChosen(),
-                    consultPhrase.isAvatarVisible()
+                    consultPhrase,
+                    () -> mAdapterInterface.onImageClick(consultPhrase),
+                    () -> mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition())
             );
-
         }
         if (holder instanceof ImageFromUserViewHolder) {
             final UserPhrase userPhrase = (UserPhrase) list.get(position);
+            if (userPhrase.getFileDescription().getFilePath() == null) {
+                mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
+            }
             if (userPhrase.getFileDescription() != null) {
-                if (userPhrase.getFileDescription().getFilePath() == null) {
-                    mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
-                }
-                ((ImageFromUserViewHolder) holder).onBind(
-                        userPhrase.getFileDescription(),
-                        userPhrase.getTimeStamp(),
-                        v -> mAdapterInterface.onImageClick(userPhrase),
-                        v -> {
-                            mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition());
-                            return true;
-                        },
-                        userPhrase.getFileDescription().isDownloadError(),
-                        userPhrase.isChosen(),
-                        userPhrase.getSentState()
+                ((ImageFromUserViewHolder) holder).onBind(userPhrase,
+                        () -> mAdapterInterface.onImageClick(userPhrase),
+                        () -> mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
                 );
             }
         }
