@@ -54,7 +54,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
     public void onBind(final UserPhrase userPhrase, final Runnable clickRunnable, final Runnable longClickRunnable) {
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
-            itemView.setOnClickListener(v -> clickRunnable.run());
+            vg.getChildAt(i).setOnClickListener(v -> clickRunnable.run());
         }
         bindImage(userPhrase.getFileDescription(), longClickRunnable);
         bindIsChosen(userPhrase.isChosen(), longClickRunnable);
