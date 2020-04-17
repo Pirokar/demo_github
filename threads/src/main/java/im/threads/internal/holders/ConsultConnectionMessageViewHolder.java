@@ -6,20 +6,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.annotation.DrawableRes;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ConsultConnectionMessage;
-import im.threads.internal.picasso_url_connection_only.Callback;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -83,7 +85,7 @@ public final class ConsultConnectionMessageViewHolder extends RecyclerView.ViewH
         }
         if (consultConnectionMessage.hasAvatar()) {
             String avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultConnectionMessage.getAvatarPath());
-            Picasso.with(itemView.getContext())
+            Picasso.get()
                     .load(avatarPath)
                     .centerInside()
                     .noPlaceholder()
@@ -95,7 +97,7 @@ public final class ConsultConnectionMessageViewHolder extends RecyclerView.ViewH
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(Exception e) {
                             showDefIcon();
                         }
                     });
@@ -105,7 +107,7 @@ public final class ConsultConnectionMessageViewHolder extends RecyclerView.ViewH
     }
 
     private void showDefIcon() {
-        Picasso.with(itemView.getContext())
+        Picasso.get()
                 .load(defIcon)
                 .centerInside()
                 .noPlaceholder()

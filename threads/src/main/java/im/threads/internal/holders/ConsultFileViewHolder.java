@@ -9,19 +9,21 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.annotation.DrawableRes;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.picasso_url_connection_only.Callback;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.views.CircularProgressButton;
@@ -103,8 +105,7 @@ public final class ConsultFileViewHolder extends BaseHolder {
             if (avatarPath != null) {
                 avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
                 final int finalResiD = resID;
-                Picasso
-                        .with(itemView.getContext())
+                Picasso.get()
                         .load(avatarPath)
                         .fit()
                         .noPlaceholder()
@@ -115,9 +116,8 @@ public final class ConsultFileViewHolder extends BaseHolder {
                             }
 
                             @Override
-                            public void onError() {
-                                Picasso
-                                        .with(itemView.getContext())
+                            public void onError(Exception e) {
+                                Picasso.get()
                                         .load(finalResiD)
                                         .fit()
                                         .noPlaceholder()
@@ -126,8 +126,7 @@ public final class ConsultFileViewHolder extends BaseHolder {
                             }
                         });
             } else {
-                Picasso
-                        .with(itemView.getContext())
+                Picasso.get()
                         .load(resID)
                         .fit()
                         .noPlaceholder()

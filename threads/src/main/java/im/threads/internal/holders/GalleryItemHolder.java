@@ -5,13 +5,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import java.io.File;
-
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
+
 import im.threads.R;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 
 public final class GalleryItemHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
@@ -27,8 +29,7 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
 
     public void onBind(final String imagePath, final View.OnClickListener listener, final boolean isChecked) {
         if (mImageView != null) {
-            Picasso
-                    .with(itemView.getContext())
+            Picasso.get()
                     .load(new File(imagePath))
                     .fit()
                     .centerCrop()

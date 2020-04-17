@@ -20,15 +20,19 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.ThreadsLib;
@@ -37,8 +41,6 @@ import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.MessageFormatter;
 import im.threads.internal.model.CompletionHandler;
-import im.threads.internal.picasso_url_connection_only.Picasso;
-import im.threads.internal.picasso_url_connection_only.Target;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.TargetNoError;
@@ -312,7 +314,7 @@ public final class NotificationService extends ThreadsService {
     }
 
     private void showPreNStyleOperatorAvatar(final String operatorAvatarUrl, final RemoteViews pushSmall, final RemoteViews pushBig) {
-        Picasso.with(this)
+        Picasso.get()
                 .load(operatorAvatarUrl)
                 .transform(new CircleTransformation())
                 .into(new Target() {
@@ -323,7 +325,7 @@ public final class NotificationService extends ThreadsService {
                           }
 
                           @Override
-                          public void onBitmapFailed(final Drawable errorDrawable) {
+                          public void onBitmapFailed(final Exception e, final Drawable errorDrawable) {
                               final Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
                               pushSmall.setImageViewBitmap(R.id.icon_large, big);
                               pushBig.setImageViewBitmap(R.id.icon_large, big);
@@ -337,7 +339,7 @@ public final class NotificationService extends ThreadsService {
     }
 
     private void showPreNStyleSmallIcon(final RemoteViews pushSmall, final RemoteViews pushBig) {
-        Picasso.with(this)
+        Picasso.get()
                 .load(style.defPushIconResId)
                 .transform(new CircleTransformation())
                 .into(new Target() {
@@ -348,7 +350,7 @@ public final class NotificationService extends ThreadsService {
                           }
 
                           @Override
-                          public void onBitmapFailed(final Drawable errorDrawable) {
+                          public void onBitmapFailed(final Exception e, final Drawable errorDrawable) {
                               final Bitmap big = BitmapFactory.decodeResource(getResources(), R.drawable.threads_operator_avatar_placeholder);
                               pushSmall.setImageViewBitmap(R.id.icon_small_corner, big);
                               pushBig.setImageViewBitmap(R.id.icon_small_corner, big);
@@ -380,8 +382,7 @@ public final class NotificationService extends ThreadsService {
                     }
                 };
                 final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(operatorUrl);
-                Picasso
-                        .with(this)
+                Picasso.get()
                         .load(avatarPath)
                         .transform(new CircleTransformation())
                         .into(avatarTarget);
@@ -405,8 +406,7 @@ public final class NotificationService extends ThreadsService {
                     }
                 };
                 final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(messageContent.avatarPath);
-                Picasso
-                        .with(this)
+                Picasso.get()
                         .load(avatarPath)
                         .transform(new CircleTransformation())
                         .into(avatarTarget);

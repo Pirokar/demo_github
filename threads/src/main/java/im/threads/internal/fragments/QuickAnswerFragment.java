@@ -22,11 +22,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.squareup.picasso.Picasso;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 
@@ -69,8 +71,7 @@ public final class QuickAnswerFragment extends DialogFragment {
             String consultPhrase = arguments.getString("consultPhrase");
             if (null != avatarPath && !avatarPath.equals("null")) {
                 avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
-                Picasso
-                        .with(getActivity())
+                Picasso.get()
                         .load(avatarPath)
                         .fit()
                         .transform(new CircleTransformation())

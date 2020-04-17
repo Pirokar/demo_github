@@ -9,7 +9,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 
-import im.threads.internal.picasso_url_connection_only.Transformation;
+import com.squareup.picasso.Transformation;
 
 public final class MaskedTransformation implements Transformation {
 

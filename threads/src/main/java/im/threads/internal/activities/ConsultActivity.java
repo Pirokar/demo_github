@@ -23,10 +23,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Picasso;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.view.ChatFragment;
@@ -73,7 +75,7 @@ public final class ConsultActivity extends BaseActivity {
         String moto = i.getStringExtra("moto");
         if (!TextUtils.isEmpty(imagePath)) {
             imagePath = FileUtils.convertRelativeUrlToAbsolute(imagePath);
-            Picasso.with(this)
+            Picasso.get()
                     .load(imagePath)
                     .into(mConsultImageView);
         }

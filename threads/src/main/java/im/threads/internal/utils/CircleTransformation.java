@@ -5,7 +5,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import im.threads.internal.picasso_url_connection_only.Transformation;
+import com.squareup.picasso.Transformation;
 
 public final class CircleTransformation implements Transformation {
     @Override

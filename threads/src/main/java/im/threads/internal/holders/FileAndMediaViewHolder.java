@@ -8,18 +8,20 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.content.res.AppCompatResources;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 
 public final class FileAndMediaViewHolder extends BaseHolder {
@@ -46,15 +48,14 @@ public final class FileAndMediaViewHolder extends BaseHolder {
 
     public void onBind(FileDescription fileDescription, View.OnClickListener fileClickListener) {
         if (FileUtils.isImage(fileDescription)) {
-            Picasso p = Picasso.with(itemView.getContext());
             if (fileDescription.getFilePath() != null) {
-                p
+                Picasso.get()
                         .load(new File(fileDescription.getFilePath()))
                         .fit()
                         .centerInside()
                         .into(mImageButton);
             } else if (fileDescription.getDownloadPath() != null) {
-                p
+                Picasso.get()
                         .load(fileDescription.getDownloadPath())
                         .fit()
                         .centerInside()
