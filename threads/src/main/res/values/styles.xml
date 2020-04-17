@@ -129,4 +129,13 @@
         <item name="android:layout_marginBottom">@dimen/margin_quarter</item>
     </style>
 
+    <style name="quickReplyButton" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/threads_quick_reply_button_background</item>
+        <item name="android:textColor">@color/threads_quick_reply_button_text</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
 </resources>

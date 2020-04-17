@@ -91,16 +91,16 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @NonNull
     private final Context ctx;
     @NonNull
-    private final AdapterInterface mAdapterInterface;
+    private final Callback mCallback;
     @NonNull
     private final MaskedTransformation outgoingImageMaskTransformation;
     @NonNull
     private final MaskedTransformation incomingImageMaskTransformation;
 
-    public ChatAdapter(@NonNull final Context ctx, @NonNull final AdapterInterface adapterInterface) {
+    public ChatAdapter(@NonNull final Context ctx, @NonNull final Callback callback) {
         this.ctx = ctx;
         ChatStyle style = Config.instance.getChatStyle();
-        this.mAdapterInterface = adapterInterface;
+        this.mCallback = callback;
         this.outgoingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.outgoingImageBubbleMask));
         this.incomingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.incomingImageBubbleMask));
     }
@@ -153,150 +153,35 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ConsultConnectionMessageViewHolder) {
-            final ConsultConnectionMessage cc = (ConsultConnectionMessage) list.get(position);
-            ((ConsultConnectionMessageViewHolder) holder).onBind(
-                    cc,
-                    v -> {
-                        final ConsultConnectionMessage cc1 = (ConsultConnectionMessage) list.get(holder.getAdapterPosition());
-                        mAdapterInterface.onConsultConnectionClick(cc1);
-                    }
-            );
+            bindConsultConnectionMessageVH((ConsultConnectionMessageViewHolder) holder, (ConsultConnectionMessage) list.get(position));
         }
         if (holder instanceof ConsultPhraseHolder) {
-            final ConsultPhrase consultPhrase = (ConsultPhrase) list.get(position);
-            if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
-                mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
-            }
-            ((ConsultPhraseHolder) holder)
-                    .onBind(
-                            consultPhrase,
-                            consultPhrase.getPhrase(),
-                            consultPhrase.getAvatarPath(),
-                            consultPhrase.getTimeStamp(),
-                            consultPhrase.isAvatarVisible(),
-                            consultPhrase.getQuote(),
-                            consultPhrase.getFileDescription(),
-                            v -> mAdapterInterface.onImageClick(consultPhrase),
-                            v -> {
-                                if (consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
-                                    mAdapterInterface.onFileClick(consultPhrase.getQuote().getFileDescription());
-                                }
-                                if (consultPhrase.getFileDescription() != null) {
-                                    mAdapterInterface.onFileClick(consultPhrase.getFileDescription());
-                                }
-                            },
-                            v -> {
-                                mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition());
-                                return true;
-                            },
-                            v -> mAdapterInterface.onConsultAvatarClick(consultPhrase.getConsultId()),
-                            () -> notifyItemChangedOnUi(consultPhrase),
-                            consultPhrase.isChosen()
-                    );
+            bindConsultPhraseVH((ConsultPhraseHolder) holder, (ConsultPhrase) list.get(position));
         }
         if (holder instanceof UserPhraseViewHolder) {
-            final UserPhrase userPhrase = (UserPhrase) list.get(position);
-            if (userPhrase.getFileDescription() != null && userPhrase.getFileDescription().getFilePath() == null) {
-                mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
-            }
-            ((UserPhraseViewHolder) holder).onBind(
-                    userPhrase,
-                    userPhrase.getPhrase(),
-                    userPhrase.getTimeStamp(),
-                    userPhrase.getSentState(),
-                    userPhrase.getQuote(),
-                    userPhrase.getFileDescription(),
-                    v -> mAdapterInterface.onImageClick(userPhrase),
-                    v -> {
-                        if (userPhrase.getFileDescription() != null) {
-                            mAdapterInterface.onFileClick(userPhrase.getFileDescription());
-                        } else if (userPhrase.getQuote() != null && userPhrase.getQuote().getFileDescription() != null) {
-                            mAdapterInterface.onFileClick(userPhrase.getQuote().getFileDescription());
-                        }
-                    },
-                    v -> mAdapterInterface.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
-                    v -> {
-                        mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition());
-                        return true;
-                    },
-                    () -> notifyItemChangedOnUi(userPhrase),
-                    userPhrase.isChosen()
-            );
+            bindUserPhraseVH((UserPhraseViewHolder) holder, (UserPhrase) list.get(position));
         }
         if (holder instanceof DateViewHolder) {
-            final DateRow dateRow = (DateRow) list.get(position);
-            ((DateViewHolder) holder).onBind(dateRow.getDate());
+            ((DateViewHolder) holder).onBind(((DateRow) list.get(position)).getDate());
         }
         if (holder instanceof ConsultIsTypingViewHolderNew) {
-            final ChatStyle style = Config.instance.getChatStyle();
-            final ConsultTyping consultTyping = (ConsultTyping) list.get(holder.getAdapterPosition());
-            ((ConsultIsTypingViewHolderNew) holder).onBind(v -> mAdapterInterface.onConsultAvatarClick(consultTyping.getConsultId()));
-            final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultTyping.getAvatarPath());
-            Picasso.get()
-                    .load(avatarPath)
-                    .fit()
-                    .error(style.defaultOperatorAvatar)
-                    .placeholder(style.defaultOperatorAvatar)
-                    .centerCrop()
-                    .transform(new CircleTransformation())
-                    .into(((ConsultIsTypingViewHolderNew) holder).mConsultAvatar);
+            bindConsultIsTypingVH((ConsultIsTypingViewHolderNew) holder);
         }
         if (holder instanceof SpaceViewHolder) {
             final Space space = (Space) list.get(position);
-            final float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, space.getHeight(), ctx.getResources().getDisplayMetrics());
-            ((SpaceViewHolder) holder).onBind((int) height);
+            ((SpaceViewHolder) holder).onBind((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, space.getHeight(), ctx.getResources().getDisplayMetrics()));
         }
         if (holder instanceof ImageFromConsultViewHolder) {
-            final ConsultPhrase consultPhrase = (ConsultPhrase) list.get(position);
-            if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
-                mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
-            }
-            ((ImageFromConsultViewHolder) holder).onBind(
-                    consultPhrase,
-                    () -> mAdapterInterface.onImageClick(consultPhrase),
-                    () -> mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition())
-            );
+            bindImageFromConsultVH((ImageFromConsultViewHolder) holder, (ConsultPhrase) list.get(position));
         }
         if (holder instanceof ImageFromUserViewHolder) {
-            final UserPhrase userPhrase = (UserPhrase) list.get(position);
-            if (userPhrase.getFileDescription().getFilePath() == null) {
-                mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
-            }
-            if (userPhrase.getFileDescription() != null) {
-                ((ImageFromUserViewHolder) holder).onBind(userPhrase,
-                        () -> mAdapterInterface.onImageClick(userPhrase),
-                        () -> mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
-                );
-            }
+            bindImageFromUserVH((ImageFromUserViewHolder) holder, (UserPhrase) list.get(position));
         }
         if (holder instanceof UserFileViewHolder) {
-            final UserPhrase userPhrase = (UserPhrase) list.get(position);
-            ((UserFileViewHolder) holder).onBind(
-                    userPhrase.getTimeStamp(),
-                    userPhrase.getFileDescription(),
-                    v -> mAdapterInterface.onFileClick(userPhrase.getFileDescription()),
-                    v -> mAdapterInterface.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
-                    v -> {
-                        mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition());
-                        return true;
-                    }, userPhrase.isChosen(),
-                    userPhrase.getSentState()
-            );
+            bindFileFromUserVH((UserFileViewHolder) holder, (UserPhrase) list.get(position));
         }
         if (holder instanceof ConsultFileViewHolder) {
-            final ConsultPhrase consultPhrase = (ConsultPhrase) list.get(position);
-            ((ConsultFileViewHolder) holder).onBind(
-                    consultPhrase.getTimeStamp(),
-                    consultPhrase.getFileDescription(),
-                    consultPhrase.getAvatarPath(),
-                    v -> mAdapterInterface.onFileClick(consultPhrase.getFileDescription()),
-                    v -> {
-                        mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition());
-                        return true;
-                    },
-                    consultPhrase.isAvatarVisible(),
-                    consultPhrase.isChosen()
-            );
+            bindFileFromConsultVH((ConsultFileViewHolder) holder, (ConsultPhrase) list.get(position));
         }
         if (holder instanceof UnreadMessageViewHolder) {
             ((UnreadMessageViewHolder) holder).onBind((UnreadMessages) list.get(holder.getAdapterPosition()));
@@ -306,7 +191,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (holder instanceof RatingThumbsViewHolder) {
             final Survey survey = (Survey) list.get(holder.getAdapterPosition());
-            ((RatingThumbsViewHolder) holder).bind(survey, mAdapterInterface);
+            ((RatingThumbsViewHolder) holder).bind(survey, mCallback);
         }
         if (holder instanceof RatingThumbsSentViewHolder) {
             final Survey survey = (Survey) list.get(holder.getAdapterPosition());
@@ -316,16 +201,93 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             final Survey survey = (Survey) list.get(holder.getAdapterPosition());
             ((RatingStarsViewHolder) holder).bind(
                     survey,
-                    ratingCount -> mAdapterInterface.onRatingClick(survey, ratingCount)
+                    ratingCount -> mCallback.onRatingClick(survey, ratingCount)
             );
         }
         if (holder instanceof RatingStarsSentViewHolder) {
-            final Survey survey = (Survey) list.get(holder.getAdapterPosition());
-            ((RatingStarsSentViewHolder) holder).bind(survey);
+            ((RatingStarsSentViewHolder) holder).bind((Survey) list.get(holder.getAdapterPosition()));
         }
         if (holder instanceof RequestResolveThreadViewHolder) {
-            ((RequestResolveThreadViewHolder) holder).bind(mAdapterInterface);
+            ((RequestResolveThreadViewHolder) holder).bind(mCallback);
         }
+    }
+
+    @Override
+    public int getItemViewType(final int position) {
+        Object o;
+        try {
+            o = list.get(position);
+        } catch (final IndexOutOfBoundsException e) {
+            ThreadsLogger.e(TAG, "getItemViewType", e);
+            return 0;
+        }
+        if (o instanceof ConsultConnectionMessage) {
+            return TYPE_CONSULT_CONNECTED;
+        }
+        if (o instanceof ConsultTyping) {
+            return TYPE_CONSULT_TYPING;
+        }
+        if (o instanceof DateRow) {
+            return TYPE_DATE;
+        }
+        if (o instanceof SearchingConsult) {
+            return TYPE_SEARCHING_CONSULT;
+        }
+        if (o instanceof Space) {
+            return TYPE_FREE_SPACE;
+        }
+        if (o instanceof UnreadMessages) {
+            return TYPE_UNREAD_MESSAGES;
+        }
+        if (o instanceof ScheduleInfo) {
+            return TYPE_SCHEDULE;
+        }
+        if (o instanceof RequestResolveThread) {
+            return TYPE_REQ_RESOLVE_THREAD;
+        }
+        if (o instanceof ConsultPhrase) {
+            final ConsultPhrase cp = (ConsultPhrase) o;
+            if (cp.isOnlyImage()) {
+                return TYPE_IMAGE_FROM_CONSULT;
+            }
+            if (cp.isOnlyDoc()) {
+                return TYPE_FILE_FROM_CONSULT;
+            }
+            return TYPE_CONSULT_PHRASE;
+        }
+        if (o instanceof UserPhrase) {
+            final UserPhrase up = (UserPhrase) o;
+            if (up.isOnlyImage()) {
+                return TYPE_IMAGE_FROM_USER;
+            }
+            if (up.isOnlyDoc()) {
+                return TYPE_FILE_FROM_USER;
+            }
+            return TYPE_USER_PHRASE;
+        }
+        if (o instanceof Survey) {
+            final Survey survey = (Survey) o;
+            final QuestionDTO questionDTO = survey.getQuestions().get(0);
+            if (questionDTO.isSimple()) {
+                if (survey.getSentState() == MessageState.STATE_SENT || survey.getSentState() == MessageState.STATE_WAS_READ) {
+                    return TYPE_RATING_THUMBS_SENT;
+                } else {
+                    return TYPE_RATING_THUMBS;
+                }
+            } else {
+                if (survey.getSentState() == MessageState.STATE_SENT || survey.getSentState() == MessageState.STATE_WAS_READ) {
+                    return TYPE_RATING_STARS_SENT;
+                } else {
+                    return TYPE_RATING_STARS;
+                }
+            }
+        }
+        return super.getItemViewType(position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return list.size();
     }
 
     public void setAllMessagesRead() {
@@ -538,84 +500,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return list.size();
-    }
-
-    @Override
-    public int getItemViewType(final int position) {
-        Object o;
-        try {
-            o = list.get(position);
-        } catch (final IndexOutOfBoundsException e) {
-            ThreadsLogger.e(TAG, "getItemViewType", e);
-            return 0;
-        }
-        if (o instanceof ConsultConnectionMessage) {
-            return TYPE_CONSULT_CONNECTED;
-        }
-        if (o instanceof ConsultTyping) {
-            return TYPE_CONSULT_TYPING;
-        }
-        if (o instanceof DateRow) {
-            return TYPE_DATE;
-        }
-        if (o instanceof SearchingConsult) {
-            return TYPE_SEARCHING_CONSULT;
-        }
-        if (o instanceof Space) {
-            return TYPE_FREE_SPACE;
-        }
-        if (o instanceof UnreadMessages) {
-            return TYPE_UNREAD_MESSAGES;
-        }
-        if (o instanceof ScheduleInfo) {
-            return TYPE_SCHEDULE;
-        }
-        if (o instanceof RequestResolveThread) {
-            return TYPE_REQ_RESOLVE_THREAD;
-        }
-        if (o instanceof ConsultPhrase) {
-            final ConsultPhrase cp = (ConsultPhrase) o;
-            if (cp.isOnlyImage()) {
-                return TYPE_IMAGE_FROM_CONSULT;
-            }
-            if (cp.isOnlyDoc()) {
-                return TYPE_FILE_FROM_CONSULT;
-            }
-            return TYPE_CONSULT_PHRASE;
-        }
-        if (o instanceof UserPhrase) {
-            final UserPhrase up = (UserPhrase) o;
-            if (up.isOnlyImage()) {
-                return TYPE_IMAGE_FROM_USER;
-            }
-            if (up.isOnlyDoc()) {
-                return TYPE_FILE_FROM_USER;
-            }
-            return TYPE_USER_PHRASE;
-        }
-        if (o instanceof Survey) {
-            final Survey survey = (Survey) o;
-            final QuestionDTO questionDTO = survey.getQuestions().get(0);
-            if (questionDTO.isSimple()) {
-                if (survey.getSentState() == MessageState.STATE_SENT || survey.getSentState() == MessageState.STATE_WAS_READ) {
-                    return TYPE_RATING_THUMBS_SENT;
-                } else {
-                    return TYPE_RATING_THUMBS;
-                }
-            } else {
-                if (survey.getSentState() == MessageState.STATE_SENT || survey.getSentState() == MessageState.STATE_WAS_READ) {
-                    return TYPE_RATING_STARS_SENT;
-                } else {
-                    return TYPE_RATING_STARS;
-                }
-            }
-        }
-        return super.getItemViewType(position);
-    }
-
     public void changeStateOfSurvey(long sendingId, MessageState sentState) {
         for (final ChatItem cm : list) {
             if (cm instanceof Survey) {
@@ -760,10 +644,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             int position = list.indexOf(chatItem);
             notifyItemChanged(position);
         });
-    }
-
-    private void notifyItemRemoved(final ChatItem chatItem) {
-        notifyItemRemoved(list.indexOf(chatItem));
     }
 
     private static int getUnreadCount(final List<ChatItem> list) {
@@ -1002,8 +882,150 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public interface AdapterInterface {
-        void onFileClick(FileDescription description);
+    private void bindConsultConnectionMessageVH(@NonNull final ConsultConnectionMessageViewHolder holder, ConsultConnectionMessage cc) {
+        holder.onBind(
+                cc,
+                v -> {
+                    final ConsultConnectionMessage cc1 = (ConsultConnectionMessage) list.get(holder.getAdapterPosition());
+                    mCallback.onConsultConnectionClick(cc1);
+                }
+        );
+    }
+
+    private void bindConsultPhraseVH(@NonNull final ConsultPhraseHolder holder, ConsultPhrase consultPhrase) {
+        if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
+            mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
+        }
+        holder
+                .onBind(
+                        consultPhrase,
+                        consultPhrase.getPhrase(),
+                        consultPhrase.getAvatarPath(),
+                        consultPhrase.getTimeStamp(),
+                        consultPhrase.isAvatarVisible(),
+                        consultPhrase.getQuote(),
+                        consultPhrase.getFileDescription(),
+                        v -> mCallback.onImageClick(consultPhrase),
+                        v -> {
+                            if (consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
+                                mCallback.onFileClick(consultPhrase.getQuote().getFileDescription());
+                            }
+                            if (consultPhrase.getFileDescription() != null) {
+                                mCallback.onFileClick(consultPhrase.getFileDescription());
+                            }
+                        },
+                        v -> {
+                            phaseLongClick(consultPhrase, holder.getAdapterPosition());
+                            return true;
+                        },
+                        v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
+                        () -> notifyItemChangedOnUi(consultPhrase),
+                        consultPhrase.isChosen()
+                );
+    }
+
+    private void bindUserPhraseVH(@NonNull final UserPhraseViewHolder holder, UserPhrase userPhrase) {
+        if (userPhrase.getFileDescription() != null && userPhrase.getFileDescription().getFilePath() == null) {
+            mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
+        }
+        holder.onBind(
+                userPhrase,
+                userPhrase.getPhrase(),
+                userPhrase.getTimeStamp(),
+                userPhrase.getSentState(),
+                userPhrase.getQuote(),
+                userPhrase.getFileDescription(),
+                v -> mCallback.onImageClick(userPhrase),
+                v -> {
+                    if (userPhrase.getFileDescription() != null) {
+                        mCallback.onFileClick(userPhrase.getFileDescription());
+                    } else if (userPhrase.getQuote() != null && userPhrase.getQuote().getFileDescription() != null) {
+                        mCallback.onFileClick(userPhrase.getQuote().getFileDescription());
+                    }
+                },
+                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
+                v -> {
+                    phaseLongClick(userPhrase, holder.getAdapterPosition());
+                    return true;
+                },
+                () -> notifyItemChangedOnUi(userPhrase),
+                userPhrase.isChosen()
+        );
+    }
+
+    private void bindConsultIsTypingVH(@NonNull final ConsultIsTypingViewHolderNew holder) {
+        final ChatStyle style = Config.instance.getChatStyle();
+        final ConsultTyping consultTyping = (ConsultTyping) list.get(holder.getAdapterPosition());
+        holder.onBind(v -> mCallback.onConsultAvatarClick(consultTyping.getConsultId()));
+        final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultTyping.getAvatarPath());
+        Picasso.get()
+                .load(avatarPath)
+                .fit()
+                .error(style.defaultOperatorAvatar)
+                .placeholder(style.defaultOperatorAvatar)
+                .centerCrop()
+                .transform(new CircleTransformation())
+                .into(holder.mConsultAvatar);
+    }
+
+    private void bindImageFromConsultVH(@NonNull final ImageFromConsultViewHolder holder, ConsultPhrase consultPhrase) {
+        if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
+            mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
+        }
+        ((ImageFromConsultViewHolder) holder).onBind(
+                consultPhrase,
+                () -> mAdapterInterface.onImageClick(consultPhrase),
+                () -> mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition())
+        );
+    }
+
+    private void bindImageFromUserVH(@NonNull final ImageFromUserViewHolder holder, UserPhrase userPhrase) {
+        if (userPhrase.getFileDescription().getFilePath() == null) {
+            mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
+        }
+        if (userPhrase.getFileDescription() != null) {
+            ((ImageFromUserViewHolder) holder).onBind(userPhrase,
+                    () -> mAdapterInterface.onImageClick(userPhrase),
+                    () -> mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
+            );
+        }
+    }
+
+    private void bindFileFromUserVH(@NonNull final UserFileViewHolder holder, UserPhrase userPhrase) {
+        holder.onBind(
+                userPhrase.getTimeStamp(),
+                userPhrase.getFileDescription(),
+                v -> mCallback.onFileClick(userPhrase.getFileDescription()),
+                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
+                v -> {
+                    phaseLongClick(userPhrase, holder.getAdapterPosition());
+                    return true;
+                }, userPhrase.isChosen(),
+                userPhrase.getSentState()
+        );
+    }
+
+    private void bindFileFromConsultVH(@NonNull final ConsultFileViewHolder holder, ConsultPhrase consultPhrase) {
+        holder.onBind(
+                consultPhrase.getTimeStamp(),
+                consultPhrase.getFileDescription(),
+                consultPhrase.getAvatarPath(),
+                v -> mCallback.onFileClick(consultPhrase.getFileDescription()),
+                v -> {
+                    phaseLongClick(consultPhrase, holder.getAdapterPosition());
+                    return true;
+                },
+                consultPhrase.isAvatarVisible(),
+                consultPhrase.isChosen()
+        );
+    }
+
+    private void phaseLongClick(ChatPhrase chatPhrase, int position) {
+        mCallback.onPhraseLongClick(chatPhrase, position);
+    }
+
+    public interface Callback {
+        void onFileClick(FileDescription fileDescription);
 
         void onPhraseLongClick(ChatPhrase chatPhrase, int position);
 

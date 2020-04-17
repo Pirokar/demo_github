@@ -6,7 +6,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.internal.Config;
-import im.threads.internal.retrofit.ApiGenerator;
 import im.threads.internal.utils.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -19,6 +18,7 @@ public final class OGDataProvider {
 
     private static volatile OGDataProvider instance;
     private final OkHttpClient client;
+    private final OGParser ogParser;
     private Executor mExecutor = Executors.newCachedThreadPool();
 
     public static OGDataProvider getInstance() {
@@ -34,6 +34,7 @@ public final class OGDataProvider {
 
     private OGDataProvider() {
         client = createOkHttpClient();
+        ogParser = new OGParser();
     }
 
     private OkHttpClient createOkHttpClient() {
@@ -63,7 +64,7 @@ public final class OGDataProvider {
                     callback.onError(new IOException("null response body"));
                     return;
                 }
-                callback.onSuccess(OGParser.parse(responseBody.byteStream()));
+                callback.onSuccess(ogParser.parse(responseBody.byteStream()));
             } catch (IOException e) {
                 callback.onError(e);
             }

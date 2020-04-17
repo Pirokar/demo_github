@@ -2,9 +2,10 @@ package im.threads.internal.model;
 
 import android.text.TextUtils;
 
+import androidx.core.util.ObjectsCompat;
+
 import java.util.List;
 
-import androidx.core.util.ObjectsCompat;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
 
@@ -26,6 +27,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     private boolean isChosen;
     private boolean isRead;
     private final String status;
+    private List<QuickReply> quickReplies;
     //для поиска сообщений в чате
     private boolean found;
 
@@ -34,7 +36,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
     public ConsultPhrase(String uuid, String providerId, List<String> providerIds, FileDescription fileDescription, Quote quote, String consultName,
                          String phrase, long timeStamp, String consultId, String avatarPath,
-                         boolean isRead, String status, boolean sex) {
+                         boolean isRead, String status, boolean sex, List<QuickReply> quickReplies) {
 
         super(avatarPath, consultId);
 
@@ -49,6 +51,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         this.isRead = isRead;
         this.status = status;
         this.sex = sex;
+        this.quickReplies = quickReplies;
     }
 
     public String getUuid() {
@@ -65,6 +68,10 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
     public String getStatus() {
         return status;
+    }
+
+    public List<QuickReply> getQuickReplies() {
+        return quickReplies;
     }
 
     public boolean getSex() {

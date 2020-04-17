@@ -2,6 +2,8 @@ package im.threads.internal.transport;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
@@ -9,7 +11,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.ChatItemType;
@@ -103,7 +104,7 @@ public final class HistoryParser {
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
                             out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, timeStamp,
-                                    operatorId, photoUrl, message.isRead(), null, false));
+                                    operatorId, photoUrl, message.isRead(), null, false, message.getQuickReplies()));
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));

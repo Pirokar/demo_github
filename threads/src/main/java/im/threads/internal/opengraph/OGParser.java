@@ -24,8 +24,11 @@ final class OGParser {
     private static final String META_START_TAG = "<meta";
     private static final String CONTENT_PROPERTY = "content=\"";
 
-    static OGData parse(InputStream inputStream) throws IOException {
-        OGData ogData = new OGData();
+    OGParser() {
+    }
+
+    OGData parse(InputStream inputStream) throws IOException {
+        OGData.Builder ogDataBuilder = new OGData.Builder();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, DECODE_UTF8);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String headContents = "", metaTags = "", sourceTextLine;
@@ -38,7 +41,7 @@ final class OGParser {
                     headContents = headContents + sourceTextLine.substring(headStart + 1);
                 }
                 if (sourceTextLine.contains(HEAD_END_TAG)) {
-                    parseFromOneLineHeader(ogData, headContents);
+                    parseFromOneLineHeader(ogDataBuilder, headContents);
                 }
                 readingHead = true;
             } else if (sourceTextLine.contains(HEAD_END_TAG)) {
@@ -50,7 +53,7 @@ final class OGParser {
                     BufferedReader stringReader = new BufferedReader(new StringReader(meta));
                     String metaTagLine;
                     while ((metaTagLine = stringReader.readLine()) != null) {
-                        fillOGData(ogData, metaTagLine);
+                        fillOGData(ogDataBuilder, metaTagLine);
                     }
                 }
                 break;
@@ -60,23 +63,23 @@ final class OGParser {
 
             if (readingHead && sourceTextLine.contains(META_START_TAG)) {
                 metaTags = metaTags + sourceTextLine + "\n";
-                fillOGData(ogData, sourceTextLine);
+                fillOGData(ogDataBuilder, sourceTextLine);
             }
         }
         bufferedReader.close();
-        return ogData;
+        return ogDataBuilder.build();
     }
 
-    private static void parseFromOneLineHeader(OGData ogData, String content) {
+    private void parseFromOneLineHeader(OGData.Builder ogDataBuilder, String content) {
         int first = content.indexOf(META_START_TAG), last = content.lastIndexOf(META_START_TAG);
         while (first < last) {
             int tabLength = META_START_TAG.length();
-            fillOGData(ogData, content.substring(first, content.indexOf(META_START_TAG, first + tabLength)));
+            fillOGData(ogDataBuilder, content.substring(first, content.indexOf(META_START_TAG, first + tabLength)));
             first = content.indexOf(META_START_TAG, first + tabLength);
         }
     }
 
-    private static String formattingMetaTags(String headText) {
+    private String formattingMetaTags(String headText) {
         String formattedText = "";
         int start = headText.indexOf(META_START_TAG), end = headText.indexOf(">", start) + 1;
         formattedText = formattedText + headText.substring(start, end) + "\n";
@@ -93,17 +96,17 @@ final class OGParser {
         return formattedText;
     }
 
-    private static void fillOGData(OGData ogData, String line) {
+    private void fillOGData(OGData.Builder ogDataBuilder, String line) {
         int start = line.indexOf(CONTENT_PROPERTY) + CONTENT_PROPERTY.length();
         int end = line.indexOf("\"", start);
         if (line.contains(TITLE) || line.contains(TWITTER_TITLE)) {
-            ogData.setTitle(line.substring(start, end));
+            ogDataBuilder.title(line.substring(start, end));
         } else if (line.contains(IMAGE) || line.contains(TWITTER_IMAGE)) {
-            ogData.setImage(line.substring(start, end));
+            ogDataBuilder.image(line.substring(start, end));
         } else if (line.contains(URL) || line.contains(TWITTER_URL)) {
-            ogData.setUrl(line.substring(start, end));
+            ogDataBuilder.url(line.substring(start, end));
         } else if (line.contains(DESC) || line.contains(TWITTER_DESC)) {
-            ogData.setDescription(line.substring(start, end));
+            ogDataBuilder.description(line.substring(start, end));
         }
     }
 }

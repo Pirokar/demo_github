@@ -1,6 +1,7 @@
 package im.threads.internal.chat_updates;
 
 import androidx.annotation.NonNull;
+
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.transport.ChatItemProviderData;
@@ -21,6 +22,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<ChatItemType> removeChatItemProcessor = PublishProcessor.create();
     private final FlowableProcessor<Long> surveySendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
+    private final FlowableProcessor<Boolean> userInputEnableProcessor = PublishProcessor.create();
 
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
 
@@ -67,6 +69,9 @@ public class ChatUpdateProcessor {
         deviceAddressChangedProcessor.onNext(deviceAddress);
     }
 
+    public void postUserInputEnableChanged(Boolean enable) {
+        userInputEnableProcessor.onNext(enable);
+    }
     public void postError(@NonNull TransportException error) {
         errorProcessor.onNext(error);
     }
@@ -110,4 +115,9 @@ public class ChatUpdateProcessor {
     public FlowableProcessor<String> getDeviceAddressChangedProcessor() {
         return deviceAddressChangedProcessor;
     }
+
+    public FlowableProcessor<Boolean> getUserInputEnableProcessor() {
+        return userInputEnableProcessor;
+    }
+
 }
