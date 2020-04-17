@@ -86,7 +86,6 @@ import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
-import im.threads.internal.utils.Callback;
 import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
@@ -546,18 +545,20 @@ public final class ChatFragment extends BaseFragment implements
         PopupMenu popup = new PopupMenu(activity, binding.popupMenuButton);
         popup.setOnMenuItemClickListener(this);
         MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.menu_main, popup.getMenu());
-
+        inflater.inflate(R.menu.threads_menu_main, popup.getMenu());
         Menu menu = popup.getMenu();
-        MenuItem searchMenuItem = menu.getItem(0);
-        SpannableString s = new SpannableString(searchMenuItem.getTitle());
-        s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s.length(), 0);
-        searchMenuItem.setTitle(s);
-
-        MenuItem filesAndMedia = menu.getItem(1);
-        SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
-        s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s2.length(), 0);
-        filesAndMedia.setTitle(s2);
+        MenuItem searchMenuItem = menu.findItem(R.id.search);
+        if (searchMenuItem != null) {
+            SpannableString s = new SpannableString(searchMenuItem.getTitle());
+            s.setSpan(new ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s.length(), 0);
+            searchMenuItem.setTitle(s);
+        }
+        MenuItem filesAndMedia = menu.findItem(R.id.files_and_media);
+        if (filesAndMedia != null) {
+            SpannableString s2 = new SpannableString(filesAndMedia.getTitle());
+            s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s2.length(), 0);
+            filesAndMedia.setTitle(s2);
+        }
 
         popup.show();
     }
