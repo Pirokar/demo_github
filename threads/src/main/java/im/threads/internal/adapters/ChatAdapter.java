@@ -970,23 +970,23 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void bindImageFromConsultVH(@NonNull final ImageFromConsultViewHolder holder, ConsultPhrase consultPhrase) {
         if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
-            mAdapterInterface.onImageDownloadRequest(consultPhrase.getFileDescription());
+            mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
         }
-        ((ImageFromConsultViewHolder) holder).onBind(
+        holder.onBind(
                 consultPhrase,
-                () -> mAdapterInterface.onImageClick(consultPhrase),
-                () -> mAdapterInterface.onPhraseLongClick(consultPhrase, holder.getAdapterPosition())
+                () -> mCallback.onImageClick(consultPhrase),
+                () -> mCallback.onPhraseLongClick(consultPhrase, holder.getAdapterPosition())
         );
     }
 
     private void bindImageFromUserVH(@NonNull final ImageFromUserViewHolder holder, UserPhrase userPhrase) {
         if (userPhrase.getFileDescription().getFilePath() == null) {
-            mAdapterInterface.onImageDownloadRequest(userPhrase.getFileDescription());
+            mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
         }
         if (userPhrase.getFileDescription() != null) {
-            ((ImageFromUserViewHolder) holder).onBind(userPhrase,
-                    () -> mAdapterInterface.onImageClick(userPhrase),
-                    () -> mAdapterInterface.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
+            holder.onBind(userPhrase,
+                    () -> mCallback.onImageClick(userPhrase),
+                    () -> mCallback.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
             );
         }
     }
