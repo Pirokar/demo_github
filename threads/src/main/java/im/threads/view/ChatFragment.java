@@ -1591,6 +1591,7 @@ public final class ChatFragment extends BaseFragment implements
         if (activity == null) {
             return;
         }
+        binding.quickRepliesRv.setMaxHeight((int) (binding.chatRoot.getHeight() * 0.4));
         binding.quickRepliesRv.setVisibility(View.VISIBLE);
         binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
             String text = quickReply.getText();

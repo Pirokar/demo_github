@@ -158,12 +158,13 @@
                     android:visibility="visible" />
             </RelativeLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
+            <im.threads.internal.views.MaxHeightRecyclerView
                 android:id="@+id/quick_replies_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
+                android:scrollbars="vertical"
                 android:visibility="gone"/>
             <LinearLayout
                 android:id="@+id/input_layout"
