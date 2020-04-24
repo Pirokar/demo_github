@@ -12,14 +12,15 @@ public class CustomFontTextView extends androidx.appcompat.widget.AppCompatTextV
 
     public CustomFontTextView(Context context) {
         super(context);
-        if (isInEditMode()) {
-            return;
-        }
-        setTypefaceView(context);
+        init(context);
     }
 
     public CustomFontTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context);
+    }
+
+    private void init(Context context) {
         if (isInEditMode()) {
             return;
         }

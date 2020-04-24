@@ -31,6 +31,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.internal.markdown.MarkdownProcessorHolder;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Quote;
@@ -42,13 +43,14 @@ import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
+import im.threads.internal.widget.text_view.BubbleMessageTextView;
 
 /**
  * layout/item_user_text_with_file.xml
  */
 public final class UserPhraseViewHolder extends BaseHolder {
     private static final String TAG = "UserPhraseViewHolder ";
-    private TextView mPhraseTextView;
+    private BubbleMessageTextView mPhraseTextView;
     private TableRow mRightTextRow;
     private ImageView mImage;
     private TextView mRightTextDescr;
@@ -73,6 +75,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
         mPhraseTextView = itemView.findViewById(R.id.text);
+        mPhraseTextView.enableMarkdown(MarkdownProcessorHolder.getMarkdownProcessor(MarkdownProcessorHolder.Type.OUTGOING));
         mImage = itemView.findViewById(R.id.image);
         mRightTextRow = itemView.findViewById(R.id.right_text_row);
         mRightTextDescr = itemView.findViewById(R.id.file_specs);

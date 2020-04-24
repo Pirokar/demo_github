@@ -31,6 +31,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.internal.markdown.MarkdownProcessorHolder;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Quote;
@@ -42,6 +43,7 @@ import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
+import im.threads.internal.widget.text_view.BubbleMessageTextView;
 
 /**
  * layout/item_consultant_text_with_file.xml
@@ -55,7 +57,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
     private TextView mRightTextDescr;
     private TextView rightTextFileStamp;
     private TextView mTimeStampTextView;
-    private TextView mPhraseTextView;
+    private BubbleMessageTextView mPhraseTextView;
     private SimpleDateFormat quoteSdf;
     private SimpleDateFormat timeStampSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private ImageView mConsultAvatar;
@@ -82,6 +84,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
         mRightTextDescr = itemView.findViewById(R.id.file_specs);
         rightTextFileStamp = itemView.findViewById(R.id.send_at);
         mPhraseTextView = itemView.findViewById(R.id.text);
+        mPhraseTextView.enableMarkdown(MarkdownProcessorHolder.getMarkdownProcessor(MarkdownProcessorHolder.Type.INCOMING));
         mConsultAvatar = itemView.findViewById(R.id.consult_avatar);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
@@ -364,4 +367,5 @@ public final class ConsultPhraseHolder extends BaseHolder {
         ogDataLayout.setVisibility(View.GONE);
         mTimeStampTextView.setVisibility(View.VISIBLE);
     }
+
 }

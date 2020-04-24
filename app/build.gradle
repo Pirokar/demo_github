@@ -153,7 +153,6 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.3'
 
-    implementation "androidx.legacy:legacy-support-v4:$androidXVersion"
     implementation "com.google.android.material:material:$androidXVersion"
     implementation "androidx.preference:preference:$androidXVersion"
 

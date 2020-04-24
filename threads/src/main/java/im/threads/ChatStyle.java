@@ -7,6 +7,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
+import com.yydcdut.markdown.MarkdownConfiguration;
+
 import java.io.Serializable;
 
 /**
@@ -270,6 +272,9 @@ public final class ChatStyle implements Serializable {
     public String typingFont;
     @Nullable
     public String scheduleAlertFont;
+
+    // Конфигурации markdown в сообщениях
+    public MarkdownConfiguration incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
 
     public ChatStyle() {
     }
@@ -759,4 +764,10 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    // https://github.com/yydcdut/RxMarkdown
+    public ChatStyle setMarkdownConfigurations(MarkdownConfiguration incoming, MarkdownConfiguration outgoing) {
+        this.incomingMarkdownConfiguration = incoming;
+        this.outgoingMarkdownConfiguration = outgoing;
+        return this;
+    }
 }
