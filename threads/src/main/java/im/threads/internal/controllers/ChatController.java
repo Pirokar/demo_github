@@ -129,7 +129,7 @@ public final class ChatController {
     private Handler unsendMessageHandler;
     private String firstUnreadProviderId;
 
-    private ScheduleInfo currentScheduleInfo = new ScheduleInfo();
+    private ScheduleInfo currentScheduleInfo;
     private boolean hasNotAnsweredQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
 
     private CompositeDisposable compositeDisposable;
@@ -209,7 +209,7 @@ public final class ChatController {
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um);
-        if (currentScheduleInfo.isChatWorking() && !consultWriter.isConsultConnected()) {
+        if (isChatWorking() && !consultWriter.isConsultConnected()) {
             if (fragment != null) {
                 fragment.setStateSearchingConsult();
             }
@@ -385,7 +385,7 @@ public final class ChatController {
     }
 
     public boolean isConsultFound() {
-        return currentScheduleInfo.isChatWorking() && consultWriter.isConsultConnected();
+        return isChatWorking() && consultWriter.isConsultConnected();
     }
 
     public ConsultInfo getCurrentConsultInfo() {
@@ -517,6 +517,10 @@ public final class ChatController {
         if (fragment != null) {
             fragment.setAllMessagesWereRead();
         }
+    }
+
+    private boolean isChatWorking() {
+        return currentScheduleInfo == null || currentScheduleInfo.isChatWorking();
     }
 
     private void onClientIdChanged() throws Exception {
@@ -1083,8 +1087,13 @@ public final class ChatController {
         if (hasNotAnsweredQuickReplies) {
             chatUpdateProcessor.postUserInputEnableChanged(false);
         } else {
-            chatUpdateProcessor.postUserInputEnableChanged(
-                    currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive());
+            // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
+            if (currentScheduleInfo == null) {
+                chatUpdateProcessor.postUserInputEnableChanged(true);
+            } else {
+                chatUpdateProcessor.postUserInputEnableChanged(
+                        currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive());
+            }
         }
     }
 
