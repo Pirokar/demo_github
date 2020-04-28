@@ -836,6 +836,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void sendMessage(List<UpcomingUserMessage> messages) {
+        sendMessage(messages, true);
+    }
+
+    private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
         ThreadsLogger.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) {
             return;
@@ -849,7 +853,9 @@ public final class ChatFragment extends BaseFragment implements
         if (null != chatAdapter) {
             chatAdapter.setAllMessagesRead();
         }
-        clearInput();
+        if (clearInput) {
+            clearInput();
+        }
     }
 
     private void clearInput() {
@@ -1523,6 +1529,33 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.setItemChosen(true, chatPhrase);
     }
 
+    public void showQuickReplies(List<QuickReply> quickReplies) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        binding.quickRepliesRv.setMaxHeight((int) (binding.chatRoot.getHeight() * 0.4));
+        binding.quickRepliesRv.setVisibility(View.VISIBLE);
+        binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
+            String text = quickReply.getText();
+            sendMessage(Collections.singletonList(
+                    new UpcomingUserMessage(
+                            null,
+                            null,
+                            text.trim(),
+                            isCopy(text))
+                    ),
+                    false
+            );
+            mChatController.answerQuickReply(text);
+        }));
+        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
+    }
+
+    public void hideQuickReplies() {
+        binding.quickRepliesRv.setVisibility(View.GONE);
+    }
+
     private class QuoteLayoutHolder {
         private QuoteLayoutHolder() {
             Activity activity = getActivity();
@@ -1584,30 +1617,6 @@ public final class ChatFragment extends BaseFragment implements
                 removeImage();
             }
         }
-    }
-
-    public void showQuickReplies(List<QuickReply> quickReplies) {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        binding.quickRepliesRv.setMaxHeight((int) (binding.chatRoot.getHeight() * 0.4));
-        binding.quickRepliesRv.setVisibility(View.VISIBLE);
-        binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
-            String text = quickReply.getText();
-            sendMessage(Collections.singletonList(new UpcomingUserMessage(
-                    mFileDescription,
-                    mQuote,
-                    text.trim(),
-                    isCopy(text)
-            )));
-            hideQuickReplies();
-        }));
-        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
-    }
-
-    public void hideQuickReplies() {
-        binding.quickRepliesRv.setVisibility(View.GONE);
     }
 
     private class AdapterCallback implements ChatAdapter.Callback {

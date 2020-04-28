@@ -1111,6 +1111,11 @@ public final class ChatController {
         }
     }
 
+    public void answerQuickReply(String quickReply) {
+        hasNotAnsweredQuickReplies = false;
+        refreshUserInputState();
+        fragment.hideQuickReplies();
+    }
 
     private List<QuickReply> getQuickReplies(List<ChatItem> chatItems) {
         if (chatItems.isEmpty()) {
