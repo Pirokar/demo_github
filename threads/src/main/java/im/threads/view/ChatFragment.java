@@ -88,6 +88,7 @@ import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ColorsHelper;
+import im.threads.internal.utils.DisplayUtils;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.Keyboard;
 import im.threads.internal.utils.MyFileFilter;
@@ -1534,7 +1535,7 @@ public final class ChatFragment extends BaseFragment implements
         if (activity == null) {
             return;
         }
-        binding.quickRepliesRv.setMaxHeight((int) (binding.chatRoot.getHeight() * 0.4));
+        binding.quickRepliesRv.setMaxHeight((int) (DisplayUtils.getDisplayHeight(activity) * 0.5));
         binding.quickRepliesRv.setVisibility(View.VISIBLE);
         binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
             String text = quickReply.getText();
@@ -1547,7 +1548,7 @@ public final class ChatFragment extends BaseFragment implements
                     ),
                     false
             );
-            mChatController.answerQuickReply(text);
+            mChatController.quickReplyIsSent();
         }));
         binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
     }

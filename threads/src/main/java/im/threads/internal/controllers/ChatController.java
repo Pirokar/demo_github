@@ -1111,7 +1111,7 @@ public final class ChatController {
         }
     }
 
-    public void answerQuickReply(String quickReply) {
+    public void quickReplyIsSent() {
         hasNotAnsweredQuickReplies = false;
         refreshUserInputState();
         fragment.hideQuickReplies();
