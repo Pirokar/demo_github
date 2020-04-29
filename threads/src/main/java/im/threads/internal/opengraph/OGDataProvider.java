@@ -53,7 +53,7 @@ public final class OGDataProvider {
         mExecutor.execute(() -> {
             final String finalUrl;
             //Adding http for urls without scheme
-            if (!url.startsWith("http")) {
+            if (!url.toLowerCase().startsWith("http")) {
                 finalUrl = "http://" + url;
             } else {
                 finalUrl = url;
