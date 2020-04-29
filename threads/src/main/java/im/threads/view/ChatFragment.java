@@ -1536,7 +1536,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         binding.quickRepliesRv.setMaxHeight((int) (DisplayUtils.getDisplayHeight(activity) * 0.4));
-        binding.quickRepliesRv.setVisibility(View.VISIBLE);
+        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
         binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
             String text = quickReply.getText();
             sendMessage(Collections.singletonList(
@@ -1550,11 +1550,15 @@ public final class ChatFragment extends BaseFragment implements
             );
             mChatController.quickReplyIsSent();
         }));
-        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
+        if (binding.quickRepliesRv.getVisibility() == View.GONE) {
+            binding.quickRepliesRv.setVisibility(View.VISIBLE);
+        }
     }
 
     public void hideQuickReplies() {
-        binding.quickRepliesRv.setVisibility(View.GONE);
+        if (binding.quickRepliesRv.getVisibility() == View.VISIBLE) {
+            binding.quickRepliesRv.setVisibility(View.GONE);
+        }
     }
 
     private class QuoteLayoutHolder {
