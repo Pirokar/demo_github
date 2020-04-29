@@ -45,9 +45,9 @@ final class OGParser {
                 }
                 readingHead = true;
             } else if (sourceTextLine.contains(HEAD_END_TAG)) {
+                sourceTextLine = sourceTextLine.trim();
                 headEnd = sourceTextLine.indexOf(HEAD_END_TAG);
                 if (headEnd != 0) {
-                    sourceTextLine = sourceTextLine.trim();
                     headContents = headContents + sourceTextLine.substring(0, headEnd);
                     String meta = formattingMetaTags(headContents).replace("\'", "\"");
                     BufferedReader stringReader = new BufferedReader(new StringReader(meta));
