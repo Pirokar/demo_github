@@ -143,6 +143,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private boolean isInMessageSearchMode;
     private boolean isResumed;
+    private boolean isSendBlocked = false;
 
     private ChatStyle style;
 
@@ -720,7 +721,12 @@ public final class ChatFragment extends BaseFragment implements
                 );
                 messages.add(upcomingUserMessage);
             }
-            sendMessage(messages);
+            if (isSendBlocked) {
+                clearInput();
+                showToast(getString(R.string.threads_message_were_unsent));
+            } else {
+                sendMessage(messages);
+            }
         }
     }
 
@@ -1202,6 +1208,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void updateInputEnable(boolean enabled) {
+        isSendBlocked = !enabled;
         binding.inputEditView.setEnabled(enabled);
         binding.addAttachment.setEnabled(enabled);
         binding.sendMessage.setEnabled(enabled);
@@ -1234,7 +1241,11 @@ public final class ChatFragment extends BaseFragment implements
                             inputText.trim(),
                             isCopy(inputText)
                     );
-            mChatController.onUserInput(uum);
+            if (isSendBlocked) {
+                showToast(getString(R.string.threads_message_were_unsent));
+            } else {
+                mChatController.onUserInput(uum);
+            }
             inputTextObservable.set("");
             mQuoteLayoutHolder.setIsVisible(false);
             mQuote = null;
