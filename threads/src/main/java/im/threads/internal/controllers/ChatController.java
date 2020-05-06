@@ -46,6 +46,7 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
+import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
@@ -180,6 +181,27 @@ public final class ChatController {
         return instance;
     }
 
+    private static void initClientId() {
+        String newClientId = PrefUtils.getNewClientID();
+        String oldClientId = PrefUtils.getClientID();
+        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
+        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
+            // clientId has not changed
+            PrefUtils.setNewClientId("");
+        } else {
+            PrefUtils.setClientId(newClientId);
+            instance.subscribe(
+                    Completable.fromAction(() -> instance.onClientIdChanged())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    () -> {
+                                    },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
+        }
+    }
+
     public void onRatingClick(@NonNull final Survey survey) {
 //        final ChatItem chatItem = convertRatingItem(survey); //TODO THREADS-3395 Figure out what is this for
         if (!surveyCompletionInProgress) {
@@ -209,12 +231,6 @@ public final class ChatController {
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um);
-        if (isChatWorking() && !consultWriter.isConsultConnected()) {
-            if (fragment != null) {
-                fragment.setStateSearchingConsult();
-            }
-            consultWriter.setSearchingConsult(true);
-        }
         queueMessageSending(um);
     }
 
@@ -375,7 +391,7 @@ public final class ChatController {
     }
 
     public int getStateOfConsult() {
-        if (consultWriter.istSearchingConsult()) {
+        if (consultWriter.isSearchingConsult()) {
             return CONSULT_STATE_SEARCHING;
         } else if (consultWriter.isConsultConnected()) {
             return CONSULT_STATE_FOUND;
@@ -403,7 +419,7 @@ public final class ChatController {
             return;
         }
         fragment = f;
-        if (consultWriter.istSearchingConsult()) {
+        if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         }
         Config.instance.transport.setLifecycle(fragment.getLifecycle());
@@ -433,7 +449,7 @@ public final class ChatController {
         );
         if (consultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo());
-        } else if (consultWriter.istSearchingConsult()) {
+        } else if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         } else {
             fragment.setTitleStateDefault();
@@ -454,27 +470,6 @@ public final class ChatController {
             }
         }
         fragment = null;
-    }
-
-    private static void initClientId() {
-        String newClientId = PrefUtils.getNewClientID();
-        String oldClientId = PrefUtils.getClientID();
-        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
-        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
-            // clientId has not changed
-            PrefUtils.setNewClientId("");
-        } else {
-            PrefUtils.setClientId(newClientId);
-            instance.subscribe(
-                    Completable.fromAction(() -> instance.onClientIdChanged())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(
-                                    () -> {
-                                    },
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
-                            )
-            );
-        }
     }
 
     /**
@@ -762,10 +757,17 @@ public final class ChatController {
                                     }
                                 } else {
                                     consultWriter.setCurrentConsultLeft();
-                                    if (fragment != null) {
+                                    if (fragment != null && !consultWriter.isSearchingConsult()) {
                                         fragment.setTitleStateDefault();
                                     }
                                 }
+                            }
+                            if (chatItem instanceof SearchingConsult) {
+                                if (fragment != null) {
+                                    fragment.setStateSearchingConsult();
+                                }
+                                consultWriter.setSearchingConsult(true);
+                                return;
                             }
                             addMessage(chatItem);
                         })
@@ -1079,7 +1081,8 @@ public final class ChatController {
                     }
                 })
                         .subscribeOn(Schedulers.io())
-                        .subscribe(() -> {}, e -> ThreadsLogger.e(TAG, e.getMessage()))
+                        .subscribe(() -> {
+                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
         );
     }
 

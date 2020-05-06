@@ -23,7 +23,7 @@ public final class ConsultWriter {
         sharedPreferences.edit().putBoolean(ConsultWriter.class + SEARCHING_CONSULT, isSearching).commit();
     }
 
-    public boolean istSearchingConsult() {
+    public boolean isSearchingConsult() {
         return sharedPreferences.getBoolean(ConsultWriter.class + SEARCHING_CONSULT, false);
     }
 
