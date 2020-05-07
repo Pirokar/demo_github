@@ -191,6 +191,7 @@ public final class ChatFragment extends BaseFragment implements
         setFragmentStyle(style);
 
         initUserInputState();
+        initQuickReplies();
         chatIsShown = true;
 
         return binding.getRoot();
@@ -244,6 +245,18 @@ public final class ChatFragment extends BaseFragment implements
         subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateInputEnable));
+    }
+
+    private void initQuickReplies() {
+        subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(quickReplies -> {
+                    if (quickReplies.isEmpty()) {
+                        hideQuickReplies();
+                    } else {
+                        showQuickReplies(quickReplies);
+                    }
+                }));
     }
 
     private void bindViews() {
@@ -1207,7 +1220,7 @@ public final class ChatFragment extends BaseFragment implements
         return style;
     }
 
-    public void updateInputEnable(boolean enabled) {
+    private void updateInputEnable(boolean enabled) {
         isSendBlocked = !enabled;
         binding.inputEditView.setEnabled(enabled);
         binding.addAttachment.setEnabled(enabled);

@@ -129,8 +129,9 @@ public final class ChatController {
     private Handler unsendMessageHandler;
     private String firstUnreadProviderId;
 
+    // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
-    private boolean hasNotAnsweredQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    private boolean hasQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
 
     private CompositeDisposable compositeDisposable;
 
@@ -677,6 +678,7 @@ public final class ChatController {
         subscribeToSurveySendSuccess();
         subscribeToRemoveChatItem();
         subscribeToDeviceAddressChanged();
+        subscribeToQuickReplies();
     }
 
     private void subscribeToTyping() {
@@ -897,6 +899,15 @@ public final class ChatController {
         );
     }
 
+    private void subscribeToQuickReplies() {
+        subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
+                .subscribe(quickReplies -> {
+                    hasQuickReplies = !quickReplies.isEmpty();
+                    refreshUserInputState();
+                }));
+
+    }
+
     private void removeResolveRequest() {
         if (isResolveRequestVisible && fragment != null) {
             if (fragment.removeResolveRequest()) {
@@ -1084,7 +1095,7 @@ public final class ChatController {
     }
 
     private void refreshUserInputState() {
-        if (hasNotAnsweredQuickReplies) {
+        if (hasQuickReplies) {
             chatUpdateProcessor.postUserInputEnableChanged(false);
         } else {
             // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
@@ -1098,43 +1109,31 @@ public final class ChatController {
     }
 
     private void handleQuickReplies(List<ChatItem> chatItems) {
-        List<QuickReply> quickReplies = getQuickReplies(chatItems);
-        if (fragment != null) {
-            if (quickReplies == null || quickReplies.isEmpty()) {
-                hasNotAnsweredQuickReplies = false;
-                fragment.hideQuickReplies();
-            } else {
-                hasNotAnsweredQuickReplies = true;
-                fragment.showQuickReplies(quickReplies);
-            }
-            refreshUserInputState();
-        }
+        chatUpdateProcessor.postQuickRepliesChanged(getQuickReplies(chatItems));
     }
 
     public void quickReplyIsSent() {
-        hasNotAnsweredQuickReplies = false;
-        refreshUserInputState();
-        fragment.hideQuickReplies();
+        chatUpdateProcessor.postQuickRepliesChanged(new ArrayList<>());
     }
 
+    @NonNull
     private List<QuickReply> getQuickReplies(List<ChatItem> chatItems) {
-        if (chatItems.isEmpty()) {
-            return null;
-        }
-        ListIterator<ChatItem> listIterator = chatItems.listIterator(chatItems.size());
-        while (listIterator.hasPrevious()) {
-            ChatItem chatItem = listIterator.previous();
-            // При некоторых ситуациях (пока неизвестно каких) последнее сообщение в истории ConsultConnectionMessage, который не отображается, его нужно игнорировать
-            if (chatItem instanceof ConsultConnectionMessage) {
-                ConsultConnectionMessage consultConnectionMessage = (ConsultConnectionMessage) chatItem;
-                if (!consultConnectionMessage.isDisplayMessage()) {
-                    continue;
+        if (!chatItems.isEmpty()) {
+            ListIterator<ChatItem> listIterator = chatItems.listIterator(chatItems.size());
+            while (listIterator.hasPrevious()) {
+                ChatItem chatItem = listIterator.previous();
+                // При некоторых ситуациях (пока неизвестно каких) последнее сообщение в истории ConsultConnectionMessage, который не отображается, его нужно игнорировать
+                if (chatItem instanceof ConsultConnectionMessage) {
+                    ConsultConnectionMessage consultConnectionMessage = (ConsultConnectionMessage) chatItem;
+                    if (!consultConnectionMessage.isDisplayMessage()) {
+                        continue;
+                    }
+                } else if (chatItem instanceof ConsultPhrase) {
+                    return ((ConsultPhrase) chatItem).getQuickReplies();
                 }
-            } else if (chatItem instanceof ConsultPhrase) {
-                return ((ConsultPhrase) chatItem).getQuickReplies();
+                break;
             }
-            return null;
         }
-        return null;
+        return new ArrayList<>();
     }
 }

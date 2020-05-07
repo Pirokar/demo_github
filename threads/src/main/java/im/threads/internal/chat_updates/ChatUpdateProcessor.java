@@ -2,8 +2,11 @@ package im.threads.internal.chat_updates;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.QuickReply;
 import im.threads.internal.transport.ChatItemProviderData;
 import im.threads.internal.transport.TransportException;
 import io.reactivex.processors.FlowableProcessor;
@@ -23,6 +26,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<Long> surveySendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
     private final FlowableProcessor<Boolean> userInputEnableProcessor = PublishProcessor.create();
+    private final FlowableProcessor<List<QuickReply>> quickRepliesProcessor = PublishProcessor.create();
 
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
 
@@ -72,6 +76,11 @@ public class ChatUpdateProcessor {
     public void postUserInputEnableChanged(Boolean enable) {
         userInputEnableProcessor.onNext(enable);
     }
+
+    public void postQuickRepliesChanged(List<QuickReply> quickReplies) {
+        quickRepliesProcessor.onNext(quickReplies);
+    }
+
     public void postError(@NonNull TransportException error) {
         errorProcessor.onNext(error);
     }
@@ -118,6 +127,10 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<Boolean> getUserInputEnableProcessor() {
         return userInputEnableProcessor;
+    }
+
+    public FlowableProcessor<List<QuickReply>> getQuickRepliesProcessor() {
+        return quickRepliesProcessor;
     }
 
 }
