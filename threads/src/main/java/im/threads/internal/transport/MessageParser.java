@@ -20,6 +20,7 @@ import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
+import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.models.Attachment;
@@ -50,9 +51,10 @@ public final class MessageParser {
                 return getRating(sentAt, fullMessage);
             case REQUEST_CLOSE_THREAD:
                 return getRequestResolveThread(fullMessage);
+            case OPERATOR_LOOKUP_STARTED:
+                return new SearchingConsult();
             case NONE:
             case MESSAGES_READ:
-            case OPERATOR_LOOKUP_STARTED:
             case CLIENT_BLOCKED:
             case SCENARIO:
                 return null;

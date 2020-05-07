@@ -105,6 +105,42 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.incomingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.incomingImageBubbleMask));
     }
 
+    private static int getUnreadCount(final List<ChatItem> list) {
+        int counter = 0;
+        for (final ChatItem ci : list) {
+            if (ci instanceof ConsultPhrase) {
+                final ConsultPhrase cp = ((ConsultPhrase) ci);
+                if (!cp.isRead()) {
+                    counter++;
+                }
+            }
+        }
+        return counter;
+    }
+
+    private static long getLastUnreadStamp(final List<ChatItem> listToInsertTo) {
+        long lastUnreadStamp = Long.MAX_VALUE;
+        for (final ChatItem item : listToInsertTo) {
+            if (item instanceof ConsultPhrase) {
+                final ConsultPhrase cp = ((ConsultPhrase) item);
+                if (!cp.isRead() && cp.getTimeStamp() < lastUnreadStamp) {
+                    lastUnreadStamp = cp.getTimeStamp();
+                }
+            }
+        }
+        return lastUnreadStamp;
+    }
+
+    private static void removeUnreadMessagesTitle(@NonNull final List<ChatItem> list) {
+        for (final Iterator<ChatItem> iterator = list.iterator(); iterator.hasNext(); ) {
+            final ChatItem item = iterator.next();
+            if (item instanceof UnreadMessages) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
@@ -417,11 +453,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (containsSearch) {
             return;
         }
-        final Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR, 23);
-        c.set(Calendar.MINUTE, 59);
-        c.set(Calendar.SECOND, 59);
-        final SearchingConsult sc = new SearchingConsult(c.getTimeInMillis());
+        final SearchingConsult sc = new SearchingConsult();
         list.add(sc);
         notifyItemInserted(list.lastIndexOf(sc));
     }
@@ -646,40 +678,166 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         });
     }
 
-    private static int getUnreadCount(final List<ChatItem> list) {
-        int counter = 0;
-        for (final ChatItem ci : list) {
-            if (ci instanceof ConsultPhrase) {
-                final ConsultPhrase cp = ((ConsultPhrase) ci);
-                if (!cp.isRead()) {
-                    counter++;
+    private void bindConsultConnectionMessageVH(@NonNull final ConsultConnectionMessageViewHolder holder, ConsultConnectionMessage cc) {
+        holder.onBind(
+                cc,
+                v -> {
+                    final ConsultConnectionMessage cc1 = (ConsultConnectionMessage) list.get(holder.getAdapterPosition());
+                    mCallback.onConsultConnectionClick(cc1);
                 }
-            }
-        }
-        return counter;
+        );
     }
 
-    private static long getLastUnreadStamp(final List<ChatItem> listToInsertTo) {
-        long lastUnreadStamp = Long.MAX_VALUE;
-        for (final ChatItem item : listToInsertTo) {
-            if (item instanceof ConsultPhrase) {
-                final ConsultPhrase cp = ((ConsultPhrase) item);
-                if (!cp.isRead() && cp.getTimeStamp() < lastUnreadStamp) {
-                    lastUnreadStamp = cp.getTimeStamp();
-                }
-            }
+    private void bindConsultPhraseVH(@NonNull final ConsultPhraseHolder holder, ConsultPhrase consultPhrase) {
+        if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
+            mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
         }
-        return lastUnreadStamp;
+        holder
+                .onBind(
+                        consultPhrase,
+                        consultPhrase.getPhrase(),
+                        consultPhrase.getAvatarPath(),
+                        consultPhrase.getTimeStamp(),
+                        consultPhrase.isAvatarVisible(),
+                        consultPhrase.getQuote(),
+                        consultPhrase.getFileDescription(),
+                        v -> mCallback.onImageClick(consultPhrase),
+                        v -> {
+                            if (consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
+                                mCallback.onFileClick(consultPhrase.getQuote().getFileDescription());
+                            }
+                            if (consultPhrase.getFileDescription() != null) {
+                                mCallback.onFileClick(consultPhrase.getFileDescription());
+                            }
+                        },
+                        v -> {
+                            phaseLongClick(consultPhrase, holder.getAdapterPosition());
+                            return true;
+                        },
+                        v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
+                        () -> notifyItemChangedOnUi(consultPhrase),
+                        consultPhrase.isChosen()
+                );
     }
 
-    private static void removeUnreadMessagesTitle(@NonNull final List<ChatItem> list) {
-        for (final Iterator<ChatItem> iterator = list.iterator(); iterator.hasNext(); ) {
-            final ChatItem item = iterator.next();
-            if (item instanceof UnreadMessages) {
-                iterator.remove();
-                break;
-            }
+    private void bindUserPhraseVH(@NonNull final UserPhraseViewHolder holder, UserPhrase userPhrase) {
+        if (userPhrase.getFileDescription() != null && userPhrase.getFileDescription().getFilePath() == null) {
+            mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
         }
+        holder.onBind(
+                userPhrase,
+                userPhrase.getPhrase(),
+                userPhrase.getTimeStamp(),
+                userPhrase.getSentState(),
+                userPhrase.getQuote(),
+                userPhrase.getFileDescription(),
+                v -> mCallback.onImageClick(userPhrase),
+                v -> {
+                    if (userPhrase.getFileDescription() != null) {
+                        mCallback.onFileClick(userPhrase.getFileDescription());
+                    } else if (userPhrase.getQuote() != null && userPhrase.getQuote().getFileDescription() != null) {
+                        mCallback.onFileClick(userPhrase.getQuote().getFileDescription());
+                    }
+                },
+                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
+                v -> {
+                    phaseLongClick(userPhrase, holder.getAdapterPosition());
+                    return true;
+                },
+                () -> notifyItemChangedOnUi(userPhrase),
+                userPhrase.isChosen()
+        );
+    }
+
+    private void bindConsultIsTypingVH(@NonNull final ConsultIsTypingViewHolderNew holder) {
+        final ChatStyle style = Config.instance.getChatStyle();
+        final ConsultTyping consultTyping = (ConsultTyping) list.get(holder.getAdapterPosition());
+        holder.onBind(v -> mCallback.onConsultAvatarClick(consultTyping.getConsultId()));
+        final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultTyping.getAvatarPath());
+        Picasso.get()
+                .load(avatarPath)
+                .fit()
+                .error(style.defaultOperatorAvatar)
+                .placeholder(style.defaultOperatorAvatar)
+                .centerCrop()
+                .transform(new CircleTransformation())
+                .into(holder.mConsultAvatar);
+    }
+
+    private void bindImageFromConsultVH(@NonNull final ImageFromConsultViewHolder holder, ConsultPhrase consultPhrase) {
+        if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
+            mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
+        }
+        holder.onBind(
+                consultPhrase,
+                () -> mCallback.onImageClick(consultPhrase),
+                () -> mCallback.onPhraseLongClick(consultPhrase, holder.getAdapterPosition())
+        );
+    }
+
+    private void bindImageFromUserVH(@NonNull final ImageFromUserViewHolder holder, UserPhrase userPhrase) {
+        if (userPhrase.getFileDescription().getFilePath() == null) {
+            mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
+        }
+        if (userPhrase.getFileDescription() != null) {
+            holder.onBind(userPhrase,
+                    () -> mCallback.onImageClick(userPhrase),
+                    () -> mCallback.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
+            );
+        }
+    }
+
+    private void bindFileFromUserVH(@NonNull final UserFileViewHolder holder, UserPhrase userPhrase) {
+        holder.onBind(
+                userPhrase.getTimeStamp(),
+                userPhrase.getFileDescription(),
+                v -> mCallback.onFileClick(userPhrase.getFileDescription()),
+                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
+                v -> {
+                    phaseLongClick(userPhrase, holder.getAdapterPosition());
+                    return true;
+                }, userPhrase.isChosen(),
+                userPhrase.getSentState()
+        );
+    }
+
+    private void bindFileFromConsultVH(@NonNull final ConsultFileViewHolder holder, ConsultPhrase consultPhrase) {
+        holder.onBind(
+                consultPhrase.getTimeStamp(),
+                consultPhrase.getFileDescription(),
+                consultPhrase.getAvatarPath(),
+                v -> mCallback.onFileClick(consultPhrase.getFileDescription()),
+                v -> {
+                    phaseLongClick(consultPhrase, holder.getAdapterPosition());
+                    return true;
+                },
+                consultPhrase.isAvatarVisible(),
+                consultPhrase.isChosen()
+        );
+    }
+
+    private void phaseLongClick(ChatPhrase chatPhrase, int position) {
+        mCallback.onPhraseLongClick(chatPhrase, position);
+    }
+
+    public interface Callback {
+        void onFileClick(FileDescription fileDescription);
+
+        void onPhraseLongClick(ChatPhrase chatPhrase, int position);
+
+        void onUserPhraseClick(UserPhrase userPhrase, int position);
+
+        void onConsultAvatarClick(String consultId);
+
+        void onImageClick(ChatPhrase chatPhrase);
+
+        void onImageDownloadRequest(FileDescription fileDescription);
+
+        void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
+
+        void onRatingClick(@NonNull Survey survey, int rating);
+
+        void onResolveThreadClick(boolean approveResolve);
     }
 
     private static class ChatMessagesOrderer {
@@ -880,167 +1038,5 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             }
         }
-    }
-
-    private void bindConsultConnectionMessageVH(@NonNull final ConsultConnectionMessageViewHolder holder, ConsultConnectionMessage cc) {
-        holder.onBind(
-                cc,
-                v -> {
-                    final ConsultConnectionMessage cc1 = (ConsultConnectionMessage) list.get(holder.getAdapterPosition());
-                    mCallback.onConsultConnectionClick(cc1);
-                }
-        );
-    }
-
-    private void bindConsultPhraseVH(@NonNull final ConsultPhraseHolder holder, ConsultPhrase consultPhrase) {
-        if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
-            mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
-        }
-        holder
-                .onBind(
-                        consultPhrase,
-                        consultPhrase.getPhrase(),
-                        consultPhrase.getAvatarPath(),
-                        consultPhrase.getTimeStamp(),
-                        consultPhrase.isAvatarVisible(),
-                        consultPhrase.getQuote(),
-                        consultPhrase.getFileDescription(),
-                        v -> mCallback.onImageClick(consultPhrase),
-                        v -> {
-                            if (consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
-                                mCallback.onFileClick(consultPhrase.getQuote().getFileDescription());
-                            }
-                            if (consultPhrase.getFileDescription() != null) {
-                                mCallback.onFileClick(consultPhrase.getFileDescription());
-                            }
-                        },
-                        v -> {
-                            phaseLongClick(consultPhrase, holder.getAdapterPosition());
-                            return true;
-                        },
-                        v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
-                        () -> notifyItemChangedOnUi(consultPhrase),
-                        consultPhrase.isChosen()
-                );
-    }
-
-    private void bindUserPhraseVH(@NonNull final UserPhraseViewHolder holder, UserPhrase userPhrase) {
-        if (userPhrase.getFileDescription() != null && userPhrase.getFileDescription().getFilePath() == null) {
-            mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
-        }
-        holder.onBind(
-                userPhrase,
-                userPhrase.getPhrase(),
-                userPhrase.getTimeStamp(),
-                userPhrase.getSentState(),
-                userPhrase.getQuote(),
-                userPhrase.getFileDescription(),
-                v -> mCallback.onImageClick(userPhrase),
-                v -> {
-                    if (userPhrase.getFileDescription() != null) {
-                        mCallback.onFileClick(userPhrase.getFileDescription());
-                    } else if (userPhrase.getQuote() != null && userPhrase.getQuote().getFileDescription() != null) {
-                        mCallback.onFileClick(userPhrase.getQuote().getFileDescription());
-                    }
-                },
-                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
-                v -> {
-                    phaseLongClick(userPhrase, holder.getAdapterPosition());
-                    return true;
-                },
-                () -> notifyItemChangedOnUi(userPhrase),
-                userPhrase.isChosen()
-        );
-    }
-
-    private void bindConsultIsTypingVH(@NonNull final ConsultIsTypingViewHolderNew holder) {
-        final ChatStyle style = Config.instance.getChatStyle();
-        final ConsultTyping consultTyping = (ConsultTyping) list.get(holder.getAdapterPosition());
-        holder.onBind(v -> mCallback.onConsultAvatarClick(consultTyping.getConsultId()));
-        final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultTyping.getAvatarPath());
-        Picasso.get()
-                .load(avatarPath)
-                .fit()
-                .error(style.defaultOperatorAvatar)
-                .placeholder(style.defaultOperatorAvatar)
-                .centerCrop()
-                .transform(new CircleTransformation())
-                .into(holder.mConsultAvatar);
-    }
-
-    private void bindImageFromConsultVH(@NonNull final ImageFromConsultViewHolder holder, ConsultPhrase consultPhrase) {
-        if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFilePath() == null) {
-            mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
-        }
-        holder.onBind(
-                consultPhrase,
-                () -> mCallback.onImageClick(consultPhrase),
-                () -> mCallback.onPhraseLongClick(consultPhrase, holder.getAdapterPosition())
-        );
-    }
-
-    private void bindImageFromUserVH(@NonNull final ImageFromUserViewHolder holder, UserPhrase userPhrase) {
-        if (userPhrase.getFileDescription().getFilePath() == null) {
-            mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
-        }
-        if (userPhrase.getFileDescription() != null) {
-            holder.onBind(userPhrase,
-                    () -> mCallback.onImageClick(userPhrase),
-                    () -> mCallback.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
-            );
-        }
-    }
-
-    private void bindFileFromUserVH(@NonNull final UserFileViewHolder holder, UserPhrase userPhrase) {
-        holder.onBind(
-                userPhrase.getTimeStamp(),
-                userPhrase.getFileDescription(),
-                v -> mCallback.onFileClick(userPhrase.getFileDescription()),
-                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
-                v -> {
-                    phaseLongClick(userPhrase, holder.getAdapterPosition());
-                    return true;
-                }, userPhrase.isChosen(),
-                userPhrase.getSentState()
-        );
-    }
-
-    private void bindFileFromConsultVH(@NonNull final ConsultFileViewHolder holder, ConsultPhrase consultPhrase) {
-        holder.onBind(
-                consultPhrase.getTimeStamp(),
-                consultPhrase.getFileDescription(),
-                consultPhrase.getAvatarPath(),
-                v -> mCallback.onFileClick(consultPhrase.getFileDescription()),
-                v -> {
-                    phaseLongClick(consultPhrase, holder.getAdapterPosition());
-                    return true;
-                },
-                consultPhrase.isAvatarVisible(),
-                consultPhrase.isChosen()
-        );
-    }
-
-    private void phaseLongClick(ChatPhrase chatPhrase, int position) {
-        mCallback.onPhraseLongClick(chatPhrase, position);
-    }
-
-    public interface Callback {
-        void onFileClick(FileDescription fileDescription);
-
-        void onPhraseLongClick(ChatPhrase chatPhrase, int position);
-
-        void onUserPhraseClick(UserPhrase userPhrase, int position);
-
-        void onConsultAvatarClick(String consultId);
-
-        void onImageClick(ChatPhrase chatPhrase);
-
-        void onImageDownloadRequest(FileDescription fileDescription);
-
-        void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
-
-        void onRatingClick(@NonNull Survey survey, int rating);
-
-        void onResolveThreadClick(boolean approveResolve);
     }
 }

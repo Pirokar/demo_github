@@ -1,18 +1,18 @@
 package im.threads.push;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.mfms.android.push_lite.PushBroadcastReceiver;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
+import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.services.NotificationService;
 import im.threads.internal.transport.mfms_push.MFMSPushMessageParser;
 import im.threads.internal.transport.mfms_push.PushMessageAttributes;
@@ -48,6 +48,9 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
                     break;
                 case REMOVE_PUSHES:
                     NotificationService.removeNotification(context);
+                    break;
+                case OPERATOR_LOOKUP_STARTED:
+                    ChatUpdateProcessor.getInstance().postNewMessage(new SearchingConsult());
                     break;
                 case UNREAD_MESSAGE_NOTIFICATION:
                     String operatorUrl = bundle.getString(PushMessageAttributes.OPERATOR_URL);
@@ -97,7 +100,8 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
                     chatItemType == ChatItemType.SURVEY ||
                     chatItemType == ChatItemType.REQUEST_CLOSE_THREAD ||
                     chatItemType == ChatItemType.REMOVE_PUSHES ||
-                    chatItemType == ChatItemType.UNREAD_MESSAGE_NOTIFICATION) {
+                    chatItemType == ChatItemType.UNREAD_MESSAGE_NOTIFICATION ||
+                    chatItemType == ChatItemType.OPERATOR_LOOKUP_STARTED) {
                 return chatItemType;
             }
         }
