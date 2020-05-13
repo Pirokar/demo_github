@@ -155,6 +155,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
 
     @Override
     public void sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, String filePath, String quoteFilePath) {
+        ThreadsLogger.i(TAG, "sendMessage: userPhrase = " + userPhrase + ", consultInfo = " + consultInfo + ", filePath = " + filePath + ", quoteFilePath = " + quoteFilePath);
         final JsonObject content = OutgoingMessageCreator.createUserPhraseMessage(
                 userPhrase,
                 consultInfo,
@@ -208,6 +209,7 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     private void sendMessage(JsonObject content,
                              boolean important,
                              String correlationId) {
+        ThreadsLogger.i(TAG, "sendMessage: content = " + content + ", important = " + important + ", correlationId = " + correlationId);
         synchronized (messageInProcessIds) {
             messageInProcessIds.add(correlationId);
         }

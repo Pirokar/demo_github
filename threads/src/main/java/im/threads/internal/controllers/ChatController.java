@@ -541,6 +541,7 @@ public final class ChatController {
     }
 
     private void updateUi() {
+        ThreadsLogger.i(TAG, "updateUi");
         if (fragment != null) {
             fragment.updateUi();
         }
@@ -619,6 +620,7 @@ public final class ChatController {
     }
 
     private void sendMessage(final UserPhrase userPhrase) {
+        ThreadsLogger.i(TAG, "sendMessage: " + userPhrase);
         ConsultInfo consultInfo = null;
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
             final String id = userPhrase.getQuote().getQuotedPhraseConsultId();
@@ -632,10 +634,12 @@ public final class ChatController {
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
+        ThreadsLogger.i(TAG, "sendTextMessage: " + userPhrase + ", " + consultInfo);
         Config.instance.transport.sendMessage(userPhrase, consultInfo, null, null);
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
+        ThreadsLogger.i(TAG, "sendFileMessage: " + userPhrase + ", " + consultInfo);
         final FileDescription fileDescription = userPhrase.getFileDescription();
         final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
         subscribe(
@@ -911,15 +915,18 @@ public final class ChatController {
     }
 
     private void removeResolveRequest() {
+        ThreadsLogger.i(TAG, "removeResolveRequest");
         if (isResolveRequestVisible && fragment != null) {
             if (fragment.removeResolveRequest()) {
                 updateUi();
             }
             isResolveRequestVisible = false;
         }
+        ThreadsLogger.i(TAG, "removeResolveRequest: " + isResolveRequestVisible);
     }
 
     private void removeActiveSurvey() {
+        ThreadsLogger.i(TAG, "removeActiveSurvey");
         if (activeSurvey != null && fragment != null) {
             final boolean removed = fragment.removeSurvey(activeSurvey.getSendingId());
             if (removed) {
@@ -930,6 +937,7 @@ public final class ChatController {
     }
 
     private void resetActiveSurvey() {
+        ThreadsLogger.i(TAG, "resetActiveSurvey");
         activeSurvey = null;
     }
 
@@ -982,6 +990,7 @@ public final class ChatController {
     Вызывается когда получено новое сообщение из канала (TG/PUSH)
      */
     private void addMessage(final ChatItem chatItem) {
+        ThreadsLogger.i(TAG, "addMessage: " + chatItem);
         databaseHolder.putChatItem(chatItem);
         if (fragment != null) {
             final ChatItem ci = setLastAvatars(Collections.singletonList(chatItem)).get(0);
@@ -1018,6 +1027,7 @@ public final class ChatController {
     }
 
     private void queueMessageSending(UserPhrase userPhrase) {
+        ThreadsLogger.i(TAG, "queueMessageSending: " + userPhrase);
         sendQueue.add(userPhrase);
         if (sendQueue.size() == 1) {
             sendMessage(userPhrase);
