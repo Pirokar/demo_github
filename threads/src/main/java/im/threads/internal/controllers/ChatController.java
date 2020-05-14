@@ -414,7 +414,7 @@ public final class ChatController {
     }
 
     public void bindFragment(final ChatFragment f) {
-        ThreadsLogger.i(TAG, "bindFragment:");
+        ThreadsLogger.i(TAG, "bindFragment: " + f.toString());
         final Activity activity = f.getActivity();
         if (activity == null) {
             return;
