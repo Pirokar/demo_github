@@ -89,7 +89,6 @@ public class FileDescriptionsTable extends Table {
         cv.put(COLUMN_FD_URL, fileDescription.getDownloadPath());
         cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
         cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
-        cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
         cv.put(COLUMN_FD_IS_FROM_QUOTE, isFromQuote);
         cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
         cv.put(COLUMN_FD_SELFIE, fileDescription.isSelfie());
@@ -100,9 +99,14 @@ public class FileDescriptionsTable extends Table {
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
             boolean existsInDb = c.getCount() > 0;
             if (existsInDb) {
+                String localPath = cGetString(c, COLUMN_FD_PATH);
+                if (TextUtils.isEmpty(localPath)) {
+                    cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
+                }
                 sqlHelper.getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
                         COLUMN_FD_MESSAGE_UUID_EXT + " = ? ", new String[]{fdMessageUuid});
             } else {
+                cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
                 sqlHelper.getWritableDatabase().insert(TABLE_FILE_DESCRIPTION, null, cv);
             }
         }
