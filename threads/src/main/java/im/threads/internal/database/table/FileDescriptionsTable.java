@@ -92,13 +92,14 @@ public class FileDescriptionsTable extends Table {
         cv.put(COLUMN_FD_IS_FROM_QUOTE, isFromQuote);
         cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
         cv.put(COLUMN_FD_SELFIE, fileDescription.isSelfie());
-        String sql = "select " + COLUMN_FD_MESSAGE_UUID_EXT +
+        String sql = "select " + COLUMN_FD_MESSAGE_UUID_EXT + " and " +  COLUMN_FD_PATH +
                 " from " + TABLE_FILE_DESCRIPTION
                 + " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?";
         String[] selectionArgs = new String[]{fdMessageUuid};
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
             boolean existsInDb = c.getCount() > 0;
             if (existsInDb) {
+                c.moveToFirst();
                 String localPath = cGetString(c, COLUMN_FD_PATH);
                 if (TextUtils.isEmpty(localPath)) {
                     cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
