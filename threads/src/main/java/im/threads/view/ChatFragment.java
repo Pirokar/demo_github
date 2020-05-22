@@ -1166,7 +1166,9 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void setTitleStateSearchingConsult() {
-        if (isInMessageSearchMode) return;
+        if (isInMessageSearchMode) {
+            return;
+        }
         binding.subtitle.setVisibility(View.GONE);
         binding.consultName.setVisibility(View.VISIBLE);
         binding.searchLo.setVisibility(View.GONE);
