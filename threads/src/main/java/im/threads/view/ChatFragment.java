@@ -88,6 +88,7 @@ import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ColorsHelper;
+import im.threads.internal.utils.DisplayUtils;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.Keyboard;
 import im.threads.internal.utils.MyFileFilter;
@@ -142,6 +143,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private boolean isInMessageSearchMode;
     private boolean isResumed;
+    private boolean isSendBlocked = false;
 
     private ChatStyle style;
 
@@ -189,6 +191,7 @@ public final class ChatFragment extends BaseFragment implements
         setFragmentStyle(style);
 
         initUserInputState();
+        initQuickReplies();
         chatIsShown = true;
 
         return binding.getRoot();
@@ -242,6 +245,18 @@ public final class ChatFragment extends BaseFragment implements
         subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateInputEnable));
+    }
+
+    private void initQuickReplies() {
+        subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(quickReplies -> {
+                    if (quickReplies.isEmpty()) {
+                        hideQuickReplies();
+                    } else {
+                        showQuickReplies(quickReplies);
+                    }
+                }));
     }
 
     private void bindViews() {
@@ -719,7 +734,12 @@ public final class ChatFragment extends BaseFragment implements
                 );
                 messages.add(upcomingUserMessage);
             }
-            sendMessage(messages);
+            if (isSendBlocked) {
+                clearInput();
+                showToast(getString(R.string.threads_message_were_unsent));
+            } else {
+                sendMessage(messages);
+            }
         }
     }
 
@@ -836,6 +856,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void sendMessage(List<UpcomingUserMessage> messages) {
+        sendMessage(messages, true);
+    }
+
+    private void sendMessage(List<UpcomingUserMessage> messages, boolean clearInput) {
         ThreadsLogger.i(TAG, "isInMessageSearchMode =" + isInMessageSearchMode);
         if (mChatController == null) {
             return;
@@ -849,7 +873,9 @@ public final class ChatFragment extends BaseFragment implements
         if (null != chatAdapter) {
             chatAdapter.setAllMessagesRead();
         }
-        clearInput();
+        if (clearInput) {
+            clearInput();
+        }
     }
 
     private void clearInput() {
@@ -1140,7 +1166,9 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void setTitleStateSearchingConsult() {
-        if (isInMessageSearchMode) return;
+        if (isInMessageSearchMode) {
+            return;
+        }
         binding.subtitle.setVisibility(View.GONE);
         binding.consultName.setVisibility(View.VISIBLE);
         binding.searchLo.setVisibility(View.GONE);
@@ -1194,7 +1222,8 @@ public final class ChatFragment extends BaseFragment implements
         return style;
     }
 
-    public void updateInputEnable(boolean enabled) {
+    private void updateInputEnable(boolean enabled) {
+        isSendBlocked = !enabled;
         binding.inputEditView.setEnabled(enabled);
         binding.addAttachment.setEnabled(enabled);
         binding.sendMessage.setEnabled(enabled);
@@ -1227,7 +1256,11 @@ public final class ChatFragment extends BaseFragment implements
                             inputText.trim(),
                             isCopy(inputText)
                     );
-            mChatController.onUserInput(uum);
+            if (isSendBlocked) {
+                showToast(getString(R.string.threads_message_were_unsent));
+            } else {
+                mChatController.onUserInput(uum);
+            }
             inputTextObservable.set("");
             mQuoteLayoutHolder.setIsVisible(false);
             mQuote = null;
@@ -1523,6 +1556,37 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.setItemChosen(true, chatPhrase);
     }
 
+    public void showQuickReplies(List<QuickReply> quickReplies) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        binding.quickRepliesRv.setMaxHeight((int) (DisplayUtils.getDisplayHeight(activity) * 0.4));
+        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
+        binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
+            String text = quickReply.getText();
+            sendMessage(Collections.singletonList(
+                    new UpcomingUserMessage(
+                            null,
+                            null,
+                            text.trim(),
+                            isCopy(text))
+                    ),
+                    false
+            );
+            mChatController.quickReplyIsSent();
+        }));
+        if (binding.quickRepliesRv.getVisibility() == View.GONE) {
+            binding.quickRepliesRv.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideQuickReplies() {
+        if (binding.quickRepliesRv.getVisibility() == View.VISIBLE) {
+            binding.quickRepliesRv.setVisibility(View.GONE);
+        }
+    }
+
     private class QuoteLayoutHolder {
         private QuoteLayoutHolder() {
             Activity activity = getActivity();
@@ -1584,29 +1648,6 @@ public final class ChatFragment extends BaseFragment implements
                 removeImage();
             }
         }
-    }
-
-    public void showQuickReplies(List<QuickReply> quickReplies) {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        binding.quickRepliesRv.setVisibility(View.VISIBLE);
-        binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
-            String text = quickReply.getText();
-            sendMessage(Collections.singletonList(new UpcomingUserMessage(
-                    mFileDescription,
-                    mQuote,
-                    text.trim(),
-                    isCopy(text)
-            )));
-            hideQuickReplies();
-        }));
-        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
-    }
-
-    public void hideQuickReplies() {
-        binding.quickRepliesRv.setVisibility(View.GONE);
     }
 
     private class AdapterCallback implements ChatAdapter.Callback {

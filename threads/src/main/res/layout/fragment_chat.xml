@@ -40,7 +40,10 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:clipToPadding="false"/>
 
             </im.threads.internal.views.MySwipeRefreshLayout>
 
@@ -158,12 +161,16 @@
                     android:visibility="visible" />
             </RelativeLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
+            <im.threads.internal.views.MaxHeightRecyclerView
                 android:id="@+id/quick_replies_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
+                android:scrollbars="vertical"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:background="@drawable/threads_quick_replies_background"
                 android:visibility="gone"/>
             <LinearLayout
                 android:id="@+id/input_layout"

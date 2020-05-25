@@ -46,6 +46,7 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
+import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
@@ -129,8 +130,9 @@ public final class ChatController {
     private Handler unsendMessageHandler;
     private String firstUnreadProviderId;
 
-    private ScheduleInfo currentScheduleInfo = new ScheduleInfo();
-    private boolean hasNotAnsweredQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    // На основе этих переменных определяется возможность отправки сообщений в чат
+    private ScheduleInfo currentScheduleInfo;
+    private boolean hasQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
 
     private CompositeDisposable compositeDisposable;
 
@@ -180,6 +182,27 @@ public final class ChatController {
         return instance;
     }
 
+    private static void initClientId() {
+        String newClientId = PrefUtils.getNewClientID();
+        String oldClientId = PrefUtils.getClientID();
+        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
+        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
+            // clientId has not changed
+            PrefUtils.setNewClientId("");
+        } else {
+            PrefUtils.setClientId(newClientId);
+            instance.subscribe(
+                    Completable.fromAction(() -> instance.onClientIdChanged())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    () -> {
+                                    },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
+        }
+    }
+
     public void onRatingClick(@NonNull final Survey survey) {
 //        final ChatItem chatItem = convertRatingItem(survey); //TODO THREADS-3395 Figure out what is this for
         if (!surveyCompletionInProgress) {
@@ -209,12 +232,6 @@ public final class ChatController {
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um);
-        if (currentScheduleInfo.isChatWorking() && !consultWriter.isConsultConnected()) {
-            if (fragment != null) {
-                fragment.setStateSearchingConsult();
-            }
-            consultWriter.setSearchingConsult(true);
-        }
         queueMessageSending(um);
     }
 
@@ -375,7 +392,7 @@ public final class ChatController {
     }
 
     public int getStateOfConsult() {
-        if (consultWriter.istSearchingConsult()) {
+        if (consultWriter.isSearchingConsult()) {
             return CONSULT_STATE_SEARCHING;
         } else if (consultWriter.isConsultConnected()) {
             return CONSULT_STATE_FOUND;
@@ -385,7 +402,7 @@ public final class ChatController {
     }
 
     public boolean isConsultFound() {
-        return currentScheduleInfo.isChatWorking() && consultWriter.isConsultConnected();
+        return isChatWorking() && consultWriter.isConsultConnected();
     }
 
     public ConsultInfo getCurrentConsultInfo() {
@@ -397,13 +414,13 @@ public final class ChatController {
     }
 
     public void bindFragment(final ChatFragment f) {
-        ThreadsLogger.i(TAG, "bindFragment:");
+        ThreadsLogger.i(TAG, "bindFragment: " + f.toString());
         final Activity activity = f.getActivity();
         if (activity == null) {
             return;
         }
         fragment = f;
-        if (consultWriter.istSearchingConsult()) {
+        if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         }
         Config.instance.transport.setLifecycle(fragment.getLifecycle());
@@ -433,7 +450,7 @@ public final class ChatController {
         );
         if (consultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo());
-        } else if (consultWriter.istSearchingConsult()) {
+        } else if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         } else {
             fragment.setTitleStateDefault();
@@ -454,27 +471,6 @@ public final class ChatController {
             }
         }
         fragment = null;
-    }
-
-    private static void initClientId() {
-        String newClientId = PrefUtils.getNewClientID();
-        String oldClientId = PrefUtils.getClientID();
-        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
-        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
-            // clientId has not changed
-            PrefUtils.setNewClientId("");
-        } else {
-            PrefUtils.setClientId(newClientId);
-            instance.subscribe(
-                    Completable.fromAction(() -> instance.onClientIdChanged())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(
-                                    () -> {
-                                    },
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
-                            )
-            );
-        }
     }
 
     /**
@@ -519,6 +515,10 @@ public final class ChatController {
         }
     }
 
+    private boolean isChatWorking() {
+        return currentScheduleInfo == null || currentScheduleInfo.isChatWorking();
+    }
+
     private void onClientIdChanged() throws Exception {
         cleanAll();
         if (fragment != null) {
@@ -541,6 +541,7 @@ public final class ChatController {
     }
 
     private void updateUi() {
+        ThreadsLogger.i(TAG, "updateUi");
         if (fragment != null) {
             fragment.updateUi();
         }
@@ -619,6 +620,7 @@ public final class ChatController {
     }
 
     private void sendMessage(final UserPhrase userPhrase) {
+        ThreadsLogger.i(TAG, "sendMessage: " + userPhrase);
         ConsultInfo consultInfo = null;
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
             final String id = userPhrase.getQuote().getQuotedPhraseConsultId();
@@ -632,10 +634,12 @@ public final class ChatController {
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
+        ThreadsLogger.i(TAG, "sendTextMessage: " + userPhrase + ", " + consultInfo);
         Config.instance.transport.sendMessage(userPhrase, consultInfo, null, null);
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
+        ThreadsLogger.i(TAG, "sendFileMessage: " + userPhrase + ", " + consultInfo);
         final FileDescription fileDescription = userPhrase.getFileDescription();
         final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
         subscribe(
@@ -673,6 +677,7 @@ public final class ChatController {
         subscribeToSurveySendSuccess();
         subscribeToRemoveChatItem();
         subscribeToDeviceAddressChanged();
+        subscribeToQuickReplies();
     }
 
     private void subscribeToTyping() {
@@ -758,10 +763,17 @@ public final class ChatController {
                                     }
                                 } else {
                                     consultWriter.setCurrentConsultLeft();
-                                    if (fragment != null) {
+                                    if (fragment != null && !consultWriter.isSearchingConsult()) {
                                         fragment.setTitleStateDefault();
                                     }
                                 }
+                            }
+                            if (chatItem instanceof SearchingConsult) {
+                                if (fragment != null) {
+                                    fragment.setStateSearchingConsult();
+                                }
+                                consultWriter.setSearchingConsult(true);
+                                return;
                             }
                             addMessage(chatItem);
                         })
@@ -893,16 +905,28 @@ public final class ChatController {
         );
     }
 
+    private void subscribeToQuickReplies() {
+        subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
+                .subscribe(quickReplies -> {
+                    hasQuickReplies = !quickReplies.isEmpty();
+                    refreshUserInputState();
+                }));
+
+    }
+
     private void removeResolveRequest() {
+        ThreadsLogger.i(TAG, "removeResolveRequest");
         if (isResolveRequestVisible && fragment != null) {
             if (fragment.removeResolveRequest()) {
                 updateUi();
             }
             isResolveRequestVisible = false;
         }
+        ThreadsLogger.i(TAG, "removeResolveRequest: " + isResolveRequestVisible);
     }
 
     private void removeActiveSurvey() {
+        ThreadsLogger.i(TAG, "removeActiveSurvey");
         if (activeSurvey != null && fragment != null) {
             final boolean removed = fragment.removeSurvey(activeSurvey.getSendingId());
             if (removed) {
@@ -913,6 +937,7 @@ public final class ChatController {
     }
 
     private void resetActiveSurvey() {
+        ThreadsLogger.i(TAG, "resetActiveSurvey");
         activeSurvey = null;
     }
 
@@ -965,6 +990,7 @@ public final class ChatController {
     Вызывается когда получено новое сообщение из канала (TG/PUSH)
      */
     private void addMessage(final ChatItem chatItem) {
+        ThreadsLogger.i(TAG, "addMessage: " + chatItem);
         databaseHolder.putChatItem(chatItem);
         if (fragment != null) {
             final ChatItem ci = setLastAvatars(Collections.singletonList(chatItem)).get(0);
@@ -1001,6 +1027,7 @@ public final class ChatController {
     }
 
     private void queueMessageSending(UserPhrase userPhrase) {
+        ThreadsLogger.i(TAG, "queueMessageSending: " + userPhrase);
         sendQueue.add(userPhrase);
         if (sendQueue.size() == 1) {
             sendMessage(userPhrase);
@@ -1075,52 +1102,51 @@ public final class ChatController {
                     }
                 })
                         .subscribeOn(Schedulers.io())
-                        .subscribe(() -> {}, e -> ThreadsLogger.e(TAG, e.getMessage()))
+                        .subscribe(() -> {
+                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
         );
     }
 
     private void refreshUserInputState() {
-        if (hasNotAnsweredQuickReplies) {
+        if (hasQuickReplies) {
             chatUpdateProcessor.postUserInputEnableChanged(false);
         } else {
-            chatUpdateProcessor.postUserInputEnableChanged(
-                    currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive());
+            // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
+            if (currentScheduleInfo == null) {
+                chatUpdateProcessor.postUserInputEnableChanged(true);
+            } else {
+                chatUpdateProcessor.postUserInputEnableChanged(
+                        currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive());
+            }
         }
     }
 
     private void handleQuickReplies(List<ChatItem> chatItems) {
-        List<QuickReply> quickReplies = getQuickReplies(chatItems);
-        if (fragment != null) {
-            if (quickReplies == null || quickReplies.isEmpty()) {
-                hasNotAnsweredQuickReplies = false;
-                fragment.hideQuickReplies();
-            } else {
-                hasNotAnsweredQuickReplies = true;
-                fragment.showQuickReplies(quickReplies);
-            }
-            refreshUserInputState();
-        }
+        chatUpdateProcessor.postQuickRepliesChanged(getQuickReplies(chatItems));
     }
 
+    public void quickReplyIsSent() {
+        chatUpdateProcessor.postQuickRepliesChanged(new ArrayList<>());
+    }
 
+    @NonNull
     private List<QuickReply> getQuickReplies(List<ChatItem> chatItems) {
-        if (chatItems.isEmpty()) {
-            return null;
-        }
-        ListIterator<ChatItem> listIterator = chatItems.listIterator(chatItems.size());
-        while (listIterator.hasPrevious()) {
-            ChatItem chatItem = listIterator.previous();
-            // При некоторых ситуациях (пока неизвестно каких) последнее сообщение в истории ConsultConnectionMessage, который не отображается, его нужно игнорировать
-            if (chatItem instanceof ConsultConnectionMessage) {
-                ConsultConnectionMessage consultConnectionMessage = (ConsultConnectionMessage) chatItem;
-                if (!consultConnectionMessage.isDisplayMessage()) {
-                    continue;
+        if (!chatItems.isEmpty()) {
+            ListIterator<ChatItem> listIterator = chatItems.listIterator(chatItems.size());
+            while (listIterator.hasPrevious()) {
+                ChatItem chatItem = listIterator.previous();
+                // При некоторых ситуациях (пока неизвестно каких) последнее сообщение в истории ConsultConnectionMessage, который не отображается, его нужно игнорировать
+                if (chatItem instanceof ConsultConnectionMessage) {
+                    ConsultConnectionMessage consultConnectionMessage = (ConsultConnectionMessage) chatItem;
+                    if (!consultConnectionMessage.isDisplayMessage()) {
+                        continue;
+                    }
+                } else if (chatItem instanceof ConsultPhrase) {
+                    return ((ConsultPhrase) chatItem).getQuickReplies();
                 }
-            } else if (chatItem instanceof ConsultPhrase) {
-                return ((ConsultPhrase) chatItem).getQuickReplies();
+                break;
             }
-            return null;
         }
-        return null;
+        return new ArrayList<>();
     }
 }

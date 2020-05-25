@@ -1,7 +1,9 @@
 package im.threads.internal.utils;
 
 import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -87,7 +89,11 @@ public final class FileUtils {
     public static String getMimeType(File file) {
         Context context = Config.instance.context;
         String type;
-        type = context.getContentResolver().getType(FileProviderHelper.getUriForFile(context, file));
+        if (file.exists()) {
+            type = context.getContentResolver().getType(FileProviderHelper.getUriForFile(context, file));
+        } else {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString()));
+        }
         return type != null ? type : "*/*";
     }
 }

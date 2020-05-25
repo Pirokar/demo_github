@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
 import java.util.HashMap;
@@ -122,15 +123,15 @@ public final class FileDownloadService extends ThreadsService {
     }
 
     private void sendDownloadProgressBroadcast(FileDescription fileDescription) {
-        sendBroadcast(new Intent(ProgressReceiver.PROGRESS_BROADCAST).putExtra(FD_TAG, fileDescription));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ProgressReceiver.PROGRESS_BROADCAST).putExtra(FD_TAG, fileDescription));
     }
 
     private void sendFinishBroadcast(FileDescription fileDescription) {
-        sendBroadcast(new Intent(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST).putExtra(FD_TAG, fileDescription));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST).putExtra(FD_TAG, fileDescription));
     }
 
     private void sendDownloadErrorBroadcast(FileDescription fileDescription, Throwable throwable) {
-        sendBroadcast(new Intent(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST)
                 .putExtra(FD_TAG, fileDescription)
                 .putExtra(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST, throwable)
         );

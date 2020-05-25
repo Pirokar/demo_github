@@ -18,6 +18,7 @@
 
     <application
         android:hardwareAccelerated="true"
+        android:requestLegacyExternalStorage="true"
         android:largeHeap="true">
         <activity
             android:name="im.threads.view.ChatActivity"
