@@ -16,7 +16,7 @@ import retrofit2.http.Query;
  */
 public interface ThreadsApi {
 
-    String API_VERSION = "v8";
+    String API_VERSION = "8";
 
     @Multipart
     @PUT("files")
@@ -25,7 +25,7 @@ public interface ThreadsApi {
             @Header("X-Client-Token") String token
     );
 
-    @GET("history/" + API_VERSION)
+    @GET("history/v" + API_VERSION)
     Call<HistoryResponse> history(
             @Header("X-Client-Token") String token,
             @Query("before") String beforeDate,
