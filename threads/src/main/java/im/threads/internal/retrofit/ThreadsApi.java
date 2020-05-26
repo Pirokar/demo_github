@@ -2,9 +2,7 @@ package im.threads.internal.retrofit;
 
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.model.HistoryResponse;
-import im.threads.internal.opengraph.OGData;
 import okhttp3.MultipartBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -12,14 +10,13 @@ import retrofit2.http.Multipart;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
-import retrofit2.http.Url;
 
 /**
  * описание серверных методов
  */
 public interface ThreadsApi {
 
-    String API_VERSION = "v6";
+    String API_VERSION = "v8";
 
     @Multipart
     @PUT("files")
