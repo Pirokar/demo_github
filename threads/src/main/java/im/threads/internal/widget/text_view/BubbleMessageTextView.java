@@ -1,7 +1,8 @@
 package im.threads.internal.widget.text_view;
 
 import android.content.Context;
-import android.content.res.TypedArray;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
@@ -13,7 +14,6 @@ import com.yydcdut.markdown.MarkdownProcessor;
 import com.yydcdut.markdown.span.MDImageSpan;
 
 import im.threads.ChatStyle;
-import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.utils.MarkdownParser;
 import im.threads.internal.widget.CustomFontTextView;
@@ -28,33 +28,10 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     public BubbleMessageTextView(Context context) {
         super(context);
-        init(null);
     }
 
     public BubbleMessageTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(attrs);
-    }
-
-    private void init(AttributeSet attributeSet) {
-        if (attributeSet != null) {
-            final TypedArray ta = getContext().getTheme().obtainStyledAttributes(
-                    attributeSet,
-                    R.styleable.BubbleMessageTextView,
-                    0, 0);
-            try {
-                int lastLinePaddingSymbols = ta.getInt(R.styleable.BubbleMessageTextView_last_line_padding_symbols, 0);
-                if (lastLinePaddingSymbols > 0) {
-                    StringBuilder paddingBuilder = new StringBuilder(" ");
-                    for (int i = 0; i < lastLinePaddingSymbols; ++i) {
-                        paddingBuilder.append(SPACE);
-                    }
-                    lastLinePadding = paddingBuilder.toString();
-                }
-            } finally {
-                ta.recycle();
-            }
-        }
     }
 
     public void setTypefaceView(Context context) {
@@ -68,6 +45,21 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     public void enableMarkdown(MarkdownProcessor processor) {
         markdownProcessor = processor;
+    }
+
+    public void bindTimestampView(BubbleTimeTextView timeTextView) {
+        timeTextView.measure(0, 0);
+        int timeWidth = (int) (timeTextView.getMeasuredWidth() * 1.6);
+        StringBuilder paddingBuilder = new StringBuilder(" ");
+        Rect bounds = new Rect();
+        Paint textPaint = getPaint();
+        int width = 0;
+        while (width < timeWidth) {
+            paddingBuilder.append("_");
+            textPaint.getTextBounds(paddingBuilder.toString(), 0, paddingBuilder.toString().length(), bounds);
+            width = bounds.width();
+        }
+        lastLinePadding = paddingBuilder.toString().replace("_", SPACE);
     }
 
     @Override

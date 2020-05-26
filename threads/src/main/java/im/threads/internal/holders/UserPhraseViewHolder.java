@@ -44,6 +44,7 @@ import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
 import im.threads.internal.widget.text_view.BubbleMessageTextView;
+import im.threads.internal.widget.text_view.BubbleTimeTextView;
 
 /**
  * layout/item_user_text_with_file.xml
@@ -56,7 +57,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
     private TextView mRightTextDescr;
     private TextView mRightTextHeader;
     private TextView mRightTextTimeStamp;
-    private TextView mTimeStampTextView;
+    private BubbleTimeTextView mTimeStampTextView;
     private FrameLayout mPhraseFrame;
     private CircularProgressButton mFileImageButton;
     private SimpleDateFormat sdf;
@@ -117,7 +118,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
     public void onBind(final UserPhrase userPhrase,
                        final String phrase,
                        final long timeStamp,
-                       final MessageState sentState,
+                       final MessageState sendState,
                        final Quote quote,
                        final FileDescription fileDescription,
                        final View.OnClickListener imageClickListener,
@@ -128,10 +129,13 @@ public final class UserPhraseViewHolder extends BaseHolder {
                        final boolean isChosen) {
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
+        setTimestamp(timeStamp);
+        setSendState(sendState);
         if (phrase == null || phrase.length() == 0) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
+            mPhraseTextView.bindTimestampView(mTimeStampTextView);
             mPhraseTextView.setText(phrase);
             List<String> urls = UrlUtils.extractLinks(phrase);
             if (!urls.isEmpty()) {
@@ -151,9 +155,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
             }
         }
         mImage.setVisibility(View.GONE);
-        String timeText = sdf.format(new Date(timeStamp));
-        mTimeStampTextView.setText(timeText);
-        ogTimestamp.setText(timeText);
         if (fileDescription == null && quote == null) {
             mRightTextRow.setVisibility(View.GONE);
         }
@@ -164,7 +165,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(quote.getTimeStamp()));
-            mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));//TODO why set it here? It is already set earlier
             if (quote.getFileDescription() != null) {
                 if (quote.getFileDescription().getFilePath() != null)
                     quote.getFileDescription().setDownloadProgress(100);
@@ -217,7 +217,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 if (fileClickListener != null) {
                     mFileImageButton.setOnClickListener(fileClickListener);
                 }
-                mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));//TODO why set it here? It is already set earlier
                 if (fileDescription.getFilePath() != null) {
                     mFileImageButton.setProgress(100);
                 } else {
@@ -236,8 +235,24 @@ public final class UserPhraseViewHolder extends BaseHolder {
         } else {
             mRightTextHeader.setVisibility(View.VISIBLE);
         }
+        if (isChosen) {
+            mFilterView.setVisibility(View.VISIBLE);
+            mFilterViewSecond.setVisibility(View.VISIBLE);
+        } else {
+            mFilterView.setVisibility(View.INVISIBLE);
+            mFilterViewSecond.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void setTimestamp(long timeStamp) {
+        String timeText = sdf.format(new Date(timeStamp));
+        mTimeStampTextView.setText(timeText);
+        ogTimestamp.setText(timeText);
+    }
+
+    private void setSendState(MessageState sendState) {
         final Drawable d;
-        switch (sentState) {
+        switch (sendState) {
             case STATE_WAS_READ:
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
@@ -261,13 +276,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 mTimeStampTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
-        }
-        if (isChosen) {
-            mFilterView.setVisibility(View.VISIBLE);
-            mFilterViewSecond.setVisibility(View.VISIBLE);
-        } else {
-            mFilterView.setVisibility(View.INVISIBLE);
-            mFilterViewSecond.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -44,6 +44,7 @@ import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
 import im.threads.internal.widget.text_view.BubbleMessageTextView;
+import im.threads.internal.widget.text_view.BubbleTimeTextView;
 
 /**
  * layout/item_consultant_text_with_file.xml
@@ -56,7 +57,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
     private ImageView mImage;
     private TextView mRightTextDescr;
     private TextView rightTextFileStamp;
-    private TextView mTimeStampTextView;
+    private BubbleTimeTextView mTimeStampTextView;
     private BubbleMessageTextView mPhraseTextView;
     private SimpleDateFormat quoteSdf;
     private SimpleDateFormat timeStampSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -143,9 +144,13 @@ public final class ConsultPhraseHolder extends BaseHolder {
                        boolean isChosen) {
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mConsultAvatar.setImageBitmap(null);
+        String timeText = timeStampSdf.format(new Date(timeStamp));
+        mTimeStampTextView.setText(timeText);
+        ogTimestamp.setText(timeText);
         if (phrase == null) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
+            mPhraseTextView.bindTimestampView(mTimeStampTextView);
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setText(phrase);
             List<String> urls = UrlUtils.extractLinks(phrase);
@@ -169,9 +174,6 @@ public final class ConsultPhraseHolder extends BaseHolder {
             }
         }
         mImage.setVisibility(View.GONE);
-        String timeText = timeStampSdf.format(new Date(timeStamp));
-        mTimeStampTextView.setText(timeText);
-        ogTimestamp.setText(timeText);
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
