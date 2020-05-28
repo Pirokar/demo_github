@@ -765,9 +765,15 @@ public final class ChatStyle implements Serializable {
     }
 
     // https://github.com/yydcdut/RxMarkdown
-    public ChatStyle setMarkdownConfigurations(MarkdownConfiguration incoming, MarkdownConfiguration outgoing) {
+    public ChatStyle setIncomingMarkdownConfiguration(MarkdownConfiguration incoming) {
         this.incomingMarkdownConfiguration = incoming;
+        return this;
+    }
+
+    // Пока используем маркдаун только для входящих сообщений выключили, так как тормозит отрисовка
+    private ChatStyle setOutgoingMarkdownConfiguration(MarkdownConfiguration outgoing) {
         this.outgoingMarkdownConfiguration = outgoing;
         return this;
     }
+
 }

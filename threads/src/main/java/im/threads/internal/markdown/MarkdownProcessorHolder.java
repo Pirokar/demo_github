@@ -1,9 +1,9 @@
 package im.threads.internal.markdown;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
+
+import androidx.core.content.ContextCompat;
 
 import com.yydcdut.markdown.MarkdownConfiguration;
 import com.yydcdut.markdown.MarkdownProcessor;
@@ -11,40 +11,24 @@ import com.yydcdut.markdown.loader.DefaultLoader;
 import com.yydcdut.markdown.syntax.text.TextFactory;
 import com.yydcdut.markdown.theme.ThemeDefault;
 
-import java.lang.ref.WeakReference;
-
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 
 public class MarkdownProcessorHolder {
 
-    private static WeakReference<MarkdownProcessor> incomingProcessorWeakReference = new WeakReference<>(null);
-    private static WeakReference<MarkdownProcessor> outgoingProcessorWeakReference = new WeakReference<>(null);
+    private static MarkdownProcessor markdownProcessor = null;
 
     public static MarkdownProcessor getMarkdownProcessor(Type type) {
-        MarkdownProcessor markdownProcessor = null;
-        switch (type) {
-            case INCOMING:
-                markdownProcessor = incomingProcessorWeakReference.get();
-                if (markdownProcessor == null) {
-                    markdownProcessor = prepareIncomingProcessor();
-                }
-                break;
-            case OUTGOING:
-                markdownProcessor = outgoingProcessorWeakReference.get();
-                if (markdownProcessor == null) {
-                    markdownProcessor = prepareOutgoingProcessor();
-                }
-                break;
+        if (markdownProcessor == null) {
+            markdownProcessor = prepareIncomingProcessor();
         }
         return markdownProcessor;
     }
 
     private static MarkdownProcessor prepareIncomingProcessor() {
         MarkdownProcessor markdownProcessor = new MarkdownProcessor(Config.instance.context);
-        markdownProcessor.factory(TextFactory.create());
         markdownProcessor.config(getIncomingConfiguration());
-        incomingProcessorWeakReference = new WeakReference<>(markdownProcessor);
+        markdownProcessor.factory(TextFactory.create());
         return markdownProcessor;
     }
 
@@ -77,16 +61,16 @@ public class MarkdownProcessorHolder {
                 .setTodoDoneColor(Color.DKGRAY)//default color of done
                 .setRxMDImageLoader(new DefaultLoader(context))//default image loader
                 .setDefaultImageSize(200, 200)//default image width & height
-                .setLinkFontColor(style.incomingMessageLinkColor)
-                .setOnLinkClickCallback((view, link) -> context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link))))
+                .showLinkUnderline(false)
+                .setLinkFontColor(ContextCompat.getColor(context, style.incomingMessageLinkColor))
                 .build();
     }
 
+    // Пока используем маркдаун только для входящих сообщений выключили, так как тормозит отрисовка
     private static MarkdownProcessor prepareOutgoingProcessor() {
         MarkdownProcessor markdownProcessor = new MarkdownProcessor(Config.instance.context);
-        markdownProcessor.factory(TextFactory.create());
         markdownProcessor.config(getOutgoingConfiguration());
-        incomingProcessorWeakReference = new WeakReference<>(markdownProcessor);
+        markdownProcessor.factory(TextFactory.create());
         return markdownProcessor;
     }
 
@@ -119,8 +103,8 @@ public class MarkdownProcessorHolder {
                 .setTodoDoneColor(Color.DKGRAY)//default color of done
                 .setRxMDImageLoader(new DefaultLoader(context))//default image loader
                 .setDefaultImageSize(200, 200)//default image width & height
-                .setLinkFontColor(style.outgoingMessageLinkColor)
-                .setOnLinkClickCallback((view, link) -> context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link))))
+                .showLinkUnderline(false)
+                .setLinkFontColor(ContextCompat.getColor(context, style.outgoingMessageLinkColor))
                 .build();
     }
 

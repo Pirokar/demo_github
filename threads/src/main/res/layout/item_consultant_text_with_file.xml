@@ -81,7 +81,7 @@
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
                     android:paddingRight="80dp"
-                    android:text="Иван Петров"
+                    tools:text="Иван Петров"
                     android:textColor="@color/threads_incoming_message_text"
                     android:textStyle="bold" />
 
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf"
+                    tools:text="счет на оплату очень длинное название очень длинное название очень длинное название.pdf"
                     android:textColor="@color/threads_incoming_message_text" />
 
                 <im.threads.internal.widget.text_view.QuoteTimeTextView
@@ -100,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:text="отправлено 21 апр 2016"
+                    tools:text="отправлено 21 апр 2016"
                     android:textColor="@color/threads_incoming_message_text"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -118,12 +118,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:autoLink="web"
                 android:lineSpacingMultiplier="1.25"
                 android:paddingTop="5dp"
-                android:text="text text text text google.com"
+                tools:text="text text text text google.com"
                 android:textColor="@color/threads_incoming_message_text"
-                android:textColorLink="@color/threads_incoming_message_link"
                 android:textSize="16sp"
                 app:last_line_padding_symbols="10" />
 
@@ -133,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:paddingRight="4dp"
-                android:text="10:19"
+                tools:text="10:19"
                 android:textColor="@color/threads_operator_message_timestamp" />
 
         </FrameLayout>
@@ -200,7 +198,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:paddingRight="4dp"
-                android:text="10:19"
+                tools:text="10:19"
                 android:textColor="@color/threads_operator_message_timestamp" />
         </FrameLayout>
     </LinearLayout>

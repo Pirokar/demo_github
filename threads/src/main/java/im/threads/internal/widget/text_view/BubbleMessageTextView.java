@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -15,7 +16,6 @@ import com.yydcdut.markdown.span.MDImageSpan;
 
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
-import im.threads.internal.utils.MarkdownParser;
 import im.threads.internal.widget.CustomFontTextView;
 
 public final class BubbleMessageTextView extends CustomFontTextView {
@@ -49,7 +49,7 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     public void bindTimestampView(BubbleTimeTextView timeTextView) {
         timeTextView.measure(0, 0);
-        int timeWidth = (int) (timeTextView.getMeasuredWidth() * 1.6);
+        int timeWidth = (int) (timeTextView.getMeasuredWidth() * 1.7);
         StringBuilder paddingBuilder = new StringBuilder(" ");
         Rect bounds = new Rect();
         Paint textPaint = getPaint();
@@ -64,12 +64,10 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     @Override
     public void setText(CharSequence text, BufferType type) {
-        String originalString = text.toString();
-        if (!TextUtils.isEmpty(originalString) && !TextUtils.isEmpty(lastLinePadding) && !originalString.endsWith(lastLinePadding)) {
-            text = new StringBuilder(originalString).append(lastLinePadding);
+        if (!TextUtils.isEmpty(text) && !TextUtils.isEmpty(lastLinePadding)) {
+            text = new SpannableStringBuilder(text).append(lastLinePadding);
         }
         if (markdownProcessor != null) {
-            text = MarkdownParser.INSTANCE.parse(text.toString(), markdownProcessor);
             if (mHasImageInText) {
                 onDetach();
                 mHasImageInText = false;

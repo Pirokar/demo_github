@@ -4,6 +4,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,7 +86,6 @@ public final class ConsultPhraseHolder extends BaseHolder {
         mRightTextDescr = itemView.findViewById(R.id.file_specs);
         rightTextFileStamp = itemView.findViewById(R.id.send_at);
         mPhraseTextView = itemView.findViewById(R.id.text);
-        mPhraseTextView.enableMarkdown(MarkdownProcessorHolder.getMarkdownProcessor(MarkdownProcessorHolder.Type.INCOMING));
         mConsultAvatar = itemView.findViewById(R.id.consult_avatar);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
@@ -152,7 +152,8 @@ public final class ConsultPhraseHolder extends BaseHolder {
         } else {
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setText(phrase);
+            mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
+            mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor(MarkdownProcessorHolder.Type.INCOMING).parse(phrase));
             List<String> urls = UrlUtils.extractLinks(phrase);
             if (!urls.isEmpty()) {
                 final String url = urls.get(0);

@@ -31,7 +31,6 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
-import im.threads.internal.markdown.MarkdownProcessorHolder;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Quote;
@@ -76,7 +75,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
         mPhraseTextView = itemView.findViewById(R.id.text);
-        mPhraseTextView.enableMarkdown(MarkdownProcessorHolder.getMarkdownProcessor(MarkdownProcessorHolder.Type.OUTGOING));
         mImage = itemView.findViewById(R.id.image);
         mRightTextRow = itemView.findViewById(R.id.right_text_row);
         mRightTextDescr = itemView.findViewById(R.id.file_specs);
