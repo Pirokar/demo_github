@@ -24,7 +24,6 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
@@ -135,9 +134,8 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
             mPhraseTextView.setText(phrase);
-            List<String> urls = UrlUtils.extractLinks(phrase);
-            if (!urls.isEmpty()) {
-                final String url = urls.get(0);
+            String url = UrlUtils.extractLink(phrase);
+            if (url != null) {
                 if (userPhrase.ogData == null) {
                     loadOGData(onItemChangedListener, userPhrase, url);
                 } else {

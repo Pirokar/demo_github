@@ -25,7 +25,6 @@ import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
@@ -154,9 +153,8 @@ public final class ConsultPhraseHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
             mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor(MarkdownProcessorHolder.Type.INCOMING).parse(phrase));
-            List<String> urls = UrlUtils.extractLinks(phrase);
-            if (!urls.isEmpty()) {
-                final String url = urls.get(0);
+            String url = UrlUtils.extractLink(phrase);
+            if (url != null) {
                 if (consultPhrase.ogData == null) {
                     loadOGData(onItemChangedListener, consultPhrase, url);
                 } else {

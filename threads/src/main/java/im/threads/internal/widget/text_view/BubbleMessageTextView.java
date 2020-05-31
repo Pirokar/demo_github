@@ -11,7 +11,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import com.yydcdut.markdown.MarkdownProcessor;
 import com.yydcdut.markdown.span.MDImageSpan;
 
 import im.threads.ChatStyle;
@@ -24,7 +23,6 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     private boolean mHasImageInText;
     private String lastLinePadding = "";
-    private MarkdownProcessor markdownProcessor;
 
     public BubbleMessageTextView(Context context) {
         super(context);
@@ -43,13 +41,9 @@ public final class BubbleMessageTextView extends CustomFontTextView {
         }
     }
 
-    public void enableMarkdown(MarkdownProcessor processor) {
-        markdownProcessor = processor;
-    }
-
     public void bindTimestampView(BubbleTimeTextView timeTextView) {
         timeTextView.measure(0, 0);
-        int timeWidth = (int) (timeTextView.getMeasuredWidth() * 1.7);
+        int timeWidth = (int) (timeTextView.getMeasuredWidth() * 1.8);
         StringBuilder paddingBuilder = new StringBuilder(" ");
         Rect bounds = new Rect();
         Paint textPaint = getPaint();
@@ -67,17 +61,15 @@ public final class BubbleMessageTextView extends CustomFontTextView {
         if (!TextUtils.isEmpty(text) && !TextUtils.isEmpty(lastLinePadding)) {
             text = new SpannableStringBuilder(text).append(lastLinePadding);
         }
-        if (markdownProcessor != null) {
-            if (mHasImageInText) {
-                onDetach();
-                mHasImageInText = false;
-            }
-            if (text instanceof Spanned) {
-                MDImageSpan[] spans = ((Spanned) text).getSpans(0, text.length(), MDImageSpan.class);
-                mHasImageInText = spans.length > 0;
-                for (MDImageSpan imageSpans : spans) {
-                    imageSpans.onAttach(this);
-                }
+        if (mHasImageInText) {
+            onDetach();
+            mHasImageInText = false;
+        }
+        if (text instanceof Spanned) {
+            MDImageSpan[] spans = ((Spanned) text).getSpans(0, text.length(), MDImageSpan.class);
+            mHasImageInText = spans.length > 0;
+            for (MDImageSpan imageSpans : spans) {
+                imageSpans.onAttach(this);
             }
         }
         super.setText(text, type);
