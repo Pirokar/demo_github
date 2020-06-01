@@ -9,18 +9,21 @@ import com.yydcdut.markdown.MarkdownConfiguration;
 import com.yydcdut.markdown.MarkdownProcessor;
 import com.yydcdut.markdown.loader.DefaultLoader;
 import com.yydcdut.markdown.syntax.text.TextFactory;
-import com.yydcdut.markdown.theme.ThemeDefault;
+
+import java.lang.ref.WeakReference;
 
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 
 public class MarkdownProcessorHolder {
 
-    private static MarkdownProcessor markdownProcessor = null;
+    private static WeakReference<MarkdownProcessor> markdownProcessorWeakReference = new WeakReference<>(null);
 
     public static MarkdownProcessor getMarkdownProcessor(Type type) {
+        MarkdownProcessor markdownProcessor = markdownProcessorWeakReference.get();
         if (markdownProcessor == null) {
             markdownProcessor = prepareIncomingProcessor();
+            markdownProcessorWeakReference = new WeakReference<>(markdownProcessor);
         }
         return markdownProcessor;
     }
@@ -56,7 +59,6 @@ public class MarkdownProcessorHolder {
                 .setHorizontalRulesHeight(Color.LTGRAY)//default height of horizontal rules
                 .setCodeFontColor(Color.LTGRAY)//default color of inline code's font
                 .setCodeBgColor(Color.LTGRAY)//default color of inline code's background
-                .setTheme(new ThemeDefault())//default code block theme
                 .setTodoColor(Color.DKGRAY)//default color of todo
                 .setTodoDoneColor(Color.DKGRAY)//default color of done
                 .setRxMDImageLoader(new DefaultLoader(context))//default image loader
@@ -98,7 +100,6 @@ public class MarkdownProcessorHolder {
                 .setHorizontalRulesHeight(Color.LTGRAY)//default height of horizontal rules
                 .setCodeFontColor(Color.LTGRAY)//default color of inline code's font
                 .setCodeBgColor(Color.LTGRAY)//default color of inline code's background
-                .setTheme(new ThemeDefault())//default code block theme
                 .setTodoColor(Color.DKGRAY)//default color of todo
                 .setTodoDoneColor(Color.DKGRAY)//default color of done
                 .setRxMDImageLoader(new DefaultLoader(context))//default image loader

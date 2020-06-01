@@ -110,7 +110,6 @@
             android:id="@+id/phrase_frame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_big"
             android:paddingBottom="5dp">
 
             <im.threads.internal.widget.text_view.BubbleMessageTextView
@@ -119,6 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:lineSpacingMultiplier="1.25"
+                android:paddingLeft="4dp"
                 android:paddingTop="5dp"
                 tools:text="text text text text google.com"
                 android:textColor="@color/threads_incoming_message_text"

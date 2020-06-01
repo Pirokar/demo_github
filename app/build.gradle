@@ -151,7 +151,7 @@ dependencies {
 
     implementation project(':threads')
 
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     implementation "com.google.android.material:material:$androidXVersion"
     implementation "androidx.preference:preference:$androidXVersion"
