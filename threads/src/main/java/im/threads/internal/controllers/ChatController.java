@@ -336,7 +336,7 @@ public final class ChatController {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(aLong -> {
                                 appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-                                notifyUnreadMessagesCountChanged();
+                                UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                             })
             );
         }
@@ -473,21 +473,6 @@ public final class ChatController {
         fragment = null;
     }
 
-    /**
-     * Оповещает об изменении количества непрочитанных сообщений.
-     * Срабатывает при показе пуш уведомления в Статус Баре и
-     * при прочтении сообщений.
-     * Все места, где срабатывает прочтение сообщений, можно найти по
-     * NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ.
-     * Данный тип сообщения отправляется в Сервис пуш уведомлений при прочтении сообщений.
-     * <p>
-     * Можно было бы поместить оповещение в точку прихода NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ,
-     * но иногда в этот момент в сообщения еще не помечены, как прочитанные.
-     */
-    private void notifyUnreadMessagesCountChanged() {
-        DatabaseHolder.getInstance().refreshUnreadMessagesCount(Config.instance.unreadMessagesCountListener);
-    }
-
     private boolean subscribe(final Disposable event) {
         if (compositeDisposable == null || compositeDisposable.isDisposed()) {
             compositeDisposable = new CompositeDisposable();
@@ -508,8 +493,7 @@ public final class ChatController {
     void setAllMessagesWereRead() {
         appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
         subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereRead()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::notifyUnreadMessagesCountChanged));
+                .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount));
         if (fragment != null) {
             fragment.setAllMessagesWereRead();
         }
@@ -1012,7 +996,7 @@ public final class ChatController {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(aLong -> {
                                 appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-                                notifyUnreadMessagesCountChanged();
+                                UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                             })
             );
         }
@@ -1051,7 +1035,7 @@ public final class ChatController {
         consultWriter.setCurrentConsultLeft();
         consultWriter.setSearchingConsult(false);
         appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-        notifyUnreadMessagesCountChanged();
+        UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
     }
 
     private void setSurveyStateSent(final Survey survey) {

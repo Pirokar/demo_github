@@ -10,11 +10,12 @@ import java.io.File;
 
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.controllers.UnreadMessagesController;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public final class ThreadsLib {
 
@@ -32,7 +33,12 @@ public final class ThreadsLib {
         instance = new ThreadsLib();
         PrefUtils.migrateToSeparateStorageIfNeeded();
         Config.instance.transport.init();
-        DatabaseHolder.getInstance().refreshUnreadMessagesCount(Config.instance.unreadMessagesCountListener);
+        if (Config.instance.unreadMessagesCountListener != null) {
+            UnreadMessagesController.INSTANCE.getUnreadMessagesPublishProcessor()
+                    .distinct()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count));
+        }
         ChatController.getInstance();
     }
 
@@ -101,4 +107,5 @@ public final class ThreadsLib {
     public interface UnreadMessagesCountListener {
         void onUnreadMessagesCountChanged(int count);
     }
+
 }

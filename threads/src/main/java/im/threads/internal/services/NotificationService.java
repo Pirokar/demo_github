@@ -25,20 +25,20 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.util.Consumer;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import im.threads.ChatStyle;
 import im.threads.R;
-import im.threads.ThreadsLib;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.controllers.UnreadMessagesController;
 import im.threads.internal.formatters.MessageFormatter;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
@@ -186,7 +186,7 @@ public final class NotificationService extends ThreadsService {
             if (!fixPushCrash) {
                 nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
             }
-            DatabaseHolder.getInstance().refreshUnreadMessagesCount(Config.instance.unreadMessagesCountListener);
+            UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
         }
     }
 

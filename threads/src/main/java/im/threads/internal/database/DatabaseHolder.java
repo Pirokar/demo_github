@@ -1,14 +1,10 @@
 package im.threads.internal.database;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import im.threads.ThreadsLib;
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
@@ -40,6 +36,13 @@ public final class DatabaseHolder {
 
     // ChatItems
 
+    /**
+     * Nullify instance. For Autotests purposes
+     */
+    static void eraseInstance() {
+        instance = null;
+    }
+
     public void cleanDatabase() {
         mMyOpenHelper.cleanDatabase();
     }
@@ -64,15 +67,15 @@ public final class DatabaseHolder {
     // FileDescriptions
 
     public Single<List<FileDescription>> getAllFileDescriptions() {
-        return Single.fromCallable(() -> mMyOpenHelper.getAllFileDescriptions())
+        return Single.fromCallable(mMyOpenHelper::getAllFileDescriptions)
                 .subscribeOn(Schedulers.io());
     }
+
+    // UserPhrase
 
     public void updateFileDescription(@NonNull FileDescription fileDescription) {
         mMyOpenHelper.updateFileDescription(fileDescription);
     }
-
-    // UserPhrase
 
     @Nullable
     public ConsultInfo getConsultInfo(@NonNull String id) {
@@ -83,11 +86,11 @@ public final class DatabaseHolder {
         return mMyOpenHelper.getUnsendUserPhrase(count);
     }
 
+    // ConsultPhrase
+
     public void setStateOfUserPhraseByProviderId(String providerId, MessageState messageState) {
         mMyOpenHelper.setUserPhraseStateByProviderId(providerId, messageState);
     }
-
-    // ConsultPhrase
 
     public Single<ConsultPhrase> getLastConsultPhrase() {
         return Single.fromCallable(mMyOpenHelper::getLastConsultPhrase)
@@ -115,18 +118,13 @@ public final class DatabaseHolder {
     }
 
     // let the DB time to write the incoming message
-    public void refreshUnreadMessagesCount(@Nullable final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
-        // Почему именно 1000 не знает никто...
-        if (unreadMessagesCountListener != null) {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> unreadMessagesCountListener.onUnreadMessagesCountChanged(mMyOpenHelper.getUnreadMessagesCount()), 1000);
-        }
+    public int getUnreadMessagesCount() {
+        return mMyOpenHelper.getUnreadMessagesCount();
     }
 
     public List<String> getUnreadMessagesProviderIds() {
         return mMyOpenHelper.getUnreadMessagesProviderIds();
     }
-
-
 
     /**
      * For Autotests purposes
@@ -135,13 +133,6 @@ public final class DatabaseHolder {
      */
     ThreadsDbHelper getMyOpenHelper() {
         return mMyOpenHelper;
-    }
-
-    /**
-     * Nullify instance. For Autotests purposes
-     */
-    static void eraseInstance() {
-        instance = null;
     }
 
 
