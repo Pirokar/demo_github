@@ -38,7 +38,6 @@ public class SyntaxChain implements ISpecialChain {
         mSyntax = syntax;
     }
 
-    @NonNull
     @Override
     public boolean handleSyntax(@NonNull CharSequence charSequence, int lineNumber) {
         if (mSyntax.isMatch(charSequence)) {

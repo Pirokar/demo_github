@@ -152,7 +152,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
-            mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor(MarkdownProcessorHolder.Type.INCOMING).parse(phrase));
+            mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor().parse(phrase));
             String url = UrlUtils.extractLink(phrase);
             if (url != null) {
                 if (consultPhrase.ogData == null) {

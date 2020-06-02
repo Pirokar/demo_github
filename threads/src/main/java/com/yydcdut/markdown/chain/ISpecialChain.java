@@ -38,7 +38,6 @@ public interface ISpecialChain {
      * @param lineNumber   the number of text in the content
      * @return whether it can handle
      */
-    @NonNull
     boolean handleSyntax(@NonNull CharSequence charSequence, int lineNumber);
 
     /**

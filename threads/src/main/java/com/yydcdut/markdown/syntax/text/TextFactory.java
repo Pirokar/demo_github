@@ -182,9 +182,6 @@ public class TextFactory implements SyntaxFactory {
     @NonNull
     @Override
     public CharSequence parse(@NonNull CharSequence charSequence, @NonNull MarkdownConfiguration markdownConfiguration) {
-        if (markdownConfiguration == null) {
-            return charSequence;
-        }
         if (mTotalChain == null || mLineChain == null || mMarkdownConfiguration == null || mMarkdownConfiguration != markdownConfiguration) {
             init(markdownConfiguration);
         }

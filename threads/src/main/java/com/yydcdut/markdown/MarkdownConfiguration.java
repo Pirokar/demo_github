@@ -30,7 +30,6 @@ import com.yydcdut.markdown.config.Image;
 import com.yydcdut.markdown.config.Link;
 import com.yydcdut.markdown.config.Todo;
 import com.yydcdut.markdown.config.UnOrderList;
-import com.yydcdut.markdown.loader.MDImageLoader;
 
 import java.util.List;
 
@@ -254,15 +253,6 @@ public class MarkdownConfiguration {
     }
 
     /**
-     * get loader
-     *
-     * @return {@link MDImageLoader}
-     */
-    public MDImageLoader getRxMDImageLoader() {
-        return image.loader;
-    }
-
-    /**
      * get image default size
      *
      * @return the array size is 2, [width, height]
@@ -298,7 +288,7 @@ public class MarkdownConfiguration {
             todo = new Todo();
             unOrderList = new UnOrderList();
             link = new Link();
-            image = new Image(context);
+            image = new Image();
         }
 
         /**
@@ -526,17 +516,6 @@ public class MarkdownConfiguration {
          */
         public Builder setOnLinkClickCallback(OnLinkClickCallback onLinkClickCallback) {
             link.callback = onLinkClickCallback;
-            return this;
-        }
-
-        /**
-         * set loader
-         *
-         * @param MDImageLoader the loader
-         * @return self
-         */
-        public Builder setRxMDImageLoader(MDImageLoader MDImageLoader) {
-            image.loader = MDImageLoader;
             return this;
         }
 

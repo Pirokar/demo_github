@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat;
 
 import com.yydcdut.markdown.MarkdownConfiguration;
 import com.yydcdut.markdown.MarkdownProcessor;
-import com.yydcdut.markdown.loader.DefaultLoader;
 import com.yydcdut.markdown.syntax.text.TextFactory;
 
 import java.lang.ref.WeakReference;
@@ -19,7 +18,7 @@ public class MarkdownProcessorHolder {
 
     private static WeakReference<MarkdownProcessor> markdownProcessorWeakReference = new WeakReference<>(null);
 
-    public static MarkdownProcessor getMarkdownProcessor(Type type) {
+    public static MarkdownProcessor getMarkdownProcessor() {
         MarkdownProcessor markdownProcessor = markdownProcessorWeakReference.get();
         if (markdownProcessor == null) {
             markdownProcessor = prepareIncomingProcessor();
@@ -61,7 +60,6 @@ public class MarkdownProcessorHolder {
                 .setCodeBgColor(Color.LTGRAY)//default color of inline code's background
                 .setTodoColor(Color.DKGRAY)//default color of todo
                 .setTodoDoneColor(Color.DKGRAY)//default color of done
-                .setRxMDImageLoader(new DefaultLoader(context))//default image loader
                 .setDefaultImageSize(200, 200)//default image width & height
                 .showLinkUnderline(false)
                 .setLinkFontColor(ContextCompat.getColor(context, style.incomingMessageLinkColor))
@@ -102,7 +100,6 @@ public class MarkdownProcessorHolder {
                 .setCodeBgColor(Color.LTGRAY)//default color of inline code's background
                 .setTodoColor(Color.DKGRAY)//default color of todo
                 .setTodoDoneColor(Color.DKGRAY)//default color of done
-                .setRxMDImageLoader(new DefaultLoader(context))//default image loader
                 .setDefaultImageSize(200, 200)//default image width & height
                 .showLinkUnderline(false)
                 .setLinkFontColor(ContextCompat.getColor(context, style.outgoingMessageLinkColor))

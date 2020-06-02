@@ -29,8 +29,7 @@ public class MarkdownProcessor {
     private MarkdownConfiguration markdownConfiguration;
     private SyntaxFactory syntaxFactory;
 
-    public MarkdownProcessor(Context context) {
-        checkNULL(context);
+    public MarkdownProcessor(@NonNull Context context) {
         this.context = context;
     }
 
@@ -38,14 +37,12 @@ public class MarkdownProcessor {
         this.markdownConfiguration = markdownConfiguration;
     }
 
-    public void factory(SyntaxFactory syntaxFactory) {
-        checkNULL(syntaxFactory);
+    public void factory(@NonNull SyntaxFactory syntaxFactory) {
         this.syntaxFactory = syntaxFactory;
     }
 
     public CharSequence parse(CharSequence charSequence) {
-        MarkdownConfiguration config = getMarkdownConfiguration();
-        return syntaxFactory.parse(charSequence, config);
+        return syntaxFactory.parse(charSequence, getMarkdownConfiguration());
     }
 
     @NonNull
@@ -56,9 +53,4 @@ public class MarkdownProcessor {
         return markdownConfiguration;
     }
 
-    private void checkNULL(Object o) {
-        if (o == null) {
-            throw new IllegalArgumentException("" + o.getClass().getName() + " is NULL");
-        }
-    }
 }

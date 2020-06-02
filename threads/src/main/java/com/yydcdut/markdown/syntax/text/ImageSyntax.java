@@ -22,7 +22,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.yydcdut.markdown.MarkdownConfiguration;
-import com.yydcdut.markdown.loader.MDImageLoader;
 import com.yydcdut.markdown.span.MDImageSpan;
 import com.yydcdut.markdown.syntax.SyntaxKey;
 import com.yydcdut.markdown.utils.CharacterProtector;
@@ -43,40 +42,10 @@ class ImageSyntax extends TextSyntaxAdapter {
     private static final String PATTERN = ".*[!\\[]{1}.*[\\](]{1}.*[)]{1}.*";
 
     private int[] mSize;
-    private MDImageLoader mMDImageLoader;
 
     public ImageSyntax(@NonNull MarkdownConfiguration markdownConfiguration) {
         super(markdownConfiguration);
         mSize = markdownConfiguration.getDefaultImageSize();
-        mMDImageLoader = markdownConfiguration.getRxMDImageLoader();
-    }
-
-    @Override
-    boolean isMatch(@NonNull String text) {
-        return contains(text) ? true : Pattern.compile(PATTERN).matcher(text).matches();
-    }
-
-    @NonNull
-    @Override
-    boolean encode(@NonNull SpannableStringBuilder ssb) {
-        boolean isHandledBackSlash = false;
-        isHandledBackSlash |= replace(ssb, SyntaxKey.KEY_IMAGE_BACKSLASH_LEFT, CharacterProtector.getKeyEncode());
-        isHandledBackSlash |= replace(ssb, SyntaxKey.KEY_IMAGE_BACKSLASH_MIDDLE, CharacterProtector.getKeyEncode2());
-        isHandledBackSlash |= replace(ssb, SyntaxKey.KEY_IMAGE_BACKSLASH_RIGHT, CharacterProtector.getKeyEncode4());
-        return isHandledBackSlash;
-    }
-
-    @Override
-    SpannableStringBuilder format(@NonNull SpannableStringBuilder ssb, int lineNumber) {
-        return parse(ssb);
-    }
-
-    @NonNull
-    @Override
-    void decode(@NonNull SpannableStringBuilder ssb) {
-        replace(ssb, CharacterProtector.getKeyEncode(), SyntaxKey.KEY_IMAGE_BACKSLASH_LEFT);
-        replace(ssb, CharacterProtector.getKeyEncode2(), SyntaxKey.KEY_IMAGE_BACKSLASH_MIDDLE);
-        replace(ssb, CharacterProtector.getKeyEncode3(), SyntaxKey.KEY_IMAGE_BACKSLASH_RIGHT);
     }
 
     /**
@@ -115,6 +84,34 @@ class ImageSyntax extends TextSyntaxAdapter {
         return false;
     }
 
+    @Override
+    boolean isMatch(@NonNull String text) {
+        return contains(text) ? true : Pattern.compile(PATTERN).matcher(text).matches();
+    }
+
+    @NonNull
+    @Override
+    boolean encode(@NonNull SpannableStringBuilder ssb) {
+        boolean isHandledBackSlash = false;
+        isHandledBackSlash |= replace(ssb, SyntaxKey.KEY_IMAGE_BACKSLASH_LEFT, CharacterProtector.getKeyEncode());
+        isHandledBackSlash |= replace(ssb, SyntaxKey.KEY_IMAGE_BACKSLASH_MIDDLE, CharacterProtector.getKeyEncode2());
+        isHandledBackSlash |= replace(ssb, SyntaxKey.KEY_IMAGE_BACKSLASH_RIGHT, CharacterProtector.getKeyEncode4());
+        return isHandledBackSlash;
+    }
+
+    @Override
+    SpannableStringBuilder format(@NonNull SpannableStringBuilder ssb, int lineNumber) {
+        return parse(ssb);
+    }
+
+    @NonNull
+    @Override
+    void decode(@NonNull SpannableStringBuilder ssb) {
+        replace(ssb, CharacterProtector.getKeyEncode(), SyntaxKey.KEY_IMAGE_BACKSLASH_LEFT);
+        replace(ssb, CharacterProtector.getKeyEncode2(), SyntaxKey.KEY_IMAGE_BACKSLASH_MIDDLE);
+        replace(ssb, CharacterProtector.getKeyEncode3(), SyntaxKey.KEY_IMAGE_BACKSLASH_RIGHT);
+    }
+
     /**
      * parse
      *
@@ -150,7 +147,7 @@ class ImageSyntax extends TextSyntaxAdapter {
                 if (index == tmp.length()) {
                     tmp.append(DEFAULT_TEXT);
                 }
-                ssb.setSpan(new MDImageSpan(link, mSize[0], mSize[1], mMDImageLoader), index, tmp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(new MDImageSpan(link, mSize[0], mSize[1]), index, tmp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 ssb.delete(tmp.length(), tmp.length() + SyntaxKey.KEY_IMAGE_MIDDLE.length() + link.length() + SyntaxKey.KEY_IMAGE_RIGHT.length());
                 tmpTotal = tmpTotal.substring(positionFooter + SyntaxKey.KEY_IMAGE_RIGHT.length(), tmpTotal.length());
             } else if (position4Key0 < position4Key1 && position4Key0 < position4Key2 && position4Key2 < position4Key1) {

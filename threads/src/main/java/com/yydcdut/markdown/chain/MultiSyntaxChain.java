@@ -39,7 +39,6 @@ public class MultiSyntaxChain implements ISpecialChain {
         mSyntaxArray = syntaxes;
     }
 
-    @NonNull
     @Override
     public boolean handleSyntax(@NonNull CharSequence charSequence, int lineNumber) {
         for (Syntax syntax : mSyntaxArray) {

@@ -23,19 +23,16 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
 import android.text.style.DynamicDrawableSpan;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.yydcdut.markdown.drawable.ForwardingDrawable;
-import com.yydcdut.markdown.loader.MDImageLoader;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,28 +41,17 @@ import java.util.regex.Pattern;
  * <p>
  * Created by yuyidong on 16/5/16.
  */
-public class MDImageSpan extends DynamicDrawableSpan implements Handler.Callback {
+public class MDImageSpan extends DynamicDrawableSpan {
 
     private static Pattern sImageUrlPattern = Pattern.compile("^(.*?)/(\\d+)\\$(\\d+)$");
-
+    private final ForwardingDrawable mActualDrawable;
     private String mImageUri;
     private Drawable mPlaceHolder;
     private Drawable mFinalDrawable;
-    private final ForwardingDrawable mActualDrawable;
     private boolean isAttached;
     private boolean isDetached;
     private View mAttachedView;
     private boolean mIsRequestSubmitted = false;
-
-    private MDImageLoader mMDImageLoader;
-
-    private Handler mHandler;
-
-    private static Drawable createEmptyDrawable(int width, int height) {
-        ColorDrawable d = new ColorDrawable(Color.TRANSPARENT);
-        d.setBounds(0, 0, width, height);
-        return d;
-    }
 
     /**
      * Constructor
@@ -73,26 +59,12 @@ public class MDImageSpan extends DynamicDrawableSpan implements Handler.Callback
      * @param uri           the image url
      * @param width         the display width
      * @param height        the display height
-     * @param MDImageLoader loader
      */
-    public MDImageSpan(String uri, int width, int height, MDImageLoader MDImageLoader) {
-        this(uri, createEmptyDrawable(getSize(uri, width, height)[0], getSize(uri, width, height)[1]), MDImageLoader);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param uri           the image url
-     * @param placeHolder   the place holder drawable
-     * @param MDImageLoader loader
-     */
-    private MDImageSpan(String uri, Drawable placeHolder, MDImageLoader MDImageLoader) {
+    public MDImageSpan(String uri, int width, int height) {
         super(ALIGN_BOTTOM);
-        mHandler = new Handler(Looper.getMainLooper(), this);
-        getUrl(uri);
-        mMDImageLoader = MDImageLoader;
         mImageUri = uri;
-        mPlaceHolder = placeHolder;
+        int[] size = getSize(uri, width, height);
+        mPlaceHolder = createEmptyDrawable(size[0], size[1]);
         mActualDrawable = new ForwardingDrawable(mPlaceHolder);
         Rect bounds = mPlaceHolder.getBounds();
         if (bounds.right == 0 || bounds.bottom == 0) {
@@ -100,6 +72,41 @@ public class MDImageSpan extends DynamicDrawableSpan implements Handler.Callback
         } else {
             mActualDrawable.setBounds(bounds);
         }
+    }
+
+    @NonNull
+    private static String getUrl(String sourceUrl) {
+        Matcher m = sImageUrlPattern.matcher(sourceUrl);
+        if (m.find()) {
+            String url = m.group(1);
+            if (url != null) {
+                return url;
+            }
+        }
+        return sourceUrl;
+    }
+
+    private Drawable createEmptyDrawable(int width, int height) {
+        ColorDrawable d = new ColorDrawable(Color.TRANSPARENT);
+        d.setBounds(0, 0, width, height);
+        return d;
+    }
+
+    @NonNull
+    private int[] getSize(String sourceUrl, int defaultWidth, int defaultHeight) {
+        Matcher m = sImageUrlPattern.matcher(sourceUrl);
+        int[] size = new int[]{defaultWidth, defaultHeight};
+        if (m.find()) {
+            String sizeStr = m.group(2);
+            if (sizeStr != null && TextUtils.isDigitsOnly(sizeStr)) {
+                size[0] = Integer.parseInt(sizeStr);
+            }
+            sizeStr = m.group(3);
+            if (sizeStr != null && TextUtils.isDigitsOnly(sizeStr)) {
+                size[1] = Integer.parseInt(sizeStr);
+            }
+        }
+        return size;
     }
 
     @Override
@@ -122,59 +129,48 @@ public class MDImageSpan extends DynamicDrawableSpan implements Handler.Callback
             mAttachedView = view;
             mActualDrawable.setCallback(mAttachedView);
         }
-        if (!mIsRequestSubmitted) {
-            submitRequest();
-        }
+        loadImage();
     }
 
-    private static final int MSG_SUCCESS = 0;
-    private static final int MSG_ERROR = 1;
+    private void loadImage() {
+        Picasso.get()
+                .load(getUrl(mImageUri))
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        setImageWithIntrinsicBounds(createBitmapDrawable(bitmap));
+                    }
 
-    private void submitRequest() {
-        mIsRequestSubmitted = true;
-        new Thread(mLoadRunnable).start();
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
     }
-
-    private Runnable mLoadRunnable = new Runnable() {
-        @Override
-        public void run() {
-            byte[] bytes = null;
-            try {
-                bytes = mMDImageLoader.loadSync(getUrl(mImageUri));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (bytes == null) {
-                mHandler.sendEmptyMessage(MSG_ERROR);
-            } else {
-                Drawable drawable = getDrawable(bytes);
-                Message message = Message.obtain();
-                message.what = MSG_SUCCESS;
-                message.obj = drawable;
-                mHandler.sendMessage(message);
-            }
-        }
-    };
 
     private void setImageWithIntrinsicBounds(@NonNull Drawable drawable) {
-        if (mFinalDrawable != drawable && drawable != null) {
+        if (mFinalDrawable != drawable) {
             mActualDrawable.setCurrent(drawable);
             mFinalDrawable = drawable;
         }
     }
 
     private BitmapDrawable createBitmapDrawable(Bitmap bitmap) {
-        BitmapDrawable drawable;
         if (mAttachedView != null) {
             final Context context = mAttachedView.getContext();
-            drawable = new BitmapDrawable(context.getResources(), bitmap);
-        } else {
-            drawable = new BitmapDrawable(null, bitmap);
+            if (context != null) {
+                return new BitmapDrawable(context.getResources(), bitmap);
+            }
         }
-        return drawable;
+        return new BitmapDrawable(null, bitmap);
     }
 
-    private static int calculateSampleSize(@NonNull BitmapFactory.Options options, int expectWidth, int expectHeight) {
+    private int calculateSampleSize(@NonNull BitmapFactory.Options options, int expectWidth, int expectHeight) {
         int sampleSize = 1;
         while (options.outHeight / sampleSize > expectWidth || options.outWidth / sampleSize > expectHeight) {
             sampleSize = sampleSize << 1;
@@ -183,9 +179,6 @@ public class MDImageSpan extends DynamicDrawableSpan implements Handler.Callback
     }
 
     private Drawable getDrawable(@NonNull byte[] bytes) {
-        if (bytes == null) {
-            return null;
-        }
         BitmapFactory.Options calculateOptions = new BitmapFactory.Options();
         calculateOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length, calculateOptions);
@@ -212,39 +205,6 @@ public class MDImageSpan extends DynamicDrawableSpan implements Handler.Callback
         mActualDrawable.setCallback(null);
         mAttachedView = null;
         mActualDrawable.setCurrent(mPlaceHolder);
-        mHandler.removeCallbacksAndMessages(null);
     }
 
-    @NonNull
-    private static int[] getSize(String sourceUrl, int defaultWidth, int defaultHeight) {
-        Matcher m = sImageUrlPattern.matcher(sourceUrl);
-        int[] size = new int[]{defaultWidth, defaultHeight};
-        if (m.find()) {
-            if (TextUtils.isDigitsOnly(m.group(2))) {
-                size[0] = Integer.valueOf(m.group(2));
-            }
-            if (TextUtils.isDigitsOnly(m.group(3))) {
-                size[1] = Integer.valueOf(m.group(3));
-            }
-        }
-        return size;
-    }
-
-    @NonNull
-    private static String getUrl(String sourceUrl) {
-        Matcher m = sImageUrlPattern.matcher(sourceUrl);
-        if (m.find()) {
-            return m.group(1);
-        }
-        return sourceUrl;
-    }
-
-    @Override
-    public boolean handleMessage(Message msg) {
-        if (!isDetached && msg.what == MSG_SUCCESS && msg.obj instanceof Drawable) {
-            Drawable drawable = (Drawable) msg.obj;
-            setImageWithIntrinsicBounds(drawable);
-        }
-        return false;
-    }
 }
