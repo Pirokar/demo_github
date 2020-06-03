@@ -103,7 +103,7 @@ public final class HistoryParser {
                         if (quote != null && quote.getFileDescription() != null)
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
-                            out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, timeStamp,
+                            out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, message.getFormattedText(), timeStamp,
                                     operatorId, photoUrl, message.isRead(), null, false, message.getQuickReplies()));
                         } else {
                             if (fileDescription != null) {

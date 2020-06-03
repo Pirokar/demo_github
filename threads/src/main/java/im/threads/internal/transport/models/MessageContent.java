@@ -8,6 +8,7 @@ import im.threads.internal.model.QuickReply;
 public class MessageContent {
     private String uuid;
     private String text;
+    private String formattedText;
     private Date receivedDate;
     private Operator operator;
     private List<String> providerIds;
@@ -21,6 +22,10 @@ public class MessageContent {
 
     public String getText() {
         return text;
+    }
+
+    public String getFormattedText() {
+        return formattedText;
     }
 
     public Date getReceivedDate() {

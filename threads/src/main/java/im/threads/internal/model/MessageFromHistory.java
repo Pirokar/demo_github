@@ -15,6 +15,7 @@ public final class MessageFromHistory implements ChatItem {
     private String receivedDate;
     private Channel channel;
     private boolean read;
+    private String formattedText;
     private String text;
     private List<Attachment> attachments;
     private List<QuickReply> quickReplies;
@@ -102,6 +103,14 @@ public final class MessageFromHistory implements ChatItem {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public String getFormattedText() {
+        return formattedText;
+    }
+
+    public void setFormattedText(String formattedText) {
+        this.formattedText = formattedText;
     }
 
     public String getText() {

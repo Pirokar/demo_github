@@ -153,6 +153,7 @@ public final class MessageParser {
                     quote,
                     name,
                     phrase,
+                    content.getFormattedText(),
                     sentAt,
                     operatorId,
                     photoUrl,

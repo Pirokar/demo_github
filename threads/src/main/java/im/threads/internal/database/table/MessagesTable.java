@@ -37,6 +37,7 @@ public class MessagesTable extends Table {
     private static final String COLUMN_PROVIDER_IDS = "COLUMN_PROVIDER_IDS";
     private static final String COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP";
     private static final String COLUMN_PHRASE = "COLUMN_PHRASE";
+    private static final String COLUMN_FORMATTED_PHRASE = "COLUMN_FORMATTED_PHRASE";
     private static final String COLUMN_MESSAGE_TYPE = "COLUMN_MESSAGE_TYPE";
     private static final String COLUMN_NAME = "COLUMN_NAME";
     private static final String COLUMN_AVATAR_PATH = "COLUMN_AVATAR_PATH";
@@ -74,6 +75,7 @@ public class MessagesTable extends Table {
                         "( %s integer primary key autoincrement," +//id column
                         " %s integer, " +//timestamp
                         " %s text, " +//phrase
+                        " %s text, " + //COLUMN_FORMATTED_PHRASE
                         " %s integer, " +//item type
                         " %s text, " +//name
                         " %s text, " +//avatar path
@@ -93,7 +95,7 @@ public class MessagesTable extends Table {
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
                         + ")",
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
-                , COLUMN_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
+                , COLUMN_PHRASE, COLUMN_FORMATTED_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
                 COLUMN_MESSAGE_UUID, COLUMN_SEX, COLUMN_MESSAGE_SEND_STATE, COLUMN_CONSULT_ID,
                 COLUMN_CONSULT_STATUS, COLUMN_CONSULT_TITLE, COLUMN_CONNECTION_TYPE,
                 COLUMN_IS_READ, COLUMN_PROVIDER_ID, COLUMN_PROVIDER_IDS));
@@ -352,6 +354,7 @@ public class MessagesTable extends Table {
                 quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
                 cGetString(c, COLUMN_NAME),
                 cGetString(c, COLUMN_PHRASE),
+                cGetString(c, COLUMN_FORMATTED_PHRASE),
                 cGetLong(c, COLUMN_TIMESTAMP),
                 cGetString(c, COLUMN_CONSULT_ID),
                 cGetString(c, COLUMN_AVATAR_PATH),
@@ -394,6 +397,7 @@ public class MessagesTable extends Table {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_UUID, phrase.getUuid());
         cv.put(COLUMN_PHRASE, phrase.getPhrase());
+        cv.put(COLUMN_FORMATTED_PHRASE, phrase.getFormattedPhrase());
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.CONSULT_PHRASE.ordinal());
         cv.put(COLUMN_AVATAR_PATH, phrase.getAvatarPath());

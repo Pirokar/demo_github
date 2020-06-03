@@ -20,6 +20,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     private final boolean sex;
     private final long timeStamp;
     private final String phrase;
+    private final String formattedPhrase;
     private final String consultName;
     private boolean isAvatarVisible = true;
     private final Quote quote;
@@ -35,7 +36,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     public String ogUrl;
 
     public ConsultPhrase(String uuid, String providerId, List<String> providerIds, FileDescription fileDescription, Quote quote, String consultName,
-                         String phrase, long timeStamp, String consultId, String avatarPath,
+                         String phrase, String formattedPhrase, long timeStamp, String consultId, String avatarPath,
                          boolean isRead, String status, boolean sex, List<QuickReply> quickReplies) {
 
         super(avatarPath, consultId);
@@ -47,6 +48,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         this.quote = quote;
         this.consultName = consultName;
         this.phrase = phrase;
+        this.formattedPhrase = formattedPhrase;
         this.timeStamp = timeStamp;
         this.isRead = isRead;
         this.status = status;
@@ -192,6 +194,10 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         return phrase;
     }
 
+    public String getFormattedPhrase() {
+        return formattedPhrase;
+    }
+
     public boolean hasSameContent(ConsultPhrase consultPhrase) {
 
         if (consultPhrase == null) {
@@ -200,6 +206,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
         boolean hasSameContent = ObjectsCompat.equals(this.uuid, consultPhrase.uuid)
                 && ObjectsCompat.equals(this.phrase, consultPhrase.phrase)
+                && ObjectsCompat.equals(this.formattedPhrase, consultPhrase.formattedPhrase)
                 && ObjectsCompat.equals(this.providerId, consultPhrase.providerId)
                 && ObjectsCompat.equals(this.timeStamp, consultPhrase.timeStamp)
                 && ObjectsCompat.equals(this.isRead, consultPhrase.isRead)

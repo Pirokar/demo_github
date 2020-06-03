@@ -155,7 +155,7 @@ public class ListSyntax implements Syntax {
                         list.add(new ListBean(currentLinePosition, line, nested, 1, originalNumber));
                     } else if (nested == previousBean.nested) {
                         // На одном уровне вложенности добавляем с номером  previousBean.number + 1
-                        list.add(new ListBean(currentLinePosition, line, nested, previousBean.number + 1, originalNumber));
+                        list.add(new ListBean(currentLinePosition, line, nested, previousBean.number == -2 ? 1 :previousBean.number + 1, originalNumber));
                     } else if (nested + 1 == previousBean.nested) {
                         // На одном уровне вложенности добавляем с номером  previousBean.number + 1
                         list.add(new ListBean(currentLinePosition, line, nested, previousBean.number + 1, originalNumber));
