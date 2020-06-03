@@ -353,7 +353,7 @@ public final class ChatController {
                             final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                             count = serverItems.size();
-                            databaseHolder.putChatItems(serverItems);
+                            saveMessages(serverItems);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         } catch (final Exception e) {
                             ThreadsLogger.e(TAG, "requestItems", e);
@@ -511,7 +511,7 @@ public final class ChatController {
         consultWriter.setCurrentConsultLeft();
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-        databaseHolder.putChatItems(serverItems);
+        saveMessages(serverItems);
         final List<ChatItem> chatItems = setLastAvatars(serverItems);
         if (fragment != null) {
             fragment.addChatItems(chatItems);
@@ -547,7 +547,7 @@ public final class ChatController {
                         final int count = Config.instance.historyLoadingCount;
                         final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        databaseHolder.putChatItems(serverItems);
+                        saveMessages(serverItems);
                         if (fragment != null && isActive) {
                             final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                             if (unreadProviderIds != null) {
@@ -953,7 +953,7 @@ public final class ChatController {
                         } else {
                             lastMessageTimestamp = serverItems.get(0).getTimeStamp();
                             isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                            databaseHolder.putChatItems(serverItems);
+                            saveMessages(serverItems);
                             isDownloadingMessages = false;
                             if (!isAllMessagesDownloaded) {
                                 downloadMessagesTillEnd();
@@ -1074,7 +1074,7 @@ public final class ChatController {
                         Config.instance.transport.sendEnvironmentMessage();
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
                         List<ChatItem> chatItems = HistoryParser.getChatItems(response);
-                        databaseHolder.putChatItems(chatItems);
+                        saveMessages(chatItems);
                         setLastAvatars(chatItems);
                         if (fragment != null) {
                             fragment.addChatItems(chatItems);
@@ -1090,6 +1090,11 @@ public final class ChatController {
                         .subscribe(() -> {
                         }, e -> ThreadsLogger.e(TAG, e.getMessage()))
         );
+    }
+
+    private void saveMessages(List<ChatItem> chatItems) {
+        databaseHolder.putChatItems(chatItems);
+        UnreadMessagesController.INSTANCE.clearUnreadPush();
     }
 
     private void refreshUserInputState() {

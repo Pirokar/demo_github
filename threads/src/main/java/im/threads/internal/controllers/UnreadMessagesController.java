@@ -9,8 +9,20 @@ public enum  UnreadMessagesController {
 
     private PublishProcessor<Integer> unreadMessagesPublishProcessor = PublishProcessor.create();
 
+    private int unreadPush = 0;
+
     public PublishProcessor<Integer> getUnreadMessagesPublishProcessor() {
         return unreadMessagesPublishProcessor;
+    }
+
+    public void incrementUnreadPush() {
+        unreadPush++;
+        refreshUnreadMessagesCount();
+    }
+
+    public void clearUnreadPush() {
+        unreadPush = 0;
+        refreshUnreadMessagesCount();
     }
 
     /**
@@ -25,7 +37,7 @@ public enum  UnreadMessagesController {
      * но иногда в этот момент в сообщения еще не помечены, как прочитанные.
      */
     public void refreshUnreadMessagesCount() {
-        unreadMessagesPublishProcessor.onNext(DatabaseHolder.getInstance().getUnreadMessagesCount());
+        unreadMessagesPublishProcessor.onNext(DatabaseHolder.getInstance().getUnreadMessagesCount() + unreadPush);
     }
 
 }

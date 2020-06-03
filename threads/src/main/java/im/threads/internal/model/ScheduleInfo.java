@@ -15,6 +15,7 @@ public final class ScheduleInfo implements ChatItem {
     private Date startTime;
     private Date endTime;
     private Date serverTime;
+    private boolean active;
 
     public Long getId() {
         return id;
@@ -49,10 +50,46 @@ public final class ScheduleInfo implements ChatItem {
         return date;
     }
 
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public Date getServerTime() {
+        return serverTime;
+    }
+
+    public void setServerTime(Date serverTime) {
+        this.serverTime = serverTime;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     /**
      * @return true, если в данный момент чат работает
      */
     public boolean isChatWorking() {
-        return startTime.getTime() <= serverTime.getTime() && serverTime.getTime() <= endTime.getTime();
+        if (startTime == null || endTime == null || serverTime == null) {
+            return active;
+        } else {
+            return startTime.getTime() <= serverTime.getTime() && serverTime.getTime() <= endTime.getTime();
+        }
     }
 }

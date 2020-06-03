@@ -141,8 +141,7 @@ public final class NotificationService extends ThreadsService {
                 case ACTION_ADD_UNREAD_MESSAGE:
                     final String message = intent.getStringExtra(EXTRA_MESSAGE);
                     if (Build.VERSION.SDK_INT < 24) {
-                        final Notification notification = getPreNStyleNotification(intent, null, message);
-                        notifyUnreadMessagesCountChanged(nm, notification);
+                        notifyUnreadMessagesCountChanged(nm, getPreNStyleNotification(intent, null, message));
                     } else {
                         getNStyleNotification(intent, null, notification -> notifyUnreadMessagesCountChanged(nm, notification), message);
                     }
@@ -186,7 +185,7 @@ public final class NotificationService extends ThreadsService {
             if (!fixPushCrash) {
                 nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
             }
-            UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+            UnreadMessagesController.INSTANCE.incrementUnreadPush();
         }
     }
 
