@@ -773,7 +773,8 @@ public final class ChatController {
                                     if (hidable instanceof RequestResolveThread) {
                                         removeResolveRequest();
                                     }
-                                }
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
         );
     }
