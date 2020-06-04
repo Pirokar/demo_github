@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -43,6 +42,7 @@ import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
 import im.threads.internal.widget.text_view.BubbleMessageTextView;
 import im.threads.internal.widget.text_view.BubbleTimeTextView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * layout/item_user_text_with_file.xml
@@ -122,7 +122,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
                        @Nullable final View.OnClickListener fileClickListener,
                        final View.OnClickListener onRowClickListener,
                        final View.OnLongClickListener onLongClickListener,
-                       Runnable onItemChangedListener,
                        final boolean isChosen) {
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
@@ -137,14 +136,9 @@ public final class UserPhraseViewHolder extends BaseHolder {
             String url = UrlUtils.extractLink(phrase);
             if (url != null) {
                 if (userPhrase.ogData == null) {
-                    loadOGData(onItemChangedListener, userPhrase, url);
+                    loadOGData(userPhrase, url);
                 } else {
-                    if (!userPhrase.ogData.areTextsEmpty()) {
-                        bindOGData(userPhrase.ogData, url);
-                        showOGView();
-                    } else {
-                        hideOGView();
-                    }
+                    bindOGData(userPhrase.ogData, url);
                 }
             } else {
                 hideOGView();
@@ -275,26 +269,27 @@ public final class UserPhraseViewHolder extends BaseHolder {
         }
     }
 
-    private void loadOGData(Runnable onItemChangedListener, final UserPhrase chatItem, final String url) {
-        OGDataProvider.getInstance().getOGData(url, new im.threads.internal.utils.Callback<OGData, Throwable>() {
-            @Override
-            public void onSuccess(OGData ogData) {
-                ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
-                if (ogData != null && !ogData.isEmpty()) {
-                    chatItem.ogData = ogData;
-                    chatItem.ogUrl = url;
-                    onItemChangedListener.run();
-                }
-            }
-
-            @Override
-            public void onError(Throwable error) {
-                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
-            }
-        });
+    private void loadOGData(final UserPhrase chatItem, final String url) {
+        hideOGView();
+        subscribe(OGDataProvider.getInstance().getOGData(url)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ogData -> {
+                    ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
+                    if (ogData != null && !ogData.isEmpty()) {
+                        chatItem.ogData = ogData;
+                        chatItem.ogUrl = url;
+                    }
+                    bindOGData(ogData, url);
+                }, e -> ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e))
+        );
     }
 
-    private void bindOGData(@NonNull final OGData ogData, String url) {
+    private void bindOGData(final OGData ogData, String url) {
+        if (ogData == null || ogData.areTextsEmpty()) {
+            hideOGView();
+            return;
+        }
+        showOGView();
         if (!TextUtils.isEmpty(ogData.title)) {
             ogTitle.setVisibility(View.VISIBLE);
             ogTitle.setText(ogData.title);

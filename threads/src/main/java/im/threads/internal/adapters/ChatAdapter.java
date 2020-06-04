@@ -22,6 +22,7 @@ import java.util.ListIterator;
 
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
+import im.threads.internal.holders.BaseHolder;
 import im.threads.internal.holders.ConsultConnectionMessageViewHolder;
 import im.threads.internal.holders.ConsultFileViewHolder;
 import im.threads.internal.holders.ConsultIsTypingViewHolderNew;
@@ -324,6 +325,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewRecycled(holder);
+        if (holder instanceof BaseHolder) {
+            ((BaseHolder) holder).onClear();
+        }
     }
 
     public void setAllMessagesRead() {
@@ -715,7 +724,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             return true;
                         },
                         v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
-                        () -> notifyItemChangedOnUi(consultPhrase),
                         consultPhrase.isChosen()
                 );
     }
@@ -744,7 +752,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     phaseLongClick(userPhrase, holder.getAdapterPosition());
                     return true;
                 },
-                () -> notifyItemChangedOnUi(userPhrase),
                 userPhrase.isChosen()
         );
     }

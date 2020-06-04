@@ -13,8 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import im.threads.R;
 import im.threads.internal.views.CircularProgressButton;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
-abstract class BaseHolder extends RecyclerView.ViewHolder {
+public abstract class BaseHolder extends RecyclerView.ViewHolder {
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     BaseHolder(View itemView) {
         super(itemView);
     }
@@ -55,5 +60,19 @@ abstract class BaseHolder extends RecyclerView.ViewHolder {
         button.setCompletedDrawable(completed);
         button.setStartDownloadDrawable(download);
         button.setInProgress(inProgress);
+    }
+
+    protected boolean subscribe(final Disposable event) {
+        if (compositeDisposable == null || compositeDisposable.isDisposed()) {
+            compositeDisposable = new CompositeDisposable();
+        }
+        return compositeDisposable.add(event);
+    }
+
+    public void onClear() {
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+            compositeDisposable = null;
+        }
     }
 }

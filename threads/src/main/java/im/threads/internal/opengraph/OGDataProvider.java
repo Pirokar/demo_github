@@ -1,12 +1,11 @@
 package im.threads.internal.opengraph;
 
 import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.internal.Config;
-import im.threads.internal.utils.Callback;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
@@ -19,7 +18,11 @@ public final class OGDataProvider {
     private static volatile OGDataProvider instance;
     private final OkHttpClient client;
     private final OGParser ogParser;
-    private Executor mExecutor = Executors.newCachedThreadPool();
+
+    private OGDataProvider() {
+        client = createOkHttpClient();
+        ogParser = new OGParser();
+    }
 
     public static OGDataProvider getInstance() {
         if (instance == null) {
@@ -30,11 +33,6 @@ public final class OGDataProvider {
             }
         }
         return instance;
-    }
-
-    private OGDataProvider() {
-        client = createOkHttpClient();
-        ogParser = new OGParser();
     }
 
     private OkHttpClient createOkHttpClient() {
@@ -49,8 +47,8 @@ public final class OGDataProvider {
         return clientBuilder.build();
     }
 
-    public void getOGData(final String url, final Callback<OGData, Throwable> callback) {
-        mExecutor.execute(() -> {
+    public Single<OGData> getOGData(final String url) {
+        return Single.fromCallable(() -> {
             final String finalUrl;
             //Adding http for urls without scheme
             if (!url.toLowerCase().startsWith("http")) {
@@ -58,16 +56,11 @@ public final class OGDataProvider {
             } else {
                 finalUrl = url;
             }
-            try {
-                ResponseBody responseBody = client.newCall(new Request.Builder().url(finalUrl).build()).execute().body();
-                if (responseBody == null) {
-                    callback.onError(new IOException("null response body"));
-                    return;
-                }
-                callback.onSuccess(ogParser.parse(responseBody.byteStream()));
-            } catch (IOException e) {
-                callback.onError(e);
+            final ResponseBody responseBody = client.newCall(new Request.Builder().url(finalUrl).build()).execute().body();
+            if (responseBody == null) {
+                throw new IOException("null response body");
             }
-        });
+            return ogParser.parse(responseBody.byteStream());
+        }).subscribeOn(Schedulers.io());
     }
 }

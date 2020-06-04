@@ -15,7 +15,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -45,6 +44,7 @@ import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
 import im.threads.internal.widget.text_view.BubbleMessageTextView;
 import im.threads.internal.widget.text_view.BubbleTimeTextView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * layout/item_consultant_text_with_file.xml
@@ -139,7 +139,6 @@ public final class ConsultPhraseHolder extends BaseHolder {
                        @Nullable View.OnClickListener fileClickListener,
                        View.OnLongClickListener onRowLongClickListener,
                        View.OnClickListener onAvatarClickListener,
-                       Runnable onItemChangedListener,
                        boolean isChosen) {
         ViewUtils.setClickListener((ViewGroup) itemView, onRowLongClickListener);
         mConsultAvatar.setImageBitmap(null);
@@ -160,14 +159,9 @@ public final class ConsultPhraseHolder extends BaseHolder {
             String url = UrlUtils.extractLink(phrase);
             if (url != null) {
                 if (consultPhrase.ogData == null) {
-                    loadOGData(onItemChangedListener, consultPhrase, url);
+                    loadOGData(consultPhrase, url);
                 } else {
-                    if (!consultPhrase.ogData.areTextsEmpty()) {
-                        bindOGData(consultPhrase.ogData, url);
-                        showOGView();
-                    } else {
-                        hideOGView();
-                    }
+                    bindOGData(consultPhrase.ogData, url);
                 }
                 ViewUtils.setClickListener(ogDataLayout, v -> {
                     UrlUtils.openUrl(itemView.getContext(), url);
@@ -303,26 +297,27 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 .into(mConsultAvatar);
     }
 
-    private void loadOGData(Runnable onItemChangedListener, final ConsultPhrase chatItem, final String url) {
-        OGDataProvider.getInstance().getOGData(url, new im.threads.internal.utils.Callback<OGData, Throwable>() {
-            @Override
-            public void onSuccess(OGData ogData) {
-                ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
-                if (ogData != null && !ogData.isEmpty()) {
-                    chatItem.ogData = ogData;
-                    chatItem.ogUrl = url;
-                    onItemChangedListener.run();
-                }
-            }
-
-            @Override
-            public void onError(Throwable error) {
-                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
-            }
-        });
+    private void loadOGData(final ConsultPhrase chatItem, final String url) {
+        hideOGView();
+        subscribe(OGDataProvider.getInstance().getOGData(url)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ogData -> {
+                    ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
+                    if (ogData != null && !ogData.isEmpty()) {
+                        chatItem.ogData = ogData;
+                        chatItem.ogUrl = url;
+                    }
+                    bindOGData(ogData, url);
+                }, e ->ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e))
+        );
     }
 
-    private void bindOGData(@NonNull final OGData ogData, String url) {
+    private void bindOGData(final OGData ogData, String url) {
+        if (ogData == null || ogData.areTextsEmpty()) {
+            hideOGView();
+            return;
+        }
+        showOGView();
         if (!TextUtils.isEmpty(ogData.title)) {
             ogTitle.setVisibility(View.VISIBLE);
             ogTitle.setText(ogData.title);
