@@ -115,6 +115,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
         ogTimestamp.setTextColor(getColorInt(style.incomingMessageTimeColor));
 
         mPhraseTextView.setLinkTextColor(getColorInt(style.incomingMessageLinkColor));
+        mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         defIcon = style.defaultOperatorAvatar;
         setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint);
@@ -150,10 +151,11 @@ public final class ConsultPhraseHolder extends BaseHolder {
         } else {
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
             mPhraseTextView.setVisibility(View.VISIBLE);
-            mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
             if (consultPhrase.getFormattedPhrase() != null) {
+                mPhraseTextView.setAutoLinkMask(0);
                 mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor().parse(consultPhrase.getFormattedPhrase()));
             } else {
+                mPhraseTextView.setAutoLinkMask(1);
                 mPhraseTextView.setText(phrase);
             }
             String url = UrlUtils.extractLink(phrase);
