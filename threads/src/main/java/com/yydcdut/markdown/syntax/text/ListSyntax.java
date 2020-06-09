@@ -38,72 +38,6 @@ public class ListSyntax implements Syntax {
         mUnorderColor = markdownConfiguration.getUnOrderListColor();
     }
 
-    @Override
-    public boolean isMatch(@NonNull CharSequence charSequence) {
-        if (TextUtils.isEmpty(charSequence)) {
-            return false;
-        }
-        String[] lines = charSequence.toString().split("\n");
-        final int length = lines.length;
-        for (int i = 0; i < length; i++) {
-            String line = lines[i].trim();
-            if (checkOrderLegal(line) || checkUnorderLegal(line)) {
-                return true;
-            } else {
-                continue;
-            }
-        }
-        return false;
-    }
-
-    @NonNull
-    @Override
-    public CharSequence format(@NonNull CharSequence charSequence, int lineNumber) {
-        if (!(charSequence instanceof SpannableStringBuilder)) {
-            return charSequence;
-        }
-        SpannableStringBuilder ssb = (SpannableStringBuilder) charSequence;
-        int currentLineIndex = 0;
-        String[] lines = charSequence.toString().split("\n");
-        ArrayList<ListBean> list = new ArrayList<>(lines.length);
-        SparseArray<MDBaseListSpan> listSpanByLineArray = new SparseArray<>();
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            if (checkOrderLegal(line.trim())) {
-                currentLineIndex = formatOrder(ssb, line, list, i, currentLineIndex);
-            } else if (checkUnorderLegal(line.trim())) {
-                currentLineIndex = formatUnorder(ssb, line, list, i, currentLineIndex);
-            } else {
-                list.add(new ListBean(currentLineIndex, line, 0, -2, -1));
-                currentLineIndex += (line + "\n").length();
-            }
-        }
-        for (int i = list.size() - 1; i >= 0; i--) {
-            ListBean bean = list.get(i);
-            if (bean != null && bean.number != -2) {
-                MDBaseListSpan span;
-                    if (bean.isOrder) {
-                        span = setOrderSpan(bean.nested, bean.start, bean.line, ssb, bean.number, bean.originalNumber);
-                    } else {
-                        span = setUnorderSpan(bean.nested, bean.start, bean.line, bean.type, ssb, mUnorderColor);
-                    }
-                listSpanByLineArray.put(i, span);
-            }
-        }
-        int previousLineIndex = -1;
-        MDBaseListSpan previousSpan = null;
-        for (int i = 0; i < listSpanByLineArray.size(); i++) {
-            int lineIndex = listSpanByLineArray.keyAt(i);
-            MDBaseListSpan span = listSpanByLineArray.get(lineIndex);
-            if (previousSpan != null && previousLineIndex + 1 == lineIndex) {
-                span.setParent(span);
-            }
-            previousLineIndex = lineIndex;
-            previousSpan = span;
-        }
-        return ssb;
-    }
-
     private static boolean checkOrderLegal(@NonNull String text) {
         if (text.length() < 3) {
             return false;
@@ -244,9 +178,13 @@ public class ListSyntax implements Syntax {
             int nested = calculateNotOrderNested(line);
             if (nested > 0) {
                 int previousType = calculateUnorderType(line);
-                ListBean previousBean = list.get(lineIndex - 1);
-                if (previousBean != null && (nested <= previousBean.nested + 1)) {
-                    list.add(new ListBean(currentLinePosition, line, nested, previousType));
+                if (lineIndex > 0) {
+                    ListBean previousBean = list.get(lineIndex - 1);
+                    if (previousBean != null && (nested <= previousBean.nested + 1)) {
+                        list.add(new ListBean(currentLinePosition, line, nested, previousType));
+                    } else {
+                        list.add(new ListBean(currentLinePosition, line, 0, 0));
+                    }
                 } else {
                     list.add(new ListBean(currentLinePosition, line, 0, 0));
                 }
@@ -277,6 +215,72 @@ public class ListSyntax implements Syntax {
                 start, start + line.length() - (nested * SyntaxKey.KEY_LIST_HEADER.length() + START_POSITION),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return span;
+    }
+
+    @Override
+    public boolean isMatch(@NonNull CharSequence charSequence) {
+        if (TextUtils.isEmpty(charSequence)) {
+            return false;
+        }
+        String[] lines = charSequence.toString().split("\n");
+        final int length = lines.length;
+        for (int i = 0; i < length; i++) {
+            String line = lines[i].trim();
+            if (checkOrderLegal(line) || checkUnorderLegal(line)) {
+                return true;
+            } else {
+                continue;
+            }
+        }
+        return false;
+    }
+
+    @NonNull
+    @Override
+    public CharSequence format(@NonNull CharSequence charSequence, int lineNumber) {
+        if (!(charSequence instanceof SpannableStringBuilder)) {
+            return charSequence;
+        }
+        SpannableStringBuilder ssb = (SpannableStringBuilder) charSequence;
+        int currentLineIndex = 0;
+        String[] lines = charSequence.toString().split("\n");
+        ArrayList<ListBean> list = new ArrayList<>(lines.length);
+        SparseArray<MDBaseListSpan> listSpanByLineArray = new SparseArray<>();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            if (checkOrderLegal(line.trim())) {
+                currentLineIndex = formatOrder(ssb, line, list, i, currentLineIndex);
+            } else if (checkUnorderLegal(line.trim())) {
+                currentLineIndex = formatUnorder(ssb, line, list, i, currentLineIndex);
+            } else {
+                list.add(new ListBean(currentLineIndex, line, 0, -2, -1));
+                currentLineIndex += (line + "\n").length();
+            }
+        }
+        for (int i = list.size() - 1; i >= 0; i--) {
+            ListBean bean = list.get(i);
+            if (bean != null && bean.number != -2) {
+                MDBaseListSpan span;
+                if (bean.isOrder) {
+                    span = setOrderSpan(bean.nested, bean.start, bean.line, ssb, bean.number, bean.originalNumber);
+                } else {
+                    span = setUnorderSpan(bean.nested, bean.start, bean.line, bean.type, ssb, mUnorderColor);
+                }
+                listSpanByLineArray.put(i, span);
+            }
+        }
+        int previousLineIndex = -1;
+        MDBaseListSpan previousSpan = null;
+        for (int i = 0; i < listSpanByLineArray.size(); i++) {
+            int lineIndex = listSpanByLineArray.keyAt(i);
+            MDBaseListSpan span = listSpanByLineArray.get(lineIndex);
+            if (previousSpan != null && previousLineIndex + 1 == lineIndex) {
+                span.setParent(span);
+            }
+            previousLineIndex = lineIndex;
+            previousSpan = span;
+        }
+        return ssb;
     }
 
     @NonNull

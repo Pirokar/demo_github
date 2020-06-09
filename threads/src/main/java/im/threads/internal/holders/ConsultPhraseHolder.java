@@ -153,7 +153,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
             mPhraseTextView.setVisibility(View.VISIBLE);
             if (consultPhrase.getFormattedPhrase() != null) {
                 mPhraseTextView.setAutoLinkMask(0);
-                mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor().parse(consultPhrase.getFormattedPhrase()));
+                mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor().parse(consultPhrase.getFormattedPhrase().trim()));
             } else {
                 mPhraseTextView.setAutoLinkMask(1);
                 mPhraseTextView.setText(phrase);
