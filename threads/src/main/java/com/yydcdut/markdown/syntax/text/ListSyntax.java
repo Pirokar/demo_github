@@ -313,7 +313,7 @@ public class ListSyntax implements Syntax {
             this.line = line;
             this.nested = nested;
             this.isOrder = false;
-            this.number = -1;
+            this.number = -2;
             this.originalNumber = -1;
             this.type = type;
         }
