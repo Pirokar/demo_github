@@ -69,6 +69,11 @@ public class ListSyntax implements Syntax {
     }
 
     private static int formatOrder(SpannableStringBuilder ssb, String line, ArrayList<ListBean> list, final int lineIndex, int currentLinePosition) {
+        int count = line.indexOf(line.trim());
+        if (count % 2 == 1) {
+            ssb.delete(currentLinePosition, currentLinePosition + 1);
+            line = line.substring(1);
+        }
         int nested = calculateOrderNested(line);
         if (nested < 0) {
             list.add(new ListBean(currentLinePosition, line, 0, -1, -1));
@@ -89,7 +94,7 @@ public class ListSyntax implements Syntax {
                         list.add(new ListBean(currentLinePosition, line, nested, 1, originalNumber));
                     } else if (nested == previousBean.nested) {
                         // На одном уровне вложенности добавляем с номером  previousBean.number + 1
-                        list.add(new ListBean(currentLinePosition, line, nested, previousBean.number == -2 ? 1 :previousBean.number + 1, originalNumber));
+                        list.add(new ListBean(currentLinePosition, line, nested, previousBean.number < 0 ? 1 :previousBean.number + 1, originalNumber));
                     } else if (nested + 1 == previousBean.nested) {
                         // На одном уровне вложенности добавляем с номером  previousBean.number + 1
                         list.add(new ListBean(currentLinePosition, line, nested, previousBean.number + 1, originalNumber));
@@ -103,12 +108,12 @@ public class ListSyntax implements Syntax {
         return currentLinePosition;
     }
 
-    private static MDBaseListSpan setOrderSpan(int nested, int start, @NonNull String line, @NonNull SpannableStringBuilder ssb, int number, int originalNumber) {
-        ssb.delete(start, start + nested * 3 + String.valueOf(originalNumber).length());
-        ssb.insert(start, String.valueOf(number));
-        MDOrderListSpan mdOrderListSpan = new MDOrderListSpan(10, nested, number);
+    private static MDBaseListSpan setOrderSpan(ListBean bean, @NonNull SpannableStringBuilder ssb) {
+        ssb.delete(bean.start, bean.start + bean.nested * 3 + String.valueOf(bean.originalNumber).length());
+        ssb.insert(bean.start, String.valueOf(bean.number));
+        MDOrderListSpan mdOrderListSpan = new MDOrderListSpan(10, bean.nested, bean.number);
         ssb.setSpan(mdOrderListSpan,
-                start, start + line.length() - (nested * 3 + String.valueOf(originalNumber).length()),
+                bean.start, bean.start + bean.line.length() - (bean.nested * 3 + String.valueOf(bean.originalNumber).length()),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return mdOrderListSpan;
     }
@@ -161,6 +166,11 @@ public class ListSyntax implements Syntax {
     }
 
     private static int formatUnorder(SpannableStringBuilder ssb, String line, ArrayList<ListBean> list, final int lineIndex, int currentLinePosition) {
+        int count = line.indexOf(line.trim());
+        if (count % 2 == 1) {
+            ssb.delete(currentLinePosition, currentLinePosition + 1);
+            line = line.substring(1);
+        }
         if (line.startsWith(SyntaxKey.IGNORE_UNORDER_LIST_HYPHEN) || line.startsWith(SyntaxKey.IGNORE_UNORDER_LIST_ASTERISK) || line.startsWith(SyntaxKey.IGNORE_UNORDER_LIST_2)
                 || line.startsWith(SyntaxKey.IGNORE_UNORDER_LIST_3) || line.startsWith(SyntaxKey.IGNORE_UNORDER_LIST_4) || line.startsWith(SyntaxKey.IGNORE_UNORDER_LIST_5)) {
             list.add(new ListBean(currentLinePosition, line, 0, 0));
@@ -208,11 +218,11 @@ public class ListSyntax implements Syntax {
         }
     }
 
-    private static MDBaseListSpan setUnorderSpan(int nested, int start, @NonNull String line, int type, @NonNull SpannableStringBuilder ssb, int color) {
-        ssb.delete(start, start + nested * SyntaxKey.KEY_LIST_HEADER.length() + START_POSITION);
-        MDUnOrderListSpan span = new MDUnOrderListSpan(10, color, nested, type);
+    private static MDBaseListSpan setUnorderSpan(ListBean bean, @NonNull SpannableStringBuilder ssb, int color) {
+        ssb.delete(bean.start, bean.start + bean.nested * SyntaxKey.KEY_LIST_HEADER.length() + START_POSITION);
+        MDUnOrderListSpan span = new MDUnOrderListSpan(10, color, bean.nested, bean.type);
         ssb.setSpan(span,
-                start, start + line.length() - (nested * SyntaxKey.KEY_LIST_HEADER.length() + START_POSITION),
+                bean.start, bean.start + bean.line.length() - (bean.nested * SyntaxKey.KEY_LIST_HEADER.length() + START_POSITION),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return span;
     }
@@ -262,9 +272,9 @@ public class ListSyntax implements Syntax {
             if (bean != null && bean.number != -2) {
                 MDBaseListSpan span;
                 if (bean.isOrder) {
-                    span = setOrderSpan(bean.nested, bean.start, bean.line, ssb, bean.number, bean.originalNumber);
+                    span = setOrderSpan(bean, ssb);
                 } else {
-                    span = setUnorderSpan(bean.nested, bean.start, bean.line, bean.type, ssb, mUnorderColor);
+                    span = setUnorderSpan(bean, ssb, mUnorderColor);
                 }
                 listSpanByLineArray.put(i, span);
             }
@@ -313,7 +323,7 @@ public class ListSyntax implements Syntax {
             this.line = line;
             this.nested = nested;
             this.isOrder = false;
-            this.number = -2;
+            this.number = -1;
             this.originalNumber = -1;
             this.type = type;
         }

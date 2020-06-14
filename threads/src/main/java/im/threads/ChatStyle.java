@@ -770,10 +770,4 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    // Пока используем маркдаун только для входящих сообщений выключили, так как тормозит отрисовка
-    private ChatStyle setOutgoingMarkdownConfiguration(MarkdownConfiguration outgoing) {
-        this.outgoingMarkdownConfiguration = outgoing;
-        return this;
-    }
-
 }
