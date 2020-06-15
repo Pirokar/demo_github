@@ -1,7 +1,8 @@
 package im.threads.internal.transport;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -66,7 +67,7 @@ public final class HistoryParser {
                 boolean sex = false;
                 String orgUnit = null;
                 if (operator != null) {
-                    name = !TextUtils.isEmpty(operator.getName()) ? operator.getName() : null;
+                    name = operator.getAliasOrName();
                     photoUrl = !TextUtils.isEmpty(operator.getPhotoUrl()) ? operator.getPhotoUrl() : null;
                     operatorId = operator.getId() != null ? String.valueOf(operator.getId()) : null;
                     sex = Operator.Gender.MALE.equals(operator.getGender());
@@ -102,8 +103,8 @@ public final class HistoryParser {
                         if (quote != null && quote.getFileDescription() != null)
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
-                            out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, timeStamp,
-                                    operatorId, photoUrl, message.isRead(), null, false));
+                            out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, message.getFormattedText(), timeStamp,
+                                    operatorId, photoUrl, message.isRead(), null, false, message.getQuickReplies()));
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
@@ -168,7 +169,7 @@ public final class HistoryParser {
                 quoteFileDescription = fileDescriptionFromList(quoteFromHistory.getAttachments());
             }
             if (quoteFromHistory.getOperator() != null) {
-                authorName = quoteFromHistory.getOperator().getName();
+                authorName = quoteFromHistory.getOperator().getAliasOrName();
             } else {
                 authorName = Config.instance.context.getString(R.string.threads_I);
             }

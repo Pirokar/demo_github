@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public final class UpcomingUserMessage {
     @Nullable

@@ -1,12 +1,12 @@
 package im.threads.internal.adapters;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.internal.holders.BottomGalleryImageHolder;
 import im.threads.internal.model.BottomGalleryItem;
 

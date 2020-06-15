@@ -1,7 +1,7 @@
 package im.threads.internal.transport;
 
-import android.arch.lifecycle.Lifecycle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 
 import im.threads.ConfigBuilder;
 import im.threads.internal.model.ConsultInfo;

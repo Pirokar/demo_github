@@ -15,8 +15,10 @@ public final class MessageFromHistory implements ChatItem {
     private String receivedDate;
     private Channel channel;
     private boolean read;
+    private String formattedText;
     private String text;
     private List<Attachment> attachments;
+    private List<QuickReply> quickReplies;
     private List<MessageFromHistory> quotes;
     private String type;
     private boolean display;
@@ -103,6 +105,14 @@ public final class MessageFromHistory implements ChatItem {
         this.read = read;
     }
 
+    public String getFormattedText() {
+        return formattedText;
+    }
+
+    public void setFormattedText(String formattedText) {
+        this.formattedText = formattedText;
+    }
+
     public String getText() {
         return text;
     }
@@ -117,6 +127,14 @@ public final class MessageFromHistory implements ChatItem {
 
     public void setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public List<QuickReply> getQuickReplies() {
+        return quickReplies;
+    }
+
+    public void setQuickReplies(List<QuickReply> quickReplies) {
+        this.quickReplies = quickReplies;
     }
 
     public List<MessageFromHistory> getQuotes() {

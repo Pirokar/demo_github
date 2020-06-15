@@ -10,17 +10,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-public abstract class FileDownloader {
+public class FileDownloader {
     private static final String TAG = "FileDownloader ";
     private String path;
-    private String fileName;
-    private Context ctx;
+    private File outputFile;
     private boolean isStopped;
 
-    protected FileDownloader(String path, String filename, Context ctx) {
+    private DownloadLister downloadLister;
+
+    public FileDownloader(String path, String fileName, Context ctx, DownloadLister downloadLister) {
         this.path = path;
-        this.ctx = ctx;
-        this.fileName = filename;
+        outputFile = new File(getDownloadDir(ctx), fileName);
+        this.downloadLister = downloadLister;
     }
 
     public void stop() {
@@ -39,7 +40,6 @@ public abstract class FileDownloader {
                 urlConnection.setConnectTimeout(15000);
                 urlConnection.setReadTimeout(15000);
 
-                File outputFile = new File(getDownloadDir(ctx), fileName);
 
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
                 List values = urlConnection.getHeaderFields().get("Content-Length");
@@ -52,31 +52,41 @@ public abstract class FileDownloader {
                     ThreadsLogger.e(TAG, "download", e);
                 }
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                int len1 = 0;
+                int len1;
                 long bytesReaded = 0;
                 long lastReadTime = System.currentTimeMillis();
-                final byte buffer[] = new byte[1024 * 8];
+                final byte[] buffer = new byte[1024 * 8];
                 while ((len1 = in.read(buffer)) > 0 && !isStopped) {
                     fileOutputStream.write(buffer, 0, len1);
                     bytesReaded += len1;
                     if (length != null && (System.currentTimeMillis() > (lastReadTime + 500))) {
                         int progress = (int) Math.floor((((double) bytesReaded) / ((double) length)) * 100.0);
                         lastReadTime = System.currentTimeMillis();
-                        onProgress(progress);
+                        if (downloadLister != null) {
+                            downloadLister.onProgress(progress);
+                        }
                     }
                 }
                 fileOutputStream.flush();
                 fileOutputStream.close();
-                if (!isStopped) onComplete(outputFile);
+                if (!isStopped) {
+                    if (downloadLister != null) {
+                        downloadLister.onComplete(outputFile);
+                    }
+                }
             } catch (Exception e) {
                 ThreadsLogger.e(TAG, "1 ", e);
-                onFileDonwloaderError(e);
+                if (downloadLister != null) {
+                    downloadLister.onFileDownloadError(e);
+                }
             } finally {
                 urlConnection.disconnect();
             }
         } catch (Exception e) {
             ThreadsLogger.e(TAG, "2 ", e);
-            onFileDonwloaderError(e);
+            if (downloadLister != null) {
+                downloadLister.onFileDownloadError(e);
+            }
         }
     }
 
@@ -84,9 +94,12 @@ public abstract class FileDownloader {
         return ctx.getFilesDir();
     }
 
-    public abstract void onProgress(double progress);
+    public interface DownloadLister {
+        void onProgress(double progress);
 
-    public abstract void onComplete(File file);
+        void onComplete(File file);
 
-    public abstract void onFileDonwloaderError(Exception e);
+        void onFileDownloadError(Exception e);
+
+    }
 }

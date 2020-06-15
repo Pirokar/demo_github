@@ -1,34 +1,30 @@
 package im.threads.internal.database;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import im.threads.ThreadsLib;
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.utils.ThreadsLogger;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public final class DatabaseHolder {
-    private static final String TAG = DatabaseHolder.class.getSimpleName();
 
     private static DatabaseHolder instance;
-    private final MyOpenHelper mMyOpenHelper;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ThreadsDbHelper mMyOpenHelper;
+
+    private DatabaseHolder() {
+        mMyOpenHelper = new ThreadsDbHelper(Config.instance.context);
+    }
 
     @NonNull
     public static DatabaseHolder getInstance() {
@@ -38,6 +34,8 @@ public final class DatabaseHolder {
         return instance;
     }
 
+    // ChatItems
+
     /**
      * Nullify instance. For Autotests purposes
      */
@@ -45,41 +43,12 @@ public final class DatabaseHolder {
         instance = null;
     }
 
-    private DatabaseHolder() {
-        mMyOpenHelper = new MyOpenHelper(Config.instance.context);
-    }
-
-    /**
-     * For Autotests purposes
-     *
-     * @return MyOpenHelper instance
-     */
-    MyOpenHelper getMyOpenHelper() {
-        return mMyOpenHelper;
+    public void cleanDatabase() {
+        mMyOpenHelper.cleanDatabase();
     }
 
     public List<ChatItem> getChatItems(int offset, int limit) {
         return mMyOpenHelper.getChatItems(offset, limit);
-    }
-
-    public List<UserPhrase> getUnsendUserPhrase(int count) {
-        List<UserPhrase> userPhrases = new ArrayList<>();
-        List<ChatItem> chatItems = mMyOpenHelper.getChatItems(0, count);
-        for (ChatItem chatItem : chatItems) {
-            if (chatItem instanceof UserPhrase) {
-                if (((UserPhrase) chatItem).getSentState() == MessageState.STATE_NOT_SENT) {
-                    userPhrases.add((UserPhrase) chatItem);
-                }
-            }
-        }
-        return userPhrases;
-    }
-
-    public void getLastConsultPhrase(final CompletionHandler<ConsultPhrase> handler) {
-        executorService.execute(() -> {
-            ConsultPhrase cp = mMyOpenHelper.getLastConsultPhrase();
-            handler.onComplete(cp);
-        });
     }
 
     @Nullable
@@ -87,9 +56,25 @@ public final class DatabaseHolder {
         return mMyOpenHelper.getChatItem(messageUuid);
     }
 
-    @Nullable
-    public Survey getSurvey(long sendingId) {
-        return mMyOpenHelper.getSurvey(sendingId);
+    public void putChatItems(final List<ChatItem> items) {
+        mMyOpenHelper.putChatItems(items);
+    }
+
+    public boolean putChatItem(ChatItem chatItem) {
+        return mMyOpenHelper.putChatItem(chatItem);
+    }
+
+    // FileDescriptions
+
+    public Single<List<FileDescription>> getAllFileDescriptions() {
+        return Single.fromCallable(mMyOpenHelper::getAllFileDescriptions)
+                .subscribeOn(Schedulers.io());
+    }
+
+    // UserPhrase
+
+    public void updateFileDescription(@NonNull FileDescription fileDescription) {
+        mMyOpenHelper.updateFileDescription(fileDescription);
     }
 
     @Nullable
@@ -97,71 +82,58 @@ public final class DatabaseHolder {
         return mMyOpenHelper.getLastConsultInfo(id);
     }
 
-    public List<String> getUnreadMessagesProviderIds() {
-        return mMyOpenHelper.getUnreadMessagesProviderIds();
+    public List<UserPhrase> getUnsendUserPhrase(int count) {
+        return mMyOpenHelper.getUnsendUserPhrase(count);
     }
 
-    public int getMessagesCount() {
-        return mMyOpenHelper.getMessagesCount();
-    }
+    // ConsultPhrase
 
-    // let the DB time to write the incoming message
-    public void getUnreadMessagesCount(boolean immediate, @NonNull final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
-        if (immediate) {
-            getUnreadMessagesCount(unreadMessagesCountListener);
-        } else {
-            final Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed(() -> getUnreadMessagesCount(unreadMessagesCountListener), 1000);
-        }
-    }
-
-    public void putMessagesSync(final List<ChatItem> items) {
-        try {
-            mMyOpenHelper.getWritableDatabase().beginTransaction();
-            for (ChatItem item : items) {
-                mMyOpenHelper.putChatItem(item);
-            }
-            mMyOpenHelper.getWritableDatabase().setTransactionSuccessful();
-        } catch (Exception e) {
-            ThreadsLogger.e(TAG, "putMessagesSync", e);
-        } finally {
-            mMyOpenHelper.getWritableDatabase().endTransaction();
-        }
-    }
-
-    public boolean putChatItem(ChatItem chatItem) {
-        return mMyOpenHelper.putChatItem(chatItem);
-    }
-
-    @WorkerThread
     public void setStateOfUserPhraseByProviderId(String providerId, MessageState messageState) {
         mMyOpenHelper.setUserPhraseStateByProviderId(providerId, messageState);
     }
 
-    public void setAllConsultMessagesWereRead(final CompletionHandler<Void> handler) {
-        executorService.execute(() -> {
-            mMyOpenHelper.setAllConsultMessagesWereRead();
-            handler.onComplete(null);
-        });
+    public Single<ConsultPhrase> getLastConsultPhrase() {
+        return Single.fromCallable(mMyOpenHelper::getLastConsultPhrase)
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Completable setAllConsultMessagesWereRead() {
+        return Completable.fromCallable(mMyOpenHelper::setAllConsultMessagesWereRead)
+                .subscribeOn(Schedulers.io());
     }
 
     public void setConsultMessageWasRead(String providerId) {
         mMyOpenHelper.setConsultMessageWasRead(providerId);
     }
 
-    public void getAllFileDescriptions(final CompletionHandler<List<FileDescription>> handler) {
-        executorService.execute(() -> handler.onComplete(mMyOpenHelper.getAllFileDescriptions()));
+    // Survey
+    @Nullable
+    public Survey getSurvey(long sendingId) {
+        return mMyOpenHelper.getSurvey(sendingId);
     }
 
-    public void updateFileDescription(@NonNull FileDescription fileDescription) {
-        mMyOpenHelper.updateFileDescription(fileDescription);
+    // Messages
+    public int getMessagesCount() {
+        return mMyOpenHelper.getMessagesCount();
     }
 
-    public void cleanDatabase() {
-        mMyOpenHelper.cleanDatabase();
+    // let the DB time to write the incoming message
+    public int getUnreadMessagesCount() {
+        return mMyOpenHelper.getUnreadMessagesCount();
     }
 
-    private void getUnreadMessagesCount(@NonNull final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener) {
-        unreadMessagesCountListener.onUnreadMessagesCountChanged(mMyOpenHelper.getUnreadMessagesCount());
+    public List<String> getUnreadMessagesProviderIds() {
+        return mMyOpenHelper.getUnreadMessagesProviderIds();
     }
+
+    /**
+     * For Autotests purposes
+     *
+     * @return MyOpenHelper instance
+     */
+    ThreadsDbHelper getMyOpenHelper() {
+        return mMyOpenHelper;
+    }
+
+
 }

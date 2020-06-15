@@ -2,13 +2,16 @@ package im.threads.internal.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -19,7 +22,6 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 
 public final class FileAndMediaViewHolder extends BaseHolder {
@@ -44,24 +46,16 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         timeStampTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
     }
 
-    public void onBind(
-            FileDescription fileDescription
-            , View.OnClickListener fileClickListener) {
-        int extension = FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.UNKNOWN ?
-                FileUtils.getExtensionFromPath(fileDescription.getIncomingName())
-                : FileUtils.getExtensionFromPath(fileDescription.getFilePath());
-        Picasso p = Picasso.with(itemView.getContext());
-        if (extension == FileUtils.PDF || extension == FileUtils.OTHER_DOC_FORMATS) {
-            mImageButton.setImageDrawable(tintedDrawable);
-        } else if (extension == FileUtils.JPEG || extension == FileUtils.PNG) {
+    public void onBind(FileDescription fileDescription, View.OnClickListener fileClickListener) {
+        if (FileUtils.isImage(fileDescription)) {
             if (fileDescription.getFilePath() != null) {
-                p
+                Picasso.get()
                         .load(new File(fileDescription.getFilePath()))
                         .fit()
                         .centerInside()
                         .into(mImageButton);
             } else if (fileDescription.getDownloadPath() != null) {
-                p
+                Picasso.get()
                         .load(fileDescription.getDownloadPath())
                         .fit()
                         .centerInside()

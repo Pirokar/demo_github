@@ -1,9 +1,10 @@
 package im.threads.internal;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 
@@ -57,7 +58,7 @@ public final class Config {
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
-        this.transport = getTransport(isDebugLoggingEnabled);
+        this.transport = getTransport();
     }
 
     public void applyChatStyle(ChatStyle chatStyle) {
@@ -83,7 +84,7 @@ public final class Config {
         return localInstance;
     }
 
-    private Transport getTransport(boolean isDebugLoggingEnabled) {
+    private Transport getTransport() {
         ConfigBuilder.TransportType transportType = ConfigBuilder.TransportType.MFMS_PUSH;
         String transportTypeValue = MetaDataUtils.getThreadsTransportType(this.context);
         if (!TextUtils.isEmpty(transportTypeValue)) {
@@ -104,7 +105,7 @@ public final class Config {
             if (TextUtils.isEmpty(threadsGateProviderUid)) {
                 throw new MetaConfigurationException("Threads gate provider uid is not set");
             }
-            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, isDebugLoggingEnabled);
+            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid);
         }
         return new MFMSPushTransport();
     }

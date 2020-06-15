@@ -8,11 +8,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -23,10 +18,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Picasso;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.view.ChatFragment;
@@ -73,7 +75,7 @@ public final class ConsultActivity extends BaseActivity {
         String moto = i.getStringExtra("moto");
         if (!TextUtils.isEmpty(imagePath)) {
             imagePath = FileUtils.convertRelativeUrlToAbsolute(imagePath);
-            Picasso.with(this)
+            Picasso.get()
                     .load(imagePath)
                     .into(mConsultImageView);
         }
@@ -125,7 +127,7 @@ public final class ConsultActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.threads_menu_main, menu);
         return true;
     }
 

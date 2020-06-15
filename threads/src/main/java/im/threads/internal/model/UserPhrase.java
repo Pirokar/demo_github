@@ -1,15 +1,15 @@
 package im.threads.internal.model;
 
-import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
 
 import java.util.List;
 import java.util.UUID;
 
+import androidx.core.util.ObjectsCompat;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
 
-public final class UserPhrase implements ChatPhrase, IsOnlyImage {
+public final class UserPhrase implements ChatPhrase {
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
     private List<String> providerIds;
@@ -52,12 +52,6 @@ public final class UserPhrase implements ChatPhrase, IsOnlyImage {
 
     public void setCopy(boolean copy) {
         isCopy = copy;
-    }
-
-    public boolean hasFile() {
-        return fileDescription != null
-                || (mQuote != null
-                && mQuote.getFileDescription() != null);
     }
 
     @Override
@@ -172,6 +166,16 @@ public final class UserPhrase implements ChatPhrase, IsOnlyImage {
         return TextUtils.isEmpty(phrase)
                 && mQuote == null
                 && FileUtils.isImage(fileDescription);
+    }
+
+    public boolean isOnlyDoc() {
+        return TextUtils.isEmpty(phrase) && FileUtils.isDoc(fileDescription);
+    }
+
+    public boolean hasFile() {
+        return fileDescription != null
+                || (mQuote != null
+                && mQuote.getFileDescription() != null);
     }
 
     @Override

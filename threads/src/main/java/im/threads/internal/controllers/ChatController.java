@@ -7,11 +7,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +24,6 @@ import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.R;
-import im.threads.ThreadsLib;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
 import im.threads.internal.activities.ImagesActivity;
@@ -32,7 +34,6 @@ import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.ConsultChatPhrase;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
@@ -42,16 +43,17 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Hidable;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
+import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.services.DownloadService;
+import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.services.NotificationService;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
-import im.threads.internal.utils.Callback;
 import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ConsultWriter;
 import im.threads.internal.utils.DeviceInfoHelper;
@@ -79,13 +81,11 @@ import io.reactivex.schedulers.Schedulers;
  * don't forget to unbindFragment() in ChatFragment onDestroy, to avoid leaks;
  */
 public final class ChatController {
-    private static final String TAG = "ChatController ";
-
     // Состояния консультанта
     public static final int CONSULT_STATE_FOUND = 1;
     public static final int CONSULT_STATE_SEARCHING = 2;
     public static final int CONSULT_STATE_DEFAULT = 3;
-
+    private static final String TAG = "ChatController ";
     private static final int PER_PAGE_COUNT = 100;
 
     private static final int RESEND_MSG = 123;
@@ -93,8 +93,6 @@ public final class ChatController {
     private static ChatController instance;
 
     private final PublishProcessor<Survey> surveyCompletionProcessor = PublishProcessor.create();
-    private boolean surveyCompletionInProgress = false;
-
     @NonNull
     private final Context appContext;
     @NonNull
@@ -103,14 +101,12 @@ public final class ChatController {
     private final DatabaseHolder databaseHolder;
     @NonNull
     private final ConsultWriter consultWriter;
-
+    private boolean surveyCompletionInProgress = false;
     // Ссылка на фрагмент, которым управляет контроллер
     private ChatFragment fragment;
 
     // Для приема сообщений из сервиса по скачиванию файлов
     private ProgressReceiver progressReceiver;
-    // Было получено сообщение, что чат не работает
-    private boolean isChatWorking;
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean isResolveRequestVisible;
 
@@ -119,44 +115,26 @@ public final class ChatController {
     private Long lastMessageTimestamp;
     private boolean isActive;
     private List<ChatItem> lastItems = new ArrayList<>();
+
+    // TODO: вынести в отдельный класс поиск сообщений
     private Seeker seeker = new Seeker();
     private long lastFancySearchDate = 0;
     private String lastSearchQuery = "";
     private boolean isAllMessagesDownloaded = false;
     private boolean isDownloadingMessages;
+
+    // TODO: вынести в отдельный класс отправку сообщений
     private List<UserPhrase> unsendMessages = new ArrayList<>();
     private int resendTimeInterval;
     private List<UserPhrase> sendQueue = new ArrayList<>();
-
     private Handler unsendMessageHandler;
     private String firstUnreadProviderId;
 
-    private CompositeDisposable compositeDisposable;
+    // На основе этих переменных определяется возможность отправки сообщений в чат
+    private ScheduleInfo currentScheduleInfo;
+    private boolean hasQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
 
-    public static ChatController getInstance() {
-        if (instance == null) {
-            instance = new ChatController();
-        }
-        String newClientId = PrefUtils.getNewClientID();
-        String oldClientId = PrefUtils.getClientID();
-        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
-        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
-            // clientId has not changed
-            PrefUtils.setNewClientId("");
-        } else {
-            PrefUtils.setClientId(newClientId);
-            instance.subscribe(
-                    Completable.fromAction(() -> instance.onClientIdChanged())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(
-                                    () -> {
-                                    },
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
-                            )
-            );
-        }
-        return instance;
-    }
+    private CompositeDisposable compositeDisposable;
 
     private ChatController() {
         appContext = Config.instance.context;
@@ -196,6 +174,35 @@ public final class ChatController {
         );
     }
 
+    public static ChatController getInstance() {
+        if (instance == null) {
+            instance = new ChatController();
+        }
+        initClientId();
+        return instance;
+    }
+
+    private static void initClientId() {
+        String newClientId = PrefUtils.getNewClientID();
+        String oldClientId = PrefUtils.getClientID();
+        ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
+        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
+            // clientId has not changed
+            PrefUtils.setNewClientId("");
+        } else {
+            PrefUtils.setClientId(newClientId);
+            instance.subscribe(
+                    Completable.fromAction(() -> instance.onClientIdChanged())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    () -> {
+                                    },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
+        }
+    }
+
     public void onRatingClick(@NonNull final Survey survey) {
 //        final ChatItem chatItem = convertRatingItem(survey); //TODO THREADS-3395 Figure out what is this for
         if (!surveyCompletionInProgress) {
@@ -225,12 +232,6 @@ public final class ChatController {
         removeActiveSurvey();
         final UserPhrase um = convert(upcomingUserMessage);
         addMessage(um);
-        if (isChatWorking && !consultWriter.isConsultConnected()) {
-            if (fragment != null) {
-                fragment.setStateSearchingConsult();
-            }
-            consultWriter.setSearchingConsult(true);
-        }
         queueMessageSending(um);
     }
 
@@ -279,20 +280,14 @@ public final class ChatController {
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-
                 if (fileDescription.getFilePath() == null) {
-                    DownloadService.startDownloadFD(activity, fileDescription);
-                } else if (FileUtils.isImage(fileDescription) && fileDescription.getFilePath() != null) {
+                    FileDownloadService.startDownloadFD(activity, fileDescription);
+                } else if (FileUtils.isImage(fileDescription)) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
-
-                } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
+                } else if (FileUtils.isDoc(fileDescription)) {
                     final Intent target = new Intent(Intent.ACTION_VIEW);
-
                     final File file = new File(fileDescription.getFilePath());
-
-                    target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
-                            "application/pdf"
-                    );
+                    target.setDataAndType(FileProviderHelper.getUriForFile(activity, file), FileUtils.getMimeType(file));
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     try {
                         activity.startActivity(target);
@@ -341,53 +336,40 @@ public final class ChatController {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(aLong -> {
                                 appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-                                notifyUnreadMessagesCountChanged();
+                                UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                             })
             );
         }
     }
 
-    public void requestItems(final Callback<List<ChatItem>, Throwable> callback) {
+    public Observable<List<ChatItem>> requestItems() {
         ThreadsLogger.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet());
-        if (!PrefUtils.isClientIdNotEmpty()) {
-            callback.onSuccess(new ArrayList<>());
-            return;
-        }
-        if (instance.fragment != null) {
-            subscribe(
-                    Single.fromCallable(() -> {
-                        final int[] currentOffset = {instance.fragment.getCurrentItemsCount()};
+        return Observable
+                .fromCallable(() -> {
+                    if (instance.fragment != null && PrefUtils.isClientIdNotEmpty()) {
+                        int currentOffset = instance.fragment.getCurrentItemsCount();
                         int count = Config.instance.historyLoadingCount;
                         try {
                             final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                             count = serverItems.size();
-                            databaseHolder.putMessagesSync(serverItems);
-                            final List<ChatItem> chatItems = setLastAvatars(databaseHolder.getChatItems(currentOffset[0], count));
-                            currentOffset[0] += chatItems.size();
-                            return chatItems;
+                            saveMessages(serverItems);
+                            return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         } catch (final Exception e) {
                             ThreadsLogger.e(TAG, "requestItems", e);
-                            final List<ChatItem> chatItems = setLastAvatars(databaseHolder.getChatItems(currentOffset[0], count));
-                            currentOffset[0] += chatItems.size();
-                            return chatItems;
+                            return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         }
-                    })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    callback::onSuccess,
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
-                            )
-            );
-        }
+                    }
+                    return new ArrayList<ChatItem>();
+                })
+                .subscribeOn(Schedulers.io());
     }
 
     public void onImageDownloadRequest(final FileDescription fileDescription) {
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-                DownloadService.startDownloadWithNoStop(activity, fileDescription);
+                FileDownloadService.startDownloadWithNoStop(activity, fileDescription);
             }
         }
     }
@@ -410,7 +392,7 @@ public final class ChatController {
     }
 
     public int getStateOfConsult() {
-        if (consultWriter.istSearchingConsult()) {
+        if (consultWriter.isSearchingConsult()) {
             return CONSULT_STATE_SEARCHING;
         } else if (consultWriter.isConsultConnected()) {
             return CONSULT_STATE_FOUND;
@@ -420,7 +402,7 @@ public final class ChatController {
     }
 
     public boolean isConsultFound() {
-        return isChatWorking && consultWriter.isConsultConnected();
+        return isChatWorking() && consultWriter.isConsultConnected();
     }
 
     public ConsultInfo getCurrentConsultInfo() {
@@ -432,13 +414,13 @@ public final class ChatController {
     }
 
     public void bindFragment(final ChatFragment f) {
-        ThreadsLogger.i(TAG, "bindFragment:");
+        ThreadsLogger.i(TAG, "bindFragment: " + f.toString());
         final Activity activity = f.getActivity();
         if (activity == null) {
             return;
         }
         fragment = f;
-        if (consultWriter.istSearchingConsult()) {
+        if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         }
         Config.instance.transport.setLifecycle(fragment.getLifecycle());
@@ -456,9 +438,10 @@ public final class ChatController {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                items -> {
+                                chatItems -> {
                                     if (fragment != null) {
-                                        fragment.addChatItems(items);
+                                        fragment.addChatItems(chatItems);
+                                        handleQuickReplies(chatItems);
                                         loadHistory();
                                     }
                                 },
@@ -467,7 +450,7 @@ public final class ChatController {
         );
         if (consultWriter.isConsultConnected()) {
             fragment.setStateConsultConnected(consultWriter.getCurrentConsultInfo());
-        } else if (consultWriter.istSearchingConsult()) {
+        } else if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         } else {
             fragment.setTitleStateDefault();
@@ -477,35 +460,17 @@ public final class ChatController {
         intentFilter.addAction(ProgressReceiver.PROGRESS_BROADCAST);
         intentFilter.addAction(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST);
         intentFilter.addAction(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST);
-        activity.registerReceiver(progressReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(activity).registerReceiver(progressReceiver, intentFilter);
     }
 
     public void unbindFragment() {
         if (fragment != null) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-                activity.unregisterReceiver(progressReceiver);
+                LocalBroadcastManager.getInstance(activity).unregisterReceiver(progressReceiver);
             }
         }
         fragment = null;
-    }
-
-    /**
-     * Оповещает об изменении количества непрочитанных сообщений.
-     * Срабатывает при показе пуш уведомления в Статус Баре и
-     * при прочтении сообщений.
-     * Все места, где срабатывает прочтение сообщений, можно найти по
-     * NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ.
-     * Данный тип сообщения отправляется в Сервис пуш уведомлений при прочтении сообщений.
-     * <p>
-     * Можно было бы поместить оповещение в точку прихода NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ,
-     * но иногда в этот момент в сообщения еще не помечены, как прочитанные.
-     */
-    private void notifyUnreadMessagesCountChanged() {
-        ThreadsLib.UnreadMessagesCountListener l = Config.instance.unreadMessagesCountListener;
-        if (l != null) {
-            DatabaseHolder.getInstance().getUnreadMessagesCount(false, l);
-        }
     }
 
     private boolean subscribe(final Disposable event) {
@@ -527,19 +492,15 @@ public final class ChatController {
 
     void setAllMessagesWereRead() {
         appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-        DatabaseHolder.getInstance().setAllConsultMessagesWereRead(new CompletionHandler<Void>() {
-            @Override
-            public void onComplete(final Void data) {
-                notifyUnreadMessagesCountChanged();
-            }
-
-            @Override
-            public void onError(final Throwable e, final String message, final Void data) {
-            }
-        });
+        subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereRead()
+                .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount));
         if (fragment != null) {
             fragment.setAllMessagesWereRead();
         }
+    }
+
+    private boolean isChatWorking() {
+        return currentScheduleInfo == null || currentScheduleInfo.isChatWorking();
     }
 
     private void onClientIdChanged() throws Exception {
@@ -550,10 +511,11 @@ public final class ChatController {
         consultWriter.setCurrentConsultLeft();
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-        databaseHolder.putMessagesSync(serverItems);
-        final List<ChatItem> phrases = setLastAvatars(serverItems);
+        saveMessages(serverItems);
+        final List<ChatItem> chatItems = setLastAvatars(serverItems);
         if (fragment != null) {
-            fragment.addChatItems(phrases);
+            fragment.addChatItems(chatItems);
+            handleQuickReplies(chatItems);
             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
             if (info != null) {
                 fragment.setStateConsultConnected(info);
@@ -563,6 +525,7 @@ public final class ChatController {
     }
 
     private void updateUi() {
+        ThreadsLogger.i(TAG, "updateUi");
         if (fragment != null) {
             fragment.updateUi();
         }
@@ -584,7 +547,7 @@ public final class ChatController {
                         final int count = Config.instance.historyLoadingCount;
                         final HistoryResponse response = HistoryLoader.getHistorySync(count, true);
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        databaseHolder.putMessagesSync(serverItems);
+                        saveMessages(serverItems);
                         if (fragment != null && isActive) {
                             final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                             if (unreadProviderIds != null) {
@@ -593,19 +556,19 @@ public final class ChatController {
                                 }
                             }
                         }
-                        return response;
+                        return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
                     })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    response -> {
+                                    pair -> {
                                         isDownloadingMessages = false;
-                                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                                        final int serverCount = serverItems.size();
+                                        final int serverCount = pair.second == null ? 0 : pair.second;
                                         final List<ChatItem> items = setLastAvatars(databaseHolder.getChatItems(0, serverCount));
                                         if (fragment != null) {
                                             fragment.addChatItems(items);
-                                            final ConsultInfo info = response != null ? response.getConsultInfo() : null;
+                                            handleQuickReplies(items);
+                                            final ConsultInfo info = pair.first;
                                             if (info != null) {
                                                 fragment.setStateConsultConnected(info);
                                             }
@@ -641,6 +604,7 @@ public final class ChatController {
     }
 
     private void sendMessage(final UserPhrase userPhrase) {
+        ThreadsLogger.i(TAG, "sendMessage: " + userPhrase);
         ConsultInfo consultInfo = null;
         if (null != userPhrase.getQuote() && userPhrase.getQuote().isFromConsult()) {
             final String id = userPhrase.getQuote().getQuotedPhraseConsultId();
@@ -654,10 +618,12 @@ public final class ChatController {
     }
 
     private void sendTextMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
+        ThreadsLogger.i(TAG, "sendTextMessage: " + userPhrase + ", " + consultInfo);
         Config.instance.transport.sendMessage(userPhrase, consultInfo, null, null);
     }
 
     private void sendFileMessage(final UserPhrase userPhrase, final ConsultInfo consultInfo) {
+        ThreadsLogger.i(TAG, "sendFileMessage: " + userPhrase + ", " + consultInfo);
         final FileDescription fileDescription = userPhrase.getFileDescription();
         final FileDescription quoteFileDescription = userPhrase.getQuote() != null ? userPhrase.getQuote().getFileDescription() : null;
         subscribe(
@@ -695,6 +661,7 @@ public final class ChatController {
         subscribeToSurveySendSuccess();
         subscribeToRemoveChatItem();
         subscribeToDeviceAddressChanged();
+        subscribeToQuickReplies();
     }
 
     private void subscribeToTyping() {
@@ -754,9 +721,8 @@ public final class ChatController {
                                 isResolveRequestVisible = true;
                             }
                             if (chatItem instanceof ScheduleInfo) {
-                                final ScheduleInfo schedule = (ScheduleInfo) chatItem;
-                                isChatWorking = schedule.isChatWorking();
-                                updateInputEnable(isChatWorking || schedule.isSendDuringInactive());
+                                currentScheduleInfo = (ScheduleInfo) chatItem;
+                                refreshUserInputState();
                                 consultWriter.setSearchingConsult(false);
                                 if (fragment != null) {
                                     fragment.removeSearching();
@@ -781,10 +747,17 @@ public final class ChatController {
                                     }
                                 } else {
                                     consultWriter.setCurrentConsultLeft();
-                                    if (fragment != null) {
+                                    if (fragment != null && !consultWriter.isSearchingConsult()) {
                                         fragment.setTitleStateDefault();
                                     }
                                 }
+                            }
+                            if (chatItem instanceof SearchingConsult) {
+                                if (fragment != null) {
+                                    fragment.setStateSearchingConsult();
+                                }
+                                consultWriter.setSearchingConsult(true);
+                                return;
                             }
                             addMessage(chatItem);
                         })
@@ -800,7 +773,8 @@ public final class ChatController {
                                     if (hidable instanceof RequestResolveThread) {
                                         removeResolveRequest();
                                     }
-                                }
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
         );
     }
@@ -916,16 +890,28 @@ public final class ChatController {
         );
     }
 
+    private void subscribeToQuickReplies() {
+        subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
+                .subscribe(quickReplies -> {
+                    hasQuickReplies = !quickReplies.isEmpty();
+                    refreshUserInputState();
+                }));
+
+    }
+
     private void removeResolveRequest() {
+        ThreadsLogger.i(TAG, "removeResolveRequest");
         if (isResolveRequestVisible && fragment != null) {
             if (fragment.removeResolveRequest()) {
                 updateUi();
             }
             isResolveRequestVisible = false;
         }
+        ThreadsLogger.i(TAG, "removeResolveRequest: " + isResolveRequestVisible);
     }
 
     private void removeActiveSurvey() {
+        ThreadsLogger.i(TAG, "removeActiveSurvey");
         if (activeSurvey != null && fragment != null) {
             final boolean removed = fragment.removeSurvey(activeSurvey.getSendingId());
             if (removed) {
@@ -936,6 +922,7 @@ public final class ChatController {
     }
 
     private void resetActiveSurvey() {
+        ThreadsLogger.i(TAG, "resetActiveSurvey");
         activeSurvey = null;
     }
 
@@ -966,7 +953,7 @@ public final class ChatController {
                         } else {
                             lastMessageTimestamp = serverItems.get(0).getTimeStamp();
                             isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                            databaseHolder.putMessagesSync(serverItems);
+                            saveMessages(serverItems);
                             isDownloadingMessages = false;
                             if (!isAllMessagesDownloaded) {
                                 downloadMessagesTillEnd();
@@ -984,10 +971,14 @@ public final class ChatController {
         }
     }
 
-    private void addMessage(final ChatItem cm) {
-        databaseHolder.putChatItem(cm);
+    /*
+    Вызывается когда получено новое сообщение из канала (TG/PUSH)
+     */
+    private void addMessage(final ChatItem chatItem) {
+        ThreadsLogger.i(TAG, "addMessage: " + chatItem);
+        databaseHolder.putChatItem(chatItem);
         if (fragment != null) {
-            final ChatItem ci = setLastAvatars(Collections.singletonList(cm)).get(0);
+            final ChatItem ci = setLastAvatars(Collections.singletonList(chatItem)).get(0);
             if (!(ci instanceof ConsultConnectionMessage) || ((ConsultConnectionMessage) ci).isDisplayMessage()) {
                 fragment.addChatItem(ci);
             }
@@ -995,9 +986,10 @@ public final class ChatController {
                 fragment.notifyConsultAvatarChanged(((ConsultChatPhrase) ci).getAvatarPath(), ((ConsultChatPhrase) ci).getConsultId());
             }
         }
-        if (cm instanceof ConsultPhrase && isActive) {
-            final String providerId = ((ConsultPhrase) cm).getProviderId();
-            Config.instance.transport.sendMessageRead(providerId);
+        if (chatItem instanceof ConsultPhrase && isActive) {
+            ConsultPhrase consultPhrase = (ConsultPhrase) chatItem;
+            handleQuickReplies(Collections.singletonList(consultPhrase));
+            Config.instance.transport.sendMessageRead(consultPhrase.getProviderId());
         }
         if (isActive) {
             subscribe(
@@ -1005,14 +997,14 @@ public final class ChatController {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(aLong -> {
                                 appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-                                notifyUnreadMessagesCountChanged();
+                                UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                             })
             );
         }
         // Если пришло сообщение от оператора,
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
-        if (cm instanceof ConsultPhrase || cm instanceof ConsultConnectionMessage || (cm instanceof ScheduleInfo && ((ScheduleInfo) cm).isChatWorking())) {
+        if (chatItem instanceof ConsultPhrase || chatItem instanceof ConsultConnectionMessage || (chatItem instanceof ScheduleInfo && ((ScheduleInfo) chatItem).isChatWorking())) {
             if (fragment != null && fragment.isAdded()) {
                 fragment.removeSchedule(false);
             }
@@ -1020,6 +1012,7 @@ public final class ChatController {
     }
 
     private void queueMessageSending(UserPhrase userPhrase) {
+        ThreadsLogger.i(TAG, "queueMessageSending: " + userPhrase);
         sendQueue.add(userPhrase);
         if (sendQueue.size() == 1) {
             sendMessage(userPhrase);
@@ -1043,7 +1036,7 @@ public final class ChatController {
         consultWriter.setCurrentConsultLeft();
         consultWriter.setSearchingConsult(false);
         appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-        notifyUnreadMessagesCountChanged();
+        UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
     }
 
     private void setSurveyStateSent(final Survey survey) {
@@ -1068,12 +1061,6 @@ public final class ChatController {
         return up;
     }
 
-    private void updateInputEnable(final boolean enabled) {
-        if (fragment != null) {
-            fragment.updateInputEnable(enabled);
-        }
-    }
-
     private void onSettingClientId() {
         ThreadsLogger.i(TAG, "onSettingClientId:");
         subscribe(
@@ -1086,11 +1073,12 @@ public final class ChatController {
                         Config.instance.transport.sendInitChatMessage();
                         Config.instance.transport.sendEnvironmentMessage();
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
-                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        databaseHolder.putMessagesSync(serverItems);
+                        List<ChatItem> chatItems = HistoryParser.getChatItems(response);
+                        saveMessages(chatItems);
+                        setLastAvatars(chatItems);
                         if (fragment != null) {
-                            List<ChatItem> itemsWithLastAvatars = setLastAvatars(serverItems);
-                            fragment.addChatItems(itemsWithLastAvatars);
+                            fragment.addChatItems(chatItems);
+                            handleQuickReplies(chatItems);
                             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
                             if (info != null) {
                                 fragment.setStateConsultConnected(info);
@@ -1099,12 +1087,56 @@ public final class ChatController {
                     }
                 })
                         .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> {
-                                },
-                                e -> ThreadsLogger.e(TAG, e.getMessage())
-                        )
+                        .subscribe(() -> {
+                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
         );
+    }
+
+    private void saveMessages(List<ChatItem> chatItems) {
+        databaseHolder.putChatItems(chatItems);
+        UnreadMessagesController.INSTANCE.clearUnreadPush();
+    }
+
+    private void refreshUserInputState() {
+        if (hasQuickReplies) {
+            chatUpdateProcessor.postUserInputEnableChanged(false);
+        } else {
+            // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
+            if (currentScheduleInfo == null) {
+                chatUpdateProcessor.postUserInputEnableChanged(true);
+            } else {
+                chatUpdateProcessor.postUserInputEnableChanged(
+                        currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive());
+            }
+        }
+    }
+
+    private void handleQuickReplies(List<ChatItem> chatItems) {
+        chatUpdateProcessor.postQuickRepliesChanged(getQuickReplies(chatItems));
+    }
+
+    public void quickReplyIsSent() {
+        chatUpdateProcessor.postQuickRepliesChanged(new ArrayList<>());
+    }
+
+    @NonNull
+    private List<QuickReply> getQuickReplies(List<ChatItem> chatItems) {
+        if (!chatItems.isEmpty()) {
+            ListIterator<ChatItem> listIterator = chatItems.listIterator(chatItems.size());
+            while (listIterator.hasPrevious()) {
+                ChatItem chatItem = listIterator.previous();
+                // При некоторых ситуациях (пока неизвестно каких) последнее сообщение в истории ConsultConnectionMessage, который не отображается, его нужно игнорировать
+                if (chatItem instanceof ConsultConnectionMessage) {
+                    ConsultConnectionMessage consultConnectionMessage = (ConsultConnectionMessage) chatItem;
+                    if (!consultConnectionMessage.isDisplayMessage()) {
+                        continue;
+                    }
+                } else if (chatItem instanceof ConsultPhrase) {
+                    return ((ConsultPhrase) chatItem).getQuickReplies();
+                }
+                break;
+            }
+        }
+        return new ArrayList<>();
     }
 }

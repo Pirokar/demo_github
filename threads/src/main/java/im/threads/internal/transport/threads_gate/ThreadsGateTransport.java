@@ -1,14 +1,15 @@
 package im.threads.internal.transport.threads_gate;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.OnLifecycleEvent;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.gson.JsonObject;
 
@@ -50,7 +51,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
-import okhttp3.logging.HttpLoggingInterceptor;
 import okio.ByteString;
 
 public class ThreadsGateTransport implements Transport, LifecycleObserver {
@@ -62,26 +62,24 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     private final WebSocketListener listener;
     private final Request request;
     private final String threadsGateProviderUid;
+    private final List<String> messageInProcessIds = new ArrayList<>();
     @Nullable
     private WebSocket webSocket;
     @Nullable
     private Lifecycle lifecycle;
 
-    private final List<String> messageInProcessIds = new ArrayList<>();
+    private ClientOfflineSender clientOfflineProvider;
 
-    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid, boolean isDebugLoggingEnabled) {
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                .pingInterval(10_000, TimeUnit.MILLISECONDS);
-        if (isDebugLoggingEnabled) {
-            clientBuilder.addInterceptor(new HttpLoggingInterceptor()
-                    .setLevel(HttpLoggingInterceptor.Level.BODY));
-        }
-        this.client = clientBuilder.build();
+    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid) {
+        this.client = new OkHttpClient.Builder()
+                .pingInterval(10_000, TimeUnit.MILLISECONDS)
+                .build();
         this.listener = new WebSocketListener();
         this.request = new Request.Builder()
                 .url(threadsGateUrl)
                 .build();
         this.threadsGateProviderUid = threadsGateProviderUid;
+        clientOfflineProvider = new ClientOfflineSender(threadsGateUrl, threadsGateProviderUid);
     }
 
     @Override
@@ -101,34 +99,38 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
     @Override
     public void sendResolveThread(boolean approveResolve) {
         final String clientID = PrefUtils.getClientID();
-        final JsonObject content = approveResolve ?
-                OutgoingMessageCreator.createResolveThreadMessage(clientID) :
-                OutgoingMessageCreator.createReopenThreadMessage(clientID);
-        sendMessage(content, false, approveResolve ? ChatItemType.CLOSE_THREAD : ChatItemType.REOPEN_THREAD);
+        JsonObject content;
+        String correlationId;
+        if (approveResolve) {
+            content = OutgoingMessageCreator.createResolveThreadMessage(clientID);
+            correlationId = ChatItemType.CLOSE_THREAD.name();
+        } else {
+            content = OutgoingMessageCreator.createReopenThreadMessage(clientID);
+            correlationId = ChatItemType.REOPEN_THREAD.name();
+        }
+        correlationId += CORRELATION_ID_DIVIDER + UUID.randomUUID().toString();
+        sendMessage(content, false, correlationId);
     }
 
     @Override
     public void sendUserTying(String input) {
-        final JsonObject content = OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(), input);
-        sendMessage(content, false);
+        sendMessage(OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(), input));
     }
 
     @Override
     public void sendInitChatMessage() {
-        final JsonObject content = OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(), PrefUtils.getData());
-        sendMessage(content, false);
+        sendMessage(OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(), PrefUtils.getData()));
     }
 
     @Override
     public void sendEnvironmentMessage() {
-        final JsonObject content = OutgoingMessageCreator.createEnvironmentMessage(
+        sendMessage(OutgoingMessageCreator.createEnvironmentMessage(
                 PrefUtils.getUserName(),
                 PrefUtils.getClientID(),
                 PrefUtils.getClientIDEncrypted(),
                 PrefUtils.getData(),
                 Config.instance.context
-        );
-        sendMessage(content, false);
+        ));
     }
 
     @Override
@@ -141,18 +143,19 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         }
         ArrayList<UpdateStatusesRequest.MessageStatusData> messageIds = new ArrayList<>();
         messageIds.add(new UpdateStatusesRequest.MessageStatusData(messageId, MessageStatus.READ));
-        webSocket.send(
-                Config.instance.gson.toJson(
-                        new UpdateStatusesRequest(
-                                UUID.randomUUID().toString(),
-                                new UpdateStatusesRequest.Data(PrefUtils.getDeviceAddress(), messageIds)
-                        )
+        String text = Config.instance.gson.toJson(
+                new UpdateStatusesRequest(
+                        UUID.randomUUID().toString(),
+                        new UpdateStatusesRequest.Data(PrefUtils.getDeviceAddress(), messageIds)
                 )
         );
+        ThreadsLogger.i(TAG, "Sending : " + text);
+        webSocket.send(text);
     }
 
     @Override
     public void sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, String filePath, String quoteFilePath) {
+        ThreadsLogger.i(TAG, "sendMessage: userPhrase = " + userPhrase + ", consultInfo = " + consultInfo + ", filePath = " + filePath + ", quoteFilePath = " + quoteFilePath);
         final JsonObject content = OutgoingMessageCreator.createUserPhraseMessage(
                 userPhrase,
                 consultInfo,
@@ -166,19 +169,12 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
 
     @Override
     public void sendRatingReceived(long sendingId) {
-        final JsonObject content = OutgoingMessageCreator.createRatingReceivedMessage(
-                sendingId,
-                PrefUtils.getClientID()
-        );
-        sendMessage(content, false);
+        sendMessage(OutgoingMessageCreator.createRatingReceivedMessage(sendingId, PrefUtils.getClientID()));
     }
 
     @Override
     public void sendClientOffline(String clientId) {
-        final JsonObject content = OutgoingMessageCreator.createMessageClientOffline(
-                PrefUtils.getClientID()
-        );
-        sendMessage(content, false);
+        clientOfflineProvider.sendClientOffline(clientId);
     }
 
     @Override
@@ -203,15 +199,17 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         this.lifecycle.addObserver(this);
     }
 
-    private void sendMessage(JsonObject content, boolean important) {
-        sendMessage(content, important, UUID.randomUUID().toString());
+    private void sendMessage(JsonObject content) {
+        sendMessage(
+                content,
+                false,
+                UUID.randomUUID().toString());
     }
 
-    private void sendMessage(JsonObject content, boolean important, ChatItemType type) {
-        sendMessage(content, important, type.name() + CORRELATION_ID_DIVIDER + UUID.randomUUID().toString());
-    }
-
-    private void sendMessage(JsonObject content, boolean important, String correlationId) {
+    private void sendMessage(JsonObject content,
+                             boolean important,
+                             String correlationId) {
+        ThreadsLogger.i(TAG, "sendMessage: content = " + content + ", important = " + important + ", correlationId = " + correlationId);
         synchronized (messageInProcessIds) {
             messageInProcessIds.add(correlationId);
         }
@@ -221,42 +219,49 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         if (webSocket == null) {
             return;
         }
-        webSocket.send(
-                Config.instance.gson.toJson(
-                        new SendMessageRequest(
-                                correlationId,
-                                new SendMessageRequest.Data(PrefUtils.getDeviceAddress(), content, important)
-                        )
+        String text = Config.instance.gson.toJson(
+                new SendMessageRequest(
+                        correlationId,
+                        new SendMessageRequest.Data(PrefUtils.getDeviceAddress(), content, important)
                 )
         );
+        ThreadsLogger.i(TAG, "Sending : " + text);
+        webSocket.send(text);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private synchronized void openWebSocket() {
         if (webSocket == null) {
             webSocket = client.newWebSocket(request, listener);
-            String deviceModel = Build.MANUFACTURER + ' ' + Build.MODEL;
-            String deviceName = Settings.Secure.getString(Config.instance.context.getContentResolver(), "bluetooth_name");
-            RegisterDeviceRequest.Data data = new RegisterDeviceRequest.Data(
-                    AppInfoHelper.getAppId(),
-                    AppInfoHelper.getAppVersion(),
-                    threadsGateProviderUid,
-                    PrefUtils.getFcmToken(),
-                    PrefUtils.getDeviceUid(),
-                    "Android",
-                    DeviceInfoHelper.getOsVersion(),
-                    DeviceInfoHelper.getLocale(Config.instance.context),
-                    Calendar.getInstance().getTimeZone().getDisplayName(),
-                    !TextUtils.isEmpty(deviceName) ? deviceName : deviceModel,
-                    deviceModel,
-                    PrefUtils.getDeviceAddress()
-            );
-            webSocket.send(
-                    Config.instance.gson.toJson(
-                            new RegisterDeviceRequest(UUID.randomUUID().toString(), data)
-                    )
-            );
+            sendRegisterDevice();
         }
+    }
+
+    private void sendRegisterDevice() {
+        if (webSocket == null) {
+            return;
+        }
+        String deviceModel = Build.MANUFACTURER + ' ' + Build.MODEL;
+        String deviceName = Settings.Secure.getString(Config.instance.context.getContentResolver(), "bluetooth_name");
+        RegisterDeviceRequest.Data data = new RegisterDeviceRequest.Data(
+                AppInfoHelper.getAppId(),
+                AppInfoHelper.getAppVersion(),
+                threadsGateProviderUid,
+                PrefUtils.getFcmToken(),
+                PrefUtils.getDeviceUid(),
+                "Android",
+                DeviceInfoHelper.getOsVersion(),
+                DeviceInfoHelper.getLocale(Config.instance.context),
+                Calendar.getInstance().getTimeZone().getDisplayName(),
+                !TextUtils.isEmpty(deviceName) ? deviceName : deviceModel,
+                deviceModel,
+                PrefUtils.getDeviceAddress()
+        );
+        String text = Config.instance.gson.toJson(
+                new RegisterDeviceRequest(UUID.randomUUID().toString(), data)
+        );
+        ThreadsLogger.i(TAG, "Sending : " + text);
+        webSocket.send(text);
     }
 
     /**

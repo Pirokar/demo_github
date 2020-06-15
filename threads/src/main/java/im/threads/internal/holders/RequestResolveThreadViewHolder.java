@@ -1,10 +1,11 @@
 package im.threads.internal.holders;
 
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import im.threads.ChatStyle;
 import im.threads.R;
@@ -16,22 +17,17 @@ import im.threads.internal.adapters.ChatAdapter;
  */
 public final class RequestResolveThreadViewHolder extends BaseHolder {
 
-    private View topSeparator;
-    private View bottomSeparator;
-    private TextView requestToResolveThread;
-    private TextView approveRequest;
-    private TextView denyRequest;
-
-    private ChatStyle style;
+    private final TextView approveRequest;
+    private final TextView denyRequest;
 
     public RequestResolveThreadViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_request_resolve_thread, parent, false));
-        topSeparator = itemView.findViewById(R.id.top_separator);
-        bottomSeparator = itemView.findViewById(R.id.bottom_separator);
-        requestToResolveThread = itemView.findViewById(R.id.request_to_resolve_thread);
+        View topSeparator = itemView.findViewById(R.id.top_separator);
+        View bottomSeparator = itemView.findViewById(R.id.bottom_separator);
+        TextView requestToResolveThread = itemView.findViewById(R.id.request_to_resolve_thread);
         approveRequest = itemView.findViewById(R.id.approve_request);
         denyRequest = itemView.findViewById(R.id.deny_request);
-        style = Config.instance.getChatStyle();
+        ChatStyle style = Config.instance.getChatStyle();
         topSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
         bottomSeparator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.iconsAndSeparatorsColor));
         requestToResolveThread.setTextColor(ContextCompat.getColor(itemView.getContext(), style.chatSystemMessageTextColor));
@@ -42,8 +38,8 @@ public final class RequestResolveThreadViewHolder extends BaseHolder {
         denyRequest.setText(style.denyRequestToResolveThreadTextResId);
     }
 
-    public void bind(final ChatAdapter.AdapterInterface adapterInterface) {
-        approveRequest.setOnClickListener(view -> adapterInterface.onResolveThreadClick(true));
-        denyRequest.setOnClickListener(view -> adapterInterface.onResolveThreadClick(false));
+    public void bind(final ChatAdapter.Callback callback) {
+        approveRequest.setOnClickListener(view -> callback.onResolveThreadClick(true));
+        denyRequest.setOnClickListener(view -> callback.onResolveThreadClick(false));
     }
 }

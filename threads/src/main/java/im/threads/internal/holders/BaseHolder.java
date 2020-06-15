@@ -2,18 +2,24 @@ package im.threads.internal.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import im.threads.R;
 import im.threads.internal.views.CircularProgressButton;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
-abstract class BaseHolder extends RecyclerView.ViewHolder {
+public abstract class BaseHolder extends RecyclerView.ViewHolder {
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     BaseHolder(View itemView) {
         super(itemView);
     }
@@ -35,12 +41,12 @@ abstract class BaseHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    void setTintToProgressButtonUser(CircularProgressButton button, @ColorRes int colorRes, @ColorRes int colorResInsideCurcle){
+    void setTintToProgressButtonUser(CircularProgressButton button, @ColorRes int colorRes, @ColorRes int colorResInsideCircle){
         Drawable completed = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.file_image_user);
         Drawable inProgress = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_clear_blue_user_36dp);
         Drawable download = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_vertical_align_bottom_user_24dp);
         setTintToViews(new Drawable[]{completed}, colorRes);
-        setTintToViews(new Drawable[]{inProgress, download}, colorResInsideCurcle);
+        setTintToViews(new Drawable[]{inProgress, download}, colorResInsideCircle);
         button.setCompletedDrawable(completed);
         button.setStartDownloadDrawable(download);
         button.setInProgress(inProgress);
@@ -54,5 +60,19 @@ abstract class BaseHolder extends RecyclerView.ViewHolder {
         button.setCompletedDrawable(completed);
         button.setStartDownloadDrawable(download);
         button.setInProgress(inProgress);
+    }
+
+    protected boolean subscribe(final Disposable event) {
+        if (compositeDisposable == null || compositeDisposable.isDisposed()) {
+            compositeDisposable = new CompositeDisposable();
+        }
+        return compositeDisposable.add(event);
+    }
+
+    public void onClear() {
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+            compositeDisposable = null;
+        }
     }
 }

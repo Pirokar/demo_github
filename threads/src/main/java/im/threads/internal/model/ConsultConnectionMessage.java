@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-import android.support.v4.util.ObjectsCompat;
+import androidx.core.util.ObjectsCompat;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,7 +22,6 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
 
     public ConsultConnectionMessage(String uuid, String providerId, List<String> providerIds, String consultId, String type, String name, boolean sex, long date,
                                     String avatarPath, String status, String title, String orgUnit, boolean displayMessage) {
-
         super(avatarPath, consultId);
         this.uuid = uuid;
         this.providerId = providerId;

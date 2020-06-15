@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="inputTextObservable" type="android.databinding.ObservableField&lt;String>"/>
+        <variable name="inputTextObservable" type="androidx.databinding.ObservableField&lt;String>"/>
     </data>
 
     <RelativeLayout
@@ -37,10 +37,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:clipToPadding="false"/>
 
             </im.threads.internal.views.MySwipeRefreshLayout>
 
@@ -158,6 +161,17 @@
                     android:visibility="visible" />
             </RelativeLayout>
 
+            <im.threads.internal.views.MaxHeightRecyclerView
+                android:id="@+id/quick_replies_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:scrollbars="vertical"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:background="@drawable/threads_quick_replies_background"
+                android:visibility="gone"/>
             <LinearLayout
                 android:id="@+id/input_layout"
                 android:layout_width="match_parent"
@@ -175,7 +189,7 @@
                     app:srcCompat="@drawable/threads_ic_attachment_button" />
 
                 <im.threads.internal.widget.CustomFontEditText
-                    android:id="@+id/input"
+                    android:id="@+id/input_edit_view"
                     style="@style/InputEditTextStyle"
                     android:hint="@string/threads_input_hint"
                     android:inputType="textCapSentences|textMultiLine"
@@ -199,7 +213,7 @@
             android:layout_height="63dp"
             android:background="@drawable/toolbar_shadow" />
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -309,7 +323,7 @@
                             android:textSize="@dimen/text_big"
                             android:visibility="visible" />
 
-                        <android.support.v7.widget.AppCompatImageButton
+                        <androidx.appcompat.widget.AppCompatImageButton
                             android:id="@+id/search_up_ib"
                             android:layout_width="36dp"
                             android:layout_height="match_parent"
@@ -318,7 +332,7 @@
                             app:backgroundTint="@android:color/transparent"
                             app:srcCompat="@drawable/ic_expand_more_white_24dp" />
 
-                        <android.support.v7.widget.AppCompatImageButton
+                        <androidx.appcompat.widget.AppCompatImageButton
                             android:id="@+id/search_down_ib"
                             android:layout_width="36dp"
                             android:layout_height="match_parent"
@@ -343,7 +357,7 @@
 
             </LinearLayout>
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
     </RelativeLayout>
 

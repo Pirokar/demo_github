@@ -2,11 +2,13 @@ package im.threads.internal.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
-import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.core.util.ObjectsCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -256,11 +258,10 @@ public final class PrefUtils {
                 setTransportType(ConfigBuilder.TransportType.MFMS_PUSH.toString());
             }
         } else {
-            // TODO: в следующие версии добавить
-            /*if (!ObjectsCompat.equals(transportType, Config.instance.transport.getType().toString())) {
+            if (!ObjectsCompat.equals(transportType, Config.instance.transport.getType().toString())) {
                 setTransportType(Config.instance.transport.getType().toString());
                 resetPushToken();
-            }*/
+            }
         }
     }
 

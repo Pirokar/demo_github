@@ -1,7 +1,8 @@
 package im.threads.internal.transport;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
@@ -19,6 +20,7 @@ import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
+import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.models.Attachment;
@@ -49,9 +51,10 @@ public final class MessageParser {
                 return getRating(sentAt, fullMessage);
             case REQUEST_CLOSE_THREAD:
                 return getRequestResolveThread(fullMessage);
+            case OPERATOR_LOOKUP_STARTED:
+                return new SearchingConsult();
             case NONE:
             case MESSAGES_READ:
-            case OPERATOR_LOOKUP_STARTED:
             case CLIENT_BLOCKED:
             case SCENARIO:
                 return null;
@@ -85,7 +88,7 @@ public final class MessageParser {
                 content.getProviderIds(),
                 String.valueOf(operator.getId()),
                 content.getType(),
-                operator.getName(),
+                operator.getAliasOrName(),
                 "male".equalsIgnoreCase(operator.getGender()),
                 sentAt,
                 operator.getPhotoUrl(),
@@ -133,7 +136,7 @@ public final class MessageParser {
         Operator operator = content.getOperator();
         if (operator != null) {
             String operatorId = String.valueOf(operator.getId());
-            String name = operator.getName();
+            String name = operator.getAliasOrName();
             String photoUrl = operator.getPhotoUrl();
             String status = operator.getStatus();
             boolean gender = operator.getGender() == null || "male".equalsIgnoreCase(operator.getGender());
@@ -141,6 +144,7 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), name, sentAt);
             }
+
             return new ConsultPhrase(
                     content.getUuid(),
                     messageId,
@@ -149,12 +153,14 @@ public final class MessageParser {
                     quote,
                     name,
                     phrase,
+                    content.getFormattedText(),
                     sentAt,
                     operatorId,
                     photoUrl,
                     false,
                     status,
-                    gender
+                    gender,
+                    content.getQuickReplies()
             );
         } else {
             FileDescription fileDescription = null;
@@ -179,6 +185,7 @@ public final class MessageParser {
             );
             fileDescription.setDownloadPath(attachment.getResult());
             fileDescription.setIncomingName(attachment.getName());
+            fileDescription.setSelfie(attachment.isSelfie());
         }
         return fileDescription;
     }
@@ -186,7 +193,7 @@ public final class MessageParser {
     private static Quote getQuote(final List<im.threads.internal.transport.models.Quote> quotes) {
         if (!quotes.isEmpty() && quotes.get(0) != null) {
             im.threads.internal.transport.models.Quote quote = quotes.get(0);
-            String authorName = quote.getOperator() != null ? quote.getOperator().getName() : null;
+            String authorName = quote.getOperator() != null ? quote.getOperator().getAliasOrName() : null;
             long timestamp = quote.getReceivedDate() != null ? quote.getReceivedDate().getTime() : System.currentTimeMillis();
             FileDescription fileDescription = null;
             if (quote.getAttachments() != null) {

@@ -1,13 +1,13 @@
 package im.threads.internal.adapters;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.internal.holders.EmptyViewHolder;
 import im.threads.internal.holders.FileAndMediaViewHolder;
 import im.threads.internal.holders.FilesDateStampHolder;
@@ -17,6 +17,9 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MediaAndFileItem;
 import im.threads.internal.utils.FileUtils;
 
+/**
+ * Created by yuri on 01.07.2016.
+ */
 public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
     private static final int TYPE_DATE_ROW = 1;
     private static final int TYPE_FILE_AND_MEDIA_ROW = 2;

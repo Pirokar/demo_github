@@ -1,8 +1,6 @@
 package im.threads.internal.holders;
 
 import android.graphics.PorterDuff;
-import android.support.annotation.DrawableRes;
-import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,17 +9,22 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.ChatStyle;
+import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.picasso_url_connection_only.Callback;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.MaskedTransformation;
@@ -39,43 +42,47 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
 
     public ImageFromConsultViewHolder(ViewGroup parent, MaskedTransformation maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_image_from_consult, parent, false));
+        style = Config.instance.getChatStyle();
         this.maskedTransformation = maskedTransformation;
-        mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mImage = itemView.findViewById(R.id.image);
-        mConsultAvatar = itemView.findViewById(R.id.consult_avatar);
         filter = itemView.findViewById(R.id.filter);
         filterSecond = itemView.findViewById(R.id.filter_second);
-        style = Config.instance.getChatStyle();
-
         filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-
+        mConsultAvatar = itemView.findViewById(R.id.consult_avatar);
         mConsultAvatar.getLayoutParams().height = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
         mConsultAvatar.getLayoutParams().width = (int) itemView.getContext().getResources().getDimension(style.operatorAvatarSize);
+        mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mTimeStampTextView.setTextColor(getColorInt(style.incomingImageTimeColor));
         mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.incomingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
     }
 
-    public void onBind(String avatarPath
-            , FileDescription fileDescription
-            , long timestamp
-            , View.OnClickListener listener
-            , View.OnLongClickListener longListener
-            , boolean isDownloadError
-            , boolean isChosen
-            , boolean isAvatarVisible) {
-        mTimeStampTextView.setOnClickListener(listener);
-        mTimeStampTextView.setOnLongClickListener(longListener);
-        mImage.setOnClickListener(listener);
-        mImage.setOnLongClickListener(longListener);
-        mConsultAvatar.setOnClickListener(listener);
-        mConsultAvatar.setOnLongClickListener(longListener);
-        filter.setOnClickListener(listener);
-        filter.setOnLongClickListener(longListener);
-        mTimeStampTextView.setText(sdf.format(new Date(timestamp)));
+    public void onBind(ConsultPhrase consultPhrase, Runnable clickRunnable, Runnable longClickRunnable) {
+        FileDescription fileDescription = consultPhrase.getFileDescription();
+        mTimeStampTextView.setOnClickListener(v -> clickRunnable.run());
+        mTimeStampTextView.setOnLongClickListener(v -> {
+            longClickRunnable.run();
+            return true;
+        });
+        mTimeStampTextView.setText(sdf.format(new Date(consultPhrase.getTimeStamp())));
+        mConsultAvatar.setOnClickListener(v -> clickRunnable.run());
+        mConsultAvatar.setOnLongClickListener(v -> {
+            longClickRunnable.run();
+            return true;
+        });
+        filter.setOnClickListener(v -> clickRunnable.run());
+        filter.setOnLongClickListener(v -> {
+            longClickRunnable.run();
+            return true;
+        });
+        mImage.setOnClickListener(v -> clickRunnable.run());
+        mImage.setOnLongClickListener(v -> {
+            longClickRunnable.run();
+            return true;
+        });
         mImage.setImageResource(0);
-        if (fileDescription.getFilePath() != null && !isDownloadError) {
-            Picasso.with(itemView.getContext())
+        if (fileDescription.getFilePath() != null && !fileDescription.isDownloadError()) {
+            Picasso.get()
                     .load(new File(fileDescription.getFilePath()))
                     .fit()
                     .centerCrop()
@@ -86,14 +93,14 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(Exception e) {
                             mImage.setImageResource(style.imagePlaceholder);
                         }
                     });
-        } else if (isDownloadError) {
+        } else if (fileDescription.isDownloadError()) {
             mImage.setImageResource(style.imagePlaceholder);
         }
-        if (isChosen) {
+        if (consultPhrase.isChosen()) {
             filter.setVisibility(View.VISIBLE);
             filterSecond.setVisibility(View.VISIBLE);
         } else {
@@ -101,7 +108,8 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
             filterSecond.setVisibility(View.INVISIBLE);
         }
         @DrawableRes int resId = style.defaultOperatorAvatar;
-        if (isAvatarVisible) {
+        String avatarPath = consultPhrase.getAvatarPath();
+        if (consultPhrase.isAvatarVisible()) {
             float bubbleLeftMarginDp = itemView.getContext().getResources().getDimension(R.dimen.margin_quarter);
             int bubbleLeftMarginPx = ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, bubbleLeftMarginDp, itemView.getResources().getDisplayMetrics()));
             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mImage.getLayoutParams();
@@ -109,9 +117,8 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
             mImage.setLayoutParams(lp);
             mConsultAvatar.setVisibility(View.VISIBLE);
             if (avatarPath != null) {
-                avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
-                Picasso.with(itemView.getContext())
-                        .load(avatarPath)
+                Picasso.get()
+                        .load(FileUtils.convertRelativeUrlToAbsolute(avatarPath))
                         .error(style.defaultOperatorAvatar)
                         .fit()
                         .transform(new CircleTransformation())
@@ -119,7 +126,7 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
                         .noPlaceholder()
                         .into(mConsultAvatar);
             } else {
-                Picasso.with(itemView.getContext())
+                Picasso.get()
                         .load(resId)
                         .fit()
                         .noPlaceholder()

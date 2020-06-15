@@ -1,16 +1,16 @@
 package im.threads.internal.transport.mfms_push;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.OnLifecycleEvent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.mfms.android.push_lite.PushController;
 import com.mfms.android.push_lite.exception.PushServerErrorException;
 import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;

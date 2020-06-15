@@ -1,8 +1,7 @@
 package im.threads.internal.transport.threads_gate;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.transport.MessageParser;
 import im.threads.internal.transport.threads_gate.responses.BaseMessage;

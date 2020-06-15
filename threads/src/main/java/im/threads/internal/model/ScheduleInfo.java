@@ -1,8 +1,6 @@
 package im.threads.internal.model;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.Date;
 
 /**
  * Информация о расписании
@@ -11,9 +9,13 @@ public final class ScheduleInfo implements ChatItem {
 
     private Long id;
     private String notification;
-    private List<Interval> intervals;
     private boolean sendDuringInactive;
     private long date;
+
+    private Date startTime;
+    private Date endTime;
+    private Date serverTime;
+    private boolean active;
 
     public Long getId() {
         return id;
@@ -29,14 +31,6 @@ public final class ScheduleInfo implements ChatItem {
 
     public void setNotification(String notification) {
         this.notification = notification;
-    }
-
-    public List<Interval> getIntervals() {
-        return intervals;
-    }
-
-    public void setIntervals(List<Interval> intervals) {
-        this.intervals = intervals;
     }
 
     public long getDate() {
@@ -56,51 +50,46 @@ public final class ScheduleInfo implements ChatItem {
         return date;
     }
 
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public Date getServerTime() {
+        return serverTime;
+    }
+
+    public void setServerTime(Date serverTime) {
+        this.serverTime = serverTime;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     /**
      * @return true, если в данный момент чат работает
      */
     public boolean isChatWorking() {
-        if(intervals == null) {
-            return false;
+        if (startTime == null || endTime == null || serverTime == null) {
+            return active;
+        } else {
+            return startTime.getTime() <= serverTime.getTime() && serverTime.getTime() <= endTime.getTime();
         }
-        TimeZone timeZone = TimeZone.getTimeZone("UTC");
-        Calendar now = Calendar.getInstance(timeZone);
-        // Поиск интервала для текущего дня недели
-        for(int i = 0; i < intervals.size(); i++) {
-            Interval dayInterval = intervals.get(i);
-            Integer dayOfWeek = dayInterval.getAndroidWeekDay();
-            if(dayOfWeek != null) {
-                int nowDayOfWeek = now.get(Calendar.DAY_OF_WEEK);
-                // Текущий день недели найден в расписании
-                if(dayOfWeek == nowDayOfWeek) {
-                    Integer start = dayInterval.getStartTime();
-                    Integer end = dayInterval.getEndTime();
-                    // Расписание корректно, указаны обе границы промежутка.
-                    if (start != null && end != null) {
-                        // Начало промежутка в текущем найденном дне
-                        Calendar startDate = Calendar.getInstance(timeZone);
-                        // Конец промежутка в текущем найденном дне
-                        Calendar endDate = Calendar.getInstance(timeZone);
-
-                        startDate.set(Calendar.HOUR_OF_DAY, 0);
-                        startDate.set(Calendar.MINUTE, 0);
-                        startDate.set(Calendar.SECOND, 0);
-
-                        endDate.set(Calendar.HOUR_OF_DAY, 0);
-                        endDate.set(Calendar.MINUTE, 0);
-                        endDate.set(Calendar.SECOND, 0);
-
-                        startDate.add(Calendar.SECOND, start);
-                        endDate.add(Calendar.SECOND, end);
-
-                        // Текущий день попадает в промежуток расписания
-                        if(startDate.getTimeInMillis() <= now.getTimeInMillis() && now.getTimeInMillis() <= endDate.getTimeInMillis()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
     }
 }

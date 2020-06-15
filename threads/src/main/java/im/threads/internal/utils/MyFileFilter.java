@@ -15,7 +15,15 @@ public final class MyFileFilter implements FileFilter, FilenameFilter {
         acceptedPicFormats.add(new IgnoreCaseString(".jpg"));
         acceptedPicFormats.add(new IgnoreCaseString(".jpeg"));
         acceptedPicFormats.add(new IgnoreCaseString(".png"));
+        acceptedPicFormats.add(new IgnoreCaseString(".txt"));
         acceptedPicFormats.add(new IgnoreCaseString(".pdf"));
+        acceptedPicFormats.add(new IgnoreCaseString(".doc"));
+        acceptedPicFormats.add(new IgnoreCaseString(".docx"));
+        acceptedPicFormats.add(new IgnoreCaseString(".xls"));
+        acceptedPicFormats.add(new IgnoreCaseString(".xlsx"));
+        acceptedPicFormats.add(new IgnoreCaseString(".xlsm"));
+        acceptedPicFormats.add(new IgnoreCaseString(".xltx"));
+        acceptedPicFormats.add(new IgnoreCaseString(".xlt"));
     }
 
     @Override

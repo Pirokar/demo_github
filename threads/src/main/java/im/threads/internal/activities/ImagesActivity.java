@@ -7,14 +7,15 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.Nullable;
-import android.support.v4.content.PermissionChecker;
-import android.support.v4.view.ViewPager;
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.PermissionChecker;
+import androidx.viewpager.widget.ViewPager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,12 +30,14 @@ import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.adapters.ImagesAdapter;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
     private static final String TAG = "ImagesActivity ";
@@ -44,6 +47,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
     private int collectionSize;
     private ViewPager mViewPager;
     private List<FileDescription> files;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public static Intent getStartIntent(Context context, FileDescription fileDescription) {
         Intent i = new Intent(context, ImagesActivity.class);
@@ -64,36 +68,42 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mToolbar.setTitle("");
-        DatabaseHolder.getInstance().getAllFileDescriptions(new CompletionHandler<List<FileDescription>>() {
-            @Override
-            public void onComplete(List<FileDescription> data) {
-                files = new ArrayList<>();
-                for (FileDescription fd : data) {
-                    if (FileUtils.isImage(fd) && fd.getFilePath() != null) {
-                        files.add(fd);
-                    }
-                }
-                collectionSize = files.size();
-                ThreadUtils.runOnUiThread(() -> {
-                    mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
-                    FileDescription fd = getIntent().getParcelableExtra("FileDescription");
-                    if (fd != null) {
-                        int page = files.indexOf(fd);
-                        if (page != -1) {
-                            mViewPager.setCurrentItem(page);
-                            onPageSelected(page);
+        compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
+                .doOnSuccess(data -> {
+                    files = new ArrayList<>();
+                    for (FileDescription fd : data) {
+                        if (FileUtils.isImage(fd) && fd.getFilePath() != null) {
+                            files.add(fd);
                         }
                     }
-                    onPageSelected(0);
-                });
-            }
-
-            @Override
-            public void onError(Throwable e, String message, List<FileDescription> data) {
-                finish();
-            }
-        });
+                    collectionSize = files.size();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                        mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
+                        FileDescription fd = getIntent().getParcelableExtra("FileDescription");
+                        if (fd != null) {
+                            int page = files.indexOf(fd);
+                            if (page != -1) {
+                                mViewPager.setCurrentItem(page);
+                                onPageSelected(page);
+                            }
+                        }
+                        onPageSelected(0);
+                },
+                        e -> ThreadsLogger.e(TAG, "getAllFileDescriptions error: " + e.getMessage()))
+        );
         mToolbar.setBackgroundColor(getColorInt(Config.instance.getChatStyle().imagesScreenToolbarColor));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+            compositeDisposable = null;
+        }
     }
 
     @Override

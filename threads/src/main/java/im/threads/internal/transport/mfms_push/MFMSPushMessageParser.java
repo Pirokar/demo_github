@@ -1,7 +1,6 @@
 package im.threads.internal.transport.mfms_push;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
@@ -11,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.transport.MessageParser;

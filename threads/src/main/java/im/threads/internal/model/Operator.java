@@ -1,8 +1,13 @@
 package im.threads.internal.model;
 
+import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
+
 public final class Operator {
     private Long id;
     private String name;
+    private String alias;
     private String role;
     private String orgUnit;
     private Long maxThreads;
@@ -24,6 +29,14 @@ public final class Operator {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public String getRole() {
@@ -64,6 +77,14 @@ public final class Operator {
 
     public void setOrgUnit(String orgUnit) {
         this.orgUnit = orgUnit;
+    }
+
+    @Nullable
+    public String getAliasOrName() {
+        if (!TextUtils.isEmpty(alias)) {
+            return alias;
+        }
+        return name;
     }
 
     public enum Gender {

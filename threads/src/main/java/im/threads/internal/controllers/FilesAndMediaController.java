@@ -4,13 +4,12 @@ import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,11 +19,18 @@ import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.helpers.FileProviderHelper;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
+import im.threads.internal.utils.ThreadsLogger;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class FilesAndMediaController extends Fragment {
+
+    private static final String TAG = FilesAndMediaController.class.getCanonicalName();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     private FilesActivity activity;
 
     public static FilesAndMediaController getInstance() {
@@ -43,50 +49,49 @@ public final class FilesAndMediaController extends Fragment {
         return null;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+            compositeDisposable = null;
+        }
+    }
+
     public void bindActivity(FilesActivity activity) {
         this.activity = activity;
     }
 
-    public void unbindActivty() {
-        activity = null;
-    }
-
     public void getFilesAsync() {
-        DatabaseHolder.getInstance().getAllFileDescriptions(new CompletionHandler<List<FileDescription>>() {
-            @Override
-            public void onComplete(final List<FileDescription> data) {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    if (null != activity) {
-                        List<FileDescription> list = new ArrayList<>();
-                        for (FileDescription fd : data) {
-                            if (FileUtils.isImage(fd)) {
-                                list.add(fd);
-                            }
-                            if (FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.PDF
-                                    || FileUtils.getExtensionFromPath(fd.getFilePath()) == FileUtils.OTHER_DOC_FORMATS) {
-                                list.add(fd);
-                            }
+        compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
+                .map(data -> {
+                    List<FileDescription> list = new ArrayList<>();
+                    for (FileDescription fd : data) {
+                        if (FileUtils.isSupportedFile(fd)) {
+                            list.add(fd);
                         }
-                        activity.onFileReceive(list);
                     }
-                });
-            }
-
-            @Override
-            public void onError(Throwable e, String message, List<FileDescription> data) {
-            }
-        });
+                    return list;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        list -> {
+                            if (null != activity) {
+                                activity.onFileReceive(list);
+                            }
+                        },
+                        e -> ThreadsLogger.e(TAG, "getAllFileDescriptions error: " + e.getMessage()))
+                );
     }
 
     public void onFileClick(FileDescription fileDescription) {
         if (FileUtils.isImage(fileDescription)) {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
-        } else if (FileUtils.getExtensionFromPath(fileDescription.getFilePath()) == FileUtils.PDF) {
+        } else if (FileUtils.isDoc(fileDescription)) {
             Intent target = new Intent(Intent.ACTION_VIEW);
             File file = new File(fileDescription.getFilePath());
-            target.setDataAndType(FileProviderHelper.getUriForFile(activity, file),
-                    "application/pdf"
-            );
+            target.setDataAndType(FileProviderHelper.getUriForFile(activity, file), FileUtils.getMimeType(file));
             target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             try {
                 activity.startActivity(target);
