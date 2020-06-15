@@ -7,15 +7,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.sequenia.appwithchat.polarbear"
         minSdkVersion 17
-        targetSdkVersion 28
+        targetSdkVersion 29
 
         versionCode 89
-        versionName "3.2.0"
+        versionName "${version}"
         project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName)
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
@@ -59,7 +59,8 @@ dependencies {
     def final supportVersion = "28.0.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':threads')
+    debugImplementation 'im.threads:threads-debug:3.4.0'
+    releaseImplementation 'im.threads:threads-release:3.4.0'
 
     implementation 'com.android.support:multidex:1.0.3'
 
