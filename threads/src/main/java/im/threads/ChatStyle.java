@@ -229,7 +229,7 @@ public final class ChatStyle implements Serializable {
     // set can show specialist onfo
     public boolean canShowSpecialistInfo = true;
 
-    public boolean useExternalCameraApp = false;
+    public boolean useExternalCameraApp = true;
 
     public boolean selfieEnabled = false;
 
