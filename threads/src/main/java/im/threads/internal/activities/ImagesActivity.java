@@ -3,7 +3,6 @@ package im.threads.internal.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,11 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.internal.Config;
 import im.threads.internal.adapters.ImagesAdapter;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.permissions.PermissionsActivity;
+import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -43,16 +42,13 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
     private static final String TAG = "ImagesActivity ";
     private static final int CODE_REQUEST_DOWNLOAD = 1;
 
-    private Toolbar mToolbar;
     private int collectionSize;
     private ViewPager mViewPager;
     private List<FileDescription> files;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public static Intent getStartIntent(Context context, FileDescription fileDescription) {
-        Intent i = new Intent(context, ImagesActivity.class);
-        i.putExtra("FileDescription", fileDescription);
-        return i;
+        return new Intent(context, ImagesActivity.class).putExtra("FileDescription", fileDescription);
     }
 
     @Override
@@ -61,13 +57,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setContentView(R.layout.activity_images);
         mViewPager = findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
-        mToolbar = findViewById(R.id.toolbar);
-        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp);
-        d.setColorFilter(getColorInt(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-        mToolbar.setNavigationIcon(d);
-        setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        mToolbar.setTitle("");
+        initToolbar(findViewById(R.id.toolbar));
         compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
                 .doOnSuccess(data -> {
                     files = new ArrayList<>();
@@ -94,7 +84,15 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                 },
                         e -> ThreadsLogger.e(TAG, "getAllFileDescriptions error: " + e.getMessage()))
         );
-        mToolbar.setBackgroundColor(getColorInt(Config.instance.getChatStyle().imagesScreenToolbarColor));
+    }
+
+    private void initToolbar(Toolbar toolbar) {
+        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp);
+        ColorsHelper.setDrawableColor(this, d, R.color.threads_attachments_toolbar_text);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setTitle("");
+        toolbar.setNavigationIcon(d);
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -109,6 +107,10 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_gallery, menu);
+        if (menu.size() > 0) {
+            ColorsHelper.setDrawableColor(this, menu.getItem(0).getIcon(), R.color.threads_attachments_toolbar_text);
+            menu.getItem(0).getIcon();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

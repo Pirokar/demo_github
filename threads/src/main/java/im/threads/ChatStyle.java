@@ -130,8 +130,6 @@ public final class ChatStyle implements Serializable {
 
     //images history & gallery screens
     @ColorRes
-    public int imagesScreenToolbarColor = R.color.threads_attachments_toolbar;
-    @ColorRes
     public int imagesScreenBackgroundColor = R.color.threads_attachments_background;
     @ColorRes
     public int imagesScreenAuthorTextColor = R.color.threads_attachments_author_text_color;
@@ -642,21 +640,17 @@ public final class ChatStyle implements Serializable {
     /**
      * Default values:
      *
-     * @param imagesScreenToolbarColor    = R.color.threads_attachments_toolbar;
      * @param imagesScreenBackgroundColor = R.color.threads_attachments_background;
      * @param imagesScreenAuthorTextColor = R.color.threads_attachments_author_text_color;
      * @param imagesScreenDateTextColor   = R.color.threads_attachments_date_text_color;
      * @param imagesScreenAuthorTextSize  = R.dimen.threads_attachments_author_text_size;
      * @param imagesScreenDateTextSize    = R.dimen.threads_attachments_date_text_size;
      */
-    public ChatStyle setImagesGalleryStyle(@ColorRes int imagesScreenToolbarColor,
-                                           @ColorRes int imagesScreenBackgroundColor,
+    public ChatStyle setImagesGalleryStyle(@ColorRes int imagesScreenBackgroundColor,
                                            @ColorRes int imagesScreenAuthorTextColor,
                                            @ColorRes int imagesScreenDateTextColor,
                                            @DimenRes int imagesScreenAuthorTextSize,
                                            @DimenRes int imagesScreenDateTextSize) {
-
-        this.imagesScreenToolbarColor = imagesScreenToolbarColor;
         this.imagesScreenBackgroundColor = imagesScreenBackgroundColor;
         this.imagesScreenAuthorTextColor = imagesScreenAuthorTextColor;
         this.imagesScreenDateTextColor = imagesScreenDateTextColor;

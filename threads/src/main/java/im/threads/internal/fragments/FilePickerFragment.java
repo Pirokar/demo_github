@@ -12,15 +12,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.text.Collator;
 import java.util.Arrays;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
@@ -42,13 +42,10 @@ public final class FilePickerFragment extends DialogFragment
     private boolean isFilterEnabled;
 
 
-    public static FilePickerFragment newInstance(@Nullable File startingFolder) {
+    public static FilePickerFragment newInstance() {
         FilePickerFragment fragment = new FilePickerFragment();
         Bundle b = new Bundle();
-        if (startingFolder == null) {
-            startingFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        }
-        b.putSerializable(STARTING_FOLDER_TAG, startingFolder);
+        b.putSerializable(STARTING_FOLDER_TAG, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM));
         fragment.setArguments(b);
         return fragment;
     }

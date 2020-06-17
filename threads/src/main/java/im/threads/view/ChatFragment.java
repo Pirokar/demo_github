@@ -673,7 +673,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         setBottomStateDefault();
         if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
-            FilePickerFragment frag = FilePickerFragment.newInstance(null);
+            FilePickerFragment frag = FilePickerFragment.newInstance();
             frag.setFileFilter(new MyFileFilter());
             frag.setOnDirSelectedListener(this);
             frag.show(fragmentManager, null);
@@ -1315,7 +1315,7 @@ public final class ChatFragment extends BaseFragment implements
             if (fragmentManager == null) {
                 return;
             }
-            FilePickerFragment picker = FilePickerFragment.newInstance(null);
+            FilePickerFragment picker = FilePickerFragment.newInstance();
             picker.setFileFilter(new MyFileFilter());
             picker.setOnDirSelectedListener(this);
             picker.show(fragmentManager, null);

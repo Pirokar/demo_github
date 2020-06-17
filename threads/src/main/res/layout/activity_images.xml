@@ -20,9 +20,9 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
+        android:background="@color/threads_attachments_toolbar_background"
+        app:titleTextColor="@color/threads_attachments_toolbar_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="@color/threads_attachments_toolbar"
-        app:titleTextColor="@android:color/white" />
+        android:layout_alignParentTop="true"/>
 </RelativeLayout>

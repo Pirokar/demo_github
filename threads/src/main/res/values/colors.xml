@@ -77,7 +77,8 @@
     <color name="threads_files_list">@color/threads_black</color>
 
     <!-- Экран просмотра файлов -->
-    <color name="threads_attachments_toolbar">@color/threads_teal_009688</color>
+    <color name="threads_attachments_toolbar_background">@color/threads_teal_009688</color>
+    <color name="threads_attachments_toolbar_text">@color/threads_white</color>
     <color name="threads_attachments_background">@color/threads_toolbar_gray</color>
     <color name="threads_attachments_author_text_color">@color/threads_white</color>
     <color name="threads_attachments_date_text_color">@color/threads_white</color>

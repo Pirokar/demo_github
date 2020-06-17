@@ -15,7 +15,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonSyntaxException;
 import com.mfms.android.push_lite.utils.CommonUtils;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import im.threads.ChatStyle;
@@ -272,8 +271,8 @@ public final class PrefUtils {
                 FirebaseInstanceId.getInstance().deleteToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE);
                 setFcmToken(null);
                 setFcmToken(FirebaseInstanceId.getInstance().getToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE));
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                ThreadsLogger.w(TAG, "resetPushToken failed: ", e);
             }
         }).start();
     }
