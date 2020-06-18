@@ -37,8 +37,9 @@ public final class ThreadsLib {
         PrefUtils.migrateToSeparateStorageIfNeeded();
         Config.instance.transport.init();
         if (Config.instance.unreadMessagesCountListener != null) {
+            Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(UnreadMessagesController.INSTANCE.getUnreadMessages());
             UnreadMessagesController.INSTANCE.getUnreadMessagesPublishProcessor()
-                    .distinct()
+                    .distinctUntilChanged()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count));
         }

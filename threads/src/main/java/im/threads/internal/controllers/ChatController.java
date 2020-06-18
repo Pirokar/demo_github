@@ -977,6 +977,7 @@ public final class ChatController {
     private void addMessage(final ChatItem chatItem) {
         ThreadsLogger.i(TAG, "addMessage: " + chatItem);
         databaseHolder.putChatItem(chatItem);
+        UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
         if (fragment != null) {
             final ChatItem ci = setLastAvatars(Collections.singletonList(chatItem)).get(0);
             if (!(ci instanceof ConsultConnectionMessage) || ((ConsultConnectionMessage) ci).isDisplayMessage()) {

@@ -37,7 +37,11 @@ public enum  UnreadMessagesController {
      * но иногда в этот момент в сообщения еще не помечены, как прочитанные.
      */
     public void refreshUnreadMessagesCount() {
-        unreadMessagesPublishProcessor.onNext(DatabaseHolder.getInstance().getUnreadMessagesCount() + unreadPush);
+        unreadMessagesPublishProcessor.onNext(getUnreadMessages());
+    }
+
+    public int getUnreadMessages() {
+        return DatabaseHolder.getInstance().getUnreadMessagesCount() + unreadPush;
     }
 
 }

@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import im.threads.ChatStyle;
+import im.threads.ConfigBuilder;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
@@ -185,7 +186,9 @@ public final class NotificationService extends ThreadsService {
             if (!fixPushCrash) {
                 nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
             }
-            UnreadMessagesController.INSTANCE.incrementUnreadPush();
+            if (Config.instance.transport.getType() == ConfigBuilder.TransportType.THREADS_GATE) {
+                UnreadMessagesController.INSTANCE.incrementUnreadPush();
+            }
         }
     }
 
