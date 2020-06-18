@@ -176,7 +176,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
         if (quote != null) {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
-            rightTextHeader.setText(quote.getPhraseOwnerTitle());
+            rightTextHeader.setText(quote.getPhraseOwnerTitle() == null ? itemView.getContext().getString(R.string.threads_I) : quote.getPhraseOwnerTitle());
             mRightTextDescr.setText(quote.getText());
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
             if (TextUtils.isEmpty(quote.getPhraseOwnerTitle())) {
