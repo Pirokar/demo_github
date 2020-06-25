@@ -41,6 +41,8 @@ public final class PrefUtils {
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String MIGRATED = "MIGRATED";
 
+    private static final String UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT";
+
     private static final String STORE_NAME = "im.threads.internal.utils.PrefStore";
 
     private PrefUtils() {
@@ -282,6 +284,14 @@ public final class PrefUtils {
                 .edit()
                 .putString(TRANSPORT_TYPE, transportType)
                 .commit();
+    }
+
+    public static int getUnreadPushCount() {
+        return getDefaultSharedPreferences().getInt(UNREAD_PUSH_COUNT, 0);
+    }
+
+    public static void setUnreadPushCount(int unreadPushCount) {
+        getDefaultSharedPreferences().edit().putInt(UNREAD_PUSH_COUNT, unreadPushCount).commit();
     }
 
     private static String getTransportType() {
