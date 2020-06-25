@@ -1,10 +1,9 @@
 package im.threads.internal.transport;
 
-import android.support.annotation.WorkerThread;
-
 import java.io.IOException;
 import java.util.List;
 
+import androidx.annotation.WorkerThread;
 import im.threads.internal.Config;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageFromHistory;

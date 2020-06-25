@@ -1,10 +1,16 @@
 package im.threads.internal.model;
 
+import java.util.Calendar;
+
 public final class SearchingConsult implements ChatItem {
     private long date;
 
-    public SearchingConsult(long date) {
-        this.date = date;
+    public SearchingConsult() {
+        final Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR, 23);
+        c.set(Calendar.MINUTE, 59);
+        c.set(Calendar.SECOND, 59);
+        this.date = c.getTimeInMillis();
     }
 
     public long getTimeStamp() {

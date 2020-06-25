@@ -1,20 +1,14 @@
 package im.threads.internal.model;
 
-import android.support.annotation.Nullable;
-
-import com.google.gson.JsonSyntaxException;
+import androidx.annotation.Nullable;
 
 import java.util.List;
-
-import im.threads.internal.Config;
-import im.threads.internal.utils.ThreadsLogger;
 
 /**
  * ответ на запрос истории v2
  * в структуре появилась информация об операторе
  */
 public final class HistoryResponse {
-    private static final String TAG = HistoryResponse.class.getSimpleName();
 
     private List<MessageFromHistory> messages;
     private AgentInfo agentInfo;
@@ -42,19 +36,6 @@ public final class HistoryResponse {
 
     public List<MessageFromHistory> getMessages() {
         return messages;
-    }
-
-    public static HistoryResponse getHistoryFromServerResponse(String response) {
-        HistoryResponse historyResponse = null;
-        try {
-            if (response != null) {
-                historyResponse = Config.instance.gson.fromJson(response, HistoryResponse.class);
-            }
-        } catch (JsonSyntaxException e) {
-            ThreadsLogger.e(TAG, "getHistoryFromServerResponse", e);
-        }
-
-        return historyResponse;
     }
 
     private class AgentInfo {

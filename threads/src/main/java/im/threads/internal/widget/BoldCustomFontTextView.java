@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 
-public class BoldCustomFontTextView extends android.support.v7.widget.AppCompatTextView {
+public class BoldCustomFontTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     public BoldCustomFontTextView(Context context) {
         super(context);

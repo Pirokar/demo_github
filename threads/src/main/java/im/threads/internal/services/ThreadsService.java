@@ -7,8 +7,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 
+import androidx.annotation.RequiresApi;
 import im.threads.R;
 
 public abstract class ThreadsService extends Service {

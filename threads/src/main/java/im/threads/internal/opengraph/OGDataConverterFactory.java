@@ -22,9 +22,11 @@ public final class OGDataConverterFactory extends Converter.Factory {
 
     public static class OGDataConverter implements Converter<ResponseBody, OGData> {
 
+        private final OGParser ogParser = new OGParser();
+
         @Override
         public OGData convert(ResponseBody value) throws IOException {
-            return OGParser.parse(value.byteStream());
+            return ogParser.parse(value.byteStream());
         }
     }
 }

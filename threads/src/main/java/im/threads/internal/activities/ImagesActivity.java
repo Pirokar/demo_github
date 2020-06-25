@@ -3,18 +3,18 @@ package im.threads.internal.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.Nullable;
-import android.support.v4.content.PermissionChecker;
-import android.support.v4.view.ViewPager;
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.PermissionChecker;
+import androidx.viewpager.widget.ViewPager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,29 +26,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.R;
-import im.threads.internal.Config;
 import im.threads.internal.adapters.ImagesAdapter;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.model.CompletionHandler;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.permissions.PermissionsActivity;
+import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
     private static final String TAG = "ImagesActivity ";
     private static final int CODE_REQUEST_DOWNLOAD = 1;
 
-    private Toolbar mToolbar;
     private int collectionSize;
     private ViewPager mViewPager;
     private List<FileDescription> files;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public static Intent getStartIntent(Context context, FileDescription fileDescription) {
-        Intent i = new Intent(context, ImagesActivity.class);
-        i.putExtra("FileDescription", fileDescription);
-        return i;
+        return new Intent(context, ImagesActivity.class).putExtra("FileDescription", fileDescription);
     }
 
     @Override
@@ -57,48 +57,60 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setContentView(R.layout.activity_images);
         mViewPager = findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
-        mToolbar = findViewById(R.id.toolbar);
-        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp);
-        d.setColorFilter(getColorInt(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-        mToolbar.setNavigationIcon(d);
-        setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        mToolbar.setTitle("");
-        DatabaseHolder.getInstance().getAllFileDescriptions(new CompletionHandler<List<FileDescription>>() {
-            @Override
-            public void onComplete(List<FileDescription> data) {
-                files = new ArrayList<>();
-                for (FileDescription fd : data) {
-                    if (FileUtils.isImage(fd) && fd.getFilePath() != null) {
-                        files.add(fd);
-                    }
-                }
-                collectionSize = files.size();
-                ThreadUtils.runOnUiThread(() -> {
-                    mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
-                    FileDescription fd = getIntent().getParcelableExtra("FileDescription");
-                    if (fd != null) {
-                        int page = files.indexOf(fd);
-                        if (page != -1) {
-                            mViewPager.setCurrentItem(page);
-                            onPageSelected(page);
+        initToolbar(findViewById(R.id.toolbar));
+        compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
+                .doOnSuccess(data -> {
+                    files = new ArrayList<>();
+                    for (FileDescription fd : data) {
+                        if (FileUtils.isImage(fd) && fd.getFilePath() != null) {
+                            files.add(fd);
                         }
                     }
-                    onPageSelected(0);
-                });
-            }
+                    collectionSize = files.size();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                        mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
+                        FileDescription fd = getIntent().getParcelableExtra("FileDescription");
+                        if (fd != null) {
+                            int page = files.indexOf(fd);
+                            if (page != -1) {
+                                mViewPager.setCurrentItem(page);
+                                onPageSelected(page);
+                            }
+                        }
+                        onPageSelected(0);
+                },
+                        e -> ThreadsLogger.e(TAG, "getAllFileDescriptions error: " + e.getMessage()))
+        );
+    }
 
-            @Override
-            public void onError(Throwable e, String message, List<FileDescription> data) {
-                finish();
-            }
-        });
-        mToolbar.setBackgroundColor(getColorInt(Config.instance.getChatStyle().imagesScreenToolbarColor));
+    private void initToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp);
+        ColorsHelper.setDrawableColor(this, d, R.color.threads_attachments_toolbar_text);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setTitle("");
+        toolbar.setNavigationIcon(d);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+            compositeDisposable = null;
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_gallery, menu);
+        if (menu.size() > 0) {
+            ColorsHelper.setDrawableColor(this, menu.getItem(0).getIcon(), R.color.threads_attachments_toolbar_text);
+            menu.getItem(0).getIcon();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

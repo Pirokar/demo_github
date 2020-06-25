@@ -2,7 +2,8 @@ package im.threads.internal.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.util.ObjectsCompat;
+
+import androidx.core.util.ObjectsCompat;
 
 public final class FileDescription implements Parcelable {
     private String from;

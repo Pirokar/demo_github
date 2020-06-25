@@ -1,6 +1,6 @@
 package im.threads.internal.formatters;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public enum ChatItemType {
     TYPING,

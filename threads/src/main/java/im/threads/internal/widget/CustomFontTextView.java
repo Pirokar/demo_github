@@ -8,18 +8,19 @@ import android.util.AttributeSet;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 
-public class CustomFontTextView extends android.support.v7.widget.AppCompatTextView {
+public class CustomFontTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     public CustomFontTextView(Context context) {
         super(context);
-        if (isInEditMode()) {
-            return;
-        }
-        setTypefaceView(context);
+        init(context);
     }
 
     public CustomFontTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context);
+    }
+
+    private void init(Context context) {
         if (isInEditMode()) {
             return;
         }

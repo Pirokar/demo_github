@@ -1,7 +1,8 @@
 package im.threads.internal.transport;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -102,8 +103,8 @@ public final class HistoryParser {
                         if (quote != null && quote.getFileDescription() != null)
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
-                            out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, timeStamp,
-                                    operatorId, photoUrl, message.isRead(), null, false));
+                            out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, message.getFormattedText(), timeStamp,
+                                    operatorId, photoUrl, message.isRead(), null, false, message.getQuickReplies()));
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));

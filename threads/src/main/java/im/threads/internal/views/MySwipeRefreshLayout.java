@@ -2,14 +2,14 @@ package im.threads.internal.views;
 
 import android.content.Context;
 import android.os.Parcelable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import im.threads.R;
 
 public final class MySwipeRefreshLayout extends SwipeRefreshLayout {

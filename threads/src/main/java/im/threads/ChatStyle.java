@@ -1,11 +1,13 @@
 package im.threads;
 
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.annotation.StyleRes;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
+
+import com.yydcdut.markdown.MarkdownConfiguration;
 
 import java.io.Serializable;
 
@@ -128,8 +130,6 @@ public final class ChatStyle implements Serializable {
 
     //images history & gallery screens
     @ColorRes
-    public int imagesScreenToolbarColor = R.color.threads_attachments_toolbar;
-    @ColorRes
     public int imagesScreenBackgroundColor = R.color.threads_attachments_background;
     @ColorRes
     public int imagesScreenAuthorTextColor = R.color.threads_attachments_author_text_color;
@@ -170,9 +170,9 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int nougatPushAccentColorResId = R.color.threads_nougat_push_accent;
     @ColorRes
-    public int quickReplyMessageBackgroundColor = R.color.threads_quick_reply_message_background;
+    public int notificationQuickReplyMessageBackgroundColor = R.color.threads_notification_quick_reply_message_background;
     @ColorRes
-    public int quickReplyMessageTextColor = R.color.threads_quick_reply_message_text_color;
+    public int notificationQuickReplyMessageTextColor = R.color.threads_notification_quick_reply_message_text_color;
 
     // resolve thread request style
     @StringRes
@@ -227,7 +227,7 @@ public final class ChatStyle implements Serializable {
     // set can show specialist onfo
     public boolean canShowSpecialistInfo = true;
 
-    public boolean useExternalCameraApp = false;
+    public boolean useExternalCameraApp = true;
 
     public boolean selfieEnabled = false;
 
@@ -270,6 +270,9 @@ public final class ChatStyle implements Serializable {
     public String typingFont;
     @Nullable
     public String scheduleAlertFont;
+
+    // Конфигурации markdown в сообщениях
+    public MarkdownConfiguration incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
 
     public ChatStyle() {
     }
@@ -611,23 +614,23 @@ public final class ChatStyle implements Serializable {
      * @param defTitleResId                    - R.string.threads_push_title
      * @param pushBackgroundColorResId         - R.color.threads_push_background
      * @param nougatPushAccentColorResId       - R.color.threads_nougat_push_accent
-     * @param quickReplyMessageBackgroundColor = R.color.threads_quick_reply_message_background;
-     * @param quickReplyMessageTextColor       = R.color.threads_quick_reply_message_text_color;
+     * @param notificationQuickReplyMessageBackgroundColor = R.color.threads_quick_reply_message_background;
+     * @param notificationQuickReplyMessageTextColor       = R.color.threads_quick_reply_message_text_color;
      * @return Builder
      */
     public ChatStyle setPushNotificationStyle(@DrawableRes final int defPushIconResId,
                                               @StringRes final int defTitleResId,
                                               @ColorRes final int pushBackgroundColorResId,
                                               @ColorRes final int nougatPushAccentColorResId,
-                                              @ColorRes int quickReplyMessageBackgroundColor,
-                                              @ColorRes int quickReplyMessageTextColor) {
+                                              @ColorRes int notificationQuickReplyMessageBackgroundColor,
+                                              @ColorRes int notificationQuickReplyMessageTextColor) {
 
         this.defPushIconResId = defPushIconResId;
         this.defTitleResId = defTitleResId;
         this.pushBackgroundColorResId = pushBackgroundColorResId;
         this.nougatPushAccentColorResId = nougatPushAccentColorResId;
-        this.quickReplyMessageBackgroundColor = quickReplyMessageBackgroundColor;
-        this.quickReplyMessageTextColor = quickReplyMessageTextColor;
+        this.notificationQuickReplyMessageBackgroundColor = notificationQuickReplyMessageBackgroundColor;
+        this.notificationQuickReplyMessageTextColor = notificationQuickReplyMessageTextColor;
         return this;
     }
 
@@ -637,21 +640,17 @@ public final class ChatStyle implements Serializable {
     /**
      * Default values:
      *
-     * @param imagesScreenToolbarColor    = R.color.threads_attachments_toolbar;
      * @param imagesScreenBackgroundColor = R.color.threads_attachments_background;
      * @param imagesScreenAuthorTextColor = R.color.threads_attachments_author_text_color;
      * @param imagesScreenDateTextColor   = R.color.threads_attachments_date_text_color;
      * @param imagesScreenAuthorTextSize  = R.dimen.threads_attachments_author_text_size;
      * @param imagesScreenDateTextSize    = R.dimen.threads_attachments_date_text_size;
      */
-    public ChatStyle setImagesGalleryStyle(@ColorRes int imagesScreenToolbarColor,
-                                           @ColorRes int imagesScreenBackgroundColor,
+    public ChatStyle setImagesGalleryStyle(@ColorRes int imagesScreenBackgroundColor,
                                            @ColorRes int imagesScreenAuthorTextColor,
                                            @ColorRes int imagesScreenDateTextColor,
                                            @DimenRes int imagesScreenAuthorTextSize,
                                            @DimenRes int imagesScreenDateTextSize) {
-
-        this.imagesScreenToolbarColor = imagesScreenToolbarColor;
         this.imagesScreenBackgroundColor = imagesScreenBackgroundColor;
         this.imagesScreenAuthorTextColor = imagesScreenAuthorTextColor;
         this.imagesScreenDateTextColor = imagesScreenDateTextColor;
@@ -756,6 +755,12 @@ public final class ChatStyle implements Serializable {
         this.welcomeScreenSubtitleTextResId = welcomeScreenSubtitleTextResId;
         this.welcomeScreenTitleSizeInSp = welcomeScreenTitleSizeInSp;
         this.welcomeScreenSubtitleSizeInSp = welcomeScreenSubtitleSizeInSp;
+        return this;
+    }
+
+    // https://github.com/yydcdut/RxMarkdown
+    public ChatStyle setIncomingMarkdownConfiguration(MarkdownConfiguration incoming) {
+        this.incomingMarkdownConfiguration = incoming;
         return this;
     }
 

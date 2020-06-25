@@ -5,10 +5,11 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import im.threads.internal.Config;
+import androidx.appcompat.widget.AppCompatButton;
 import im.threads.ChatStyle;
+import im.threads.internal.Config;
 
-public final class CustomFontButton extends android.support.v7.widget.AppCompatButton {
+public final class CustomFontButton extends AppCompatButton {
     public CustomFontButton(Context context) {
         super(context);
         if (isInEditMode()) {
@@ -25,7 +26,7 @@ public final class CustomFontButton extends android.support.v7.widget.AppCompatB
         setTypefaceView(context);
     }
 
-    public void setTypefaceView(Context context){
+    public void setTypefaceView(Context context) {
         ChatStyle style = Config.instance.getChatStyle();
         if (!TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));

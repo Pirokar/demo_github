@@ -12,7 +12,7 @@
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/threads_image_placeholder"/>
 
-    <android.support.v7.widget.AppCompatCheckBox
+    <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/checkbox"
         android:layout_width="36dp"
         android:layout_height="36dp"

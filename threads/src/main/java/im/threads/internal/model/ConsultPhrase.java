@@ -1,7 +1,8 @@
 package im.threads.internal.model;
 
-import android.support.v4.util.ObjectsCompat;
 import android.text.TextUtils;
+
+import androidx.core.util.ObjectsCompat;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     private final boolean sex;
     private final long timeStamp;
     private final String phrase;
+    private final String formattedPhrase;
     private final String consultName;
     private boolean isAvatarVisible = true;
     private final Quote quote;
@@ -26,6 +28,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     private boolean isChosen;
     private boolean isRead;
     private final String status;
+    private List<QuickReply> quickReplies;
     //для поиска сообщений в чате
     private boolean found;
 
@@ -33,8 +36,8 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     public String ogUrl;
 
     public ConsultPhrase(String uuid, String providerId, List<String> providerIds, FileDescription fileDescription, Quote quote, String consultName,
-                         String phrase, long timeStamp, String consultId, String avatarPath,
-                         boolean isRead, String status, boolean sex) {
+                         String phrase, String formattedPhrase, long timeStamp, String consultId, String avatarPath,
+                         boolean isRead, String status, boolean sex, List<QuickReply> quickReplies) {
 
         super(avatarPath, consultId);
 
@@ -45,10 +48,12 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         this.quote = quote;
         this.consultName = consultName;
         this.phrase = phrase;
+        this.formattedPhrase = formattedPhrase;
         this.timeStamp = timeStamp;
         this.isRead = isRead;
         this.status = status;
         this.sex = sex;
+        this.quickReplies = quickReplies;
     }
 
     public String getUuid() {
@@ -65,6 +70,10 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
     public String getStatus() {
         return status;
+    }
+
+    public List<QuickReply> getQuickReplies() {
+        return quickReplies;
     }
 
     public boolean getSex() {
@@ -185,6 +194,10 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         return phrase;
     }
 
+    public String getFormattedPhrase() {
+        return formattedPhrase;
+    }
+
     public boolean hasSameContent(ConsultPhrase consultPhrase) {
 
         if (consultPhrase == null) {
@@ -193,6 +206,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
         boolean hasSameContent = ObjectsCompat.equals(this.uuid, consultPhrase.uuid)
                 && ObjectsCompat.equals(this.phrase, consultPhrase.phrase)
+                && ObjectsCompat.equals(this.formattedPhrase, consultPhrase.formattedPhrase)
                 && ObjectsCompat.equals(this.providerId, consultPhrase.providerId)
                 && ObjectsCompat.equals(this.timeStamp, consultPhrase.timeStamp)
                 && ObjectsCompat.equals(this.isRead, consultPhrase.isRead)

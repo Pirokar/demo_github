@@ -5,10 +5,10 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import im.threads.internal.Config;
 import im.threads.ChatStyle;
+import im.threads.internal.Config;
 
-public final class CustomFontEditText extends android.support.v7.widget.AppCompatEditText {
+public final class CustomFontEditText extends androidx.appcompat.widget.AppCompatEditText {
     public CustomFontEditText(Context context) {
         super(context);
         if (isInEditMode()) {
@@ -25,7 +25,7 @@ public final class CustomFontEditText extends android.support.v7.widget.AppCompa
         setTypefaceView(context);
     }
 
-    public void setTypefaceView(Context context){
+    public void setTypefaceView(Context context) {
         ChatStyle style = Config.instance.getChatStyle();
         if (!TextUtils.isEmpty(style.defaultFontRegular)) {
             setTypeface(Typeface.createFromAsset(context.getAssets(), style.defaultFontRegular));

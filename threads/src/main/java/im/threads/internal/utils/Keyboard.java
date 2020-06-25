@@ -2,9 +2,10 @@ package im.threads.internal.utils;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.Nullable;
 
 public final class Keyboard {
 

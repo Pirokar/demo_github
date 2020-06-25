@@ -1,7 +1,8 @@
 package im.threads.internal.transport;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
@@ -15,11 +16,11 @@ import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
-import im.threads.internal.model.OperatorLookupStarted;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
+import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.models.Attachment;
@@ -51,7 +52,7 @@ public final class MessageParser {
             case REQUEST_CLOSE_THREAD:
                 return getRequestResolveThread(fullMessage);
             case OPERATOR_LOOKUP_STARTED:
-                return new OperatorLookupStarted(System.currentTimeMillis());
+                return new SearchingConsult();
             case NONE:
             case MESSAGES_READ:
             case CLIENT_BLOCKED:
@@ -116,7 +117,6 @@ public final class MessageParser {
         return survey;
     }
 
-    @Nullable
     private static RequestResolveThread getRequestResolveThread(final JsonObject fullMessage) {
         RequestResolveThreadContent content = Config.instance.gson.fromJson(fullMessage, RequestResolveThreadContent.class);
         return content.getHideAfter() > 0 ? new RequestResolveThread(content.getHideAfter(), System.currentTimeMillis()) : null;
@@ -144,6 +144,7 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), name, sentAt);
             }
+
             return new ConsultPhrase(
                     content.getUuid(),
                     messageId,
@@ -152,19 +153,23 @@ public final class MessageParser {
                     quote,
                     name,
                     phrase,
+                    content.getFormattedText(),
                     sentAt,
                     operatorId,
                     photoUrl,
                     false,
                     status,
-                    gender
+                    gender,
+                    content.getQuickReplies()
             );
         } else {
             FileDescription fileDescription = null;
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), null, sentAt);
             }
-            return new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription, MessageState.STATE_SENT);
+            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription);
+            userPhrase.setSentState(MessageState.STATE_SENT);
+            return userPhrase;
         }
     }
 
@@ -180,6 +185,7 @@ public final class MessageParser {
             );
             fileDescription.setDownloadPath(attachment.getResult());
             fileDescription.setIncomingName(attachment.getName());
+            fileDescription.setSelfie(attachment.isSelfie());
         }
         return fileDescription;
     }

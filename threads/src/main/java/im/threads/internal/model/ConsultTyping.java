@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-import android.support.v4.util.ObjectsCompat;
+import androidx.core.util.ObjectsCompat;
 
 public final class ConsultTyping extends ConsultChatPhrase implements ChatItem {
     private long date;

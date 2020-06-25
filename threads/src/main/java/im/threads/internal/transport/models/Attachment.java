@@ -5,6 +5,7 @@ public class Attachment {
     private String result;
     private String name;
     private long size;
+    private boolean isSelfie;
 
     public long getId() {
         return id;
@@ -20,5 +21,9 @@ public class Attachment {
 
     public long getSize() {
         return size;
+    }
+
+    public boolean isSelfie() {
+        return isSelfie;
     }
 }

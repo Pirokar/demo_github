@@ -1,10 +1,11 @@
 package im.threads.internal.utils;
 
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public final class BucketsGalleryDecorator extends RecyclerView.ItemDecoration {
     private int offset;

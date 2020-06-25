@@ -2,7 +2,6 @@ package im.threads.internal.widget;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,7 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
+import androidx.core.content.ContextCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;

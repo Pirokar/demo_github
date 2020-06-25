@@ -7,18 +7,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.controllers.QuickAnswerController;
 import im.threads.internal.fragments.QuickAnswerFragment;
 import im.threads.internal.model.ConsultPhrase;
-import im.threads.internal.model.OutgoingUserMessage;
+import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.utils.ThreadsLogger;
 
 public final class QuickAnswerActivity
@@ -89,7 +90,7 @@ public final class QuickAnswerActivity
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
                 ThreadsLogger.i(TAG, "onReceive: ACTION_ANSWER");
-                controller.onUserAnswer(new OutgoingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER)));
+                controller.onUserAnswer(new UpcomingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER), false));
                 finish();
             }
         }

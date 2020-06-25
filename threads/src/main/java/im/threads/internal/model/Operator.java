@@ -1,7 +1,8 @@
 package im.threads.internal.model;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 public final class Operator {
     private Long id;

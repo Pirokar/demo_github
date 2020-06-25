@@ -1,7 +1,6 @@
 package im.threads.internal.views;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -9,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.ChatStyle;

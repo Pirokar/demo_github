@@ -2,18 +2,23 @@ package im.threads;
 
 import android.app.PendingIntent;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.controllers.UnreadMessagesController;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.model.OutgoingUserMessage;
+import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.exceptions.UndeliverableException;
+import io.reactivex.functions.Consumer;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ThreadsLib {
 
@@ -32,10 +37,22 @@ public final class ThreadsLib {
         PrefUtils.migrateToSeparateStorageIfNeeded();
         Config.instance.transport.init();
         if (Config.instance.unreadMessagesCountListener != null) {
-            DatabaseHolder.getInstance()
-                    .getUnreadMessagesCount(false, Config.instance.unreadMessagesCountListener);
+            Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(UnreadMessagesController.INSTANCE.getUnreadMessages());
+            UnreadMessagesController.INSTANCE.getUnreadMessagesPublishProcessor()
+                    .distinctUntilChanged()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count));
         }
         ChatController.getInstance();
+        Consumer<? super Throwable> errorHandler = RxJavaPlugins.getErrorHandler();
+        RxJavaPlugins.setErrorHandler(throwable -> {
+            if (errorHandler != null) {
+                errorHandler.accept(throwable);
+            }
+            if (throwable instanceof UndeliverableException) {
+                return;
+            }
+        });
     }
 
     public static ThreadsLib getInstance() {
@@ -87,7 +104,7 @@ public final class ThreadsLib {
                         file.length(),
                         System.currentTimeMillis());
             }
-            OutgoingUserMessage msg = new OutgoingUserMessage(fileDescription, null, message);
+            UpcomingUserMessage msg = new UpcomingUserMessage(fileDescription, null, message, false);
             chatController.onUserInput(msg);
             return true;
         } else {
@@ -103,4 +120,5 @@ public final class ThreadsLib {
     public interface UnreadMessagesCountListener {
         void onUnreadMessagesCountChanged(int count);
     }
+
 }

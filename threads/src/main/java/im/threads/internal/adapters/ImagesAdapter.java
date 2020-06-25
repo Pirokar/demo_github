@@ -5,20 +5,23 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
 import im.threads.internal.fragments.ImageFragment;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
-public final class ImagesAdapter extends PagerAdapter {
+/**
+ * Created by yuri on 05.08.2016.
+ */
+public class ImagesAdapter extends PagerAdapter {
     private List<FileDescription> fileDescriptions;
 
     private static final String TAG = "ImagesAdapter";

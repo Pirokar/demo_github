@@ -2,18 +2,19 @@ package im.threads.internal.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
-import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.core.util.ObjectsCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonSyntaxException;
 import com.mfms.android.push_lite.utils.CommonUtils;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import im.threads.ChatStyle;
@@ -39,6 +40,8 @@ public final class PrefUtils {
     private static final String TRANSPORT_TYPE = "TRANSPORT_TYPE";
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String MIGRATED = "MIGRATED";
+
+    private static final String UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT";
 
     private static final String STORE_NAME = "im.threads.internal.utils.PrefStore";
 
@@ -256,11 +259,10 @@ public final class PrefUtils {
                 setTransportType(ConfigBuilder.TransportType.MFMS_PUSH.toString());
             }
         } else {
-            // TODO: в следующие версии добавить
-            /*if (!ObjectsCompat.equals(transportType, Config.instance.transport.getType().toString())) {
+            if (!ObjectsCompat.equals(transportType, Config.instance.transport.getType().toString())) {
                 setTransportType(Config.instance.transport.getType().toString());
                 resetPushToken();
-            }*/
+            }
         }
     }
 
@@ -271,8 +273,8 @@ public final class PrefUtils {
                 FirebaseInstanceId.getInstance().deleteToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE);
                 setFcmToken(null);
                 setFcmToken(FirebaseInstanceId.getInstance().getToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE));
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                ThreadsLogger.w(TAG, "resetPushToken failed: ", e);
             }
         }).start();
     }
@@ -282,6 +284,14 @@ public final class PrefUtils {
                 .edit()
                 .putString(TRANSPORT_TYPE, transportType)
                 .commit();
+    }
+
+    public static int getUnreadPushCount() {
+        return getDefaultSharedPreferences().getInt(UNREAD_PUSH_COUNT, 0);
+    }
+
+    public static void setUnreadPushCount(int unreadPushCount) {
+        getDefaultSharedPreferences().edit().putInt(UNREAD_PUSH_COUNT, unreadPushCount).commit();
     }
 
     private static String getTransportType() {

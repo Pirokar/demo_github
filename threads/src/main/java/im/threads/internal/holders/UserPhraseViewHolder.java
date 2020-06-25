@@ -3,10 +3,6 @@ package im.threads.internal.holders;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
@@ -17,10 +13,16 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
@@ -33,26 +35,27 @@ import im.threads.internal.model.Quote;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.opengraph.OGDataProvider;
-import im.threads.internal.picasso_url_connection_only.Callback;
-import im.threads.internal.picasso_url_connection_only.Picasso;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.UrlUtils;
 import im.threads.internal.utils.ViewUtils;
 import im.threads.internal.views.CircularProgressButton;
+import im.threads.internal.widget.text_view.BubbleMessageTextView;
+import im.threads.internal.widget.text_view.BubbleTimeTextView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * layout/item_user_text_with_file.xml
  */
 public final class UserPhraseViewHolder extends BaseHolder {
     private static final String TAG = "UserPhraseViewHolder ";
-    private TextView mPhraseTextView;
+    private BubbleMessageTextView mPhraseTextView;
     private TableRow mRightTextRow;
     private ImageView mImage;
     private TextView mRightTextDescr;
     private TextView mRightTextHeader;
     private TextView mRightTextTimeStamp;
-    private TextView mTimeStampTextView;
+    private BubbleTimeTextView mTimeStampTextView;
     private FrameLayout mPhraseFrame;
     private CircularProgressButton mFileImageButton;
     private SimpleDateFormat sdf;
@@ -112,43 +115,36 @@ public final class UserPhraseViewHolder extends BaseHolder {
     public void onBind(final UserPhrase userPhrase,
                        final String phrase,
                        final long timeStamp,
-                       final MessageState sentState,
+                       final MessageState sendState,
                        final Quote quote,
                        final FileDescription fileDescription,
                        final View.OnClickListener imageClickListener,
                        @Nullable final View.OnClickListener fileClickListener,
                        final View.OnClickListener onRowClickListener,
                        final View.OnLongClickListener onLongClickListener,
-                       Runnable onItemChangedListener,
                        final boolean isChosen) {
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
         ViewUtils.setClickListener((ViewGroup) itemView, onRowClickListener);
+        setTimestamp(timeStamp);
+        setSendState(sendState);
         if (phrase == null || phrase.length() == 0) {
             mPhraseTextView.setVisibility(View.GONE);
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
+            mPhraseTextView.bindTimestampView(mTimeStampTextView);
             mPhraseTextView.setText(phrase);
-            List<String> urls = UrlUtils.extractLinks(phrase);
-            if (!urls.isEmpty()) {
-                final String url = urls.get(0);
+            String url = UrlUtils.extractLink(phrase);
+            if (url != null) {
                 if (userPhrase.ogData == null) {
-                    loadOGData(onItemChangedListener, userPhrase, url);
+                    loadOGData(userPhrase, url);
                 } else {
-                    if (!userPhrase.ogData.areTextsEmpty()) {
-                        bindOGData(userPhrase.ogData, url);
-                        showOGView();
-                    } else {
-                        hideOGView();
-                    }
+                    bindOGData(userPhrase.ogData, url);
                 }
             } else {
                 hideOGView();
             }
         }
         mImage.setVisibility(View.GONE);
-        String timeText = sdf.format(new Date(timeStamp));
-        mTimeStampTextView.setText(timeText);
-        ogTimestamp.setText(timeText);
         if (fileDescription == null && quote == null) {
             mRightTextRow.setVisibility(View.GONE);
         }
@@ -159,7 +155,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(quote.getTimeStamp()));
-            mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));//TODO why set it here? It is already set earlier
             if (quote.getFileDescription() != null) {
                 if (quote.getFileDescription().getFilePath() != null)
                     quote.getFileDescription().setDownloadProgress(100);
@@ -182,14 +177,14 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 mImage.setOnClickListener(imageClickListener);
                 // User image can be already available locally
                 if (TextUtils.isEmpty(fileDescription.getFilePath())) {
-                    Picasso.with(itemView.getContext())
+                    Picasso.get()
                             .load(fileDescription.getDownloadPath())
                             .error(style.imagePlaceholder)
                             .fit()
                             .centerCrop()
                             .into(mImage);
                 } else {
-                    Picasso.with(itemView.getContext())
+                    Picasso.get()
                             .load(new File(fileDescription.getFilePath()))
                             .error(style.imagePlaceholder)
                             .fit()
@@ -212,7 +207,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 if (fileClickListener != null) {
                     mFileImageButton.setOnClickListener(fileClickListener);
                 }
-                mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));//TODO why set it here? It is already set earlier
                 if (fileDescription.getFilePath() != null) {
                     mFileImageButton.setProgress(100);
                 } else {
@@ -231,8 +225,24 @@ public final class UserPhraseViewHolder extends BaseHolder {
         } else {
             mRightTextHeader.setVisibility(View.VISIBLE);
         }
+        if (isChosen) {
+            mFilterView.setVisibility(View.VISIBLE);
+            mFilterViewSecond.setVisibility(View.VISIBLE);
+        } else {
+            mFilterView.setVisibility(View.INVISIBLE);
+            mFilterViewSecond.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void setTimestamp(long timeStamp) {
+        String timeText = sdf.format(new Date(timeStamp));
+        mTimeStampTextView.setText(timeText);
+        ogTimestamp.setText(timeText);
+    }
+
+    private void setSendState(MessageState sendState) {
         final Drawable d;
-        switch (sentState) {
+        switch (sendState) {
             case STATE_WAS_READ:
                 d = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.threads_message_received);
                 d.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.threads_outgoing_message_received_icon), PorterDuff.Mode.SRC_ATOP);
@@ -257,35 +267,29 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 ogTimestamp.setCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
                 break;
         }
-        if (isChosen) {
-            mFilterView.setVisibility(View.VISIBLE);
-            mFilterViewSecond.setVisibility(View.VISIBLE);
-        } else {
-            mFilterView.setVisibility(View.INVISIBLE);
-            mFilterViewSecond.setVisibility(View.INVISIBLE);
+    }
+
+    private void loadOGData(final UserPhrase chatItem, final String url) {
+        hideOGView();
+        subscribe(OGDataProvider.getInstance().getOGData(url)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ogData -> {
+                    ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
+                    if (ogData != null && !ogData.isEmpty()) {
+                        chatItem.ogData = ogData;
+                        chatItem.ogUrl = url;
+                    }
+                    bindOGData(ogData, url);
+                }, e -> ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e))
+        );
+    }
+
+    private void bindOGData(final OGData ogData, String url) {
+        if (ogData == null || ogData.areTextsEmpty()) {
+            hideOGView();
+            return;
         }
-    }
-
-    private void loadOGData(Runnable onItemChangedListener, final UserPhrase chatItem, final String url) {
-        OGDataProvider.getInstance().getOGData(url, new im.threads.internal.utils.Callback<OGData, Throwable>() {
-            @Override
-            public void onSuccess(OGData ogData) {
-                ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
-                if (ogData != null && !ogData.isEmpty()) {
-                    chatItem.ogData = ogData;
-                    chatItem.ogUrl = url;
-                    onItemChangedListener.run();
-                }
-            }
-
-            @Override
-            public void onError(Throwable error) {
-                ThreadsLogger.w(TAG, "OpenGraph data load failed: ", error);
-            }
-        });
-    }
-
-    private void bindOGData(@NonNull final OGData ogData, String url) {
+        showOGView();
         if (!TextUtils.isEmpty(ogData.title)) {
             ogTitle.setVisibility(View.VISIBLE);
             ogTitle.setText(ogData.title);
@@ -303,13 +307,13 @@ public final class UserPhraseViewHolder extends BaseHolder {
         if (TextUtils.isEmpty(ogData.image)) {
             ogImage.setVisibility(View.GONE);
         } else {
-            Picasso.with(itemView.getContext())
+            Picasso.get()
                     .load(ogData.image)
                     .fetch(new Callback() {
                         @Override
                         public void onSuccess() {
                             ogImage.setVisibility(View.VISIBLE);
-                            Picasso.with(itemView.getContext())
+                            Picasso.get()
                                     .load(ogData.image)
                                     .error(style.imagePlaceholder)
                                     .fit()
@@ -318,9 +322,9 @@ public final class UserPhraseViewHolder extends BaseHolder {
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(Exception e) {
                             ogImage.setVisibility(View.GONE);
-                            ThreadsLogger.d(TAG, "Could not load OpenGraph image");
+                            ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.getLocalizedMessage());
                         }
                     });
         }

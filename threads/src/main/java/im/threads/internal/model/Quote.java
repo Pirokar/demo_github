@@ -1,7 +1,7 @@
 package im.threads.internal.model;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.ObjectsCompat;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
 
 public final class Quote {
     private String phraseOwnerTitle;

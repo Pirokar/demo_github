@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import im.threads.internal.Config;
 import im.threads.ChatStyle;
 
-public class LightCustomFontTextView extends android.support.v7.widget.AppCompatTextView {
+public class LightCustomFontTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     public LightCustomFontTextView(Context context) {
         super(context);
