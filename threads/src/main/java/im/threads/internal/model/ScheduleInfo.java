@@ -33,23 +33,6 @@ public final class ScheduleInfo implements ChatItem {
         this.notification = notification;
     }
 
-    public long getDate() {
-        return date;
-    }
-
-    public void setDate(long date) {
-        this.date = date;
-    }
-
-    public boolean isSendDuringInactive() {
-        return sendDuringInactive;
-    }
-
-    @Override
-    public long getTimeStamp() {
-        return date;
-    }
-
     public Date getStartTime() {
         return startTime;
     }
@@ -82,14 +65,63 @@ public final class ScheduleInfo implements ChatItem {
         this.active = active;
     }
 
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public boolean isSendDuringInactive() {
+        return sendDuringInactive;
+    }
+
+    @Override
+    public long getTimeStamp() {
+        return date;
+    }
+
     /**
      * @return true, если в данный момент чат работает
      */
     public boolean isChatWorking() {
         if (startTime == null || endTime == null || serverTime == null) {
             return active;
-        } else {
-            return startTime.getTime() <= serverTime.getTime() && serverTime.getTime() <= endTime.getTime();
         }
+        if (active) {
+            //Next unavailability not started yet
+            // всегда true т.к. startTime - это дата и время старта ближайшего интервала неактивности чата
+            if (serverTime.getTime() < startTime.getTime()) {
+                return true;
+            }
+
+            //Next unavailability started
+            if (serverTime.getTime() > startTime.getTime() && serverTime.getTime() < endTime.getTime()) {
+                return false;
+            }
+
+            //Next unavailability ended
+            if (serverTime.getTime() > endTime.getTime()) {
+                return true;
+            }
+        } else {
+            // всегда true т.к. endTime - это дата и время окончания ближайшего(или текущего) интервала неактивности чата
+            if (serverTime.getTime() < endTime.getTime()) {
+                return false;
+            }
+
+            //Unavailability ended, next unavailability not started yet
+            if (serverTime.getTime() > endTime.getTime() && serverTime.getTime() < startTime.getTime()) {
+                return true;
+            }
+
+            //Next unavailability started
+            if (serverTime.getTime() > startTime.getTime()) {
+                return true;
+            }
+        }
+        return true;
     }
+
 }
