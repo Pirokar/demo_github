@@ -2,6 +2,7 @@ package im.threads.internal.retrofit;
 
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.model.HistoryResponse;
+import im.threads.internal.opengraph.OGResponse;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -33,4 +34,6 @@ public interface ThreadsApi {
             @Query("libVersion") String version
     );
 
+    @GET("opengraph")
+    Call<OGResponse> openGraph(@Query(value = "href", encoded = true) String url);
 }

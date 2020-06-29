@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.opengraph.OGDataConverterFactory;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.MetaDataUtils;
@@ -35,7 +34,6 @@ public final class ApiGenerator {
         }
         threadsApi = new Retrofit.Builder()
                         .baseUrl(baseUrl)
-                        .addConverterFactory(new OGDataConverterFactory())
                         .addConverterFactory(GsonConverterFactory.create())
                         .client(createOkHttpClient())
                         .build().create(ThreadsApi.class);

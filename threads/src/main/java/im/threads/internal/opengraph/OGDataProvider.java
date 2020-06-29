@@ -1,27 +1,15 @@
 package im.threads.internal.opengraph;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import im.threads.internal.Config;
+import im.threads.internal.retrofit.ApiGenerator;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.ResponseBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public final class OGDataProvider {
 
-    private static final String USER_AGENT_HEADER = "User-Agent";
-
     private static volatile OGDataProvider instance;
-    private final OkHttpClient client;
-    private final OGParser ogParser;
 
     private OGDataProvider() {
-        client = createOkHttpClient();
-        ogParser = new OGParser();
     }
 
     public static OGDataProvider getInstance() {
@@ -35,32 +23,21 @@ public final class OGDataProvider {
         return instance;
     }
 
-    private OkHttpClient createOkHttpClient() {
-        //Preventing redirects to mobile versions without OpenGraph
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                .addInterceptor(chain -> chain.proceed(chain.request().newBuilder().header(USER_AGENT_HEADER, "Chrome/68.0.3440.106").build()))
-                .connectTimeout(60, TimeUnit.SECONDS);
-        if (Config.instance.isDebugLoggingEnabled) {
-            clientBuilder.addInterceptor(new HttpLoggingInterceptor()
-                    .setLevel(HttpLoggingInterceptor.Level.BASIC));
-        }
-        return clientBuilder.build();
-    }
-
-    public Single<OGData> getOGData(final String url) {
-        return Single.fromCallable(() -> {
-            final String finalUrl;
-            //Adding http for urls without scheme
-            if (!url.toLowerCase().startsWith("http")) {
-                finalUrl = "http://" + url;
-            } else {
-                finalUrl = url;
-            }
-            final ResponseBody responseBody = client.newCall(new Request.Builder().url(finalUrl).build()).execute().body();
-            if (responseBody == null) {
-                throw new IOException("null response body");
-            }
-            return ogParser.parse(responseBody.byteStream());
-        }).subscribeOn(Schedulers.io());
+    public Maybe<OGData> getOGData(final String url) {
+        return Single
+                .fromCallable(() -> {
+                    if (!url.toLowerCase().startsWith("http")) {
+                        OGResponse ogResponse = ApiGenerator.getThreadsApi().openGraph("http://" + url).execute().body();
+                        if (ogResponse == null || ogResponse.getOgdata() == null) {
+                            ogResponse = ApiGenerator.getThreadsApi().openGraph("https://" + url).execute().body();
+                        }
+                        return ogResponse;
+                    } else {
+                       return ApiGenerator.getThreadsApi().openGraph(url).execute().body();
+                    }
+                })
+                .filter(ogResponse -> ogResponse.getOgdata() != null)
+                .map(OGResponse::getOgdata)
+                .subscribeOn(Schedulers.io());
     }
 }

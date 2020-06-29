@@ -290,31 +290,31 @@ public final class UserPhraseViewHolder extends BaseHolder {
             return;
         }
         showOGView();
-        if (!TextUtils.isEmpty(ogData.title)) {
+        if (!TextUtils.isEmpty(ogData.getTitle())) {
             ogTitle.setVisibility(View.VISIBLE);
-            ogTitle.setText(ogData.title);
+            ogTitle.setText(ogData.getTitle());
             ogTitle.setTypeface(ogTitle.getTypeface(), Typeface.BOLD);
         } else {
             ogTitle.setVisibility(View.GONE);
         }
-        if (!TextUtils.isEmpty(ogData.description)) {
+        if (!TextUtils.isEmpty(ogData.getDescription())) {
             ogDescription.setVisibility(View.VISIBLE);
-            ogDescription.setText(ogData.description);
+            ogDescription.setText(ogData.getDescription());
         } else {
             ogDescription.setVisibility(View.GONE);
         }
-        ogUrl.setText(!TextUtils.isEmpty(ogData.url) ? ogData.url : url);
-        if (TextUtils.isEmpty(ogData.image)) {
+        ogUrl.setText(!TextUtils.isEmpty(ogData.getUrl()) ? ogData.getUrl() : url);
+        if (TextUtils.isEmpty(ogData.getImageUrl())) {
             ogImage.setVisibility(View.GONE);
         } else {
             Picasso.get()
-                    .load(ogData.image)
+                    .load(ogData.getImageUrl())
                     .fetch(new Callback() {
                         @Override
                         public void onSuccess() {
                             ogImage.setVisibility(View.VISIBLE);
                             Picasso.get()
-                                    .load(ogData.image)
+                                    .load(ogData.getImageUrl())
                                     .error(style.imagePlaceholder)
                                     .fit()
                                     .centerInside()
