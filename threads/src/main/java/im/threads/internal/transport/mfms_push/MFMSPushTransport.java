@@ -2,15 +2,16 @@ package im.threads.internal.transport.mfms_push;
 
 import android.text.TextUtils;
 
-import com.mfms.android.push_lite.PushController;
-import com.mfms.android.push_lite.exception.PushServerErrorException;
-import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
+
+import com.mfms.android.push_lite.PushController;
+import com.mfms.android.push_lite.exception.PushServerErrorException;
+import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
+
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
@@ -29,7 +30,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class MFMSPushTransport implements Transport, LifecycleObserver {
+public final class MFMSPushTransport extends Transport implements LifecycleObserver {
 
     private final ChatUpdateProcessor chatUpdateProcessor = ChatUpdateProcessor.getInstance();
 
@@ -131,18 +132,6 @@ public final class MFMSPushTransport implements Transport, LifecycleObserver {
                         .subscribe(
                                 () -> {
                                 },
-                                e -> chatUpdateProcessor.postError(new TransportException(e.getMessage()))
-                        )
-        );
-    }
-
-    @Override
-    public void sendMessageRead(String messageId) {
-        subscribe(
-                Completable.fromAction(() -> getPushControllerInstance().notifyMessageRead(messageId))
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(
-                                () -> chatUpdateProcessor.postConsultMessageWasRead(messageId),
                                 e -> chatUpdateProcessor.postError(new TransportException(e.getMessage()))
                         )
         );

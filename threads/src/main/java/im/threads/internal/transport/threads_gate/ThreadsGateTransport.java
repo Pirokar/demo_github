@@ -35,7 +35,6 @@ import im.threads.internal.transport.TransportException;
 import im.threads.internal.transport.models.TypingContent;
 import im.threads.internal.transport.threads_gate.requests.RegisterDeviceRequest;
 import im.threads.internal.transport.threads_gate.requests.SendMessageRequest;
-import im.threads.internal.transport.threads_gate.requests.UpdateStatusesRequest;
 import im.threads.internal.transport.threads_gate.responses.BaseMessage;
 import im.threads.internal.transport.threads_gate.responses.BaseResponse;
 import im.threads.internal.transport.threads_gate.responses.GetMessagesData;
@@ -53,7 +52,7 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okio.ByteString;
 
-public class ThreadsGateTransport implements Transport, LifecycleObserver {
+public class ThreadsGateTransport extends Transport implements LifecycleObserver {
 
     private static final String TAG = ThreadsGateTransport.class.getSimpleName();
     private static final String CORRELATION_ID_DIVIDER = ":";
@@ -133,25 +132,6 @@ public class ThreadsGateTransport implements Transport, LifecycleObserver {
         ));
     }
 
-    @Override
-    public void sendMessageRead(String messageId) {
-        if (webSocket == null) {
-            openWebSocket();
-            if (webSocket == null) {
-                return;
-            }
-        }
-        ArrayList<UpdateStatusesRequest.MessageStatusData> messageIds = new ArrayList<>();
-        messageIds.add(new UpdateStatusesRequest.MessageStatusData(messageId, MessageStatus.READ));
-        String text = Config.instance.gson.toJson(
-                new UpdateStatusesRequest(
-                        UUID.randomUUID().toString(),
-                        new UpdateStatusesRequest.Data(PrefUtils.getDeviceAddress(), messageIds)
-                )
-        );
-        ThreadsLogger.i(TAG, "Sending : " + text);
-        webSocket.send(text);
-    }
 
     @Override
     public void sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, String filePath, String quoteFilePath) {

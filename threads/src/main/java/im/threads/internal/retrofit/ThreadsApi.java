@@ -1,13 +1,17 @@
 package im.threads.internal.retrofit;
 
+import java.util.List;
+
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.opengraph.OGResponse;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
+import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
@@ -36,4 +40,7 @@ public interface ThreadsApi {
 
     @GET("opengraph")
     Call<OGResponse> openGraph(@Query(value = "href", encoded = true) String url);
+
+    @POST("messages/read")
+    Call<Void> markMessageAsRead(@Body List<String> ids);
 }

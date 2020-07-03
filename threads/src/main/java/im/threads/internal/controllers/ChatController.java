@@ -321,9 +321,7 @@ public final class ChatController {
                     final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
                     if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
                         firstUnreadProviderId = unreadProviderIds.get(0); // для скролла к первому непрочитанному сообщению
-                        for (final String providerId : unreadProviderIds) {
-                            Config.instance.transport.sendMessageRead(providerId);
-                        }
+                        Config.instance.transport.markMessagesAsRead(unreadProviderIds);
                     } else {
                         firstUnreadProviderId = null;
                     }
@@ -550,10 +548,8 @@ public final class ChatController {
                         saveMessages(serverItems);
                         if (fragment != null && isActive) {
                             final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
-                            if (unreadProviderIds != null) {
-                                for (final String providerId : unreadProviderIds) {
-                                    Config.instance.transport.sendMessageRead(providerId);
-                                }
+                            if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
+                                Config.instance.transport.markMessagesAsRead(unreadProviderIds);
                             }
                         }
                         return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
@@ -990,7 +986,7 @@ public final class ChatController {
         if (chatItem instanceof ConsultPhrase && isActive) {
             ConsultPhrase consultPhrase = (ConsultPhrase) chatItem;
             handleQuickReplies(Collections.singletonList(consultPhrase));
-            Config.instance.transport.sendMessageRead(consultPhrase.getProviderId());
+            Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getProviderId()));
         }
         if (isActive) {
             subscribe(
