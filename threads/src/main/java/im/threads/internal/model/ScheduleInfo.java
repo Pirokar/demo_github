@@ -1,6 +1,8 @@
 package im.threads.internal.model;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Информация о расписании
@@ -16,6 +18,8 @@ public final class ScheduleInfo implements ChatItem {
     private Date endTime;
     private Date serverTime;
     private boolean active;
+
+    private long serverTimeDiff;
 
     public Long getId() {
         return id;
@@ -82,6 +86,10 @@ public final class ScheduleInfo implements ChatItem {
         return date;
     }
 
+    public void calculateServerTimeDiff() {
+        serverTimeDiff = getCurrentUtcTime() - serverTime.getTime();
+    }
+
     /**
      * @return true, если в данный момент чат работает
      */
@@ -89,39 +97,43 @@ public final class ScheduleInfo implements ChatItem {
         if (startTime == null || endTime == null || serverTime == null) {
             return active;
         }
+        long currentServerTime = getCurrentUtcTime() - serverTimeDiff;
         if (active) {
             //Next unavailability not started yet
             // всегда true т.к. startTime - это дата и время старта ближайшего интервала неактивности чата
-            if (serverTime.getTime() < startTime.getTime()) {
+            if (currentServerTime < startTime.getTime()) {
                 return true;
             }
 
             //Next unavailability started
-            if (serverTime.getTime() > startTime.getTime() && serverTime.getTime() < endTime.getTime()) {
+            if (currentServerTime > startTime.getTime() && currentServerTime < endTime.getTime()) {
                 return false;
             }
 
             //Next unavailability ended
-            if (serverTime.getTime() > endTime.getTime()) {
+            if (currentServerTime > endTime.getTime()) {
                 return true;
             }
         } else {
             // всегда true т.к. endTime - это дата и время окончания ближайшего(или текущего) интервала неактивности чата
-            if (serverTime.getTime() < endTime.getTime()) {
+            if (currentServerTime < endTime.getTime()) {
                 return false;
             }
 
             //Unavailability ended, next unavailability not started yet
-            if (serverTime.getTime() > endTime.getTime() && serverTime.getTime() < startTime.getTime()) {
+            if (currentServerTime > endTime.getTime() && currentServerTime < startTime.getTime()) {
                 return true;
             }
 
             //Next unavailability started
-            if (serverTime.getTime() > startTime.getTime()) {
+            if (currentServerTime > startTime.getTime()) {
                 return true;
             }
         }
         return true;
     }
 
+    private long getCurrentUtcTime() {
+        return Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis();
+    }
 }

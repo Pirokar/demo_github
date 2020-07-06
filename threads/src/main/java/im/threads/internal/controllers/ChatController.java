@@ -201,6 +201,7 @@ public final class ChatController {
                             )
             );
         }
+        Config.instance.transport.sendInitChatMessage();
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
@@ -718,6 +719,7 @@ public final class ChatController {
                             }
                             if (chatItem instanceof ScheduleInfo) {
                                 currentScheduleInfo = (ScheduleInfo) chatItem;
+                                currentScheduleInfo.calculateServerTimeDiff();
                                 refreshUserInputState();
                                 consultWriter.setSearchingConsult(false);
                                 if (fragment != null) {
