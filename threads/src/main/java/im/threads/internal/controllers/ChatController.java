@@ -1003,7 +1003,11 @@ public final class ChatController {
         // Если пришло сообщение от оператора,
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
-        if (chatItem instanceof ConsultPhrase || chatItem instanceof ConsultConnectionMessage || (chatItem instanceof ScheduleInfo && ((ScheduleInfo) chatItem).isChatWorking())) {
+        if (
+                 chatItem instanceof ConsultPhrase ||
+                (chatItem instanceof ConsultConnectionMessage && !ChatItemType.OPERATOR_LEFT.name().equals(((ConsultConnectionMessage) chatItem).getType())) ||
+                (chatItem instanceof ScheduleInfo && ((ScheduleInfo) chatItem).isChatWorking())
+        ) {
             if (fragment != null && fragment.isAdded()) {
                 fragment.removeSchedule(false);
             }
