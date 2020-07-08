@@ -160,8 +160,8 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
     }
 
     @Override
-    public List<String> getUnreadMessagesProviderIds() {
-        return messagesTable.getUnreadMessagesProviderIds(this);
+    public List<String> getUnreadMessagesUuid() {
+        return messagesTable.getUnreadMessagesUuid(this);
     }
 
 }

@@ -128,7 +128,7 @@ public final class ChatController {
     private int resendTimeInterval;
     private List<UserPhrase> sendQueue = new ArrayList<>();
     private Handler unsendMessageHandler;
-    private String firstUnreadProviderId;
+    private String firstUnreadUuidId;
 
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
@@ -319,12 +319,12 @@ public final class ChatController {
                 if (cm != null
                         && cm.getActiveNetworkInfo() != null
                         && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
-                    final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
-                    if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
-                        firstUnreadProviderId = unreadProviderIds.get(0); // для скролла к первому непрочитанному сообщению
-                        Config.instance.transport.markMessagesAsRead(unreadProviderIds);
+                    final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
+                    if (uuidList != null && !uuidList.isEmpty()) {
+                        Config.instance.transport.markMessagesAsRead(uuidList);
+                        firstUnreadUuidId = uuidList.get(0); // для скролла к первому непрочитанному сообщению
                     } else {
-                        firstUnreadProviderId = null;
+                        firstUnreadUuidId = null;
                     }
                 }
             }
@@ -408,8 +408,8 @@ public final class ChatController {
         return consultWriter.getCurrentConsultInfo();
     }
 
-    public String getFirstUnreadProviderId() {
-        return firstUnreadProviderId;
+    public String getFirstUnreadUuidId() {
+        return firstUnreadUuidId;
     }
 
     public void bindFragment(final ChatFragment f) {
@@ -548,9 +548,9 @@ public final class ChatController {
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                         saveMessages(serverItems);
                         if (fragment != null && isActive) {
-                            final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
-                            if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
-                                Config.instance.transport.markMessagesAsRead(unreadProviderIds);
+                            final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
+                            if (uuidList != null && !uuidList.isEmpty()) {
+                                Config.instance.transport.markMessagesAsRead(uuidList);
                             }
                         }
                         return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
@@ -988,7 +988,7 @@ public final class ChatController {
         if (chatItem instanceof ConsultPhrase && isActive) {
             ConsultPhrase consultPhrase = (ConsultPhrase) chatItem;
             handleQuickReplies(Collections.singletonList(consultPhrase));
-            Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getProviderId()));
+            Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getUuid()));
         }
         if (isActive) {
             subscribe(

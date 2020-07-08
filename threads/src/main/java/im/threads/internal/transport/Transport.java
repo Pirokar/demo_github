@@ -23,20 +23,20 @@ public abstract class Transport {
     private CompositeDisposable compositeDisposable;
     private final ChatUpdateProcessor chatUpdateProcessor = ChatUpdateProcessor.getInstance();
 
-    public void markMessagesAsRead(List<String> messageIds) {
-        ThreadsLogger.i(TAG, "markMessagesAsRead : " + messageIds);
+    public void markMessagesAsRead(List<String> uuidList) {
+        ThreadsLogger.i(TAG, "markMessagesAsRead : " + uuidList);
         subscribe(
-                Completable.fromAction(() -> ApiGenerator.getThreadsApi().markMessageAsRead(messageIds).execute())
+                Completable.fromAction(() -> ApiGenerator.getThreadsApi().markMessageAsRead(uuidList).execute())
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 () -> {
-                                    ThreadsLogger.i(TAG, "messagesAreRead : " + messageIds);
-                                    for(String messageId: messageIds) {
+                                    ThreadsLogger.i(TAG, "messagesAreRead : " + uuidList);
+                                    for(String messageId: uuidList) {
                                         chatUpdateProcessor.postConsultMessageWasRead(messageId);
                                     }
                                 },
                                 e -> {
-                                    ThreadsLogger.i(TAG, "error on messages read : " + messageIds);
+                                    ThreadsLogger.i(TAG, "error on messages read : " + uuidList);
                                     chatUpdateProcessor.postError(new TransportException(e.getMessage()));
                                 }
                         )
