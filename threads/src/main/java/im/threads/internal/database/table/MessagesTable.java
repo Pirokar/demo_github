@@ -303,7 +303,7 @@ public class MessagesTable extends Table {
     }
 
     public List<String> getUnreadMessagesUuid(SQLiteOpenHelper sqlHelper) {
-        String sql = "select " + COLUMN_MESSAGE_UUID + " , " + COLUMN_PROVIDER_IDS +
+        String sql = "select " + COLUMN_MESSAGE_UUID +
                 " from " + TABLE_MESSAGES +
                 " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc";
