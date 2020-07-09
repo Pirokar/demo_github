@@ -42,6 +42,7 @@ import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Hidable;
 import im.threads.internal.model.HistoryResponse;
+import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.RequestResolveThread;
@@ -710,6 +711,16 @@ public final class ChatController {
                 Flowable.fromPublisher(chatUpdateProcessor.getNewMessageProcessor())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(chatItem -> {
+                            if (chatItem instanceof MessageRead) {
+                                List<String> readMessagesIds = ((MessageRead) chatItem).getMessageId();
+                                for(String readId: readMessagesIds) {
+                                    UserPhrase userPhrase = (UserPhrase) databaseHolder.getChatItem(readId);
+                                    if (userPhrase != null) {
+                                        chatUpdateProcessor.postUserMessageWasRead(userPhrase.getProviderId());
+                                    }
+                                }
+                                return;
+                            }
                             if (chatItem instanceof Survey) {
                                 activeSurvey = (Survey) chatItem;
                                 Config.instance.transport.sendRatingReceived(activeSurvey.getSendingId());
