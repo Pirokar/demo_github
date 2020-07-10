@@ -38,7 +38,6 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,7 +65,6 @@ import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
-import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
@@ -91,7 +89,6 @@ import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.DisplayUtils;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.Keyboard;
-import im.threads.internal.utils.MyFileFilter;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -104,17 +101,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  */
 public final class ChatFragment extends BaseFragment implements
         AttachmentBottomSheetDialogFragment.Callback,
-        FilePickerFragment.SelectedListener,
         PopupMenu.OnMenuItemClickListener {
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
-    public static final int REQUEST_CODE_SELFIE = 106;
-    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 105;
-    public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 102;
-    public static final int REQUEST_PERMISSION_CAMERA = 103;
-    public static final int REQUEST_PERMISSION_READ_EXTERNAL = 104;
-    public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 107;
+    public static final int REQUEST_CODE_SELFIE = 102;
+    public static final int REQUEST_EXTERNAL_CAMERA_PHOTO = 103;
+    public static final int REQUEST_CODE_FILE = 104;
+    public static final int REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY = 200;
+    public static final int REQUEST_PERMISSION_CAMERA = 201;
+    public static final int REQUEST_PERMISSION_READ_EXTERNAL = 202;
+    public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 203;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
@@ -158,7 +155,7 @@ public final class ChatFragment extends BaseFragment implements
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
 
-    private List<String> mAttachedImages = new ArrayList<>();
+    private List<Uri> mAttachedImages = new ArrayList<>();
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -494,7 +491,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         boolean isCameraGranted = ThreadsPermissionChecker.isCameraPermissionGranted(activity);
-        boolean isWriteGranted = ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
+        boolean isWriteGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
         ThreadsLogger.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             if (Config.instance.getChatStyle().useExternalCameraApp) {
@@ -535,7 +532,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Override
-    public void onImageSelectionChanged(List<String> imageList) {
+    public void onImageSelectionChanged(List<Uri> imageList) {
         mAttachedImages = new ArrayList<>(imageList);
     }
 
@@ -628,16 +625,19 @@ public final class ChatFragment extends BaseFragment implements
             mQuote.setQuotedPhraseConsultId(consultPhrase.getConsultId());
         }
         mFileDescription = null;
+        Uri fileUri = cp.getFileDescription().getFileUri();
         if (FileUtils.isImage(cp.getFileDescription())) {
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+            mQuoteLayoutHolder.setText(
+                    TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
-                    cp.getFileDescription().getFilePath());
+                    fileUri
+            );
         } else if (FileUtils.isDoc(cp.getFileDescription())) {
             String fileName = "";
             try {
-                fileName = cp.getFileDescription().getIncomingName() == null
-                        ? FileUtils.getLastPathSegment((cp.getFileDescription().getFilePath()))
-                        : cp.getFileDescription().getIncomingName();
+                fileName = cp.getFileDescription().getIncomingName() != null
+                        ? cp.getFileDescription().getIncomingName()
+                        : (fileUri != null ? FileUtils.getFileName(fileUri) : "");
             } catch (Exception e) {
                 ThreadsLogger.e(TAG, "onReplyClick", e);
             }
@@ -667,16 +667,12 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onFilePickerClick() {
         Activity activity = getActivity();
-        FragmentManager fragmentManager = getFragmentManager();
-        if (activity == null || fragmentManager == null) {
+        if (activity == null) {
             return;
         }
         setBottomStateDefault();
         if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
-            FilePickerFragment frag = FilePickerFragment.newInstance();
-            frag.setFileFilter(new MyFileFilter());
-            frag.setOnDirSelectedListener(this);
-            frag.show(fragmentManager, null);
+            openFile();
         } else {
             PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_READ_EXTERNAL, R.string.threads_permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
         }
@@ -686,7 +682,7 @@ public final class ChatFragment extends BaseFragment implements
     public void onSelfieClick() {
         Activity activity = getActivity();
         boolean isCameraGranted = ThreadsPermissionChecker.isCameraPermissionGranted(activity);
-        boolean isWriteGranted = ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
+        boolean isWriteGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || ThreadsPermissionChecker.isWriteExternalPermissionGranted(activity);
         ThreadsLogger.i(TAG, "isCameraGranted = " + isCameraGranted + " isWriteGranted " + isWriteGranted);
         if (isCameraGranted && isWriteGranted) {
             setBottomStateDefault();
@@ -712,21 +708,23 @@ public final class ChatFragment extends BaseFragment implements
             if (inputText == null) {
                 return;
             }
+            Uri fileUri = mAttachedImages.get(0);
             messages.add(new UpcomingUserMessage(
                     new FileDescription(
                             appContext.getString(R.string.threads_I),
-                            mAttachedImages.get(0),
-                            new File(mAttachedImages.get(0)).length(),
+                            fileUri,
+                            FileUtils.getFileSize(fileUri),
                             System.currentTimeMillis()),
                     mQuote,
                     inputText.trim(),
                     isCopy(inputText))
             );
             for (int i = 1; i < mAttachedImages.size(); i++) {
+                fileUri = mAttachedImages.get(i);
                 FileDescription fileDescription = new FileDescription(
                         appContext.getString(R.string.threads_I),
-                        mAttachedImages.get(i),
-                        new File(mAttachedImages.get(i)).length(),
+                        fileUri,
+                        FileUtils.getFileSize(fileUri),
                         System.currentTimeMillis()
                 );
                 UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
@@ -755,14 +753,6 @@ public final class ChatFragment extends BaseFragment implements
             bottomSheetDialogFragment = new AttachmentBottomSheetDialogFragment();
             bottomSheetDialogFragment.show(getChildFragmentManager(), AttachmentBottomSheetDialogFragment.TAG);
         }
-    }
-
-    @Override
-    public void onFileSelected(File fileOrDirectory) {
-        ThreadsLogger.i(TAG, "onFileSelected: " + fileOrDirectory);
-        mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
-        mQuote = null;
     }
 
     private void doFancySearch(final String request, final boolean forward) {
@@ -835,6 +825,105 @@ public final class ChatFragment extends BaseFragment implements
         }
         chatAdapter.addItems(data);
         chatAdapter.removeHighlight();
+    }
+
+    private void onPhotosResult(@NonNull Intent data) {
+        ArrayList<Uri> photos = data.getParcelableArrayListExtra(GalleryActivity.PHOTOS_TAG);
+        hideBottomSheet();
+        welcomeScreenVisibility(false);
+        String inputText = inputTextObservable.get();
+        if (photos == null || photos.size() == 0 || inputText == null) {
+            return;
+        }
+        unChooseItem();
+        Uri fileUri = photos.get(0);
+        UpcomingUserMessage uum =
+                new UpcomingUserMessage(
+                        new FileDescription(
+                                appContext.getString(R.string.threads_I),
+                                fileUri,
+                                FileUtils.getFileSize(fileUri),
+                                System.currentTimeMillis()
+                        ),
+                        null,
+                        inputText.trim(),
+                        isCopy(inputText)
+                );
+        if (isSendBlocked) {
+            showToast(getString(R.string.threads_message_were_unsent));
+        } else {
+            mChatController.onUserInput(uum);
+        }
+        inputTextObservable.set("");
+        mQuoteLayoutHolder.setIsVisible(false);
+        mQuote = null;
+        mFileDescription = null;
+        for (int i = 1; i < photos.size(); i++) {
+            fileUri = photos.get(i);
+            uum = new UpcomingUserMessage(
+                    new FileDescription(
+                            appContext.getString(R.string.threads_I),
+                            fileUri,
+                            FileUtils.getFileSize(fileUri),
+                            System.currentTimeMillis()
+                    ),
+                    null,
+                    null,
+                    false
+            );
+            mChatController.onUserInput(uum);
+        }
+    }
+
+    private void onExternalCameraPhotoResult() {
+        mFileDescription = new FileDescription(
+                appContext.getString(R.string.threads_image),
+                FileProviderHelper.getUriForFile(Config.instance.context, externalCameraPhotoFile),
+                externalCameraPhotoFile.length(),
+                System.currentTimeMillis()
+        );
+        sendMessage(Collections.singletonList(new UpcomingUserMessage(mFileDescription, null, null, false)));
+    }
+
+    private void onFileResult(@NonNull Intent data) {
+        Uri uri = data.getData();
+        if (uri != null) {
+            ThreadsLogger.i(TAG, "onFileSelected: " + uri);
+            mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis());
+            mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getFileName(uri), null);
+            mQuote = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                final int takeFlags = data.getFlags()
+                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                try {
+                    requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                } catch (SecurityException e) {
+                    ThreadsLogger.e(TAG, e.getLocalizedMessage());
+                }
+            }
+        }
+    }
+
+    private void onPhotoResult(@NonNull Intent data, boolean selfie) {
+        String imageExtra = data.getStringExtra(CameraActivity.IMAGE_EXTRA);
+        if (imageExtra != null) {
+            File file = new File(imageExtra);
+            mFileDescription = new FileDescription(
+                    appContext.getString(R.string.threads_image),
+                    FileProviderHelper.getUriForFile(requireContext(), file),
+                    file.length(),
+                    System.currentTimeMillis()
+            );
+            mFileDescription.setSelfie(selfie);
+            UpcomingUserMessage uum = new UpcomingUserMessage(
+                    mFileDescription,
+                    null,
+                    null,
+                    false
+            );
+            sendMessage(Collections.singletonList(uum));
+        }
     }
 
     private void openBottomSheetAndGallery() {
@@ -1233,92 +1322,55 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_PHOTOS && resultCode == Activity.RESULT_OK) {
-            ArrayList<String> photos = data.getStringArrayListExtra(GalleryActivity.PHOTOS_TAG);
-            hideBottomSheet();
-            welcomeScreenVisibility(false);
-            String inputText = inputTextObservable.get();
-            if (photos.size() == 0 || inputText == null) {
-                return;
-            }
-            unChooseItem();
-            UpcomingUserMessage uum =
-                    new UpcomingUserMessage(
-                            new FileDescription(
-                                    appContext.getString(R.string.threads_I),
-                                    photos.get(0),
-                                    new File(photos.get(0)).length(),
-                                    System.currentTimeMillis()
-                            ),
-                            null,
-                            inputText.trim(),
-                            isCopy(inputText)
-                    );
-            if (isSendBlocked) {
-                showToast(getString(R.string.threads_message_were_unsent));
-            } else {
-                mChatController.onUserInput(uum);
-            }
-            inputTextObservable.set("");
-            mQuoteLayoutHolder.setIsVisible(false);
-            mQuote = null;
-            mFileDescription = null;
-            for (int i = 1; i < photos.size(); i++) {
-                uum =
-                        new UpcomingUserMessage(
-                                new FileDescription(appContext.getString(R.string.threads_I),
-                                        photos.get(i),
-                                        new File(photos.get(i)).length(),
-                                        System.currentTimeMillis())
-                                , null
-                                , null
-                                , false);
-                mChatController.onUserInput(uum);
-            }
-
-        } else if (requestCode == REQUEST_EXTERNAL_CAMERA_PHOTO) {
-            if (resultCode == Activity.RESULT_OK && externalCameraPhotoFile != null) {
-                mFileDescription = new FileDescription(
-                        appContext.getString(R.string.threads_image),
-                        externalCameraPhotoFile.getAbsolutePath(),
-                        externalCameraPhotoFile.length(), System.currentTimeMillis()
-                );
-                sendMessage(Collections.singletonList(new UpcomingUserMessage(mFileDescription, null, null, false)));
-            }
-            externalCameraPhotoFile = null;
-        } else if (requestCode == REQUEST_CODE_PHOTO && resultCode == Activity.RESULT_OK) {
-            mFileDescription = new FileDescription(
-                    appContext.getString(R.string.threads_image),
-                    data.getStringExtra(CameraActivity.IMAGE_EXTRA),
-                    new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA)).length(),
-                    System.currentTimeMillis()
-            );
-            sendMessage(Collections.singletonList(new UpcomingUserMessage(mFileDescription, null, null, false)));
-        } else if (requestCode == REQUEST_CODE_SELFIE && resultCode == Activity.RESULT_OK) {
-            mFileDescription = new FileDescription(appContext.getString(R.string.threads_image),
-                    data.getStringExtra(CameraActivity.IMAGE_EXTRA),
-                    new File(data.getStringExtra(CameraActivity.IMAGE_EXTRA)).length(),
-                    System.currentTimeMillis());
-            mFileDescription.setSelfie(true);
-            UpcomingUserMessage uum = new UpcomingUserMessage(mFileDescription, null, null, false);
-            sendMessage(Collections.singletonList(uum));
-        } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
-            openBottomSheetAndGallery();
-        } else if (requestCode == REQUEST_PERMISSION_CAMERA && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
-            onCameraClick();
-        } else if (requestCode == REQUEST_PERMISSION_SELFIE_CAMERA && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
-            onSelfieClick();
-        } else if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL && resultCode == PermissionsActivity.RESPONSE_GRANTED) {
-            FragmentManager fragmentManager = getFragmentManager();
-            if (fragmentManager == null) {
-                return;
-            }
-            FilePickerFragment picker = FilePickerFragment.newInstance();
-            picker.setFileFilter(new MyFileFilter());
-            picker.setOnDirSelectedListener(this);
-            picker.show(fragmentManager, null);
+        switch (requestCode) {
+            case REQUEST_CODE_PHOTOS:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    onPhotosResult(data);
+                }
+                break;
+            case REQUEST_EXTERNAL_CAMERA_PHOTO:
+                if (resultCode == Activity.RESULT_OK && externalCameraPhotoFile != null) {
+                    onExternalCameraPhotoResult();
+                }
+                externalCameraPhotoFile = null;
+                break;
+            case REQUEST_CODE_FILE:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    onFileResult(data);
+                }
+                break;
+            case REQUEST_CODE_PHOTO:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    onPhotoResult(data, false);
+                }
+                break;
+            case REQUEST_CODE_SELFIE:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    onPhotoResult(data, true);
+                }
+                break;
+            case REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY:
+                if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+                    openBottomSheetAndGallery();
+                }
+                break;
+            case REQUEST_PERMISSION_CAMERA:
+                if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+                    onCameraClick();
+                }
+                break;
+            case REQUEST_PERMISSION_SELFIE_CAMERA:
+                if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+                    onSelfieClick();
+                }
+                break;
+            case REQUEST_PERMISSION_READ_EXTERNAL:
+                if (resultCode == PermissionsActivity.RESPONSE_GRANTED) {
+                    openFile();
+                }
+                break;
         }
     }
 
@@ -1587,6 +1639,33 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
+    private void openFile() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            String[] mimeTypes = {
+                    "image/jpeg",
+                    "image/png",
+                    "text/plain",
+                    "application/pdf",
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "application/vnd.ms-excel",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "application/vnd.ms-excel.sheet.macroenabled.12",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.template"
+            };
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            intent.setType("*/*");
+            startActivityForResult(intent, REQUEST_CODE_FILE);
+        } else {
+            Intent intent = new Intent();
+            intent.setType("*/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(intent, REQUEST_CODE_FILE);
+        }
+    }
+
     private class QuoteLayoutHolder {
         private QuoteLayoutHolder() {
             Activity activity = getActivity();
@@ -1616,14 +1695,14 @@ public final class ChatFragment extends BaseFragment implements
             }
         }
 
-        private void setImage(String path) {
+        private void setImage(Uri path) {
             Activity activity = getActivity();
             if (activity == null) {
                 return;
             }
             binding.quoteImage.setVisibility(View.VISIBLE);
             Picasso.get()
-                    .load(new File(path))
+                    .load(path)
                     .fit()
                     .centerCrop()
                     .into(binding.quoteImage);
@@ -1633,7 +1712,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.quoteImage.setVisibility(View.GONE);
         }
 
-        private void setText(String header, String text, String imagePath) {
+        private void setText(String header, String text, Uri imagePath) {
             setIsVisible(true);
             if (header == null || header.equals("null")) {
                 binding.quoteHeader.setVisibility(View.INVISIBLE);
@@ -1679,7 +1758,7 @@ public final class ChatFragment extends BaseFragment implements
 
         @Override
         public void onImageClick(ChatPhrase chatPhrase) {
-            if (chatPhrase.getFileDescription().getFilePath() == null) {
+            if (chatPhrase.getFileDescription().getFileUri() == null) {
                 return;
             }
             if (chatPhrase instanceof UserPhrase) {

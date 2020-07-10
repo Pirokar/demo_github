@@ -1,6 +1,5 @@
 package im.threads.internal.controllers;
 
-import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,15 +9,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -90,8 +88,7 @@ public final class FilesAndMediaController extends Fragment {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
         } else if (FileUtils.isDoc(fileDescription)) {
             Intent target = new Intent(Intent.ACTION_VIEW);
-            File file = new File(fileDescription.getFilePath());
-            target.setDataAndType(FileProviderHelper.getUriForFile(activity, file), FileUtils.getMimeType(file));
+            target.setDataAndType(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription));
             target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             try {
                 activity.startActivity(target);

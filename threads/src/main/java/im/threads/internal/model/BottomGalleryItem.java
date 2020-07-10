@@ -1,10 +1,12 @@
 package im.threads.internal.model;
 
+import android.net.Uri;
+
 public final class BottomGalleryItem {
     private boolean isChosen;
-    private String imagePath;
+    private Uri imagePath;
 
-    public BottomGalleryItem(boolean isChosen, String imagePath) {
+    public BottomGalleryItem(boolean isChosen, Uri imagePath) {
         this.isChosen = isChosen;
         this.imagePath = imagePath;
     }
@@ -17,11 +19,11 @@ public final class BottomGalleryItem {
         isChosen = chosen;
     }
 
-    public String getImagePath() {
+    public Uri getImagePath() {
         return imagePath;
     }
 
-    public void setImagePath(String imagePath) {
+    public void setImagePath(Uri imagePath) {
         this.imagePath = imagePath;
     }
 

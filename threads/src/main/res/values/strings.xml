@@ -40,7 +40,7 @@
     <string name="threads_download">Загрузить</string>
     <string name="threads_message_were_unsent">Сообщение не было отправлено</string>
     <string name="threads_unknown_operator">Неизвестный</string>
-    <string name="threads_saved_to">Сохранено в</string>
+    <string name="threads_saved_to_downloads">Сохранено в Загрузки</string>
     <string name="threads_unable_to_save">Сейчас невозможно сохранить файл</string>
     <string name="threads_search_files">Искать файлы</string>
     <string name="threads_push_left_female">покинула диалог</string>

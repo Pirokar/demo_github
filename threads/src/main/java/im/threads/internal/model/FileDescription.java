@@ -1,24 +1,53 @@
 package im.threads.internal.model;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
 public final class FileDescription implements Parcelable {
-    private String from;
-    private String filePath;
+    public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<FileDescription>() {
+        @Override
+        public FileDescription createFromParcel(Parcel source) {
+            String from = source.readString();
+            Uri filePath = source.readParcelable(Uri.class.getClassLoader());
+            String downloadPath = source.readString();
+            String incomingName = source.readString();
+            String mimeType = source.readString();
+            long size = source.readLong();
+            long timeStamp = source.readLong();
+            int progress = source.readInt();
+            boolean selfie = source.readInt() == 1;
+            FileDescription fd = new FileDescription(from, filePath, size, timeStamp);
+            fd.setIncomingName(incomingName);
+            fd.setMimeType(mimeType);
+            fd.setDownloadPath(downloadPath);
+            fd.setDownloadProgress(progress);
+            fd.setSelfie(selfie);
+            return fd;
+        }
+
+        @Override
+        public FileDescription[] newArray(int size) {
+            return new FileDescription[size];
+        }
+    };
     private final long size;
+    private String from;
+    private Uri fileUri;
     private long timeStamp;
     private String downloadPath;
     private String incomingName;
+    private String mimeType = null;
     private int downloadProgress;
     private boolean downloadError = false;
     private boolean selfie = false;
 
-    public FileDescription(String from, String filePath, long size, long timeStamp) {
+    public FileDescription(String from, Uri fileUri, long size, long timeStamp) {
         this.from = from;
-        this.filePath = filePath;
+        this.fileUri = fileUri;
         this.size = size;
         this.timeStamp = timeStamp;
     }
@@ -31,12 +60,13 @@ public final class FileDescription implements Parcelable {
         this.from = header;
     }
 
-    public String getFilePath() {
-        return filePath;
+    @Nullable
+    public Uri getFileUri() {
+        return fileUri;
     }
 
-    public void setFilePath(String text) {
-        this.filePath = text;
+    public void setFileUri(Uri text) {
+        this.fileUri = text;
     }
 
     public long getSize() {
@@ -67,6 +97,14 @@ public final class FileDescription implements Parcelable {
         this.incomingName = incomingName;
     }
 
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
     public int getDownloadProgress() {
         return downloadProgress;
     }
@@ -90,6 +128,7 @@ public final class FileDescription implements Parcelable {
     public void setSelfie(boolean selfie) {
         this.selfie = selfie;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -120,45 +159,21 @@ public final class FileDescription implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(from);
-        dest.writeString(filePath);
+        dest.writeParcelable(fileUri, 0);
         dest.writeString(downloadPath);
         dest.writeString(incomingName);
+        dest.writeString(mimeType);
         dest.writeLong(size);
         dest.writeLong(timeStamp);
         dest.writeInt(downloadProgress);
         dest.writeInt(selfie ? 1 : 0);
     }
 
-    public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<FileDescription>() {
-        @Override
-        public FileDescription createFromParcel(Parcel source) {
-            String from = source.readString();
-            String filePath = source.readString();
-            String downloadPath = source.readString();
-            String incomingName = source.readString();
-            long size = source.readLong();
-            long timeStamp = source.readLong();
-            int progress = source.readInt();
-            boolean selfie = source.readInt() == 1;
-            FileDescription fd = new FileDescription(from, filePath, size, timeStamp);
-            fd.setIncomingName(incomingName);
-            fd.setDownloadPath(downloadPath);
-            fd.setDownloadProgress(progress);
-            fd.setSelfie(selfie);
-            return fd;
-        }
-
-        @Override
-        public FileDescription[] newArray(int size) {
-            return new FileDescription[size];
-        }
-    };
-
     @Override
     public String toString() {
         return "FileDescription{" +
                 "from='" + from + '\'' +
-                ", filePath='" + filePath + '\'' +
+                ", filePath='" + fileUri + '\'' +
                 ", downloadPath='" + downloadPath + '\'' +
                 ", incomingName='" + incomingName + '\'' +
                 ", size=" + size +
@@ -172,11 +187,12 @@ public final class FileDescription implements Parcelable {
             return false;
         }
         return ObjectsCompat.equals(this.from, fileDescription.from)
-                && ObjectsCompat.equals(this.filePath, fileDescription.filePath)
+                && ObjectsCompat.equals(this.fileUri, fileDescription.fileUri)
                 && ObjectsCompat.equals(this.timeStamp, fileDescription.timeStamp)
                 && ObjectsCompat.equals(this.downloadPath, fileDescription.downloadPath)
                 && ObjectsCompat.equals(this.size, fileDescription.size)
                 && ObjectsCompat.equals(this.incomingName, fileDescription.incomingName)
+                && ObjectsCompat.equals(this.mimeType, fileDescription.mimeType)
                 && ObjectsCompat.equals(this.downloadProgress, fileDescription.downloadProgress)
                 && ObjectsCompat.equals(this.selfie, fileDescription.selfie);
     }

@@ -2,7 +2,6 @@ package im.threads.internal.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ import im.threads.internal.views.CircularProgressButton;
 public final class UserFileViewHolder extends BaseHolder {
     private CircularProgressButton mCircularProgressButton;
     private TextView mFileHeader;
-    private TextView mSizeTextView;
+    private TextView fileSizeTextView;
     private TextView mTimeStampTextView;
     private View mFilterView;
     private View mFilterSecond;
@@ -36,13 +35,13 @@ public final class UserFileViewHolder extends BaseHolder {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_chat_file, parent, false));
         mCircularProgressButton = itemView.findViewById(R.id.button_download);
         mFileHeader = itemView.findViewById(R.id.header);
-        mSizeTextView = itemView.findViewById(R.id.file_size);
+        fileSizeTextView = itemView.findViewById(R.id.file_size);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterSecond = itemView.findViewById(R.id.filter_second);
         mBubble = itemView.findViewById(R.id.bubble);
         ChatStyle style = Config.instance.getChatStyle();
-        setTextColorToViews(new TextView[]{mFileHeader, mSizeTextView}, style.outgoingMessageTextColor);
+        setTextColorToViews(new TextView[]{mFileHeader, fileSizeTextView}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         mCircularProgressButton.setBackgroundColorResId(style.outgoingMessageTextColor);
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
@@ -61,19 +60,17 @@ public final class UserFileViewHolder extends BaseHolder {
             , boolean isFilterVisible
             , MessageState sentState) {
         if (fileDescription == null) return;
-        if (fileDescription.getIncomingName() != null) {
-            mFileHeader.setText(fileDescription.getIncomingName());
-        } else if (fileDescription.getFilePath() != null) {
-            mFileHeader.setText(FileUtils.getLastPathSegment(fileDescription.getFilePath()));
-        }
-        mSizeTextView.setText(Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
+        mFileHeader.setText(FileUtils.getFileName(fileDescription));
+        long fileSize = fileDescription.getSize();
+        fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), fileSize));
+        fileSizeTextView.setVisibility(fileSize > 0 ? View.VISIBLE : View.GONE);
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);
             vg.getChildAt(i).setOnClickListener(rowClickListener);
         }
-        if (fileDescription.getFilePath() != null) {
+        if (fileDescription.getFileUri() != null) {
             mCircularProgressButton.setProgress(100);
         } else {
             mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());

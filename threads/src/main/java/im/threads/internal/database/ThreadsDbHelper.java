@@ -25,7 +25,7 @@ import im.threads.internal.model.UserPhrase;
  * обертка для БД
  */
 final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
-    private static final int VERSION = 10;
+    private static final int VERSION = 11;
 
     private QuotesTable quotesTable;
     private QuickRepliesTable quickRepliesTable;

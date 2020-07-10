@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -81,9 +80,9 @@ public final class ImageFromConsultViewHolder extends BaseHolder {
             return true;
         });
         mImage.setImageResource(0);
-        if (fileDescription.getFilePath() != null && !fileDescription.isDownloadError()) {
+        if (fileDescription.getFileUri() != null && !fileDescription.isDownloadError()) {
             Picasso.get()
-                    .load(new File(fileDescription.getFilePath()))
+                    .load(fileDescription.getFileUri())
                     .fit()
                     .centerCrop()
                     .transform(maskedTransformation)

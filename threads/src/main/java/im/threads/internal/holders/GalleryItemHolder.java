@@ -1,5 +1,6 @@
 package im.threads.internal.holders;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,6 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
-
-import java.io.File;
 
 import im.threads.R;
 
@@ -27,10 +26,10 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
         mCheckBox.setButtonDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.bk_checkbox_blue));
     }
 
-    public void onBind(final String imagePath, final View.OnClickListener listener, final boolean isChecked) {
+    public void onBind(final Uri imagePath, final View.OnClickListener listener, final boolean isChecked) {
         if (mImageView != null) {
             Picasso.get()
-                    .load(new File(imagePath))
+                    .load(imagePath)
                     .fit()
                     .centerCrop()
                     .into(mImageView);

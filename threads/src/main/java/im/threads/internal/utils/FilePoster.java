@@ -1,18 +1,22 @@
 package im.threads.internal.utils;
 
 import android.accounts.NetworkErrorException;
+import android.graphics.Bitmap;
+import android.net.Uri;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 
 import im.threads.internal.Config;
-import im.threads.internal.helpers.FileHelper;
-import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.retrofit.ApiGenerator;
+import im.threads.internal.transport.InputStreamRequestBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -23,6 +27,7 @@ import okhttp3.RequestBody;
 public final class FilePoster {
 
     private static final String TAG = "FilePoster ";
+
     private FilePoster() {
     }
 
@@ -31,45 +36,20 @@ public final class FilePoster {
         String token = PrefUtils.getClientID();
         ThreadsLogger.i(TAG, "token = " + token);
         if (!token.isEmpty()) {
-            File file = null;
-            if (fileDescription.getFilePath() != null) {
-                file = new File(fileDescription.getFilePath());
+            if (fileDescription.getFileUri() != null) {
+                return sendFile(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription.getFileUri()), token);
             }
-            ThreadsLogger.i(TAG, "file: " + file);
-            if (file != null) {
-                ThreadsLogger.i(TAG, "file.exists = " + file.exists() + ", file.isFile = " + file.isFile() + ", file.canRead= "  + file.canRead());
-            }
-            if (file != null && file.exists() && file.isFile() && file.canRead()) {
-                String response = sendFile(file, token);
-                if (response != null) {
-                    return response;
-                }
-            } else if (fileDescription.getFilePath() != null && !new File(fileDescription.getFilePath()).exists()) {
-                if (fileDescription.getDownloadPath() != null) {
-                    return fileDescription.getDownloadPath();
-                } else {
-                    throw new FileNotFoundException();
-                }
-            } else if (fileDescription.getFilePath() == null && fileDescription.getDownloadPath() != null) {
+            if (fileDescription.getDownloadPath() != null) {
                 return fileDescription.getDownloadPath();
             }
         }
         throw new NetworkErrorException();
     }
 
-    private static String sendFile(File file, String token) throws IOException {
-        ThreadsLogger.i(TAG, "sendFile: " + file);
-        if (FileHelper.isThreadsImage(file)) {
-            ThreadsLogger.i(TAG, "threads file: " + file);
-            File downsizedImageFile = MediaHelper.downsizeImage(Config.instance.context, file, MediaHelper.PHOTO_RESIZE_MAX_SIDE);
-            if (downsizedImageFile != null) {
-                ThreadsLogger.i(TAG, "use downsizedImageFile ");
-                file = downsizedImageFile;
-            }
-        }
-        ThreadsLogger.i(TAG, "okHttpFileSend" + file);
+    private static String sendFile(Uri uri, String mimeType, String token) throws IOException {
+        ThreadsLogger.i(TAG, "sendFile: " + uri);
         MultipartBody.Part part = MultipartBody.Part
-                .createFormData("file", URLEncoder.encode(file.getName(), "utf-8"), RequestBody.create(MediaType.parse(FileUtils.getMimeType(file)), file));
+                .createFormData("file", URLEncoder.encode(FileUtils.getFileName(uri), "utf-8"), getFileRequestBody(uri, mimeType));
         FileUploadResponse body = ApiGenerator.getThreadsApi().upload(part, token).execute().body();
         if (body != null) {
             return body.getResult();
@@ -77,4 +57,38 @@ public final class FilePoster {
         return null;
     }
 
+    private static RequestBody getFileRequestBody(Uri uri, String mimeType) throws IOException {
+        if (mimeType.equals("image/jpeg")) {
+            return getJpegRequestBody(uri);
+        }
+        return new InputStreamRequestBody(MediaType.parse(mimeType), Config.instance.context.getContentResolver(), uri);
+    }
+
+    private static RequestBody getJpegRequestBody(Uri uri) throws IOException {
+        ThreadsLogger.i(TAG, "sendFile: " + uri);
+        File file = compressImage(uri);
+        if (file == null) {
+            throw new IOException("Unable to create compressed file");
+        }
+        return RequestBody.create(MediaType.parse("image/jpeg"), file);
+    }
+
+
+    private static File compressImage(Uri uri) throws IOException {
+        Bitmap bitmap = Picasso.get().load(uri).get();
+        File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(downsizedImageFile)) {
+            fileOutputStream.write(byteArrayOutputStream.toByteArray());
+            fileOutputStream.flush();
+            bitmap.recycle();
+            return downsizedImageFile;
+        } catch (IOException e) {
+            ThreadsLogger.e(TAG, "downsizeImage", e);
+            bitmap.recycle();
+            downsizedImageFile.delete();
+            return null;
+        }
+    }
 }

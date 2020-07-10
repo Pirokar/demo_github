@@ -1,8 +1,10 @@
 package im.threads.internal.activities;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -10,14 +12,15 @@ import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.GridLayoutManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import im.threads.R;
 import im.threads.databinding.ActivityGalleryBinding;
 import im.threads.internal.adapters.GalleryAdapter;
@@ -32,16 +35,13 @@ public final class GalleryActivity
         extends BaseActivity
         implements PhotoBucketsGalleryAdapter.OnItemClick, GalleryAdapter.OnGalleryItemClick {
 
-    private static final String PHOTOS_REQUEST_CODE_TAG = "PHOTOS_REQUEST_CODE_TAG";
     public static final String PHOTOS_TAG = "PHOTOS_TAG";
-
+    private static final String PHOTOS_REQUEST_CODE_TAG = "PHOTOS_REQUEST_CODE_TAG";
+    public final ObservableField<ScreenState> screenState = new ObservableField<>(ScreenState.BUCKET_LIST);
+    public final ObservableField<Boolean> dataEmpty = new ObservableField<>(false);
     private final List<List<MediaPhoto>> lists = new ArrayList<>();
     private final List<PhotoBucketItem> bucketItems = new ArrayList<>();
     private final List<MediaPhoto> chosenItems = new ArrayList<>();
-
-    public final ObservableField<ScreenState> screenState = new ObservableField<>(ScreenState.BUCKET_LIST);
-    public final ObservableField<Boolean> dataEmpty = new ObservableField<>(false);
-
     private final BucketsGalleryDecorator bucketsGalleryDecorator = new BucketsGalleryDecorator(4);
     private final GalleryDecorator galleryDecorator = new GalleryDecorator(4);
 
@@ -108,12 +108,12 @@ public final class GalleryActivity
     }
 
     public void send() {
-        ArrayList<String> list1 = new ArrayList<>();
+        ArrayList<Uri> list1 = new ArrayList<>();
         for (MediaPhoto mp : chosenItems) {
-            list1.add(mp.getImagePath());
+            list1.add(mp.getImageUri());
         }
         Intent i = new Intent();
-        i.putStringArrayListExtra(PHOTOS_TAG, list1);
+        i.putParcelableArrayListExtra(PHOTOS_TAG, list1);
         setResult(RESULT_OK, i);
         finish();
     }
@@ -153,12 +153,14 @@ public final class GalleryActivity
             if (c == null) {
                 return;
             }
+            int DISPLAY_NAME = c.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
             int BUCKET_DISPLAY_NAME = c.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-            int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
+            int _ID = c.getColumnIndex(MediaStore.Images.Media._ID);
             if (c.getCount() == 0) return;
             List<MediaPhoto> allItems = new ArrayList<>();
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                allItems.add(new MediaPhoto(c.getString(DATA), c.getString(BUCKET_DISPLAY_NAME)));
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, c.getLong(_ID));
+                allItems.add(new MediaPhoto(imageUri, c.getString(DISPLAY_NAME), c.getString(BUCKET_DISPLAY_NAME)));
             }
             List<MediaPhoto> list = new ArrayList<>();
             list.add(allItems.get(0));
@@ -178,7 +180,7 @@ public final class GalleryActivity
                 }
             }
             for (List<MediaPhoto> itemList : lists) {
-                bucketItems.add(new PhotoBucketItem(itemList.get(0).getBucketName(), String.valueOf(itemList.size()), itemList.get(0).getImagePath()));
+                bucketItems.add(new PhotoBucketItem(itemList.get(0).getBucketName(), String.valueOf(itemList.size()), itemList.get(0).getImageUri()));
             }
         }
     }
@@ -204,7 +206,7 @@ public final class GalleryActivity
         binding.recycler.setLayoutManager(new GridLayoutManager(this, 3));
         List<MediaPhoto> photos = null;
         for (List<MediaPhoto> list : lists) {
-            if (list.get(0).getImagePath().equals(item.getImagePath())) {
+            if (list.get(0).getImageUri().equals(item.getImagePath())) {
                 photos = list;
                 break;
             }
@@ -237,7 +239,8 @@ public final class GalleryActivity
         List<MediaPhoto> list = new ArrayList<>();
         for (List<MediaPhoto> photos : lists) {
             for (MediaPhoto mp : photos) {
-                if (mp.getImagePath().contains(searchString)) {
+                if (mp.getImageUri().toString().toLowerCase().contains(searchString.toLowerCase())
+                        || mp.getDisplayName().contains(searchString.toLowerCase())) {
                     list.add(mp);
                 }
             }

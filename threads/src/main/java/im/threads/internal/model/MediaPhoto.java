@@ -1,29 +1,29 @@
 package im.threads.internal.model;
 
+import android.net.Uri;
+
 public final class MediaPhoto {
-    private String imagePath;
-    private String bucketName;
+    private final Uri imageUri;
+    private final String displayName;
+    private final String bucketName;
     private boolean isChecked;
 
-    public MediaPhoto(String imagePath, String bucketName) {
-        this.imagePath = imagePath;
+    public MediaPhoto(Uri imageUri, String displayName, String bucketName) {
+        this.imageUri = imageUri;
+        this.displayName = displayName;
         this.bucketName = bucketName;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public Uri getImageUri() {
+        return imageUri;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getBucketName() {
         return bucketName;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
     }
 
     public boolean isChecked() {
@@ -37,7 +37,7 @@ public final class MediaPhoto {
     @Override
     public String toString() {
         return "MediaPhoto{" +
-                "imagePath='" + imagePath + '\'' +
+                "imagePath='" + imageUri + '\'' +
                 ", bucketName='" + bucketName + '\'' +
                 ", isChecked=" + isChecked +
                 '}';

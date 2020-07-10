@@ -1,18 +1,20 @@
 package im.threads.internal.adapters;
 
+import android.net.Uri;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.internal.holders.BottomGalleryImageHolder;
 import im.threads.internal.model.BottomGalleryItem;
 
 public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;
-    private List<String> mChosenItems = new ArrayList<>();
+    private List<Uri> mChosenItems = new ArrayList<>();
     private OnChooseItemsListener mOnChooseItemsListener;
 
     public BottomGalleryAdapter(List<BottomGalleryItem> list, OnChooseItemsListener listener) {
@@ -30,11 +32,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
     public void onBindViewHolder(@NonNull final BottomGalleryImageHolder holder, int position) {
         final BottomGalleryItem item = list.get(position);
         holder.onBind(list.get(position), v -> {
-            if (item.isChosen()) {
-                item.setChosen(false);
-            } else if (!item.isChosen()) {//yes, i know;
-                item.setChosen(true);
-            }
+            item.setChosen(!item.isChosen());
             notifyItemChanged(holder.getAdapterPosition());
             mChosenItems.clear();
             for (BottomGalleryItem item1 : list) {
@@ -42,7 +40,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                     mChosenItems.add(item1.getImagePath());
                 }
             }
-            if (null != mOnChooseItemsListener) {
+            if (mOnChooseItemsListener != null) {
                 mOnChooseItemsListener.onChosenItems(mChosenItems);
             }
         });
@@ -54,6 +52,6 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
     }
 
     public interface OnChooseItemsListener {
-        void onChosenItems(List<String> items);
+        void onChosenItems(List<Uri> items);
     }
 }

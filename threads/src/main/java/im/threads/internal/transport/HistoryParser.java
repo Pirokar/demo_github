@@ -23,6 +23,7 @@ import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageFromHistory;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Operator;
+import im.threads.internal.model.Optional;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.Survey;
@@ -185,20 +186,29 @@ public final class HistoryParser {
 
     private static FileDescription fileDescriptionFromList(final List<Attachment> attachments) {
         FileDescription fileDescription = null;
-        if (attachments.size() > 0 && attachments.get(0) != null) {
-            String header = null;
-            if (attachments.get(0).getOptional() != null) {
-                header = attachments.get(0).getOptional().getName();
+        if (attachments.size() > 0) {
+            Attachment attachment = attachments.get(0);
+            if (attachment != null) {
+                String header = null;
+                String mimeType = null;
+                long size = 0;
+                Optional metaData = attachment.getOptional();
+                if (metaData != null) {
+                    header = metaData.getName();
+                    size = metaData.getSize();
+                    mimeType = metaData.getType();
+                }
+                fileDescription = new FileDescription(
+                        null,
+                        null,
+                        size,
+                        0
+                );
+                fileDescription.setDownloadPath(attachment.getResult());
+                fileDescription.setIncomingName(header);
+                fileDescription.setMimeType(mimeType);
+                fileDescription.setSelfie(attachment.isSelfie());
             }
-            fileDescription = new FileDescription(
-                    null,
-                    null,
-                    attachments.get(0).getOptional().getSize(),
-                    0
-            );
-            fileDescription.setDownloadPath(attachments.get(0).getResult());
-            fileDescription.setIncomingName(header);
-            fileDescription.setSelfie(attachments.get(0).isSelfie());
         }
         return fileDescription;
     }

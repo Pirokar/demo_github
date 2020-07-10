@@ -1,6 +1,7 @@
 package im.threads.internal.transport;
 
 import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -8,8 +9,6 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import java.io.File;
 
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ConsultInfo;
@@ -153,17 +152,20 @@ public final class OutgoingMessageCreator {
         return formattedMessage;
     }
 
-    private static JsonArray attachmentsFromFileDescription(File file, boolean isSelfie) {
+    private static JsonArray attachmentsFromFileDescription(FileDescription fd, boolean isSelfie) {
         JsonArray attachments = new JsonArray();
         JsonObject attachment = new JsonObject();
         attachments.add(attachment);
         JsonObject optional = new JsonObject();
         attachment.addProperty("isSelfie", isSelfie);
         attachment.add("optional", optional);
-        optional.addProperty(MessageAttributes.TYPE, FileUtils.getMimeType(file));
-        optional.addProperty("name", file.getName());
-        optional.addProperty("size", file.length());
-        optional.addProperty("lastModified", file.lastModified());
+        optional.addProperty(MessageAttributes.TYPE, FileUtils.getMimeType(fd));
+        Uri fileUri = fd.getFileUri();
+        if (fileUri != null) {
+            optional.addProperty("name", FileUtils.getFileName(fileUri));
+            optional.addProperty("size", FileUtils.getFileSize(fileUri));
+        }
+        optional.addProperty("lastModified", 0);
         return attachments;
     }
 
@@ -175,7 +177,7 @@ public final class OutgoingMessageCreator {
         attachment.addProperty("isSelfie", fileDescription.isSelfie());
         attachment.add("optional", optional);
         if (fileDescription.getIncomingName() != null) {
-            optional.addProperty(MessageAttributes.TYPE, FileUtils.getMimeType(new File(fileDescription.getIncomingName())));
+            optional.addProperty(MessageAttributes.TYPE, FileUtils.getMimeType(Uri.parse(fileDescription.getIncomingName())));
         }
         optional.addProperty("name", fileDescription.getIncomingName());
         optional.addProperty("size", fileDescription.getSize());
@@ -185,8 +187,8 @@ public final class OutgoingMessageCreator {
 
     private static JsonArray attachmentsFromFileDescription(FileDescription fileDescription, String mfmsFilepath) {
         JsonArray attachments = null;
-        if (fileDescription.getFilePath() != null && new File(fileDescription.getFilePath()).exists()) {
-            attachments = attachmentsFromFileDescription(new File(fileDescription.getFilePath()), fileDescription.isSelfie());
+        if (fileDescription.getFileUri() != null) {
+            attachments = attachmentsFromFileDescription(fileDescription, fileDescription.isSelfie());
         } else if (fileDescription.getDownloadPath() != null) {
             attachments = attachmentsFromMfmsPath(fileDescription);
         }

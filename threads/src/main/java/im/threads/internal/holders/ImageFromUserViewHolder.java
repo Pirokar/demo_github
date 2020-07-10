@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -77,9 +76,9 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             return true;
         });
         mImage.setImageResource(0);
-        if (fileDescription.getFilePath() != null && !isDownloadError) {
+        if (fileDescription.getFileUri() != null && !isDownloadError) {
             Picasso.get()
-                    .load(new File(fileDescription.getFilePath()))
+                    .load(fileDescription.getFileUri())
                     .error(style.imagePlaceholder)
                     .fit()
                     .centerCrop()
