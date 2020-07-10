@@ -1370,6 +1370,12 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        ChatController.getInstance().loadHistory();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         isResumed = false;

@@ -699,10 +699,11 @@ public final class ChatController {
     private void subscribeToConsultMessageRead() {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getConsultMessageReadProcessor())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                databaseHolder::setConsultMessageWasRead
-                        )
+                        .observeOn(Schedulers.io())
+                        .subscribe(id -> {
+                            databaseHolder.setConsultMessageWasRead(id);
+                            UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+                        })
         );
     }
 

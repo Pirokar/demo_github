@@ -2,15 +2,15 @@ package im.threads.internal.controllers;
 
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.utils.PrefUtils;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.processors.BehaviorProcessor;
 
 public enum  UnreadMessagesController {
 
     INSTANCE;
 
-    private PublishProcessor<Integer> unreadMessagesPublishProcessor = PublishProcessor.create();
+    private BehaviorProcessor<Integer> unreadMessagesPublishProcessor = BehaviorProcessor.create();
 
-    public PublishProcessor<Integer> getUnreadMessagesPublishProcessor() {
+    public BehaviorProcessor<Integer> getUnreadMessagesPublishProcessor() {
         return unreadMessagesPublishProcessor;
     }
 
