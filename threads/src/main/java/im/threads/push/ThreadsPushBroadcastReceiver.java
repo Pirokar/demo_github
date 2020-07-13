@@ -11,8 +11,10 @@ import com.mfms.android.push_lite.PushBroadcastReceiver;
 import java.util.List;
 
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.SearchingConsult;
+import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.NotificationService;
 import im.threads.internal.transport.mfms_push.MFMSPushMessageParser;
 import im.threads.internal.transport.mfms_push.PushMessageAttributes;
@@ -40,10 +42,13 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
                     }
                     break;
                 case MESSAGES_READ:
-                    final List<String> list = MFMSPushMessageParser.getReadIds(bundle);
-                    ThreadsLogger.i(TAG, "onSystemMessageFromServer: read messages " + list);
-                    for (final String readMessageProviderId : list) {
-                        ChatUpdateProcessor.getInstance().postUserMessageWasRead(readMessageProviderId);
+                    final List<String> readMessagesIds = MFMSPushMessageParser.getReadIds(bundle);
+                    ThreadsLogger.i(TAG, "onSystemMessageFromServer: read messages " + readMessagesIds);
+                    for(String readId: readMessagesIds) {
+                        UserPhrase userPhrase = (UserPhrase) DatabaseHolder.getInstance().getChatItem(readId);
+                        if (userPhrase != null) {
+                            ChatUpdateProcessor.getInstance().postUserMessageWasRead(userPhrase.getProviderId());
+                        }
                     }
                     break;
                 case REMOVE_PUSHES:
