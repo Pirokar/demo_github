@@ -101,6 +101,7 @@
 
     <!-- Тексты для кастомизации -->
     <string name="threads_push_title">Threads</string>
+    <string name="threads_media_description">Threads</string>
 
     <string name="threads_contact_center">Контакт центр</string>
     <string name="threads_operator_subtitle">Оператор</string>

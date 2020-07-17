@@ -27,6 +27,7 @@ import okhttp3.RequestBody;
 public final class FilePoster {
 
     private static final String TAG = "FilePoster ";
+    private static int PHOTO_RESIZE_MAX_SIDE = 1600;
 
     private FilePoster() {
     }
@@ -75,7 +76,12 @@ public final class FilePoster {
 
 
     private static File compressImage(Uri uri) throws IOException {
-        Bitmap bitmap = Picasso.get().load(uri).get();
+        Bitmap bitmap = Picasso.get()
+                .load(uri)
+                .resize(PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE)
+                .centerInside()
+                .onlyScaleDown()
+                .get();
         File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);

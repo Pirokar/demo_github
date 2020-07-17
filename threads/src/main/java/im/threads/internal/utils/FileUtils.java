@@ -1,5 +1,6 @@
 package im.threads.internal.utils;
 
+import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,8 +27,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import im.threads.R;
 import im.threads.internal.Config;
-import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.FileDescription;
 
 public final class FileUtils {
@@ -128,6 +129,18 @@ public final class FileUtils {
             File outputFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getFileName(uri));
             if (outputFile.exists() || outputFile.createNewFile()) {
                 saveToFile(uri, outputFile);
+                DownloadManager dm = (DownloadManager) Config.instance.context.getSystemService(Context.DOWNLOAD_SERVICE);
+                if (dm != null) {
+                    dm.addCompletedDownload(
+                            getFileName(uri),
+                            Config.instance.context.getString(R.string.threads_media_description),
+                            true,
+                            getMimeType(uri),
+                            outputFile.getPath(),
+                            outputFile.length(),
+                            false
+                    );
+                }
             } else {
                 throw new FileNotFoundException();
             }

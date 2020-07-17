@@ -15,8 +15,6 @@ import java.util.List;
 
 public final class MediaHelper {
 
-    public static int PHOTO_RESIZE_MAX_SIDE = 1600;
-
     public static void grantPermissions(final Context context, final Intent intent, final Uri imageUri) {
         final List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (!resInfoList.isEmpty()) {

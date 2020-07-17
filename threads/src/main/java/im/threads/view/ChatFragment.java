@@ -65,6 +65,7 @@ import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
+import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
@@ -89,6 +90,7 @@ import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.DisplayUtils;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.Keyboard;
+import im.threads.internal.utils.MyFileFilter;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -101,7 +103,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  */
 public final class ChatFragment extends BaseFragment implements
         AttachmentBottomSheetDialogFragment.Callback,
-        PopupMenu.OnMenuItemClickListener {
+        PopupMenu.OnMenuItemClickListener, FilePickerFragment.SelectedListener {
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -888,10 +890,7 @@ public final class ChatFragment extends BaseFragment implements
     private void onFileResult(@NonNull Intent data) {
         Uri uri = data.getData();
         if (uri != null) {
-            ThreadsLogger.i(TAG, "onFileSelected: " + uri);
-            mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis());
-            mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getFileName(uri), null);
-            mQuote = null;
+            onFileResult(uri);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 final int takeFlags = data.getFlags()
                         & (Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -903,6 +902,13 @@ public final class ChatFragment extends BaseFragment implements
                 }
             }
         }
+    }
+
+    private void onFileResult(@NonNull Uri uri) {
+        ThreadsLogger.i(TAG, "onFileSelected: " + uri);
+        mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis());
+        mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getFileName(uri), null);
+        mQuote = null;
     }
 
     private void onPhotoResult(@NonNull Intent data, boolean selfie) {
@@ -1659,11 +1665,16 @@ public final class ChatFragment extends BaseFragment implements
             intent.setType("*/*");
             startActivityForResult(intent, REQUEST_CODE_FILE);
         } else {
-            Intent intent = new Intent();
-            intent.setType("*/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(intent, REQUEST_CODE_FILE);
+            FilePickerFragment frag = FilePickerFragment.newInstance();
+            frag.setFileFilter(new MyFileFilter());
+            frag.setOnDirSelectedListener(this);
+            frag.show(getChildFragmentManager(), null);
         }
+    }
+
+    @Override
+    public void onFileSelected(File file) {
+        onFileResult(FileProviderHelper.getUriForFile(requireContext(), file));
     }
 
     private class QuoteLayoutHolder {
