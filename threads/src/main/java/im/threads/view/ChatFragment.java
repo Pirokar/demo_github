@@ -510,7 +510,7 @@ public final class ChatFragment extends BaseFragment implements
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     ThreadsLogger.w(TAG, "Could not start external camera", e);
-                    showToast(getString(R.string.threads_camera_could_not_start_error));
+                    showToast(appContext.getString(R.string.threads_camera_could_not_start_error));
                 }
 
             } else {
@@ -736,7 +736,7 @@ public final class ChatFragment extends BaseFragment implements
             }
             if (isSendBlocked) {
                 clearInput();
-                showToast(getString(R.string.threads_message_were_unsent));
+                showToast(appContext.getString(R.string.threads_message_were_unsent));
             } else {
                 sendMessage(messages);
             }
@@ -997,7 +997,7 @@ public final class ChatFragment extends BaseFragment implements
                         binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
                     }
                     binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
-                            ? getString(style.chatSubtitleTextResId)
+                            ? appContext.getString(style.chatSubtitleTextResId)
                             : info.getOrganizationUnit());
 
                     chatAdapter.removeConsultSearching();
@@ -1023,7 +1023,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void showConnectionError() {
-        showToast(getString(R.string.threads_message_not_sent));
+        showToast(appContext.getString(R.string.threads_message_not_sent));
     }
 
     public void showToast(final String message) {
@@ -1257,7 +1257,7 @@ public final class ChatFragment extends BaseFragment implements
                             isCopy(inputText)
                     );
             if (isSendBlocked) {
-                showToast(getString(R.string.threads_message_were_unsent));
+                showToast(appContext.getString(R.string.threads_message_were_unsent));
             } else {
                 mChatController.onUserInput(uum);
             }
