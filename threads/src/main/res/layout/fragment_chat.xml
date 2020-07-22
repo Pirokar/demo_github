@@ -97,40 +97,17 @@
             android:background="@color/threads_input_background"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/quote_layout"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
+                android:orientation="horizontal"
                 android:visibility="gone">
-
-                <im.threads.internal.widget.text_view.InputQuotedMessageAuthorTextView
-                    android:id="@+id/quote_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_quarter"
-                    android:layout_marginTop="@dimen/margin_three_fourth"
-                    android:layout_toRightOf="@+id/quote_image"
-                    android:textColor="@color/threads_incoming_message_text"
-                    android:textSize="@dimen/text_medium" />
-
-                <im.threads.internal.widget.text_view.InputQuotedMessageTextView
-                    android:id="@+id/quote_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/quote_header"
-                    android:layout_marginLeft="@dimen/margin_quarter"
-                    android:layout_marginTop="@dimen/margin_quarter"
-                    android:layout_toLeftOf="@+id/quote_clear"
-                    android:layout_toRightOf="@+id/quote_image"
-                    android:ellipsize="end"
-                    android:lines="1"
-                    android:textColor="@color/threads_incoming_message_text" />
 
                 <ImageButton
                     android:id="@+id/quote_past"
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
-                    android:layout_alignParentLeft="true"
                     android:background="@null"
                     app:srcCompat="@drawable/ic_reply_gray_24dp" />
 
@@ -138,28 +115,57 @@
                     android:id="@+id/quote_image"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:layout_toRightOf="@id/quote_past"
                     android:minWidth="1dp"
                     android:padding="@dimen/margin_half"
                     android:scaleType="centerCrop"
-                    android:visibility="visible" />
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <im.threads.internal.widget.text_view.InputQuotedMessageAuthorTextView
+                        android:id="@+id/quote_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginTop="12dp"
+                        android:textColor="@color/threads_incoming_message_text"
+                        tools:text="title_title_title"
+                        android:textSize="@dimen/text_medium" />
+
+                    <im.threads.internal.widget.text_view.InputQuotedMessageTextView
+                        android:id="@+id/quote_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        tools:text="text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text"
+                        android:textColor="@color/threads_incoming_message_text" />
+
+                </LinearLayout>
 
                 <ImageButton
                     android:id="@+id/quote_clear"
                     android:layout_width="64dp"
                     android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
                     android:background="@null"
                     app:srcCompat="@drawable/ic_clear_blue_user_36dp" />
 
-                <View
-                    android:id="@+id/delimeter"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="#e5e5e5"
-                    android:visibility="visible" />
-            </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/delimeter"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#e5e5e5"
+                android:visibility="visible" />
 
             <im.threads.internal.views.MaxHeightRecyclerView
                 android:id="@+id/quick_replies_rv"

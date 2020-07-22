@@ -629,7 +629,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         mFileDescription = null;
         if (FileUtils.isImage(cp.getFileDescription())) {
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+            mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
                     cp.getFileDescription().getFilePath());
         } else if (FileUtils.isDoc(cp.getFileDescription())) {
@@ -641,11 +641,11 @@ public final class ChatFragment extends BaseFragment implements
             } catch (Exception e) {
                 ThreadsLogger.e(TAG, "onReplyClick", e);
             }
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+            mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
                     null);
         } else {
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+            mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? "" : text,
                     null);
         }
@@ -761,7 +761,7 @@ public final class ChatFragment extends BaseFragment implements
     public void onFileSelected(File fileOrDirectory) {
         ThreadsLogger.i(TAG, "onFileSelected: " + fileOrDirectory);
         mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), fileOrDirectory.getAbsolutePath(), fileOrDirectory.length(), System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
+        mQuoteLayoutHolder.setContent(appContext.getString(R.string.threads_I), FileUtils.getLastPathSegment(fileOrDirectory.getAbsolutePath()), null);
         mQuote = null;
     }
 
@@ -1588,6 +1588,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private class QuoteLayoutHolder {
+
         private QuoteLayoutHolder() {
             Activity activity = getActivity();
             if (activity == null) {
@@ -1598,6 +1599,7 @@ public final class ChatFragment extends BaseFragment implements
                 binding.quoteHeader.setText("");
                 binding.quoteText.setText("");
                 binding.quoteLayout.setVisibility(View.GONE);
+                binding.delimeter.setVisibility(View.GONE);
                 mQuote = null;
                 mFileDescription = null;
                 unChooseItem();
@@ -1611,8 +1613,10 @@ public final class ChatFragment extends BaseFragment implements
         private void setIsVisible(boolean isVisible) {
             if (isVisible) {
                 binding.quoteLayout.setVisibility(View.VISIBLE);
+                binding.delimeter.setVisibility(View.VISIBLE);
             } else {
                 binding.quoteLayout.setVisibility(View.GONE);
+                binding.delimeter.setVisibility(View.GONE);
             }
         }
 
@@ -1629,24 +1633,20 @@ public final class ChatFragment extends BaseFragment implements
                     .into(binding.quoteImage);
         }
 
-        private void removeImage() {
-            binding.quoteImage.setVisibility(View.GONE);
-        }
-
-        private void setText(String header, String text, String imagePath) {
+        private void setContent(String header, String text, String imagePath) {
             setIsVisible(true);
             if (header == null || header.equals("null")) {
                 binding.quoteHeader.setVisibility(View.INVISIBLE);
             } else {
                 binding.quoteHeader.setVisibility(View.VISIBLE);
+                binding.quoteHeader.setText(header);
             }
-            binding.quoteHeader.setText(header);
             binding.quoteText.setText(text);
             if (imagePath != null) {
                 setImage(imagePath);
             } else {
-                removeImage();
-            }
+                binding.quoteImage.setVisibility(View.GONE);
+           }
         }
     }
 
