@@ -202,7 +202,6 @@ public final class ChatController {
                             )
             );
         }
-        Config.instance.transport.sendInitChatMessage();
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
