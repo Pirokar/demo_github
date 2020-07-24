@@ -202,6 +202,7 @@ public final class ChatController {
                             )
             );
         }
+        Config.instance.transport.sendInitChatMessage();
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
@@ -527,14 +528,6 @@ public final class ChatController {
         ThreadsLogger.i(TAG, "updateUi");
         if (fragment != null) {
             fragment.updateUi();
-        }
-    }
-
-    public void logoutClient(@NonNull final String clientId) {
-        if (!TextUtils.isEmpty(clientId)) {
-            Config.instance.transport.sendClientOffline(clientId);
-        } else {
-            ThreadsLogger.i(getClass().getSimpleName(), "clientId must not be empty");
         }
     }
 
