@@ -73,6 +73,7 @@ public final class ThreadsLib {
         PrefUtils.setUserName(userInfoBuilder.userName);
         PrefUtils.setData(userInfoBuilder.data);
         PrefUtils.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted);
+        ChatController.getInstance().loadHistory();
     }
 
     public void applyChatStyle(ChatStyle chatStyle) {
@@ -88,10 +89,6 @@ public final class ThreadsLib {
         } else {
             ThreadsLogger.i(getClass().getSimpleName(), "clientId must not be empty");
         }
-    }
-
-    public void reloadHistory() {
-        ChatController.getInstance().loadHistory();
     }
 
     /**
