@@ -123,7 +123,7 @@ public class ClientOfflineSender {
                     );
                     ThreadsLogger.i(TAG, "Sending : " + request);
                     webSocket.send(request);
-
+                    return;
                 }
             }
             closeWebSocket();
