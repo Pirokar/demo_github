@@ -2,6 +2,7 @@ package im.threads;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,6 +73,7 @@ public final class ThreadsLib {
         PrefUtils.setUserName(userInfoBuilder.userName);
         PrefUtils.setData(userInfoBuilder.data);
         PrefUtils.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted);
+        ChatController.getInstance().loadHistory();
     }
 
     public void applyChatStyle(ChatStyle chatStyle) {
@@ -82,11 +84,11 @@ public final class ThreadsLib {
      * Used to stop receiving messages for user with provided clientId
      */
     public void logoutClient(@NonNull final String clientId) {
-        ChatController.getInstance().logoutClient(clientId);
-    }
-
-    public void reloadHistory() {
-        ChatController.getInstance().loadHistory();
+        if (!TextUtils.isEmpty(clientId)) {
+            Config.instance.transport.sendClientOffline(clientId);
+        } else {
+            ThreadsLogger.i(getClass().getSimpleName(), "clientId must not be empty");
+        }
     }
 
     /**

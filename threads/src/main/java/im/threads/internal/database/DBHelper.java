@@ -37,6 +37,6 @@ public interface DBHelper {
 
     int getMessagesCount();
     int getUnreadMessagesCount();
-    List<String> getUnreadMessagesProviderIds();
+    List<String> getUnreadMessagesUuid();
 
 }

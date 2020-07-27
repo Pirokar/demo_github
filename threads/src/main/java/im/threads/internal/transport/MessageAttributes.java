@@ -17,4 +17,5 @@ public final class MessageAttributes {
     static final String QUOTES = "quotes";
     static final String ATTACHMENTS = "attachments";
     static final String UUID = "uuid";
+    static final String READ_MESSAGE_ID= "readInMessageIds";
 }

@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
@@ -55,6 +57,7 @@ public final class MessageParser {
                 return new SearchingConsult();
             case NONE:
             case MESSAGES_READ:
+                return getMessageRead(fullMessage);
             case CLIENT_BLOCKED:
             case SCENARIO:
                 return null;
@@ -77,6 +80,10 @@ public final class MessageParser {
                 && fullMessage != null
                 && fullMessage.has(MessageAttributes.CLIENT_ID)
                 && currentClientId.equalsIgnoreCase(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString());
+    }
+
+    private static MessageRead getMessageRead(final JsonObject fullMessage) {
+        return new MessageRead(Arrays.asList(fullMessage.get(MessageAttributes.READ_MESSAGE_ID).getAsString().split(",")));
     }
 
     private static ConsultConnectionMessage getConsultConnection(final String messageId, final long sentAt, final String shortMessage, final JsonObject fullMessage) {

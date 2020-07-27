@@ -961,13 +961,13 @@ public final class ChatFragment extends BaseFragment implements
                 isInMessageSearchMode) {
             return;
         }
-        String firstUnreadProviderId = mChatController.getFirstUnreadProviderId();
+        String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
         ArrayList<ChatItem> newList = chatAdapter.getList();
-        if (newList != null && !newList.isEmpty() && firstUnreadProviderId != null) {
+        if (newList != null && !newList.isEmpty() && firstUnreadUuid != null) {
             for (int i = 1; i < newList.size(); i++) {
                 if (newList.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) newList.get(i);
-                    if (firstUnreadProviderId.equalsIgnoreCase(cp.getProviderId())) {
+                    if (firstUnreadUuid.equalsIgnoreCase(cp.getUuid())) {
                         final int index = i;
                         h.postDelayed(
                                 () -> binding.recycler.post(() -> layoutManager.scrollToPositionWithOffset(index - 1, 0)),
@@ -1350,12 +1350,12 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         List<ChatItem> list = chatAdapter.getList();
-        String firstUnreadProviderId = mChatController.getFirstUnreadProviderId();
-        if (list != null && !list.isEmpty() && firstUnreadProviderId != null) {
+        String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
+        if (list != null && !list.isEmpty() && firstUnreadUuid != null) {
             for (int i = 1; i < list.size(); i++) {
                 if (list.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) list.get(i);
-                    if (firstUnreadProviderId.equalsIgnoreCase(cp.getProviderId())) {
+                    if (firstUnreadUuid.equalsIgnoreCase(cp.getUuid())) {
                         final int index = i;
                         h.post(() -> {
                             if (!isInMessageSearchMode) {
@@ -1367,6 +1367,12 @@ public final class ChatFragment extends BaseFragment implements
                 }
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ChatController.getInstance().loadHistory();
     }
 
     @Override

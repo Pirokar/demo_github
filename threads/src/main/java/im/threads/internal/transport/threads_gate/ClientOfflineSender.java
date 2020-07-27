@@ -153,6 +153,4 @@ public class ClientOfflineSender {
             ChatUpdateProcessor.getInstance().postError(new TransportException(t.getMessage()));
         }
     }
-
-
 }
