@@ -40,6 +40,7 @@ import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Hidable;
 import im.threads.internal.model.HistoryResponse;
+import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.RequestResolveThread;
@@ -126,7 +127,7 @@ public final class ChatController {
     private int resendTimeInterval;
     private List<UserPhrase> sendQueue = new ArrayList<>();
     private Handler unsendMessageHandler;
-    private String firstUnreadProviderId;
+    private String firstUnreadUuidId;
 
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
@@ -199,6 +200,7 @@ public final class ChatController {
                             )
             );
         }
+        Config.instance.transport.sendInitChatMessage();
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
@@ -315,12 +317,12 @@ public final class ChatController {
                 if (cm != null
                         && cm.getActiveNetworkInfo() != null
                         && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
-                    final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
-                    if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
-                        firstUnreadProviderId = unreadProviderIds.get(0); // для скролла к первому непрочитанному сообщению
-                        Config.instance.transport.markMessagesAsRead(unreadProviderIds);
+                    final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
+                    if (uuidList != null && !uuidList.isEmpty()) {
+                        Config.instance.transport.markMessagesAsRead(uuidList);
+                        firstUnreadUuidId = uuidList.get(0); // для скролла к первому непрочитанному сообщению
                     } else {
-                        firstUnreadProviderId = null;
+                        firstUnreadUuidId = null;
                     }
                 }
             }
@@ -404,8 +406,8 @@ public final class ChatController {
         return consultWriter.getCurrentConsultInfo();
     }
 
-    public String getFirstUnreadProviderId() {
-        return firstUnreadProviderId;
+    public String getFirstUnreadUuidId() {
+        return firstUnreadUuidId;
     }
 
     public void bindFragment(final ChatFragment f) {
@@ -526,14 +528,6 @@ public final class ChatController {
         }
     }
 
-    public void logoutClient(@NonNull final String clientId) {
-        if (!TextUtils.isEmpty(clientId)) {
-            Config.instance.transport.sendClientOffline(clientId);
-        } else {
-            ThreadsLogger.i(getClass().getSimpleName(), "clientId must not be empty");
-        }
-    }
-
     public void loadHistory() {
         if (!isDownloadingMessages) {
             isDownloadingMessages = true;
@@ -544,9 +538,9 @@ public final class ChatController {
                         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
                         saveMessages(serverItems);
                         if (fragment != null && isActive) {
-                            final List<String> unreadProviderIds = databaseHolder.getUnreadMessagesProviderIds();
-                            if (unreadProviderIds != null && !unreadProviderIds.isEmpty()) {
-                                Config.instance.transport.markMessagesAsRead(unreadProviderIds);
+                            final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
+                            if (uuidList != null && !uuidList.isEmpty()) {
+                                Config.instance.transport.markMessagesAsRead(uuidList);
                             }
                         }
                         return new Pair<>(response == null ? null : response.getConsultInfo(), serverItems.size());
@@ -694,10 +688,11 @@ public final class ChatController {
     private void subscribeToConsultMessageRead() {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getConsultMessageReadProcessor())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                databaseHolder::setConsultMessageWasRead
-                        )
+                        .observeOn(Schedulers.io())
+                        .subscribe(id -> {
+                            databaseHolder.setConsultMessageWasRead(id);
+                            UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+                        })
         );
     }
 
@@ -706,6 +701,16 @@ public final class ChatController {
                 Flowable.fromPublisher(chatUpdateProcessor.getNewMessageProcessor())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(chatItem -> {
+                            if (chatItem instanceof MessageRead) {
+                                List<String> readMessagesIds = ((MessageRead) chatItem).getMessageId();
+                                for(String readId: readMessagesIds) {
+                                    UserPhrase userPhrase = (UserPhrase) databaseHolder.getChatItem(readId);
+                                    if (userPhrase != null) {
+                                        chatUpdateProcessor.postUserMessageWasRead(userPhrase.getProviderId());
+                                    }
+                                }
+                                return;
+                            }
                             if (chatItem instanceof Survey) {
                                 activeSurvey = (Survey) chatItem;
                                 Config.instance.transport.sendRatingReceived(activeSurvey.getSendingId());
@@ -715,6 +720,7 @@ public final class ChatController {
                             }
                             if (chatItem instanceof ScheduleInfo) {
                                 currentScheduleInfo = (ScheduleInfo) chatItem;
+                                currentScheduleInfo.calculateServerTimeDiff();
                                 refreshUserInputState();
                                 consultWriter.setSearchingConsult(false);
                                 if (fragment != null) {
@@ -983,7 +989,7 @@ public final class ChatController {
         if (chatItem instanceof ConsultPhrase && isActive) {
             ConsultPhrase consultPhrase = (ConsultPhrase) chatItem;
             handleQuickReplies(Collections.singletonList(consultPhrase));
-            Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getProviderId()));
+            Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getUuid()));
         }
         if (isActive) {
             subscribe(
@@ -998,7 +1004,11 @@ public final class ChatController {
         // Если пришло сообщение от оператора,
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
-        if (chatItem instanceof ConsultPhrase || chatItem instanceof ConsultConnectionMessage || (chatItem instanceof ScheduleInfo && ((ScheduleInfo) chatItem).isChatWorking())) {
+        if (
+                 chatItem instanceof ConsultPhrase ||
+                (chatItem instanceof ConsultConnectionMessage && !ChatItemType.OPERATOR_LEFT.name().equals(((ConsultConnectionMessage) chatItem).getType())) ||
+                (chatItem instanceof ScheduleInfo && ((ScheduleInfo) chatItem).isChatWorking())
+        ) {
             if (fragment != null && fragment.isAdded()) {
                 fragment.removeSchedule(false);
             }

@@ -302,16 +302,15 @@ public class MessagesTable extends Table {
         }
     }
 
-    public List<String> getUnreadMessagesProviderIds(SQLiteOpenHelper sqlHelper) {
-        String sql = "select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
+    public List<String> getUnreadMessagesUuid(SQLiteOpenHelper sqlHelper) {
+        String sql = "select " + COLUMN_MESSAGE_UUID +
                 " from " + TABLE_MESSAGES +
                 " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc";
         Set<String> ids = new HashSet<>();
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, null)) {
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                ids.add(cGetString(c, COLUMN_PROVIDER_ID));
-                ids.addAll(stringToList(cGetString(c, COLUMN_PROVIDER_IDS)));
+                ids.add(cGetString(c, COLUMN_MESSAGE_UUID));
             }
         }
         return new ArrayList<>(ids);

@@ -123,7 +123,7 @@ public class ClientOfflineSender {
                     );
                     ThreadsLogger.i(TAG, "Sending : " + request);
                     webSocket.send(request);
-
+                    return;
                 }
             }
             closeWebSocket();
@@ -153,6 +153,4 @@ public class ClientOfflineSender {
             ChatUpdateProcessor.getInstance().postError(new TransportException(t.getMessage()));
         }
     }
-
-
 }

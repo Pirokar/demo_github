@@ -7,7 +7,10 @@ import java.util.List;
 
 import im.threads.ConfigBuilder;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
+import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.retrofit.ApiGenerator;
@@ -23,20 +26,23 @@ public abstract class Transport {
     private CompositeDisposable compositeDisposable;
     private final ChatUpdateProcessor chatUpdateProcessor = ChatUpdateProcessor.getInstance();
 
-    public void markMessagesAsRead(List<String> messageIds) {
-        ThreadsLogger.i(TAG, "markMessagesAsRead : " + messageIds);
+    public void markMessagesAsRead(List<String> uuidList) {
+        ThreadsLogger.i(TAG, "markMessagesAsRead : " + uuidList);
         subscribe(
-                Completable.fromAction(() -> ApiGenerator.getThreadsApi().markMessageAsRead(messageIds).execute())
+                Completable.fromAction(() -> ApiGenerator.getThreadsApi().markMessageAsRead(uuidList).execute())
                         .subscribeOn(Schedulers.io())
                         .subscribe(
                                 () -> {
-                                    ThreadsLogger.i(TAG, "messagesAreRead : " + messageIds);
-                                    for(String messageId: messageIds) {
-                                        chatUpdateProcessor.postConsultMessageWasRead(messageId);
+                                    ThreadsLogger.i(TAG, "messagesAreRead : " + uuidList);
+                                    for(String messageId: uuidList) {
+                                        ChatItem chatItem = DatabaseHolder.getInstance().getChatItem(messageId);
+                                        if (chatItem instanceof ConsultPhrase) {
+                                            chatUpdateProcessor.postConsultMessageWasRead(((ConsultPhrase) chatItem).getProviderId());
+                                        }
                                     }
                                 },
                                 e -> {
-                                    ThreadsLogger.i(TAG, "error on messages read : " + messageIds);
+                                    ThreadsLogger.i(TAG, "error on messages read : " + uuidList);
                                     chatUpdateProcessor.postError(new TransportException(e.getMessage()));
                                 }
                         )

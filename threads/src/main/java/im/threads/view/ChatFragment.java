@@ -509,7 +509,7 @@ public final class ChatFragment extends BaseFragment implements
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     ThreadsLogger.w(TAG, "Could not start external camera", e);
-                    showToast(getString(R.string.threads_camera_could_not_start_error));
+                    showToast(appContext.getString(R.string.threads_camera_could_not_start_error));
                 }
 
             } else {
@@ -629,7 +629,7 @@ public final class ChatFragment extends BaseFragment implements
         mFileDescription = null;
         Uri fileUri = cp.getFileDescription().getFileUri();
         if (FileUtils.isImage(cp.getFileDescription())) {
-            mQuoteLayoutHolder.setText(
+            mQuoteLayoutHolder.setContent(
                     TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
                     fileUri
@@ -643,11 +643,11 @@ public final class ChatFragment extends BaseFragment implements
             } catch (Exception e) {
                 ThreadsLogger.e(TAG, "onReplyClick", e);
             }
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+            mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
                     null);
         } else {
-            mQuoteLayoutHolder.setText(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+            mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? "" : text,
                     null);
         }
@@ -736,7 +736,7 @@ public final class ChatFragment extends BaseFragment implements
             }
             if (isSendBlocked) {
                 clearInput();
-                showToast(getString(R.string.threads_message_were_unsent));
+                showToast(appContext.getString(R.string.threads_message_were_unsent));
             } else {
                 sendMessage(messages);
             }
@@ -1056,13 +1056,13 @@ public final class ChatFragment extends BaseFragment implements
                 isInMessageSearchMode) {
             return;
         }
-        String firstUnreadProviderId = mChatController.getFirstUnreadProviderId();
+        String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
         ArrayList<ChatItem> newList = chatAdapter.getList();
-        if (newList != null && !newList.isEmpty() && firstUnreadProviderId != null) {
+        if (newList != null && !newList.isEmpty() && firstUnreadUuid != null) {
             for (int i = 1; i < newList.size(); i++) {
                 if (newList.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) newList.get(i);
-                    if (firstUnreadProviderId.equalsIgnoreCase(cp.getProviderId())) {
+                    if (firstUnreadUuid.equalsIgnoreCase(cp.getUuid())) {
                         final int index = i;
                         h.postDelayed(
                                 () -> binding.recycler.post(() -> layoutManager.scrollToPositionWithOffset(index - 1, 0)),
@@ -1092,7 +1092,7 @@ public final class ChatFragment extends BaseFragment implements
                         binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
                     }
                     binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
-                            ? getString(style.chatSubtitleTextResId)
+                            ? appContext.getString(style.chatSubtitleTextResId)
                             : info.getOrganizationUnit());
 
                     chatAdapter.removeConsultSearching();
@@ -1118,7 +1118,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void showConnectionError() {
-        showToast(getString(R.string.threads_message_not_sent));
+        showToast(appContext.getString(R.string.threads_message_not_sent));
     }
 
     public void showToast(final String message) {
@@ -1408,12 +1408,12 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         List<ChatItem> list = chatAdapter.getList();
-        String firstUnreadProviderId = mChatController.getFirstUnreadProviderId();
-        if (list != null && !list.isEmpty() && firstUnreadProviderId != null) {
+        String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
+        if (list != null && !list.isEmpty() && firstUnreadUuid != null) {
             for (int i = 1; i < list.size(); i++) {
                 if (list.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) list.get(i);
-                    if (firstUnreadProviderId.equalsIgnoreCase(cp.getProviderId())) {
+                    if (firstUnreadUuid.equalsIgnoreCase(cp.getUuid())) {
                         final int index = i;
                         h.post(() -> {
                             if (!isInMessageSearchMode) {
@@ -1425,6 +1425,12 @@ public final class ChatFragment extends BaseFragment implements
                 }
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ChatController.getInstance().loadHistory();
     }
 
     @Override
@@ -1678,6 +1684,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private class QuoteLayoutHolder {
+
         private QuoteLayoutHolder() {
             Activity activity = getActivity();
             if (activity == null) {
@@ -1688,6 +1695,7 @@ public final class ChatFragment extends BaseFragment implements
                 binding.quoteHeader.setText("");
                 binding.quoteText.setText("");
                 binding.quoteLayout.setVisibility(View.GONE);
+                binding.delimeter.setVisibility(View.GONE);
                 mQuote = null;
                 mFileDescription = null;
                 unChooseItem();
@@ -1701,8 +1709,10 @@ public final class ChatFragment extends BaseFragment implements
         private void setIsVisible(boolean isVisible) {
             if (isVisible) {
                 binding.quoteLayout.setVisibility(View.VISIBLE);
+                binding.delimeter.setVisibility(View.VISIBLE);
             } else {
                 binding.quoteLayout.setVisibility(View.GONE);
+                binding.delimeter.setVisibility(View.GONE);
             }
         }
 
@@ -1719,24 +1729,20 @@ public final class ChatFragment extends BaseFragment implements
                     .into(binding.quoteImage);
         }
 
-        private void removeImage() {
-            binding.quoteImage.setVisibility(View.GONE);
-        }
-
-        private void setText(String header, String text, Uri imagePath) {
+        private void setContent(String header, String text, Uri imagePath) {
             setIsVisible(true);
             if (header == null || header.equals("null")) {
                 binding.quoteHeader.setVisibility(View.INVISIBLE);
             } else {
                 binding.quoteHeader.setVisibility(View.VISIBLE);
+                binding.quoteHeader.setText(header);
             }
-            binding.quoteHeader.setText(header);
             binding.quoteText.setText(text);
             if (imagePath != null) {
                 setImage(imagePath);
             } else {
-                removeImage();
-            }
+                binding.quoteImage.setVisibility(View.GONE);
+           }
         }
     }
 

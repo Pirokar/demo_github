@@ -122,8 +122,8 @@ public final class DatabaseHolder {
         return mMyOpenHelper.getUnreadMessagesCount();
     }
 
-    public List<String> getUnreadMessagesProviderIds() {
-        return mMyOpenHelper.getUnreadMessagesProviderIds();
+    public List<String> getUnreadMessagesUuid() {
+        return mMyOpenHelper.getUnreadMessagesUuid();
     }
 
     /**
