@@ -907,7 +907,7 @@ public final class ChatFragment extends BaseFragment implements
     private void onFileResult(@NonNull Uri uri) {
         ThreadsLogger.i(TAG, "onFileSelected: " + uri);
         mFileDescription = new FileDescription(appContext.getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis());
-        mQuoteLayoutHolder.setText(appContext.getString(R.string.threads_I), FileUtils.getFileName(uri), null);
+        mQuoteLayoutHolder.setContent(appContext.getString(R.string.threads_I), FileUtils.getFileName(uri), null);
         mQuote = null;
     }
 
