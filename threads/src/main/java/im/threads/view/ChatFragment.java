@@ -627,16 +627,16 @@ public final class ChatFragment extends BaseFragment implements
             mQuote.setQuotedPhraseConsultId(consultPhrase.getConsultId());
         }
         mFileDescription = null;
-        Uri fileUri = cp.getFileDescription().getFileUri();
         if (FileUtils.isImage(cp.getFileDescription())) {
             mQuoteLayoutHolder.setContent(
                     TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
-                    fileUri
+                    cp.getFileDescription().getFileUri()
             );
         } else if (FileUtils.isDoc(cp.getFileDescription())) {
             String fileName = "";
             try {
+                Uri fileUri = cp.getFileDescription().getFileUri();
                 fileName = cp.getFileDescription().getIncomingName() != null
                         ? cp.getFileDescription().getIncomingName()
                         : (fileUri != null ? FileUtils.getFileName(fileUri) : "");
@@ -1742,7 +1742,7 @@ public final class ChatFragment extends BaseFragment implements
                 setImage(imagePath);
             } else {
                 binding.quoteImage.setVisibility(View.GONE);
-           }
+            }
         }
     }
 
