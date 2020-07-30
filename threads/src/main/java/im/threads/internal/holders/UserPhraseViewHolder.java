@@ -172,7 +172,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 mImage.setVisibility(View.VISIBLE);
                 mImage.setOnClickListener(imageClickListener);
                 // User image can be already available locally
-                if (fileDescription.getFileUri() != null) {
+                if (fileDescription.getFileUri() == null) {
                     Picasso.get()
                             .load(fileDescription.getDownloadPath())
                             .error(style.imagePlaceholder)
