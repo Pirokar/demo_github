@@ -149,7 +149,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
         }
         if (quote != null) {
             mRightTextRow.setVisibility(View.VISIBLE);
-            mRightTextRow.setVisibility(View.VISIBLE);
             mFileImageButton.setVisibility(View.GONE);
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
@@ -167,7 +166,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
         }
         if (fileDescription != null) {
             if (FileUtils.isImage(fileDescription)) {
-                mRightTextRow.setVisibility(View.GONE);
                 mFileImageButton.setVisibility(View.GONE);
                 mImage.setVisibility(View.VISIBLE);
                 mImage.setOnClickListener(imageClickListener);
