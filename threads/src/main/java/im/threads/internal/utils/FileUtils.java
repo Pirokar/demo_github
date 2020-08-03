@@ -124,6 +124,10 @@ public final class FileUtils {
             imageCV.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(uri));
             Uri imagesCollection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
             Uri outputUri = resolver.insert(imagesCollection, imageCV);
+            if (outputUri == null) {
+                imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, "threads" + UUID.randomUUID());
+                outputUri = resolver.insert(imagesCollection, imageCV);
+            }
             saveToUri(uri, outputUri);
         } else {
             File outputFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getFileName(uri));
