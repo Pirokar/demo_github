@@ -1,11 +1,13 @@
 package im.threads.internal.model;
 
+import android.net.Uri;
+
 public final class PhotoBucketItem {
     private final String bucketName;
     private final String bucketSize;
-    private final String imagePath;
+    private final Uri imagePath;
 
-    public PhotoBucketItem(String bucketName, String bucketSize, String imagePath) {
+    public PhotoBucketItem(String bucketName, String bucketSize, Uri imagePath) {
         this.bucketName = bucketName;
         this.bucketSize = bucketSize;
         this.imagePath = imagePath;
@@ -19,7 +21,7 @@ public final class PhotoBucketItem {
         return bucketSize;
     }
 
-    public String getImagePath() {
+    public Uri getImagePath() {
         return imagePath;
     }
 

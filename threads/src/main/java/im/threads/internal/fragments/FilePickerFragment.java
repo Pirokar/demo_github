@@ -1,6 +1,5 @@
 package im.threads.internal.fragments;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
@@ -34,9 +34,9 @@ import im.threads.internal.helpers.FileHelper;
  */
 public final class FilePickerFragment extends DialogFragment
         implements FileFilter, View.OnClickListener, ListView.OnItemClickListener, AlertDialog.OnClickListener {
-    private File currentAbsoluteDir;
     private static final String STARTING_FOLDER_TAG = "start";
     private static final String PREVIOUS_FOLDER_DOTS = "...";
+    private File currentAbsoluteDir;
     private ListView mListView;
     private ArrayAdapter<String> mAnimatedArrayAdapter;
     private SelectedListener mSelectedListener;
@@ -181,19 +181,20 @@ public final class FilePickerFragment extends DialogFragment
         currentAbsoluteDir = pointedFileToTravel;
         if (pointedFileToTravel.exists() && mSelectedListener != null) {
             if (mFileFilter != null && mFileFilter.accept(pointedFileToTravel.getAbsoluteFile())) {
-                if (FileHelper.INSTANCE.canAttachFile(pointedFileToTravel)) {
-                    mSelectedListener.onFileSelected(pointedFileToTravel);
-                    dismiss();
+                String path = pointedFileToTravel.getPath();
+                if (path.contains(".")) {
+                    if (FileHelper.INSTANCE.canAttachFile(pointedFileToTravel.length(), path.substring(path.lastIndexOf(".") + 1))) {
+                        mSelectedListener.onFileSelected(pointedFileToTravel);
+                        dismiss();
+                    } else {
+                        Toast.makeText(getContext(), R.string.threads_item_user_rate_text, Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(getContext(), R.string.threads_item_user_rate_text, Toast.LENGTH_SHORT).show();
                 }
             }
         }
         travelToFolder(currentAbsoluteDir, mAnimatedArrayAdapter);
-    }
-
-    public interface SelectedListener {
-        void onFileSelected(File directory);
     }
 
     public void setOnDirSelectedListener(SelectedListener getDirectory) {
@@ -231,5 +232,9 @@ public final class FilePickerFragment extends DialogFragment
         ChatStyle style = Config.instance.getChatStyle();
         ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
         ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(getActivity(), style.chatToolbarColorResId));
+    }
+
+    public interface SelectedListener {
+        void onFileSelected(File file);
     }
 }

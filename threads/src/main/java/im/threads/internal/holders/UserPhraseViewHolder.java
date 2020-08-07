@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -150,20 +149,16 @@ public final class UserPhraseViewHolder extends BaseHolder {
         }
         if (quote != null) {
             mRightTextRow.setVisibility(View.VISIBLE);
-            mRightTextRow.setVisibility(View.VISIBLE);
             mFileImageButton.setVisibility(View.GONE);
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(quote.getTimeStamp()));
             if (quote.getFileDescription() != null) {
-                if (quote.getFileDescription().getFilePath() != null)
+                if (quote.getFileDescription().getFileUri() != null)
                     quote.getFileDescription().setDownloadProgress(100);
                 mFileImageButton.setVisibility(View.VISIBLE);
-                String filename = quote.getFileDescription().getIncomingName();
-                if (filename == null) {
-                    filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath()) == null ? "" : FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
-                }
-                mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
+                long fileSize = quote.getFileDescription().getSize();
+                mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 if (null != fileClickListener)
                     mFileImageButton.setOnClickListener(fileClickListener);
                 mFileImageButton.setProgress(quote.getFileDescription().getDownloadProgress());
@@ -171,12 +166,11 @@ public final class UserPhraseViewHolder extends BaseHolder {
         }
         if (fileDescription != null) {
             if (FileUtils.isImage(fileDescription)) {
-                mRightTextRow.setVisibility(View.GONE);
                 mFileImageButton.setVisibility(View.GONE);
                 mImage.setVisibility(View.VISIBLE);
                 mImage.setOnClickListener(imageClickListener);
                 // User image can be already available locally
-                if (TextUtils.isEmpty(fileDescription.getFilePath())) {
+                if (fileDescription.getFileUri() == null) {
                     Picasso.get()
                             .load(fileDescription.getDownloadPath())
                             .error(style.imagePlaceholder)
@@ -185,29 +179,25 @@ public final class UserPhraseViewHolder extends BaseHolder {
                             .into(mImage);
                 } else {
                     Picasso.get()
-                            .load(new File(fileDescription.getFilePath()))
+                            .load(fileDescription.getFileUri())
                             .error(style.imagePlaceholder)
                             .fit()
                             .centerCrop()
                             .into(mImage);
                 }
             } else {
-                if (fileDescription.getFilePath() != null) fileDescription.setDownloadProgress(100);
+                if (fileDescription.getFileUri() != null) fileDescription.setDownloadProgress(100);
                 mRightTextRow.setVisibility(View.VISIBLE);
                 mFileImageButton.setVisibility(View.VISIBLE);
-                String filename = fileDescription.getIncomingName();
-                if (filename == null) {
-                    filename = FileUtils.getLastPathSegment(fileDescription.getFilePath()) == null ? "" : FileUtils
-                            .getLastPathSegment(fileDescription.getFilePath());
-                }
-                mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
+                long fileSize = fileDescription.getSize();
+                mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 mRightTextHeader.setText(quote == null ? fileDescription.getFrom() : quote.getPhraseOwnerTitle());
                 mRightTextTimeStamp
                         .setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(fileDescription.getTimeStamp()));
                 if (fileClickListener != null) {
                     mFileImageButton.setOnClickListener(fileClickListener);
                 }
-                if (fileDescription.getFilePath() != null) {
+                if (fileDescription.getFileUri() != null) {
                     mFileImageButton.setProgress(100);
                 } else {
                     mFileImageButton.setProgress(fileDescription.getDownloadProgress());

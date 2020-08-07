@@ -1,8 +1,10 @@
 package im.threads.internal.fragments;
 
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -72,16 +74,16 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
         BottomGallery bottomGallery = view.findViewById(R.id.bottom_gallery);
         fileInputSheet.setButtonsTint(Config.instance.getChatStyle().chatBodyIconsTint);
         fileInputSheet.setButtonsListener(this);
-        ArrayList<String> allItems = new ArrayList<>();
+        ArrayList<Uri> allItems = new ArrayList<>();
         Context context = getContext();
         if (context != null) {
             ColorsHelper.setBackgroundColor(context, fileInputSheet, Config.instance.getChatStyle().chatMessageInputColor);
             ColorsHelper.setBackgroundColor(context, bottomGallery, Config.instance.getChatStyle().chatMessageInputColor);
             try (Cursor c = MediaHelper.getAllPhotos(context)) {
                 if (c != null) {
-                    int DATA = c.getColumnIndex(MediaStore.Images.Media.DATA);
+                    int _ID = c.getColumnIndex(MediaStore.Images.Media._ID);
                     for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                        allItems.add(c.getString(DATA));
+                        allItems.add(ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, c.getLong(_ID)));
                     }
                 }
             }
@@ -135,7 +137,7 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
     }
 
     public interface Callback extends BottomSheetView.ButtonsListener {
-        void onImageSelectionChanged(List<String> imageList);
+        void onImageSelectionChanged(List<Uri> imageList);
 
         void onBottomSheetDetached();
     }

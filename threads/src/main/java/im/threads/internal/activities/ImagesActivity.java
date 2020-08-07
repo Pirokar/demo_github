@@ -4,8 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -13,15 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.PermissionChecker;
 import androidx.viewpager.widget.ViewPager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +28,8 @@ import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.utils.ThreadsPermissionChecker;
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -62,7 +58,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                 .doOnSuccess(data -> {
                     files = new ArrayList<>();
                     for (FileDescription fd : data) {
-                        if (FileUtils.isImage(fd) && fd.getFilePath() != null) {
+                        if (FileUtils.isImage(fd) && fd.getFileUri() != null) {
                             files.add(fd);
                         }
                     }
@@ -71,17 +67,17 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                        mViewPager.setAdapter(new ImagesAdapter(files, getFragmentManager()));
-                        FileDescription fd = getIntent().getParcelableExtra("FileDescription");
-                        if (fd != null) {
-                            int page = files.indexOf(fd);
-                            if (page != -1) {
-                                mViewPager.setCurrentItem(page);
-                                onPageSelected(page);
+                            mViewPager.setAdapter(new ImagesAdapter(files, getSupportFragmentManager()));
+                            FileDescription fd = getIntent().getParcelableExtra("FileDescription");
+                            if (fd != null) {
+                                int page = files.indexOf(fd);
+                                if (page != -1) {
+                                    mViewPager.setCurrentItem(page);
+                                    onPageSelected(page);
+                                }
                             }
-                        }
-                        onPageSelected(0);
-                },
+                            onPageSelected(0);
+                        },
                         e -> ThreadsLogger.e(TAG, "getAllFileDescriptions error: " + e.getMessage()))
         );
     }
@@ -132,36 +128,24 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
     }
 
     private void downloadImage() {
-        if (files.get(mViewPager.getCurrentItem()).getFilePath() == null) return;
-        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_DENIED) {
+        if (files.get(mViewPager.getCurrentItem()).getFileUri() == null) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !ThreadsPermissionChecker.isWriteExternalPermissionGranted(this)) {
             PermissionsActivity.startActivityForResult(this, CODE_REQUEST_DOWNLOAD,
                     R.string.threads_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
-        String path = files.get(mViewPager.getCurrentItem()).getFilePath();
-        try {
-            File file = new File(path);
-            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            if (downloadDir == null) {
-                Toast.makeText(this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            File out = new File(downloadDir, FileUtils.getLastPathSegment(path));
-            out.createNewFile();
-            InputStream inStream = new FileInputStream(file);
-            OutputStream outStram = new FileOutputStream(out);
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = inStream.read(buf)) > 0) {
-                outStram.write(buf, 0, len);
-            }
-            inStream.close();
-            outStram.close();
-            Toast.makeText(this, getString(R.string.threads_saved_to) + " " + out.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            ThreadsLogger.e(TAG, "downloadImage", e);
-            Toast.makeText(this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
-        }
+        Uri path = files.get(mViewPager.getCurrentItem()).getFileUri();
+        compositeDisposable.add(Completable.fromAction(() -> FileUtils.saveToDownloads(path))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        () -> Toast.makeText(ImagesActivity.this, getString(R.string.threads_saved_to_downloads), Toast.LENGTH_SHORT).show(),
+                        throwable -> {
+                            ThreadsLogger.e(TAG, "downloadImage", throwable);
+                            Toast.makeText(ImagesActivity.this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
+                        }
+                )
+        );
     }
 
     @Override

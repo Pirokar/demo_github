@@ -1,6 +1,7 @@
 package im.threads.internal.views;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -39,9 +40,9 @@ public final class BottomGallery extends FrameLayout {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
-    public void setImages(List<String> images, BottomGalleryAdapter.OnChooseItemsListener listener) {
+    public void setImages(List<Uri> images, BottomGalleryAdapter.OnChooseItemsListener listener) {
         List<BottomGalleryItem> items = new ArrayList<>();
-        for (String str : images) {
+        for (Uri str : images) {
             BottomGalleryItem item = new BottomGalleryItem(false, str);
             items.add(item);
         }

@@ -2,12 +2,13 @@ package im.threads.internal.adapters;
 
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.internal.holders.EmptyViewHolder;
 import im.threads.internal.holders.FileAndMediaViewHolder;
 import im.threads.internal.holders.FilesDateStampHolder;
@@ -58,13 +59,15 @@ public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
         if (getItemViewType(position) == TYPE_FILE_AND_MEDIA_ROW) {
             final FileAndMediaViewHolder h = (FileAndMediaViewHolder) holder;
             FileAndMediaItem item = (FileAndMediaItem) list.get(position);
-            h.onBind(item.getFileDescription()
-                    , v -> {
+            h.onBind(
+                    item.getFileDescription(),
+                    v -> {
                         if (null != mOnFileClick) {
                             FileAndMediaItem item1 = (FileAndMediaItem) list.get(h.getAdapterPosition());
                             mOnFileClick.onFileClick(item1.getFileDescription());
                         }
-                    });
+                    }
+            );
         }
     }
 
@@ -95,15 +98,19 @@ public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
         ArrayList<FileDescription> filteredItems = new ArrayList<>();
         for (MediaAndFileItem maf : backup) {
             if (maf instanceof FileAndMediaItem) {
-                if (((FileAndMediaItem) maf).getFileDescription() != null) {
-                    FileDescription fd = ((FileAndMediaItem) maf).getFileDescription();
-                    if (FileUtils.getLastPathSegment(fd.getFilePath()).toLowerCase().contains(filter.toLowerCase())
-                    ) {
+                FileAndMediaItem fileAndMediaItem = (FileAndMediaItem) maf;
+                FileDescription fd = fileAndMediaItem.getFileDescription();
+                if (fd != null) {
+                    String lastPathSegment = fd.getFileUri() != null ? fd.getFileUri().getLastPathSegment() : null;
+                    if (lastPathSegment != null && lastPathSegment.toLowerCase().contains(filter.toLowerCase())) {
                         filteredItems.add(fd);
-                    } else if (((FileAndMediaItem) maf).getFileDescription() != null && ((FileAndMediaItem) maf).getFileDescription().getIncomingName() != null) {
-                        String name = ((FileAndMediaItem) maf).getFileDescription().getIncomingName();
-                        if (name.toLowerCase().contains(filter.toLowerCase()))
-                            filteredItems.add(((FileAndMediaItem) maf).getFileDescription());
+                    } else if (fd.getIncomingName() != null) {
+                        String name = fd.getIncomingName();
+                        if (name.toLowerCase().contains(filter.toLowerCase())) {
+                            filteredItems.add(fd);
+                        }
+                    } else if (fileAndMediaItem.getFileName().toLowerCase().contains(filter.toLowerCase())) {
+                        filteredItems.add(fd);
                     }
                 }
             }
@@ -118,21 +125,23 @@ public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
-    private void addItems(List<FileDescription> fileDescription) {
-        if (fileDescription.size() == 0) return;
+    private void addItems(List<FileDescription> fileDescriptionList) {
+        if (fileDescriptionList.size() == 0) return;
         Calendar current = Calendar.getInstance();
         Calendar prev = Calendar.getInstance();
         if (list.size() == 0) {
-            this.list.add(new DateRow(fileDescription.get(0).getTimeStamp()));
-            this.list.add(new FileAndMediaItem(fileDescription.get(0)));
+            FileDescription fd = fileDescriptionList.get(0);
+            this.list.add(new DateRow(fd.getTimeStamp()));
+            this.list.add(new FileAndMediaItem(fd, fd.getFileUri() != null ? FileUtils.getFileName(fd.getFileUri()) : ""));
 
         }
-        for (int i = 1; i < fileDescription.size(); i++) {
-            current.setTimeInMillis(fileDescription.get(i).getTimeStamp());
-            prev.setTimeInMillis(fileDescription.get(i - 1).getTimeStamp());
-            this.list.add(new FileAndMediaItem(fileDescription.get(i)));
+        for (int i = 1; i < fileDescriptionList.size(); i++) {
+            FileDescription fd = fileDescriptionList.get(i);
+            current.setTimeInMillis(fd.getTimeStamp());
+            prev.setTimeInMillis(fileDescriptionList.get(i - 1).getTimeStamp());
+            this.list.add(new FileAndMediaItem(fd, fd.getFileUri() != null ? FileUtils.getFileName(fd.getFileUri()) : ""));
             if (current.get(Calendar.DAY_OF_YEAR) != prev.get(Calendar.DAY_OF_YEAR)) {
-                this.list.add(new DateRow(fileDescription.get(i).getTimeStamp()));
+                this.list.add(new DateRow(fd.getTimeStamp()));
             }
         }
     }

@@ -12,8 +12,10 @@ import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import im.threads.internal.Config;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileDownloader;
 import im.threads.internal.utils.ThreadsLogger;
@@ -52,7 +54,7 @@ public final class FileDownloadService extends ThreadsService {
         if (fileDescription == null) {
             return START_STICKY;
         }
-        if (fileDescription.getDownloadPath() == null || fileDescription.getFilePath() != null) {
+        if (fileDescription.getDownloadPath() == null || fileDescription.getFileUri() != null) {
             ThreadsLogger.e(TAG, "cant download with fileDescription = " + fileDescription);
             return START_STICKY;
         }
@@ -72,7 +74,7 @@ public final class FileDownloadService extends ThreadsService {
                     @Override
                     public void onComplete(final File file) {
                         fileDescription.setDownloadProgress(100);
-                        fileDescription.setFilePath(file.getAbsolutePath());
+                        fileDescription.setFileUri(FileProviderHelper.getUriForFile(Config.instance.context, file));
                         DatabaseHolder.getInstance().updateFileDescription(fileDescription);
                         runningDownloads.remove(fileDescription);
                         sendFinishBroadcast(fileDescription);

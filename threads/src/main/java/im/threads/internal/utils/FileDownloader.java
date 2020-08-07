@@ -40,7 +40,6 @@ public class FileDownloader {
                 urlConnection.setConnectTimeout(15000);
                 urlConnection.setReadTimeout(15000);
 
-
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
                 List values = urlConnection.getHeaderFields().get("Content-Length");
                 Long length = null;

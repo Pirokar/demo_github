@@ -1,6 +1,5 @@
 package im.threads.internal.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +9,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -66,7 +65,7 @@ public final class ImageFragment extends Fragment {
         }
         if (FileUtils.isImage(fd)) {
             Picasso.get()
-                    .load(new File(fd.getFilePath()))
+                    .load(fd.getFileUri())
                     .fit()
                     .centerInside()
                     .error(style.imagePlaceholder)

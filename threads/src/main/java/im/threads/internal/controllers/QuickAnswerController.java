@@ -1,8 +1,7 @@
 package im.threads.internal.controllers;
 
-import android.app.Fragment;
-
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;

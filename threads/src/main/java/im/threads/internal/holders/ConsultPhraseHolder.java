@@ -181,11 +181,8 @@ public final class ConsultPhraseHolder extends BaseHolder {
             rightTextFileStamp.setText(itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(new Date(quote.getTimeStamp())));
             if (quote.getFileDescription() != null) {
                 mCircularProgressButton.setVisibility(View.VISIBLE);
-                String filename = quote.getFileDescription().getIncomingName();
-                if (filename == null) {
-                    filename = FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath()) == null ? "" : FileUtils.getLastPathSegment(quote.getFileDescription().getFilePath());
-                }
-                mRightTextDescr.setText(filename + "\n" + Formatter.formatFileSize(itemView.getContext(), quote.getFileDescription().getSize()));
+                long fileSize = quote.getFileDescription().getSize();
+                mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 if (fileDescription != null)
                     mCircularProgressButton.setOnClickListener(fileClickListener);
                 mCircularProgressButton.setProgress(quote.getFileDescription().getDownloadProgress());
@@ -218,10 +215,8 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 } else {
                     rightTextHeader.setVisibility(View.GONE);
                 }
-                String fileHeader = fileDescription.getIncomingName() == null ? FileUtils.getLastPathSegment(fileDescription.getFilePath()) : fileDescription
-                        .getIncomingName();
-                mRightTextDescr.setText(fileHeader == null ? "" : fileHeader + "\n" + android.text.format.Formatter
-                        .formatFileSize(itemView.getContext(), fileDescription.getSize()));
+                long fileSize = fileDescription.getSize();
+                mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 rightTextFileStamp
                         .setText(itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
                 mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
@@ -305,7 +300,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                         chatItem.ogUrl = url;
                     }
                     bindOGData(ogData, url);
-                }, e ->ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e))
+                }, e -> ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e))
         );
     }
 

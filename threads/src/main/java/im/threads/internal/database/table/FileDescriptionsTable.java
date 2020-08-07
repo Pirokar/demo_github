@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.utils.FileUtils;
 
 public class FileDescriptionsTable extends Table {
 
@@ -26,6 +27,7 @@ public class FileDescriptionsTable extends Table {
     private static final String COLUMN_FD_SIZE = "COLUMN_FD_SIZE";
     private static final String COLUMN_FD_IS_FROM_QUOTE = "COLUMN_FD_IS_FROM_QUOTE";
     private static final String COLUMN_FD_FILENAME = "COLUMN_FD_FILENAME";
+    private static final String COLUMN_FD_MIME_TYPE = "COLUMN_FD_MIME_TYPE";
     private static final String COLUMN_FD_MESSAGE_UUID_EXT = "COLUMN_FD_MESSAGE_UUID_EXT";
     private static final String COLUMN_FD_SELFIE = "COLUMN_FD_SELFIE";
 
@@ -40,6 +42,7 @@ public class FileDescriptionsTable extends Table {
                 + COLUMN_FD_SIZE + " integer, "
                 + COLUMN_FD_IS_FROM_QUOTE + " integer, "
                 + COLUMN_FD_FILENAME + " text,"
+                + COLUMN_FD_MIME_TYPE + " text,"
                 + COLUMN_FD_DOWNLOAD_PROGRESS + " integer, "
                 + COLUMN_FD_SELFIE + " integer)"
         );
@@ -67,7 +70,7 @@ public class FileDescriptionsTable extends Table {
             }
             FileDescription fd = new FileDescription(
                     cGetString(c, COLUMN_FD_FROM),
-                    cGetString(c, COLUMN_FD_PATH),
+                    FileUtils.safeParse(cGetString(c, COLUMN_FD_PATH)),
                     cGetLong(c, COLUMN_FD_SIZE),
                     cGetLong(c, COLUMN_FD_TIMESTAMP)
             );
@@ -75,6 +78,7 @@ public class FileDescriptionsTable extends Table {
             fd.setDownloadPath(cGetString(c, COLUMN_FD_URL));
             fd.setSelfie(cGetBool(c, COLUMN_FD_SELFIE));
             fd.setIncomingName(cGetString(c, COLUMN_FD_FILENAME));
+            fd.setMimeType(cGetString(c, COLUMN_FD_MIME_TYPE));
             return fd;
         }
     }
@@ -83,16 +87,17 @@ public class FileDescriptionsTable extends Table {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FD_MESSAGE_UUID_EXT, fdMessageUuid);
         cv.put(COLUMN_FD_FROM, fileDescription.getFrom());
-        if (!TextUtils.isEmpty(fileDescription.getFilePath())) {
-            cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
+        if (fileDescription.getFileUri() != null) {
+            cv.put(COLUMN_FD_PATH, fileDescription.getFileUri().toString());
         }
         cv.put(COLUMN_FD_URL, fileDescription.getDownloadPath());
         cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
         cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
         cv.put(COLUMN_FD_IS_FROM_QUOTE, isFromQuote);
         cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
+        cv.put(COLUMN_FD_MIME_TYPE, fileDescription.getMimeType());
         cv.put(COLUMN_FD_SELFIE, fileDescription.isSelfie());
-        String sql = "select " + COLUMN_FD_MESSAGE_UUID_EXT + " and " +  COLUMN_FD_PATH +
+        String sql = "select " + COLUMN_FD_MESSAGE_UUID_EXT + " and " + COLUMN_FD_PATH +
                 " from " + TABLE_FILE_DESCRIPTION
                 + " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?";
         String[] selectionArgs = new String[]{fdMessageUuid};
@@ -123,12 +128,13 @@ public class FileDescriptionsTable extends Table {
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
                 FileDescription fd = new FileDescription(
                         cGetString(c, COLUMN_FD_FROM),
-                        cGetString(c, COLUMN_FD_PATH),
+                        FileUtils.safeParse(cGetString(c, COLUMN_FD_PATH)),
                         cGetLong(c, COLUMN_FD_SIZE),
                         cGetLong(c, COLUMN_FD_TIMESTAMP)
                 );
                 fd.setDownloadProgress(cGetInt(c, COLUMN_FD_DOWNLOAD_PROGRESS));
                 fd.setIncomingName(cGetString(c, COLUMN_FD_FILENAME));
+                fd.setMimeType(cGetString(c, COLUMN_FD_MIME_TYPE));
                 fd.setDownloadPath(cGetString(c, COLUMN_FD_URL));
                 fd.setSelfie(cGetBool(c, COLUMN_FD_SELFIE));
                 list.add(fd);
@@ -140,12 +146,13 @@ public class FileDescriptionsTable extends Table {
     public void updateFileDescription(SQLiteOpenHelper sqlHelper, @NonNull FileDescription fileDescription) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FD_FROM, fileDescription.getFrom());
-        cv.put(COLUMN_FD_PATH, fileDescription.getFilePath());
+        cv.put(COLUMN_FD_PATH, fileDescription.getFileUri() != null ? fileDescription.getFileUri().toString() : null);
         cv.put(COLUMN_FD_URL, fileDescription.getDownloadPath());
         cv.put(COLUMN_FD_TIMESTAMP, fileDescription.getTimeStamp());
         cv.put(COLUMN_FD_SIZE, fileDescription.getSize());
         cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.getDownloadProgress());
         cv.put(COLUMN_FD_FILENAME, fileDescription.getIncomingName());
+        cv.put(COLUMN_FD_MIME_TYPE, fileDescription.getMimeType());
         cv.put(COLUMN_FD_SELFIE, fileDescription.isSelfie());
         sqlHelper.getWritableDatabase().update(TABLE_FILE_DESCRIPTION, cv,
                 "" + COLUMN_FD_FILENAME

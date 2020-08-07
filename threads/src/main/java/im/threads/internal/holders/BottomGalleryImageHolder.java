@@ -10,8 +10,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
@@ -43,7 +41,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
         }
         chosenMark.setBackground(d);
         Picasso.get()
-                .load(new File(item.getImagePath()))
+                .load(item.getImagePath())
                 .fit()
                 .centerCrop()
                 .into(image);

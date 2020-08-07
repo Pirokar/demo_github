@@ -47,7 +47,7 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
     public void onFileReceive(List<FileDescription> descriptions) {
         if (descriptions != null && descriptions.size() > 0) {
             for (Iterator<FileDescription> iter = descriptions.iterator(); iter.hasNext(); ) {
-                if (iter.next().getFilePath() == null) iter.remove();
+                if (iter.next().getFileUri() == null) iter.remove();
             }
             mFilesAndMediaAdapter = new FilesAndMediaAdapter(descriptions, this);
             mRecyclerView.setAdapter(mFilesAndMediaAdapter);
@@ -73,11 +73,11 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        if (getFragmentManager().findFragmentByTag(TAG) == null) {
+        if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
             mFilesAndMediaController = FilesAndMediaController.getInstance();
-            getFragmentManager().beginTransaction().add(mFilesAndMediaController, TAG).commit();
+            getSupportFragmentManager().beginTransaction().add(mFilesAndMediaController, TAG).commit();
         } else {
-            mFilesAndMediaController = (FilesAndMediaController) getFragmentManager().findFragmentByTag(TAG);
+            mFilesAndMediaController = (FilesAndMediaController) getSupportFragmentManager().findFragmentByTag(TAG);
         }
         mFilesAndMediaController.bindActivity(this);
         mFilesAndMediaController.getFilesAsync();

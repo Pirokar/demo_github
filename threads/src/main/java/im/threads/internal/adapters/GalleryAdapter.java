@@ -29,7 +29,7 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
     @Override
     public void onBindViewHolder(@NonNull final GalleryItemHolder holder, int position) {
         holder.onBind(
-                list.get(position).getImagePath(),
+                list.get(position).getImageUri(),
                 v -> {
                     MediaPhoto photo = list.get(holder.getAdapterPosition());
                     if (photo.isChecked()) {

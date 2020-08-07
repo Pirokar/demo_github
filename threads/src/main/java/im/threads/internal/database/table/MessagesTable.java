@@ -119,7 +119,7 @@ public class MessagesTable extends Table {
     public List<ChatItem> getChatItems(SQLiteOpenHelper sqlHelper, int offset, int limit) {
         List<ChatItem> items = new ArrayList<>();
         String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc",
-                TABLE_MESSAGES, COLUMN_TIMESTAMP, String.valueOf(limit), String.valueOf(offset), COLUMN_TIMESTAMP);
+                TABLE_MESSAGES, COLUMN_TIMESTAMP, limit, offset, COLUMN_TIMESTAMP);
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(query, null)) {
             if (c.getCount() == 0) {
                 return items;

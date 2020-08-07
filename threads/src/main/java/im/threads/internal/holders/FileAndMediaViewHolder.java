@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -48,9 +47,9 @@ public final class FileAndMediaViewHolder extends BaseHolder {
 
     public void onBind(FileDescription fileDescription, View.OnClickListener fileClickListener) {
         if (FileUtils.isImage(fileDescription)) {
-            if (fileDescription.getFilePath() != null) {
+            if (fileDescription.getFileUri() != null) {
                 Picasso.get()
-                        .load(new File(fileDescription.getFilePath()))
+                        .load(fileDescription.getFileUri())
                         .fit()
                         .centerInside()
                         .into(mImageButton);
@@ -65,14 +64,10 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }
-        String header = "";
-        if (fileDescription.getFilePath() != null) {
-            header = FileUtils.getLastPathSegment(fileDescription.getFilePath());
-        } else if (fileDescription.getIncomingName() != null) {
-            header = fileDescription.getIncomingName();
-        }
-        fileHeaderTextView.setText(header);
-        fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), fileDescription.getSize()));
+        fileHeaderTextView.setText(FileUtils.getFileName(fileDescription));
+        long fileSize = fileDescription.getSize();
+        fileSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), fileSize));
+        fileSizeTextView.setVisibility(fileSize > 0 ? View.VISIBLE : View.GONE);
         timeStampTextView.setText(sdf.format(new Date(fileDescription.getTimeStamp())));
         mImageButton.setOnClickListener(fileClickListener);
         ViewGroup vg = (ViewGroup) itemView;

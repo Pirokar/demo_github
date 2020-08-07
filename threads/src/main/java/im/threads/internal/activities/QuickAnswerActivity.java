@@ -47,7 +47,7 @@ public final class QuickAnswerActivity
                     QuickAnswerFragment.getInstance(phrase.getAvatarPath(),
                             phrase.getConsultName(),
                             phrase.getPhrase());
-            fr.show(getFragmentManager(), null);
+            fr.show(getSupportFragmentManager(), null);
         }
     }
 

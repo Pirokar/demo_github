@@ -74,10 +74,11 @@ public final class ConsultFileViewHolder extends BaseHolder {
             , View.OnLongClickListener onLongClick
             , boolean isAvatarVisible
             , boolean isFilterVisible) {
-        mFileHeader.setText(fileDescription.getIncomingName() == null ? FileUtils.getLastPathSegment(fileDescription.getFilePath()) : fileDescription.getIncomingName());
+        mFileHeader.setText(FileUtils.getFileName(fileDescription));
         if (mFileHeader.getText().toString().equalsIgnoreCase("null")) mFileHeader.setText("");
-        mSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(),
-                fileDescription.getSize()));
+        long size = fileDescription.getSize();
+        mSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), size));
+        mSizeTextView.setVisibility(size > 0 ? View.VISIBLE : View.GONE);
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
         mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
         ViewGroup vg = (ViewGroup) itemView;

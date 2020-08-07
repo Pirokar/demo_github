@@ -1,7 +1,6 @@
 package im.threads.internal.fragments;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -21,6 +20,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.squareup.picasso.Picasso;

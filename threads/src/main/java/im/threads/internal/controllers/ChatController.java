@@ -16,7 +16,6 @@ import androidx.core.util.ObjectsCompat;
 import androidx.core.util.Pair;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +30,6 @@ import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.ChatItemType;
-import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ConsultChatPhrase;
@@ -282,14 +280,13 @@ public final class ChatController {
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-                if (fileDescription.getFilePath() == null) {
+                if (fileDescription.getFileUri() == null) {
                     FileDownloadService.startDownloadFD(activity, fileDescription);
                 } else if (FileUtils.isImage(fileDescription)) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
                 } else if (FileUtils.isDoc(fileDescription)) {
                     final Intent target = new Intent(Intent.ACTION_VIEW);
-                    final File file = new File(fileDescription.getFilePath());
-                    target.setDataAndType(FileProviderHelper.getUriForFile(activity, file), FileUtils.getMimeType(file));
+                    target.setDataAndType(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription));
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     try {
                         activity.startActivity(target);
