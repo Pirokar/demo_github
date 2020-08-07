@@ -18,7 +18,7 @@ public final class FileUtils {
     private static final int JPEG = 0;
     private static final int PNG = 1;
     private static final int PDF = 2;
-    private static final int OTHER_DOC_FORMATS = 3;
+    private static final int TEXT = 3;
     private static final int UNKNOWN = -1;
 
     private FileUtils() {
@@ -43,19 +43,33 @@ public final class FileUtils {
     }
 
     public static boolean isImage(@Nullable final FileDescription fileDescription) {
-        return fileDescription != null
-                && (getExtensionFromPath(fileDescription.getFilePath()) == JPEG
-                || getExtensionFromPath(fileDescription.getFilePath()) == PNG
-                || getExtensionFromPath(fileDescription.getIncomingName()) == PNG
-                || getExtensionFromPath(fileDescription.getIncomingName()) == JPEG);
+        if (fileDescription == null) {
+            return false;
+        }
+        int fileExtension = getExtensionFromPath(fileDescription.getFilePath());
+        if (fileExtension == JPEG  || fileExtension == PNG) {
+            return true;
+        }
+        int incomingFileExtension = getExtensionFromPath(fileDescription.getIncomingName());
+        if (incomingFileExtension == JPEG  || incomingFileExtension == PNG) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isDoc(@Nullable final FileDescription fileDescription) {
-        return fileDescription != null
-                && (getExtensionFromPath(fileDescription.getFilePath()) == PDF
-                || getExtensionFromPath(fileDescription.getFilePath()) == OTHER_DOC_FORMATS
-                || getExtensionFromPath(fileDescription.getIncomingName()) == PDF
-                || getExtensionFromPath(fileDescription.getIncomingName()) == OTHER_DOC_FORMATS);
+        if (fileDescription == null) {
+            return false;
+        }
+        int fileExtension = getExtensionFromPath(fileDescription.getFilePath());
+        if (fileExtension == PDF  || fileExtension == TEXT) {
+            return true;
+        }
+        int incomingFileExtension = getExtensionFromPath(fileDescription.getIncomingName());
+        if (incomingFileExtension == PDF  || incomingFileExtension == TEXT) {
+            return true;
+        }
+        return false;
     }
 
     private static int getExtensionFromPath(@Nullable String path) {
@@ -80,7 +94,7 @@ public final class FileUtils {
                 || extension.equalsIgnoreCase("xlsm")
                 || extension.equalsIgnoreCase("xltx")
                 || extension.equalsIgnoreCase("xlt")) {
-            return OTHER_DOC_FORMATS;
+            return TEXT;
         }
         return UNKNOWN;
     }

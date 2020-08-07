@@ -9,6 +9,7 @@ import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.QuickReply;
 import im.threads.internal.transport.ChatItemProviderData;
 import im.threads.internal.transport.TransportException;
+import im.threads.internal.transport.models.AttachmentSettings;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 
@@ -17,6 +18,7 @@ public class ChatUpdateProcessor {
     private static ChatUpdateProcessor instance;
 
     private final FlowableProcessor<String> typingProcessor = PublishProcessor.create();
+    private final FlowableProcessor<AttachmentSettings> attachmentSettingsProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> userMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> consultMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
@@ -39,6 +41,10 @@ public class ChatUpdateProcessor {
 
     public void postTyping(@NonNull String clientId) {
         typingProcessor.onNext(clientId);
+    }
+
+    public void postAttachmentSettings(@NonNull AttachmentSettings attachmentSettings) {
+        attachmentSettingsProcessor.onNext(attachmentSettings);
     }
 
     public void postUserMessageWasRead(@NonNull String messageId) {
@@ -87,6 +93,10 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<String> getTypingProcessor() {
         return typingProcessor;
+    }
+
+    public FlowableProcessor<AttachmentSettings> getAttachmentSettingsProcessor() {
+        return attachmentSettingsProcessor;
     }
 
     public FlowableProcessor<String> getUserMessageReadProcessor() {

@@ -2,6 +2,8 @@ package im.threads.internal.transport.mfms_push;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
@@ -10,10 +12,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import androidx.annotation.Nullable;
 import im.threads.internal.Config;
+import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.transport.MessageParser;
+import im.threads.internal.transport.models.AttachmentSettings;
 import im.threads.internal.utils.ThreadsLogger;
 
 public final class MFMSPushMessageParser {
@@ -33,11 +37,21 @@ public final class MFMSPushMessageParser {
 
     public static List<ChatItem> formatMessages(final List<PushMessage> messages) {
         final List<ChatItem> list = new ArrayList<>();
-        for (int i = 0; i < messages.size(); i++) {
-            final ChatItem chatItem = format(messages.get(i));
-            if (chatItem != null) {
-                list.add(chatItem);
+        for (PushMessage message: messages) {
+            JsonObject jsonObject = Config.instance.gson.fromJson(message.fullMessage, JsonObject.class);
+            ChatItemType type = ChatItemType.fromString(MessageParser.getType(jsonObject));
+            if (type == ChatItemType.ATTACHMENT_SETTINGS) {
+                AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(jsonObject, AttachmentSettings.class);
+                if (attachmentSettings.getClientId() != null) {
+                    ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
+                }
+            } else {
+                final ChatItem chatItem = format(message);
+                if (chatItem != null) {
+                    list.add(chatItem);
+                }
             }
+
         }
         return list;
     }

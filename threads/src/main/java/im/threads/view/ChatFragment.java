@@ -500,7 +500,7 @@ public final class ChatFragment extends BaseFragment implements
             if (Config.instance.getChatStyle().useExternalCameraApp) {
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    externalCameraPhotoFile = FileHelper.createImageFile(activity);
+                    externalCameraPhotoFile = FileHelper.INSTANCE.createImageFile(activity);
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
                     ThreadsLogger.d(TAG, "Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);

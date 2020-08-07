@@ -115,4 +115,5 @@
     <string name="threads_selfie">Селфи</string>
     <string name="threads_selfie_hint">Убедитесь, что на фото ваше лицо размещено прямо и его отчетливо видно</string>
 
+    <string name="threads_can_not_attach_file">Невозможно прикрепить файл</string>
 </resources>

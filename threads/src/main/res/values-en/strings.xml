@@ -104,4 +104,6 @@
         <item quantity="other">%d files</item>
     </plurals>
 
+    <string name="threads_can_not_attach_file">Can`t attach file</string>
+
 </resources>

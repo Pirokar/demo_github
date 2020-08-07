@@ -141,11 +141,12 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         String path = files.get(mViewPager.getCurrentItem()).getFilePath();
         try {
             File file = new File(path);
-            if (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) == null) {
+            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            if (downloadDir == null) {
                 Toast.makeText(this, R.string.threads_unable_to_save, Toast.LENGTH_SHORT).show();
                 return;
             }
-            File out = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), FileUtils.getLastPathSegment(path));
+            File out = new File(downloadDir, FileUtils.getLastPathSegment(path));
             out.createNewFile();
             InputStream inStream = new FileInputStream(file);
             OutputStream outStram = new FileOutputStream(out);

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 public enum ChatItemType {
     TYPING,
+    ATTACHMENT_SETTINGS,
     // incoming
     OPERATOR_JOINED,
     OPERATOR_LEFT,

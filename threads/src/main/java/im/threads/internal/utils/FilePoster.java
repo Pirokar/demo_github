@@ -59,7 +59,7 @@ public final class FilePoster {
 
     private static String sendFile(File file, String token) throws IOException {
         ThreadsLogger.i(TAG, "sendFile: " + file);
-        if (FileHelper.isThreadsImage(file)) {
+        if (FileHelper.INSTANCE.isThreadsImage(file)) {
             ThreadsLogger.i(TAG, "threads file: " + file);
             File downsizedImageFile = MediaHelper.downsizeImage(Config.instance.context, file, MediaHelper.PHOTO_RESIZE_MAX_SIDE);
             if (downsizedImageFile != null) {

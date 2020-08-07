@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.helpers.FileHelper;
 
 /**
  * Dialog fragment for picking folder
@@ -179,8 +181,12 @@ public final class FilePickerFragment extends DialogFragment
         currentAbsoluteDir = pointedFileToTravel;
         if (pointedFileToTravel.exists() && mSelectedListener != null) {
             if (mFileFilter != null && mFileFilter.accept(pointedFileToTravel.getAbsoluteFile())) {
-                mSelectedListener.onFileSelected(pointedFileToTravel);
-                dismiss();
+                if (FileHelper.INSTANCE.canAttachFile(pointedFileToTravel)) {
+                    mSelectedListener.onFileSelected(pointedFileToTravel);
+                    dismiss();
+                } else {
+                    Toast.makeText(getContext(), R.string.threads_item_user_rate_text, Toast.LENGTH_SHORT).show();
+                }
             }
         }
         travelToFolder(currentAbsoluteDir, mAnimatedArrayAdapter);

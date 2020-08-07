@@ -32,6 +32,7 @@ import im.threads.internal.transport.MessageAttributes;
 import im.threads.internal.transport.OutgoingMessageCreator;
 import im.threads.internal.transport.Transport;
 import im.threads.internal.transport.TransportException;
+import im.threads.internal.transport.models.AttachmentSettings;
 import im.threads.internal.transport.models.TypingContent;
 import im.threads.internal.transport.threads_gate.requests.RegisterDeviceRequest;
 import im.threads.internal.transport.threads_gate.requests.SendMessageRequest;
@@ -336,11 +337,16 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                                 if (content.getClientId() != null) {
                                     ChatUpdateProcessor.getInstance().postTyping(content.getClientId());
                                 }
-                            } else if (ThreadsGateMessageParser.checkId(message, PrefUtils.getClientID())) {
-                                ChatItem chatItem = ThreadsGateMessageParser.format(message);
-                                if (chatItem != null) {
-                                    ChatUpdateProcessor.getInstance().postNewMessage(chatItem);
+                            } else if (ChatItemType.ATTACHMENT_SETTINGS.equals(type)) {
+                                AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(message.getContent(), AttachmentSettings.class);
+                                if (attachmentSettings.getClientId() != null) {
+                                    ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
                                 }
+                            } else if (ThreadsGateMessageParser.checkId(message, PrefUtils.getClientID())) {
+                                    ChatItem chatItem = ThreadsGateMessageParser.format(message);
+                                    if (chatItem != null) {
+                                        ChatUpdateProcessor.getInstance().postNewMessage(chatItem);
+                                    }
                             }
                         }
                     }
