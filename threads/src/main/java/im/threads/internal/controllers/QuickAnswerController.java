@@ -6,9 +6,13 @@ import androidx.fragment.app.Fragment;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.internal.transport.HistoryLoader;
+import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.ThreadsLogger;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public final class QuickAnswerController extends Fragment {
 
@@ -20,7 +24,11 @@ public final class QuickAnswerController extends Fragment {
     }
 
     public void onBind(@NonNull final QuickAnswerActivity activity) {
-        compositeDisposable.add(DatabaseHolder.getInstance().getLastConsultPhrase()
+        ChatController.getInstance().loadHistory();
+        compositeDisposable.add(Single.fromCallable(() -> HistoryParser.getChatItems(HistoryLoader.getHistorySync(100, false)))
+                .doOnSuccess(chatItems -> DatabaseHolder.getInstance().putChatItems(chatItems))
+                .flatMap(items -> DatabaseHolder.getInstance().getLastConsultPhrase())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(consultPhrase -> {
                     if (consultPhrase != null) {

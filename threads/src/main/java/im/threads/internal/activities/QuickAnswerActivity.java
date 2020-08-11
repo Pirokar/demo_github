@@ -12,6 +12,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import im.threads.ChatStyle;
@@ -43,11 +44,13 @@ public final class QuickAnswerActivity
 
     public void setLastUnreadMessage(ConsultPhrase phrase) {
         if (null != phrase) {
-            QuickAnswerFragment fr =
-                    QuickAnswerFragment.getInstance(phrase.getAvatarPath(),
-                            phrase.getConsultName(),
-                            phrase.getPhrase());
-            fr.show(getSupportFragmentManager(), null);
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(QuickAnswerFragment.TAG);
+            if(fragment != null) {
+                getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            }
+            QuickAnswerFragment.getInstance(phrase.getAvatarPath(),
+                    phrase.getConsultName(),
+                    phrase.getPhrase()).show(getSupportFragmentManager(), QuickAnswerFragment.TAG);
         }
     }
 

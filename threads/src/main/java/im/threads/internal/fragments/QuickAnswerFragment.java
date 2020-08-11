@@ -1,5 +1,6 @@
 package im.threads.internal.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -33,6 +34,7 @@ import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 
 public final class QuickAnswerFragment extends DialogFragment {
+    public static final String TAG = QuickAnswerFragment.class.getCanonicalName();
     private EditText mEditText;
 
     public static QuickAnswerFragment getInstance(
@@ -59,9 +61,7 @@ public final class QuickAnswerFragment extends DialogFragment {
         ImageView imageView = v.findViewById(R.id.consult_image);
         ImageButton imageButton = v.findViewById(R.id.send);
         v.findViewById(R.id.close_button).setOnClickListener(v1 -> {
-            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
-            Intent answerIntent = new Intent(QuickAnswerActivity.ACTION_CANCEL);
-            manager.sendBroadcast(answerIntent);
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(QuickAnswerActivity.ACTION_CANCEL));
             dismiss();
         });
         Bundle arguments = getArguments();
@@ -87,10 +87,10 @@ public final class QuickAnswerFragment extends DialogFragment {
             if (mEditText.getText().toString().trim().length() == 0) {
                 return;
             }
-            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
-            Intent answerIntent = new Intent(QuickAnswerActivity.ACTION_ANSWER);
-            answerIntent.putExtra(QuickAnswerActivity.ACTION_ANSWER, mEditText.getText().toString());
-            manager.sendBroadcast(answerIntent);
+            LocalBroadcastManager.getInstance(getActivity())
+                    .sendBroadcast(
+                            new Intent(QuickAnswerActivity.ACTION_ANSWER)
+                            .putExtra(QuickAnswerActivity.ACTION_ANSWER, mEditText.getText().toString()));
             mEditText.setText("");
             dismiss();
         });
@@ -123,7 +123,6 @@ public final class QuickAnswerFragment extends DialogFragment {
         Dialog d = super.onCreateDialog(savedInstanceState);
         int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9f);
         d.getWindow().setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT);
-        d.setCancelable(false);
         return d;
     }
 
@@ -134,7 +133,6 @@ public final class QuickAnswerFragment extends DialogFragment {
         if (null != d) {
             int width = getResources().getDisplayMetrics().widthPixels;
             d.getWindow().setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT);
-            d.setCancelable(false);
         }
     }
 
@@ -144,6 +142,15 @@ public final class QuickAnswerFragment extends DialogFragment {
         if (null != mEditText) {
             mEditText.requestFocus();
             getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Activity activity = getActivity();
+        if (activity != null) {
+            activity.finish();
         }
     }
 }
