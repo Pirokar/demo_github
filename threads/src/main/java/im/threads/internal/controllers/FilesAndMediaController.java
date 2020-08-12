@@ -11,9 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.database.DatabaseHolder;
@@ -62,15 +59,6 @@ public final class FilesAndMediaController extends Fragment {
 
     public void getFilesAsync() {
         compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
-                .map(data -> {
-                    List<FileDescription> list = new ArrayList<>();
-                    for (FileDescription fd : data) {
-                        if (FileUtils.isSupportedFile(fd)) {
-                            list.add(fd);
-                        }
-                    }
-                    return list;
-                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -86,7 +74,7 @@ public final class FilesAndMediaController extends Fragment {
     public void onFileClick(FileDescription fileDescription) {
         if (FileUtils.isImage(fileDescription)) {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
-        } else if (FileUtils.isDoc(fileDescription)) {
+        } else {
             Intent target = new Intent(Intent.ACTION_VIEW);
             target.setDataAndType(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription));
             target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);

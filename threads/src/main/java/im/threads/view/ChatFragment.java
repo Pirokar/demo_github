@@ -633,7 +633,7 @@ public final class ChatFragment extends BaseFragment implements
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
                     cp.getFileDescription().getFileUri()
             );
-        } else if (FileUtils.isDoc(cp.getFileDescription())) {
+        } else {
             String fileName = "";
             try {
                 Uri fileUri = cp.getFileDescription().getFileUri();
@@ -645,10 +645,6 @@ public final class ChatFragment extends BaseFragment implements
             }
             mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
-                    null);
-        } else {
-            mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
-                    TextUtils.isEmpty(text) ? "" : text,
                     null);
         }
     }

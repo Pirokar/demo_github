@@ -170,7 +170,7 @@ public final class UserPhrase implements ChatPhrase {
     }
 
     public boolean isOnlyDoc() {
-        return TextUtils.isEmpty(phrase) && FileUtils.isDoc(fileDescription);
+        return TextUtils.isEmpty(phrase) && !FileUtils.isImage(fileDescription);
     }
 
     public boolean hasFile() {

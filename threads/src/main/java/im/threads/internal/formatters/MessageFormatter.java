@@ -5,11 +5,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
 import im.threads.R;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
@@ -61,7 +62,7 @@ public final class MessageFormatter {
                     if (FileUtils.isImage(fileDescription)) {
                         imagesCount++;
                         imagePath = fileDescription.getDownloadPath();
-                    } else if (FileUtils.isDoc(fileDescription)) {
+                    } else {
                         plainFilesCount++;
                         docName = fileDescription.getIncomingName();
                     }
@@ -71,7 +72,7 @@ public final class MessageFormatter {
                     if (FileUtils.isImage(fileDescription)) {
                         imagesCount++;
                         imagePath = fileDescription.getDownloadPath();
-                    } else if (FileUtils.isDoc(fileDescription)) {
+                    } else {
                         plainFilesCount++;
                         docName = fileDescription.getIncomingName();
                     }

@@ -76,10 +76,6 @@ public final class FileUtils {
         return 0;
     }
 
-    public static boolean isSupportedFile(@Nullable final FileDescription fileDescription) {
-        return FileUtils.isImage(fileDescription) || FileUtils.isDoc(fileDescription);
-    }
-
     public static boolean isImage(@Nullable final FileDescription fileDescription) {
         return fileDescription != null
                 && (getExtensionFromFileDescription(fileDescription) == JPEG
