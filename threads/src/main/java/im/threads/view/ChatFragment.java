@@ -1653,23 +1653,10 @@ public final class ChatFragment extends BaseFragment implements
 
     private void openFile() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            String[] mimeTypes = {
-                    "image/jpeg",
-                    "image/png",
-                    "text/plain",
-                    "application/pdf",
-                    "application/msword",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    "application/vnd.ms-excel",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "application/vnd.ms-excel.sheet.macroenabled.12",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.template"
-            };
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-            intent.setType("*/*");
-            startActivityForResult(intent, REQUEST_CODE_FILE);
+            startActivityForResult(
+                    new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                            .addCategory(Intent.CATEGORY_OPENABLE)
+                            .setType("*/*"), REQUEST_CODE_FILE);
         } else {
             FilePickerFragment frag = FilePickerFragment.newInstance();
             frag.setFileFilter(new MyFileFilter());
