@@ -886,20 +886,26 @@ public final class ChatFragment extends BaseFragment implements
     private void onFileResult(@NonNull Intent data) {
         Uri uri = data.getData();
         if (uri != null) {
-            if (FileHelper.INSTANCE.canAttachFile(FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri), FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))) {
-                onFileResult(uri);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    final int takeFlags = data.getFlags()
-                            & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    try {
-                        requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                    } catch (SecurityException e) {
-                        ThreadsLogger.e(TAG, e.getLocalizedMessage());
+            if (FileHelper.INSTANCE.isAllowedFileExtension(FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))) {
+                if (FileHelper.INSTANCE.isAllowedFileSize(FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri))) {
+                    onFileResult(uri);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        final int takeFlags = data.getFlags()
+                                & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        try {
+                            requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                        } catch (SecurityException e) {
+                            ThreadsLogger.e(TAG, e.getLocalizedMessage());
+                        }
                     }
+                } else {
+                    // Недопустимый размер файла
+                    Toast.makeText(getContext(), getString(R.string.threads_not_allowed_file_size, FileHelper.INSTANCE.getMaxAllowedFileSize()), Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(getContext(), R.string.threads_can_not_attach_file, Toast.LENGTH_SHORT).show();
+                // Недопустимое расширение файла
+                Toast.makeText(getContext(), R.string.threads_not_allowed_file_extension, Toast.LENGTH_SHORT).show();
             }
         }
     }

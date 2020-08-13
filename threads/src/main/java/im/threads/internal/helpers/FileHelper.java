@@ -32,17 +32,22 @@ public enum  FileHelper {
         return output;
     }
 
-    public boolean canAttachFile(long fileSize, String fileExtension) {
+    public boolean isAllowedFileSize(long fileSize) {
+        return fileSize / MEGABYTE <= getMaxAllowedFileSize();
+    }
+
+    public boolean isAllowedFileExtension(String fileExtension) {
         AttachmentSettings.Content attachmentSettings = getAttachmentSettings();
-        if (fileSize / MEGABYTE > attachmentSettings.getMaxSize()) {
-            return false;
-        }
         for (String allowedExt : attachmentSettings.getFileExtensions()) {
             if (allowedExt.equalsIgnoreCase(fileExtension)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public long getMaxAllowedFileSize() {
+        return getAttachmentSettings().getMaxSize();
     }
 
     private void saveAttachmentSettings(AttachmentSettings.Content attachmentSettingsContent) {

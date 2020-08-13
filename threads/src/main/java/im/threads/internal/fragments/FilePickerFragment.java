@@ -182,15 +182,17 @@ public final class FilePickerFragment extends DialogFragment
         if (pointedFileToTravel.exists() && mSelectedListener != null) {
             if (mFileFilter != null && mFileFilter.accept(pointedFileToTravel.getAbsoluteFile())) {
                 String path = pointedFileToTravel.getPath();
-                if (path.contains(".")) {
-                    if (FileHelper.INSTANCE.canAttachFile(pointedFileToTravel.length(), path.substring(path.lastIndexOf(".") + 1))) {
+                if (path.contains(".") && FileHelper.INSTANCE.isAllowedFileExtension(path.substring(path.lastIndexOf(".") + 1))) {
+                    if (FileHelper.INSTANCE.isAllowedFileSize(pointedFileToTravel.length())) {
                         mSelectedListener.onFileSelected(pointedFileToTravel);
                         dismiss();
                     } else {
-                        Toast.makeText(getContext(), R.string.threads_can_not_attach_file, Toast.LENGTH_SHORT).show();
+                        // Недопустимый размер файла
+                        Toast.makeText(getContext(), getString(R.string.threads_not_allowed_file_size, FileHelper.INSTANCE.getMaxAllowedFileSize()), Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(getContext(), R.string.threads_can_not_attach_file, Toast.LENGTH_SHORT).show();
+                    // Недопустимое расширение файла
+                    Toast.makeText(getContext(), R.string.threads_not_allowed_file_extension, Toast.LENGTH_SHORT).show();
                 }
             }
         }
