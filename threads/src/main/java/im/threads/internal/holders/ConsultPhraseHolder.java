@@ -173,7 +173,9 @@ public final class ConsultPhraseHolder extends BaseHolder {
             }
         }
         mImage.setVisibility(View.GONE);
-        if (quote != null) {
+        if (quote == null) {
+            fileRow.setVisibility(View.GONE);
+        } else {
             fileRow.setVisibility(View.VISIBLE);
             mCircularProgressButton.setVisibility(View.GONE);
             rightTextHeader.setText(quote.getPhraseOwnerTitle() == null ? itemView.getContext().getString(R.string.threads_I) : quote.getPhraseOwnerTitle());
