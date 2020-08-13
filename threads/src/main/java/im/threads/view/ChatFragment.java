@@ -899,7 +899,7 @@ public final class ChatFragment extends BaseFragment implements
                     }
                 }
             } else {
-                Toast.makeText(getContext(), R.string.threads_item_user_rate_text, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.threads_can_not_attach_file, Toast.LENGTH_SHORT).show();
             }
         }
     }
