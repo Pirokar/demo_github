@@ -14,15 +14,16 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import java.util.Iterator;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Iterator;
+import java.util.List;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
@@ -88,12 +89,16 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
                 mSearchEditText.setText("");
                 mSearchEditText.setVisibility(View.GONE);
                 mToolbar.setTitle(getString(R.string.threads_files_and_media));
-                if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.undoClear();
+                if (null != mFilesAndMediaAdapter) {
+                    mFilesAndMediaAdapter.undoClear();
+                }
             } else {
                 mSearchEditText.setVisibility(View.VISIBLE);
                 mSearchEditText.requestFocus();
                 mToolbar.setTitle("");
-                if (null != mFilesAndMediaAdapter) mFilesAndMediaAdapter.backupAndClear();
+                if (null != mFilesAndMediaAdapter) {
+                    mFilesAndMediaAdapter.backupAndClear();
+                }
                 mSearchEditText.setText("");
                 Keyboard.show(this, mSearchEditText, 100);
             }

@@ -284,7 +284,7 @@ public final class ChatController {
                     FileDownloadService.startDownloadFD(activity, fileDescription);
                 } else if (FileUtils.isImage(fileDescription)) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
-                } else if (FileUtils.isDoc(fileDescription)) {
+                } else {
                     final Intent target = new Intent(Intent.ACTION_VIEW);
                     target.setDataAndType(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription));
                     target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);

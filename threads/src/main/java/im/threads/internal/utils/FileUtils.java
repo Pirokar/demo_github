@@ -1,5 +1,6 @@
 package im.threads.internal.utils;
 
+import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -73,10 +74,6 @@ public final class FileUtils {
             }
         }
         return 0;
-    }
-
-    public static boolean isSupportedFile(@Nullable final FileDescription fileDescription) {
-        return FileUtils.isImage(fileDescription) || FileUtils.isDoc(fileDescription);
     }
 
     public static boolean isImage(@Nullable final FileDescription fileDescription) {
@@ -166,7 +163,7 @@ public final class FileUtils {
         return getExtensionFromPath(fileDescription.getIncomingName());
     }
 
-    private static int getExtensionFromPath(@Nullable String path) {
+    public static int getExtensionFromPath(@Nullable String path) {
         if (path == null || !path.contains(".")) {
             return UNKNOWN;
         }
@@ -247,4 +244,40 @@ public final class FileUtils {
             bitmap.recycle();
         }
     }
+
+    public static String getExtensionFromMediaStore(Context context, Uri contentUri) {
+        if (contentUri == null || context == null) {
+            return null;
+        }
+        String path = getFileNameFromMediaStore(context, contentUri);
+        if (path == null || !path.contains(".")) {
+            return null;
+        }
+        return path.substring(path.lastIndexOf(".") + 1);
+    }
+
+    @SuppressLint("NewApi")
+    public static String getFileNameFromMediaStore(Context context, Uri uri) {
+        try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor == null) {
+                return null;
+            }
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            cursor.moveToFirst();
+            return cursor.getString(nameIndex);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    public static long getFileSizeFromMediaStore(Context context, Uri uri) {
+        try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor == null) {
+                return 0;
+            }
+            int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+            cursor.moveToFirst();
+            return cursor.getLong(sizeIndex);
+        }
+    }
+
 }

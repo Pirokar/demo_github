@@ -147,7 +147,10 @@ public final class UserPhraseViewHolder extends BaseHolder {
         if (fileDescription == null && quote == null) {
             mRightTextRow.setVisibility(View.GONE);
         }
-        if (quote != null) {
+        if (quote == null) {
+            mRightTextRow.setVisibility(View.GONE);
+        } else {
+            mRightTextRow.setVisibility(View.VISIBLE);
             mRightTextRow.setVisibility(View.VISIBLE);
             mFileImageButton.setVisibility(View.GONE);
             mRightTextDescr.setText(quote.getText());

@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.helpers.FileHelper;
 
 /**
  * Dialog fragment for picking folder
@@ -179,8 +181,19 @@ public final class FilePickerFragment extends DialogFragment
         currentAbsoluteDir = pointedFileToTravel;
         if (pointedFileToTravel.exists() && mSelectedListener != null) {
             if (mFileFilter != null && mFileFilter.accept(pointedFileToTravel.getAbsoluteFile())) {
-                mSelectedListener.onFileSelected(pointedFileToTravel);
-                dismiss();
+                String path = pointedFileToTravel.getPath();
+                if (path.contains(".") && FileHelper.INSTANCE.isAllowedFileExtension(path.substring(path.lastIndexOf(".") + 1))) {
+                    if (FileHelper.INSTANCE.isAllowedFileSize(pointedFileToTravel.length())) {
+                        mSelectedListener.onFileSelected(pointedFileToTravel);
+                        dismiss();
+                    } else {
+                        // Недопустимый размер файла
+                        Toast.makeText(getContext(), getString(R.string.threads_not_allowed_file_size, FileHelper.INSTANCE.getMaxAllowedFileSize()), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // Недопустимое расширение файла
+                    Toast.makeText(getContext(), R.string.threads_not_allowed_file_extension, Toast.LENGTH_SHORT).show();
+                }
             }
         }
         travelToFolder(currentAbsoluteDir, mAnimatedArrayAdapter);

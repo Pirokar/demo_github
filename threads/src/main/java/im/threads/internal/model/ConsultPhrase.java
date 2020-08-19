@@ -128,7 +128,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     }
 
     public boolean isOnlyDoc() {
-        return TextUtils.isEmpty(phrase) && FileUtils.isDoc(fileDescription);
+        return TextUtils.isEmpty(phrase) && !FileUtils.isImage(fileDescription);
     }
 
     @Override

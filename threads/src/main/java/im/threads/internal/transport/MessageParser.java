@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import im.threads.internal.Config;
+import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
@@ -26,6 +27,7 @@ import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.models.Attachment;
+import im.threads.internal.transport.models.AttachmentSettings;
 import im.threads.internal.transport.models.MessageContent;
 import im.threads.internal.transport.models.Operator;
 import im.threads.internal.transport.models.OperatorJoinedContent;
@@ -60,6 +62,12 @@ public final class MessageParser {
                 return getMessageRead(fullMessage);
             case CLIENT_BLOCKED:
             case SCENARIO:
+                return null;
+            case ATTACHMENT_SETTINGS:
+                AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(fullMessage, AttachmentSettings.class);
+                if (attachmentSettings.getClientId() != null) {
+                    ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
+                }
                 return null;
             case MESSAGE:
             case ON_HOLD:

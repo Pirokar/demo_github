@@ -499,7 +499,7 @@ public final class ChatFragment extends BaseFragment implements
             if (Config.instance.getChatStyle().useExternalCameraApp) {
                 try {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    externalCameraPhotoFile = FileHelper.createImageFile(activity);
+                    externalCameraPhotoFile = FileHelper.INSTANCE.createImageFile(activity);
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
                     ThreadsLogger.d(TAG, "Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
@@ -633,7 +633,7 @@ public final class ChatFragment extends BaseFragment implements
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
                     cp.getFileDescription().getFileUri()
             );
-        } else if (FileUtils.isDoc(cp.getFileDescription())) {
+        } else {
             String fileName = "";
             try {
                 Uri fileUri = cp.getFileDescription().getFileUri();
@@ -645,10 +645,6 @@ public final class ChatFragment extends BaseFragment implements
             }
             mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
-                    null);
-        } else {
-            mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
-                    TextUtils.isEmpty(text) ? "" : text,
                     null);
         }
     }
@@ -890,16 +886,26 @@ public final class ChatFragment extends BaseFragment implements
     private void onFileResult(@NonNull Intent data) {
         Uri uri = data.getData();
         if (uri != null) {
-            onFileResult(uri);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                final int takeFlags = data.getFlags()
-                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                try {
-                    requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                } catch (SecurityException e) {
-                    ThreadsLogger.e(TAG, e.getLocalizedMessage());
+            if (FileHelper.INSTANCE.isAllowedFileExtension(FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))) {
+                if (FileHelper.INSTANCE.isAllowedFileSize(FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri))) {
+                    onFileResult(uri);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        final int takeFlags = data.getFlags()
+                                & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        try {
+                            requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                        } catch (SecurityException e) {
+                            ThreadsLogger.e(TAG, e.getLocalizedMessage());
+                        }
+                    }
+                } else {
+                    // Недопустимый размер файла
+                    Toast.makeText(getContext(), getString(R.string.threads_not_allowed_file_size, FileHelper.INSTANCE.getMaxAllowedFileSize()), Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                // Недопустимое расширение файла
+                Toast.makeText(getContext(), R.string.threads_not_allowed_file_extension, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -1653,23 +1659,10 @@ public final class ChatFragment extends BaseFragment implements
 
     private void openFile() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            String[] mimeTypes = {
-                    "image/jpeg",
-                    "image/png",
-                    "text/plain",
-                    "application/pdf",
-                    "application/msword",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    "application/vnd.ms-excel",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "application/vnd.ms-excel.sheet.macroenabled.12",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.template"
-            };
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-            intent.setType("*/*");
-            startActivityForResult(intent, REQUEST_CODE_FILE);
+            startActivityForResult(
+                    new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                            .addCategory(Intent.CATEGORY_OPENABLE)
+                            .setType("*/*"), REQUEST_CODE_FILE);
         } else {
             FilePickerFragment frag = FilePickerFragment.newInstance();
             frag.setFileFilter(new MyFileFilter());

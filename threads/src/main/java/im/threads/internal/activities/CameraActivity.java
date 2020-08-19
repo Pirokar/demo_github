@@ -195,7 +195,7 @@ public final class CameraActivity extends BaseActivity {
                             out = Bitmap.createBitmap(raw, 0, 0, raw.getWidth(), raw.getHeight(), matrix, true);
                             raw.recycle();
                         }
-                        File output = FileHelper.createImageFile(CameraActivity.this);
+                        File output = FileHelper.INSTANCE.createImageFile(CameraActivity.this);
                         try {
                             FileOutputStream fio = new FileOutputStream(output);
                             out.compress(Bitmap.CompressFormat.JPEG, 100, fio);
