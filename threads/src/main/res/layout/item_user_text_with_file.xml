@@ -33,11 +33,18 @@
         android:paddingRight="19dp"
         android:paddingBottom="@dimen/margin_quarter">
 
-        <ImageView
-            android:id="@+id/image"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:minWidth="240dp" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/margin_quarter">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:minWidth="240dp" />
+
+        </FrameLayout>
 
         <TableRow
             android:id="@+id/right_text_row"
