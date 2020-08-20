@@ -19,7 +19,9 @@ import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import im.threads.R;
 import im.threads.databinding.ActivityGalleryBinding;
@@ -39,7 +41,7 @@ public final class GalleryActivity
     private static final String PHOTOS_REQUEST_CODE_TAG = "PHOTOS_REQUEST_CODE_TAG";
     public final ObservableField<ScreenState> screenState = new ObservableField<>(ScreenState.BUCKET_LIST);
     public final ObservableField<Boolean> dataEmpty = new ObservableField<>(false);
-    private final List<List<MediaPhoto>> lists = new ArrayList<>();
+    private Map<String, List<MediaPhoto>> photosMap = new HashMap<>();
     private final List<PhotoBucketItem> bucketItems = new ArrayList<>();
     private final List<MediaPhoto> chosenItems = new ArrayList<>();
     private final BucketsGalleryDecorator bucketsGalleryDecorator = new BucketsGalleryDecorator(4);
@@ -157,30 +159,24 @@ public final class GalleryActivity
             int BUCKET_DISPLAY_NAME = c.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
             int _ID = c.getColumnIndex(MediaStore.Images.Media._ID);
             if (c.getCount() == 0) return;
-            List<MediaPhoto> allItems = new ArrayList<>();
+            photosMap = new HashMap<>();
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
                 Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, c.getLong(_ID));
-                allItems.add(new MediaPhoto(imageUri, c.getString(DISPLAY_NAME), c.getString(BUCKET_DISPLAY_NAME)));
-            }
-            List<MediaPhoto> list = new ArrayList<>();
-            list.add(allItems.get(0));
-            lists.add(list);
-            for (int i = 1; i < allItems.size(); i++) {
-                if (allItems.get(i - 1).getBucketName().equalsIgnoreCase(allItems.get(i).getBucketName())) {
-                    for (int j = 0; j < lists.size(); j++) {
-                        if (lists.get(j).get(0).getBucketName().equalsIgnoreCase(allItems.get(i).getBucketName())) {
-                            lists.get(j).add(allItems.get(i));
-                            break;
-                        }
+                String bucketName = c.getString(BUCKET_DISPLAY_NAME);
+                List<MediaPhoto> mediaPhotos;
+                if (photosMap.containsKey(bucketName)) {
+                    mediaPhotos = photosMap.get(bucketName);
+                    if (mediaPhotos == null) {
+                        mediaPhotos = new ArrayList<>();
                     }
                 } else {
-                    list = new ArrayList<>();
-                    list.add(allItems.get(i));
-                    lists.add(list);
+                    mediaPhotos = new ArrayList<>();
                 }
+                mediaPhotos.add(new MediaPhoto(imageUri, c.getString(DISPLAY_NAME), bucketName));
+                photosMap.put(bucketName, mediaPhotos);
             }
-            for (List<MediaPhoto> itemList : lists) {
-                bucketItems.add(new PhotoBucketItem(itemList.get(0).getBucketName(), String.valueOf(itemList.size()), itemList.get(0).getImageUri()));
+            for (Map.Entry<String, List<MediaPhoto>> itemList : photosMap.entrySet()) {
+                bucketItems.add(new PhotoBucketItem(itemList.getKey(), String.valueOf(itemList.getValue().size()), itemList.getValue().get(0).getImageUri()));
             }
         }
     }
@@ -205,7 +201,7 @@ public final class GalleryActivity
         binding.recycler.addItemDecoration(galleryDecorator);
         binding.recycler.setLayoutManager(new GridLayoutManager(this, 3));
         List<MediaPhoto> photos = null;
-        for (List<MediaPhoto> list : lists) {
+        for (List<MediaPhoto> list : photosMap.values()) {
             if (list.get(0).getImageUri().equals(item.getImagePath())) {
                 photos = list;
                 break;
@@ -237,7 +233,7 @@ public final class GalleryActivity
         chosenItems.clear();
         syncSendButtonState();
         List<MediaPhoto> list = new ArrayList<>();
-        for (List<MediaPhoto> photos : lists) {
+        for (List<MediaPhoto> photos : photosMap.values()) {
             for (MediaPhoto mp : photos) {
                 if (mp.getImageUri().toString().toLowerCase().contains(searchString.toLowerCase())
                         || mp.getDisplayName().contains(searchString.toLowerCase())) {
@@ -250,7 +246,7 @@ public final class GalleryActivity
     }
 
     private void clearCheckedStateOfItems() {
-        for (List<MediaPhoto> list : lists) {
+        for (List<MediaPhoto> list : photosMap.values()) {
             for (MediaPhoto mp : list) {
                 mp.setChecked(false);
             }
