@@ -3,8 +3,10 @@ package im.threads.internal.holders;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import androidx.core.text.util.LinkifyCompat;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -131,7 +134,10 @@ public final class UserPhraseViewHolder extends BaseHolder {
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
-            mPhraseTextView.setText(phrase);
+            final SpannableString text = new SpannableString(phrase);
+            LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
+            mPhraseTextView.setText(text);
+            mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
             String url = UrlUtils.extractLink(phrase);
             if (url != null) {
                 if (userPhrase.ogData == null) {

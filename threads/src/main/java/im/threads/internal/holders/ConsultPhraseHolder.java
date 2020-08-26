@@ -2,6 +2,7 @@ package im.threads.internal.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.text.method.LinkMovementMethod;
@@ -18,6 +19,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import androidx.core.text.util.LinkifyCompat;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -155,8 +157,10 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 mPhraseTextView.setAutoLinkMask(0);
                 mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor().parse(consultPhrase.getFormattedPhrase().trim()));
             } else {
-                mPhraseTextView.setAutoLinkMask(1);
-                mPhraseTextView.setText(phrase);
+                final SpannableString text = new SpannableString(phrase);
+                LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
+                mPhraseTextView.setText(text);
+                mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
             }
             String url = UrlUtils.extractLink(phrase);
             if (url != null) {

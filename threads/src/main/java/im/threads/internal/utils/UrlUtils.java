@@ -82,15 +82,15 @@ public final class UrlUtils {
 
     private static final String PORT_NUMBER = "\\:\\d{1,5}";
 
-    private static final String PATH_AND_QUERY = "[/\\?](?:(?:[" + LABEL_CHAR
-            + ";/\\?:@&=#~"  // plus optional query params
-            + "\\-\\.\\+!\\*'\\(\\),_\\$])|(?:%[a-fA-F0-9]{2}))*";
+    private static final String PATH_AND_QUERY = "[/?](?:(?:[" + LABEL_CHAR
+            + ";/?:@&=#~"  // plus optional query params
+            + "\\-.\\+!\\*'\\(\\),_\\$])|(?:%[a-fA-F0-9]{2}))*";
 
     /**
      *  Regular expression pattern to match most part of RFC 3987
      *  Internationalized URLs, aka IRIs.
      */
-    private static final Pattern WEB_URL = Pattern.compile("("
+    public static final Pattern WEB_URL = Pattern.compile("("
             + "("
             + "(?:" + PROTOCOL + "(?:" + USER_INFO + ")?" + ")?"
             + "(?:" + DOMAIN_NAME_STR + ")"
