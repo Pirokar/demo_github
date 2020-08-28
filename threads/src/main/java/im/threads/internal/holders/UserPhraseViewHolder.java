@@ -134,18 +134,19 @@ public final class UserPhraseViewHolder extends BaseHolder {
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
-            final SpannableString text = new SpannableString(phrase);
-            LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
-            mPhraseTextView.setText(text);
-            mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
             String url = UrlUtils.extractLink(phrase);
             if (url != null) {
+                final SpannableString text = new SpannableString(phrase);
+                LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
+                mPhraseTextView.setText(text);
+                mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
                 if (userPhrase.ogData == null) {
                     loadOGData(userPhrase, url);
                 } else {
                     bindOGData(userPhrase.ogData, url);
                 }
             } else {
+                mPhraseTextView.setText(phrase);
                 hideOGView();
             }
         }

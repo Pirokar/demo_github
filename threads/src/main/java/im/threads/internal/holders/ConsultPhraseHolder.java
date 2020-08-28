@@ -153,16 +153,18 @@ public final class ConsultPhraseHolder extends BaseHolder {
         } else {
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
             mPhraseTextView.setVisibility(View.VISIBLE);
+            String url = UrlUtils.extractLink(phrase);
             if (consultPhrase.getFormattedPhrase() != null) {
                 mPhraseTextView.setAutoLinkMask(0);
                 mPhraseTextView.setText(MarkdownProcessorHolder.getMarkdownProcessor().parse(consultPhrase.getFormattedPhrase().trim()));
-            } else {
+            } else if (url != null) {
                 final SpannableString text = new SpannableString(phrase);
                 LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
                 mPhraseTextView.setText(text);
                 mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
+            } else {
+                mPhraseTextView.setText(phrase);
             }
-            String url = UrlUtils.extractLink(phrase);
             if (url != null) {
                 if (consultPhrase.ogData == null) {
                     loadOGData(consultPhrase, url);
