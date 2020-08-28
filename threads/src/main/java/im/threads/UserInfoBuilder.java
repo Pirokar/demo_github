@@ -9,11 +9,11 @@ public final class UserInfoBuilder {
     @NonNull
     String clientId;
     @Nullable
+    String clientData = null;
+    @Nullable
     String clientIdSignature = null;
     @Nullable
     String userName = null;
-    @Nullable
-    String data = null;
     @Nullable
     String appMarker = null;
 
@@ -41,9 +41,19 @@ public final class UserInfoBuilder {
 
     /**
      * Any additional information can be provided in data string, i.e. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+     * @deprecated use {@link #setClientData(String)} instead
      */
-    public UserInfoBuilder setData(String data) {
-        this.data = data;
+    @Deprecated
+    public UserInfoBuilder setData(String clientData) {
+        this.clientData = clientData;
+        return this;
+    }
+
+    /**
+     * Any additional information can be provided in data string, i.e. "{balance:"1000.00", fio:"Vasya Pupkin"}"
+     */
+    public UserInfoBuilder setClientData(String clientData) {
+        this.clientData = clientData;
         return this;
     }
 

@@ -41,7 +41,9 @@ public final class OutgoingMessageCreator {
         object.addProperty("name", clientName);
         object.addProperty(MessageAttributes.CLIENT_ID, clientId);
         object.addProperty(MessageAttributes.CLIENT_ID_ENCRYPTED, clientIdEncrypted);
-        object.addProperty(MessageAttributes.DATA, data);
+        if (!TextUtils.isEmpty(data)) {
+            object.addProperty(MessageAttributes.DATA, data);
+        }
         object.addProperty("platform", "Android");
         object.addProperty("osVersion", DeviceInfoHelper.getOsVersion());
         object.addProperty("device", DeviceInfoHelper.getDeviceName());

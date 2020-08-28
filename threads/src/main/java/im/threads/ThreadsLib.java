@@ -74,7 +74,7 @@ public final class ThreadsLib {
         PrefUtils.setNewClientId(userInfoBuilder.clientId);
         PrefUtils.setClientIdSignature(userInfoBuilder.clientIdSignature);
         PrefUtils.setUserName(userInfoBuilder.userName);
-        PrefUtils.setData(userInfoBuilder.data);
+        PrefUtils.setData(userInfoBuilder.clientData);
         PrefUtils.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted);
         ChatController.getInstance().sendInit();
         ChatController.getInstance().loadHistory();
