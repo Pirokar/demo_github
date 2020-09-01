@@ -15,25 +15,24 @@ import im.threads.internal.utils.FileUtils;
 public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase {
 
     private final String uuid;
-    private String providerId; //This this a mfms messageId required for read status updates
-    private List<String> providerIds;
     private final boolean sex;
     private final long timeStamp;
     private final String phrase;
     private final String formattedPhrase;
     private final String consultName;
-    private boolean isAvatarVisible = true;
     private final Quote quote;
+    private final String status;
+    public OGData ogData;
+    public String ogUrl;
+    private String providerId; //This this a mfms messageId required for read status updates
+    private List<String> providerIds;
+    private boolean isAvatarVisible = true;
     private FileDescription fileDescription;
     private boolean isChosen;
     private boolean isRead;
-    private final String status;
     private List<QuickReply> quickReplies;
     //для поиска сообщений в чате
     private boolean found;
-
-    public OGData ogData;
-    public String ogUrl;
 
     public ConsultPhrase(String uuid, String providerId, List<String> providerIds, FileDescription fileDescription, Quote quote, String consultName,
                          String phrase, String formattedPhrase, long timeStamp, String consultId, String avatarPath,
@@ -78,10 +77,6 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
     public boolean getSex() {
         return sex;
-    }
-
-    public void setFileDescription(FileDescription fileDescription) {
-        this.fileDescription = fileDescription;
     }
 
     public boolean isRead() {
@@ -157,25 +152,6 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ConsultPhrase)) return false;
-
-        ConsultPhrase that = (ConsultPhrase) o;
-
-        if (!TextUtils.isEmpty(uuid)) {
-            return uuid.equals(that.uuid);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid != null ? uuid.hashCode() : 0;
-    }
-
-    @Override
     public Quote getQuote() {
         return quote;
     }
@@ -183,6 +159,10 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     @Override
     public FileDescription getFileDescription() {
         return fileDescription;
+    }
+
+    public void setFileDescription(FileDescription fileDescription) {
+        this.fileDescription = fileDescription;
     }
 
     @Override
@@ -199,11 +179,9 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     }
 
     public boolean hasSameContent(ConsultPhrase consultPhrase) {
-
         if (consultPhrase == null) {
             return false;
         }
-
         boolean hasSameContent = ObjectsCompat.equals(this.uuid, consultPhrase.uuid)
                 && ObjectsCompat.equals(this.phrase, consultPhrase.phrase)
                 && ObjectsCompat.equals(this.formattedPhrase, consultPhrase.formattedPhrase)
@@ -215,15 +193,50 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
                 && ObjectsCompat.equals(this.consultName, consultPhrase.consultName)
                 && ObjectsCompat.equals(this.sex, consultPhrase.sex)
                 && ObjectsCompat.equals(this.status, consultPhrase.status);
-
         if (this.fileDescription != null) {
             hasSameContent = hasSameContent && this.fileDescription.hasSameContent(consultPhrase.fileDescription);
         }
-
         if (this.quote != null) {
             hasSameContent = hasSameContent && this.quote.hasSameContent(consultPhrase.quote);
         }
-
         return hasSameContent;
+    }
+
+    @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        if (otherItem instanceof ConsultPhrase) {
+            return this.uuid.equals(((ConsultPhrase) otherItem).uuid);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConsultPhrase that = (ConsultPhrase) o;
+        return sex == that.sex &&
+                timeStamp == that.timeStamp &&
+                isAvatarVisible == that.isAvatarVisible &&
+                isChosen == that.isChosen &&
+                isRead == that.isRead &&
+                found == that.found &&
+                ObjectsCompat.equals(uuid, that.uuid) &&
+                ObjectsCompat.equals(providerId, that.providerId) &&
+                ObjectsCompat.equals(providerIds, that.providerIds) &&
+                ObjectsCompat.equals(phrase, that.phrase) &&
+                ObjectsCompat.equals(formattedPhrase, that.formattedPhrase) &&
+                ObjectsCompat.equals(consultName, that.consultName) &&
+                ObjectsCompat.equals(quote, that.quote) &&
+                ObjectsCompat.equals(fileDescription, that.fileDescription) &&
+                ObjectsCompat.equals(status, that.status) &&
+                ObjectsCompat.equals(quickReplies, that.quickReplies) &&
+                ObjectsCompat.equals(ogData, that.ogData) &&
+                ObjectsCompat.equals(ogUrl, that.ogUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return ObjectsCompat.hash(uuid, providerId, providerIds, sex, timeStamp, phrase, formattedPhrase, consultName, isAvatarVisible, quote, fileDescription, isChosen, isRead, status, quickReplies, found, ogData, ogUrl);
     }
 }

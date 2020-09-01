@@ -84,7 +84,7 @@ public class QuestionsTable extends Table {
         }
         questionCv.put(COLUMN_QUESTION_TEXT, question.getText());
         questionCv.put(COLUMN_QUESTION_SIMPLE, question.isSimple());
-        questionCv.put(COLUMN_QUESTION_TIMESTAMP, question.getTimeStamp());
+        questionCv.put(COLUMN_QUESTION_TIMESTAMP, question.getPhraseTimeStamp());
         try (Cursor questionCursor = sqlHelper.getWritableDatabase().rawQuery(questionSql, questionSelectionArgs)) {
             if (questionCursor.getCount() > 0) {
                 sqlHelper.getWritableDatabase().update(

@@ -1,5 +1,7 @@
 package im.threads.internal.model;
 
+import androidx.core.util.ObjectsCompat;
+
 public class OperatorLookupStarted implements ChatItem {
 
     private final long timeStamp;
@@ -11,5 +13,23 @@ public class OperatorLookupStarted implements ChatItem {
     @Override
     public long getTimeStamp() {
         return timeStamp;
+    }
+
+    @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        return otherItem instanceof OperatorLookupStarted;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OperatorLookupStarted that = (OperatorLookupStarted) o;
+        return timeStamp == that.timeStamp;
+    }
+
+    @Override
+    public int hashCode() {
+        return ObjectsCompat.hash(timeStamp);
     }
 }

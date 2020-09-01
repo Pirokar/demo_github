@@ -24,24 +24,20 @@ public final class ConsultTyping extends ConsultChatPhrase implements ChatItem {
     }
 
     @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        return otherItem instanceof ConsultTyping;
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ConsultTyping)) {
-            return false;
-        }
-
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         ConsultTyping that = (ConsultTyping) o;
-
-        if (date != that.date) return false;
-        return ObjectsCompat.equals(consultId, that.consultId);
+        return date == that.date;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (date ^ (date >>> 32));
-        result = 31 * result + (consultId != null ? consultId.hashCode() : 0);
-        return result;
+        return ObjectsCompat.hash(date);
     }
 }

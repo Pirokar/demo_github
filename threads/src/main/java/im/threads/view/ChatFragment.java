@@ -542,14 +542,6 @@ public final class ChatFragment extends BaseFragment implements
         bottomSheetDialogFragment = null;
     }
 
-    public void updateUi() {
-        chatAdapter.notifyDataSetChangedOnUi();
-    }
-
-    public void updateChatItem(ChatItem chatItem, boolean needsReordering) {
-        chatAdapter.updateChatItem(chatItem, needsReordering);
-    }
-
     private void showPopup() {
         Activity activity = getActivity();
         if (activity == null) {
@@ -1015,28 +1007,28 @@ public final class ChatFragment extends BaseFragment implements
         if (item instanceof ConsultPhrase) {
             ((ConsultPhrase) item).setRead(isUserSeesMessage && isResumed && !isInMessageSearchMode);
         }
+        if (item instanceof ConsultPhrase) {
+            chatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
+        }
         if (needsAddMessage(item)) {
             welcomeScreenVisibility(false);
             chatAdapter.addItems(Collections.singletonList(item));
             if (!isUserSeesMessage) {
                 showUnreadMsgsCount(chatAdapter.getUnreadCount());
             }
-        }
-        if (item instanceof ConsultPhrase) {
-            chatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
-        }
-        // do not scroll when consult is typing or write
-        h.postDelayed(() -> {
-            if (!isInMessageSearchMode) {
-                int itemCount = chatAdapter.getItemCount();
-                int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-                boolean isUserSeesMessages = (itemCount - 1) - lastVisibleItemPosition < INVISIBLE_MSGS_COUNT;
-                boolean isConsultMsg = (item instanceof ConsultPhrase) || (item instanceof ConsultTyping);
-                if (isUserSeesMessages || !isConsultMsg) {
-                    scrollToPosition(itemCount - 1);
+            // do not scroll when consult is typing or write
+            h.postDelayed(() -> {
+                if (!isInMessageSearchMode) {
+                    int itemCount = chatAdapter.getItemCount();
+                    int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+                    boolean isUserSeesMessages = (itemCount - 1) - lastVisibleItemPosition < INVISIBLE_MSGS_COUNT;
+                    boolean isConsultMsg = (item instanceof ConsultPhrase) || (item instanceof ConsultTyping);
+                    if (isUserSeesMessages || !isConsultMsg) {
+                        scrollToPosition(itemCount - 1);
+                    }
                 }
-            }
-        }, 100);
+            }, 100);
+        }
     }
 
     private void scrollToPosition(int itemCount) {
@@ -1060,10 +1052,9 @@ public final class ChatFragment extends BaseFragment implements
         if (list.size() == 0) {
             return;
         }
-        h.post(() -> {
-            welcomeScreenVisibility(false);
-            chatAdapter.addItems(list);
-        });
+        int oldAdapterSize = chatAdapter.getList().size();
+        welcomeScreenVisibility(false);
+        chatAdapter.addItems(list);
         LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
         if (layoutManager == null ||
                 list.size() == 1 && list.get(0) instanceof ConsultTyping ||
@@ -1087,7 +1078,10 @@ public final class ChatFragment extends BaseFragment implements
                 }
             }
         }
-        h.post(() -> scrollToPosition(chatAdapter.getItemCount() - 1));
+        int newAdapterSize = chatAdapter.getList().size();
+        if (newAdapterSize > oldAdapterSize) {
+            h.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1), 100);
+        }
     }
 
     public void setStateConsultConnected(ConsultInfo info) {
@@ -1529,7 +1523,7 @@ public final class ChatFragment extends BaseFragment implements
         if (binding.searchLo.getVisibility() == View.VISIBLE) {
             isNeedToClose = false;
             hideSearchMode();
-            if (binding.recycler != null && chatAdapter != null) {
+            if (chatAdapter != null) {
                 scrollToPosition(chatAdapter.getItemCount() - 1);
             }
         }

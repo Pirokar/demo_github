@@ -242,8 +242,7 @@ public final class ChatController {
         subscribe(Completable.fromAction(() -> {
                     if (System.currentTimeMillis() > (lastFancySearchDate + 3000)) {
                         final List<ChatItem> fromDb = databaseHolder.getChatItems(0, -1);
-                        if (lastItems == null || lastItems.size() == 0) lastItems = fromDb;
-                        else {
+                        if (lastItems != null && lastItems.size() != 0) {
                             if (lastSearchQuery.equalsIgnoreCase(query)) {
                                 for (final ChatItem ci : lastItems) {
                                     if (ci instanceof ChatPhrase) {
@@ -256,8 +255,8 @@ public final class ChatController {
                                     }
                                 }
                             }
-                            lastItems = fromDb;
                         }
+                        lastItems = fromDb;
                         lastFancySearchDate = System.currentTimeMillis();
                     }
                     if (query.isEmpty() || !query.equals(lastSearchQuery)) seeker = new Seeker();
@@ -519,13 +518,6 @@ public final class ChatController {
             }
         }
         PrefUtils.setClientIdWasSet(true);
-    }
-
-    private void updateUi() {
-        ThreadsLogger.i(TAG, "updateUi");
-        if (fragment != null) {
-            fragment.updateUi();
-        }
     }
 
     public void loadHistory() {
@@ -802,9 +794,8 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(chatItem -> {
                             if (chatItem instanceof UserPhrase) {
-                                UserPhrase userPhrase = (UserPhrase) chatItem;
                                 if (fragment != null) {
-                                    fragment.updateChatItem(userPhrase, true);
+                                    fragment.addChatItem(chatItem);
                                 }
                                 proceedSendingQueue();
                             }
@@ -866,7 +857,6 @@ public final class ChatController {
                             surveyCompletionInProgress = false;
                             setSurveyStateSent(survey);
                             resetActiveSurvey();
-                            updateUi();
                         })
         );
     }
@@ -901,9 +891,7 @@ public final class ChatController {
     private void removeResolveRequest() {
         ThreadsLogger.i(TAG, "removeResolveRequest");
         if (isResolveRequestVisible && fragment != null) {
-            if (fragment.removeResolveRequest()) {
-                updateUi();
-            }
+            fragment.removeResolveRequest();
             isResolveRequestVisible = false;
         }
         ThreadsLogger.i(TAG, "removeResolveRequest: " + isResolveRequestVisible);
@@ -912,10 +900,7 @@ public final class ChatController {
     private void removeActiveSurvey() {
         ThreadsLogger.i(TAG, "removeActiveSurvey");
         if (activeSurvey != null && fragment != null) {
-            final boolean removed = fragment.removeSurvey(activeSurvey.getSendingId());
-            if (removed) {
-                updateUi();
-            }
+            fragment.removeSurvey(activeSurvey.getSendingId());
             resetActiveSurvey();
         }
     }

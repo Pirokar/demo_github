@@ -1,7 +1,10 @@
 package im.threads.internal.model;
 
+import androidx.core.util.ObjectsCompat;
+
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -131,6 +134,32 @@ public final class ScheduleInfo implements ChatItem {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        return otherItem instanceof ScheduleInfo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScheduleInfo that = (ScheduleInfo) o;
+        return sendDuringInactive == that.sendDuringInactive &&
+                date == that.date &&
+                active == that.active &&
+                serverTimeDiff == that.serverTimeDiff &&
+                ObjectsCompat.equals(id, that.id) &&
+                ObjectsCompat.equals(notification, that.notification) &&
+                ObjectsCompat.equals(startTime, that.startTime) &&
+                ObjectsCompat.equals(endTime, that.endTime) &&
+                ObjectsCompat.equals(serverTime, that.serverTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return ObjectsCompat.hash(id, notification, sendDuringInactive, date, startTime, endTime, serverTime, active, serverTimeDiff);
     }
 
     private long getCurrentUtcTime() {

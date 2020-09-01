@@ -1,6 +1,6 @@
 package im.threads.internal.model;
 
-public final class QuestionDTO implements ChatItem {
+public final class QuestionDTO {
 
     private long id;
     private long sendingId;
@@ -66,8 +66,7 @@ public final class QuestionDTO implements ChatItem {
         this.phraseTimeStamp = phraseTimeStamp;
     }
 
-    @Override
-    public long getTimeStamp() {
+    public long getPhraseTimeStamp() {
         return phraseTimeStamp;
     }
 }
