@@ -43,7 +43,7 @@ public final class BubbleMessageTextView extends CustomFontTextView {
 
     public void bindTimestampView(BubbleTimeTextView timeTextView) {
         timeTextView.measure(0, 0);
-        int timeWidth = (int) (timeTextView.getMeasuredWidth() * 1.8);
+        int timeWidth = timeTextView.getMeasuredWidth() * 2;
         StringBuilder paddingBuilder = new StringBuilder(" ");
         Rect bounds = new Rect();
         Paint textPaint = getPaint();
