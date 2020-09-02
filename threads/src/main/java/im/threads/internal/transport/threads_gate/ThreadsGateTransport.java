@@ -133,7 +133,6 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
         ));
     }
 
-
     @Override
     public void sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, String filePath, String quoteFilePath) {
         ThreadsLogger.i(TAG, "sendMessage: userPhrase = " + userPhrase + ", consultInfo = " + consultInfo + ", filePath = " + filePath + ", quoteFilePath = " + quoteFilePath);

@@ -107,5 +107,6 @@
 
     <string name="threads_not_allowed_file_extension">Not allowed file format</string>
     <string name="threads_not_allowed_file_size">The file exceeds the maximum allowed size of %1$dMB </string>
+    <string name="threads_message_sending_is_unavailable">You cannot send message at the moment</string>
 
 </resources>

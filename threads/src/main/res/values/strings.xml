@@ -118,5 +118,6 @@
 
     <string name="threads_not_allowed_file_extension">Недопустимый формат файла</string>
     <string name="threads_not_allowed_file_size">Файл превышает максимально допустимый размер %1$dмб</string>
+    <string name="threads_message_sending_is_unavailable">Отправка сообщения временно недоступна</string>
 
 </resources>
