@@ -11,21 +11,20 @@ import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
 
 public final class UserPhrase implements ChatPhrase {
+    private final String phrase;
+    private final Quote mQuote;
+    public OGData ogData;
+    public String ogUrl;
     private String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
     private List<String> providerIds;
-    private final String phrase;
     private MessageState sentState;
-    private final Quote mQuote;
     private long phraseTimeStamp;
     private FileDescription fileDescription;
     private boolean isChosen;
     private boolean isCopy = false;
     //для поиска сообщений в чате
     private boolean found;
-
-    public OGData ogData;
-    public String ogUrl;
 
     public UserPhrase(String uuid, String providerId, List<String> providerIds, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
         this.uuid = uuid;
@@ -75,23 +74,6 @@ public final class UserPhrase implements ChatPhrase {
         this.found = found;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserPhrase)) return false;
-        UserPhrase that = (UserPhrase) o;
-        if (!TextUtils.isEmpty(uuid)) {
-            return uuid.equals(that.uuid);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid != null ? uuid.hashCode() : 0;
-    }
-
     public String getUuid() {
         return uuid;
     }
@@ -104,21 +86,21 @@ public final class UserPhrase implements ChatPhrase {
         return providerId;
     }
 
-    public List<String> getProviderIds() {
-        return providerIds;
-    }
-
     public void setProviderId(String providerId) {
         this.providerId = providerId;
     }
 
-    public void setTimeStamp(long timestamp) {
-        this.phraseTimeStamp = timestamp;
+    public List<String> getProviderIds() {
+        return providerIds;
     }
 
     @Override
     public long getTimeStamp() {
         return phraseTimeStamp;
+    }
+
+    public void setTimeStamp(long timestamp) {
+        this.phraseTimeStamp = timestamp;
     }
 
     public Quote getQuote() {
@@ -127,10 +109,6 @@ public final class UserPhrase implements ChatPhrase {
 
     public String getPhrase() {
         return phrase;
-    }
-
-    public void setFileDescription(FileDescription fileDescription) {
-        this.fileDescription = fileDescription;
     }
 
     public MessageState getSentState() {
@@ -143,6 +121,10 @@ public final class UserPhrase implements ChatPhrase {
 
     public FileDescription getFileDescription() {
         return fileDescription;
+    }
+
+    public void setFileDescription(FileDescription fileDescription) {
+        this.fileDescription = fileDescription;
     }
 
     @Override
@@ -208,5 +190,38 @@ public final class UserPhrase implements ChatPhrase {
         }
 
         return hasSameContent;
+    }
+
+    @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        if (otherItem instanceof UserPhrase) {
+            return this.uuid.equals(((UserPhrase) otherItem).uuid);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserPhrase that = (UserPhrase) o;
+        return phraseTimeStamp == that.phraseTimeStamp &&
+                isChosen == that.isChosen &&
+                isCopy == that.isCopy &&
+                found == that.found &&
+                ObjectsCompat.equals(uuid, that.uuid) &&
+                ObjectsCompat.equals(providerId, that.providerId) &&
+                ObjectsCompat.equals(providerIds, that.providerIds) &&
+                ObjectsCompat.equals(phrase, that.phrase) &&
+                sentState == that.sentState &&
+                ObjectsCompat.equals(mQuote, that.mQuote) &&
+                ObjectsCompat.equals(fileDescription, that.fileDescription) &&
+                ObjectsCompat.equals(ogData, that.ogData) &&
+                ObjectsCompat.equals(ogUrl, that.ogUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return ObjectsCompat.hash(uuid, providerId, providerIds, phrase, sentState, mQuote, phraseTimeStamp, fileDescription, isChosen, isCopy, found, ogData, ogUrl);
     }
 }

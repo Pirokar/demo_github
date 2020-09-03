@@ -1,5 +1,7 @@
 package im.threads.internal.model;
 
+import androidx.core.util.ObjectsCompat;
+
 import java.util.List;
 
 import im.threads.internal.utils.DateHelper;
@@ -210,4 +212,46 @@ public final class MessageFromHistory implements ChatItem {
         this.simple = simple;
     }
 
+    @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        if (otherItem instanceof MessageFromHistory) {
+            return this.uuid.equals(((MessageFromHistory) otherItem).uuid);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MessageFromHistory that = (MessageFromHistory) o;
+        return read == that.read &&
+                display == that.display &&
+                simple == that.simple &&
+                ObjectsCompat.equals(uuid, that.uuid) &&
+                ObjectsCompat.equals(providerId, that.providerId) &&
+                ObjectsCompat.equals(providerIds, that.providerIds) &&
+                ObjectsCompat.equals(clientId, that.clientId) &&
+                ObjectsCompat.equals(threadId, that.threadId) &&
+                ObjectsCompat.equals(operator, that.operator) &&
+                ObjectsCompat.equals(client, that.client) &&
+                ObjectsCompat.equals(receivedDate, that.receivedDate) &&
+                ObjectsCompat.equals(channel, that.channel) &&
+                ObjectsCompat.equals(formattedText, that.formattedText) &&
+                ObjectsCompat.equals(text, that.text) &&
+                ObjectsCompat.equals(attachments, that.attachments) &&
+                ObjectsCompat.equals(quickReplies, that.quickReplies) &&
+                ObjectsCompat.equals(quotes, that.quotes) &&
+                ObjectsCompat.equals(type, that.type) &&
+                ObjectsCompat.equals(hideAfter, that.hideAfter) &&
+                ObjectsCompat.equals(sendingId, that.sendingId) &&
+                ObjectsCompat.equals(questionId, that.questionId) &&
+                ObjectsCompat.equals(rate, that.rate) &&
+                ObjectsCompat.equals(scale, that.scale);
+    }
+
+    @Override
+    public int hashCode() {
+        return ObjectsCompat.hash(uuid, providerId, providerIds, clientId, threadId, operator, client, receivedDate, channel, read, formattedText, text, attachments, quickReplies, quotes, type, display, hideAfter, sendingId, questionId, rate, scale, simple);
+    }
 }

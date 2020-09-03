@@ -1,6 +1,9 @@
 package im.threads.internal.model;
 
+import androidx.core.util.ObjectsCompat;
+
 import java.util.Calendar;
+import java.util.Objects;
 
 public final class SearchingConsult implements ChatItem {
     private long date;
@@ -22,16 +25,21 @@ public final class SearchingConsult implements ChatItem {
     }
 
     @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        return otherItem instanceof SearchingConsult;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SearchingConsult)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         SearchingConsult that = (SearchingConsult) o;
         return date == that.date;
     }
 
     @Override
     public int hashCode() {
-        return (int) (date ^ (date >>> 32));
+        return ObjectsCompat.hash(date);
     }
 
     @Override

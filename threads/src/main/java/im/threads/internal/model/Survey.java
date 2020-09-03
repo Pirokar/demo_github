@@ -1,5 +1,7 @@
 package im.threads.internal.model;
 
+import androidx.core.util.ObjectsCompat;
+
 import java.util.List;
 
 public final class Survey implements ChatItem, Hidable {
@@ -62,22 +64,27 @@ public final class Survey implements ChatItem, Hidable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        } else if (!(obj instanceof Survey)) {
-            return false;
-        } else {
-            Survey otherSurvey = (Survey) obj;
-            if (sendingId > 0) {
-                return sendingId == otherSurvey.sendingId;
-            }
-            return false;
+    public boolean isTheSameItem(ChatItem otherItem) {
+        if (otherItem instanceof Survey) {
+            return this.sendingId == ((Survey) otherItem).sendingId;
         }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Survey survey = (Survey) o;
+        return sendingId == survey.sendingId &&
+                phraseTimeStamp == survey.phraseTimeStamp &&
+                ObjectsCompat.equals(questions, survey.questions) &&
+                ObjectsCompat.equals(hideAfter, survey.hideAfter) &&
+                sentState == survey.sentState;
     }
 
     @Override
     public int hashCode() {
-        return String.valueOf(sendingId).hashCode();
+        return ObjectsCompat.hash(sendingId, questions, hideAfter, phraseTimeStamp, sentState);
     }
 }

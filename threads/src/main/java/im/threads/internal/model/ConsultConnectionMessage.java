@@ -8,14 +8,14 @@ import java.util.List;
 
 public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
 
-    private String uuid;
-    private String providerId; //This this a mfms messageId required for read status updates
-    private List<String> providerIds;
     private final String type;
     private final String name;
     private final boolean sex;
     private final long date;
     private final String status;
+    private String uuid;
+    private String providerId; //This this a mfms messageId required for read status updates
+    private List<String> providerIds;
     private String title;
     private String orgUnit;
     private boolean displayMessage;
@@ -95,25 +95,33 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     }
 
     @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        if (otherItem instanceof ConsultConnectionMessage) {
+            return this.uuid.equals(((ConsultConnectionMessage) otherItem).uuid);
+        }
+        return false;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ConsultConnectionMessage)) return false;
-        if (uuid == null) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         ConsultConnectionMessage that = (ConsultConnectionMessage) o;
-        if (sex != that.sex) return false;
-        if (!ObjectsCompat.equals(type, that.type)) return false;
-        if (!ObjectsCompat.equals(name, that.name)) return false;
-        return uuid.equalsIgnoreCase(that.uuid);
+        return sex == that.sex &&
+                date == that.date &&
+                displayMessage == that.displayMessage &&
+                ObjectsCompat.equals(uuid, that.uuid) &&
+                ObjectsCompat.equals(providerId, that.providerId) &&
+                ObjectsCompat.equals(providerIds, that.providerIds) &&
+                ObjectsCompat.equals(type, that.type) &&
+                ObjectsCompat.equals(name, that.name) &&
+                ObjectsCompat.equals(status, that.status) &&
+                ObjectsCompat.equals(title, that.title) &&
+                ObjectsCompat.equals(orgUnit, that.orgUnit);
     }
 
     @Override
     public int hashCode() {
-        int result = consultId != null ? consultId.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (sex ? 1 : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (title != null ? title.hashCode() : 0);
-        return result;
+        return ObjectsCompat.hash(uuid, providerId, providerIds, type, name, sex, date, status, title, orgUnit, displayMessage);
     }
 }

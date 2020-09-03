@@ -1,5 +1,7 @@
 package im.threads.internal.model;
 
+import androidx.core.util.ObjectsCompat;
+
 public final class Space implements ChatItem {
     private final int height;
     private final long timeStamp;
@@ -19,10 +21,29 @@ public final class Space implements ChatItem {
     }
 
     @Override
+    public boolean isTheSameItem(ChatItem otherItem) {
+        return otherItem instanceof Space;
+    }
+
+    @Override
     public String toString() {
         return "Space{" +
                 "height=" + height +
                 ", timeStamp=" + timeStamp +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Space space = (Space) o;
+        return height == space.height &&
+                timeStamp == space.timeStamp;
+    }
+
+    @Override
+    public int hashCode() {
+        return ObjectsCompat.hash(height, timeStamp);
     }
 }
