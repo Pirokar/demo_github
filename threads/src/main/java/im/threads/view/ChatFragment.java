@@ -31,16 +31,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -51,6 +41,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -843,7 +842,7 @@ public final class ChatFragment extends BaseFragment implements
                                 FileUtils.getFileSize(fileUri),
                                 System.currentTimeMillis()
                         ),
-                        null,
+                        mQuote,
                         inputText.trim(),
                         isCopy(inputText)
                 );
@@ -880,7 +879,15 @@ public final class ChatFragment extends BaseFragment implements
                 externalCameraPhotoFile.length(),
                 System.currentTimeMillis()
         );
-        sendMessage(Collections.singletonList(new UpcomingUserMessage(mFileDescription, null, null, false)));
+        String inputText = inputTextObservable.get();
+        sendMessage(Collections.singletonList(
+                new UpcomingUserMessage(
+                        mFileDescription,
+                        mQuote,
+                        inputText != null ? inputText.trim() : null,
+                        false)
+                )
+        );
     }
 
     private void onFileResult(@NonNull Intent data) {
@@ -928,10 +935,11 @@ public final class ChatFragment extends BaseFragment implements
                     System.currentTimeMillis()
             );
             mFileDescription.setSelfie(selfie);
+            String inputText = inputTextObservable.get();
             UpcomingUserMessage uum = new UpcomingUserMessage(
                     mFileDescription,
-                    null,
-                    null,
+                    mQuote,
+                    inputText != null ? inputText.trim() : null,
                     false
             );
             sendMessage(Collections.singletonList(uum));
