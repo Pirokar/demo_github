@@ -1438,6 +1438,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onStart() {
         super.onStart();
+        Config.instance.transport.setLifecycle(getLifecycle());
         ChatController.getInstance().loadHistory();
     }
 

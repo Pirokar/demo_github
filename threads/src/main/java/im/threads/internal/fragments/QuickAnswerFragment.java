@@ -15,13 +15,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.squareup.picasso.Picasso;
@@ -30,10 +30,12 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
+import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public final class QuickAnswerFragment extends DialogFragment {
+public final class QuickAnswerFragment extends BaseDialogFragment {
     public static final String TAG = QuickAnswerFragment.class.getCanonicalName();
     private EditText mEditText;
 
@@ -61,7 +63,7 @@ public final class QuickAnswerFragment extends DialogFragment {
         ImageView imageView = v.findViewById(R.id.consult_image);
         ImageButton imageButton = v.findViewById(R.id.send);
         v.findViewById(R.id.close_button).setOnClickListener(v1 -> {
-            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(QuickAnswerActivity.ACTION_CANCEL));
+            LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(new Intent(QuickAnswerActivity.ACTION_CANCEL));
             dismiss();
         });
         Bundle arguments = getArguments();
@@ -87,10 +89,10 @@ public final class QuickAnswerFragment extends DialogFragment {
             if (mEditText.getText().toString().trim().length() == 0) {
                 return;
             }
-            LocalBroadcastManager.getInstance(getActivity())
+            LocalBroadcastManager.getInstance(requireContext())
                     .sendBroadcast(
                             new Intent(QuickAnswerActivity.ACTION_ANSWER)
-                            .putExtra(QuickAnswerActivity.ACTION_ANSWER, mEditText.getText().toString()));
+                                    .putExtra(QuickAnswerActivity.ACTION_ANSWER, mEditText.getText().toString()));
             mEditText.setText("");
             dismiss();
         });
@@ -108,14 +110,15 @@ public final class QuickAnswerFragment extends DialogFragment {
         imageButton.setImageDrawable(d);
 
         mEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
-        mEditText.getLayoutParams().height = (int) getActivity().getResources().getDimension(style.inputHeight);
-        mEditText.setBackground(AppCompatResources.getDrawable(getActivity(), style.inputBackground));
+        mEditText.getLayoutParams().height = (int) requireContext().getResources().getDimension(style.inputHeight);
+        mEditText.setBackground(AppCompatResources.getDrawable(requireContext(), style.inputBackground));
+        initUserInputState();
         return v;
     }
 
     @ColorInt
     private int getColorInt(@ColorRes int colorResId) {
-        return ContextCompat.getColor(getActivity(), colorResId);
+        return ContextCompat.getColor(requireContext(), colorResId);
     }
 
     @Override
@@ -129,6 +132,7 @@ public final class QuickAnswerFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
+        Config.instance.transport.setLifecycle(getLifecycle());
         Dialog d = getDialog();
         if (null != d) {
             int width = getResources().getDisplayMetrics().widthPixels;
@@ -151,6 +155,20 @@ public final class QuickAnswerFragment extends DialogFragment {
         Activity activity = getActivity();
         if (activity != null) {
             activity.finish();
+        }
+    }
+
+    private void initUserInputState() {
+        subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::updateInputEnable));
+    }
+
+    private void updateInputEnable(boolean enabled) {
+        mEditText.setEnabled(enabled);
+        if (!enabled) {
+            Toast.makeText(requireContext(), R.string.threads_message_sending_is_unavailable, Toast.LENGTH_LONG)
+                    .show();
         }
     }
 }

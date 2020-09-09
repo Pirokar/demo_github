@@ -419,7 +419,6 @@ public final class ChatController {
         if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         }
-        Config.instance.transport.setLifecycle(fragment.getLifecycle());
         subscribe(
                 Single.fromCallable(() -> {
                     final int historyLoadingCount = Config.instance.historyLoadingCount;
