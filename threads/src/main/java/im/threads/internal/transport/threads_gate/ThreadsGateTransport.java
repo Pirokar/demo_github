@@ -196,7 +196,8 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
         if (webSocket == null) {
             openWebSocket();
         }
-        if (webSocket == null) {
+        final WebSocket ws = this.webSocket;
+        if (ws == null) {
             return;
         }
         String text = Config.instance.gson.toJson(
@@ -206,7 +207,7 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                 )
         );
         ThreadsLogger.i(TAG, "Sending : " + text);
-        webSocket.send(text);
+        ws.send(text);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -218,7 +219,8 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
     }
 
     private void sendRegisterDevice() {
-        if (webSocket == null) {
+        final WebSocket ws = this.webSocket;
+        if (ws == null) {
             return;
         }
         String deviceModel = Build.MANUFACTURER + ' ' + Build.MODEL;
@@ -241,7 +243,7 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                 new RegisterDeviceRequest(UUID.randomUUID().toString(), data)
         );
         ThreadsLogger.i(TAG, "Sending : " + text);
-        webSocket.send(text);
+        ws.send(text);
     }
 
     /**
