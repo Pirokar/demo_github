@@ -171,7 +171,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 if (null != fileClickListener)
                     mFileImageButton.setOnClickListener(fileClickListener);
-                mFileImageButton.setProgress(quote.getFileDescription().getDownloadProgress());
+                mFileImageButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
             }
         }
         if (fileDescription != null) {
@@ -207,11 +207,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 if (fileClickListener != null) {
                     mFileImageButton.setOnClickListener(fileClickListener);
                 }
-                if (fileDescription.getFileUri() != null) {
-                    mFileImageButton.setProgress(100);
-                } else {
-                    mFileImageButton.setProgress(fileDescription.getDownloadProgress());
-                }
+                mFileImageButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
             }
         }
         if (quote != null || fileDescription != null) {

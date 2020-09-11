@@ -193,7 +193,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 if (fileDescription != null)
                     mCircularProgressButton.setOnClickListener(fileClickListener);
-                mCircularProgressButton.setProgress(quote.getFileDescription().getDownloadProgress());
+                mCircularProgressButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
             } else {
                 mCircularProgressButton.setVisibility(View.GONE);
             }
@@ -227,7 +227,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 rightTextFileStamp
                         .setText(itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
-                mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
+                mCircularProgressButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
             }
         }
         if (fileDescription == null && quote == null) {
