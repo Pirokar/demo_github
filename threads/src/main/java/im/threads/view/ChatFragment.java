@@ -31,6 +31,16 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -41,15 +51,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -624,7 +625,7 @@ public final class ChatFragment extends BaseFragment implements
                     TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
                     cp.getFileDescription().getFileUri()
             );
-        } else {
+        } else if (cp.getFileDescription() != null) {
             String fileName = "";
             try {
                 Uri fileUri = cp.getFileDescription().getFileUri();
@@ -636,6 +637,10 @@ public final class ChatFragment extends BaseFragment implements
             }
             mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
                     fileName,
+                    null);
+        } else {
+            mQuoteLayoutHolder.setContent(TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
+                    TextUtils.isEmpty(text) ? "" : text,
                     null);
         }
     }
