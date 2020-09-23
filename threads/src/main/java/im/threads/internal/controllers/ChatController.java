@@ -200,7 +200,6 @@ public final class ChatController {
                             )
             );
         }
-        Config.instance.transport.sendInitChatMessage();
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
@@ -517,6 +516,10 @@ public final class ChatController {
             }
         }
         PrefUtils.setClientIdWasSet(true);
+    }
+
+    public void sendInit() {
+        Config.instance.transport.sendInitChatMessage();
     }
 
     public void loadHistory() {
