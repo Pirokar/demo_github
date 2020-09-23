@@ -158,7 +158,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mRightTextRow.setVisibility(View.GONE);
         } else {
             mRightTextRow.setVisibility(View.VISIBLE);
-            mRightTextRow.setVisibility(View.VISIBLE);
             mFileImageButton.setVisibility(View.GONE);
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
@@ -173,6 +172,9 @@ public final class UserPhraseViewHolder extends BaseHolder {
                     mFileImageButton.setOnClickListener(fileClickListener);
                 mFileImageButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
             }
+            mRightTextRow.setOnClickListener(v -> {
+                quote.getUuid();
+            });
         }
         if (fileDescription != null) {
             if (FileUtils.isImage(fileDescription)) {

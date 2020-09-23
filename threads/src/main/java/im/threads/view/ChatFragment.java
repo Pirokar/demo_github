@@ -96,6 +96,7 @@ import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.ThreadsPermissionChecker;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Весь функционал чата находится здесь во фрагменте,
@@ -1761,6 +1762,29 @@ public final class ChatFragment extends BaseFragment implements
 
         @Override
         public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
+            if (userPhrase.getQuote() != null) {
+                subscribe(
+                        mChatController.downloadMessagesTillEnd()
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .map(list -> {
+                                    chatAdapter.addItems(list);
+                                    final int itemHighlightedIndex = chatAdapter.setItemHighlighted(userPhrase.getQuote().getUuid());
+                                    scrollToPosition(itemHighlightedIndex);
+                                    return list;
+                                })
+                                .delay(1500, TimeUnit.MILLISECONDS)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        list -> {
+                                            chatAdapter.removeHighlight();
+                                        },
+                                        e -> {
+                                            ThreadsLogger.e(TAG, e.getMessage());
+                                        }
+                                )
+                );
+            }
             mChatController.checkAndResendPhrase(userPhrase);
         }
 
