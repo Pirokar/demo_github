@@ -191,8 +191,9 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 mCircularProgressButton.setVisibility(View.VISIBLE);
                 long fileSize = quote.getFileDescription().getSize();
                 mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
-                if (fileDescription != null)
+                if (fileClickListener != null) {
                     mCircularProgressButton.setOnClickListener(fileClickListener);
+                }
                 mCircularProgressButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
             } else {
                 mCircularProgressButton.setVisibility(View.GONE);
