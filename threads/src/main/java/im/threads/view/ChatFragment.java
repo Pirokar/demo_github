@@ -1762,30 +1762,31 @@ public final class ChatFragment extends BaseFragment implements
 
         @Override
         public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
-            if (userPhrase.getQuote() != null) {
-                subscribe(
-                        mChatController.downloadMessagesTillEnd()
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .map(list -> {
-                                    chatAdapter.addItems(list);
-                                    final int itemHighlightedIndex = chatAdapter.setItemHighlighted(userPhrase.getQuote().getUuid());
-                                    scrollToPosition(itemHighlightedIndex);
-                                    return list;
-                                })
-                                .delay(1500, TimeUnit.MILLISECONDS)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        list -> {
-                                            chatAdapter.removeHighlight();
-                                        },
-                                        e -> {
-                                            ThreadsLogger.e(TAG, e.getMessage());
-                                        }
-                                )
-                );
-            }
             mChatController.checkAndResendPhrase(userPhrase);
+        }
+
+        @Override
+        public void onQuoteClick(Quote quote) {
+            if (quote == null) {
+                return;
+            }
+            subscribe(
+                    mChatController.downloadMessagesTillEnd()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .map(list -> {
+                                chatAdapter.addItems(list);
+                                final int itemHighlightedIndex = chatAdapter.setItemHighlighted(quote.getUuid());
+                                scrollToPosition(itemHighlightedIndex);
+                                return list;
+                            })
+                            .delay(1500, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    list -> chatAdapter.removeHighlight(),
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
         }
 
         @Override

@@ -53,6 +53,7 @@ import im.threads.internal.model.DateRow;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuestionDTO;
+import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
@@ -720,6 +721,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             }
                         },
                         v -> {
+                            mCallback.onQuoteClick(consultPhrase.getQuote());
+                        },
+                        v -> {
                             phaseLongClick(consultPhrase, holder.getAdapterPosition());
                             return true;
                         },
@@ -749,6 +753,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 },
                 v -> {
                     mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition());
+                },
+                v -> {
+                    mCallback.onQuoteClick(userPhrase.getQuote());
                 },
                 v -> {
                     phaseLongClick(userPhrase, holder.getAdapterPosition());
@@ -833,6 +840,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onFileClick(FileDescription fileDescription);
 
         void onPhraseLongClick(ChatPhrase chatPhrase, int position);
+
+        void onQuoteClick(Quote quote);
 
         void onUserPhraseClick(UserPhrase userPhrase, int position);
 

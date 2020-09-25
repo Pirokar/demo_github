@@ -123,6 +123,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
                        final View.OnClickListener imageClickListener,
                        @Nullable final View.OnClickListener fileClickListener,
                        final View.OnClickListener onRowClickListener,
+                       final View.OnClickListener onQuoteClickListener,
                        final View.OnLongClickListener onLongClickListener,
                        final boolean isChosen) {
         ViewUtils.setClickListener((ViewGroup) itemView, onLongClickListener);
@@ -158,6 +159,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mRightTextRow.setVisibility(View.GONE);
         } else {
             mRightTextRow.setVisibility(View.VISIBLE);
+            ViewUtils.setClickListener((ViewGroup) mRightTextRow, onQuoteClickListener);
             mFileImageButton.setVisibility(View.GONE);
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
@@ -172,9 +174,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
                     mFileImageButton.setOnClickListener(fileClickListener);
                 mFileImageButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
             }
-            mRightTextRow.setOnClickListener(v -> {
-                quote.getUuid();
-            });
         }
         if (fileDescription != null) {
             if (FileUtils.isImage(fileDescription)) {
@@ -200,6 +199,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
             } else {
                 if (fileDescription.getFileUri() != null) fileDescription.setDownloadProgress(100);
                 mRightTextRow.setVisibility(View.VISIBLE);
+                ViewUtils.setClickListener((ViewGroup) mRightTextRow, (View.OnClickListener) null);
                 mFileImageButton.setVisibility(View.VISIBLE);
                 long fileSize = fileDescription.getSize();
                 mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
