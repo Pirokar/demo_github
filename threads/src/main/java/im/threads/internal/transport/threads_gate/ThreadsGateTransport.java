@@ -119,7 +119,11 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
 
     @Override
     public void sendInitChatMessage() {
-        sendMessage(OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(), PrefUtils.getData()));
+        if (webSocket == null) {
+            openWebSocket();
+        } else {
+            sendMessage(OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(), PrefUtils.getData()));
+        }
     }
 
     @Override
