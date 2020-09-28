@@ -158,9 +158,16 @@ public final class FileUtils {
     private static int getExtensionFromFileDescription(@NonNull FileDescription fileDescription) {
         String mimeType = getMimeType(fileDescription);
         if (!mimeType.equals(UNKNOWN_MIME_TYPE)) {
-            return getExtensionFromMimeType(mimeType);
+            int extensionFromMimeType = getExtensionFromMimeType(mimeType);
+            if (extensionFromMimeType != UNKNOWN) {
+                return extensionFromMimeType;
+            }
         }
-        return getExtensionFromPath(fileDescription.getIncomingName());
+        int extensionFromPath = getExtensionFromPath(fileDescription.getIncomingName());
+        if (extensionFromPath != UNKNOWN) {
+            return extensionFromPath;
+        }
+        return getExtensionFromPath(fileDescription.getDownloadPath());
     }
 
     public static int getExtensionFromPath(@Nullable String path) {
