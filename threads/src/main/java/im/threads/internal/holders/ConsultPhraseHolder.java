@@ -140,6 +140,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                        FileDescription fileDescription,
                        final View.OnClickListener imageClickListener,
                        @Nullable View.OnClickListener fileClickListener,
+                       final View.OnClickListener onQuoteClickListener,
                        View.OnLongClickListener onRowLongClickListener,
                        View.OnClickListener onAvatarClickListener,
                        boolean isChosen) {
@@ -183,6 +184,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
             fileRow.setVisibility(View.GONE);
         } else {
             fileRow.setVisibility(View.VISIBLE);
+            ViewUtils.setClickListener((ViewGroup) fileRow, onQuoteClickListener);
             mCircularProgressButton.setVisibility(View.GONE);
             rightTextHeader.setText(quote.getPhraseOwnerTitle() == null ? itemView.getContext().getString(R.string.threads_I) : quote.getPhraseOwnerTitle());
             mRightTextDescr.setText(quote.getText());
@@ -213,6 +215,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                         .into(mImage);
             } else {
                 fileRow.setVisibility(View.VISIBLE);
+                ViewUtils.setClickListener((ViewGroup) fileRow, (View.OnClickListener) null);
                 mCircularProgressButton.setVisibility(View.VISIBLE);
 
                 if (fileClickListener != null) {

@@ -7,6 +7,11 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -16,10 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.holders.BaseHolder;
@@ -52,6 +53,7 @@ import im.threads.internal.model.DateRow;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuestionDTO;
+import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
@@ -391,6 +393,16 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return index;
     }
 
+    public int setItemHighlighted(final String uuid) {
+        for (ChatItem chatItem : list) {
+            if (chatItem instanceof ChatPhrase && ((ChatPhrase) chatItem).getId().equals(uuid)) {
+                setItemHighlighted((ChatPhrase) chatItem);
+                return lastIndexOf(chatItem);
+            }
+        }
+        return -1;
+    }
+
     private void removeConsultIsTyping() {
         for (final ListIterator<ChatItem> iter = list.listIterator(); iter.hasNext(); ) {
             final ChatItem cm = iter.next();
@@ -709,6 +721,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             }
                         },
                         v -> {
+                            mCallback.onQuoteClick(consultPhrase.getQuote());
+                        },
+                        v -> {
                             phaseLongClick(consultPhrase, holder.getAdapterPosition());
                             return true;
                         },
@@ -736,7 +751,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         mCallback.onFileClick(userPhrase.getQuote().getFileDescription());
                     }
                 },
-                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
+                v -> {
+                    mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition());
+                },
+                v -> {
+                    mCallback.onQuoteClick(userPhrase.getQuote());
+                },
                 v -> {
                     phaseLongClick(userPhrase, holder.getAdapterPosition());
                     return true;
@@ -820,6 +840,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onFileClick(FileDescription fileDescription);
 
         void onPhraseLongClick(ChatPhrase chatPhrase, int position);
+
+        void onQuoteClick(Quote quote);
 
         void onUserPhraseClick(UserPhrase userPhrase, int position);
 
