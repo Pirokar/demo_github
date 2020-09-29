@@ -687,7 +687,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindConsultPhraseVH(@NonNull final ConsultPhraseHolder holder, ConsultPhrase consultPhrase) {
-        if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFileUri() == null) {
+        if (FileUtils.isImage(consultPhrase.getFileDescription())) {
             mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
         }
         holder
@@ -718,7 +718,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindUserPhraseVH(@NonNull final UserPhraseViewHolder holder, UserPhrase userPhrase) {
-        if (userPhrase.getFileDescription() != null && userPhrase.getFileDescription().getFileUri() == null) {
+        if (FileUtils.isImage(userPhrase.getFileDescription())) {
             mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
         }
         holder.onBind(
