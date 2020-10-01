@@ -140,6 +140,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                        FileDescription fileDescription,
                        final View.OnClickListener imageClickListener,
                        @Nullable View.OnClickListener fileClickListener,
+                       final View.OnClickListener onQuoteClickListener,
                        View.OnLongClickListener onRowLongClickListener,
                        View.OnClickListener onAvatarClickListener,
                        boolean isChosen) {
@@ -183,6 +184,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
             fileRow.setVisibility(View.GONE);
         } else {
             fileRow.setVisibility(View.VISIBLE);
+            ViewUtils.setClickListener((ViewGroup) fileRow, onQuoteClickListener);
             mCircularProgressButton.setVisibility(View.GONE);
             rightTextHeader.setText(quote.getPhraseOwnerTitle() == null ? itemView.getContext().getString(R.string.threads_I) : quote.getPhraseOwnerTitle());
             mRightTextDescr.setText(quote.getText());
@@ -191,9 +193,10 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 mCircularProgressButton.setVisibility(View.VISIBLE);
                 long fileSize = quote.getFileDescription().getSize();
                 mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
-                if (fileDescription != null)
+                if (fileClickListener != null) {
                     mCircularProgressButton.setOnClickListener(fileClickListener);
-                mCircularProgressButton.setProgress(quote.getFileDescription().getDownloadProgress());
+                }
+                mCircularProgressButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
             } else {
                 mCircularProgressButton.setVisibility(View.GONE);
             }
@@ -212,6 +215,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                         .into(mImage);
             } else {
                 fileRow.setVisibility(View.VISIBLE);
+                ViewUtils.setClickListener((ViewGroup) fileRow, (View.OnClickListener) null);
                 mCircularProgressButton.setVisibility(View.VISIBLE);
 
                 if (fileClickListener != null) {
@@ -227,7 +231,7 @@ public final class ConsultPhraseHolder extends BaseHolder {
                 mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 rightTextFileStamp
                         .setText(itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(new Date(fileDescription.getTimeStamp())));
-                mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
+                mCircularProgressButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
             }
         }
         if (fileDescription == null && quote == null) {

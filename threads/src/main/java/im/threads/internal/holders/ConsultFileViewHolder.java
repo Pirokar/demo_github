@@ -80,7 +80,7 @@ public final class ConsultFileViewHolder extends BaseHolder {
         mSizeTextView.setText(android.text.format.Formatter.formatFileSize(itemView.getContext(), size));
         mSizeTextView.setVisibility(size > 0 ? View.VISIBLE : View.GONE);
         mTimeStampTextView.setText(sdf.format(new Date(timeStamp)));
-        mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
+        mCircularProgressButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);

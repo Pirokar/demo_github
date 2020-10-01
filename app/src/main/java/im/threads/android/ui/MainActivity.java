@@ -46,12 +46,10 @@ import io.fabric.sdk.android.Fabric;
 public class MainActivity extends AppCompatActivity implements AddCardDialog.AddCardDialogActionsListener, YesNoDialog.YesNoDialogActionListener {
 
     private static final int YES_NO_DIALOG_REQUEST_CODE = 323;
-
+    ActivityMainBinding binding;
     private CardsAdapter cardsAdapter;
     private CardsSnapHelper cardsSnapHelper;
     private Card cardForDelete;
-
-    ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +105,8 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         }
         ThreadsLib.getInstance().initUser(
                 new UserInfoBuilder(currentCard.getUserId())
+                        .setClientData(currentCard.getClientData())
                         .setClientIdSignature(currentCard.getClientIdSignature())
-                        .setUserName(currentCard.getUserName())
-                        .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
                         .setAppMarker(currentCard.getAppMarker())
         );
         ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(getCurrentDesign()));
@@ -131,14 +128,18 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         }
         ThreadsLib.getInstance().initUser(
                 new UserInfoBuilder(currentCard.getUserId())
+                        .setClientData(currentCard.getClientData())
                         .setClientIdSignature(currentCard.getClientIdSignature())
-                        .setUserName(currentCard.getUserName())
-                        .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
                         .setAppMarker(currentCard.getAppMarker())
         );
-        startActivity(BottomNavigationActivity.createIntent(this, currentCard.getAppMarker(),
-                currentCard.getUserId(), currentCard.getClientIdSignature(),
-                currentCard.getUserName(), getCurrentDesign()));
+        startActivity(BottomNavigationActivity.createIntent(
+                this,
+                currentCard.getAppMarker(),
+                currentCard.getUserId(),
+                currentCard.getClientData(),
+                currentCard.getClientIdSignature(),
+                getCurrentDesign())
+        );
     }
 
     public void showAddCardDialog() {
@@ -166,11 +167,11 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
             displayError(R.string.error_empty_userid);
             return;
         }
-        UserInfoBuilder userInfoBuilder = new UserInfoBuilder(currentCard.getUserId())
-                .setClientIdSignature(currentCard.getClientIdSignature())
-                .setUserName(currentCard.getUserName())
-                .setData("{\"phone\": \"+7-999-999-99-99\",\"email\": \"e@mail.com\"}")
-                .setAppMarker(currentCard.getAppMarker());
+        UserInfoBuilder userInfoBuilder =
+                new UserInfoBuilder(currentCard.getUserId())
+                        .setClientData(currentCard.getClientData())
+                        .setClientIdSignature(currentCard.getClientIdSignature())
+                        .setAppMarker(currentCard.getAppMarker());
         ThreadsLib.getInstance().initUser(userInfoBuilder);
         boolean messageSent = ThreadsLib.getInstance().sendMessage(getString(R.string.test_message), imageFile);
         if (messageSent) {

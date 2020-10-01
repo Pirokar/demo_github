@@ -236,7 +236,18 @@ public final class ChatController {
 
     public void fancySearch(final String query, final boolean forward, final CallbackNoError<List<ChatItem>> callback) {
         if (!isAllMessagesDownloaded) {
-            downloadMessagesTillEnd();
+            subscribe(
+                    downloadMessagesTillEnd()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    list -> {
+                                    },
+                                    e -> {
+                                        ThreadsLogger.e(TAG, e.getMessage());
+                                    }
+                            )
+            );
         }
         subscribe(Completable.fromAction(() -> {
                     if (System.currentTimeMillis() > (lastFancySearchDate + 3000)) {
@@ -271,6 +282,34 @@ public final class ChatController {
                                 e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
         );
+    }
+
+    public Single<List<ChatItem>> downloadMessagesTillEnd() {
+        return Single.fromCallable(
+                () -> {
+                    if (!isDownloadingMessages) {
+                        isDownloadingMessages = true;
+                        ThreadsLogger.d(TAG, "downloadMessagesTillEnd");
+                        while (!isAllMessagesDownloaded) {
+                            final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
+                            final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                            if (serverItems.isEmpty()) {
+                                isAllMessagesDownloaded = true;
+                            } else {
+                                lastMessageTimestamp = serverItems.get(0).getTimeStamp();
+                                isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
+                                saveMessages(serverItems);
+                            }
+                        }
+                    }
+                    return databaseHolder.getChatItems(0, -1);
+                }
+        )
+                .map(list -> {
+                    isDownloadingMessages = false;
+                    return list;
+                })
+                .doOnError(throwable -> isDownloadingMessages = false);
     }
 
     public void onFileClick(final FileDescription fileDescription) {
@@ -697,7 +736,7 @@ public final class ChatController {
                         .doOnNext(chatItem -> {
                             if (chatItem instanceof MessageRead) {
                                 List<String> readMessagesIds = ((MessageRead) chatItem).getMessageId();
-                                for(String readId: readMessagesIds) {
+                                for (String readId : readMessagesIds) {
                                     UserPhrase userPhrase = (UserPhrase) databaseHolder.getChatItem(readId);
                                     if (userPhrase != null) {
                                         chatUpdateProcessor.postUserMessageWasRead(userPhrase.getProviderId());
@@ -925,38 +964,6 @@ public final class ChatController {
         }
     }
 
-    private void downloadMessagesTillEnd() {
-        if (!isDownloadingMessages && !isAllMessagesDownloaded) {
-            isDownloadingMessages = true;
-            ThreadsLogger.d(TAG, "downloadMessagesTillEnd");
-            subscribe(
-                    Completable.fromAction(() -> {
-                        final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
-                        final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                        if (serverItems.isEmpty()) {
-                            isDownloadingMessages = false;
-                            isAllMessagesDownloaded = true;
-                        } else {
-                            lastMessageTimestamp = serverItems.get(0).getTimeStamp();
-                            isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                            saveMessages(serverItems);
-                            isDownloadingMessages = false;
-                            if (!isAllMessagesDownloaded) {
-                                downloadMessagesTillEnd();
-                            }
-                        }
-                    })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    () -> {
-                                    },
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
-                            )
-            );
-        }
-    }
-
     /*
     Вызывается когда получено новое сообщение из канала (TG/PUSH)
      */
@@ -992,9 +999,9 @@ public final class ChatController {
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
         if (
-                 chatItem instanceof ConsultPhrase ||
-                (chatItem instanceof ConsultConnectionMessage && !ChatItemType.OPERATOR_LEFT.name().equals(((ConsultConnectionMessage) chatItem).getType())) ||
-                (chatItem instanceof ScheduleInfo && ((ScheduleInfo) chatItem).isChatWorking())
+                chatItem instanceof ConsultPhrase ||
+                        (chatItem instanceof ConsultConnectionMessage && !ChatItemType.OPERATOR_LEFT.name().equals(((ConsultConnectionMessage) chatItem).getType())) ||
+                        (chatItem instanceof ScheduleInfo && ((ScheduleInfo) chatItem).isChatWorking())
         ) {
             if (fragment != null && fragment.isAdded()) {
                 fragment.removeSchedule(false);

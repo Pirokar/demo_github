@@ -70,11 +70,7 @@ public final class UserFileViewHolder extends BaseHolder {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);
             vg.getChildAt(i).setOnClickListener(rowClickListener);
         }
-        if (fileDescription.getFileUri() != null) {
-            mCircularProgressButton.setProgress(100);
-        } else {
-            mCircularProgressButton.setProgress(fileDescription.getDownloadProgress());
-        }
+        mCircularProgressButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
         mCircularProgressButton.setOnClickListener(buttonClickListener);
         if (isFilterVisible) {
             mFilterView.setVisibility(View.VISIBLE);
