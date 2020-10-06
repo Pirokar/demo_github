@@ -1096,7 +1096,7 @@ public final class ChatController {
     }
 
     private void refreshUserInputState() {
-        if (hasQuickReplies) {
+        if (hasQuickReplies && !Config.instance.inputEnabledDuringQuickReplies) {
             chatUpdateProcessor.postUserInputEnableChanged(false);
         } else {
             // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
@@ -1113,7 +1113,7 @@ public final class ChatController {
         chatUpdateProcessor.postQuickRepliesChanged(getQuickReplies(chatItems));
     }
 
-    public void quickReplyIsSent() {
+    public void hideQuickReplies() {
         chatUpdateProcessor.postQuickRepliesChanged(new ArrayList<>());
     }
 

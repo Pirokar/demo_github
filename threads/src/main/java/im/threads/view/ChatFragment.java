@@ -983,6 +983,7 @@ public final class ChatFragment extends BaseFragment implements
         if (clearInput) {
             clearInput();
         }
+        mChatController.hideQuickReplies();
     }
 
     private void clearInput() {
@@ -1653,7 +1654,6 @@ public final class ChatFragment extends BaseFragment implements
                     ),
                     false
             );
-            mChatController.quickReplyIsSent();
         }));
         if (binding.quickRepliesRv.getVisibility() == View.GONE) {
             binding.quickRepliesRv.setVisibility(View.VISIBLE);
