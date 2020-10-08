@@ -28,8 +28,6 @@ public final class ConfigBuilder {
 
     private int surveyCompletionDelay = 2000;
 
-    private boolean inputEnabledDuringQuickReplies = false;
-
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
     }
@@ -59,11 +57,6 @@ public final class ConfigBuilder {
         return this;
     }
 
-    public ConfigBuilder inputEnabledDuringQuickReplies(boolean inputEnabledDuringQuickReplies) {
-        this.inputEnabledDuringQuickReplies = inputEnabledDuringQuickReplies;
-        return this;
-    }
-
     final Config build() {
         return new Config(
                 context,
@@ -71,8 +64,7 @@ public final class ConfigBuilder {
                 unreadMessagesCountListener,
                 isDebugLoggingEnabled,
                 historyLoadingCount,
-                surveyCompletionDelay,
-                inputEnabledDuringQuickReplies
+                surveyCompletionDelay
         );
     }
 

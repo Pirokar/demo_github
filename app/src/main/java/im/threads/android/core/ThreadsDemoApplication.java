@@ -39,8 +39,7 @@ public class ThreadsDemoApplication extends MultiDexApplication {
                 .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count))
                 .surveyCompletionDelay(2000)
                 .historyLoadingCount(50)
-                .isDebugLoggingEnabled(true)
-                .inputEnabledDuringQuickReplies(true);
+                .isDebugLoggingEnabled(true);
         ThreadsLib.init(configBuilder);
     }
 

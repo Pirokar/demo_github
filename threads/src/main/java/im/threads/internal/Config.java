@@ -44,8 +44,6 @@ public final class Config {
 
     public final int surveyCompletionDelay;
 
-    public final boolean inputEnabledDuringQuickReplies;
-
     public final Gson gson = new Gson();
 
     public Config(@NonNull Context context,
@@ -53,15 +51,13 @@ public final class Config {
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
-                  int surveyCompletionDelay,
-                  boolean inputEnabledDuringQuickReplies) {
+                  int surveyCompletionDelay) {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
-        this.inputEnabledDuringQuickReplies = inputEnabledDuringQuickReplies;
         this.transport = getTransport();
     }
 

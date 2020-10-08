@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -1096,7 +1097,7 @@ public final class ChatController {
     }
 
     private void refreshUserInputState() {
-        if (hasQuickReplies && !Config.instance.inputEnabledDuringQuickReplies) {
+        if (hasQuickReplies && !Config.instance.getChatStyle().inputEnabledDuringQuickReplies) {
             chatUpdateProcessor.postUserInputEnableChanged(false);
         } else {
             // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
