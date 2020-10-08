@@ -27,6 +27,7 @@ import im.threads.internal.model.Optional;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.Survey;
+import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.DateHelper;
 import im.threads.internal.utils.ThreadsLogger;
@@ -76,9 +77,18 @@ public final class HistoryParser {
                 }
                 ChatItemType type = ChatItemType.fromString(message.getType());
                 switch (type) {
+                    case THREAD_ENQUEUED:
+                    case AVERAGE_WAIT_TIME:
+                    case PARTING_AFTER_SURVEY:
+                    case THREAD_CLOSED:
+                    case THREAD_TRANSFERRED:
+                    case THREAD_IN_PROGRESS:
+                        out.add(getSystemMessageFromHistory(message));
+                        break;
                     case OPERATOR_JOINED:
+                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay(), message.getText()));
+                        break;
                     case OPERATOR_LEFT:
-                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay()));
                         break;
                     case SURVEY:
                         Survey survey = getSurveyFromJsonString(message.getText());
@@ -150,6 +160,10 @@ public final class HistoryParser {
         question.setSimple(message.isSimple());
         survey.setQuestions(Collections.singletonList(question));
         return survey;
+    }
+
+    private static SimpleSystemMessage getSystemMessageFromHistory(MessageFromHistory message) {
+        return new SimpleSystemMessage(message.getUuid(), message.getType(), message.getTimeStamp(), message.getText());
     }
 
     private static Quote quoteFromList(final List<MessageFromHistory> quotes) {

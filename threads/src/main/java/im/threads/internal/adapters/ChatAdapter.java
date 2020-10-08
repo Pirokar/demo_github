@@ -7,11 +7,6 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -21,10 +16,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.holders.BaseHolder;
-import im.threads.internal.holders.ConsultConnectionMessageViewHolder;
 import im.threads.internal.holders.ConsultFileViewHolder;
 import im.threads.internal.holders.ConsultIsTypingViewHolderNew;
 import im.threads.internal.holders.ConsultPhraseHolder;
@@ -40,13 +38,13 @@ import im.threads.internal.holders.RequestResolveThreadViewHolder;
 import im.threads.internal.holders.ScheduleInfoViewHolder;
 import im.threads.internal.holders.SearchingConsultViewHolder;
 import im.threads.internal.holders.SpaceViewHolder;
+import im.threads.internal.holders.SystemMessageViewHolder;
 import im.threads.internal.holders.UnreadMessageViewHolder;
 import im.threads.internal.holders.UserFileViewHolder;
 import im.threads.internal.holders.UserPhraseViewHolder;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ConsultChatPhrase;
-import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.DateRow;
@@ -59,6 +57,7 @@ import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Space;
 import im.threads.internal.model.Survey;
+import im.threads.internal.model.SystemMessage;
 import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.CircleTransformation;
@@ -73,7 +72,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int TYPE_CONSULT_TYPING = 1;
     private static final int TYPE_DATE = 2;
     private static final int TYPE_SEARCHING_CONSULT = 3;
-    private static final int TYPE_CONSULT_CONNECTED = 4;
+    private static final int TYPE_SYSTEM_MESSAGE = 4;
     private static final int TYPE_CONSULT_PHRASE = 5;
     private static final int TYPE_USER_PHRASE = 6;
     private static final int TYPE_FREE_SPACE = 7;
@@ -154,8 +153,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 return new DateViewHolder(parent);
             case TYPE_SEARCHING_CONSULT:
                 return new SearchingConsultViewHolder(parent);
-            case TYPE_CONSULT_CONNECTED:
-                return new ConsultConnectionMessageViewHolder(parent);
+            case TYPE_SYSTEM_MESSAGE:
+                return new SystemMessageViewHolder(parent);
             case TYPE_CONSULT_PHRASE:
                 return new ConsultPhraseHolder(parent);
             case TYPE_USER_PHRASE:
@@ -191,8 +190,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
-        if (holder instanceof ConsultConnectionMessageViewHolder) {
-            bindConsultConnectionMessageVH((ConsultConnectionMessageViewHolder) holder, (ConsultConnectionMessage) list.get(position));
+        if (holder instanceof SystemMessageViewHolder) {
+            bindSystemMessageVH((SystemMessageViewHolder) holder, (SystemMessage) list.get(position));
         }
         if (holder instanceof ConsultPhraseHolder) {
             bindConsultPhraseVH((ConsultPhraseHolder) holder, (ConsultPhrase) list.get(position));
@@ -260,8 +259,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             ThreadsLogger.e(TAG, "getItemViewType", e);
             return 0;
         }
-        if (o instanceof ConsultConnectionMessage) {
-            return TYPE_CONSULT_CONNECTED;
+        if (o instanceof SystemMessage) {
+            return TYPE_SYSTEM_MESSAGE;
         }
         if (o instanceof ConsultTyping) {
             return TYPE_CONSULT_TYPING;
@@ -493,7 +492,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public int getCurrentItemCount() {
         int count = 0;
         for (final ChatItem item : list) {
-            if (item instanceof UserPhrase || item instanceof ConsultPhrase || item instanceof ConsultConnectionMessage || item instanceof Survey) {
+            if (item instanceof UserPhrase || item instanceof ConsultPhrase || item instanceof SystemMessage || item instanceof Survey) {
                 count++;
             }
         }
@@ -647,15 +646,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     notifyItemChanged(lastIndexOf(cp));
                 }
             }
-            if (ci instanceof ConsultConnectionMessage) {
-                final ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
-                if (!ccm.getConsultId().equals(consultId)) continue;
-                final String oldUrl = ccm.getAvatarPath();
-                if (oldUrl == null || !oldUrl.equals(newUrl)) {
-                    ccm.setAvatarPath(newUrl);
-                    notifyItemChanged(lastIndexOf(ci));
-                }
-            }
         }
     }
 
@@ -688,12 +678,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         });
     }
 
-    private void bindConsultConnectionMessageVH(@NonNull final ConsultConnectionMessageViewHolder holder, ConsultConnectionMessage cc) {
+    private void bindSystemMessageVH(@NonNull final SystemMessageViewHolder holder, SystemMessage sm) {
         holder.onBind(
-                cc,
+                sm,
                 v -> {
-                    final ConsultConnectionMessage cc1 = (ConsultConnectionMessage) list.get(holder.getAdapterPosition());
-                    mCallback.onConsultConnectionClick(cc1);
+                    final SystemMessage cc1 = (SystemMessage) list.get(holder.getAdapterPosition());
+                    mCallback.onSystemMessageClick(cc1);
                 }
         );
     }
@@ -851,7 +841,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         void onImageDownloadRequest(FileDescription fileDescription);
 
-        void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage);
+        void onSystemMessageClick(SystemMessage systemMessage);
 
         void onRatingClick(@NonNull Survey survey, int rating);
 
@@ -978,9 +968,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (listToInsertTo.contains(itemToInsert)) {
                 return;
             }
-            if (itemToInsert instanceof ConsultConnectionMessage && !((ConsultConnectionMessage) itemToInsert).isDisplayMessage()) {
+            /*if (itemToInsert instanceof SystemMessage && !((SystemMessage) itemToInsert).isDisplayMessage()) {
                 return;
-            }
+            }*/
             listToInsertTo.add(itemToInsert);
             final Calendar currentTimeStamp = Calendar.getInstance();
             final Calendar prevTimeStamp = Calendar.getInstance();
@@ -1012,7 +1002,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     listToInsertTo.add(i, new Space(24, prev.getTimeStamp() + 1));
                     continue;
                 }
-                if (prev instanceof UserPhrase && current instanceof ConsultConnectionMessage) {// spacing between Consult and Consult connected
+                if (prev instanceof UserPhrase && current instanceof SystemMessage) {// spacing between Consult and Consult connected
                     listToInsertTo.add(i, new Space(12, prev.getTimeStamp() + 1));
                     continue;
                 }
@@ -1020,19 +1010,19 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     listToInsertTo.add(i, new Space(12, prev.getTimeStamp() + 1));
                     continue;
                 }
-                if (prev instanceof ConsultConnectionMessage && current instanceof ConsultPhrase) {// spacing between Consult connected and Consult phrase
+                if (prev instanceof SystemMessage && current instanceof ConsultPhrase) {// spacing between Consult connected and Consult phrase
                     listToInsertTo.add(i, new Space(12, prev.getTimeStamp() + 1));
                     continue;
                 }
-                if (prev instanceof ConsultConnectionMessage && current instanceof UserPhrase) {
+                if (prev instanceof SystemMessage && current instanceof UserPhrase) {
                     listToInsertTo.add(i, new Space(12, prev.getTimeStamp() + 1));
                     continue;
                 }
-                if (prev instanceof ConsultConnectionMessage && current instanceof ConsultConnectionMessage) {
+                if (prev instanceof SystemMessage && current instanceof SystemMessage) {
                     listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
                     continue;
                 }
-                if (prev instanceof ConsultPhrase && current instanceof ConsultConnectionMessage) {
+                if (prev instanceof ConsultPhrase && current instanceof SystemMessage) {
                     listToInsertTo.add(i, new Space(8, prev.getTimeStamp() + 1));
                     continue;
                 }

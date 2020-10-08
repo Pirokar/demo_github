@@ -5,9 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,12 +13,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuestionDTO;
+import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.ThreadsLogger;
@@ -49,7 +49,7 @@ public class MessagesTable extends Table {
     private static final String COLUMN_CONSULT_ORG_UNIT = "COLUMN_CONSULT_ORG_UNIT";
     private static final String COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE";
     private static final String COLUMN_IS_READ = "COLUMN_IS_READ";
-    private static final String COLUMN_DISPLAY_MASSAGE = "COLUMN_DISPLAY_MESSAGE";
+    private static final String COLUMN_DISPLAY_MESSAGE = "COLUMN_DISPLAY_MESSAGE";
     private static final String COLUMN_SURVEY_SENDING_ID = "COLUMN_SURVEY_SENDING_ID";
     private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
 
@@ -90,7 +90,7 @@ public class MessagesTable extends Table {
                         "%s integer," + //isRead
                         "%s text, " + //COLUMN_PROVIDER_ID
                         "%s text " //COLUMN_PROVIDER_IDS
-                        + ", " + COLUMN_DISPLAY_MASSAGE + " integer"
+                        + ", " + COLUMN_DISPLAY_MESSAGE + " integer"
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
                         + ")",
@@ -104,7 +104,7 @@ public class MessagesTable extends Table {
     @Override
     public void upgradeTable(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
-            db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COLUMN_DISPLAY_MASSAGE + " INTEGER DEFAULT 0");
+            db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COLUMN_DISPLAY_MESSAGE + " INTEGER DEFAULT 0");
         }
         if (oldVersion < newVersion) {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
@@ -167,6 +167,10 @@ public class MessagesTable extends Table {
             insertOrUpdateMessage(sqlHelper, getConsultConnectionMessageCV((ConsultConnectionMessage) chatItem));
             return true;
         }
+        if (chatItem instanceof SimpleSystemMessage) {
+            insertOrUpdateMessage(sqlHelper, getSimpleSystemMessageCV((SimpleSystemMessage) chatItem));
+            return true;
+        }
         if (chatItem instanceof ConsultPhrase) {
             final ConsultPhrase phrase = (ConsultPhrase) chatItem;
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(phrase));
@@ -219,9 +223,9 @@ public class MessagesTable extends Table {
         return null;
     }
 
-    public  List<UserPhrase> getUnsendUserPhrase(SQLiteOpenHelper sqlHelper, int count) {
+    public List<UserPhrase> getUnsendUserPhrase(SQLiteOpenHelper sqlHelper, int count) {
         List<UserPhrase> userPhrases = new ArrayList<>();
-        List<ChatItem> chatItems = getChatItems(sqlHelper,0, count);
+        List<ChatItem> chatItems = getChatItems(sqlHelper, 0, count);
         for (ChatItem chatItem : chatItems) {
             if (chatItem instanceof UserPhrase) {
                 if (((UserPhrase) chatItem).getSentState() == MessageState.STATE_NOT_SENT) {
@@ -333,7 +337,16 @@ public class MessagesTable extends Table {
                     cGetString(c, COLUMN_CONSULT_STATUS),
                     cGetString(c, COLUMN_CONSULT_TITLE),
                     cGetString(c, COLUMN_CONSULT_ORG_UNIT),
-                    cGetBool(c, COLUMN_DISPLAY_MASSAGE));
+                    cGetBool(c, COLUMN_DISPLAY_MESSAGE),
+                    cGetString(c, COLUMN_PHRASE)
+            );
+        } else if (type == MessageType.SYSTEM_MESSAGE.ordinal()) {
+            return new SimpleSystemMessage(
+                    cGetString(c, COLUMN_MESSAGE_UUID),
+                    cGetString(c, COLUMN_MESSAGE_TYPE),
+                    cGetLong(c, COLUMN_TIMESTAMP),
+                    cGetString(c, COLUMN_PHRASE)
+            );
         } else if (type == MessageType.CONSULT_PHRASE.ordinal()) {
             return getConsultPhrase(sqlHelper, c);
         } else if (type == MessageType.USER_PHRASE.ordinal()) {
@@ -435,7 +448,17 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.getTitle());
         cv.put(COLUMN_CONSULT_ORG_UNIT, consultConnectionMessage.getOrgUnit());
         cv.put(COLUMN_MESSAGE_UUID, consultConnectionMessage.getUuid());
-        cv.put(COLUMN_DISPLAY_MASSAGE, consultConnectionMessage.isDisplayMessage());
+        cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage());
+        cv.put(COLUMN_PHRASE, consultConnectionMessage.getText());
+        return cv;
+    }
+
+    private ContentValues getSimpleSystemMessageCV(SimpleSystemMessage simpleSystemMessage) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_MESSAGE_UUID, simpleSystemMessage.getUuid());
+        cv.put(COLUMN_MESSAGE_TYPE, simpleSystemMessage.getType());
+        cv.put(COLUMN_TIMESTAMP, simpleSystemMessage.getTimeStamp());
+        cv.put(COLUMN_PHRASE, simpleSystemMessage.getText());
         return cv;
     }
 
@@ -499,7 +522,7 @@ public class MessagesTable extends Table {
         }
         StringBuilder stringBuilder = new StringBuilder();
         String divider = "";
-        for(String item: list) {
+        for (String item : list) {
             stringBuilder.append(divider).append(item);
             divider = ";";
         }
@@ -509,6 +532,7 @@ public class MessagesTable extends Table {
     private enum MessageType {
         UNKNOWN,
         CONSULT_CONNECTED,
+        SYSTEM_MESSAGE,
         CONSULT_PHRASE,
         USER_PHRASE,
         SURVEY

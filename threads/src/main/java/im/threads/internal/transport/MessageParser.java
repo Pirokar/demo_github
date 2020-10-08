@@ -25,6 +25,7 @@ import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.Survey;
+import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.models.Attachment;
 import im.threads.internal.transport.models.AttachmentSettings;
@@ -32,6 +33,7 @@ import im.threads.internal.transport.models.MessageContent;
 import im.threads.internal.transport.models.Operator;
 import im.threads.internal.transport.models.OperatorJoinedContent;
 import im.threads.internal.transport.models.RequestResolveThreadContent;
+import im.threads.internal.transport.models.SystemMessageContent;
 import im.threads.internal.transport.models.TextContent;
 
 public final class MessageParser {
@@ -46,8 +48,14 @@ public final class MessageParser {
     public static ChatItem format(String messageId, long sentAt, String shortMessage, JsonObject fullMessage) {
         final ChatItemType type = ChatItemType.fromString(getType(fullMessage));
         switch (type) {
+            case THREAD_ENQUEUED:
+            case AVERAGE_WAIT_TIME:
+            case PARTING_AFTER_SURVEY:
+            case THREAD_CLOSED:
+            case THREAD_TRANSFERRED:
+            case THREAD_IN_PROGRESS:
+                return getSystemMessage(sentAt, fullMessage);
             case OPERATOR_JOINED:
-            case OPERATOR_LEFT:
                 return getConsultConnection(messageId, sentAt, shortMessage, fullMessage);
             case SCHEDULE:
                 return getScheduleInfo(fullMessage);
@@ -62,6 +70,7 @@ public final class MessageParser {
                 return getMessageRead(fullMessage);
             case CLIENT_BLOCKED:
             case SCENARIO:
+            case OPERATOR_LEFT:
                 return null;
             case ATTACHMENT_SETTINGS:
                 AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(fullMessage, AttachmentSettings.class);
@@ -110,8 +119,14 @@ public final class MessageParser {
                 operator.getStatus(),
                 shortMessage == null ? null : shortMessage.split(" ")[0],
                 operator.getOrganizationUnit(),
-                content.isDisplay()
+                content.isDisplay(),
+                content.getText()
         );
+    }
+
+    private static SimpleSystemMessage getSystemMessage(final long sentAt, final JsonObject fullMessage) {
+        SystemMessageContent content = Config.instance.gson.fromJson(fullMessage, SystemMessageContent.class);
+        return new SimpleSystemMessage(content.getUuid(), content.getType(), sentAt, content.getText());
     }
 
     private static ScheduleInfo getScheduleInfo(final JsonObject fullMessage) {
