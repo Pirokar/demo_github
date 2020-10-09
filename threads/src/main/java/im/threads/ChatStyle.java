@@ -104,6 +104,7 @@ public final class ChatStyle implements Serializable {
     public int fileBrowserDialogStyleResId = R.style.FileDialogStyleTransparent;
     public boolean showConsultSearching = false;
     public boolean scrollChatToEndIfUserTyping = false;
+    public boolean inputEnabledDuringQuickReplies = false;
     @DrawableRes
     public int scrollDownButtonResId = R.drawable.threads_scroll_down_btn_back;
     @ColorRes
@@ -410,6 +411,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setScheduleAlertFont(final String path) {
         this.scheduleAlertFont = path;
+        return this;
+    }
+
+    public ChatStyle setInputEnabledDuringQuickReplies(final boolean inputEnabledDuringQuickReplies) {
+        this.inputEnabledDuringQuickReplies = inputEnabledDuringQuickReplies;
         return this;
     }
 
