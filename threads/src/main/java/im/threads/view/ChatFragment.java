@@ -1658,6 +1658,7 @@ public final class ChatFragment extends BaseFragment implements
         if (binding.quickRepliesRv.getVisibility() == View.GONE) {
             binding.quickRepliesRv.setVisibility(View.VISIBLE);
         }
+        hideBottomSheet();
     }
 
     public void hideQuickReplies() {
