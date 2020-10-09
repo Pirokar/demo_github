@@ -10,20 +10,22 @@ import android.view.ViewConfiguration;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import im.threads.R;
 
 public final class MySwipeRefreshLayout extends SwipeRefreshLayout {
-    private float initX;
-    private float initY;
-    private int mActivePointerId;
-    int mTouchSlop;
     private static final int SWIPE_MIN_DISTANCE = 100;
     private static final int SWIPE_Y_MAX_DISTANCE = 500;
     private static final int SWIPE_X_MIN_DISTANCE = 350;
     private static final float SWIPE_MIN_VELOCITY = 4.5f;
+    int mTouchSlop;
+    private float initX;
+    private float initY;
+    private int mActivePointerId;
     private VelocityTracker mVelocityTracker;
     private SwipeListener mSwipeListener;
     private RecyclerView nestedRecyclerView;
+    private boolean selfCancelled = false;
 
     public MySwipeRefreshLayout(Context context) {
         super(context);
@@ -44,8 +46,6 @@ public final class MySwipeRefreshLayout extends SwipeRefreshLayout {
     public boolean canChildScrollUp() {
         return isRefreshing();
     }
-
-    private boolean selfCancelled = false;
 
     @Override
     protected Parcelable onSaveInstanceState() {

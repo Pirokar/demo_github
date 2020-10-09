@@ -17,8 +17,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.crashlytics.android.Crashlytics;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,7 +34,6 @@ import im.threads.android.utils.CardsSnapHelper;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PrefUtils;
 import im.threads.view.ChatActivity;
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Активность с примерами открытия чата:
@@ -73,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements AddCardDialog.Add
         });
         binding.cardsView.setAdapter(cardsAdapter);
         showCards(PrefUtils.getCards(this));
-        Fabric.with(this, new Crashlytics());
     }
 
     private void showCards(List<Card> cards) {

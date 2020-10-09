@@ -81,10 +81,6 @@
             android:name="com.pushserver.android.logs"
             android:value="true"/>
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="1e16d59476dc33c7506b19bf8b6ed04de67068cd"/>
-
     </application>
 
 </manifest>

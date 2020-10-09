@@ -106,6 +106,7 @@ dependencies {
 
     implementation "androidx.preference:preference:$rootProject.androidXPreferenceVersion"
     implementation "androidx.core:core:$rootProject.androidXCoreVersion"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$rootProject.androidXSwiperefreshlayout"
     implementation "com.google.android.material:material:$rootProject.materialComponentsVersion"
 
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
