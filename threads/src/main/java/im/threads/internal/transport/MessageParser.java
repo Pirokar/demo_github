@@ -56,6 +56,7 @@ public final class MessageParser {
             case THREAD_IN_PROGRESS:
                 return getSystemMessage(sentAt, fullMessage);
             case OPERATOR_JOINED:
+            case OPERATOR_LEFT:
                 return getConsultConnection(messageId, sentAt, shortMessage, fullMessage);
             case SCHEDULE:
                 return getScheduleInfo(fullMessage);
@@ -70,7 +71,6 @@ public final class MessageParser {
                 return getMessageRead(fullMessage);
             case CLIENT_BLOCKED:
             case SCENARIO:
-            case OPERATOR_LEFT:
                 return null;
             case ATTACHMENT_SETTINGS:
                 AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(fullMessage, AttachmentSettings.class);

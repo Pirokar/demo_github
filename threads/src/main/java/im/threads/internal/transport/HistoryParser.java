@@ -86,9 +86,8 @@ public final class HistoryParser {
                         out.add(getSystemMessageFromHistory(message));
                         break;
                     case OPERATOR_JOINED:
-                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay(), message.getText()));
-                        break;
                     case OPERATOR_LEFT:
+                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay(), message.getText()));
                         break;
                     case SURVEY:
                         Survey survey = getSurveyFromJsonString(message.getText());

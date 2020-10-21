@@ -7,6 +7,11 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -16,10 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.holders.BaseHolder;
@@ -45,6 +46,7 @@ import im.threads.internal.holders.UserPhraseViewHolder;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ConsultChatPhrase;
+import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.DateRow;
@@ -55,6 +57,7 @@ import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
+import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.Space;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.SystemMessage;
@@ -568,7 +571,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         for (final ChatItem cm : list) {
             if (cm instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) cm;
-                if (providerId.equals(up.getProviderId())) {
+                if (ObjectsCompat.equals(providerId, up.getProviderId())) {
                     ThreadsLogger.i(TAG, "changeStateOfMessageByProviderId: changing read state");
                     ((UserPhrase) cm).setSentState(state);
                     notifyItemChangedOnUi(cm);
@@ -968,9 +971,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (listToInsertTo.contains(itemToInsert)) {
                 return;
             }
-            /*if (itemToInsert instanceof SystemMessage && !((SystemMessage) itemToInsert).isDisplayMessage()) {
+            if (itemToInsert instanceof ConsultConnectionMessage && !((ConsultConnectionMessage) itemToInsert).isDisplayMessage()) {
                 return;
-            }*/
+            }
+            if (itemToInsert instanceof SimpleSystemMessage && TextUtils.isEmpty(((SimpleSystemMessage) itemToInsert).getText())) {
+                return;
+            }
             listToInsertTo.add(itemToInsert);
             final Calendar currentTimeStamp = Calendar.getInstance();
             final Calendar prevTimeStamp = Calendar.getInstance();

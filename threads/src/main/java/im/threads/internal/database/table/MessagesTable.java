@@ -167,10 +167,10 @@ public class MessagesTable extends Table {
             insertOrUpdateMessage(sqlHelper, getConsultConnectionMessageCV((ConsultConnectionMessage) chatItem));
             return true;
         }
-        if (chatItem instanceof SimpleSystemMessage) {
+        /*if (chatItem instanceof SimpleSystemMessage) {
             insertOrUpdateMessage(sqlHelper, getSimpleSystemMessageCV((SimpleSystemMessage) chatItem));
             return true;
-        }
+        }*/
         if (chatItem instanceof ConsultPhrase) {
             final ConsultPhrase phrase = (ConsultPhrase) chatItem;
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(phrase));

@@ -43,6 +43,7 @@ public class SimpleSystemMessage implements ChatItem, SystemMessage {
         this.sentAt = sentAt;
     }
 
+    @Override
     public String getText() {
         return text;
     }
