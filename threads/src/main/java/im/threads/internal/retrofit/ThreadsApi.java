@@ -21,7 +21,7 @@ import retrofit2.http.Query;
  */
 public interface ThreadsApi {
 
-    String API_VERSION = "10";
+    String API_VERSION = "11";
 
     @Multipart
     @PUT("files")

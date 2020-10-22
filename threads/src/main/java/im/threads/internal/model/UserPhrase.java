@@ -195,7 +195,7 @@ public final class UserPhrase implements ChatPhrase {
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof UserPhrase) {
-            return this.uuid.equals(((UserPhrase) otherItem).uuid);
+            return ObjectsCompat.equals(this.uuid, ((UserPhrase) otherItem).uuid);
         }
         return false;
     }

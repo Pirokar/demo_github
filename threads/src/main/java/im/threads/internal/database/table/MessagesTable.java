@@ -4,6 +4,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +17,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
@@ -167,10 +169,10 @@ public class MessagesTable extends Table {
             insertOrUpdateMessage(sqlHelper, getConsultConnectionMessageCV((ConsultConnectionMessage) chatItem));
             return true;
         }
-        /*if (chatItem instanceof SimpleSystemMessage) {
+        if (chatItem instanceof SimpleSystemMessage && !TextUtils.isEmpty(((SimpleSystemMessage) chatItem).getUuid())) {
             insertOrUpdateMessage(sqlHelper, getSimpleSystemMessageCV((SimpleSystemMessage) chatItem));
             return true;
-        }*/
+        }
         if (chatItem instanceof ConsultPhrase) {
             final ConsultPhrase phrase = (ConsultPhrase) chatItem;
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(phrase));
@@ -457,7 +459,7 @@ public class MessagesTable extends Table {
     private ContentValues getSimpleSystemMessageCV(SimpleSystemMessage simpleSystemMessage) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_UUID, simpleSystemMessage.getUuid());
-        cv.put(COLUMN_MESSAGE_TYPE, simpleSystemMessage.getType());
+        cv.put(COLUMN_MESSAGE_TYPE, MessageType.SYSTEM_MESSAGE.ordinal());
         cv.put(COLUMN_TIMESTAMP, simpleSystemMessage.getTimeStamp());
         cv.put(COLUMN_PHRASE, simpleSystemMessage.getText());
         return cv;

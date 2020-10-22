@@ -117,7 +117,7 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof ConsultConnectionMessage) {
-            return this.uuid.equals(((ConsultConnectionMessage) otherItem).uuid);
+            return ObjectsCompat.equals(this.uuid, ((ConsultConnectionMessage) otherItem).uuid);
         }
         return false;
     }

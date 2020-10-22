@@ -205,7 +205,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof ConsultPhrase) {
-            return this.uuid.equals(((ConsultPhrase) otherItem).uuid);
+            return ObjectsCompat.equals(this.uuid, ((ConsultPhrase) otherItem).uuid);
         }
         return false;
     }

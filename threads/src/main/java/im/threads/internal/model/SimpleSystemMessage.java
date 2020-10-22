@@ -60,7 +60,7 @@ public class SimpleSystemMessage implements ChatItem, SystemMessage {
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof SimpleSystemMessage) {
-            return this.uuid.equals(((SimpleSystemMessage) otherItem).uuid);
+            return ObjectsCompat.equals(this.uuid, ((SimpleSystemMessage) otherItem).uuid);
         }
         return false;
     }
