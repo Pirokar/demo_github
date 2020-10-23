@@ -1,12 +1,12 @@
 package im.threads.internal.model;
 
-import androidx.core.util.ObjectsCompat;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem {
+import androidx.core.util.ObjectsCompat;
+
+public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem, SystemMessage {
 
     private final String type;
     private final String name;
@@ -19,9 +19,24 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     private String title;
     private String orgUnit;
     private boolean displayMessage;
+    private String text;
 
-    public ConsultConnectionMessage(String uuid, String providerId, List<String> providerIds, String consultId, String type, String name, boolean sex, long date,
-                                    String avatarPath, String status, String title, String orgUnit, boolean displayMessage) {
+    public ConsultConnectionMessage(
+            String uuid,
+            String providerId,
+            List<String> providerIds,
+            String consultId,
+            String type,
+            String name,
+            boolean sex,
+            long date,
+            String avatarPath,
+            String status,
+            String title,
+            String orgUnit,
+            boolean displayMessage,
+            String text
+    ) {
         super(avatarPath, consultId);
         this.uuid = uuid;
         this.providerId = providerId;
@@ -34,6 +49,7 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
         this.title = title;
         this.orgUnit = orgUnit;
         this.displayMessage = displayMessage;
+        this.text = text;
     }
 
     public String getUuid() {
@@ -94,6 +110,10 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
         return displayMessage;
     }
 
+    public String getText() {
+        return text;
+    }
+
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof ConsultConnectionMessage) {
@@ -117,11 +137,12 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
                 ObjectsCompat.equals(name, that.name) &&
                 ObjectsCompat.equals(status, that.status) &&
                 ObjectsCompat.equals(title, that.title) &&
-                ObjectsCompat.equals(orgUnit, that.orgUnit);
+                ObjectsCompat.equals(orgUnit, that.orgUnit) &&
+                ObjectsCompat.equals(text, that.text);
     }
 
     @Override
     public int hashCode() {
-        return ObjectsCompat.hash(uuid, providerId, providerIds, type, name, sex, date, status, title, orgUnit, displayMessage);
+        return ObjectsCompat.hash(uuid, providerId, providerIds, type, name, sex, date, status, title, orgUnit, displayMessage, text);
     }
 }

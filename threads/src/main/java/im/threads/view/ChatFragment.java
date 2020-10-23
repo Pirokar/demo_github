@@ -31,16 +31,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -51,6 +41,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -71,7 +70,6 @@ import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
-import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
@@ -81,6 +79,7 @@ import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
+import im.threads.internal.model.SystemMessage;
 import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
@@ -1829,13 +1828,7 @@ public final class ChatFragment extends BaseFragment implements
         }
 
         @Override
-        public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
-            if (Config.instance.getChatStyle().canShowSpecialistInfo) {
-                Activity activity = getActivity();
-                if (activity != null) {
-                    mChatController.onConsultChoose(activity, consultConnectionMessage.getConsultId());
-                }
-            }
+        public void onSystemMessageClick(SystemMessage systemMessage) {
         }
 
         @Override

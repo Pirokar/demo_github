@@ -10,19 +10,17 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
-import im.threads.ChatStyle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -606,13 +604,6 @@ public final class ChatController {
 
     private List<ChatItem> setLastAvatars(final List<ChatItem> list) {
         for (final ChatItem ci : list) {
-            if (ci instanceof ConsultConnectionMessage) {
-                final ConsultConnectionMessage ccm = (ConsultConnectionMessage) ci;
-                ConsultInfo consultInfo = databaseHolder.getConsultInfo(ccm.getConsultId());
-                if (consultInfo != null) {
-                    ccm.setAvatarPath(consultInfo.getPhotoUrl());
-                }
-            }
             if (ci instanceof ConsultPhrase) {
                 final ConsultPhrase cp = (ConsultPhrase) ci;
                 ConsultInfo consultInfo = databaseHolder.getConsultInfo(cp.getConsultId());

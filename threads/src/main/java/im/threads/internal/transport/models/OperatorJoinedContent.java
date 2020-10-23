@@ -10,6 +10,7 @@ public final class OperatorJoinedContent {
     private Operator operator;
     private List<String> providerIds;
     private boolean display;
+    private String text;
 
     public long getId() {
         return id;
@@ -37,5 +38,9 @@ public final class OperatorJoinedContent {
 
     public boolean isDisplay() {
         return display;
+    }
+
+    public String getText() {
+        return text;
     }
 }
