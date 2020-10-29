@@ -26,6 +26,11 @@ public final class Space implements ChatItem {
     }
 
     @Override
+    public Long getThreadId() {
+        return null;
+    }
+
+    @Override
     public String toString() {
         return "Space{" +
                 "height=" + height +

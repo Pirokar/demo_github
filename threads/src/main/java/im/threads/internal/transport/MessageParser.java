@@ -24,8 +24,8 @@ import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
-import im.threads.internal.model.Survey;
 import im.threads.internal.model.SimpleSystemMessage;
+import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.models.Attachment;
 import im.threads.internal.transport.models.AttachmentSettings;
@@ -120,13 +120,14 @@ public final class MessageParser {
                 shortMessage == null ? null : shortMessage.split(" ")[0],
                 operator.getOrganizationUnit(),
                 content.isDisplay(),
-                content.getText()
+                content.getText(),
+                content.getThreadId()
         );
     }
 
     private static SimpleSystemMessage getSystemMessage(final long sentAt, final JsonObject fullMessage) {
         SystemMessageContent content = Config.instance.gson.fromJson(fullMessage, SystemMessageContent.class);
-        return new SimpleSystemMessage(content.getUuid(), content.getType(), sentAt, content.getText());
+        return new SimpleSystemMessage(content.getUuid(), content.getType(), sentAt, content.getText(), content.getThreadId());
     }
 
     private static ScheduleInfo getScheduleInfo(final JsonObject fullMessage) {
@@ -190,6 +191,7 @@ public final class MessageParser {
                     false,
                     status,
                     gender,
+                    content.getThreadId(),
                     content.getQuickReplies()
             );
         } else {
@@ -197,7 +199,7 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), null, sentAt);
             }
-            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription);
+            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription, content.getThreadId());
             userPhrase.setSentState(MessageState.STATE_SENT);
             return userPhrase;
         }

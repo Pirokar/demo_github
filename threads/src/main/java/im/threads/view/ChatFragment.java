@@ -71,6 +71,7 @@ import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
+import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
@@ -1444,6 +1445,7 @@ public final class ChatFragment extends BaseFragment implements
     public void onStart() {
         super.onStart();
         Config.instance.transport.setLifecycle(getLifecycle());
+        Config.instance.transport.getSettings();
         ChatController.getInstance().loadHistory();
     }
 
@@ -1682,6 +1684,10 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onFileSelected(File file) {
         onFileResult(FileProviderHelper.getUriForFile(requireContext(), file));
+    }
+
+    public void setClientNotificationDisplayType(ClientNotificationDisplayType type) {
+        chatAdapter.setClientNotificationDisplayType(type);
     }
 
     private class QuoteLayoutHolder {

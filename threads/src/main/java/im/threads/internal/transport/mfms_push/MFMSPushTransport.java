@@ -146,8 +146,7 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
                             consultInfo,
                             quoteFilePath,
                             filePath,
-                            PrefUtils.getClientID(),
-                            PrefUtils.getThreadID()
+                            PrefUtils.getClientID()
                     ).toString();
                     return sendMessageMFMSSync(message, false);
                 })

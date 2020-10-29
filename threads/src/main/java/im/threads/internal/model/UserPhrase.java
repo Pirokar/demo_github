@@ -25,8 +25,16 @@ public final class UserPhrase implements ChatPhrase {
     private boolean isCopy = false;
     //для поиска сообщений в чате
     private boolean found;
+    private Long threadId;
 
-    public UserPhrase(String uuid, String providerId, List<String> providerIds, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription, MessageState sentState) {
+    public UserPhrase(String uuid,
+                      String providerId,
+                      List<String> providerIds,
+                      String phrase, Quote mQuote,
+                      long phraseTimeStamp,
+                      FileDescription fileDescription,
+                      MessageState sentState,
+                      Long threadId) {
         this.uuid = uuid;
         this.providerId = providerId;
         this.providerIds = providerIds;
@@ -35,15 +43,26 @@ public final class UserPhrase implements ChatPhrase {
         this.phraseTimeStamp = phraseTimeStamp;
         this.fileDescription = fileDescription;
         this.sentState = sentState;
+        this.threadId = threadId;
     }
 
-    public UserPhrase(String uuid, String providerId, String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
-        this(uuid, providerId, null, phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
+    public UserPhrase(String uuid,
+                      String providerId,
+                      String phrase,
+                      Quote mQuote,
+                      long phraseTimeStamp,
+                      FileDescription fileDescription,
+                      Long threadId) {
+        this(uuid, providerId, null, phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING, threadId);
     }
 
-    public UserPhrase(String phrase, Quote mQuote, long phraseTimeStamp, FileDescription fileDescription) {
+    public UserPhrase(String phrase,
+                      Quote mQuote,
+                      long phraseTimeStamp,
+                      FileDescription fileDescription,
+                      Long threadId) {
         this(UUID.randomUUID().toString(), "tempProviderId: " + UUID.randomUUID().toString(), null,
-                phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING);
+                phrase, mQuote, phraseTimeStamp, fileDescription, MessageState.STATE_SENDING, threadId);
     }
 
     public boolean isCopy() {
@@ -201,6 +220,11 @@ public final class UserPhrase implements ChatPhrase {
     }
 
     @Override
+    public Long getThreadId() {
+        return threadId;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -217,11 +241,12 @@ public final class UserPhrase implements ChatPhrase {
                 ObjectsCompat.equals(mQuote, that.mQuote) &&
                 ObjectsCompat.equals(fileDescription, that.fileDescription) &&
                 ObjectsCompat.equals(ogData, that.ogData) &&
-                ObjectsCompat.equals(ogUrl, that.ogUrl);
+                ObjectsCompat.equals(ogUrl, that.ogUrl) &&
+                ObjectsCompat.equals(threadId, that.threadId);
     }
 
     @Override
     public int hashCode() {
-        return ObjectsCompat.hash(uuid, providerId, providerIds, phrase, sentState, mQuote, phraseTimeStamp, fileDescription, isChosen, isCopy, found, ogData, ogUrl);
+        return ObjectsCompat.hash(uuid, providerId, providerIds, phrase, sentState, mQuote, phraseTimeStamp, fileDescription, isChosen, isCopy, found, ogData, ogUrl, threadId);
     }
 }

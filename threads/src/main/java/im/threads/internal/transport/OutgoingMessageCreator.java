@@ -117,8 +117,7 @@ public final class OutgoingMessageCreator {
                                                      @Nullable ConsultInfo consultInfo,
                                                      @Nullable String quoteMfmsFilePath,
                                                      @Nullable String mfmsFilePath,
-                                                     @Nullable String clientId,
-                                                     @Nullable Long threadId) {
+                                                     @Nullable String clientId) {
         Quote quote = userPhrase.getQuote();
         FileDescription fileDescription = userPhrase.getFileDescription();
         JsonObject formattedMessage = new JsonObject();
@@ -126,9 +125,6 @@ public final class OutgoingMessageCreator {
         formattedMessage.addProperty(MessageAttributes.CLIENT_ID, clientId);
         final String phrase = userPhrase.getPhrase();
         formattedMessage.addProperty(MessageAttributes.TEXT, phrase == null ? "" : phrase);
-        if (threadId != null && threadId != -1) {
-            formattedMessage.addProperty(MessageAttributes.THREAD_ID, String.valueOf(threadId));
-        }
         formattedMessage.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         if (quote != null) {
             JsonArray quotes = new JsonArray();

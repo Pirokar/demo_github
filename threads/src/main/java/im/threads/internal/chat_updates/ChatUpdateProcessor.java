@@ -6,6 +6,7 @@ import java.util.List;
 
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.QuickReply;
 import im.threads.internal.transport.ChatItemProviderData;
 import im.threads.internal.transport.TransportException;
@@ -29,6 +30,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
     private final FlowableProcessor<Boolean> userInputEnableProcessor = PublishProcessor.create();
     private final FlowableProcessor<List<QuickReply>> quickRepliesProcessor = PublishProcessor.create();
+    private final FlowableProcessor<ClientNotificationDisplayType> clientNotificationDisplayTypeProcessor = PublishProcessor.create();
 
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
 
@@ -87,6 +89,10 @@ public class ChatUpdateProcessor {
         quickRepliesProcessor.onNext(quickReplies);
     }
 
+    public void postClientNotificationDisplayType(ClientNotificationDisplayType type) {
+        clientNotificationDisplayTypeProcessor.onNext(type);
+    }
+
     public void postError(@NonNull TransportException error) {
         errorProcessor.onNext(error);
     }
@@ -127,10 +133,6 @@ public class ChatUpdateProcessor {
         return surveySendSuccessProcessor;
     }
 
-    public FlowableProcessor<TransportException> getErrorProcessor() {
-        return errorProcessor;
-    }
-
     public FlowableProcessor<String> getDeviceAddressChangedProcessor() {
         return deviceAddressChangedProcessor;
     }
@@ -143,4 +145,11 @@ public class ChatUpdateProcessor {
         return quickRepliesProcessor;
     }
 
+    public FlowableProcessor<ClientNotificationDisplayType> getClientNotificationDisplayTypeProcessor() {
+        return clientNotificationDisplayTypeProcessor;
+    }
+
+    public FlowableProcessor<TransportException> getErrorProcessor() {
+        return errorProcessor;
+    }
 }

@@ -145,8 +145,7 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                 consultInfo,
                 quoteFilePath,
                 filePath,
-                PrefUtils.getClientID(),
-                PrefUtils.getThreadID()
+                PrefUtils.getClientID()
         );
         sendMessage(content, true, ChatItemType.MESSAGE.name() + CORRELATION_ID_DIVIDER + userPhrase.getUuid());
     }

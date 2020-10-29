@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.util.Pair;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -391,7 +390,6 @@ public final class ChatController {
                         try {
                             final HistoryResponse response = HistoryLoader.getHistorySync(null, false);
                             final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                            count = serverItems.size();
                             saveMessages(serverItems);
                             return setLastAvatars(databaseHolder.getChatItems(currentOffset, count));
                         } catch (final Exception e) {
@@ -677,6 +675,7 @@ public final class ChatController {
         subscribeToRemoveChatItem();
         subscribeToDeviceAddressChanged();
         subscribeToQuickReplies();
+        subscribeToClientNotificationDisplayTypeProcessor();
     }
 
     private void subscribeToTyping() {
@@ -911,7 +910,6 @@ public final class ChatController {
         );
     }
 
-
     private void subscribeToDeviceAddressChanged() {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getDeviceAddressChangedProcessor())
@@ -925,8 +923,20 @@ public final class ChatController {
                 .subscribe(quickReplies -> {
                     hasQuickReplies = !quickReplies.isEmpty();
                     refreshUserInputState();
-                }));
+                })
+        );
+    }
 
+    private void subscribeToClientNotificationDisplayTypeProcessor() {
+        subscribe(ChatUpdateProcessor.getInstance().getClientNotificationDisplayTypeProcessor()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(type -> {
+                            fragment.setClientNotificationDisplayType(type);
+                        },
+                        e -> {
+                            ThreadsLogger.e(TAG, e.getMessage());
+                        })
+        );
     }
 
     private void removeResolveRequest() {
@@ -1044,15 +1054,13 @@ public final class ChatController {
         databaseHolder.putChatItem(survey);
     }
 
-    private UserPhrase convert(@Nullable final UpcomingUserMessage message) {
-        if (message == null) {
-            return new UserPhrase(null, null, System.currentTimeMillis(), null);
-        }
+    private UserPhrase convert(@NonNull final UpcomingUserMessage message) {
         final UserPhrase up = new UserPhrase(
                 message.text,
                 message.quote,
                 System.currentTimeMillis(),
-                message.fileDescription
+                message.fileDescription,
+                null
         );
         up.setCopy(message.copyied);
         return up;

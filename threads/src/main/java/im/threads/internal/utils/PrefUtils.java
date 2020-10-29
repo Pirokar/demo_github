@@ -20,6 +20,7 @@ import java.util.UUID;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
+import im.threads.internal.model.ClientNotificationDisplayType;
 
 public final class PrefUtils {
     private static final String TAG = "PrefUtils ";
@@ -41,6 +42,7 @@ public final class PrefUtils {
     private static final String TRANSPORT_TYPE = "TRANSPORT_TYPE";
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String MIGRATED = "MIGRATED";
+    private static final String CLIENT_NOTIFICATION_DISPLAY_TYPE = "CLIENT_NOTIFICATION_DISPLAY_TYPE";
 
     private static final String UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT";
 
@@ -126,18 +128,17 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static void setThreadId(Long threadId) {
-        if (threadId == null) {
-            throw new IllegalStateException("threadId must not be null");
-        }
-        getDefaultSharedPreferences()
-                .edit()
-                .putLong(TAG_THREAD_ID, threadId)
-                .commit();
+    public static ClientNotificationDisplayType getClientNotificationDisplayType() {
+        return ClientNotificationDisplayType.fromString(
+                getDefaultSharedPreferences().getString(CLIENT_NOTIFICATION_DISPLAY_TYPE, null)
+        );
     }
 
-    public static Long getThreadID() {
-        return getDefaultSharedPreferences().getLong(TAG_THREAD_ID, -1L);
+    public static void setClientNotificationDisplayType(@NonNull ClientNotificationDisplayType type) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(CLIENT_NOTIFICATION_DISPLAY_TYPE, type.name())
+                .commit();
     }
 
     public static boolean isClientIdNotEmpty() {

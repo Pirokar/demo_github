@@ -54,6 +54,7 @@ public class MessagesTable extends Table {
     private static final String COLUMN_DISPLAY_MESSAGE = "COLUMN_DISPLAY_MESSAGE";
     private static final String COLUMN_SURVEY_SENDING_ID = "COLUMN_SURVEY_SENDING_ID";
     private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
+    private static final String COLUMN_THREAD_ID = "COLUMN_THREAD_ID";
 
     private final FileDescriptionsTable fileDescriptionTable;
     private final QuotesTable quotesTable;
@@ -95,6 +96,7 @@ public class MessagesTable extends Table {
                         + ", " + COLUMN_DISPLAY_MESSAGE + " integer"
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
+                        + ", " + COLUMN_THREAD_ID + " integer"
                         + ")",
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_FORMATTED_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
@@ -341,14 +343,16 @@ public class MessagesTable extends Table {
                     cGetString(c, COLUMN_CONSULT_TITLE),
                     cGetString(c, COLUMN_CONSULT_ORG_UNIT),
                     cGetBool(c, COLUMN_DISPLAY_MESSAGE),
-                    cGetString(c, COLUMN_PHRASE)
+                    cGetString(c, COLUMN_PHRASE),
+                    cGetLong(c, COLUMN_THREAD_ID)
             );
         } else if (type == MessageType.SYSTEM_MESSAGE.ordinal()) {
             return new SimpleSystemMessage(
                     cGetString(c, COLUMN_MESSAGE_UUID),
                     cGetString(c, COLUMN_MESSAGE_TYPE),
                     cGetLong(c, COLUMN_TIMESTAMP),
-                    cGetString(c, COLUMN_PHRASE)
+                    cGetString(c, COLUMN_PHRASE),
+                    cGetLong(c, COLUMN_THREAD_ID)
             );
         } else if (type == MessageType.CONSULT_PHRASE.ordinal()) {
             return getConsultPhrase(sqlHelper, c);
@@ -376,6 +380,7 @@ public class MessagesTable extends Table {
                 cGetBool(c, COLUMN_IS_READ),
                 cGetString(c, COLUMN_CONSULT_STATUS),
                 cGetBool(c, COLUMN_SEX),
+                cGetLong(c, COLUMN_THREAD_ID),
                 quickRepliesTable.getQuickReplies(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID))
         );
     }
@@ -389,7 +394,8 @@ public class MessagesTable extends Table {
                 quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
                 cGetLong(c, COLUMN_TIMESTAMP),
                 fileDescriptionTable.getFileDescription(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
-                MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
+                MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
+                cGetLong(c, COLUMN_THREAD_ID)
         );
     }
 
@@ -423,6 +429,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
         cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.getProviderIds()));
         cv.put(COLUMN_SEX, phrase.getSex());
+        cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
         return cv;
     }
 
@@ -435,6 +442,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal());
         cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.getSentState().ordinal());
+        cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
         return cv;
     }
 
@@ -453,6 +461,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_MESSAGE_UUID, consultConnectionMessage.getUuid());
         cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage());
         cv.put(COLUMN_PHRASE, consultConnectionMessage.getText());
+        cv.put(COLUMN_THREAD_ID, consultConnectionMessage.getThreadId());
         return cv;
     }
 
@@ -462,6 +471,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.SYSTEM_MESSAGE.ordinal());
         cv.put(COLUMN_TIMESTAMP, simpleSystemMessage.getTimeStamp());
         cv.put(COLUMN_PHRASE, simpleSystemMessage.getText());
+        cv.put(COLUMN_THREAD_ID, simpleSystemMessage.getThreadId());
         return cv;
     }
 

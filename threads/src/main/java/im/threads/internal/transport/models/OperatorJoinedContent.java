@@ -11,6 +11,7 @@ public final class OperatorJoinedContent {
     private List<String> providerIds;
     private boolean display;
     private String text;
+    private long threadId;
 
     public long getId() {
         return id;
@@ -42,5 +43,9 @@ public final class OperatorJoinedContent {
 
     public String getText() {
         return text;
+    }
+
+    public long getThreadId() {
+        return threadId;
     }
 }

@@ -35,6 +35,11 @@ public final class RequestResolveThread implements ChatItem, Hidable {
     }
 
     @Override
+    public Long getThreadId() {
+        return null;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

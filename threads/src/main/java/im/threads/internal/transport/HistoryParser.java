@@ -26,8 +26,8 @@ import im.threads.internal.model.Operator;
 import im.threads.internal.model.Optional;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
-import im.threads.internal.model.Survey;
 import im.threads.internal.model.SimpleSystemMessage;
+import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.DateHelper;
 import im.threads.internal.utils.ThreadsLogger;
@@ -87,7 +87,7 @@ public final class HistoryParser {
                         break;
                     case OPERATOR_JOINED:
                     case OPERATOR_LEFT:
-                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay(), message.getText()));
+                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay(), message.getText(), message.getThreadId()));
                         break;
                     case SURVEY:
                         Survey survey = getSurveyFromJsonString(message.getText());
@@ -114,13 +114,13 @@ public final class HistoryParser {
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
                             out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, message.getFormattedText(), timeStamp,
-                                    operatorId, photoUrl, message.isRead(), null, false, message.getQuickReplies()));
+                                    operatorId, photoUrl, message.isRead(), null, false, message.getThreadId(), message.getQuickReplies()));
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
                             }
                             MessageState sentState = message.isRead() ? MessageState.STATE_WAS_READ : MessageState.STATE_SENT;
-                            out.add(new UserPhrase(uuid, providerId, providerIds, phraseText, quote, timeStamp, fileDescription, sentState));
+                            out.add(new UserPhrase(uuid, providerId, providerIds, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId()));
                         }
                 }
             }
@@ -162,7 +162,7 @@ public final class HistoryParser {
     }
 
     private static SimpleSystemMessage getSystemMessageFromHistory(MessageFromHistory message) {
-        return new SimpleSystemMessage(message.getUuid(), message.getType(), message.getTimeStamp(), message.getText());
+        return new SimpleSystemMessage(message.getUuid(), message.getType(), message.getTimeStamp(), message.getText(), message.getThreadId());
     }
 
     private static Quote quoteFromList(final List<MessageFromHistory> quotes) {
