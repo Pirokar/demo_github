@@ -15,6 +15,7 @@ import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.utils.FileUtils;
 
 public final class MessageFormatter {
@@ -34,7 +35,7 @@ public final class MessageFormatter {
         boolean isNeedAnswer = false;
         List<ChatItem> unreadMessages = new ArrayList<>();
         for (ChatItem ci : chatItems) {
-            if (ci instanceof ConsultConnectionMessage || ci instanceof ConsultPhrase) {
+            if (ci instanceof ConsultConnectionMessage || ci instanceof ConsultPhrase|| ci instanceof SimpleSystemMessage) {
                 unreadMessages.add(ci);
             }
         }
@@ -45,6 +46,10 @@ public final class MessageFormatter {
                 phrase = ccm.getText();
                 sex = ccm.getSex();
                 avatarPath = ((ConsultConnectionMessage) ci).getAvatarPath();
+            }
+            if (ci instanceof SimpleSystemMessage) {
+                SimpleSystemMessage ccm = (SimpleSystemMessage) ci;
+                phrase = ccm.getText();
             }
             if (ci instanceof ConsultPhrase) {
                 ConsultPhrase consultPhrase = (ConsultPhrase) ci;
