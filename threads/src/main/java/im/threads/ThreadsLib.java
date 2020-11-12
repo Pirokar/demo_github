@@ -5,11 +5,10 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.io.File;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.controllers.UnreadMessagesController;
@@ -25,6 +24,8 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ThreadsLib {
+
+    private static final String TAG = ThreadsLib.class.getSimpleName();
 
     private static ThreadsLib instance;
 
@@ -53,6 +54,7 @@ public final class ThreadsLib {
         ChatController.getInstance();
         Consumer<? super Throwable> errorHandler = RxJavaPlugins.getErrorHandler();
         RxJavaPlugins.setErrorHandler(throwable -> {
+            ThreadsLogger.e(TAG, "global handler: ", throwable);
             if (errorHandler != null) {
                 errorHandler.accept(throwable);
             }
