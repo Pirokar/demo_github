@@ -981,16 +981,15 @@ public final class ChatController {
             handleQuickReplies(Collections.singletonList(consultPhrase));
             Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getUuid()));
         }
-        if (isActive) {
-            subscribe(
-                    Observable.timer(1500, TimeUnit.MILLISECONDS)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(aLong -> {
-                                appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-                                UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
-                            })
-            );
-        }
+        subscribe(
+                Observable.timer(1500, TimeUnit.MILLISECONDS)
+                        .filter(value -> isActive)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aLong -> {
+                            appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
+                            UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+                        })
+        );
         // Если пришло сообщение от оператора,
         // или новое расписание в котором сейчас чат работает
         // - нужно удалить расписание из чата
