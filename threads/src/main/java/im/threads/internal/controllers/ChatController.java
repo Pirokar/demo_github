@@ -10,17 +10,18 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -190,10 +191,15 @@ public final class ChatController {
         } else {
             PrefUtils.setClientId(newClientId);
             instance.subscribe(
-                    Completable.fromAction(() -> instance.onClientIdChanged())
+                    Single.fromCallable(() -> instance.onClientIdChanged())
                             .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    () -> {
+                                    chatItems -> {
+                                        if (instance.fragment != null) {
+                                            instance.fragment.addChatItems(chatItems);
+                                            instance.handleQuickReplies(chatItems);
+                                        }
                                     },
                                     e -> ThreadsLogger.e(TAG, e.getMessage())
                             )
@@ -535,7 +541,7 @@ public final class ChatController {
         return currentScheduleInfo == null || currentScheduleInfo.isChatWorking();
     }
 
-    private void onClientIdChanged() throws Exception {
+    private List<ChatItem> onClientIdChanged() throws Exception {
         cleanAll();
         if (fragment != null) {
             fragment.removeSearching();
@@ -544,16 +550,14 @@ public final class ChatController {
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
         saveMessages(serverItems);
-        final List<ChatItem> chatItems = setLastAvatars(serverItems);
         if (fragment != null) {
-            fragment.addChatItems(chatItems);
-            handleQuickReplies(chatItems);
             final ConsultInfo info = response != null ? response.getConsultInfo() : null;
             if (info != null) {
                 fragment.setStateConsultConnected(info);
             }
         }
         PrefUtils.setClientIdWasSet(true);
+        return setLastAvatars(serverItems);
     }
 
     public void sendInit() {
