@@ -81,7 +81,7 @@ public final class HistoryParser {
                     case AVERAGE_WAIT_TIME:
                     case PARTING_AFTER_SURVEY:
                     case THREAD_CLOSED:
-                    case THREAD_TRANSFERRED:
+                    case THREAD_WILL_BE_REASSIGNED:
                     case THREAD_IN_PROGRESS:
                         out.add(getSystemMessageFromHistory(message));
                         break;
