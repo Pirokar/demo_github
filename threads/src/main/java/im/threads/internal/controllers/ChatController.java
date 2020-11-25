@@ -46,6 +46,7 @@ import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
+import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
@@ -773,11 +774,6 @@ public final class ChatController {
                                                 )
                                         );
                                     }
-                                } else {
-                                    consultWriter.setCurrentConsultLeft();
-                                    if (fragment != null && !consultWriter.isSearchingConsult()) {
-                                        fragment.setTitleStateDefault();
-                                    }
                                 }
                             }
                             if (chatItem instanceof SearchingConsult) {
@@ -786,6 +782,14 @@ public final class ChatController {
                                 }
                                 consultWriter.setSearchingConsult(true);
                                 return;
+                            }
+                            if (chatItem instanceof SimpleSystemMessage) {
+                                if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(((SimpleSystemMessage) chatItem).getType())) {
+                                    consultWriter.setCurrentConsultLeft();
+                                    if (fragment != null && !consultWriter.isSearchingConsult()) {
+                                        fragment.setTitleStateDefault();
+                                    }
+                                }
                             }
                             addMessage(chatItem);
                         })
@@ -995,7 +999,7 @@ public final class ChatController {
         // - нужно удалить расписание из чата
         if (
                 chatItem instanceof ConsultPhrase ||
-                        (chatItem instanceof ConsultConnectionMessage && !ChatItemType.OPERATOR_LEFT.name().equals(((ConsultConnectionMessage) chatItem).getType())) ||
+                        (chatItem instanceof ConsultConnectionMessage && ChatItemType.OPERATOR_JOINED.name().equals(((ConsultConnectionMessage) chatItem).getType())) ||
                         (chatItem instanceof ScheduleInfo && ((ScheduleInfo) chatItem).isChatWorking())
         ) {
             if (fragment != null && fragment.isAdded()) {
