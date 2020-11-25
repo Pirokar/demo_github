@@ -382,7 +382,6 @@ public final class ChatController {
     }
 
     public Observable<List<ChatItem>> requestItems() {
-        ThreadsLogger.i(TAG, "isClientIdSet = " + PrefUtils.isClientIdSet());
         return Observable
                 .fromCallable(() -> {
                     if (instance.fragment != null && PrefUtils.isClientIdNotEmpty()) {
@@ -556,7 +555,6 @@ public final class ChatController {
                 fragment.setStateConsultConnected(info);
             }
         }
-        PrefUtils.setClientIdWasSet(true);
         return setLastAvatars(serverItems);
     }
 
@@ -914,7 +912,7 @@ public final class ChatController {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getDeviceAddressChangedProcessor())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(chatItemType -> onSettingClientId())
+                        .subscribe(chatItemType -> onDeviceAddressChanged())
         );
     }
 
@@ -1057,35 +1055,37 @@ public final class ChatController {
         return up;
     }
 
-    private void onSettingClientId() {
-        ThreadsLogger.i(TAG, "onSettingClientId:");
-        subscribe(
-                Completable.fromAction(() -> {
-                    String newClientId = PrefUtils.getNewClientID();
-                    if (fragment != null && !TextUtils.isEmpty(newClientId)) {
-                        cleanAll();
-                        PrefUtils.setClientId(newClientId);
-                        PrefUtils.setClientIdWasSet(true);
+    private void onDeviceAddressChanged() {
+        ThreadsLogger.i(TAG, "onDeviceAddressChanged:");
+        String clientId = PrefUtils.getClientID();
+        if (fragment != null && !TextUtils.isEmpty(clientId)) {
+            subscribe(
+                    Single.fromCallable(() -> {
                         Config.instance.transport.sendInitChatMessage();
                         Config.instance.transport.sendEnvironmentMessage();
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
                         List<ChatItem> chatItems = HistoryParser.getChatItems(response);
                         saveMessages(chatItems);
-                        setLastAvatars(chatItems);
-                        if (fragment != null) {
-                            fragment.addChatItems(chatItems);
-                            handleQuickReplies(chatItems);
-                            final ConsultInfo info = response != null ? response.getConsultInfo() : null;
-                            if (info != null) {
-                                fragment.setStateConsultConnected(info);
-                            }
-                        }
-                    }
-                })
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(() -> {
-                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
-        );
+                        return new Pair<>(response != null ? response.getConsultInfo() : null, setLastAvatars(chatItems));
+                    })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    pair -> {
+                                        List<ChatItem> chatItems = pair.second;
+                                        if (fragment != null) {
+                                            fragment.addChatItems(chatItems);
+                                            handleQuickReplies(chatItems);
+                                            final ConsultInfo info = pair.first;
+                                            if (info != null) {
+                                                fragment.setStateConsultConnected(info);
+                                            }
+                                        }
+                                    },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
+        }
     }
 
     private void saveMessages(List<ChatItem> chatItems) {
