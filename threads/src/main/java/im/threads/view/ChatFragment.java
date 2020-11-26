@@ -31,6 +31,16 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -41,15 +51,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -1094,7 +1095,7 @@ public final class ChatFragment extends BaseFragment implements
         if (!isAdded()) {
             return;
         }
-        h.postDelayed(
+        h.post(
                 () -> {
                     if (!isInMessageSearchMode) {
                         binding.subtitle.setVisibility(View.VISIBLE);
@@ -1111,13 +1112,12 @@ public final class ChatFragment extends BaseFragment implements
 
                     chatAdapter.removeConsultSearching();
                     showOverflowMenu();
-                },
-                50
+                }
         );
     }
 
     public void setTitleStateDefault() {
-        h.postDelayed(
+        h.post(
                 () -> {
                     if (!isInMessageSearchMode) {
                         binding.subtitle.setVisibility(View.GONE);
@@ -1126,8 +1126,7 @@ public final class ChatFragment extends BaseFragment implements
                         binding.search.setText("");
                         binding.consultName.setText(style.chatTitleTextResId);
                     }
-                },
-                50
+                }
         );
     }
 
@@ -1295,10 +1294,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void setStateSearchingConsult() {
-        h.postDelayed(() -> {
+        h.post(() -> {
             setTitleStateSearchingConsult();
             chatAdapter.setSearchingConsult();
-        }, 50);
+        });
     }
 
     public void removeSearching() {
