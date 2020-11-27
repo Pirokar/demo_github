@@ -208,14 +208,11 @@ public final class ChatController {
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
-//        final ChatItem chatItem = convertRatingItem(survey); //TODO THREADS-3395 Figure out what is this for
         if (!surveyCompletionInProgress) {
             surveyCompletionInProgress = true;
             subscribeToSurveyCompletion();
-            addMessage(survey);
         }
         surveyCompletionProcessor.onNext(survey);
-        addMessage(survey);
     }
 
     public void onResolveThreadClick(final boolean approveResolve) {
@@ -884,14 +881,6 @@ public final class ChatController {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getSurveySendSuccessProcessor())
                         .observeOn(Schedulers.io())
-                        .flatMapMaybe(sendingId -> {
-                            Survey survey = databaseHolder.getSurvey(sendingId);
-                            if (survey == null) {
-                                ThreadsLogger.e(TAG, "survey not found");
-                            }
-                            return Maybe.fromCallable(() -> survey);
-                        })
-                        .delay(Config.instance.surveyCompletionDelay, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(survey -> {
                             surveyCompletionInProgress = false;

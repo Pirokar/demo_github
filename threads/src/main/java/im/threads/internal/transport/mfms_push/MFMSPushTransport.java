@@ -56,7 +56,7 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
                 })
                         .subscribeOn(Schedulers.io())
                         .subscribe(
-                                response -> chatUpdateProcessor.postSurveySendSuccess(survey.getSendingId()),
+                                response -> chatUpdateProcessor.postSurveySendSuccess(survey),
                                 e -> chatUpdateProcessor.postError(new TransportException(e.getMessage()))
                         )
         );
