@@ -69,6 +69,7 @@ import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.MaskedTransformation;
+import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
@@ -105,7 +106,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @NonNull
     private final MaskedTransformation incomingImageMaskTransformation;
     @NonNull
-    private ClientNotificationDisplayType clientNotificationDisplayType = ClientNotificationDisplayType.ALL;
+    private ClientNotificationDisplayType clientNotificationDisplayType;
+
+    private long currentThreadId;
 
     public ChatAdapter(@NonNull final Context ctx, @NonNull final Callback callback) {
         this.ctx = ctx;
@@ -113,6 +116,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.mCallback = callback;
         this.outgoingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.outgoingImageBubbleMask));
         this.incomingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.incomingImageBubbleMask));
+        clientNotificationDisplayType = PrefUtils.getClientNotificationDisplayType();
+        currentThreadId = PrefUtils.getThreadId();
     }
 
     private static int getUnreadCount(final List<ChatItem> list) {
@@ -524,7 +529,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             removeConsultIsTyping();
         }
         ArrayList<ChatItem> newList = new ArrayList<>(list);
-        ChatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType);
+        ChatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ChatDiffCallback(list, newList));
         list.clear();
         list.addAll(newList);
@@ -841,6 +846,11 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         addItems(new ArrayList<>());
     }
 
+    public void setCurrentThreadId(long threadId) {
+        this.currentThreadId = threadId;
+        addItems(new ArrayList<>());
+    }
+
     public interface Callback {
         void onFileClick(FileDescription fileDescription);
 
@@ -865,7 +875,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private static class ChatMessagesOrderer {
 
-        static void addAndOrder(@NonNull final List<ChatItem> listToInsertTo, @NonNull final List<ChatItem> listToAdd, ClientNotificationDisplayType type) {
+        static void addAndOrder(@NonNull final List<ChatItem> listToInsertTo, @NonNull final List<ChatItem> listToAdd, ClientNotificationDisplayType type, long currentThreadId) {
             for (int i = 0; i < listToAdd.size(); i++) {
                 ChatItem currentItem = listToAdd.get(i);
                 int index = indexOf(listToInsertTo, currentItem);
@@ -875,15 +885,15 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     listToInsertTo.set(index, currentItem);
                 }
             }
-            orderAndFilter(listToInsertTo, type);
+            orderAndFilter(listToInsertTo, type, currentThreadId);
         }
 
-        static void orderAndFilter(@NonNull List<ChatItem> items, ClientNotificationDisplayType type) {
+        static void orderAndFilter(@NonNull List<ChatItem> items, ClientNotificationDisplayType type, long currentThreadId) {
             Collections.sort(items, (lhs, rhs) -> Long.compare(lhs.getTimeStamp(), rhs.getTimeStamp()));
             if (items.size() == 0) {
                 return;
             }
-            filter(items, type);
+            filter(items, type, currentThreadId);
             items.add(0, new DateRow(items.get(0).getTimeStamp() - 2));
             final Calendar currentTimeStamp = Calendar.getInstance();
             final Calendar nextTimeStamp = Calendar.getInstance();
@@ -969,18 +979,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             insertSpacing(items);
         }
 
-        private static void filter(@NonNull List<ChatItem> items, ClientNotificationDisplayType type) {
+        private static void filter(@NonNull List<ChatItem> items, ClientNotificationDisplayType type, long currentThreadId) {
             if (type == ClientNotificationDisplayType.ALL) {
                 return;
             }
-            Long currentThreadId = null;
             Set<String> systemMessagesTypes = new HashSet<>();
             for (int i = items.size() - 1; i >= 0; i--) {
                 final ChatItem chatItem = items.get(i);
-                if (currentThreadId == null && chatItem.getThreadId() != null && chatItem.getThreadId() != 0) {
-                    currentThreadId = chatItem.getThreadId();
-                }
-                if (currentThreadId != null && chatItem instanceof SystemMessage) {
+                if (chatItem instanceof SystemMessage) {
                     if (!ObjectsCompat.equals(chatItem.getThreadId(), currentThreadId)) {
                         items.remove(chatItem);
                     }

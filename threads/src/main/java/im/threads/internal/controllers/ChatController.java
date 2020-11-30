@@ -541,6 +541,7 @@ public final class ChatController {
         if (fragment != null) {
             fragment.removeSearching();
         }
+        PrefUtils.setThreadId(-1);
         consultWriter.setCurrentConsultLeft();
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
@@ -757,6 +758,10 @@ public final class ChatController {
                             if (chatItem instanceof ConsultConnectionMessage) {
                                 ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
                                 if (ccm.getType().equalsIgnoreCase(ChatItemType.OPERATOR_JOINED.name())) {
+                                    if (ccm.getThreadId() != null) {
+                                        PrefUtils.setThreadId(ccm.getThreadId());
+                                        fragment.setCurrentThreadId(ccm.getThreadId());
+                                    }
                                     consultWriter.setSearchingConsult(false);
                                     consultWriter.setCurrentConsultInfo(ccm);
                                     if (fragment != null) {
@@ -781,6 +786,7 @@ public final class ChatController {
                             }
                             if (chatItem instanceof SimpleSystemMessage) {
                                 if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(((SimpleSystemMessage) chatItem).getType())) {
+                                    PrefUtils.setThreadId(-1);
                                     consultWriter.setCurrentConsultLeft();
                                     if (fragment != null && !consultWriter.isSearchingConsult()) {
                                         fragment.setTitleStateDefault();
@@ -919,12 +925,10 @@ public final class ChatController {
     private void subscribeToClientNotificationDisplayTypeProcessor() {
         subscribe(ChatUpdateProcessor.getInstance().getClientNotificationDisplayTypeProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(type -> {
-                            fragment.setClientNotificationDisplayType(type);
-                        },
-                        e -> {
-                            ThreadsLogger.e(TAG, e.getMessage());
-                        })
+                .subscribe(
+                        type -> fragment.setClientNotificationDisplayType(type),
+                        e -> ThreadsLogger.e(TAG, e.getMessage())
+                )
         );
     }
 
@@ -1029,6 +1033,7 @@ public final class ChatController {
         if (fragment != null) {
             fragment.cleanChat();
         }
+        PrefUtils.setThreadId(-1);
         consultWriter.setCurrentConsultLeft();
         consultWriter.setSearchingConsult(false);
         appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));

@@ -35,6 +35,7 @@ public final class PrefUtils {
     private static final String EXTRA_DATA = "EXTRA_DATE";
     private static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
     private static final String APP_STYLE = "APP_STYLE";
+    @Deprecated
     private static final String TAG_THREAD_ID = "THREAD_ID";
     private static final String APP_MARKER_KEY = "APP_MARKER";
     private static final String FCM_TOKEN = "FCM_TOKEN";
@@ -43,6 +44,7 @@ public final class PrefUtils {
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String MIGRATED = "MIGRATED";
     private static final String CLIENT_NOTIFICATION_DISPLAY_TYPE = "CLIENT_NOTIFICATION_DISPLAY_TYPE";
+    private static final String THREAD_ID = "THREAD_ID";
 
     private static final String UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT";
 
@@ -130,7 +132,7 @@ public final class PrefUtils {
 
     public static ClientNotificationDisplayType getClientNotificationDisplayType() {
         return ClientNotificationDisplayType.fromString(
-                getDefaultSharedPreferences().getString(CLIENT_NOTIFICATION_DISPLAY_TYPE, null)
+                getDefaultSharedPreferences().getString(CLIENT_NOTIFICATION_DISPLAY_TYPE, "")
         );
     }
 
@@ -138,6 +140,17 @@ public final class PrefUtils {
         getDefaultSharedPreferences()
                 .edit()
                 .putString(CLIENT_NOTIFICATION_DISPLAY_TYPE, type.name())
+                .commit();
+    }
+
+    public static long getThreadId() {
+        return getDefaultSharedPreferences().getLong(THREAD_ID, -1);
+    }
+
+    public static void setThreadId(long threadId) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putLong(THREAD_ID, threadId)
                 .commit();
     }
 

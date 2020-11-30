@@ -1444,6 +1444,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onStart() {
         super.onStart();
+        setCurrentThreadId(PrefUtils.getThreadId());
         Config.instance.transport.setLifecycle(getLifecycle());
         Config.instance.transport.getSettings();
         ChatController.getInstance().loadHistory();
@@ -1688,6 +1689,10 @@ public final class ChatFragment extends BaseFragment implements
 
     public void setClientNotificationDisplayType(ClientNotificationDisplayType type) {
         chatAdapter.setClientNotificationDisplayType(type);
+    }
+
+    public void setCurrentThreadId(long threadId) {
+        chatAdapter.setCurrentThreadId(threadId);
     }
 
     private class QuoteLayoutHolder {
