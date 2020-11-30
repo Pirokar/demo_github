@@ -785,12 +785,20 @@ public final class ChatController {
                                 return;
                             }
                             if (chatItem instanceof SimpleSystemMessage) {
-                                if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(((SimpleSystemMessage) chatItem).getType())) {
+                                final String type = ((SimpleSystemMessage) chatItem).getType();
+                                if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(type)) {
                                     PrefUtils.setThreadId(-1);
                                     consultWriter.setCurrentConsultLeft();
                                     if (fragment != null && !consultWriter.isSearchingConsult()) {
                                         fragment.setTitleStateDefault();
                                     }
+                                }
+                                if (ChatItemType.THREAD_ENQUEUED.name().equalsIgnoreCase(type)) {
+                                    if (fragment != null) {
+                                        fragment.setStateSearchingConsult();
+                                    }
+                                    consultWriter.setSearchingConsult(true);
+                                    return;
                                 }
                             }
                             addMessage(chatItem);
