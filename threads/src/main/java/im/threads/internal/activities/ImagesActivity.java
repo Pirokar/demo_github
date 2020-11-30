@@ -84,7 +84,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
 
     private void initToolbar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
-        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp);
+        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp).mutate();
         ColorsHelper.setDrawableColor(this, d, R.color.threads_attachments_toolbar_text);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         toolbar.setTitle("");

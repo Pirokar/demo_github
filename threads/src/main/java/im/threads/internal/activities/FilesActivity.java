@@ -3,6 +3,7 @@ package im.threads.internal.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -159,7 +160,9 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
         mToolbar.setBackgroundColor(ContextCompat.getColor(this, style.chatToolbarColorResId));
         ((ImageButton) findViewById(R.id.search)).setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
         mSearchEditText.setTextColor(getColorInt(style.chatToolbarTextColorResId));
-        mToolbar.getNavigationIcon().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+        final Drawable navigationIcon = mToolbar.getNavigationIcon();
+        navigationIcon.mutate().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
+        mToolbar.setNavigationIcon(navigationIcon);
         mSearchEditText.setHintTextColor(getColorInt(style.chatToolbarHintTextColor));
     }
 }

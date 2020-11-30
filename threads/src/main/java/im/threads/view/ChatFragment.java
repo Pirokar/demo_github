@@ -1167,7 +1167,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         setTitleStateCurrentOperatorConnected();
-        Drawable d = AppCompatResources.getDrawable(activity, R.drawable.ic_arrow_back_white_24dp);
+        Drawable d = AppCompatResources.getDrawable(activity, R.drawable.ic_arrow_back_white_24dp).mutate();
         ColorsHelper.setDrawableColor(activity, d, style.chatToolbarTextColorResId);
         binding.chatBackButton.setImageDrawable(d);
         ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
