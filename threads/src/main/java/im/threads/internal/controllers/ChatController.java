@@ -747,10 +747,12 @@ public final class ChatController {
                                 currentScheduleInfo = (ScheduleInfo) chatItem;
                                 currentScheduleInfo.calculateServerTimeDiff();
                                 refreshUserInputState();
-                                consultWriter.setSearchingConsult(false);
-                                if (fragment != null) {
-                                    fragment.removeSearching();
-                                    fragment.setTitleStateDefault();
+                                if (!isChatWorking()) {
+                                    consultWriter.setSearchingConsult(false);
+                                    if (fragment != null) {
+                                        fragment.removeSearching();
+                                        fragment.setTitleStateDefault();
+                                    }
                                 }
                             }
                             if (chatItem instanceof ConsultConnectionMessage) {
