@@ -37,8 +37,8 @@ ext {
     androidXSwiperefreshlayout = '1.1.0'
     materialComponentsVersion = '1.2.1'
 
-    firebaseAnalyticsVersion = '17.6.0'
-    firebaseCrashlyticsVersion = '17.2.2'
+    firebaseAnalyticsVersion = '18.0.0'
+    firebaseCrashlyticsVersion = '17.3.0'
 
     okhttpVersion = '3.12.3'
     retrofitVersion = '2.6.4'
