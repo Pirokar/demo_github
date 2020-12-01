@@ -5,10 +5,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import java.io.File;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
+
+import java.io.File;
+
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.controllers.UnreadMessagesController;
@@ -72,6 +74,10 @@ public final class ThreadsLib {
     }
 
     public void initUser(UserInfoBuilder userInfoBuilder) {
+        final String currentClientId = PrefUtils.getClientID();
+        if (currentClientId != null && !ObjectsCompat.equals(currentClientId, userInfoBuilder.clientId)) {
+            logoutClient(currentClientId);
+        }
         PrefUtils.setAppMarker(userInfoBuilder.appMarker);
         PrefUtils.setNewClientId(userInfoBuilder.clientId);
         PrefUtils.setClientIdSignature(userInfoBuilder.clientIdSignature);
