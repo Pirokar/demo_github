@@ -3,6 +3,9 @@ package im.threads.internal.controllers;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.util.List;
+
+import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.UpcomingUserMessage;
@@ -25,18 +28,26 @@ public final class QuickAnswerController extends Fragment {
 
     public void onBind(@NonNull final QuickAnswerActivity activity) {
         ChatController.getInstance().loadHistory();
-        compositeDisposable.add(Single.fromCallable(() -> HistoryParser.getChatItems(HistoryLoader.getHistorySync(100, false)))
-                .doOnSuccess(chatItems -> DatabaseHolder.getInstance().putChatItems(chatItems))
-                .flatMap(items -> DatabaseHolder.getInstance().getLastConsultPhrase())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(consultPhrase -> {
-                    if (consultPhrase != null) {
-                        activity.setLastUnreadMessage(consultPhrase);
-                    }
-                }, e -> {
-
-                })
+        compositeDisposable.add(
+                Single.fromCallable(() -> HistoryParser.getChatItems(HistoryLoader.getHistorySync(100, true)))
+                        .doOnSuccess(chatItems -> {
+                            DatabaseHolder.getInstance().putChatItems(chatItems);
+                            final List<String> uuidList = DatabaseHolder.getInstance().getUnreadMessagesUuid();
+                            if (!uuidList.isEmpty()) {
+                                Config.instance.transport.markMessagesAsRead(uuidList);
+                            }
+                        })
+                        .flatMap(items -> DatabaseHolder.getInstance().getLastConsultPhrase())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                consultPhrase -> {
+                                    if (consultPhrase != null) {
+                                        activity.setLastUnreadMessage(consultPhrase);
+                                    }
+                                },
+                                e -> ThreadsLogger.e(TAG, "onBind", e)
+                        )
         );
     }
 
