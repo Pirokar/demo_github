@@ -785,6 +785,11 @@ public final class ChatController {
                                 return;
                             }
                             if (chatItem instanceof SimpleSystemMessage) {
+                                final Long threadId = chatItem.getThreadId();
+                                if (threadId != null) {
+                                    PrefUtils.setThreadId(threadId);
+                                    fragment.setCurrentThreadId(threadId);
+                                }
                                 final String type = ((SimpleSystemMessage) chatItem).getType();
                                 if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(type)) {
                                     PrefUtils.setThreadId(-1);
@@ -798,7 +803,6 @@ public final class ChatController {
                                         fragment.setStateSearchingConsult();
                                     }
                                     consultWriter.setSearchingConsult(true);
-                                    return;
                                 }
                             }
                             addMessage(chatItem);
