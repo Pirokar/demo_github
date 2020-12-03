@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
 
 import java.io.File;
 
@@ -25,6 +26,8 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ThreadsLib {
+
+    private static final String TAG = ThreadsLib.class.getSimpleName();
 
     private static ThreadsLib instance;
 
@@ -53,6 +56,7 @@ public final class ThreadsLib {
         ChatController.getInstance();
         Consumer<? super Throwable> errorHandler = RxJavaPlugins.getErrorHandler();
         RxJavaPlugins.setErrorHandler(throwable -> {
+            ThreadsLogger.e(TAG, "global handler: ", throwable);
             if (errorHandler != null) {
                 errorHandler.accept(throwable);
             }
@@ -70,6 +74,10 @@ public final class ThreadsLib {
     }
 
     public void initUser(UserInfoBuilder userInfoBuilder) {
+        final String currentClientId = PrefUtils.getClientID();
+        if (currentClientId != null && !ObjectsCompat.equals(currentClientId, userInfoBuilder.clientId)) {
+            logoutClient(currentClientId);
+        }
         PrefUtils.setAppMarker(userInfoBuilder.appMarker);
         PrefUtils.setNewClientId(userInfoBuilder.clientId);
         PrefUtils.setClientIdSignature(userInfoBuilder.clientIdSignature);

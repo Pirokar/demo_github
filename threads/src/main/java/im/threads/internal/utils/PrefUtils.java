@@ -28,6 +28,7 @@ public final class PrefUtils {
     private static final String TAG_CLIENT_ID_ENCRYPTED = "TAG_CLIENT_ID_ENCRYPTED";
     private static final String CLIENT_ID_SIGNATURE_KEY = "CLIENT_ID_SIGNATURE";
     private static final String TAG_NEW_CLIENT_ID = "TAG_NEW_CLIENT_ID";
+    @Deprecated
     private static final String IS_CLIENT_ID_SET_TAG = "IS_CLIENT_ID_SET_TAG";
     private static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
     private static final String EXTRA_DATA = "EXTRA_DATE";
@@ -48,6 +49,10 @@ public final class PrefUtils {
     private PrefUtils() {
     }
 
+    public static String getLastCopyText() {
+        return getDefaultSharedPreferences().getString(LAST_COPY_TEXT, null);
+    }
+
     public static void setLastCopyText(String text) {
         getDefaultSharedPreferences()
                 .edit()
@@ -55,8 +60,8 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static String getLastCopyText() {
-        return getDefaultSharedPreferences().getString(LAST_COPY_TEXT, null);
+    public static String getUserName() {
+        return getDefaultSharedPreferences().getString(CLIENT_NAME, "");
     }
 
     public static void setUserName(String clientName) {
@@ -66,8 +71,8 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static String getUserName() {
-        return getDefaultSharedPreferences().getString(CLIENT_NAME, "");
+    public static String getData() {
+        return getDefaultSharedPreferences().getString(EXTRA_DATA, "");
     }
 
     public static void setData(String data) {
@@ -75,10 +80,6 @@ public final class PrefUtils {
                 .edit()
                 .putString(EXTRA_DATA, data)
                 .commit();
-    }
-
-    public static String getData() {
-        return getDefaultSharedPreferences().getString(EXTRA_DATA, "");
     }
 
     public static void setNewClientId(@NonNull String clientId) {
@@ -114,15 +115,15 @@ public final class PrefUtils {
         return getDefaultSharedPreferences().getBoolean(TAG_CLIENT_ID_ENCRYPTED, false);
     }
 
+    public static String getClientIdSignature() {
+        return getDefaultSharedPreferences().getString(CLIENT_ID_SIGNATURE_KEY, "");
+    }
+
     public static void setClientIdSignature(String clientIdSignature) {
         getDefaultSharedPreferences()
                 .edit()
                 .putString(CLIENT_ID_SIGNATURE_KEY, clientIdSignature)
                 .commit();
-    }
-
-    public static String getClientIdSignature() {
-        return getDefaultSharedPreferences().getString(CLIENT_ID_SIGNATURE_KEY, "");
     }
 
     public static void setThreadId(Long threadId) {
@@ -139,26 +140,8 @@ public final class PrefUtils {
         return getDefaultSharedPreferences().getLong(TAG_THREAD_ID, -1L);
     }
 
-    public static void setClientIdWasSet(boolean isSet) {
-        getDefaultSharedPreferences()
-                .edit()
-                .putBoolean(IS_CLIENT_ID_SET_TAG, isSet)
-                .apply();
-    }
-
-    public static boolean isClientIdSet() {
-        return getDefaultSharedPreferences().getBoolean(IS_CLIENT_ID_SET_TAG, false);
-    }
-
     public static boolean isClientIdNotEmpty() {
         return !getClientID().isEmpty();
-    }
-
-    public static void setIncomingStyle(@NonNull ChatStyle style) {
-        getDefaultSharedPreferences()
-                .edit()
-                .putString(APP_STYLE, Config.instance.gson.toJson(style))
-                .commit();
     }
 
     @Nullable
@@ -176,6 +159,18 @@ public final class PrefUtils {
         return style;
     }
 
+    public static void setIncomingStyle(@NonNull ChatStyle style) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(APP_STYLE, Config.instance.gson.toJson(style))
+                .commit();
+    }
+
+    public static String getAppMarker() {
+        String appMarker = getDefaultSharedPreferences().getString(APP_MARKER_KEY, "");
+        return appMarker.length() > 0 ? appMarker : null;
+    }
+
     public static void setAppMarker(String appMarker) {
         getDefaultSharedPreferences()
                 .edit()
@@ -183,9 +178,9 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static String getAppMarker() {
-        String appMarker = getDefaultSharedPreferences().getString(APP_MARKER_KEY, "");
-        return appMarker.length() > 0 ? appMarker : null;
+    public static String getFcmToken() {
+        String fcmToken = getDefaultSharedPreferences().getString(FCM_TOKEN, "");
+        return fcmToken.length() > 0 ? fcmToken : null;
     }
 
     public static void setFcmToken(String fcmToken) {
@@ -195,9 +190,9 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static String getFcmToken() {
-        String fcmToken = getDefaultSharedPreferences().getString(FCM_TOKEN, "");
-        return fcmToken.length() > 0 ? fcmToken : null;
+    public static String getDeviceAddress() {
+        String deviceAddress = getDefaultSharedPreferences().getString(DEVICE_ADDRESS, "");
+        return deviceAddress.length() > 0 ? deviceAddress : null;
     }
 
     public static void setDeviceAddress(String deviceAddress) {
@@ -205,11 +200,6 @@ public final class PrefUtils {
                 .edit()
                 .putString(DEVICE_ADDRESS, deviceAddress)
                 .commit();
-    }
-
-    public static String getDeviceAddress() {
-        String deviceAddress = getDefaultSharedPreferences().getString(DEVICE_ADDRESS, "");
-        return deviceAddress.length() > 0 ? deviceAddress : null;
     }
 
     public static synchronized String getDeviceUid() {
@@ -269,7 +259,7 @@ public final class PrefUtils {
     private static void resetPushToken() {
         new Thread(() -> {
             try {
-                String senderId = CommonUtils.getStringResourceByName( Config.instance.context, "gcm_defaultSenderId");
+                String senderId = CommonUtils.getStringResourceByName(Config.instance.context, "gcm_defaultSenderId");
                 FirebaseInstanceId.getInstance().deleteToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE);
                 setFcmToken(null);
                 setFcmToken(FirebaseInstanceId.getInstance().getToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE));
@@ -277,13 +267,6 @@ public final class PrefUtils {
                 ThreadsLogger.w(TAG, "resetPushToken failed: ", e);
             }
         }).start();
-    }
-
-    private static void setTransportType(String transportType) {
-        getDefaultSharedPreferences()
-                .edit()
-                .putString(TRANSPORT_TYPE, transportType)
-                .commit();
     }
 
     public static int getUnreadPushCount() {
@@ -297,6 +280,13 @@ public final class PrefUtils {
     private static String getTransportType() {
         String transportType = getDefaultSharedPreferences().getString(TRANSPORT_TYPE, "");
         return transportType.length() > 0 ? transportType : null;
+    }
+
+    private static void setTransportType(String transportType) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(TRANSPORT_TYPE, transportType)
+                .commit();
     }
 
     private static SharedPreferences getDefaultSharedPreferences() {

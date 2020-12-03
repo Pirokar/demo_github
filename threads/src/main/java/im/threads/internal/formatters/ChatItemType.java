@@ -6,8 +6,6 @@ public enum ChatItemType {
     TYPING,
     ATTACHMENT_SETTINGS,
     // incoming
-    OPERATOR_JOINED,
-    OPERATOR_LEFT,
     SCHEDULE,
     SURVEY,
     REQUEST_CLOSE_THREAD,
@@ -16,12 +14,22 @@ public enum ChatItemType {
     NONE,
     MESSAGES_READ,
     REMOVE_PUSHES,
-    THREAD_CLOSED,
     UNREAD_MESSAGE_NOTIFICATION,
-    OPERATOR_LOOKUP_STARTED,
     CLIENT_BLOCKED,
     SCENARIO,
     CHAT_PUSH,
+    //system
+    THREAD_ENQUEUED,
+    AVERAGE_WAIT_TIME,
+    PARTING_AFTER_SURVEY,
+    OPERATOR_JOINED,
+    THREAD_CLOSED,
+    THREAD_TRANSFERRED,
+    THREAD_IN_PROGRESS,
+    @Deprecated
+    OPERATOR_LEFT,
+    @Deprecated
+    OPERATOR_LOOKUP_STARTED,
 
     // outgoing
     INIT_CHAT,
@@ -43,5 +51,3 @@ public enum ChatItemType {
         }
     }
 }
-
-

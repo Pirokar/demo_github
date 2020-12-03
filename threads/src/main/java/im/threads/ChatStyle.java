@@ -1,5 +1,7 @@
 package im.threads;
 
+import android.view.Gravity;
+
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
@@ -225,7 +227,18 @@ public final class ChatStyle implements Serializable {
     public int welcomeScreenTitleSizeInSp = R.dimen.threads_welcome_screen_title;
     public int welcomeScreenSubtitleSizeInSp = R.dimen.threads_welcome_screen_subtitle;
 
-    // set can show specialist onfo
+    // system messages
+    @DimenRes
+    public int systemMessageTextSize = R.dimen.threads_system_message_text_size;
+    @ColorRes
+    public int systemMessageTextColorResId = R.color.threads_chat_new_system_message;
+    @DimenRes
+    public int systemMessageLeftRightPadding = R.dimen.threads_system_message_left_right_padding;
+    public int systemMessageTextGravity = Gravity.CENTER;
+    @ColorRes
+    public int systemMessageLinkColor = R.color.threads_system_message_link;
+
+    // set can show specialist info
     public boolean canShowSpecialistInfo = true;
 
     public boolean useExternalCameraApp = true;
@@ -271,6 +284,8 @@ public final class ChatStyle implements Serializable {
     public String typingFont;
     @Nullable
     public String scheduleAlertFont;
+    @Nullable
+    public String systemMessageFont;
 
     // Конфигурации markdown в сообщениях
     public MarkdownConfiguration incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
@@ -414,8 +429,21 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    public ChatStyle setSystemMessageFont(final String path) {
+        this.systemMessageFont = path;
+        return this;
+    }
+
     public ChatStyle setInputEnabledDuringQuickReplies(final boolean inputEnabledDuringQuickReplies) {
         this.inputEnabledDuringQuickReplies = inputEnabledDuringQuickReplies;
+        return this;
+    }
+    
+    /**
+     * @see android.view.Gravity
+     */
+    public ChatStyle setSystemMessageTextGravity(final int systemMessageTextGravity) {
+        this.systemMessageTextGravity = systemMessageTextGravity;
         return this;
     }
 
@@ -600,7 +628,6 @@ public final class ChatStyle implements Serializable {
             @StringRes final int inputHint,
             @DimenRes final int inputHeight,
             @DrawableRes final int inputBackground) {
-
         this.chatMessageInputColor = chatMessageInputColor;
         this.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
         this.inputTextColor = inputTextColor;
@@ -770,4 +797,34 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+
+
+
+    /**
+     * Default values:
+     *
+     * @param systemMessageFont             - setSystemMessageFont(String path)
+     * @param systemMessageTextSize         - R.dimen.threads_system_message_text_size
+     * @param systemMessageTextColorResId   - R.color.threads_chat_new_system_message
+     * @param systemMessageLeftRightPadding - R.dimen.threads_system_message_left_right_padding
+     * @param systemMessageTextGravity      - Gravity.CENTER
+     * @param systemMessageLinkColor        - R.color.threads_system_message_link
+     * @return Builder
+     */
+    public ChatStyle setSystemMessageStyle(
+            final String systemMessageFont,
+            @DimenRes final int systemMessageTextSize,
+            @ColorRes final int systemMessageTextColorResId,
+            @DimenRes final int systemMessageLeftRightPadding,
+            final int systemMessageTextGravity,
+            @ColorRes final int systemMessageLinkColor
+            ) {
+        this.systemMessageFont = systemMessageFont;
+        this.systemMessageTextSize = systemMessageTextSize;
+        this.systemMessageTextColorResId = systemMessageTextColorResId;
+        this.systemMessageLeftRightPadding = systemMessageLeftRightPadding;
+        this.systemMessageTextGravity = systemMessageTextGravity;
+        this.systemMessageLinkColor = systemMessageLinkColor;
+        return this;
+    }
 }

@@ -71,7 +71,6 @@ import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
-import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
@@ -81,6 +80,7 @@ import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
+import im.threads.internal.model.SystemMessage;
 import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
@@ -1095,7 +1095,7 @@ public final class ChatFragment extends BaseFragment implements
         if (!isAdded()) {
             return;
         }
-        h.postDelayed(
+        h.post(
                 () -> {
                     if (!isInMessageSearchMode) {
                         binding.subtitle.setVisibility(View.VISIBLE);
@@ -1112,13 +1112,12 @@ public final class ChatFragment extends BaseFragment implements
 
                     chatAdapter.removeConsultSearching();
                     showOverflowMenu();
-                },
-                50
+                }
         );
     }
 
     public void setTitleStateDefault() {
-        h.postDelayed(
+        h.post(
                 () -> {
                     if (!isInMessageSearchMode) {
                         binding.subtitle.setVisibility(View.GONE);
@@ -1127,8 +1126,7 @@ public final class ChatFragment extends BaseFragment implements
                         binding.search.setText("");
                         binding.consultName.setText(style.chatTitleTextResId);
                     }
-                },
-                50
+                }
         );
     }
 
@@ -1168,7 +1166,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         setTitleStateCurrentOperatorConnected();
-        Drawable d = AppCompatResources.getDrawable(activity, R.drawable.ic_arrow_back_white_24dp);
+        Drawable d = AppCompatResources.getDrawable(activity, R.drawable.ic_arrow_back_white_24dp).mutate();
         ColorsHelper.setDrawableColor(activity, d, style.chatToolbarTextColorResId);
         binding.chatBackButton.setImageDrawable(d);
         ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
@@ -1296,10 +1294,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void setStateSearchingConsult() {
-        h.postDelayed(() -> {
+        h.post(() -> {
             setTitleStateSearchingConsult();
             chatAdapter.setSearchingConsult();
-        }, 50);
+        });
     }
 
     public void removeSearching() {
@@ -1829,13 +1827,7 @@ public final class ChatFragment extends BaseFragment implements
         }
 
         @Override
-        public void onConsultConnectionClick(ConsultConnectionMessage consultConnectionMessage) {
-            if (Config.instance.getChatStyle().canShowSpecialistInfo) {
-                Activity activity = getActivity();
-                if (activity != null) {
-                    mChatController.onConsultChoose(activity, consultConnectionMessage.getConsultId());
-                }
-            }
+        public void onSystemMessageClick(SystemMessage systemMessage) {
         }
 
         @Override
