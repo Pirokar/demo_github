@@ -9,6 +9,9 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -201,7 +204,9 @@ public class MessagesTable extends Table {
             return true;
         }
         if (chatItem instanceof Survey) {
-            insertOrUpdateSurvey(sqlHelper, (Survey) chatItem);
+            final Survey survey = (Survey) chatItem;
+            setOldSurveyDisplayMessageToFalse(sqlHelper, survey.getSendingId());
+            insertOrUpdateSurvey(sqlHelper, survey);
         }
         return false;
     }
@@ -325,6 +330,13 @@ public class MessagesTable extends Table {
         return new ArrayList<>(ids);
     }
 
+    public int setOldSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_DISPLAY_MESSAGE, false);
+        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal();
+        return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
+    }
+
     @Nullable
     private ChatItem getChatItem(SQLiteOpenHelper sqlHelper, Cursor c) {
         int type = cGetInt(c, COLUMN_MESSAGE_TYPE);
@@ -407,7 +419,7 @@ public class MessagesTable extends Table {
                 cGetLong(c, COLUMN_TIMESTAMP),
                 MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
         );
-        if (survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis()) {
+        if (!cGetBool(c, COLUMN_DISPLAY_MESSAGE) || survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis()) {
             return null;
         }
         survey.setQuestions(Collections.singletonList(questionsTable.getQuestion(sqlHelper, surveySendingId)));
@@ -505,6 +517,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
         cv.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
         cv.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
+        cv.put(COLUMN_DISPLAY_MESSAGE, true);
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
             if (c.getCount() > 0) {
                 sqlHelper.getWritableDatabase().update(
@@ -520,6 +533,14 @@ public class MessagesTable extends Table {
         for (QuestionDTO question : survey.getQuestions()) {
             questionsTable.putQuestion(sqlHelper, question, survey.getSendingId());
         }
+    }
+
+    private void setOldSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper, long currentSurveySendingId) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_DISPLAY_MESSAGE, false);
+        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() +
+                " and " + COLUMN_SURVEY_SENDING_ID + " != ?";
+        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{String.valueOf(currentSurveySendingId)});
     }
 
     private List<String> stringToList(String text) {

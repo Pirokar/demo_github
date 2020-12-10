@@ -112,6 +112,11 @@ public final class DatabaseHolder {
         return mMyOpenHelper.getSurvey(sendingId);
     }
 
+    public Completable setOldSurveyDisplayMessageToFalse() {
+        return Completable.fromCallable(mMyOpenHelper::setOldSurveyDisplayMessageToFalse)
+                .subscribeOn(Schedulers.io());
+    }
+
     // Messages
     public int getMessagesCount() {
         return mMyOpenHelper.getMessagesCount();

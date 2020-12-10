@@ -34,6 +34,7 @@ public interface DBHelper {
     void setConsultMessageWasRead(String providerId);
 
     Survey getSurvey(long sendingId);
+    int setOldSurveyDisplayMessageToFalse();
 
     int getMessagesCount();
     int getUnreadMessagesCount();

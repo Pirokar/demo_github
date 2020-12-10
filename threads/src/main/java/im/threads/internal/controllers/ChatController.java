@@ -956,6 +956,13 @@ public final class ChatController {
     private void removeActiveSurvey() {
         ThreadsLogger.i(TAG, "removeActiveSurvey");
         if (activeSurvey != null && fragment != null) {
+            subscribe(
+                    databaseHolder.setOldSurveyDisplayMessageToFalse()
+                            .subscribe(
+                                    () -> ThreadsLogger.i(TAG, "setOldSurveyDisplayMessageToFalse"),
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
+                            )
+            );
             fragment.removeSurvey(activeSurvey.getSendingId());
             resetActiveSurvey();
         }
