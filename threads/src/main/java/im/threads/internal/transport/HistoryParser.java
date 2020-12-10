@@ -26,6 +26,7 @@ import im.threads.internal.model.Operator;
 import im.threads.internal.model.Optional;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
+import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
@@ -101,6 +102,9 @@ public final class HistoryParser {
                         break;
                     case SURVEY_QUESTION_ANSWER:
                         out.add(getCompletedSurveyFromHistory(message));
+                        break;
+                    case REQUEST_CLOSE_THREAD:
+                        out.add(new RequestResolveThread(uuid, message.getHideAfter(), timeStamp, message.getThreadId()));
                         break;
                     default:
                         final String phraseText = message.getText();

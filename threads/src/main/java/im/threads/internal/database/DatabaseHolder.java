@@ -1,10 +1,9 @@
 package im.threads.internal.database;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
@@ -117,6 +116,11 @@ public final class DatabaseHolder {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Completable setOldRequestResolveThreadDisplayMessageToFalse() {
+        return Completable.fromCallable(mMyOpenHelper::setOldRequestResolveThreadDisplayMessageToFalse)
+                .subscribeOn(Schedulers.io());
+    }
+
     // Messages
     public int getMessagesCount() {
         return mMyOpenHelper.getMessagesCount();
@@ -140,6 +144,5 @@ public final class DatabaseHolder {
     ThreadsDbHelper getMyOpenHelper() {
         return mMyOpenHelper;
     }
-
 
 }

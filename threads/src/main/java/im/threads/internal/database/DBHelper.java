@@ -35,6 +35,7 @@ public interface DBHelper {
 
     Survey getSurvey(long sendingId);
     int setOldSurveyDisplayMessageToFalse();
+    int setOldRequestResolveThreadDisplayMessageToFalse();
 
     int getMessagesCount();
     int getUnreadMessagesCount();

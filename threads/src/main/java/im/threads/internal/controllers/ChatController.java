@@ -10,17 +10,16 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -107,7 +106,6 @@ public final class ChatController {
     // Для приема сообщений из сервиса по скачиванию файлов
     private ProgressReceiver progressReceiver;
     // this flag is keeping the visibility state of the request to resolve thread
-    private boolean isResolveRequestVisible;
 
     // keep an active and visible for user survey id
     private Survey activeSurvey = null;
@@ -740,9 +738,6 @@ public final class ChatController {
                                 activeSurvey = (Survey) chatItem;
                                 Config.instance.transport.sendRatingReceived(activeSurvey.getSendingId());
                             }
-                            if (chatItem instanceof RequestResolveThread) {
-                                isResolveRequestVisible = true;
-                            }
                             if (chatItem instanceof ScheduleInfo) {
                                 currentScheduleInfo = (ScheduleInfo) chatItem;
                                 currentScheduleInfo.calculateServerTimeDiff();
@@ -946,23 +941,28 @@ public final class ChatController {
 
     private void removeResolveRequest() {
         ThreadsLogger.i(TAG, "removeResolveRequest");
-        if (isResolveRequestVisible && fragment != null) {
+        subscribe(
+                databaseHolder.setOldRequestResolveThreadDisplayMessageToFalse()
+                        .subscribe(
+                                () -> ThreadsLogger.i(TAG, "removeResolveRequest"),
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
+        if (fragment != null) {
             fragment.removeResolveRequest();
-            isResolveRequestVisible = false;
         }
-        ThreadsLogger.i(TAG, "removeResolveRequest: " + isResolveRequestVisible);
     }
 
     private void removeActiveSurvey() {
         ThreadsLogger.i(TAG, "removeActiveSurvey");
+        subscribe(
+                databaseHolder.setOldSurveyDisplayMessageToFalse()
+                        .subscribe(
+                                () -> ThreadsLogger.i(TAG, "setOldSurveyDisplayMessageToFalse"),
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
         if (activeSurvey != null && fragment != null) {
-            subscribe(
-                    databaseHolder.setOldSurveyDisplayMessageToFalse()
-                            .subscribe(
-                                    () -> ThreadsLogger.i(TAG, "setOldSurveyDisplayMessageToFalse"),
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
-                            )
-            );
             fragment.removeSurvey(activeSurvey.getSendingId());
             resetActiveSurvey();
         }

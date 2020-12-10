@@ -153,6 +153,10 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
         return messagesTable.setOldSurveyDisplayMessageToFalse(this);
     }
 
+    @Override
+    public int setOldRequestResolveThreadDisplayMessageToFalse() {
+        return messagesTable.setOldRequestResolveThreadDisplayMessageToFalse(this);
+    }
 
     @Override
     public int getMessagesCount() {

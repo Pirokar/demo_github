@@ -61,9 +61,9 @@ public final class MessageParser {
             case SCHEDULE:
                 return getScheduleInfo(fullMessage);
             case SURVEY:
-                return getRating(sentAt, fullMessage);
+                return getSurvey(sentAt, fullMessage);
             case REQUEST_CLOSE_THREAD:
-                return getRequestResolveThread(fullMessage);
+                return getRequestResolveThread(sentAt, fullMessage);
             case OPERATOR_LOOKUP_STARTED:
                 return new SearchingConsult();
             case NONE:
@@ -137,7 +137,7 @@ public final class MessageParser {
         return scheduleInfo;
     }
 
-    private static Survey getRating(final long sentAt, final JsonObject fullMessage) {
+    private static Survey getSurvey(final long sentAt, final JsonObject fullMessage) {
         TextContent content = Config.instance.gson.fromJson(fullMessage, TextContent.class);
         Survey survey = Config.instance.gson.fromJson(content.getText(), Survey.class);
         survey.setPhraseTimeStamp(sentAt);
@@ -148,9 +148,9 @@ public final class MessageParser {
         return survey;
     }
 
-    private static RequestResolveThread getRequestResolveThread(final JsonObject fullMessage) {
+    private static RequestResolveThread getRequestResolveThread(final long sentAt, final JsonObject fullMessage) {
         RequestResolveThreadContent content = Config.instance.gson.fromJson(fullMessage, RequestResolveThreadContent.class);
-        return content.getHideAfter() > 0 ? new RequestResolveThread(content.getHideAfter(), System.currentTimeMillis()) : null;
+        return new RequestResolveThread(content.getUuid(), content.getHideAfter(), sentAt, content.getThreadId());
     }
 
     @Nullable
