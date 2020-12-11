@@ -10,16 +10,17 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -41,7 +42,6 @@ import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
-import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.SimpleSystemMessage;
@@ -810,9 +810,6 @@ public final class ChatController {
                                 hidable -> {
                                     if (hidable instanceof Survey) {
                                         removeActiveSurvey();
-                                    }
-                                    if (hidable instanceof RequestResolveThread) {
-                                        removeResolveRequest();
                                     }
                                 },
                                 e -> ThreadsLogger.e(TAG, e.getMessage())

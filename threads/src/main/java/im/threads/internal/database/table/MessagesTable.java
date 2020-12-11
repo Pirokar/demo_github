@@ -446,7 +446,7 @@ public class MessagesTable extends Table {
                 cGetLong(c, COLUMN_TIMESTAMP),
                 cGetLong(c, COLUMN_THREAD_ID)
         );
-        if (!cGetBool(c, COLUMN_DISPLAY_MESSAGE) || requestResolveThread.getHideAfter() * 1000 + requestResolveThread.getTimeStamp() <= System.currentTimeMillis()) {
+        if (!cGetBool(c, COLUMN_DISPLAY_MESSAGE)) {
             return null;
         }
         return requestResolveThread;

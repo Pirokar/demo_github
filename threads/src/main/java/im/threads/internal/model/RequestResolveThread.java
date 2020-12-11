@@ -2,7 +2,7 @@ package im.threads.internal.model;
 
 import androidx.core.util.ObjectsCompat;
 
-public final class RequestResolveThread implements ChatItem, Hidable {
+public final class RequestResolveThread implements ChatItem {
     private String uuid;
     private Long hideAfter;
     private long phraseTimeStamp;
@@ -19,7 +19,6 @@ public final class RequestResolveThread implements ChatItem, Hidable {
         return uuid;
     }
 
-    @Override
     public Long getHideAfter() {
         return hideAfter;
     }
