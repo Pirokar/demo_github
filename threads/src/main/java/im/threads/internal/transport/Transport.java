@@ -12,6 +12,7 @@ import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
+import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.SettingsResponse;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
@@ -39,10 +40,7 @@ public abstract class Transport {
                                 () -> {
                                     ThreadsLogger.i(TAG, "messagesAreRead : " + uuidList);
                                     for(String messageId: uuidList) {
-                                        ChatItem chatItem = DatabaseHolder.getInstance().getChatItem(messageId);
-                                        if (chatItem instanceof ConsultPhrase) {
-                                            chatUpdateProcessor.postConsultMessageWasRead(((ConsultPhrase) chatItem).getProviderId());
-                                        }
+                                        chatUpdateProcessor.postIncomingMessageWasRead(messageId);
                                     }
                                 },
                                 e -> {
@@ -101,7 +99,7 @@ public abstract class Transport {
      */
     public abstract void sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, final String filePath, final String quoteFilePath);
 
-    public abstract void sendRatingReceived(long sendingId);
+    public abstract void sendRatingReceived(Survey survey);
 
     public abstract void sendClientOffline(String clientId);
 

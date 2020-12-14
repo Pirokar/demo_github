@@ -93,6 +93,7 @@ public final class HistoryParser {
                     case SURVEY:
                         Survey survey = getSurveyFromJsonString(message.getText());
                         if (survey != null) {
+                            survey.setRead(message.isRead());
                             survey.setPhraseTimeStamp(message.getTimeStamp());
                             for (final QuestionDTO questionDTO : survey.getQuestions()) {
                                 questionDTO.setPhraseTimeStamp(message.getTimeStamp());
@@ -104,7 +105,7 @@ public final class HistoryParser {
                         out.add(getCompletedSurveyFromHistory(message));
                         break;
                     case REQUEST_CLOSE_THREAD:
-                        out.add(new RequestResolveThread(uuid, message.getHideAfter(), timeStamp, message.getThreadId()));
+                        out.add(new RequestResolveThread(uuid, message.getHideAfter(), timeStamp, message.getThreadId(), message.isRead()));
                         break;
                     default:
                         final String phraseText = message.getText();
@@ -141,6 +142,7 @@ public final class HistoryParser {
             final long time = new Date().getTime();
             survey.setPhraseTimeStamp(time);
             survey.setSentState(MessageState.STATE_NOT_SENT);
+            survey.setDisplayMessage(true);
             for (final QuestionDTO questionDTO : survey.getQuestions()) {
                 questionDTO.setPhraseTimeStamp(time);
             }
@@ -152,7 +154,7 @@ public final class HistoryParser {
     }
 
     private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
-        Survey survey = new Survey(message.getSendingId(), message.getTimeStamp(), MessageState.STATE_WAS_READ);
+        Survey survey = new Survey(message.getUuid(), message.getSendingId(), message.getTimeStamp(), MessageState.STATE_WAS_READ, message.isRead(), message.isDisplay());
         QuestionDTO question = new QuestionDTO();
         question.setId(message.getQuestionId());
         question.setPhraseTimeStamp(message.getTimeStamp());

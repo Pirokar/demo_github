@@ -47,7 +47,7 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
                     for(String readId: readMessagesIds) {
                         UserPhrase userPhrase = (UserPhrase) DatabaseHolder.getInstance().getChatItem(readId);
                         if (userPhrase != null) {
-                            ChatUpdateProcessor.getInstance().postUserMessageWasRead(userPhrase.getProviderId());
+                            ChatUpdateProcessor.getInstance().postOutgoingMessageWasRead(userPhrase.getProviderId());
                         }
                     }
                     break;

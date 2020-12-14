@@ -165,11 +165,11 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
     }
 
     @Override
-    public void sendRatingReceived(long sendingId) {
+    public void sendRatingReceived(Survey survey) {
         subscribe(
                 Completable.fromAction(() -> {
                     final String message = OutgoingMessageCreator.createRatingReceivedMessage(
-                            sendingId,
+                            survey.getSendingId(),
                             PrefUtils.getClientID()
                     ).toString();
                     sendMessageMFMSSync(message, true);

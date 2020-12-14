@@ -18,6 +18,7 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     private List<String> providerIds;
     private String title;
     private String orgUnit;
+    @SerializedName("display")
     private boolean displayMessage;
     private String text;
     private final Long threadId;
@@ -108,7 +109,6 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
         return date;
     }
 
-    @SerializedName("display")
     public boolean isDisplayMessage() {
         return displayMessage;
     }

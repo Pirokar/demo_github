@@ -2,14 +2,13 @@ package im.threads.internal.transport;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
@@ -33,6 +32,7 @@ import im.threads.internal.transport.models.MessageContent;
 import im.threads.internal.transport.models.Operator;
 import im.threads.internal.transport.models.OperatorJoinedContent;
 import im.threads.internal.transport.models.RequestResolveThreadContent;
+import im.threads.internal.transport.models.SurveyContent;
 import im.threads.internal.transport.models.SystemMessageContent;
 import im.threads.internal.transport.models.TextContent;
 
@@ -138,10 +138,13 @@ public final class MessageParser {
     }
 
     private static Survey getSurvey(final long sentAt, final JsonObject fullMessage) {
-        TextContent content = Config.instance.gson.fromJson(fullMessage, TextContent.class);
+        SurveyContent content = Config.instance.gson.fromJson(fullMessage, SurveyContent.class);
         Survey survey = Config.instance.gson.fromJson(content.getText(), Survey.class);
+        survey.setUuid(content.getUuid());
         survey.setPhraseTimeStamp(sentAt);
         survey.setSentState(MessageState.STATE_NOT_SENT);
+        survey.setDisplayMessage(true);
+        survey.setRead(false);
         for (final QuestionDTO questionDTO : survey.getQuestions()) {
             questionDTO.setPhraseTimeStamp(sentAt);
         }
@@ -150,7 +153,7 @@ public final class MessageParser {
 
     private static RequestResolveThread getRequestResolveThread(final long sentAt, final JsonObject fullMessage) {
         RequestResolveThreadContent content = Config.instance.gson.fromJson(fullMessage, RequestResolveThreadContent.class);
-        return new RequestResolveThread(content.getUuid(), content.getHideAfter(), sentAt, content.getThreadId());
+        return new RequestResolveThread(content.getUuid(), content.getHideAfter(), sentAt, content.getThreadId(), false);
     }
 
     @Nullable

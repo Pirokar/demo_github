@@ -136,12 +136,12 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
 
     @Override
     public int setAllConsultMessagesWereRead() {
-        return messagesTable.setAllConsultMessagesWereRead(this);
+        return messagesTable.setAllMessagesWereRead(this);
     }
 
     @Override
-    public void setConsultMessageWasRead(String providerId) {
-        messagesTable.setConsultMessageWasRead(this, providerId);
+    public void setMessageWasRead(String uuid) {
+        messagesTable.setMessageWasRead(this, uuid);
     }
     @Override
     public Survey getSurvey(long sendingId) {

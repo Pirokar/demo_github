@@ -101,8 +101,8 @@ public final class DatabaseHolder {
                 .subscribeOn(Schedulers.io());
     }
 
-    public void setConsultMessageWasRead(String providerId) {
-        mMyOpenHelper.setConsultMessageWasRead(providerId);
+    public void setMessageWasRead(String uuid) {
+        mMyOpenHelper.setMessageWasRead(uuid);
     }
 
     // Survey
