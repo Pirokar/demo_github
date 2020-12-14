@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.util.Pair;
@@ -46,6 +47,7 @@ import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.Survey;
+import im.threads.internal.model.SystemMessage;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.FileDownloadService;
@@ -539,8 +541,6 @@ public final class ChatController {
         if (fragment != null) {
             fragment.removeSearching();
         }
-        PrefUtils.setThreadId(-1);
-        consultWriter.setCurrentConsultLeft();
         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
         final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
         saveMessages(serverItems);
@@ -751,26 +751,7 @@ public final class ChatController {
                                 }
                             }
                             if (chatItem instanceof ConsultConnectionMessage) {
-                                ConsultConnectionMessage ccm = (ConsultConnectionMessage) chatItem;
-                                if (ccm.getType().equalsIgnoreCase(ChatItemType.OPERATOR_JOINED.name())) {
-                                    if (ccm.getThreadId() != null) {
-                                        PrefUtils.setThreadId(ccm.getThreadId());
-                                        fragment.setCurrentThreadId(ccm.getThreadId());
-                                    }
-                                    consultWriter.setSearchingConsult(false);
-                                    consultWriter.setCurrentConsultInfo(ccm);
-                                    if (fragment != null) {
-                                        fragment.setStateConsultConnected(
-                                                new ConsultInfo(
-                                                        ccm.getName(),
-                                                        ccm.getConsultId(),
-                                                        ccm.getStatus(),
-                                                        ccm.getOrgUnit(),
-                                                        ccm.getAvatarPath()
-                                                )
-                                        );
-                                    }
-                                }
+                                processConsultConnectionMessage((ConsultConnectionMessage) chatItem);
                             }
                             if (chatItem instanceof SearchingConsult) {
                                 if (fragment != null) {
@@ -780,25 +761,7 @@ public final class ChatController {
                                 return;
                             }
                             if (chatItem instanceof SimpleSystemMessage) {
-                                final Long threadId = chatItem.getThreadId();
-                                if (threadId != null) {
-                                    PrefUtils.setThreadId(threadId);
-                                    fragment.setCurrentThreadId(threadId);
-                                }
-                                final String type = ((SimpleSystemMessage) chatItem).getType();
-                                if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(type)) {
-                                    PrefUtils.setThreadId(-1);
-                                    consultWriter.setCurrentConsultLeft();
-                                    if (fragment != null && !consultWriter.isSearchingConsult()) {
-                                        fragment.setTitleStateDefault();
-                                    }
-                                }
-                                if (ChatItemType.THREAD_ENQUEUED.name().equalsIgnoreCase(type)) {
-                                    if (fragment != null) {
-                                        fragment.setStateSearchingConsult();
-                                    }
-                                    consultWriter.setSearchingConsult(true);
-                                }
+                                processSimpleSystemMessage((SimpleSystemMessage) chatItem);
                             }
                             addMessage(chatItem);
                         })
@@ -1112,6 +1075,93 @@ public final class ChatController {
     private void saveMessages(List<ChatItem> chatItems) {
         databaseHolder.putChatItems(chatItems);
         UnreadMessagesController.INSTANCE.clearUnreadPush();
+        if (!isChatWorking()) {
+            return;
+        }
+        processSystemMessage(chatItems);
+    }
+
+    private void processSystemMessage(List<ChatItem> chatItems) {
+        ChatItem latestSystemMessage = null;
+        for (ChatItem chatItem : chatItems) {
+            if (chatItem instanceof SystemMessage) {
+                final Long threadId = chatItem.getThreadId();
+                if (threadId != null && threadId >= PrefUtils.getThreadId()) {
+                    final String type = ((SystemMessage) chatItem).getType();
+                    if (ChatItemType.OPERATOR_JOINED.toString().equalsIgnoreCase(type) ||
+                            ChatItemType.THREAD_ENQUEUED.toString().equalsIgnoreCase(type) ||
+                            ChatItemType.THREAD_CLOSED.toString().equalsIgnoreCase(type)) {
+                        if (latestSystemMessage == null || latestSystemMessage.getTimeStamp() <= chatItem.getTimeStamp()) {
+                            latestSystemMessage = chatItem;
+                        }
+                    }
+                }
+            }
+        }
+        if (latestSystemMessage != null) {
+            final ChatItem systemMessage = latestSystemMessage;
+            ThreadUtils.runOnUiThread(() -> {
+                if (systemMessage instanceof ConsultConnectionMessage) {
+                    processConsultConnectionMessage((ConsultConnectionMessage) systemMessage);
+                } else {
+                    processSimpleSystemMessage((SimpleSystemMessage) systemMessage);
+                }
+            });
+        }
+    }
+
+    @MainThread
+    private void processConsultConnectionMessage(ConsultConnectionMessage ccm) {
+        if (ccm.getType().equalsIgnoreCase(ChatItemType.OPERATOR_JOINED.name())) {
+            if (ccm.getThreadId() != null) {
+                PrefUtils.setThreadId(ccm.getThreadId());
+                if (fragment != null) {
+                    fragment.setCurrentThreadId(ccm.getThreadId());
+                }
+            }
+            consultWriter.setSearchingConsult(false);
+            consultWriter.setCurrentConsultInfo(ccm);
+            if (fragment != null) {
+                fragment.setStateConsultConnected(
+                        new ConsultInfo(
+                                ccm.getName(),
+                                ccm.getConsultId(),
+                                ccm.getStatus(),
+                                ccm.getOrgUnit(),
+                                ccm.getAvatarPath()
+                        )
+                );
+            }
+        }
+    }
+
+    @MainThread
+    private void processSimpleSystemMessage(SimpleSystemMessage systemMessage) {
+        final String type = systemMessage.getType();
+        if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(type)) {
+            PrefUtils.setThreadId(-1);
+            if (fragment != null) {
+                fragment.setCurrentThreadId(-1);
+            }
+            removeResolveRequest();
+            consultWriter.setCurrentConsultLeft();
+            if (fragment != null && !consultWriter.isSearchingConsult()) {
+                fragment.setTitleStateDefault();
+            }
+        } else {
+            if (systemMessage.getThreadId() != null) {
+                PrefUtils.setThreadId(systemMessage.getThreadId());
+                if (fragment != null) {
+                    fragment.setCurrentThreadId(systemMessage.getThreadId());
+                }
+            }
+            if (ChatItemType.THREAD_ENQUEUED.name().equalsIgnoreCase(type)) {
+                if (fragment != null) {
+                    fragment.setStateSearchingConsult();
+                }
+                consultWriter.setSearchingConsult(true);
+            }
+        }
     }
 
     private void refreshUserInputState() {
