@@ -306,6 +306,7 @@ public class MessagesTable extends Table {
         }
     }
 
+    @NonNull
     public List<String> getUnreadMessagesUuid(SQLiteOpenHelper sqlHelper) {
         String sql = "select " + COLUMN_MESSAGE_UUID +
                 " from " + TABLE_MESSAGES +

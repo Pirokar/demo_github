@@ -360,7 +360,7 @@ public final class ChatController {
                         && cm.getActiveNetworkInfo() != null
                         && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
                     final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
-                    if (uuidList != null && !uuidList.isEmpty()) {
+                    if (!uuidList.isEmpty()) {
                         Config.instance.transport.markMessagesAsRead(uuidList);
                         firstUnreadUuidId = uuidList.get(0); // для скролла к первому непрочитанному сообщению
                     } else {
@@ -573,7 +573,7 @@ public final class ChatController {
                         saveMessages(serverItems);
                         if (fragment != null && isActive) {
                             final List<String> uuidList = databaseHolder.getUnreadMessagesUuid();
-                            if (uuidList != null && !uuidList.isEmpty()) {
+                            if (!uuidList.isEmpty()) {
                                 Config.instance.transport.markMessagesAsRead(uuidList);
                             }
                         }

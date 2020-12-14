@@ -122,6 +122,7 @@ public final class DatabaseHolder {
         return mMyOpenHelper.getUnreadMessagesCount();
     }
 
+    @NonNull
     public List<String> getUnreadMessagesUuid() {
         return mMyOpenHelper.getUnreadMessagesUuid();
     }
