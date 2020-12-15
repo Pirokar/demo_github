@@ -71,6 +71,10 @@ public final class Survey implements ChatItem, Hidable {
         return false;
     }
 
+    public boolean isCompleted() {
+        return sentState == MessageState.STATE_SENT || sentState == MessageState.STATE_WAS_READ;
+    }
+
     @Override
     public Long getThreadId() {
         return null;

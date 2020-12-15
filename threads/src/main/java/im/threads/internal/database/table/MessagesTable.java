@@ -203,7 +203,7 @@ public class MessagesTable extends Table {
         }
         if (chatItem instanceof Survey) {
             final Survey survey = (Survey) chatItem;
-            setOldSurveyDisplayMessageToFalse(sqlHelper, survey.getSendingId());
+            setNotSentSurveyDisplayMessageToFalse(sqlHelper, survey.getSendingId());
             insertOrUpdateSurvey(sqlHelper, survey);
         }
         if (chatItem instanceof RequestResolveThread) {
@@ -334,10 +334,11 @@ public class MessagesTable extends Table {
         return new ArrayList<>(ids);
     }
 
-    public int setOldSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper) {
+    public int setNotSentSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_DISPLAY_MESSAGE, false);
-        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal();
+        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() +
+                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal();
         return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
     }
 
@@ -432,7 +433,7 @@ public class MessagesTable extends Table {
                 cGetLong(c, COLUMN_TIMESTAMP),
                 MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
         );
-        if (!cGetBool(c, COLUMN_DISPLAY_MESSAGE) || survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis()) {
+        if (!survey.isCompleted() && (!cGetBool(c, COLUMN_DISPLAY_MESSAGE) || survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis())) {
             return null;
         }
         survey.setQuestions(Collections.singletonList(questionsTable.getQuestion(sqlHelper, surveySendingId)));
@@ -572,10 +573,11 @@ public class MessagesTable extends Table {
         }
     }
 
-    private void setOldSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper, long currentSurveySendingId) {
+    private void setNotSentSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper, long currentSurveySendingId) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_DISPLAY_MESSAGE, false);
         String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() +
+                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() +
                 " and " + COLUMN_SURVEY_SENDING_ID + " != ?";
         sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{String.valueOf(currentSurveySendingId)});
     }

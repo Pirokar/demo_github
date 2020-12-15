@@ -916,7 +916,7 @@ public final class ChatController {
     private void removeActiveSurvey() {
         ThreadsLogger.i(TAG, "removeActiveSurvey");
         subscribe(
-                databaseHolder.setOldSurveyDisplayMessageToFalse()
+                databaseHolder.setNotSentSurveyDisplayMessageToFalse()
                         .subscribe(
                                 () -> ThreadsLogger.i(TAG, "setOldSurveyDisplayMessageToFalse"),
                                 e -> ThreadsLogger.e(TAG, e.getMessage())

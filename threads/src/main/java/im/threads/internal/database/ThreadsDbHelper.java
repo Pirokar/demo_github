@@ -149,8 +149,8 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
     }
 
     @Override
-    public int setOldSurveyDisplayMessageToFalse() {
-        return messagesTable.setOldSurveyDisplayMessageToFalse(this);
+    public int setNotSentSurveyDisplayMessageToFalse() {
+        return messagesTable.setNotSentSurveyDisplayMessageToFalse(this);
     }
 
     @Override
