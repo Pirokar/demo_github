@@ -1,6 +1,7 @@
 package im.threads.internal.controllers;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -74,6 +75,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
+import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
 
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
@@ -366,16 +370,15 @@ public final class ChatController {
                 }
             }
         }
-        if (isActive) {
-            subscribe(
-                    Observable.timer(1500, TimeUnit.MILLISECONDS)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(aLong -> {
-                                appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
-                                UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
-                            })
-            );
-        }
+        subscribe(
+                Observable.timer(1500, TimeUnit.MILLISECONDS)
+                        .filter(value -> isActive)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aLong -> {
+                            removePushNotification();
+                            UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+                        })
+        );
     }
 
     public Observable<List<ChatItem>> requestItems() {
@@ -524,7 +527,7 @@ public final class ChatController {
     }
 
     void setAllMessagesWereRead() {
-        appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
+        removePushNotification();
         subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereRead()
                 .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount));
         if (fragment != null) {
@@ -971,7 +974,7 @@ public final class ChatController {
                         .filter(value -> isActive)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {
-                            appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
+                            removePushNotification();
                             UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                         })
         );
@@ -1014,8 +1017,15 @@ public final class ChatController {
         PrefUtils.setThreadId(-1);
         consultWriter.setCurrentConsultLeft();
         consultWriter.setSearchingConsult(false);
-        appContext.sendBroadcast(new Intent(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
+        removePushNotification();
         UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+    }
+
+    private void removePushNotification() {
+        final NotificationManager nm = (NotificationManager) appContext.getSystemService(NOTIFICATION_SERVICE);
+        if (nm != null) {
+            nm.cancel(UNREAD_MESSAGE_PUSH_ID);
+        }
     }
 
     private void setSurveyStateSent(final Survey survey) {
