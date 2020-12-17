@@ -10,6 +10,7 @@ public class MessageContent {
     private String text;
     private String formattedText;
     private Date receivedDate;
+    private Long threadId;
     private Operator operator;
     private List<String> providerIds;
     private List<Attachment> attachments;
@@ -30,6 +31,10 @@ public class MessageContent {
 
     public Date getReceivedDate() {
         return receivedDate;
+    }
+
+    public Long getThreadId() {
+        return threadId;
     }
 
     public Operator getOperator() {

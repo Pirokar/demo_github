@@ -30,16 +30,16 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     private FileDescription fileDescription;
     private boolean isChosen;
     private boolean isRead;
+    private final Long threadId;
     private List<QuickReply> quickReplies;
     //для поиска сообщений в чате
     private boolean found;
 
     public ConsultPhrase(String uuid, String providerId, List<String> providerIds, FileDescription fileDescription, Quote quote, String consultName,
                          String phrase, String formattedPhrase, long timeStamp, String consultId, String avatarPath,
-                         boolean isRead, String status, boolean sex, List<QuickReply> quickReplies) {
+                         boolean isRead, String status, boolean sex, Long threadId, List<QuickReply> quickReplies) {
 
         super(avatarPath, consultId);
-
         this.uuid = uuid;
         this.providerId = providerId;
         this.providerIds = providerIds;
@@ -52,6 +52,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         this.isRead = isRead;
         this.status = status;
         this.sex = sex;
+        this.threadId = threadId;
         this.quickReplies = quickReplies;
     }
 
@@ -192,7 +193,8 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
                 && ObjectsCompat.equals(this.consultId, consultPhrase.consultId)
                 && ObjectsCompat.equals(this.consultName, consultPhrase.consultName)
                 && ObjectsCompat.equals(this.sex, consultPhrase.sex)
-                && ObjectsCompat.equals(this.status, consultPhrase.status);
+                && ObjectsCompat.equals(this.status, consultPhrase.status)
+                && ObjectsCompat.equals(this.threadId, consultPhrase.threadId);
         if (this.fileDescription != null) {
             hasSameContent = hasSameContent && this.fileDescription.hasSameContent(consultPhrase.fileDescription);
         }
@@ -205,9 +207,14 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof ConsultPhrase) {
-            return this.uuid.equals(((ConsultPhrase) otherItem).uuid);
+            return ObjectsCompat.equals(this.uuid, ((ConsultPhrase) otherItem).uuid);
         }
         return false;
+    }
+
+    @Override
+    public Long getThreadId() {
+        return threadId;
     }
 
     @Override
@@ -232,11 +239,12 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
                 ObjectsCompat.equals(status, that.status) &&
                 ObjectsCompat.equals(quickReplies, that.quickReplies) &&
                 ObjectsCompat.equals(ogData, that.ogData) &&
-                ObjectsCompat.equals(ogUrl, that.ogUrl);
+                ObjectsCompat.equals(ogUrl, that.ogUrl) &&
+                ObjectsCompat.equals(threadId, that.threadId);
     }
 
     @Override
     public int hashCode() {
-        return ObjectsCompat.hash(uuid, providerId, providerIds, sex, timeStamp, phrase, formattedPhrase, consultName, isAvatarVisible, quote, fileDescription, isChosen, isRead, status, quickReplies, found, ogData, ogUrl);
+        return ObjectsCompat.hash(uuid, providerId, providerIds, sex, timeStamp, phrase, formattedPhrase, consultName, isAvatarVisible, quote, fileDescription, isChosen, isRead, status, quickReplies, found, ogData, ogUrl, threadId);
     }
 }

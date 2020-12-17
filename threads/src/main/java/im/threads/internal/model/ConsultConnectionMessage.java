@@ -20,6 +20,7 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     private String orgUnit;
     private boolean displayMessage;
     private String text;
+    private final Long threadId;
 
     public ConsultConnectionMessage(
             String uuid,
@@ -35,7 +36,8 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
             String title,
             String orgUnit,
             boolean displayMessage,
-            String text
+            String text,
+            Long threadId
     ) {
         super(avatarPath, consultId);
         this.uuid = uuid;
@@ -50,6 +52,7 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
         this.orgUnit = orgUnit;
         this.displayMessage = displayMessage;
         this.text = text;
+        this.threadId = threadId;
     }
 
     public String getUuid() {
@@ -117,9 +120,14 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof ConsultConnectionMessage) {
-            return this.uuid.equals(((ConsultConnectionMessage) otherItem).uuid);
+            return ObjectsCompat.equals(this.uuid, ((ConsultConnectionMessage) otherItem).uuid);
         }
         return false;
+    }
+
+    @Override
+    public Long getThreadId() {
+        return threadId;
     }
 
     @Override

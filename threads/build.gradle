@@ -34,9 +34,11 @@ android {
 
     buildTypes {
         release {
+            buildConfigField "String", "VERSION_NAME", "\"${version}\""
             consumerProguardFiles 'proguard-rules.pro'
         }
         debug {
+            buildConfigField "String", "VERSION_NAME", "\"${version}\""
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
