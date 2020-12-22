@@ -21,9 +21,6 @@ import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.exceptions.UndeliverableException;
-import io.reactivex.functions.Consumer;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ThreadsLib {
 
@@ -54,16 +51,6 @@ public final class ThreadsLib {
                     .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count));
         }
         ChatController.getInstance();
-        Consumer<? super Throwable> errorHandler = RxJavaPlugins.getErrorHandler();
-        RxJavaPlugins.setErrorHandler(throwable -> {
-            ThreadsLogger.e(TAG, "global handler: ", throwable);
-            if (errorHandler != null) {
-                errorHandler.accept(throwable);
-            }
-            if (throwable instanceof UndeliverableException) {
-                return;
-            }
-        });
     }
 
     public static ThreadsLib getInstance() {
