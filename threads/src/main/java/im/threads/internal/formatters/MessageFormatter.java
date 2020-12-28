@@ -5,17 +5,20 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.core.util.ObjectsCompat;
 import im.threads.R;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.SimpleSystemMessage;
+import im.threads.internal.model.Survey;
 import im.threads.internal.utils.FileUtils;
 
 public final class MessageFormatter {
@@ -35,7 +38,7 @@ public final class MessageFormatter {
         boolean isNeedAnswer = false;
         List<ChatItem> unreadMessages = new ArrayList<>();
         for (ChatItem ci : chatItems) {
-            if (ci instanceof ConsultConnectionMessage || ci instanceof ConsultPhrase|| ci instanceof SimpleSystemMessage) {
+            if (ci instanceof ConsultConnectionMessage || ci instanceof ConsultPhrase || ci instanceof SimpleSystemMessage || ci instanceof Survey) {
                 unreadMessages.add(ci);
             }
         }
@@ -83,6 +86,13 @@ public final class MessageFormatter {
                 }
                 avatarPath = consultPhrase.getAvatarPath();
             }
+            if (ci instanceof Survey) {
+                Survey ccm = (Survey) ci;
+                final List<QuestionDTO> questions = ccm.getQuestions();
+                if (questions != null && questions.size() > 0) {
+                    phrase = questions.get(0).getText();
+                }
+            }
         }
         String titleText = consultName;
         if (plainFilesCount != 0) {
@@ -123,6 +133,17 @@ public final class MessageFormatter {
     }
 
     public static class MessageContent implements Parcelable {
+        public static final Creator<MessageContent> CREATOR = new Creator<MessageContent>() {
+            @Override
+            public MessageContent createFromParcel(Parcel in) {
+                return new MessageContent(in);
+            }
+
+            @Override
+            public MessageContent[] newArray(int size) {
+                return new MessageContent[size];
+            }
+        };
         public final String titleText;
         @NonNull
         public final String contentText;
@@ -174,18 +195,6 @@ public final class MessageFormatter {
             consultName = in.readString();
             isNeedAnswer = in.readByte() != 0;
         }
-
-        public static final Creator<MessageContent> CREATOR = new Creator<MessageContent>() {
-            @Override
-            public MessageContent createFromParcel(Parcel in) {
-                return new MessageContent(in);
-            }
-
-            @Override
-            public MessageContent[] newArray(int size) {
-                return new MessageContent[size];
-            }
-        };
 
         @Override
         public boolean equals(Object o) {
