@@ -44,6 +44,7 @@ import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
+import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.SimpleSystemMessage;
@@ -665,8 +666,8 @@ public final class ChatController {
 
     private void subscribeToChatEvents() {
         subscribeToTyping();
-        subscribeToUserMessageRead();
-        subscribeToConsultMessageRead();
+        subscribeToOutgoingMessageRead();
+        subscribeToIncomingMessageRead();
         subscribeToNewMessage();
         subscribeToMessageSendSuccess();
         subscribeToMessageSendError();
@@ -695,9 +696,9 @@ public final class ChatController {
         );
     }
 
-    private void subscribeToUserMessageRead() {
+    private void subscribeToOutgoingMessageRead() {
         subscribe(
-                Flowable.fromPublisher(chatUpdateProcessor.getUserMessageReadProcessor())
+                Flowable.fromPublisher(chatUpdateProcessor.getOutgoingMessageReadProcessor())
                         .observeOn(Schedulers.io())
                         .doOnNext(providerId -> databaseHolder.setStateOfUserPhraseByProviderId(providerId, MessageState.STATE_WAS_READ))
                         .observeOn(AndroidSchedulers.mainThread())
@@ -711,12 +712,12 @@ public final class ChatController {
         );
     }
 
-    private void subscribeToConsultMessageRead() {
+    private void subscribeToIncomingMessageRead() {
         subscribe(
-                Flowable.fromPublisher(chatUpdateProcessor.getConsultMessageReadProcessor())
+                Flowable.fromPublisher(chatUpdateProcessor.getIncomingMessageReadProcessor())
                         .observeOn(Schedulers.io())
                         .subscribe(id -> {
-                            databaseHolder.setConsultMessageWasRead(id);
+                            databaseHolder.setMessageWasRead(id);
                             UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
                         })
         );
@@ -732,7 +733,7 @@ public final class ChatController {
                                 for (String readId : readMessagesIds) {
                                     UserPhrase userPhrase = (UserPhrase) databaseHolder.getChatItem(readId);
                                     if (userPhrase != null) {
-                                        chatUpdateProcessor.postUserMessageWasRead(userPhrase.getProviderId());
+                                        chatUpdateProcessor.postOutgoingMessageWasRead(userPhrase.getProviderId());
                                     }
                                 }
                                 return;
@@ -969,6 +970,12 @@ public final class ChatController {
             handleQuickReplies(Collections.singletonList(consultPhrase));
             Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getUuid()));
         }
+        if (chatItem instanceof Survey && isActive) {
+            Config.instance.transport.markMessagesAsRead(Collections.singletonList(((Survey) chatItem).getUuid()));
+        }
+        if (chatItem instanceof RequestResolveThread && isActive) {
+            Config.instance.transport.markMessagesAsRead(Collections.singletonList(((RequestResolveThread) chatItem).getUuid()));
+        }
         subscribe(
                 Observable.timer(1500, TimeUnit.MILLISECONDS)
                         .filter(value -> isActive)
@@ -1030,6 +1037,7 @@ public final class ChatController {
 
     private void setSurveyStateSent(final Survey survey) {
         survey.setSentState(MessageState.STATE_SENT);
+        survey.setDisplayMessage(true);
         if (fragment != null) {
             fragment.setSurveySentStatus(survey.getSendingId(), survey.getSentState());
         }
@@ -1097,8 +1105,12 @@ public final class ChatController {
     }
 
     private void processSurvey(Survey survey) {
-        activeSurvey = survey;
-        Config.instance.transport.sendRatingReceived(activeSurvey.getSendingId());
+        if (!survey.isCompleted()) {
+            if (activeSurvey == null && !survey.isRead()) {
+                Config.instance.transport.sendRatingReceived(survey);
+            }
+            activeSurvey = survey;
+        }
     }
 
     private void processSystemMessage(List<ChatItem> chatItems) {

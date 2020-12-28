@@ -1020,6 +1020,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (itemToInsert instanceof ConsultConnectionMessage && !((ConsultConnectionMessage) itemToInsert).isDisplayMessage()) {
                 return;
             }
+            if (itemToInsert instanceof Survey) {
+                final Survey survey = (Survey) itemToInsert;
+                if (!survey.isCompleted() && (!((Survey) survey).isDisplayMessage() || survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis())) {
+                    return;
+                }
+            }
             if (itemToInsert instanceof SimpleSystemMessage && TextUtils.isEmpty(((SimpleSystemMessage) itemToInsert).getText())) {
                 return;
             }

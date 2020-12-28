@@ -21,8 +21,8 @@ public class ChatUpdateProcessor {
 
     private final FlowableProcessor<String> typingProcessor = PublishProcessor.create();
     private final FlowableProcessor<AttachmentSettings> attachmentSettingsProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> userMessageReadProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> consultMessageReadProcessor = PublishProcessor.create();
+    private final FlowableProcessor<String> outgoingMessageReadProcessor = PublishProcessor.create();
+    private final FlowableProcessor<String> incomingMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemProviderData> messageSendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> messageSendErrorProcessor = PublishProcessor.create();
@@ -50,12 +50,12 @@ public class ChatUpdateProcessor {
         attachmentSettingsProcessor.onNext(attachmentSettings);
     }
 
-    public void postUserMessageWasRead(@NonNull String messageId) {
-        userMessageReadProcessor.onNext(messageId);
+    public void postOutgoingMessageWasRead(@NonNull String messageId) {
+        outgoingMessageReadProcessor.onNext(messageId);
     }
 
-    public void postConsultMessageWasRead(@NonNull String messageId) {
-        consultMessageReadProcessor.onNext(messageId);
+    public void postIncomingMessageWasRead(@NonNull String messageId) {
+        incomingMessageReadProcessor.onNext(messageId);
     }
 
     public void postNewMessage(@NonNull ChatItem chatItem) {
@@ -106,12 +106,12 @@ public class ChatUpdateProcessor {
         return attachmentSettingsProcessor;
     }
 
-    public FlowableProcessor<String> getUserMessageReadProcessor() {
-        return userMessageReadProcessor;
+    public FlowableProcessor<String> getOutgoingMessageReadProcessor() {
+        return outgoingMessageReadProcessor;
     }
 
-    public FlowableProcessor<String> getConsultMessageReadProcessor() {
-        return consultMessageReadProcessor;
+    public FlowableProcessor<String> getIncomingMessageReadProcessor() {
+        return incomingMessageReadProcessor;
     }
 
     public FlowableProcessor<ChatItem> getNewMessageProcessor() {

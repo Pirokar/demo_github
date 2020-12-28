@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,6 @@ import im.threads.internal.transport.threads_gate.responses.GetMessagesData;
 import im.threads.internal.transport.threads_gate.responses.GetStatusesData;
 import im.threads.internal.transport.threads_gate.responses.RegisterDeviceData;
 import im.threads.internal.transport.threads_gate.responses.SendMessageData;
-import im.threads.internal.transport.threads_gate.responses.UpdateStatusesData;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.PrefUtils;
@@ -155,8 +155,12 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
     }
 
     @Override
-    public void sendRatingReceived(long sendingId) {
-        sendMessage(OutgoingMessageCreator.createRatingReceivedMessage(sendingId, PrefUtils.getClientID()));
+    public void sendRatingReceived(Survey survey) {
+        sendMessage(
+                OutgoingMessageCreator.createRatingReceivedMessage(survey.getSendingId(), PrefUtils.getClientID()),
+                false,
+                ChatItemType.SURVEY_PASSED.name() + CORRELATION_ID_DIVIDER + survey.getUuid()
+        );
     }
 
     @Override
@@ -330,16 +334,16 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                     GetStatusesData data = Config.instance.gson.fromJson(response.getData().toString(), GetStatusesData.class);
                     for (final GetStatusesData.Status status : data.getStatuses()) {
                         if (ObjectsCompat.equals(MessageStatus.READ, status.getStatus())) {
-                            ChatUpdateProcessor.getInstance().postUserMessageWasRead(status.getMessageId());
+                            ChatUpdateProcessor.getInstance().postOutgoingMessageWasRead(status.getMessageId());
                         }
                     }
                 }
-                if (action.equals(Action.UPDATE_STATUSES)) {
+                /*if (action.equals(Action.UPDATE_STATUSES)) {
                     UpdateStatusesData data = Config.instance.gson.fromJson(response.getData().toString(), UpdateStatusesData.class);
                     for (final String messageId : data.getMessageIds()) {
-                        ChatUpdateProcessor.getInstance().postConsultMessageWasRead(messageId);
+                        ChatUpdateProcessor.getInstance().postMessageWasRead(messageId);
                     }
-                }
+                }*/
                 if (action.equals(Action.GET_MESSAGES)) {
                     GetMessagesData data = Config.instance.gson.fromJson(response.getData().toString(), GetMessagesData.class);
                     for (BaseMessage message : data.getMessages()) {

@@ -7,12 +7,14 @@ public final class RequestResolveThread implements ChatItem {
     private Long hideAfter;
     private long phraseTimeStamp;
     private Long threadId;
+    private boolean read;
 
-    public RequestResolveThread(final String uuid, final Long hideAfter, final long phraseTimeStamp, final Long threadId) {
+    public RequestResolveThread(final String uuid, final Long hideAfter, final long phraseTimeStamp, final Long threadId, boolean read) {
         this.uuid = uuid;
         this.hideAfter = hideAfter;
         this.phraseTimeStamp = phraseTimeStamp;
         this.threadId = threadId;
+        this.read = read;
     }
 
     public String getUuid() {
@@ -31,6 +33,10 @@ public final class RequestResolveThread implements ChatItem {
     @Override
     public Long getThreadId() {
         return threadId;
+    }
+
+    public boolean isRead() {
+        return read;
     }
 
     @Override
