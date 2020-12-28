@@ -1172,9 +1172,6 @@ public final class ChatController {
         final String type = systemMessage.getType();
         if (ChatItemType.THREAD_CLOSED.name().equalsIgnoreCase(type)) {
             PrefUtils.setThreadId(-1);
-            if (fragment != null) {
-                fragment.setCurrentThreadId(-1);
-            }
             removeResolveRequest();
             consultWriter.setCurrentConsultLeft();
             if (fragment != null && !consultWriter.isSearchingConsult()) {

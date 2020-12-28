@@ -384,7 +384,7 @@ public class MessagesTable extends Table {
         } else if (type == MessageType.SYSTEM_MESSAGE.ordinal()) {
             return new SimpleSystemMessage(
                     cGetString(c, COLUMN_MESSAGE_UUID),
-                    cGetString(c, COLUMN_MESSAGE_TYPE),
+                    cGetString(c, COLUMN_CONNECTION_TYPE),
                     cGetLong(c, COLUMN_TIMESTAMP),
                     cGetString(c, COLUMN_PHRASE),
                     cGetLong(c, COLUMN_THREAD_ID)
@@ -520,6 +520,7 @@ public class MessagesTable extends Table {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_UUID, simpleSystemMessage.getUuid());
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.SYSTEM_MESSAGE.ordinal());
+        cv.put(COLUMN_CONNECTION_TYPE, simpleSystemMessage.getType());
         cv.put(COLUMN_TIMESTAMP, simpleSystemMessage.getTimeStamp());
         cv.put(COLUMN_PHRASE, simpleSystemMessage.getText());
         cv.put(COLUMN_THREAD_ID, simpleSystemMessage.getThreadId());
