@@ -514,9 +514,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void addItems(@NonNull final List<ChatItem> items) {
         boolean withTyping = false;
+        boolean withRequestResolveThread = false;
         for (final ChatItem ci : items) {
             if (ci instanceof ConsultTyping) {
                 withTyping = true;
+                break;
+            }
+            if (ci instanceof RequestResolveThread) {
+                withRequestResolveThread = true;
                 break;
             }
         }
@@ -527,6 +532,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (items.size() == 1 && items.get(0) instanceof ConsultPhrase) {
             removeConsultIsTyping();
+        }
+        if (withRequestResolveThread) {
+            removeResolveRequest();
         }
         ArrayList<ChatItem> newList = new ArrayList<>(list);
         ChatMessagesOrderer.addAndOrder(newList, items, clientNotificationDisplayType, currentThreadId);
