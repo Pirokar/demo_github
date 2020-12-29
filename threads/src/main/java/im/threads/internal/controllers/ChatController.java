@@ -997,6 +997,9 @@ public final class ChatController {
                 fragment.removeSchedule(false);
             }
         }
+        /*if (chatItem instanceof ConsultPhrase) {
+            removeResolveRequest();
+        }*/
     }
 
     private void queueMessageSending(UserPhrase userPhrase) {
@@ -1100,6 +1103,9 @@ public final class ChatController {
             if (lastItem instanceof Survey) {
                 processSurvey((Survey) lastItem);
             }
+            /*if (!(lastItem instanceof RequestResolveThread)) {
+                removeResolveRequest();
+            }*/
         }
         processSystemMessage(chatItems);
     }
