@@ -26,8 +26,9 @@ import im.threads.internal.model.Operator;
 import im.threads.internal.model.Optional;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.Quote;
-import im.threads.internal.model.Survey;
+import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.SimpleSystemMessage;
+import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.DateHelper;
 import im.threads.internal.utils.ThreadsLogger;
@@ -81,17 +82,18 @@ public final class HistoryParser {
                     case AVERAGE_WAIT_TIME:
                     case PARTING_AFTER_SURVEY:
                     case THREAD_CLOSED:
-                    case THREAD_TRANSFERRED:
+                    case THREAD_WILL_BE_REASSIGNED:
                     case THREAD_IN_PROGRESS:
                         out.add(getSystemMessageFromHistory(message));
                         break;
                     case OPERATOR_JOINED:
                     case OPERATOR_LEFT:
-                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay(), message.getText()));
+                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay(), message.getText(), message.getThreadId()));
                         break;
                     case SURVEY:
                         Survey survey = getSurveyFromJsonString(message.getText());
                         if (survey != null) {
+                            survey.setRead(message.isRead());
                             survey.setPhraseTimeStamp(message.getTimeStamp());
                             for (final QuestionDTO questionDTO : survey.getQuestions()) {
                                 questionDTO.setPhraseTimeStamp(message.getTimeStamp());
@@ -101,6 +103,9 @@ public final class HistoryParser {
                         break;
                     case SURVEY_QUESTION_ANSWER:
                         out.add(getCompletedSurveyFromHistory(message));
+                        break;
+                    case REQUEST_CLOSE_THREAD:
+                        out.add(new RequestResolveThread(uuid, message.getHideAfter(), timeStamp, message.getThreadId(), message.isRead()));
                         break;
                     default:
                         final String phraseText = message.getText();
@@ -114,13 +119,13 @@ public final class HistoryParser {
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
                             out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, message.getFormattedText(), timeStamp,
-                                    operatorId, photoUrl, message.isRead(), null, false, message.getQuickReplies()));
+                                    operatorId, photoUrl, message.isRead(), null, false, message.getThreadId(), message.getQuickReplies()));
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
                             }
                             MessageState sentState = message.isRead() ? MessageState.STATE_WAS_READ : MessageState.STATE_SENT;
-                            out.add(new UserPhrase(uuid, providerId, providerIds, phraseText, quote, timeStamp, fileDescription, sentState));
+                            out.add(new UserPhrase(uuid, providerId, providerIds, phraseText, quote, timeStamp, fileDescription, sentState, message.getThreadId()));
                         }
                 }
             }
@@ -137,6 +142,7 @@ public final class HistoryParser {
             final long time = new Date().getTime();
             survey.setPhraseTimeStamp(time);
             survey.setSentState(MessageState.STATE_NOT_SENT);
+            survey.setDisplayMessage(true);
             for (final QuestionDTO questionDTO : survey.getQuestions()) {
                 questionDTO.setPhraseTimeStamp(time);
             }
@@ -148,7 +154,7 @@ public final class HistoryParser {
     }
 
     private static Survey getCompletedSurveyFromHistory(MessageFromHistory message) {
-        Survey survey = new Survey(message.getSendingId(), message.getTimeStamp(), MessageState.STATE_WAS_READ);
+        Survey survey = new Survey(message.getUuid(), message.getSendingId(), message.getTimeStamp(), MessageState.STATE_WAS_READ, message.isRead(), message.isDisplay());
         QuestionDTO question = new QuestionDTO();
         question.setId(message.getQuestionId());
         question.setPhraseTimeStamp(message.getTimeStamp());
@@ -162,7 +168,7 @@ public final class HistoryParser {
     }
 
     private static SimpleSystemMessage getSystemMessageFromHistory(MessageFromHistory message) {
-        return new SimpleSystemMessage(message.getUuid(), message.getType(), message.getTimeStamp(), message.getText());
+        return new SimpleSystemMessage(message.getUuid(), message.getType(), message.getTimeStamp(), message.getText(), message.getThreadId());
     }
 
     private static Quote quoteFromList(final List<MessageFromHistory> quotes) {

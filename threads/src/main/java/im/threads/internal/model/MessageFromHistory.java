@@ -215,7 +215,7 @@ public final class MessageFromHistory implements ChatItem {
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof MessageFromHistory) {
-            return this.uuid.equals(((MessageFromHistory) otherItem).uuid);
+            return ObjectsCompat.equals(this.uuid, ((MessageFromHistory) otherItem).uuid);
         }
         return false;
     }

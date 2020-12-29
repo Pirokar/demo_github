@@ -15,7 +15,10 @@ import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +45,6 @@ import im.threads.internal.transport.threads_gate.responses.GetMessagesData;
 import im.threads.internal.transport.threads_gate.responses.GetStatusesData;
 import im.threads.internal.transport.threads_gate.responses.RegisterDeviceData;
 import im.threads.internal.transport.threads_gate.responses.SendMessageData;
-import im.threads.internal.transport.threads_gate.responses.UpdateStatusesData;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.PrefUtils;
@@ -63,6 +65,7 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
     private final Request request;
     private final String threadsGateProviderUid;
     private final List<String> messageInProcessIds = new ArrayList<>();
+    private final Map<Long, Survey> surveysInProcess = new HashMap<>();
     @Nullable
     private WebSocket webSocket;
     @Nullable
@@ -93,6 +96,7 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                 PrefUtils.getClientID(),
                 PrefUtils.getAppMarker()
         );
+        surveysInProcess.put(survey.getSendingId(), survey);
         sendMessage(content, true, ChatItemType.SURVEY_QUESTION_ANSWER.name() + CORRELATION_ID_DIVIDER + survey.getSendingId());
     }
 
@@ -145,15 +149,18 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                 consultInfo,
                 quoteFilePath,
                 filePath,
-                PrefUtils.getClientID(),
-                PrefUtils.getThreadID()
+                PrefUtils.getClientID()
         );
         sendMessage(content, true, ChatItemType.MESSAGE.name() + CORRELATION_ID_DIVIDER + userPhrase.getUuid());
     }
 
     @Override
-    public void sendRatingReceived(long sendingId) {
-        sendMessage(OutgoingMessageCreator.createRatingReceivedMessage(sendingId, PrefUtils.getClientID()));
+    public void sendRatingReceived(Survey survey) {
+        sendMessage(
+                OutgoingMessageCreator.createRatingReceivedMessage(survey.getSendingId(), PrefUtils.getClientID()),
+                false,
+                ChatItemType.SURVEY_PASSED.name() + CORRELATION_ID_DIVIDER + survey.getUuid()
+        );
     }
 
     @Override
@@ -309,7 +316,12 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                                 ChatUpdateProcessor.getInstance().postChatItemSendSuccess(new ChatItemProviderData(tokens[1], data.getMessageId(), data.getSentAt().getTime()));
                                 break;
                             case SURVEY_QUESTION_ANSWER:
-                                ChatUpdateProcessor.getInstance().postSurveySendSuccess(Long.parseLong(tokens[1]));
+                                final long sendingId = Long.parseLong(tokens[1]);
+                                if (surveysInProcess.containsKey(sendingId)) {
+                                    final Survey survey = surveysInProcess.get(sendingId);
+                                    ChatUpdateProcessor.getInstance().postSurveySendSuccess(survey);
+                                    surveysInProcess.remove(sendingId);
+                                }
                                 break;
                             case REOPEN_THREAD:
                             case CLOSE_THREAD:
@@ -322,16 +334,16 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                     GetStatusesData data = Config.instance.gson.fromJson(response.getData().toString(), GetStatusesData.class);
                     for (final GetStatusesData.Status status : data.getStatuses()) {
                         if (ObjectsCompat.equals(MessageStatus.READ, status.getStatus())) {
-                            ChatUpdateProcessor.getInstance().postUserMessageWasRead(status.getMessageId());
+                            ChatUpdateProcessor.getInstance().postOutgoingMessageWasRead(status.getMessageId());
                         }
                     }
                 }
-                if (action.equals(Action.UPDATE_STATUSES)) {
+                /*if (action.equals(Action.UPDATE_STATUSES)) {
                     UpdateStatusesData data = Config.instance.gson.fromJson(response.getData().toString(), UpdateStatusesData.class);
                     for (final String messageId : data.getMessageIds()) {
-                        ChatUpdateProcessor.getInstance().postConsultMessageWasRead(messageId);
+                        ChatUpdateProcessor.getInstance().postMessageWasRead(messageId);
                     }
-                }
+                }*/
                 if (action.equals(Action.GET_MESSAGES)) {
                     GetMessagesData data = Config.instance.gson.fromJson(response.getData().toString(), GetMessagesData.class);
                     for (BaseMessage message : data.getMessages()) {
@@ -348,10 +360,10 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                                     ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
                                 }
                             } else if (ThreadsGateMessageParser.checkId(message, PrefUtils.getClientID())) {
-                                    ChatItem chatItem = ThreadsGateMessageParser.format(message);
-                                    if (chatItem != null) {
-                                        ChatUpdateProcessor.getInstance().postNewMessage(chatItem);
-                                    }
+                                ChatItem chatItem = ThreadsGateMessageParser.format(message);
+                                if (chatItem != null) {
+                                    ChatUpdateProcessor.getInstance().postNewMessage(chatItem);
+                                }
                             }
                         }
                     }

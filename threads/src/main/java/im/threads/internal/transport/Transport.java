@@ -9,13 +9,18 @@ import im.threads.ConfigBuilder;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
+import im.threads.internal.model.RequestResolveThread;
+import im.threads.internal.model.SettingsResponse;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.retrofit.ApiGenerator;
+import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -35,10 +40,7 @@ public abstract class Transport {
                                 () -> {
                                     ThreadsLogger.i(TAG, "messagesAreRead : " + uuidList);
                                     for(String messageId: uuidList) {
-                                        ChatItem chatItem = DatabaseHolder.getInstance().getChatItem(messageId);
-                                        if (chatItem instanceof ConsultPhrase) {
-                                            chatUpdateProcessor.postConsultMessageWasRead(((ConsultPhrase) chatItem).getProviderId());
-                                        }
+                                        chatUpdateProcessor.postIncomingMessageWasRead(messageId);
                                     }
                                 },
                                 e -> {
@@ -50,6 +52,28 @@ public abstract class Transport {
         );
     }
 
+    public void getSettings() {
+        subscribe(
+            Single.fromCallable(() -> ApiGenerator.getThreadsApi().settings().execute())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(
+                            response -> {
+                                final SettingsResponse responseBody = response.body();
+                                if (responseBody != null) {
+                                    ThreadsLogger.i(TAG, "getting settings : " + responseBody);
+                                    final ClientNotificationDisplayType type = ClientNotificationDisplayType.fromString(responseBody.getClientNotificationDisplayType());
+                                    PrefUtils.setClientNotificationDisplayType(type);
+                                    chatUpdateProcessor.postClientNotificationDisplayType(type);
+                                }
+                            },
+                            e -> {
+                                ThreadsLogger.i(TAG, "error on getting settings : " + e.getMessage());
+                                chatUpdateProcessor.postError(new TransportException(e.getMessage()));
+                            }
+                    )
+
+    );
+    }
     private boolean subscribe(final Disposable event) {
         if (compositeDisposable == null || compositeDisposable.isDisposed()) {
             compositeDisposable = new CompositeDisposable();
@@ -75,7 +99,7 @@ public abstract class Transport {
      */
     public abstract void sendMessage(UserPhrase userPhrase, ConsultInfo consultInfo, final String filePath, final String quoteFilePath);
 
-    public abstract void sendRatingReceived(long sendingId);
+    public abstract void sendRatingReceived(Survey survey);
 
     public abstract void sendClientOffline(String clientId);
 

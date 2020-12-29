@@ -6,7 +6,9 @@ import java.util.List;
 
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.QuickReply;
+import im.threads.internal.model.Survey;
 import im.threads.internal.transport.ChatItemProviderData;
 import im.threads.internal.transport.TransportException;
 import im.threads.internal.transport.models.AttachmentSettings;
@@ -19,16 +21,17 @@ public class ChatUpdateProcessor {
 
     private final FlowableProcessor<String> typingProcessor = PublishProcessor.create();
     private final FlowableProcessor<AttachmentSettings> attachmentSettingsProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> userMessageReadProcessor = PublishProcessor.create();
-    private final FlowableProcessor<String> consultMessageReadProcessor = PublishProcessor.create();
+    private final FlowableProcessor<String> outgoingMessageReadProcessor = PublishProcessor.create();
+    private final FlowableProcessor<String> incomingMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemProviderData> messageSendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> messageSendErrorProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemType> removeChatItemProcessor = PublishProcessor.create();
-    private final FlowableProcessor<Long> surveySendSuccessProcessor = PublishProcessor.create();
+    private final FlowableProcessor<Survey> surveySendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
     private final FlowableProcessor<Boolean> userInputEnableProcessor = PublishProcessor.create();
     private final FlowableProcessor<List<QuickReply>> quickRepliesProcessor = PublishProcessor.create();
+    private final FlowableProcessor<ClientNotificationDisplayType> clientNotificationDisplayTypeProcessor = PublishProcessor.create();
 
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
 
@@ -47,12 +50,12 @@ public class ChatUpdateProcessor {
         attachmentSettingsProcessor.onNext(attachmentSettings);
     }
 
-    public void postUserMessageWasRead(@NonNull String messageId) {
-        userMessageReadProcessor.onNext(messageId);
+    public void postOutgoingMessageWasRead(@NonNull String messageId) {
+        outgoingMessageReadProcessor.onNext(messageId);
     }
 
-    public void postConsultMessageWasRead(@NonNull String messageId) {
-        consultMessageReadProcessor.onNext(messageId);
+    public void postIncomingMessageWasRead(@NonNull String messageId) {
+        incomingMessageReadProcessor.onNext(messageId);
     }
 
     public void postNewMessage(@NonNull ChatItem chatItem) {
@@ -71,8 +74,8 @@ public class ChatUpdateProcessor {
         removeChatItemProcessor.onNext(chatItemType);
     }
 
-    public void postSurveySendSuccess(long sendingId) {
-        surveySendSuccessProcessor.onNext(sendingId);
+    public void postSurveySendSuccess(Survey survey) {
+        surveySendSuccessProcessor.onNext(survey);
     }
 
     public void postDeviceAddressChanged(String deviceAddress) {
@@ -87,6 +90,10 @@ public class ChatUpdateProcessor {
         quickRepliesProcessor.onNext(quickReplies);
     }
 
+    public void postClientNotificationDisplayType(ClientNotificationDisplayType type) {
+        clientNotificationDisplayTypeProcessor.onNext(type);
+    }
+
     public void postError(@NonNull TransportException error) {
         errorProcessor.onNext(error);
     }
@@ -99,12 +106,12 @@ public class ChatUpdateProcessor {
         return attachmentSettingsProcessor;
     }
 
-    public FlowableProcessor<String> getUserMessageReadProcessor() {
-        return userMessageReadProcessor;
+    public FlowableProcessor<String> getOutgoingMessageReadProcessor() {
+        return outgoingMessageReadProcessor;
     }
 
-    public FlowableProcessor<String> getConsultMessageReadProcessor() {
-        return consultMessageReadProcessor;
+    public FlowableProcessor<String> getIncomingMessageReadProcessor() {
+        return incomingMessageReadProcessor;
     }
 
     public FlowableProcessor<ChatItem> getNewMessageProcessor() {
@@ -123,12 +130,8 @@ public class ChatUpdateProcessor {
         return removeChatItemProcessor;
     }
 
-    public FlowableProcessor<Long> getSurveySendSuccessProcessor() {
+    public FlowableProcessor<Survey> getSurveySendSuccessProcessor() {
         return surveySendSuccessProcessor;
-    }
-
-    public FlowableProcessor<TransportException> getErrorProcessor() {
-        return errorProcessor;
     }
 
     public FlowableProcessor<String> getDeviceAddressChangedProcessor() {
@@ -143,4 +146,11 @@ public class ChatUpdateProcessor {
         return quickRepliesProcessor;
     }
 
+    public FlowableProcessor<ClientNotificationDisplayType> getClientNotificationDisplayTypeProcessor() {
+        return clientNotificationDisplayTypeProcessor;
+    }
+
+    public FlowableProcessor<TransportException> getErrorProcessor() {
+        return errorProcessor;
+    }
 }

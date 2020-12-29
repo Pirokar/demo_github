@@ -20,6 +20,7 @@ import java.util.UUID;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
+import im.threads.internal.model.ClientNotificationDisplayType;
 
 public final class PrefUtils {
     private static final String TAG = "PrefUtils ";
@@ -34,6 +35,7 @@ public final class PrefUtils {
     private static final String EXTRA_DATA = "EXTRA_DATE";
     private static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
     private static final String APP_STYLE = "APP_STYLE";
+    @Deprecated
     private static final String TAG_THREAD_ID = "THREAD_ID";
     private static final String APP_MARKER_KEY = "APP_MARKER";
     private static final String FCM_TOKEN = "FCM_TOKEN";
@@ -41,6 +43,8 @@ public final class PrefUtils {
     private static final String TRANSPORT_TYPE = "TRANSPORT_TYPE";
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String MIGRATED = "MIGRATED";
+    private static final String CLIENT_NOTIFICATION_DISPLAY_TYPE = "CLIENT_NOTIFICATION_DISPLAY_TYPE";
+    private static final String THREAD_ID = "THREAD_ID";
 
     private static final String UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT";
 
@@ -126,18 +130,28 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static void setThreadId(Long threadId) {
-        if (threadId == null) {
-            throw new IllegalStateException("threadId must not be null");
-        }
+    public static ClientNotificationDisplayType getClientNotificationDisplayType() {
+        return ClientNotificationDisplayType.fromString(
+                getDefaultSharedPreferences().getString(CLIENT_NOTIFICATION_DISPLAY_TYPE, "")
+        );
+    }
+
+    public static void setClientNotificationDisplayType(@NonNull ClientNotificationDisplayType type) {
         getDefaultSharedPreferences()
                 .edit()
-                .putLong(TAG_THREAD_ID, threadId)
+                .putString(CLIENT_NOTIFICATION_DISPLAY_TYPE, type.name())
                 .commit();
     }
 
-    public static Long getThreadID() {
-        return getDefaultSharedPreferences().getLong(TAG_THREAD_ID, -1L);
+    public static long getThreadId() {
+        return getDefaultSharedPreferences().getLong(THREAD_ID, -1);
+    }
+
+    public static void setThreadId(long threadId) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putLong(THREAD_ID, threadId)
+                .commit();
     }
 
     public static boolean isClientIdNotEmpty() {

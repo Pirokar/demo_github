@@ -1,10 +1,9 @@
 package im.threads.internal.database;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
@@ -102,14 +101,24 @@ public final class DatabaseHolder {
                 .subscribeOn(Schedulers.io());
     }
 
-    public void setConsultMessageWasRead(String providerId) {
-        mMyOpenHelper.setConsultMessageWasRead(providerId);
+    public void setMessageWasRead(String uuid) {
+        mMyOpenHelper.setMessageWasRead(uuid);
     }
 
     // Survey
     @Nullable
     public Survey getSurvey(long sendingId) {
         return mMyOpenHelper.getSurvey(sendingId);
+    }
+
+    public Completable setNotSentSurveyDisplayMessageToFalse() {
+        return Completable.fromCallable(mMyOpenHelper::setNotSentSurveyDisplayMessageToFalse)
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Completable setOldRequestResolveThreadDisplayMessageToFalse() {
+        return Completable.fromCallable(mMyOpenHelper::setOldRequestResolveThreadDisplayMessageToFalse)
+                .subscribeOn(Schedulers.io());
     }
 
     // Messages
@@ -135,6 +144,5 @@ public final class DatabaseHolder {
     ThreadsDbHelper getMyOpenHelper() {
         return mMyOpenHelper;
     }
-
 
 }

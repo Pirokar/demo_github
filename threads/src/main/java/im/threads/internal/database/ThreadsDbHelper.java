@@ -25,7 +25,7 @@ import im.threads.internal.model.UserPhrase;
  * обертка для БД
  */
 final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
-    private static final int VERSION = 11;
+    private static final int VERSION = 12;
 
     private QuotesTable quotesTable;
     private QuickRepliesTable quickRepliesTable;
@@ -136,17 +136,26 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
 
     @Override
     public int setAllConsultMessagesWereRead() {
-        return messagesTable.setAllConsultMessagesWereRead(this);
+        return messagesTable.setAllMessagesWereRead(this);
     }
 
     @Override
-    public void setConsultMessageWasRead(String providerId) {
-        messagesTable.setConsultMessageWasRead(this, providerId);
+    public void setMessageWasRead(String uuid) {
+        messagesTable.setMessageWasRead(this, uuid);
     }
-
     @Override
     public Survey getSurvey(long sendingId) {
         return messagesTable.getSurvey(this, sendingId);
+    }
+
+    @Override
+    public int setNotSentSurveyDisplayMessageToFalse() {
+        return messagesTable.setNotSentSurveyDisplayMessageToFalse(this);
+    }
+
+    @Override
+    public int setOldRequestResolveThreadDisplayMessageToFalse() {
+        return messagesTable.setOldRequestResolveThreadDisplayMessageToFalse(this);
     }
 
     @Override

@@ -1,15 +1,8 @@
 package im.threads.internal.transport.models;
 
-public class SystemMessageContent {
-
-    private String type;
+public class SurveyContent {
     private String uuid;
     private String text;
-    private long threadId;
-
-    public String getType() {
-        return type;
-    }
 
     public String getUuid() {
         return uuid;
@@ -17,9 +10,5 @@ public class SystemMessageContent {
 
     public String getText() {
         return text;
-    }
-
-    public long getThreadId() {
-        return threadId;
     }
 }

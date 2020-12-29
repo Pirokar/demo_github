@@ -5,29 +5,39 @@ import androidx.core.util.ObjectsCompat;
 import java.util.List;
 
 public final class Survey implements ChatItem, Hidable {
+    private String uuid;
     private long sendingId;
     private List<QuestionDTO> questions;
     private Long hideAfter;
     private long phraseTimeStamp;
+    private boolean displayMessage;
     private MessageState sentState;
+    private boolean read;
 
-    public Survey(long surveySendingId, Long hideAfter, long phraseTimeStamp, MessageState messageState) {
+    public Survey(String uuid, long surveySendingId, Long hideAfter, long phraseTimeStamp, MessageState messageState, boolean read, boolean displayMessage) {
+        this.uuid = uuid;
         this.sendingId = surveySendingId;
         this.hideAfter = hideAfter;
         this.phraseTimeStamp = phraseTimeStamp;
         this.sentState = messageState;
+        this.read = read;
+        this.displayMessage = displayMessage;
     }
 
-    public Survey(long surveySendingId, long phraseTimeStamp, MessageState messageState) {
-        this(surveySendingId, null, phraseTimeStamp, messageState);
+    public Survey(String uuid, long surveySendingId, long phraseTimeStamp, MessageState messageState, boolean read, boolean displayMessage) {
+        this(uuid, surveySendingId, null, phraseTimeStamp, messageState, read, displayMessage);
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public long getSendingId() {
         return sendingId;
-    }
-
-    public void setSendingId(long sendingId) {
-        this.sendingId = sendingId;
     }
 
     public List<QuestionDTO> getQuestions() {
@@ -42,20 +52,36 @@ public final class Survey implements ChatItem, Hidable {
         return hideAfter;
     }
 
-    public void setHideAfter(Long hideAfter) {
-        this.hideAfter = hideAfter;
-    }
-
-    public void setPhraseTimeStamp(long phraseTimeStamp) {
-        this.phraseTimeStamp = phraseTimeStamp;
-    }
-
     public MessageState getSentState() {
         return sentState;
     }
 
     public void setSentState(MessageState sentState) {
         this.sentState = sentState;
+    }
+
+    public long getPhraseTimeStamp() {
+        return phraseTimeStamp;
+    }
+
+    public void setPhraseTimeStamp(long phraseTimeStamp) {
+        this.phraseTimeStamp = phraseTimeStamp;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
+    }
+
+    public boolean isDisplayMessage() {
+        return displayMessage;
+    }
+
+    public void setDisplayMessage(boolean displayMessage) {
+        this.displayMessage = displayMessage;
     }
 
     @Override
@@ -66,9 +92,18 @@ public final class Survey implements ChatItem, Hidable {
     @Override
     public boolean isTheSameItem(ChatItem otherItem) {
         if (otherItem instanceof Survey) {
-            return this.sendingId == ((Survey) otherItem).sendingId;
+            return ObjectsCompat.equals(this.sendingId, ((Survey) otherItem).sendingId);
         }
         return false;
+    }
+
+    public boolean isCompleted() {
+        return sentState == MessageState.STATE_SENT || sentState == MessageState.STATE_WAS_READ;
+    }
+
+    @Override
+    public Long getThreadId() {
+        return null;
     }
 
     @Override

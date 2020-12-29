@@ -4,6 +4,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,14 +17,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuestionDTO;
+import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.SimpleSystemMessage;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
@@ -52,6 +55,7 @@ public class MessagesTable extends Table {
     private static final String COLUMN_DISPLAY_MESSAGE = "COLUMN_DISPLAY_MESSAGE";
     private static final String COLUMN_SURVEY_SENDING_ID = "COLUMN_SURVEY_SENDING_ID";
     private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
+    private static final String COLUMN_THREAD_ID = "COLUMN_THREAD_ID";
 
     private final FileDescriptionsTable fileDescriptionTable;
     private final QuotesTable quotesTable;
@@ -93,6 +97,7 @@ public class MessagesTable extends Table {
                         + ", " + COLUMN_DISPLAY_MESSAGE + " integer"
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
+                        + ", " + COLUMN_THREAD_ID + " integer"
                         + ")",
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_FORMATTED_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
@@ -167,10 +172,10 @@ public class MessagesTable extends Table {
             insertOrUpdateMessage(sqlHelper, getConsultConnectionMessageCV((ConsultConnectionMessage) chatItem));
             return true;
         }
-        /*if (chatItem instanceof SimpleSystemMessage) {
+        if (chatItem instanceof SimpleSystemMessage && !TextUtils.isEmpty(((SimpleSystemMessage) chatItem).getUuid())) {
             insertOrUpdateMessage(sqlHelper, getSimpleSystemMessageCV((SimpleSystemMessage) chatItem));
             return true;
-        }*/
+        }
         if (chatItem instanceof ConsultPhrase) {
             final ConsultPhrase phrase = (ConsultPhrase) chatItem;
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(phrase));
@@ -197,7 +202,15 @@ public class MessagesTable extends Table {
             return true;
         }
         if (chatItem instanceof Survey) {
-            insertOrUpdateSurvey(sqlHelper, (Survey) chatItem);
+            final Survey survey = (Survey) chatItem;
+            setNotSentSurveyDisplayMessageToFalse(sqlHelper, survey.getSendingId());
+            insertOrUpdateSurvey(sqlHelper, survey);
+        }
+        if (chatItem instanceof RequestResolveThread) {
+            RequestResolveThread requestResolveThread = (RequestResolveThread) chatItem;
+            setOldRequestResolveThreadDisplayMessageToFalse(sqlHelper, requestResolveThread.getUuid());
+            insertOrUpdateMessage(sqlHelper, getRequestResolveThreadCV(requestResolveThread));
+            return true;
         }
         return false;
     }
@@ -255,21 +268,22 @@ public class MessagesTable extends Table {
         return null;
     }
 
-    public int setAllConsultMessagesWereRead(SQLiteOpenHelper sqlHelper) {
+    public int setAllMessagesWereRead(SQLiteOpenHelper sqlHelper) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_IS_READ, true);
-        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() +
+        String whereClause = "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() +
+                " or (" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() + ")" +
+                " or " + COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() + ")" +
                 " and " + COLUMN_IS_READ + " = 0";
         return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
     }
 
-    public void setConsultMessageWasRead(SQLiteOpenHelper sqlHelper, String providerId) {
+    public void setMessageWasRead(SQLiteOpenHelper sqlHelper, String uuid) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_IS_READ, true);
-        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() +
-                " and " + COLUMN_PROVIDER_ID + " = ? " +
+        String whereClause = COLUMN_MESSAGE_UUID + " = ? " +
                 " and " + COLUMN_IS_READ + " = 0";
-        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{providerId});
+        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{uuid});
     }
 
     @Nullable
@@ -299,7 +313,12 @@ public class MessagesTable extends Table {
     public int getUnreadMessagesCount(SQLiteOpenHelper sqlHelper) {
         String sql = "select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
                 " from " + TABLE_MESSAGES +
-                " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = 0" +
+                " where (" +
+                COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " or " +
+                "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() + ") or " +
+                COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() +
+                ")" +
+                " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc";
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, null)) {
             return c.getCount();
@@ -310,7 +329,12 @@ public class MessagesTable extends Table {
     public List<String> getUnreadMessagesUuid(SQLiteOpenHelper sqlHelper) {
         String sql = "select " + COLUMN_MESSAGE_UUID +
                 " from " + TABLE_MESSAGES +
-                " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " and " + COLUMN_IS_READ + " = 0" +
+                " where (" +
+                COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal() + " or " +
+                "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() + ") or " +
+                COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() +
+                ")" +
+                " and " + COLUMN_IS_READ + " = 0" +
                 " order by " + COLUMN_TIMESTAMP + " asc";
         Set<String> ids = new HashSet<>();
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, null)) {
@@ -319,6 +343,21 @@ public class MessagesTable extends Table {
             }
         }
         return new ArrayList<>(ids);
+    }
+
+    public int setNotSentSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_DISPLAY_MESSAGE, false);
+        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() +
+                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal();
+        return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
+    }
+
+    public int setOldRequestResolveThreadDisplayMessageToFalse(SQLiteOpenHelper sqlHelper) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_DISPLAY_MESSAGE, false);
+        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal();
+        return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
     }
 
     @Nullable
@@ -339,14 +378,16 @@ public class MessagesTable extends Table {
                     cGetString(c, COLUMN_CONSULT_TITLE),
                     cGetString(c, COLUMN_CONSULT_ORG_UNIT),
                     cGetBool(c, COLUMN_DISPLAY_MESSAGE),
-                    cGetString(c, COLUMN_PHRASE)
+                    cGetString(c, COLUMN_PHRASE),
+                    cGetLong(c, COLUMN_THREAD_ID)
             );
         } else if (type == MessageType.SYSTEM_MESSAGE.ordinal()) {
             return new SimpleSystemMessage(
                     cGetString(c, COLUMN_MESSAGE_UUID),
-                    cGetString(c, COLUMN_MESSAGE_TYPE),
+                    cGetString(c, COLUMN_CONNECTION_TYPE),
                     cGetLong(c, COLUMN_TIMESTAMP),
-                    cGetString(c, COLUMN_PHRASE)
+                    cGetString(c, COLUMN_PHRASE),
+                    cGetLong(c, COLUMN_THREAD_ID)
             );
         } else if (type == MessageType.CONSULT_PHRASE.ordinal()) {
             return getConsultPhrase(sqlHelper, c);
@@ -354,6 +395,8 @@ public class MessagesTable extends Table {
             return getUserPhrase(sqlHelper, c);
         } else if (type == MessageType.SURVEY.ordinal()) {
             return getSurvey(sqlHelper, c);
+        } else if (type == MessageType.REQUEST_RESOLVE_THREAD.ordinal()) {
+            return getRequestResolveThread(c);
         }
         return null;
     }
@@ -374,6 +417,7 @@ public class MessagesTable extends Table {
                 cGetBool(c, COLUMN_IS_READ),
                 cGetString(c, COLUMN_CONSULT_STATUS),
                 cGetBool(c, COLUMN_SEX),
+                cGetLong(c, COLUMN_THREAD_ID),
                 quickRepliesTable.getQuickReplies(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID))
         );
     }
@@ -387,23 +431,38 @@ public class MessagesTable extends Table {
                 quotesTable.getQuote(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
                 cGetLong(c, COLUMN_TIMESTAMP),
                 fileDescriptionTable.getFileDescription(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
-                MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
+                MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
+                cGetLong(c, COLUMN_THREAD_ID)
         );
     }
 
     private Survey getSurvey(SQLiteOpenHelper sqlHelper, Cursor c) {
         long surveySendingId = cGetLong(c, COLUMN_SURVEY_SENDING_ID);
         Survey survey = new Survey(
+                cGetString(c, COLUMN_MESSAGE_UUID),
                 surveySendingId,
                 cGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
                 cGetLong(c, COLUMN_TIMESTAMP),
-                MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE))
+                MessageState.fromOrdinal(cGetInt(c, COLUMN_MESSAGE_SEND_STATE)),
+                cGetBool(c, COLUMN_IS_READ),
+                cGetBool(c, COLUMN_DISPLAY_MESSAGE)
         );
-        if (survey.getHideAfter() * 1000 + survey.getTimeStamp() <= System.currentTimeMillis()) {
-            return null;
-        }
         survey.setQuestions(Collections.singletonList(questionsTable.getQuestion(sqlHelper, surveySendingId)));
         return survey;
+    }
+
+    private RequestResolveThread getRequestResolveThread(Cursor c) {
+        RequestResolveThread requestResolveThread = new RequestResolveThread(
+                cGetString(c, COLUMN_MESSAGE_UUID),
+                cGetLong(c, COLUMN_SURVEY_HIDE_AFTER),
+                cGetLong(c, COLUMN_TIMESTAMP),
+                cGetLong(c, COLUMN_THREAD_ID),
+                cGetBool(c, COLUMN_IS_READ)
+        );
+        if (!cGetBool(c, COLUMN_DISPLAY_MESSAGE)) {
+            return null;
+        }
+        return requestResolveThread;
     }
 
     private ContentValues getConsultPhraseCV(ConsultPhrase phrase) {
@@ -421,6 +480,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
         cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.getProviderIds()));
         cv.put(COLUMN_SEX, phrase.getSex());
+        cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
         return cv;
     }
 
@@ -433,6 +493,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal());
         cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.getSentState().ordinal());
+        cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
         return cv;
     }
 
@@ -451,15 +512,30 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_MESSAGE_UUID, consultConnectionMessage.getUuid());
         cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage());
         cv.put(COLUMN_PHRASE, consultConnectionMessage.getText());
+        cv.put(COLUMN_THREAD_ID, consultConnectionMessage.getThreadId());
         return cv;
     }
 
     private ContentValues getSimpleSystemMessageCV(SimpleSystemMessage simpleSystemMessage) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_UUID, simpleSystemMessage.getUuid());
-        cv.put(COLUMN_MESSAGE_TYPE, simpleSystemMessage.getType());
+        cv.put(COLUMN_MESSAGE_TYPE, MessageType.SYSTEM_MESSAGE.ordinal());
+        cv.put(COLUMN_CONNECTION_TYPE, simpleSystemMessage.getType());
         cv.put(COLUMN_TIMESTAMP, simpleSystemMessage.getTimeStamp());
         cv.put(COLUMN_PHRASE, simpleSystemMessage.getText());
+        cv.put(COLUMN_THREAD_ID, simpleSystemMessage.getThreadId());
+        return cv;
+    }
+
+    private ContentValues getRequestResolveThreadCV(RequestResolveThread requestResolveThread) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_MESSAGE_UUID, requestResolveThread.getUuid());
+        cv.put(COLUMN_MESSAGE_TYPE, MessageType.REQUEST_RESOLVE_THREAD.ordinal());
+        cv.put(COLUMN_SURVEY_HIDE_AFTER, requestResolveThread.getHideAfter());
+        cv.put(COLUMN_TIMESTAMP, requestResolveThread.getTimeStamp());
+        cv.put(COLUMN_THREAD_ID, requestResolveThread.getThreadId());
+        cv.put(COLUMN_DISPLAY_MESSAGE, true);
+        cv.put(COLUMN_IS_READ, requestResolveThread.isRead());
         return cv;
     }
 
@@ -489,10 +565,13 @@ public class MessagesTable extends Table {
         String[] selectionArgs = new String[]{String.valueOf(survey.getSendingId()), String.valueOf(MessageType.SURVEY.ordinal())};
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.SURVEY.ordinal());
+        cv.put(COLUMN_MESSAGE_UUID, survey.getUuid());
         cv.put(COLUMN_SURVEY_SENDING_ID, survey.getSendingId());
         cv.put(COLUMN_SURVEY_HIDE_AFTER, survey.getHideAfter());
         cv.put(COLUMN_TIMESTAMP, survey.getTimeStamp());
         cv.put(COLUMN_MESSAGE_SEND_STATE, survey.getSentState().ordinal());
+        cv.put(COLUMN_DISPLAY_MESSAGE, survey.isDisplayMessage());
+        cv.put(COLUMN_IS_READ, survey.isRead());
         try (Cursor c = sqlHelper.getWritableDatabase().rawQuery(sql, selectionArgs)) {
             if (c.getCount() > 0) {
                 sqlHelper.getWritableDatabase().update(
@@ -508,6 +587,23 @@ public class MessagesTable extends Table {
         for (QuestionDTO question : survey.getQuestions()) {
             questionsTable.putQuestion(sqlHelper, question, survey.getSendingId());
         }
+    }
+
+    private void setNotSentSurveyDisplayMessageToFalse(SQLiteOpenHelper sqlHelper, long currentSurveySendingId) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_DISPLAY_MESSAGE, false);
+        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal() +
+                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal() +
+                " and " + COLUMN_SURVEY_SENDING_ID + " != ?";
+        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{String.valueOf(currentSurveySendingId)});
+    }
+
+    private void setOldRequestResolveThreadDisplayMessageToFalse(SQLiteOpenHelper sqlHelper, String uuid) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_DISPLAY_MESSAGE, false);
+        String whereClause = COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal() +
+                " and " + COLUMN_MESSAGE_UUID + " != ?";
+        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{uuid});
     }
 
     private List<String> stringToList(String text) {
@@ -536,6 +632,7 @@ public class MessagesTable extends Table {
         SYSTEM_MESSAGE,
         CONSULT_PHRASE,
         USER_PHRASE,
-        SURVEY
+        SURVEY,
+        REQUEST_RESOLVE_THREAD
     }
 }

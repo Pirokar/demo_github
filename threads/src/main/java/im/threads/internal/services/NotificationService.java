@@ -5,10 +5,8 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -52,25 +50,18 @@ import im.threads.view.ChatFragment;
  */
 public final class NotificationService extends ThreadsService {
 
-    private static final String TAG = "NotificationService";
-    private static final String CHANNEL_ID = "im.threads.internal.services.NotificationService.CHANNEL_ID";
-
-    public static final String BROADCAST_ALL_MESSAGES_WERE_READ = "im.threads.internal.services.NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ";
-
-    private static final String ACTION_REMOVE_NOTIFICATION = "im.threads.internal.services.NotificationService.ACTION_REMOVE_NOTIFICATION";
-    private static final String ACTION_ADD_UNREAD_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE";
-    private static final String ACTION_ADD_UNREAD_MESSAGE_LIST = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE_LIST";
-    private static final String ACTION_ADD_UNSENT_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNSENT_MESSAGE";
-
     public static final String EXTRA_MESSAGE = "im.threads.internal.services.NotificationService.EXTRA_MESSAGE";
     public static final String EXTRA_OPERATOR_URL = "im.threads.internal.services.NotificationService.EXTRA_OPERATOR_URL";
     public static final String EXTRA_APP_MARKER = "im.threads.internal.services.NotificationService.EXTRA_APP_MARKER";
     public static final String EXTRA_MESSAGE_CONTENT = "im.threads.internal.services.NotificationService.EXTRA_MESSAGE_CONTENT";
-
-    private static final int UNREAD_MESSAGE_PUSH_ID = 0;
+    public static final int UNREAD_MESSAGE_PUSH_ID = 0;
+    private static final String TAG = "NotificationService";
+    private static final String CHANNEL_ID = "im.threads.internal.services.NotificationService.CHANNEL_ID";
+    private static final String ACTION_REMOVE_NOTIFICATION = "im.threads.internal.services.NotificationService.ACTION_REMOVE_NOTIFICATION";
+    private static final String ACTION_ADD_UNREAD_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE";
+    private static final String ACTION_ADD_UNREAD_MESSAGE_LIST = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE_LIST";
+    private static final String ACTION_ADD_UNSENT_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNSENT_MESSAGE";
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
-
-    private MyBroadcastReceiver mBroadcastReceiver;
     private final Handler h = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -116,11 +107,6 @@ public final class NotificationService extends ThreadsService {
         ThreadsLogger.i(TAG, "onStartCommand");
         if (style == null) {
             style = Config.instance.getChatStyle();
-        }
-        if (mBroadcastReceiver == null) {
-            mBroadcastReceiver = new MyBroadcastReceiver();
-            getApplicationContext().registerReceiver(mBroadcastReceiver,
-                    new IntentFilter(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ));
         }
         if (intent == null) {
             return START_STICKY;
@@ -189,14 +175,6 @@ public final class NotificationService extends ThreadsService {
             if (Config.instance.transport.getType() == ConfigBuilder.TransportType.THREADS_GATE) {
                 UnreadMessagesController.INSTANCE.incrementUnreadPush();
             }
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mBroadcastReceiver != null) {
-            getApplicationContext().unregisterReceiver(mBroadcastReceiver);
         }
     }
 
@@ -440,17 +418,5 @@ public final class NotificationService extends ThreadsService {
 
     private PendingIntent getChatIntent(String appMarker) {
         return Config.instance.pendingIntentCreator.create(this, appMarker);
-    }
-
-    private class MyBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            if (intent.getAction() != null && intent.getAction().equals(NotificationService.BROADCAST_ALL_MESSAGES_WERE_READ)) {
-                final NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                if (nm != null) {
-                    nm.cancel(UNREAD_MESSAGE_PUSH_ID);
-                }
-            }
-        }
     }
 }

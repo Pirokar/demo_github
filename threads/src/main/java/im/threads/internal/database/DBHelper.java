@@ -31,9 +31,11 @@ public interface DBHelper {
 
     ConsultPhrase getLastConsultPhrase();
     int setAllConsultMessagesWereRead();
-    void setConsultMessageWasRead(String providerId);
+    void setMessageWasRead(String providerId);
 
     Survey getSurvey(long sendingId);
+    int setNotSentSurveyDisplayMessageToFalse();
+    int setOldRequestResolveThreadDisplayMessageToFalse();
 
     int getMessagesCount();
     int getUnreadMessagesCount();

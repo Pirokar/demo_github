@@ -5,12 +5,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import java.io.File;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
-
-import java.io.File;
-
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.controllers.UnreadMessagesController;
@@ -56,14 +55,20 @@ public final class ThreadsLib {
         ChatController.getInstance();
         Consumer<? super Throwable> errorHandler = RxJavaPlugins.getErrorHandler();
         RxJavaPlugins.setErrorHandler(throwable -> {
-            ThreadsLogger.e(TAG, "global handler: ", throwable);
             if (errorHandler != null) {
                 errorHandler.accept(throwable);
             }
             if (throwable instanceof UndeliverableException) {
+                throwable = throwable.getCause();
+                if (throwable != null) {
+                    ThreadsLogger.e(TAG, "global handler: ", throwable);
+                }
                 return;
             }
+            Thread.currentThread().getUncaughtExceptionHandler()
+                    .uncaughtException(Thread.currentThread(), throwable);
         });
+
     }
 
     public static ThreadsLib getInstance() {

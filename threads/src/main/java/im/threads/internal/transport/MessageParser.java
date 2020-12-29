@@ -2,14 +2,13 @@ package im.threads.internal.transport;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
@@ -24,8 +23,8 @@ import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
-import im.threads.internal.model.Survey;
 import im.threads.internal.model.SimpleSystemMessage;
+import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.models.Attachment;
 import im.threads.internal.transport.models.AttachmentSettings;
@@ -33,6 +32,7 @@ import im.threads.internal.transport.models.MessageContent;
 import im.threads.internal.transport.models.Operator;
 import im.threads.internal.transport.models.OperatorJoinedContent;
 import im.threads.internal.transport.models.RequestResolveThreadContent;
+import im.threads.internal.transport.models.SurveyContent;
 import im.threads.internal.transport.models.SystemMessageContent;
 import im.threads.internal.transport.models.TextContent;
 
@@ -52,7 +52,7 @@ public final class MessageParser {
             case AVERAGE_WAIT_TIME:
             case PARTING_AFTER_SURVEY:
             case THREAD_CLOSED:
-            case THREAD_TRANSFERRED:
+            case THREAD_WILL_BE_REASSIGNED:
             case THREAD_IN_PROGRESS:
                 return getSystemMessage(sentAt, fullMessage);
             case OPERATOR_JOINED:
@@ -61,9 +61,9 @@ public final class MessageParser {
             case SCHEDULE:
                 return getScheduleInfo(fullMessage);
             case SURVEY:
-                return getRating(sentAt, fullMessage);
+                return getSurvey(sentAt, fullMessage);
             case REQUEST_CLOSE_THREAD:
-                return getRequestResolveThread(fullMessage);
+                return getRequestResolveThread(sentAt, fullMessage);
             case OPERATOR_LOOKUP_STARTED:
                 return new SearchingConsult();
             case NONE:
@@ -120,13 +120,14 @@ public final class MessageParser {
                 shortMessage == null ? null : shortMessage.split(" ")[0],
                 operator.getOrganizationUnit(),
                 content.isDisplay(),
-                content.getText()
+                content.getText(),
+                content.getThreadId()
         );
     }
 
     private static SimpleSystemMessage getSystemMessage(final long sentAt, final JsonObject fullMessage) {
         SystemMessageContent content = Config.instance.gson.fromJson(fullMessage, SystemMessageContent.class);
-        return new SimpleSystemMessage(content.getUuid(), content.getType(), sentAt, content.getText());
+        return new SimpleSystemMessage(content.getUuid(), content.getType(), sentAt, content.getText(), content.getThreadId());
     }
 
     private static ScheduleInfo getScheduleInfo(final JsonObject fullMessage) {
@@ -136,20 +137,23 @@ public final class MessageParser {
         return scheduleInfo;
     }
 
-    private static Survey getRating(final long sentAt, final JsonObject fullMessage) {
-        TextContent content = Config.instance.gson.fromJson(fullMessage, TextContent.class);
+    private static Survey getSurvey(final long sentAt, final JsonObject fullMessage) {
+        SurveyContent content = Config.instance.gson.fromJson(fullMessage, SurveyContent.class);
         Survey survey = Config.instance.gson.fromJson(content.getText(), Survey.class);
+        survey.setUuid(content.getUuid());
         survey.setPhraseTimeStamp(sentAt);
         survey.setSentState(MessageState.STATE_NOT_SENT);
+        survey.setDisplayMessage(true);
+        survey.setRead(false);
         for (final QuestionDTO questionDTO : survey.getQuestions()) {
             questionDTO.setPhraseTimeStamp(sentAt);
         }
         return survey;
     }
 
-    private static RequestResolveThread getRequestResolveThread(final JsonObject fullMessage) {
+    private static RequestResolveThread getRequestResolveThread(final long sentAt, final JsonObject fullMessage) {
         RequestResolveThreadContent content = Config.instance.gson.fromJson(fullMessage, RequestResolveThreadContent.class);
-        return content.getHideAfter() > 0 ? new RequestResolveThread(content.getHideAfter(), System.currentTimeMillis()) : null;
+        return new RequestResolveThread(content.getUuid(), content.getHideAfter(), sentAt, content.getThreadId(), false);
     }
 
     @Nullable
@@ -190,6 +194,7 @@ public final class MessageParser {
                     false,
                     status,
                     gender,
+                    content.getThreadId(),
                     content.getQuickReplies()
             );
         } else {
@@ -197,7 +202,7 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), null, sentAt);
             }
-            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription);
+            final UserPhrase userPhrase = new UserPhrase(content.getUuid(), messageId, phrase, quote, sentAt, fileDescription, content.getThreadId());
             userPhrase.setSentState(MessageState.STATE_SENT);
             return userPhrase;
         }
