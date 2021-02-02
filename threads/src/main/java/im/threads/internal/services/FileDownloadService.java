@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
-import androidx.annotation.Nullable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.internal.Config;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.database.DatabaseHolder;
@@ -26,7 +25,7 @@ public final class FileDownloadService extends ThreadsService {
     private static final String TAG = "DownloadService ";
     private static final String START_DOWNLOAD_FD_TAG = "im.threads.internal.services.DownloadService.START_DOWNLOAD_FD_TAG";
     private static final String START_DOWNLOAD_WITH_NO_STOP = "im.threads.internal.services.DownloadService.START_DOWNLOAD_WITH_NO_STOP";
-    private static HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();
+    private static final HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();
     private final Executor executor = Executors.newFixedThreadPool(3);
 
     public FileDownloadService() {
@@ -60,7 +59,6 @@ public final class FileDownloadService extends ThreadsService {
         }
         final FileDownloader fileDownloader = new FileDownloader(
                 fileDescription.getDownloadPath(),
-                fileDescription.getIncomingName(),
                 this,
                 new FileDownloader.DownloadLister() {
                     @Override

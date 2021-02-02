@@ -8,6 +8,7 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -704,9 +705,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindConsultPhraseVH(@NonNull final ConsultPhraseHolder holder, ConsultPhrase consultPhrase) {
-        if (FileUtils.isImage(consultPhrase.getFileDescription())) {
-            mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
-        }
+        downloadImageIfNeeded(consultPhrase.getFileDescription());
         holder
                 .onBind(
                         consultPhrase,
@@ -738,9 +737,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindUserPhraseVH(@NonNull final UserPhraseViewHolder holder, UserPhrase userPhrase) {
-        if (FileUtils.isImage(userPhrase.getFileDescription())) {
-            mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
-        }
+        downloadImageIfNeeded(userPhrase.getFileDescription());
         holder.onBind(
                 userPhrase,
                 userPhrase.getPhrase(),
@@ -786,9 +783,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindImageFromConsultVH(@NonNull final ImageFromConsultViewHolder holder, ConsultPhrase consultPhrase) {
-        if (consultPhrase.getFileDescription() != null && consultPhrase.getFileDescription().getFileUri() == null) {
-            mCallback.onImageDownloadRequest(consultPhrase.getFileDescription());
-        }
+        downloadImageIfNeeded(consultPhrase.getFileDescription());
         holder.onBind(
                 consultPhrase,
                 () -> mCallback.onImageClick(consultPhrase),
@@ -797,14 +792,18 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindImageFromUserVH(@NonNull final ImageFromUserViewHolder holder, UserPhrase userPhrase) {
-        if (userPhrase.getFileDescription().getFileUri() == null) {
-            mCallback.onImageDownloadRequest(userPhrase.getFileDescription());
-        }
+        downloadImageIfNeeded(userPhrase.getFileDescription());
         if (userPhrase.getFileDescription() != null) {
             holder.onBind(userPhrase,
                     () -> mCallback.onImageClick(userPhrase),
                     () -> mCallback.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
             );
+        }
+    }
+
+    private void downloadImageIfNeeded(@Nullable FileDescription fileDescription) {
+        if (FileUtils.isImage(fileDescription) && fileDescription.getFileUri() == null) {
+            mCallback.onImageDownloadRequest(fileDescription);
         }
     }
 

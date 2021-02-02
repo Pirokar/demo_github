@@ -4,21 +4,19 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import im.threads.R;
 import im.threads.internal.adapters.ImagesAdapter;
 import im.threads.internal.database.DatabaseHolder;
@@ -134,8 +132,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                     R.string.threads_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             return;
         }
-        Uri path = files.get(mViewPager.getCurrentItem()).getFileUri();
-        compositeDisposable.add(Completable.fromAction(() -> FileUtils.saveToDownloads(path))
+        compositeDisposable.add(Completable.fromAction(() -> FileUtils.saveToDownloads(files.get(mViewPager.getCurrentItem())))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

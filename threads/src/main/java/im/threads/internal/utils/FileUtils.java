@@ -113,12 +113,13 @@ public final class FileUtils {
         return (source != null) ? Uri.parse(source) : null;
     }
 
-    public static void saveToDownloads(Uri uri) throws IOException {
+    public static void saveToDownloads(FileDescription fileDescription) throws IOException {
+        final Uri uri = fileDescription.getFileUri();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContentResolver resolver = Config.instance.context.getContentResolver();
             ContentValues imageCV = new ContentValues();
-            imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, getFileName(uri));
-            imageCV.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(uri));
+            imageCV.put(MediaStore.Images.Media.DISPLAY_NAME, fileDescription.getIncomingName());
+            imageCV.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(fileDescription));
             Uri imagesCollection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
             Uri outputUri = resolver.insert(imagesCollection, imageCV);
             if (outputUri == null) {

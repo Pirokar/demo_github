@@ -1,6 +1,7 @@
 package im.threads.internal.utils;
 
 import android.content.Context;
+import android.net.Uri;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -8,19 +9,32 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class FileDownloader {
     private static final String TAG = "FileDownloader ";
-    private String path;
-    private File outputFile;
+    private final String path;
+    private final File outputFile;
+    private final DownloadLister downloadLister;
+
     private boolean isStopped;
 
-    private DownloadLister downloadLister;
-
-    public FileDownloader(String path, String fileName, Context ctx, DownloadLister downloadLister) {
+    public FileDownloader(@NonNull String path, @NonNull Context ctx, @Nullable DownloadLister downloadLister) {
         this.path = path;
-        outputFile = new File(getDownloadDir(ctx), fileName);
+        String filename = Uri.parse(path).getLastPathSegment();
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.update(path.getBytes());
+            filename = new String(messageDigest.digest());
+        } catch (NoSuchAlgorithmException e) {
+            ThreadsLogger.e(TAG, "constructor", e);
+        }
+        this.outputFile = new File(getDownloadDir(ctx), filename);
         this.downloadLister = downloadLister;
     }
 
@@ -41,7 +55,7 @@ public class FileDownloader {
                 urlConnection.setReadTimeout(15000);
 
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                List values = urlConnection.getHeaderFields().get("Content-Length");
+                List<String> values = urlConnection.getHeaderFields().get("Content-Length");
                 Long length = null;
                 try {
                     if (values != null && !values.isEmpty()) {
