@@ -190,12 +190,14 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
     }
 
     @Override
-    public synchronized void setLifecycle(@NonNull Lifecycle lifecycle) {
+    public synchronized void setLifecycle(@Nullable Lifecycle lifecycle) {
         if (this.lifecycle != null) {
             this.lifecycle.removeObserver(this);
         }
         this.lifecycle = lifecycle;
-        this.lifecycle.addObserver(this);
+        if (this.lifecycle != null) {
+            this.lifecycle.addObserver(this);
+        }
     }
 
     private void sendMessage(JsonObject content) {

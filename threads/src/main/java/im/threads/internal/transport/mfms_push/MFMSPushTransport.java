@@ -217,12 +217,14 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
     }
 
     @Override
-    public synchronized void setLifecycle(@NonNull Lifecycle lifecycle) {
+    public synchronized void setLifecycle(@Nullable Lifecycle lifecycle) {
         if (this.lifecycle != null) {
             this.lifecycle.removeObserver(this);
         }
         this.lifecycle = lifecycle;
-        this.lifecycle.addObserver(this);
+        if (this.lifecycle != null) {
+            this.lifecycle.addObserver(this);
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)

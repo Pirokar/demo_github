@@ -254,6 +254,12 @@ public final class ChatFragment extends BaseFragment implements
         chatIsShown = false;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Config.instance.transport.setLifecycle(null);
+    }
+
     private void initController() {
         Activity activity = getActivity();
         if (activity == null) {
