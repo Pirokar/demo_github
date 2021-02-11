@@ -54,40 +54,56 @@
 
         </FrameLayout>
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/scroll_down_button_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/bottom_layout"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/margin_half"
-            android:layout_marginBottom="@dimen/margin_half"
+            android:layout_margin="@dimen/threads_scroll_down_button_margin"
+            tools:visibility="visible"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/scroll_down_button"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginTop="14dp"
-                app:srcCompat="@drawable/threads_scroll_down_btn_back" />
+                android:layout_width="@dimen/threads_scroll_down_button_width"
+                android:layout_height="@dimen/threads_scroll_down_button_height"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:elevation="@dimen/threads_scroll_down_button_elevation"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/threads_scroll_down_background"
+                app:srcCompat="@drawable/threads_scroll_down_icon" />
 
             <View
                 android:id="@+id/unread_msg_sticker"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_centerHorizontal="true"
+                android:elevation="@dimen/threads_scroll_down_button_elevation"
                 android:background="@drawable/circle_red" />
 
             <im.threads.internal.widget.CustomFontTextView
                 android:id="@+id/unread_msg_count"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/unread_msg_sticker"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_centerHorizontal="true"
+                android:elevation="@dimen/threads_scroll_down_button_elevation"
                 android:gravity="center"
                 android:textColor="@color/threads_chat_unread_msg_count_text"
                 android:textSize="@dimen/text_small"
                 tools:text="1" />
-        </RelativeLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/bottom_layout"

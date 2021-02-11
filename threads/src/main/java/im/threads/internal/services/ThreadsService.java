@@ -9,15 +9,16 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+
 import im.threads.R;
 
 public abstract class ThreadsService extends Service {
 
+    protected static final String CHANNEL_ID = "im.threads.internal.services.ThreadsService.CHANNEL_ID";
+
     private static final int FOREGROUND_ID = 1423;
 
     private static final String EXTRA_IS_FOREGROUND = "IS_FOREGROUND";
-
-    private static final String CHANNEL_ID = "SYNCHRONIZATION";
 
     private static NotificationChannel notificationChannel;
 
@@ -47,7 +48,7 @@ public abstract class ThreadsService extends Service {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private void createNotificationChannel(Context context) {
+    protected void createNotificationChannel(Context context) {
         if (notificationChannel == null) {
             final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (notificationManager != null) {
@@ -55,8 +56,9 @@ public abstract class ThreadsService extends Service {
                 if (notificationChannel == null) {
                     notificationChannel = new NotificationChannel(
                             CHANNEL_ID,
-                            context.getString(R.string.threads_contact_center),
-                            NotificationManager.IMPORTANCE_LOW);
+                            context.getString(R.string.threads_channel_name),
+                            NotificationManager.IMPORTANCE_DEFAULT
+                    );
                     notificationManager.createNotificationChannel(notificationChannel);
                 }
             }
