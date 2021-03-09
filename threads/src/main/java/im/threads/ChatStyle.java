@@ -270,6 +270,14 @@ public final class ChatStyle implements Serializable {
     @DimenRes
     public int welcomeScreenLogoHeight = R.dimen.threads_welcome_logo_height;
 
+    // empty state
+    @ColorRes
+    public int emptyStateBackgroundColorResId = R.color.threads_empty_state_background;
+    @ColorRes
+    public int emptyStateProgressBarColorResId = R.color.threads_empty_state_progress;
+    @ColorRes
+    public int emptyStateHintColorResId = R.color.threads_empty_state_hint;
+
     // system messages
     @DimenRes
     public int systemMessageTextSize = R.dimen.threads_system_message_text_size;
@@ -659,7 +667,6 @@ public final class ChatStyle implements Serializable {
      * @param inputHint                     - R.string.threads_input_hint
      * @param inputHeight                   - R.dimen.threads_input_height
      * @param inputBackground               - R.drawable.threads_chat_input_background
-     * @return Builder
      */
     public ChatStyle setChatInputStyle(
             @ColorRes final int chatMessageInputHintTextColor,
@@ -794,7 +801,6 @@ public final class ChatStyle implements Serializable {
      *
      * @param scheduleMessageIconResId      - R.drawable.threads_schedule_icon
      * @param scheduleMessageTextColorResId - R.color.threads_schedule_text
-     * @return Builder
      */
     public ChatStyle setScheduleMessageStyle(
             @DrawableRes final int scheduleMessageIconResId,
@@ -855,7 +861,6 @@ public final class ChatStyle implements Serializable {
      * @param systemMessageLeftRightPadding - R.dimen.threads_system_message_left_right_padding
      * @param systemMessageTextGravity      - Gravity.CENTER
      * @param systemMessageLinkColor        - R.color.threads_system_message_link
-     * @return Builder
      */
     public ChatStyle setSystemMessageStyle(
             final String systemMessageFont,
@@ -966,6 +971,24 @@ public final class ChatStyle implements Serializable {
         this.previewPlayPauseButtonColor = previewPlayPauseButtonColor;
         this.voiceMessagePlayButton = voiceMessagePlayButton;
         this.voiceMessagePauseButton = voiceMessagePauseButton;
+        return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param emptyStateBackgroundColorResId  - R.color.threads_empty_state_background
+     * @param emptyStateProgressBarColorResId - R.color.threads_empty_state_progress
+     * @param emptyStateHintColorResId        - R.color.threads_empty_state_hint
+     */
+    public ChatStyle setEmptyStateStyle(
+            @ColorRes final int emptyStateBackgroundColorResId,
+            @ColorRes final int emptyStateProgressBarColorResId,
+            @ColorRes final int emptyStateHintColorResId
+    ) {
+        this.emptyStateBackgroundColorResId = emptyStateBackgroundColorResId;
+        this.emptyStateProgressBarColorResId = emptyStateProgressBarColorResId;
+        this.emptyStateHintColorResId = emptyStateHintColorResId;
         return this;
     }
 }

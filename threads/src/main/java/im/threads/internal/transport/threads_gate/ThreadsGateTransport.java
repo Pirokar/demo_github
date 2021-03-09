@@ -311,8 +311,10 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                 if (action.equals(Action.REGISTER_DEVICE)) {
                     RegisterDeviceData data = Config.instance.gson.fromJson(response.getData().toString(), RegisterDeviceData.class);
                     PrefUtils.setDeviceAddress(data.getDeviceAddress());
-                    sendInitChatMessage();
-                    sendEnvironmentMessage();
+                    if (!TextUtils.isEmpty(PrefUtils.getClientID())) {
+                        sendInitChatMessage();
+                        sendEnvironmentMessage();
+                    }
                 }
                 if (action.equals(Action.SEND_MESSAGE)) {
                     SendMessageData data = Config.instance.gson.fromJson(response.getData().toString(), SendMessageData.class);

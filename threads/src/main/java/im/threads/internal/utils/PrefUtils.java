@@ -175,8 +175,8 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static boolean isClientIdNotEmpty() {
-        return !getClientID().isEmpty() || Config.instance.clientIdIgnoreEnabled;
+    public static boolean isClientIdEmpty() {
+        return getClientID().isEmpty() && !Config.instance.clientIdIgnoreEnabled;
     }
 
     @Nullable

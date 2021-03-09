@@ -127,7 +127,7 @@ public final class ThreadsLib {
      */
     public boolean sendMessage(@Nullable String message, @Nullable Uri fileUri) {
         ChatController chatController = ChatController.getInstance();
-        if (PrefUtils.isClientIdNotEmpty()) {
+        if (!PrefUtils.isClientIdEmpty()) {
             FileDescription fileDescription = null;
             if (fileUri != null) {
                 fileDescription = new FileDescription(

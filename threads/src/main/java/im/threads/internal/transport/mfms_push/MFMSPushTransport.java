@@ -227,8 +227,10 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void sendUserInfo() {
-        sendInitChatMessage();
-        sendEnvironmentMessage();
+        if (!TextUtils.isEmpty(PrefUtils.getClientID())) {
+            sendInitChatMessage();
+            sendEnvironmentMessage();
+        }
     }
 
 
