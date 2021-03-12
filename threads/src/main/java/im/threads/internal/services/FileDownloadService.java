@@ -4,13 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
+import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.Nullable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.internal.Config;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.database.DatabaseHolder;
@@ -59,6 +60,7 @@ public final class FileDownloadService extends ThreadsService {
         }
         final FileDownloader fileDownloader = new FileDownloader(
                 fileDescription.getDownloadPath(),
+                fileDescription.getIncomingName(),
                 this,
                 new FileDownloader.DownloadLister() {
                     @Override

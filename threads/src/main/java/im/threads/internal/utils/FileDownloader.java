@@ -3,18 +3,16 @@ package im.threads.internal.utils;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class FileDownloader {
     private static final String TAG = "FileDownloader ";
@@ -24,18 +22,38 @@ public class FileDownloader {
 
     private boolean isStopped;
 
-    public FileDownloader(@NonNull String path, @NonNull Context ctx, @Nullable DownloadLister downloadLister) {
+    public FileDownloader(@NonNull String path, @NonNull String fileName, @NonNull Context ctx, @Nullable DownloadLister downloadLister) {
         this.path = path;
-        String filename = Uri.parse(path).getLastPathSegment();
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            messageDigest.update(path.getBytes());
-            filename = new String(messageDigest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            ThreadsLogger.e(TAG, "constructor", e);
-        }
-        this.outputFile = new File(getDownloadDir(ctx), filename);
+        this.outputFile = new File(getDownloadDir(ctx), generateFileName(path, fileName));
         this.downloadLister = downloadLister;
+    }
+
+    public static File getDownloadDir(Context ctx) {
+        return ctx.getFilesDir();
+    }
+
+    public static String generateFileName(@NonNull String path, @NonNull String fileName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getFileName(fileName))
+                .append("(")
+                .append(Uri.parse(path).getLastPathSegment())
+                .append(")");
+        final String ext = getFileExtension(fileName);
+        if (ext != null) {
+            sb.append(ext);
+        }
+        return sb.toString();
+    }
+
+    private static String getFileExtension(final String path) {
+        if (path != null && path.lastIndexOf('.') != -1) {
+            return path.substring(path.lastIndexOf('.'));
+        }
+        return null;
+    }
+
+    private static String getFileName(String fileName) {
+        return fileName.substring(0, fileName.lastIndexOf('.'));
     }
 
     public void stop() {
@@ -101,10 +119,6 @@ public class FileDownloader {
                 downloadLister.onFileDownloadError(e);
             }
         }
-    }
-
-    public static File getDownloadDir(Context ctx) {
-        return ctx.getFilesDir();
     }
 
     public interface DownloadLister {
