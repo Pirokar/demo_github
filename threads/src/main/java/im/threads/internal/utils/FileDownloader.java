@@ -1,6 +1,10 @@
 package im.threads.internal.utils;
 
 import android.content.Context;
+import android.net.Uri;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -12,16 +16,44 @@ import java.util.List;
 
 public class FileDownloader {
     private static final String TAG = "FileDownloader ";
-    private String path;
-    private File outputFile;
+    private final String path;
+    private final File outputFile;
+    private final DownloadLister downloadLister;
+
     private boolean isStopped;
 
-    private DownloadLister downloadLister;
-
-    public FileDownloader(String path, String fileName, Context ctx, DownloadLister downloadLister) {
+    public FileDownloader(@NonNull String path, @NonNull String fileName, @NonNull Context ctx, @Nullable DownloadLister downloadLister) {
         this.path = path;
-        outputFile = new File(getDownloadDir(ctx), fileName);
+        this.outputFile = new File(getDownloadDir(ctx), generateFileName(path, fileName));
         this.downloadLister = downloadLister;
+    }
+
+    public static File getDownloadDir(Context ctx) {
+        return ctx.getFilesDir();
+    }
+
+    public static String generateFileName(@NonNull String path, @NonNull String fileName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getFileName(fileName))
+                .append("(")
+                .append(Uri.parse(path).getLastPathSegment())
+                .append(")");
+        final String ext = getFileExtension(fileName);
+        if (ext != null) {
+            sb.append(ext);
+        }
+        return sb.toString();
+    }
+
+    private static String getFileExtension(final String path) {
+        if (path != null && path.lastIndexOf('.') != -1) {
+            return path.substring(path.lastIndexOf('.'));
+        }
+        return null;
+    }
+
+    private static String getFileName(String fileName) {
+        return fileName.substring(0, fileName.lastIndexOf('.'));
     }
 
     public void stop() {
@@ -41,7 +73,7 @@ public class FileDownloader {
                 urlConnection.setReadTimeout(15000);
 
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                List values = urlConnection.getHeaderFields().get("Content-Length");
+                List<String> values = urlConnection.getHeaderFields().get("Content-Length");
                 Long length = null;
                 try {
                     if (values != null && !values.isEmpty()) {
@@ -87,10 +119,6 @@ public class FileDownloader {
                 downloadLister.onFileDownloadError(e);
             }
         }
-    }
-
-    public static File getDownloadDir(Context ctx) {
-        return ctx.getFilesDir();
     }
 
     public interface DownloadLister {

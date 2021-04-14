@@ -2,8 +2,6 @@ package im.threads.internal.transport;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
@@ -11,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.ChatItemType;
@@ -208,12 +207,12 @@ public final class HistoryParser {
         if (attachments.size() > 0) {
             Attachment attachment = attachments.get(0);
             if (attachment != null) {
-                String header = null;
+                String incomingName = null;
                 String mimeType = null;
                 long size = 0;
                 Optional metaData = attachment.getOptional();
                 if (metaData != null) {
-                    header = metaData.getName();
+                    incomingName = metaData.getName();
                     size = metaData.getSize();
                     mimeType = metaData.getType();
                 }
@@ -224,7 +223,7 @@ public final class HistoryParser {
                         0
                 );
                 fileDescription.setDownloadPath(attachment.getResult());
-                fileDescription.setIncomingName(header);
+                fileDescription.setIncomingName(incomingName);
                 fileDescription.setMimeType(mimeType);
                 fileDescription.setSelfie(attachment.isSelfie());
             }

@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import androidx.annotation.NonNull;
 
 public final class UrlUtils {
 
@@ -60,12 +60,12 @@ public final class UrlUtils {
             "[" + LABEL_CHAR + "](?:[" + LABEL_CHAR + "_\\-]{0,61}[" + LABEL_CHAR + "]){0,1}";
 
     /**
-    /**
+     * /**
      * RFC 3492 references RFC 1034 and limits Punycode algorithm output to 63 characters.
      */
     private static final String PUNYCODE_TLD = "xn\\-\\-[\\w\\-]{0,58}\\w";
 
-    private static final String TLD = "(" + PUNYCODE_TLD + "|" + "[" + TLD_CHAR + "]{2,63}" +")";
+    private static final String TLD = "(" + PUNYCODE_TLD + "|" + "[" + TLD_CHAR + "]{2,63}" + ")";
 
     private static final String HOST_NAME = "(" + IRI_LABEL + "\\.)+" + TLD;
 
@@ -87,8 +87,8 @@ public final class UrlUtils {
             + "\\-.\\+!\\*'\\(\\),_\\$])|(?:%[a-fA-F0-9]{2}))*";
 
     /**
-     *  Regular expression pattern to match most part of RFC 3987
-     *  Internationalized URLs, aka IRIs.
+     * Regular expression pattern to match most part of RFC 3987
+     * Internationalized URLs, aka IRIs.
      */
     public static final Pattern WEB_URL = Pattern.compile("("
             + "("
@@ -100,7 +100,7 @@ public final class UrlUtils {
             + WORD_BOUNDARY
             + ")");
 
-    private static Pattern WEB_URL_WITH_BRACKETS = Pattern.compile("\\[.*\\]\\(" + WEB_URL.toString() +"\\)");
+    private static Pattern WEB_URL_WITH_BRACKETS = Pattern.compile("\\[.*\\]\\(" + WEB_URL.toString() + "\\)");
 
     public static String extractLink(@NonNull String text) {
         Matcher matcherWithBrackets = WEB_URL_WITH_BRACKETS.matcher(text);

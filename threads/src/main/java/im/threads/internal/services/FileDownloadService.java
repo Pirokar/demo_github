@@ -26,7 +26,7 @@ public final class FileDownloadService extends ThreadsService {
     private static final String TAG = "DownloadService ";
     private static final String START_DOWNLOAD_FD_TAG = "im.threads.internal.services.DownloadService.START_DOWNLOAD_FD_TAG";
     private static final String START_DOWNLOAD_WITH_NO_STOP = "im.threads.internal.services.DownloadService.START_DOWNLOAD_WITH_NO_STOP";
-    private static HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();
+    private static final HashMap<FileDescription, FileDownloader> runningDownloads = new HashMap<>();
     private final Executor executor = Executors.newFixedThreadPool(3);
 
     public FileDownloadService() {
