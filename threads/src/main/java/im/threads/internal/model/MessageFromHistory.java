@@ -1,5 +1,6 @@
 package im.threads.internal.model;
 
+import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public final class MessageFromHistory implements ChatItem {
     private String text;
     private List<Attachment> attachments;
     private List<QuickReply> quickReplies;
+    @Nullable
+    private Settings settings;
     private List<MessageFromHistory> quotes;
     private String type;
     private boolean display;
@@ -137,6 +140,11 @@ public final class MessageFromHistory implements ChatItem {
 
     public void setQuickReplies(List<QuickReply> quickReplies) {
         this.quickReplies = quickReplies;
+    }
+
+    @Nullable
+    public Settings getSettings() {
+        return settings;
     }
 
     public List<MessageFromHistory> getQuotes() {

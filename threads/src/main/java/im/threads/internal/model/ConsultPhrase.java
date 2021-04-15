@@ -31,13 +31,15 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     private boolean isChosen;
     private boolean isRead;
     private final Long threadId;
-    private List<QuickReply> quickReplies;
+    private final List<QuickReply> quickReplies;
+    private final boolean blockInput;
     //для поиска сообщений в чате
     private boolean found;
 
     public ConsultPhrase(String uuid, String providerId, List<String> providerIds, FileDescription fileDescription, Quote quote, String consultName,
                          String phrase, String formattedPhrase, long timeStamp, String consultId, String avatarPath,
-                         boolean isRead, String status, boolean sex, Long threadId, List<QuickReply> quickReplies) {
+                         boolean isRead, String status, boolean sex, Long threadId, List<QuickReply> quickReplies,
+                         boolean blockInput) {
 
         super(avatarPath, consultId);
         this.uuid = uuid;
@@ -54,6 +56,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         this.sex = sex;
         this.threadId = threadId;
         this.quickReplies = quickReplies;
+        this.blockInput = blockInput;
     }
 
     public String getUuid() {
@@ -74,6 +77,10 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
     public List<QuickReply> getQuickReplies() {
         return quickReplies;
+    }
+
+    public boolean isBlockInput() {
+        return blockInput;
     }
 
     public boolean getSex() {
@@ -194,7 +201,8 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
                 && ObjectsCompat.equals(this.consultName, consultPhrase.consultName)
                 && ObjectsCompat.equals(this.sex, consultPhrase.sex)
                 && ObjectsCompat.equals(this.status, consultPhrase.status)
-                && ObjectsCompat.equals(this.threadId, consultPhrase.threadId);
+                && ObjectsCompat.equals(this.threadId, consultPhrase.threadId)
+                && ObjectsCompat.equals(this.blockInput, consultPhrase.blockInput);
         if (this.fileDescription != null) {
             hasSameContent = hasSameContent && this.fileDescription.hasSameContent(consultPhrase.fileDescription);
         }
@@ -238,6 +246,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
                 ObjectsCompat.equals(fileDescription, that.fileDescription) &&
                 ObjectsCompat.equals(status, that.status) &&
                 ObjectsCompat.equals(quickReplies, that.quickReplies) &&
+                ObjectsCompat.equals(blockInput, that.blockInput) &&
                 ObjectsCompat.equals(ogData, that.ogData) &&
                 ObjectsCompat.equals(ogUrl, that.ogUrl) &&
                 ObjectsCompat.equals(threadId, that.threadId);
@@ -245,6 +254,6 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
 
     @Override
     public int hashCode() {
-        return ObjectsCompat.hash(uuid, providerId, providerIds, sex, timeStamp, phrase, formattedPhrase, consultName, isAvatarVisible, quote, fileDescription, isChosen, isRead, status, quickReplies, found, ogData, ogUrl, threadId);
+        return ObjectsCompat.hash(uuid, providerId, providerIds, sex, timeStamp, phrase, formattedPhrase, consultName, isAvatarVisible, quote, fileDescription, isChosen, isRead, status, quickReplies, blockInput, found, ogData, ogUrl, threadId);
     }
 }

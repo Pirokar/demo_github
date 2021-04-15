@@ -2,13 +2,15 @@ package im.threads.internal.transport;
 
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.Nullable;
+import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
@@ -178,7 +180,6 @@ public final class MessageParser {
             if (content.getAttachments() != null) {
                 fileDescription = getFileDescription(content.getAttachments(), name, sentAt);
             }
-
             return new ConsultPhrase(
                     content.getUuid(),
                     messageId,
@@ -195,7 +196,8 @@ public final class MessageParser {
                     status,
                     gender,
                     content.getThreadId(),
-                    content.getQuickReplies()
+                    content.getQuickReplies(),
+                    content.getSettings() != null ? content.getSettings().isBlockInput() : !Config.instance.getChatStyle().inputEnabledDuringQuickReplies
             );
         } else {
             FileDescription fileDescription = null;

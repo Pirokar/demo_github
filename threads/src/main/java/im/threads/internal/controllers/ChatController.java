@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.util.Pair;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -43,7 +44,6 @@ import im.threads.internal.model.Hidable;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
-import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
@@ -137,6 +137,7 @@ public final class ChatController {
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
     private boolean hasQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    private boolean inputEnabledDuringQuickReplies = Config.instance.getChatStyle().inputEnabledDuringQuickReplies; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
 
     private CompositeDisposable compositeDisposable;
 
@@ -1194,7 +1195,7 @@ public final class ChatController {
     }
 
     private void refreshUserInputState() {
-        if (hasQuickReplies && !Config.instance.getChatStyle().inputEnabledDuringQuickReplies) {
+        if (hasQuickReplies && !inputEnabledDuringQuickReplies) {
             chatUpdateProcessor.postUserInputEnableChanged(false);
         } else {
             // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
@@ -1208,15 +1209,21 @@ public final class ChatController {
     }
 
     private void handleQuickReplies(List<ChatItem> chatItems) {
-        chatUpdateProcessor.postQuickRepliesChanged(getQuickReplies(chatItems));
+        ConsultPhrase quickReplyMessageCandidate = getQuickReplyMessageCandidate(chatItems);
+        if (quickReplyMessageCandidate != null) {
+            inputEnabledDuringQuickReplies = !quickReplyMessageCandidate.isBlockInput();
+            chatUpdateProcessor.postQuickRepliesChanged(quickReplyMessageCandidate.getQuickReplies());
+        } else {
+            hideQuickReplies();
+        }
     }
 
     public void hideQuickReplies() {
         chatUpdateProcessor.postQuickRepliesChanged(new ArrayList<>());
     }
 
-    @NonNull
-    private List<QuickReply> getQuickReplies(List<ChatItem> chatItems) {
+    @Nullable
+    private ConsultPhrase getQuickReplyMessageCandidate(List<ChatItem> chatItems) {
         if (!chatItems.isEmpty()) {
             ListIterator<ChatItem> listIterator = chatItems.listIterator(chatItems.size());
             while (listIterator.hasPrevious()) {
@@ -1228,11 +1235,11 @@ public final class ChatController {
                         continue;
                     }
                 } else if (chatItem instanceof ConsultPhrase) {
-                    return ((ConsultPhrase) chatItem).getQuickReplies();
+                    return ((ConsultPhrase) chatItem);
                 }
                 break;
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 }

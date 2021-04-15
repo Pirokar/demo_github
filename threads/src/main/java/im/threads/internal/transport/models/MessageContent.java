@@ -1,11 +1,14 @@
 package im.threads.internal.transport.models;
 
+import androidx.annotation.Nullable;
+
 import java.util.Date;
 import java.util.List;
 
 import im.threads.internal.model.QuickReply;
+import im.threads.internal.model.Settings;
 
-public class MessageContent {
+public final class MessageContent {
     private String uuid;
     private String text;
     private String formattedText;
@@ -16,6 +19,8 @@ public class MessageContent {
     private List<Attachment> attachments;
     private List<Quote> quotes;
     private List<QuickReply> quickReplies;
+    @Nullable
+    private Settings settings;
 
     public String getUuid() {
         return uuid;
@@ -55,5 +60,10 @@ public class MessageContent {
 
     public List<QuickReply> getQuickReplies() {
         return quickReplies;
+    }
+
+    @Nullable
+    public Settings getSettings() {
+        return settings;
     }
 }
