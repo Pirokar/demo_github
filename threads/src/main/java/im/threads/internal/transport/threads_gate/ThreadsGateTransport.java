@@ -28,6 +28,7 @@ import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
+import im.threads.internal.transport.AuthInterceptor;
 import im.threads.internal.transport.ChatItemProviderData;
 import im.threads.internal.transport.MessageAttributes;
 import im.threads.internal.transport.OutgoingMessageCreator;
@@ -51,6 +52,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
+import okhttp3.logging.HttpLoggingInterceptor;
 import okio.ByteString;
 
 public class ThreadsGateTransport extends Transport implements LifecycleObserver {
@@ -59,8 +61,8 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
     private static final String CORRELATION_ID_DIVIDER = ":";
 
     private final OkHttpClient client;
-    private final WebSocketListener listener;
     private final Request request;
+    private final WebSocketListener listener;
     private final String threadsGateProviderUid;
     private final List<String> messageInProcessIds = new ArrayList<>();
     private final Map<Long, Survey> surveysInProcess = new HashMap<>();
@@ -69,14 +71,21 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
     @Nullable
     private Lifecycle lifecycle;
 
-    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid) {
-        this.client = new OkHttpClient.Builder()
-                .pingInterval(10_000, TimeUnit.MILLISECONDS)
-                .build();
-        this.listener = new WebSocketListener();
+    public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid, boolean isDebugLoggingEnabled) {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .addInterceptor(new AuthInterceptor())
+                .pingInterval(10_000, TimeUnit.MILLISECONDS);
+        if (isDebugLoggingEnabled) {
+            clientBuilder.addInterceptor(
+                    new HttpLoggingInterceptor()
+                            .setLevel(HttpLoggingInterceptor.Level.BODY)
+            );
+        }
+        this.client = clientBuilder.build();
         this.request = new Request.Builder()
                 .url(threadsGateUrl)
                 .build();
+        this.listener = new WebSocketListener();
         this.threadsGateProviderUid = threadsGateProviderUid;
     }
 

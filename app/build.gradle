@@ -101,6 +101,11 @@ android {
             applicationId "com.threads.android.gatetest18048"
             resValue "string", "app_name1", "THR Gatetest18048"
         }
+        gpbTest {
+            dimension "server"
+            applicationId "io.edna.chatcenter.android.gpb"
+            resValue "string", "app_name1", "THR GPB Test"
+        }
         pushLib {
             dimension "transport"
             resValue "string", "transport_type", "MFMS_PUSH"
