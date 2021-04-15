@@ -53,7 +53,10 @@ public class FileDownloader {
     }
 
     private static String getFileName(String fileName) {
-        return fileName.substring(0, fileName.lastIndexOf('.'));
+        if (fileName.lastIndexOf('.') != -1) {
+            return fileName.substring(0, fileName.lastIndexOf('.'));
+        }
+        return fileName;
     }
 
     public void stop() {
