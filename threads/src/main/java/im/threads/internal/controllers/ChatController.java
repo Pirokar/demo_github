@@ -971,6 +971,9 @@ public final class ChatController {
             handleQuickReplies(Collections.singletonList(consultPhrase));
             Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getUuid()));
         }
+        if (chatItem instanceof SimpleSystemMessage && isActive) {
+            hideQuickReplies();
+        }
         if (chatItem instanceof Survey && isActive) {
             Config.instance.transport.markMessagesAsRead(Collections.singletonList(((Survey) chatItem).getUuid()));
         }
