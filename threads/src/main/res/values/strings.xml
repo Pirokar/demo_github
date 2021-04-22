@@ -104,6 +104,7 @@
     <string name="threads_media_description">Threads</string>
 
     <string name="threads_contact_center">Контакт центр</string>
+    <string name="threads_channel_name">Контакт центр</string>
     <string name="threads_operator_subtitle">Оператор</string>
 
     <string name="threads_request_to_resolve_thread">Специалист ответил на все ваши вопросы, продолжить консультацию?</string>

@@ -35,4 +35,12 @@
     <dimen name="threads_system_message_text_size">@dimen/text_regular</dimen>
     <dimen name="threads_system_message_left_right_padding">16dp</dimen>
 
+    <dimen name="threads_scroll_down_button_width">32dp</dimen>
+    <dimen name="threads_scroll_down_button_height">32dp</dimen>
+    <dimen name="threads_scroll_down_button_elevation">2dp</dimen>
+    <dimen name="threads_scroll_down_button_margin">8dp</dimen>
+
+    <dimen name="threads_welcome_logo_height">200dp</dimen>
+    <dimen name="threads_welcome_logo_width">200dp</dimen>
+
 </resources>

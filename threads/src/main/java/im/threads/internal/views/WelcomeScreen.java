@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +42,9 @@ public final class WelcomeScreen extends LinearLayout {
     private void initLogo(final @NonNull ChatStyle style) {
         final ImageView logoView = findViewById(R.id.welcome_logo);
         logoView.setImageResource(style.welcomeScreenLogoResId);
+        final ViewGroup.LayoutParams layoutParams = logoView.getLayoutParams();
+        layoutParams.width = getResources().getDimensionPixelSize(style.welcomeScreenLogoWidth);
+        layoutParams.height = getResources().getDimensionPixelSize(style.welcomeScreenLogoHeight);
     }
 
     private void initTitle(final @NonNull ChatStyle style) {
