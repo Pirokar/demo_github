@@ -36,6 +36,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
+
+import com.annimon.stream.Optional;
+import com.devlomi.record_view.OnRecordListener;
+import com.devlomi.record_view.RecordButton;
+import com.devlomi.record_view.RecordView;
+import com.google.android.material.slider.Slider;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -51,12 +71,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
 import cafe.adriel.androidaudioconverter.model.AudioFormat;
-import com.annimon.stream.Optional;
-import com.devlomi.record_view.OnRecordListener;
-import com.devlomi.record_view.RecordButton;
-import com.devlomi.record_view.RecordView;
-import com.google.android.material.slider.Slider;
-import com.squareup.picasso.Picasso;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -111,18 +125,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
@@ -165,7 +167,6 @@ public final class ChatFragment extends BaseFragment implements
     private FileDescriptionMediaPlayer fdMediaPlayer;
     @Nullable
     private AudioManager audioManager;
-    private Context appContext;
     private ChatController mChatController;
     private ChatAdapter chatAdapter;
     private ChatAdapter.Callback chatAdapterCallback;
@@ -178,7 +179,6 @@ public final class ChatFragment extends BaseFragment implements
     private boolean isSendBlocked = false;
     private ChatStyle style;
     private FragmentChatBinding binding;
-    private Toast mToast;
     private File externalCameraPhotoFile;
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
@@ -200,7 +200,6 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
-        appContext = Config.instance.context;
         style = Config.instance.getChatStyle();
 
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
@@ -211,7 +210,7 @@ public final class ChatFragment extends BaseFragment implements
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
         binding.setInputTextObservable(inputTextObservable);
         chatAdapterCallback = new ChatFragment.AdapterCallback();
-        audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
         fdMediaPlayer = new FileDescriptionMediaPlayer(audioManager);
         initViews();
         initRecording();
@@ -441,7 +440,7 @@ public final class ChatFragment extends BaseFragment implements
                 ThreadsLogger.e(TAG, "error finishing voice message recording");
             }
         };
-        AndroidAudioConverter.with(appContext)
+        AndroidAudioConverter.with(requireContext())
                 // Your current audio file
                 .setFile(file)
 
@@ -468,7 +467,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         FileDescription fd = new FileDescription(
-                appContext.getString(R.string.threads_voice_message).toLowerCase(),
+                requireContext().getString(R.string.threads_voice_message).toLowerCase(),
                 FileProviderHelper.getUriForFile(context, file),
                 file.length(),
                 System.currentTimeMillis()
@@ -831,7 +830,7 @@ public final class ChatFragment extends BaseFragment implements
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     ThreadsLogger.w(TAG, "Could not start external camera", e);
-                    showToast(appContext.getString(R.string.threads_camera_could_not_start_error));
+                    showToast(requireContext().getString(R.string.threads_camera_could_not_start_error));
                 }
 
             } else {
@@ -924,7 +923,7 @@ public final class ChatFragment extends BaseFragment implements
         String text = cp.getPhraseText();
         if (userPhrase != null) {
             mQuote = new Quote(userPhrase.getUuid(),
-                    appContext.getString(R.string.threads_I),
+                    requireContext().getString(R.string.threads_I),
                     userPhrase.getPhraseText(),
                     userPhrase.getFileDescription(),
                     userPhrase.getTimeStamp());
@@ -933,7 +932,7 @@ public final class ChatFragment extends BaseFragment implements
             mQuote = new Quote(consultPhrase.getUuid(),
                     consultPhrase.getConsultName() != null
                             ? consultPhrase.getConsultName()
-                            : appContext.getString(R.string.threads_consult),
+                            : requireContext().getString(R.string.threads_consult),
                     consultPhrase.getPhraseText(),
                     consultPhrase.getFileDescription(),
                     consultPhrase.getTimeStamp());
@@ -944,7 +943,7 @@ public final class ChatFragment extends BaseFragment implements
         if (FileUtils.isImage(cp.getFileDescription())) {
             mQuoteLayoutHolder.setContent(
                     TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
-                    TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
+                    TextUtils.isEmpty(text) ? requireContext().getString(R.string.threads_image) : text,
                     cp.getFileDescription().getFileUri()
             );
         } else if (cp.getFileDescription() != null) {
@@ -1024,7 +1023,7 @@ public final class ChatFragment extends BaseFragment implements
             Uri fileUri = mAttachedImages.get(0);
             messages.add(new UpcomingUserMessage(
                     new FileDescription(
-                            appContext.getString(R.string.threads_I),
+                            requireContext().getString(R.string.threads_I),
                             fileUri,
                             FileUtils.getFileSize(fileUri),
                             System.currentTimeMillis()),
@@ -1035,7 +1034,7 @@ public final class ChatFragment extends BaseFragment implements
             for (int i = 1; i < mAttachedImages.size(); i++) {
                 fileUri = mAttachedImages.get(i);
                 FileDescription fileDescription = new FileDescription(
-                        appContext.getString(R.string.threads_I),
+                        requireContext().getString(R.string.threads_I),
                         fileUri,
                         FileUtils.getFileSize(fileUri),
                         System.currentTimeMillis()
@@ -1047,7 +1046,7 @@ public final class ChatFragment extends BaseFragment implements
             }
             if (isSendBlocked) {
                 clearInput();
-                showToast(appContext.getString(R.string.threads_message_were_unsent));
+                showToast(requireContext().getString(R.string.threads_message_were_unsent));
             } else {
                 sendMessage(messages);
             }
@@ -1153,7 +1152,7 @@ public final class ChatFragment extends BaseFragment implements
         UpcomingUserMessage uum =
                 new UpcomingUserMessage(
                         new FileDescription(
-                                appContext.getString(R.string.threads_I),
+                                requireContext().getString(R.string.threads_I),
                                 fileUri,
                                 FileUtils.getFileSize(fileUri),
                                 System.currentTimeMillis()
@@ -1173,7 +1172,7 @@ public final class ChatFragment extends BaseFragment implements
             fileUri = photos.get(i);
             uum = new UpcomingUserMessage(
                     new FileDescription(
-                            appContext.getString(R.string.threads_I),
+                            requireContext().getString(R.string.threads_I),
                             fileUri,
                             FileUtils.getFileSize(fileUri),
                             System.currentTimeMillis()
@@ -1189,7 +1188,7 @@ public final class ChatFragment extends BaseFragment implements
     private void onExternalCameraPhotoResult() {
         setFileDescription(
                 new FileDescription(
-                        appContext.getString(R.string.threads_image),
+                        requireContext().getString(R.string.threads_image),
                         FileProviderHelper.getUriForFile(Config.instance.context, externalCameraPhotoFile),
                         externalCameraPhotoFile.length(),
                         System.currentTimeMillis()
@@ -1235,8 +1234,8 @@ public final class ChatFragment extends BaseFragment implements
 
     private void onFileResult(@NonNull Uri uri) {
         ThreadsLogger.i(TAG, "onFileSelected: " + uri);
-        setFileDescription(new FileDescription(appContext.getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
-        mQuoteLayoutHolder.setContent(appContext.getString(R.string.threads_I), FileUtils.getFileName(uri), null);
+        setFileDescription(new FileDescription(requireContext().getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
+        mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
         mQuote = null;
     }
 
@@ -1245,7 +1244,7 @@ public final class ChatFragment extends BaseFragment implements
         if (imageExtra != null) {
             File file = new File(imageExtra);
             FileDescription fileDescription = new FileDescription(
-                    appContext.getString(R.string.threads_image),
+                    requireContext().getString(R.string.threads_image),
                     FileProviderHelper.getUriForFile(requireContext(), file),
                     file.length(),
                     System.currentTimeMillis()
@@ -1414,10 +1413,10 @@ public final class ChatFragment extends BaseFragment implements
                     if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
                         binding.consultName.setText(info.getName());
                     } else {
-                        binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
+                        binding.consultName.setText(requireContext().getString(R.string.threads_unknown_operator));
                     }
                     binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
-                            ? appContext.getString(style.chatSubtitleTextResId)
+                            ? requireContext().getString(style.chatSubtitleTextResId)
                             : info.getOrganizationUnit());
 
                     chatAdapter.removeConsultSearching();
@@ -1441,15 +1440,11 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void showConnectionError() {
-        showToast(appContext.getString(R.string.threads_message_not_sent));
+        showToast(requireContext().getString(R.string.threads_message_not_sent));
     }
 
     public void showToast(final String message) {
-        if (null != mToast) {
-            mToast.cancel();
-        }
-        mToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
-        mToast.show();
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
     public void setMessageState(String providerId, MessageState state) {
@@ -1595,7 +1590,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.searchLo.setVisibility(View.GONE);
         binding.search.setText("");
         if (isAdded()) {
-            binding.consultName.setText(appContext.getString(R.string.threads_searching_operator));
+            binding.consultName.setText(requireContext().getString(R.string.threads_searching_operator));
         }
     }
 
