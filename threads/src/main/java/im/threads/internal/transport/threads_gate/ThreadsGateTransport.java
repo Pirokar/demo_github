@@ -4,24 +4,22 @@ import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.ObjectsCompat;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
-
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
@@ -71,8 +69,6 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
     @Nullable
     private Lifecycle lifecycle;
 
-    private ClientOfflineSender clientOfflineProvider;
-
     public ThreadsGateTransport(String threadsGateUrl, String threadsGateProviderUid) {
         this.client = new OkHttpClient.Builder()
                 .pingInterval(10_000, TimeUnit.MILLISECONDS)
@@ -82,7 +78,6 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                 .url(threadsGateUrl)
                 .build();
         this.threadsGateProviderUid = threadsGateProviderUid;
-        clientOfflineProvider = new ClientOfflineSender(threadsGateUrl, threadsGateProviderUid);
     }
 
     @Override
@@ -165,7 +160,10 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
 
     @Override
     public void sendClientOffline(String clientId) {
-        clientOfflineProvider.sendClientOffline(clientId);
+        final JsonObject content = OutgoingMessageCreator.createMessageClientOffline(
+                clientId
+        );
+        sendMessage(content);
     }
 
     @Override

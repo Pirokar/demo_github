@@ -56,6 +56,7 @@ public class MessagesTable extends Table {
     private static final String COLUMN_SURVEY_SENDING_ID = "COLUMN_SURVEY_SENDING_ID";
     private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
     private static final String COLUMN_THREAD_ID = "COLUMN_THREAD_ID";
+    private static final String COLUMN_BLOCK_INPUT = "COLUMN_BLOCK_INPUT";
 
     private final FileDescriptionsTable fileDescriptionTable;
     private final QuotesTable quotesTable;
@@ -98,6 +99,7 @@ public class MessagesTable extends Table {
                         + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
                         + ", " + COLUMN_THREAD_ID + " integer"
+                        + ", " + COLUMN_BLOCK_INPUT + " integer"
                         + ")",
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_FORMATTED_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
@@ -418,7 +420,8 @@ public class MessagesTable extends Table {
                 cGetString(c, COLUMN_CONSULT_STATUS),
                 cGetBool(c, COLUMN_SEX),
                 cGetLong(c, COLUMN_THREAD_ID),
-                quickRepliesTable.getQuickReplies(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID))
+                quickRepliesTable.getQuickReplies(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
+                cGetBool(c, COLUMN_BLOCK_INPUT)
         );
     }
 
@@ -481,6 +484,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.getProviderIds()));
         cv.put(COLUMN_SEX, phrase.getSex());
         cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
+        cv.put(COLUMN_BLOCK_INPUT, phrase.isBlockInput());
         return cv;
     }
 
