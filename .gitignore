@@ -19,5 +19,4 @@
 /build
 /captures
 /.idea
-/threads/src/main/assets/crashlytics-build.properties
-/threads/src/main/res/values/com_crashlytics_export_strings.xml
+/threads
