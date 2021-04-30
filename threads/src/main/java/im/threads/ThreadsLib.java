@@ -3,6 +3,7 @@ package im.threads;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,8 @@ import androidx.core.util.ObjectsCompat;
 
 import java.io.File;
 
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
 import im.threads.internal.Config;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.controllers.UnreadMessagesController;
@@ -49,6 +52,19 @@ public final class ThreadsLib {
                     .distinctUntilChanged()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count));
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            AndroidAudioConverter.load(Config.instance.context, new ILoadCallback() {
+                @Override
+                public void onSuccess() {
+                    ThreadsLogger.i(TAG, "AndroidAudioConverter was successfully loaded");
+                }
+
+                @Override
+                public void onFailure(Exception error) {
+                    ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load", error);
+                }
+            });
         }
         ChatController.getInstance();
     }

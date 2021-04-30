@@ -21,4 +21,8 @@ public final class ThreadsPermissionChecker {
     public static boolean isReadExternalPermissionGranted(Context ctx) {
         return PermissionChecker.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_GRANTED;
     }
+
+    public static boolean isRecordAudioPermissionGranted(Context ctx) {
+        return PermissionChecker.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PermissionChecker.PERMISSION_GRANTED;
+    }
 }

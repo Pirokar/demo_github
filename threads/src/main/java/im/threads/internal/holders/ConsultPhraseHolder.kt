@@ -109,7 +109,10 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
-                AppCompatResources.getDrawable(itemView.context, style.incomingMessageBubbleBackground)
+                AppCompatResources.getDrawable(
+                    itemView.context,
+                    style.incomingMessageBubbleBackground
+                )
             background.setColorFilter(
                 getColorInt(style.incomingMessageBubbleColor),
                 PorterDuff.Mode.SRC_ATOP
@@ -159,17 +162,21 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mPhraseTextView.bindTimestampView(mTimeStampTextView)
             mPhraseTextView.visibility = View.VISIBLE
             val url = UrlUtils.extractLink(phrase)
-            if (consultPhrase.formattedPhrase != null) {
-                mPhraseTextView.autoLinkMask = 0
-                mPhraseTextView.text = MarkdownProcessorHolder.getMarkdownProcessor()
-                    .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
-            } else if (url != null) {
-                val text = SpannableString(phrase)
-                LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "")
-                mPhraseTextView.text = text
-                mPhraseTextView.movementMethod = LinkMovementMethod.getInstance()
-            } else {
-                mPhraseTextView.text = phrase
+            when {
+                consultPhrase.formattedPhrase != null -> {
+                    mPhraseTextView.autoLinkMask = 0
+                    mPhraseTextView.text = MarkdownProcessorHolder.getMarkdownProcessor()
+                        .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
+                }
+                url != null -> {
+                    val text = SpannableString(phrase)
+                    LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "")
+                    mPhraseTextView.text = text
+                    mPhraseTextView.movementMethod = LinkMovementMethod.getInstance()
+                }
+                else -> {
+                    mPhraseTextView.text = phrase
+                }
             }
             if (url != null) {
                 if (consultPhrase.ogData == null) {
@@ -200,21 +207,23 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 .getString(R.string.threads_I) else quote.phraseOwnerTitle
             mRightTextDescr.text = quote.text
             rightTextFileStamp.text =
-                itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf!!.format(
+                itemView.getContext().getString(R.string.threads_sent_at) + " " + quoteSdf.format(
                     Date(quote.timeStamp)
                 )
             if (quote.fileDescription != null) {
-                mCircularProgressButton.visibility = View.VISIBLE
-                val fileSize = quote.fileDescription.size
-                mRightTextDescr.text =
-                    FileUtils.getFileName(quote.fileDescription) + if (fileSize > 0) """
+                if (FileUtils.isVoiceMessage(quote.fileDescription)) {
+                    mRightTextDescr.setText(R.string.threads_voice_message)
+                } else {
+                    mCircularProgressButton.visibility = View.VISIBLE
+                    val fileSize = quote.fileDescription.size
+                    mRightTextDescr.text =
+                        FileUtils.getFileName(quote.fileDescription) + if (fileSize > 0) """
      
      ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
      """.trimIndent() else ""
-                mCircularProgressButton.setOnClickListener(fileClickListener)
-                mCircularProgressButton.setProgress(if (quote.fileDescription.fileUri != null) 100 else quote.fileDescription.downloadProgress)
-            } else {
-                mCircularProgressButton.visibility = View.GONE
+                    mCircularProgressButton.setOnClickListener(fileClickListener)
+                    mCircularProgressButton.setProgress(if (quote.fileDescription.fileUri != null) 100 else quote.fileDescription.downloadProgress)
+                }
             }
         }
         if (fileDescription != null) {
@@ -252,7 +261,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 }
                     """.trimIndent()
                 rightTextFileStamp.text = itemView.getContext()
-                    .getString(R.string.threads_sent_at) + " " + quoteSdf!!.format(
+                    .getString(R.string.threads_sent_at) + " " + quoteSdf.format(
                     Date(fileDescription.timeStamp)
                 )
                 mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)

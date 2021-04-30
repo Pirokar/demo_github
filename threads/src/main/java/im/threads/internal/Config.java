@@ -1,17 +1,21 @@
 package im.threads.internal;
 
 import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
 import im.threads.internal.exceptions.MetaConfigurationException;
+import im.threads.internal.model.gson.UriDeserializer;
+import im.threads.internal.model.gson.UriSerializer;
 import im.threads.internal.transport.Transport;
 import im.threads.internal.transport.mfms_push.MFMSPushTransport;
 import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
@@ -44,7 +48,10 @@ public final class Config {
 
     public final int surveyCompletionDelay;
 
-    public final Gson gson = new Gson();
+    public final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Uri.class, new UriSerializer())
+            .registerTypeAdapter(Uri.class, new UriDeserializer())
+            .create();
 
     public Config(@NonNull Context context,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,

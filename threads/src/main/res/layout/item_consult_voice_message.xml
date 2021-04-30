@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bubble"
+        android:layout_alignParentTop="true"
+        android:background="@color/threads_chat_highlighting" />
+
+    <View
+        android:id="@+id/filter_second"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/filter_offset_size"
+        android:layout_below="@+id/filter"
+        android:background="@color/threads_chat_highlighting" />
+
+    <ImageView
+        android:id="@+id/consult_avatar"
+        android:layout_width="@dimen/threads_operator_photo_size"
+        android:layout_height="@dimen/threads_operator_photo_size"
+        android:layout_below="@+id/bubble"
+        tools:src="@drawable/threads_operator_avatar_placeholder"
+        android:layout_marginLeft="@dimen/margin_half"
+        android:layout_marginTop="@dimen/consultant_photo_offset_size" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bubble"
+        android:layout_width="match_parent"
+        style="@style/consultBubble"
+        android:layout_toEndOf="@+id/consult_avatar"
+        android:background="@drawable/thread_incoming_bubble">
+
+        <ImageView
+            android:id="@+id/voice_message_consult_button_play_pause"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginStart="@dimen/margin_half"
+            android:background="@null"
+            app:srcCompat="@drawable/threads_voice_message_play" />
+
+        <FrameLayout
+            android:id="@+id/voice_message_consult_slider_container"
+            app:layout_constraintStart_toEndOf="@+id/voice_message_consult_button_play_pause"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/voice_message_consult_slider"
+                android:theme="@style/ThemeOverlay.ChatCenter.Slider.Consult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:visibility="gone"/>
+
+            <im.threads.internal.widget.text_view.BubbleMessageTextView
+                android:id="@+id/voice_message_consult_audio_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/margin_half"
+                android:text="@string/threads_voice_message_is_processing"
+                tools:visibility="visible"
+                android:visibility="gone"
+                android:textColor="@color/threads_incoming_message_text" />
+
+        </FrameLayout>
+
+        <im.threads.internal.widget.text_view.BubbleMessageTextView
+            android:id="@+id/file_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/voice_message_consult_button_play_pause"
+            app:layout_constraintTop_toBottomOf="@+id/voice_message_consult_slider_container"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/margin_half"
+            tools:text="1:20"
+            android:textColor="@color/threads_incoming_message_text" />
+
+        <im.threads.internal.widget.text_view.BubbleTimeTextView
+            android:id="@+id/timestamp"
+            style="@style/timestamp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/voice_message_consult_slider_container"
+            android:layout_marginEnd="@dimen/margin_half"
+            android:textColor="@color/threads_operator_message_timestamp"
+            tools:text="10:19" />
+
+        <View
+            android:id="@+id/voice_message_consult_delimiter"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/margin_half"
+            android:layout_marginStart="@dimen/margin_half"
+            app:layout_constraintStart_toEndOf="@+id/voice_message_consult_button_play_pause"
+            app:layout_constraintTop_toTopOf="@+id/voice_message_consult_text"
+            app:layout_constraintBottom_toBottomOf="@+id/voice_message_consult_text"
+            android:background="@color/threads_chat_icons_tint" />
+
+        <im.threads.internal.widget.text_view.QuoteMessageTextView
+            android:id="@+id/voice_message_consult_text"
+            android:ellipsize="end"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/voice_message_consult_delimiter"
+            app:layout_constraintTop_toBottomOf="@+id/timestamp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/margin_half"
+            android:paddingBottom="@dimen/margin_half"
+            tools:text="счет на оплату очень длинное название очень длинное название очень длинное название или счет на оплату очень длинное название очень длинное название очень длинное название"
+            android:textColor="@color/threads_incoming_message_text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

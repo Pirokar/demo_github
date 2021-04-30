@@ -121,9 +121,13 @@ dependencies {
 
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+    implementation "com.annimon:stream:$rootProject.streamVersion"
 
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
     implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+
+    implementation "com.devlomi.record-view:record-view:$rootProject.recordViewVersion"
+    implementation "com.github.adrielcafe:AndroidAudioConverter:$rootProject.androidAudioConverterVersion"
 
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'

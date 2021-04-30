@@ -165,14 +165,17 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
             mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(quote.getTimeStamp()));
             if (quote.getFileDescription() != null) {
-                if (quote.getFileDescription().getFileUri() != null)
-                    quote.getFileDescription().setDownloadProgress(100);
-                mFileImageButton.setVisibility(View.VISIBLE);
-                long fileSize = quote.getFileDescription().getSize();
-                mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
-                if (null != fileClickListener)
-                    mFileImageButton.setOnClickListener(fileClickListener);
-                mFileImageButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
+                if (FileUtils.isVoiceMessage(quote.getFileDescription())) {
+                    mRightTextDescr.setText(R.string.threads_voice_message);
+                } else {
+                    mFileImageButton.setVisibility(View.VISIBLE);
+                    long fileSize = quote.getFileDescription().getSize();
+                    mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
+                    if (fileClickListener != null) {
+                        mFileImageButton.setOnClickListener(fileClickListener);
+                    }
+                    mFileImageButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
+                }
             }
         }
         if (fileDescription != null) {

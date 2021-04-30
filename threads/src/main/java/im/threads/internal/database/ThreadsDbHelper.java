@@ -18,6 +18,7 @@ import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 
@@ -25,7 +26,7 @@ import im.threads.internal.model.UserPhrase;
  * обертка для БД
  */
 final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
-    private static final int VERSION = 13;
+    private static final int VERSION = 14;
 
     private QuotesTable quotesTable;
     private QuickRepliesTable quickRepliesTable;
@@ -143,6 +144,7 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
     public void setMessageWasRead(String uuid) {
         messagesTable.setMessageWasRead(this, uuid);
     }
+
     @Override
     public Survey getSurvey(long sendingId) {
         return messagesTable.getSurvey(this, sendingId);
@@ -172,5 +174,9 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
     @Override
     public List<String> getUnreadMessagesUuid() {
         return messagesTable.getUnreadMessagesUuid(this);
+    }
+
+    public void speechMessageUpdated(SpeechMessageUpdate speechMessageUpdate) {
+        messagesTable.speechMessageUpdated(this, speechMessageUpdate);
     }
 }

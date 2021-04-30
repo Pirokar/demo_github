@@ -1,6 +1,8 @@
 package im.threads.internal.adapters;
 
 import android.content.Context;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -13,7 +15,7 @@ import androidx.core.util.ObjectsCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +32,7 @@ import im.threads.internal.holders.BaseHolder;
 import im.threads.internal.holders.ConsultFileViewHolder;
 import im.threads.internal.holders.ConsultIsTypingViewHolderNew;
 import im.threads.internal.holders.ConsultPhraseHolder;
+import im.threads.internal.holders.ConsultVoiceMessageViewHolder;
 import im.threads.internal.holders.DateViewHolder;
 import im.threads.internal.holders.EmptyViewHolder;
 import im.threads.internal.holders.ImageFromConsultViewHolder;
@@ -46,6 +49,9 @@ import im.threads.internal.holders.SystemMessageViewHolder;
 import im.threads.internal.holders.UnreadMessageViewHolder;
 import im.threads.internal.holders.UserFileViewHolder;
 import im.threads.internal.holders.UserPhraseViewHolder;
+import im.threads.internal.holders.UserVoiceMessageViewHolder;
+import im.threads.internal.holders.VoiceMessageBaseHolder;
+import im.threads.internal.media.FileDescriptionMediaPlayer;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ClientNotificationDisplayType;
@@ -67,12 +73,13 @@ import im.threads.internal.model.Survey;
 import im.threads.internal.model.SystemMessage;
 import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
+import im.threads.internal.utils.FileUtilsKt;
 import im.threads.internal.utils.MaskedTransformation;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "ChatAdapter ";
@@ -95,6 +102,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int TYPE_RATING_STARS = 16;
     private static final int TYPE_RATING_STARS_SENT = 17;
     private static final int TYPE_REQ_RESOLVE_THREAD = 18;
+    private static final int TYPE_VOICE_MESSAGE_FROM_USER = 19;
+    private static final int TYPE_VOICE_MESSAGE_FROM_CONSULT = 20;
 
     private final Handler viewHandler = new Handler(Looper.getMainLooper());
     private final ArrayList<ChatItem> list = new ArrayList<>();
@@ -107,14 +116,26 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @NonNull
     private final MaskedTransformation incomingImageMaskTransformation;
     @NonNull
+    private final FileDescriptionMediaPlayer fdMediaPlayer;
+    @NonNull
+    private final MediaMetadataRetriever mediaMetadataRetriever;
+    @NonNull
     private ClientNotificationDisplayType clientNotificationDisplayType;
-
     private long currentThreadId;
+    private boolean ignorePlayerUpdates = false;
+    @Nullable
+    private VoiceMessageBaseHolder playingHolder = null;
 
-    public ChatAdapter(@NonNull final Context ctx, @NonNull final Callback callback) {
+    public ChatAdapter(
+            @NonNull Context ctx,
+            @NonNull Callback callback,
+            @NonNull FileDescriptionMediaPlayer fdMediaPlayer,
+            @NonNull MediaMetadataRetriever mediaMetadataRetriever) {
         this.ctx = ctx;
-        ChatStyle style = Config.instance.getChatStyle();
         this.mCallback = callback;
+        this.fdMediaPlayer = fdMediaPlayer;
+        this.mediaMetadataRetriever = mediaMetadataRetriever;
+        ChatStyle style = Config.instance.getChatStyle();
         this.outgoingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.outgoingImageBubbleMask));
         this.incomingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.incomingImageBubbleMask));
         clientNotificationDisplayType = PrefUtils.getClientNotificationDisplayType();
@@ -197,6 +218,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 return new RatingStarsSentViewHolder(parent);
             case TYPE_REQ_RESOLVE_THREAD:
                 return new RequestResolveThreadViewHolder(parent);
+            case TYPE_VOICE_MESSAGE_FROM_USER:
+                return new UserVoiceMessageViewHolder(parent);
+            case TYPE_VOICE_MESSAGE_FROM_CONSULT:
+                return new ConsultVoiceMessageViewHolder(parent);
             default:
                 return new EmptyViewHolder(parent);
         }
@@ -262,6 +287,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (holder instanceof RequestResolveThreadViewHolder) {
             ((RequestResolveThreadViewHolder) holder).bind(mCallback);
         }
+        if (holder instanceof UserVoiceMessageViewHolder) {
+            bindVoiceMessageFromUserVH((UserVoiceMessageViewHolder) holder, (UserPhrase) list.get(position));
+        }
+        if (holder instanceof ConsultVoiceMessageViewHolder) {
+            bindVoiceMessageFromConsultVH((ConsultVoiceMessageViewHolder) holder, (ConsultPhrase) list.get(position));
+        }
     }
 
     @Override
@@ -299,6 +330,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (o instanceof ConsultPhrase) {
             final ConsultPhrase cp = (ConsultPhrase) o;
+            if (cp.isVoiceMessage()) {
+                return TYPE_VOICE_MESSAGE_FROM_CONSULT;
+            }
             if (cp.isOnlyImage()) {
                 return TYPE_IMAGE_FROM_CONSULT;
             }
@@ -309,6 +343,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (o instanceof UserPhrase) {
             final UserPhrase up = (UserPhrase) o;
+            if (FileUtils.isVoiceMessage(up.getFileDescription())) {
+                return TYPE_VOICE_MESSAGE_FROM_USER;
+            }
             if (up.isOnlyImage()) {
                 return TYPE_IMAGE_FROM_USER;
             }
@@ -596,7 +633,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void updateProgress(final FileDescription fileDescription) {
         for (int i = 0; i < list.size(); i++) {
             if (fileDescription.getFileUri() == null
-                    && (getItemViewType(i) == TYPE_IMAGE_FROM_USER || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT))
+                    && (getItemViewType(i) == TYPE_IMAGE_FROM_USER
+                    || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT
+                    || getItemViewType(i) == TYPE_VOICE_MESSAGE_FROM_USER
+                    || getItemViewType(i) == TYPE_VOICE_MESSAGE_FROM_CONSULT))
                 continue;
             if (list.get(i) instanceof ConsultPhrase) {
                 final ConsultPhrase cp = (ConsultPhrase) list.get(i);
@@ -620,7 +660,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void setItemChosen(final boolean isChosen, final ChatPhrase cp) {
+    public void setItemChosen(final boolean isChosen, @Nullable final ChatPhrase cp) {
         if (cp == null) {
             return;
         }
@@ -642,9 +682,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) instanceof ChatPhrase) {
                 final ChatPhrase cp = (ChatPhrase) list.get(i);
+                int itemViewType = getItemViewType(i);
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)
-                        && getItemViewType(i) == TYPE_IMAGE_FROM_USER
-                        || getItemViewType(i) == TYPE_IMAGE_FROM_CONSULT) {
+                        && (itemViewType == TYPE_IMAGE_FROM_USER
+                        || itemViewType == TYPE_IMAGE_FROM_CONSULT
+                        || itemViewType == TYPE_VOICE_MESSAGE_FROM_USER
+                        || itemViewType == TYPE_VOICE_MESSAGE_FROM_CONSULT)) {
                     cp.getFileDescription().setDownloadError(true);
                     notifyItemChanged(i);
                 }
@@ -724,7 +767,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         },
                         v -> mCallback.onQuoteClick(consultPhrase.getQuote()),
                         v -> {
-                            phaseLongClick(consultPhrase, holder.getAdapterPosition());
+                            phraseLongClick(consultPhrase, holder.getAdapterPosition());
                             return true;
                         },
                         v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId())
@@ -755,7 +798,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     mCallback.onQuoteClick(userPhrase.getQuote());
                 },
                 v -> {
-                    phaseLongClick(userPhrase, holder.getAdapterPosition());
+                    phraseLongClick(userPhrase, holder.getAdapterPosition());
                     return true;
                 },
                 userPhrase.isChosen()
@@ -795,7 +838,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void downloadImageIfNeeded(@Nullable FileDescription fileDescription) {
         if (FileUtils.isImage(fileDescription) && fileDescription.getFileUri() == null) {
-            mCallback.onImageDownloadRequest(fileDescription);
+            mCallback.onFileDownloadRequest(fileDescription);
+        }
+    }
+
+    private void downloadVoiceIfNeeded(@Nullable FileDescription fileDescription) {
+        if (FileUtils.isVoiceMessage(fileDescription) && fileDescription.getFileUri() == null) {
+            mCallback.onFileDownloadRequest(fileDescription);
         }
     }
 
@@ -806,7 +855,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 v -> mCallback.onFileClick(userPhrase.getFileDescription()),
                 v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
                 v -> {
-                    phaseLongClick(userPhrase, holder.getAdapterPosition());
+                    phraseLongClick(userPhrase, holder.getAdapterPosition());
                     return true;
                 }, userPhrase.isChosen(),
                 userPhrase.getSentState()
@@ -818,14 +867,108 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 consultPhrase,
                 v -> mCallback.onFileClick(consultPhrase.getFileDescription()),
                 v -> {
-                    phaseLongClick(consultPhrase, holder.getAdapterPosition());
+                    phraseLongClick(consultPhrase, holder.getAdapterPosition());
                     return true;
                 },
                 v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId())
         );
     }
 
-    private void phaseLongClick(ChatPhrase chatPhrase, int position) {
+    private void bindVoiceMessageFromUserVH(@NonNull final UserVoiceMessageViewHolder holder, UserPhrase userPhrase) {
+        downloadVoiceIfNeeded(userPhrase.getFileDescription());
+        holder.onBind(
+                userPhrase.getTimeStamp(),
+                getFormattedDuration(userPhrase.getFileDescription()),
+                userPhrase.getFileDescription(),
+                v -> {
+                    if (holder.getFileDescription() != null) {
+                        fdMediaPlayer.processPlayPause(holder.getFileDescription());
+                    }
+                },
+                v -> mCallback.onUserPhraseClick(userPhrase, holder.getAdapterPosition()),
+                v -> {
+                    phraseLongClick(userPhrase, holder.getAdapterPosition());
+                    return true;
+                }, (slider, value, fromUser) -> {
+                    if (fromUser) {
+                        MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
+                        if (mediaPlayer != null) {
+                            mediaPlayer.seekTo((int) value);
+                        }
+                    }
+                },
+                new Slider.OnSliderTouchListener() {
+                    @Override
+                    public void onStartTrackingTouch(@NonNull Slider slider) {
+                        ignorePlayerUpdates = true;
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(@NonNull Slider slider) {
+                        ignorePlayerUpdates = false;
+                    }
+                },
+                userPhrase.isChosen(),
+                userPhrase.getSentState()
+        );
+        if (ObjectsCompat.equals(holder.getFileDescription(), fdMediaPlayer.getFileDescription())) {
+            MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
+            if (mediaPlayer != null) {
+                holder.init(mediaPlayer.getDuration(), mediaPlayer.getCurrentPosition(), mediaPlayer.isPlaying());
+            }
+            playingHolder = holder;
+        } else {
+            holder.resetProgress();
+        }
+    }
+
+    private void bindVoiceMessageFromConsultVH(@NonNull final ConsultVoiceMessageViewHolder holder, ConsultPhrase consultPhrase) {
+        downloadVoiceIfNeeded(consultPhrase.getFileDescription());
+        holder.onBind(
+                consultPhrase,
+                getFormattedDuration(consultPhrase.getFileDescription()),
+                v -> {
+                    phraseLongClick(consultPhrase, holder.getAdapterPosition());
+                    return true;
+                },
+                v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
+                v -> {
+                    if (holder.getFileDescription() != null) {
+                        fdMediaPlayer.processPlayPause(holder.getFileDescription());
+                    }
+                },
+                (slider, value, fromUser) -> {
+                    if (fromUser) {
+                        MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
+                        if (mediaPlayer != null) {
+                            mediaPlayer.seekTo((int) value);
+                        }
+                    }
+                },
+                new Slider.OnSliderTouchListener() {
+                    @Override
+                    public void onStartTrackingTouch(@NonNull Slider slider) {
+                        ignorePlayerUpdates = true;
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(@NonNull Slider slider) {
+                        ignorePlayerUpdates = false;
+                    }
+                }
+        );
+        if (ObjectsCompat.equals(holder.getFileDescription(), fdMediaPlayer.getFileDescription())) {
+            MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
+            if (mediaPlayer != null) {
+                holder.init(mediaPlayer.getDuration(), mediaPlayer.getCurrentPosition(), mediaPlayer.isPlaying());
+            }
+            playingHolder = holder;
+        } else {
+            holder.resetProgress();
+        }
+    }
+
+    private void phraseLongClick(ChatPhrase chatPhrase, int position) {
         mCallback.onPhraseLongClick(chatPhrase, position);
     }
 
@@ -837,6 +980,64 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void setCurrentThreadId(long threadId) {
         this.currentThreadId = threadId;
         addItems(new ArrayList<>());
+    }
+
+    public void playerUpdate() {
+        if (ignorePlayerUpdates) {
+            return;
+        }
+        FileDescription fileDescription = fdMediaPlayer.getFileDescription();
+        if (fileDescription != null) {
+            if (playingHolder != null && ObjectsCompat.equals(playingHolder.getFileDescription(), fileDescription)) {
+                MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
+                if (mediaPlayer != null) {
+                    playingHolder.updateProgress(mediaPlayer.getCurrentPosition());
+                    playingHolder.updateIsPlaying(mediaPlayer.isPlaying());
+                }
+            } else {
+                resetPlayingHolder();
+                ChatItem chatItem = findByFileDescription(fileDescription);
+                if (chatItem != null) {
+                    notifyItemChanged(lastIndexOf(chatItem));
+                }
+            }
+        } else {
+            resetPlayingHolder();
+        }
+    }
+
+    public void resetPlayingHolder() {
+        if (playingHolder != null) {
+            ignorePlayerUpdates = false;
+            playingHolder.resetProgress();
+            playingHolder = null;
+        }
+    }
+
+    @Nullable
+    private ChatItem findByFileDescription(FileDescription fileDescription) {
+        for (ChatItem chatPhrase : list) {
+            if (chatPhrase instanceof ConsultPhrase) {
+                final ConsultPhrase cp = (ConsultPhrase) chatPhrase;
+                if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)) {
+                    return cp;
+                }
+            } else if (chatPhrase instanceof UserPhrase) {
+                final UserPhrase up = (UserPhrase) chatPhrase;
+                if (ObjectsCompat.equals(up.getFileDescription(), fileDescription)) {
+                    return up;
+                }
+            }
+        }
+        return null;
+    }
+
+    private String getFormattedDuration(@Nullable FileDescription fileDescription) {
+        long duration = 0L;
+        if (fileDescription != null && fileDescription.getFileUri() != null) {
+            duration = FileUtilsKt.getDuration(mediaMetadataRetriever, ctx, fileDescription.getFileUri());
+        }
+        return VoiceTimeLabelFormatterKt.formatAsDuration(duration);
     }
 
     public interface Callback {
@@ -852,7 +1053,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         void onImageClick(ChatPhrase chatPhrase);
 
-        void onImageDownloadRequest(FileDescription fileDescription);
+        void onFileDownloadRequest(FileDescription fileDescription);
 
         void onSystemMessageClick(SystemMessage systemMessage);
 

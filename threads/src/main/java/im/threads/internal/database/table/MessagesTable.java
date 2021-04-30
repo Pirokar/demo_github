@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import im.threads.internal.formatters.SpeechStatus;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
@@ -25,6 +26,7 @@ import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuestionDTO;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.SimpleSystemMessage;
+import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.ThreadsLogger;
@@ -57,6 +59,7 @@ public class MessagesTable extends Table {
     private static final String COLUMN_SURVEY_HIDE_AFTER = "COLUMN_SURVEY_HIDE_AFTER";
     private static final String COLUMN_THREAD_ID = "COLUMN_THREAD_ID";
     private static final String COLUMN_BLOCK_INPUT = "COLUMN_BLOCK_INPUT";
+    private static final String COLUMN_SPEECH_STATUS = "COLUMN_SPEECH_STATUS";
 
     private final FileDescriptionsTable fileDescriptionTable;
     private final QuotesTable quotesTable;
@@ -100,6 +103,7 @@ public class MessagesTable extends Table {
                         + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
                         + ", " + COLUMN_THREAD_ID + " integer"
                         + ", " + COLUMN_BLOCK_INPUT + " integer"
+                        + ", " + COLUMN_SPEECH_STATUS + " text"
                         + ")",
                 TABLE_MESSAGES, COLUMN_TABLE_ID, COLUMN_TIMESTAMP
                 , COLUMN_PHRASE, COLUMN_FORMATTED_PHRASE, COLUMN_MESSAGE_TYPE, COLUMN_NAME, COLUMN_AVATAR_PATH,
@@ -362,6 +366,15 @@ public class MessagesTable extends Table {
         return sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, null);
     }
 
+    public void speechMessageUpdated(SQLiteOpenHelper sqlHelper, @NonNull SpeechMessageUpdate speechMessageUpdate) {
+        ContentValues cv = new ContentValues();
+        String uuid = speechMessageUpdate.getUuid();
+        cv.put(COLUMN_SPEECH_STATUS, speechMessageUpdate.getSpeechStatus().toString());
+        fileDescriptionTable.putFileDescription(sqlHelper, speechMessageUpdate.getFileDescription(), speechMessageUpdate.getUuid(), false);
+        String whereClause = COLUMN_MESSAGE_UUID + " = ?";
+        sqlHelper.getWritableDatabase().update(TABLE_MESSAGES, cv, whereClause, new String[]{uuid});
+    }
+
     @Nullable
     private ChatItem getChatItem(SQLiteOpenHelper sqlHelper, Cursor c) {
         int type = cGetInt(c, COLUMN_MESSAGE_TYPE);
@@ -421,7 +434,8 @@ public class MessagesTable extends Table {
                 cGetBool(c, COLUMN_SEX),
                 cGetLong(c, COLUMN_THREAD_ID),
                 quickRepliesTable.getQuickReplies(sqlHelper, cGetString(c, COLUMN_MESSAGE_UUID)),
-                cGetBool(c, COLUMN_BLOCK_INPUT)
+                cGetBool(c, COLUMN_BLOCK_INPUT),
+                SpeechStatus.Companion.fromString(cGetString(c, COLUMN_SPEECH_STATUS))
         );
     }
 
@@ -485,6 +499,7 @@ public class MessagesTable extends Table {
         cv.put(COLUMN_SEX, phrase.getSex());
         cv.put(COLUMN_THREAD_ID, phrase.getThreadId());
         cv.put(COLUMN_BLOCK_INPUT, phrase.isBlockInput());
+        cv.put(COLUMN_SPEECH_STATUS, phrase.getSpeechStatus().toString());
         return cv;
     }
 
