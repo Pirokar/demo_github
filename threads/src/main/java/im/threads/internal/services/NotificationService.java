@@ -56,7 +56,6 @@ public final class NotificationService extends ThreadsService {
     public static final String EXTRA_MESSAGE_CONTENT = "im.threads.internal.services.NotificationService.EXTRA_MESSAGE_CONTENT";
     public static final int UNREAD_MESSAGE_PUSH_ID = 0;
     private static final String TAG = "NotificationService";
-    private static final String CHANNEL_ID = "im.threads.internal.services.NotificationService.CHANNEL_ID";
     private static final String ACTION_REMOVE_NOTIFICATION = "im.threads.internal.services.NotificationService.ACTION_REMOVE_NOTIFICATION";
     private static final String ACTION_ADD_UNREAD_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE";
     private static final String ACTION_ADD_UNREAD_MESSAGE_LIST = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE_LIST";
@@ -116,8 +115,7 @@ public final class NotificationService extends ThreadsService {
             return START_STICKY;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            final NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Threads Channel", NotificationManager.IMPORTANCE_DEFAULT);
-            nm.createNotificationChannel(channel);
+            createNotificationChannel(this);
         }
         String action = intent.getAction();
         if (action != null) {

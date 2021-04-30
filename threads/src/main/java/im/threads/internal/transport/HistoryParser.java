@@ -118,8 +118,27 @@ public final class HistoryParser {
                         if (quote != null && quote.getFileDescription() != null)
                             quote.getFileDescription().setTimeStamp(timeStamp);
                         if (message.getOperator() != null) {
-                            out.add(new ConsultPhrase(uuid, providerId, providerIds, fileDescription, quote, name, phraseText, message.getFormattedText(), timeStamp,
-                                    operatorId, photoUrl, message.isRead(), null, false, message.getThreadId(), message.getQuickReplies()));
+                            out.add(
+                                    new ConsultPhrase(
+                                            uuid,
+                                            providerId,
+                                            providerIds,
+                                            fileDescription,
+                                            quote,
+                                            name,
+                                            phraseText,
+                                            message.getFormattedText(),
+                                            timeStamp,
+                                            operatorId,
+                                            photoUrl,
+                                            message.isRead(),
+                                            null,
+                                            false,
+                                            message.getThreadId(),
+                                            message.getQuickReplies(),
+                                            message.getSettings() != null ? message.getSettings().isBlockInput() : !Config.instance.getChatStyle().inputEnabledDuringQuickReplies
+                                    )
+                            );
                         } else {
                             if (fileDescription != null) {
                                 fileDescription.setFrom(Config.instance.context.getString(R.string.threads_I));
@@ -208,12 +227,12 @@ public final class HistoryParser {
         if (attachments.size() > 0) {
             Attachment attachment = attachments.get(0);
             if (attachment != null) {
-                String header = null;
+                String incomingName = null;
                 String mimeType = null;
                 long size = 0;
                 Optional metaData = attachment.getOptional();
                 if (metaData != null) {
-                    header = metaData.getName();
+                    incomingName = metaData.getName();
                     size = metaData.getSize();
                     mimeType = metaData.getType();
                 }
@@ -224,7 +243,7 @@ public final class HistoryParser {
                         0
                 );
                 fileDescription.setDownloadPath(attachment.getResult());
-                fileDescription.setIncomingName(header);
+                fileDescription.setIncomingName(incomingName);
                 fileDescription.setMimeType(mimeType);
                 fileDescription.setSelfie(attachment.isSelfie());
             }

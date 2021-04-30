@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -434,13 +435,24 @@ public final class ChatFragment extends BaseFragment implements
         binding.searchMore.setBackgroundColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
         binding.searchMore.setTextColor(ContextCompat.getColor(activity, style.iconsAndSeparatorsColor));
 
-        binding.swipeRefresh.setColorSchemeResources(style.chatToolbarColorResId);
+        binding.swipeRefresh.setColorSchemeColors(getResources().getIntArray(style.threadsSwipeRefreshColors));
 
-        binding.scrollDownButton.setImageResource(style.scrollDownButtonResId);
+        binding.scrollDownButton.setBackgroundResource(style.scrollDownBackgroundResId);
+        binding.scrollDownButton.setImageResource(style.scrollDownIconResId);
+        final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) binding.scrollDownButton.getLayoutParams();
+        lp.height = getResources().getDimensionPixelSize(style.scrollDownButtonHeight);
+        lp.width = getResources().getDimensionPixelSize(style.scrollDownButtonWidth);
+        ViewCompat.setElevation(binding.scrollDownButton, getResources().getDimension(style.scrollDownButtonElevation));
+
+        ViewGroup.MarginLayoutParams lpButtonContainer = (ViewGroup.MarginLayoutParams) binding.scrollDownButtonContainer.getLayoutParams();
+        final int margin = getResources().getDimensionPixelSize(style.scrollDownButtonMargin);
+        lpButtonContainer.setMargins(margin, margin, margin, margin);
 
         binding.unreadMsgSticker.getBackground().setColorFilter(ContextCompat.getColor(activity, style.unreadMsgStickerColorResId), PorterDuff.Mode.SRC_ATOP);
+        ViewCompat.setElevation(binding.unreadMsgSticker, getResources().getDimension(style.scrollDownButtonElevation));
 
         binding.unreadMsgCount.setTextColor(ContextCompat.getColor(activity, style.unreadMsgCountTextColorResId));
+        ViewCompat.setElevation(binding.unreadMsgCount, getResources().getDimension(style.scrollDownButtonElevation));
 
         binding.inputEditView.setMinHeight((int) activity.getResources().getDimension(style.inputHeight));
         binding.inputEditView.setBackground(AppCompatResources.getDrawable(activity, style.inputBackground));
@@ -1616,7 +1628,7 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setDrawableColor(activity, d, style.chatBodyIconsTint);
         binding.chatBackButton.setImageDrawable(d);
 
-        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, style.chatToolbarTextColorResId);
+        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, style.chatToolbarContextMenuColorResId);
 
         binding.copyControls.setVisibility(View.VISIBLE);
         binding.consultName.setVisibility(View.GONE);
