@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="datastore_url" translatable="false">https://gpb-test.threads.im/</string>
+    <string name="serverBaseUrl" translatable="false">https://gpb-test.threads.im/</string>
+    <string name="threadsGateUrl" translatable="false">https://gpb-test.threads.im/socket</string>
+    <string name="threadsGateProviderUid" translatable="false">913a8c95-a8d1-4f15-8ea7-598e098fd8b5</string>
+</resources>

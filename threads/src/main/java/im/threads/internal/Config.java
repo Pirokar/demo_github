@@ -105,7 +105,7 @@ public final class Config {
             if (TextUtils.isEmpty(threadsGateProviderUid)) {
                 throw new MetaConfigurationException("Threads gate provider uid is not set");
             }
-            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid);
+            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, isDebugLoggingEnabled);
         }
         return new MFMSPushTransport();
     }
