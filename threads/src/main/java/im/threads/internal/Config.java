@@ -52,6 +52,11 @@ public final class Config {
             .registerTypeAdapter(Uri.class, new UriSerializer())
             .registerTypeAdapter(Uri.class, new UriDeserializer())
             .create();
+    public final boolean clientIdIgnoreEnabled;
+
+    public final boolean newChatCenterApi;
+
+    public final boolean attachmentEnabled;
 
     public Config(@NonNull Context context,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
@@ -63,6 +68,9 @@ public final class Config {
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
+        this.clientIdIgnoreEnabled = MetaDataUtils.getClientIdIgnoreEnabled(this.context);
+        this.newChatCenterApi = MetaDataUtils.getNewChatCenterApi(this.context);
+        this.attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context);
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
         this.transport = getTransport();

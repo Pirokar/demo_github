@@ -521,6 +521,7 @@ public final class ChatFragment extends BaseFragment implements
     private void bindViews() {
         binding.swipeRefresh.setSwipeListener(() -> {
         });
+        binding.addAttachment.setVisibility(Config.instance.attachmentEnabled ? View.VISIBLE : View.GONE);
         binding.addAttachment.setOnClickListener(v -> openBottomSheetAndGallery());
         binding.swipeRefresh.setOnRefreshListener(ChatFragment.this::onRefresh);
         binding.sendMessage.setOnClickListener(v -> onSendButtonClick());

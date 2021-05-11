@@ -2,49 +2,65 @@ package im.threads.internal.retrofit;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import im.threads.internal.Config;
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.SettingsResponse;
 import im.threads.internal.opengraph.OGResponse;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Multipart;
-import retrofit2.http.POST;
-import retrofit2.http.PUT;
-import retrofit2.http.Part;
-import retrofit2.http.Query;
 
-/**
- * описание серверных методов
- */
-public interface ThreadsApi {
+public final class ThreadsApi {
 
-    String API_VERSION = "13";
+    @NonNull
+    private final OldThreadsApi oldThreadsApi;
 
-    @Multipart
-    @PUT("files")
-    Call<FileUploadResponse> upload(
-            @Part MultipartBody.Part file,
-            @Header("X-Client-Token") String token
-    );
+    @NonNull
+    private final NewThreadsApi newThreadsApi;
 
-    @GET("history/v" + API_VERSION)
-    Call<HistoryResponse> history(
-            @Header("X-Client-Token") String token,
-            @Query("before") String beforeDate,
-            @Query("count") Integer count,
-            @Query("libVersion") String version
-    );
+    public ThreadsApi(@NonNull OldThreadsApi oldThreadsApi, @NonNull NewThreadsApi newThreadsApi) {
+        this.oldThreadsApi = oldThreadsApi;
+        this.newThreadsApi = newThreadsApi;
+    }
 
-    @GET("opengraph")
-    Call<OGResponse> openGraph(@Query(value = "href", encoded = true) String url);
+    public Call<SettingsResponse> settings() {
+        if (Config.instance.newChatCenterApi) {
+            return newThreadsApi.settings();
+        } else {
+            return oldThreadsApi.settings();
+        }
+    }
 
-    @POST("messages/read")
-    Call<Void> markMessageAsRead(@Body List<String> ids);
+    public Call<HistoryResponse> history(String token, String beforeDate, Integer count, String version) {
+        if (Config.instance.newChatCenterApi) {
+            return newThreadsApi.history(token, beforeDate, count, version);
+        } else {
+            return oldThreadsApi.history(token, beforeDate, count, version);
+        }
+    }
 
-    @GET("v" + API_VERSION + "/chat/settings?channelType=MOBILE&auth=false")
-    Call<SettingsResponse> settings();
+    public Call<Void> markMessageAsRead(List<String> ids) {
+        if (Config.instance.newChatCenterApi) {
+            return newThreadsApi.markMessageAsRead(ids);
+        } else {
+            return oldThreadsApi.markMessageAsRead(ids);
+        }
+    }
+
+    public Call<OGResponse> openGraph(String url) {
+        if (Config.instance.newChatCenterApi) {
+            return newThreadsApi.openGraph(url);
+        } else {
+            return oldThreadsApi.openGraph(url);
+        }
+    }
+
+    public Call<FileUploadResponse> upload(MultipartBody.Part file, String token) {
+        if (Config.instance.newChatCenterApi) {
+            return newThreadsApi.upload(file, token);
+        } else {
+            return oldThreadsApi.upload(file, token);
+        }
+    }
 }

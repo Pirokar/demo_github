@@ -9,7 +9,6 @@ import im.threads.internal.transport.AuthInterceptor;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.MetaDataUtils;
-import im.threads.internal.utils.PrefUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -20,7 +19,7 @@ public final class ApiGenerator {
     private static final String USER_AGENT_HEADER = "User-Agent";
     private static ApiGenerator apiGenerator = null;
 
-    private ThreadsApi threadsApi;
+    private final ThreadsApi threadsApi;
 
     public static ThreadsApi getThreadsApi() throws IOException {
         if (apiGenerator == null) {
@@ -34,11 +33,15 @@ public final class ApiGenerator {
         if (baseUrl == null) {
             throw new IOException("Empty im.threads.getServerUrl meta variable");
         }
-        threadsApi = new Retrofit.Builder()
+        Retrofit build = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
-                .build().create(ThreadsApi.class);
+                .build();
+        threadsApi = new ThreadsApi(
+                build.create(OldThreadsApi.class),
+                build.create(NewThreadsApi.class)
+        );
     }
 
     private OkHttpClient createOkHttpClient() {
