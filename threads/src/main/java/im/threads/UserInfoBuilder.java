@@ -9,6 +9,10 @@ public final class UserInfoBuilder {
     @NonNull
     String clientId;
     @Nullable
+    String authToken;
+    @Nullable
+    String authSchema;
+    @Nullable
     String clientData = null;
     @Nullable
     String clientIdSignature = null;
@@ -27,6 +31,12 @@ public final class UserInfoBuilder {
             throw new IllegalArgumentException("clientId must not be empty");
         }
         this.clientId = clientId;
+    }
+
+    public UserInfoBuilder setAuthData(@NonNull String authToken, @NonNull String authSchema) {
+        this.authToken = authToken;
+        this.authSchema = authSchema;
+        return this;
     }
 
     public UserInfoBuilder setClientIdSignature(String clientIdSignature) {

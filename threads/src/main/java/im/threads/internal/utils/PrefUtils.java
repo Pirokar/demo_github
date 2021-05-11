@@ -42,6 +42,8 @@ public final class PrefUtils {
     private static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
     private static final String TRANSPORT_TYPE = "TRANSPORT_TYPE";
     private static final String DEVICE_UID = "DEVICE_UID";
+    private static final String AUTH_TOKEN = "AUTH_TOKEN";
+    private static final String AUTH_SCHEMA = "AUTH_SCHEMA";
     private static final String MIGRATED = "MIGRATED";
     private static final String CLIENT_NOTIFICATION_DISPLAY_TYPE = "CLIENT_NOTIFICATION_DISPLAY_TYPE";
     private static final String THREAD_ID = "THREAD_ID";
@@ -226,6 +228,28 @@ public final class PrefUtils {
                     .commit();
         }
         return deviceUid;
+    }
+
+    public static String getAuthToken() {
+        return getDefaultSharedPreferences().getString(AUTH_TOKEN, "");
+    }
+
+    public static void setAuthToken(String authToken) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(AUTH_TOKEN, authToken)
+                .commit();
+    }
+
+    public static String getAuthSchema() {
+        return getDefaultSharedPreferences().getString(AUTH_SCHEMA, "");
+    }
+
+    public static void setAuthSchema(String authSchema) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(AUTH_SCHEMA, authSchema)
+                .commit();
     }
 
     public static void migrateToSeparateStorageIfNeeded() {

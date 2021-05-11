@@ -85,6 +85,8 @@ public final class ThreadsLib {
         }
         PrefUtils.setAppMarker(userInfoBuilder.appMarker);
         PrefUtils.setNewClientId(userInfoBuilder.clientId);
+        PrefUtils.setAuthToken(userInfoBuilder.authToken);
+        PrefUtils.setAuthSchema(userInfoBuilder.authSchema);
         PrefUtils.setClientIdSignature(userInfoBuilder.clientIdSignature);
         PrefUtils.setUserName(userInfoBuilder.userName);
         PrefUtils.setData(userInfoBuilder.clientData);

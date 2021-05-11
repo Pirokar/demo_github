@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -68,10 +68,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -104,10 +104,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -140,10 +140,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -176,10 +176,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -212,10 +212,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -248,10 +248,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -284,10 +284,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -320,10 +320,10 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
@@ -356,10 +356,46 @@
               "client_type": 3
             },
             {
-              "client_id": "158671513869-2j3i863ju3bhjboklrqc9qchibfveol1.apps.googleusercontent.com",
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.brooma.threads.winlab2"
+                "bundle_id": "com.brooma.threads.polarbear-push"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:ad03068cbe33bc89b02844",
+        "android_client_info": {
+          "package_name": "io.edna.chatcenter.android.gpb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.polarbear-push"
               }
             }
           ]
