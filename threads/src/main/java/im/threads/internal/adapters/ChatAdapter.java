@@ -624,14 +624,18 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (cp == null) {
             return;
         }
+        int position = indexOf(cp);
+        if (position < 0) {
+            return;
+        }
+        ChatItem chatItem = list.get(position);
         if (cp instanceof UserPhrase) {
-            ((UserPhrase) cp).setChosen(isChosen);
-            notifyItemChanged(indexOf(cp));
+            ((UserPhrase) chatItem).setChosen(isChosen);
         }
         if (cp instanceof ConsultPhrase) {
-            ((ConsultPhrase) cp).setChosen(isChosen);
-            notifyItemChanged(indexOf(cp));
+            ((ConsultPhrase) chatItem).setChosen(isChosen);
         }
+        notifyItemChanged(position);
     }
 
     public void onDownloadError(final FileDescription fileDescription) {
@@ -709,12 +713,6 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder
                 .onBind(
                         consultPhrase,
-                        consultPhrase.getPhrase(),
-                        consultPhrase.getAvatarPath(),
-                        consultPhrase.getTimeStamp(),
-                        consultPhrase.isAvatarVisible(),
-                        consultPhrase.getQuote(),
-                        consultPhrase.getFileDescription(),
                         v -> mCallback.onImageClick(consultPhrase),
                         v -> {
                             if (consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
@@ -724,15 +722,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 mCallback.onFileClick(consultPhrase.getFileDescription());
                             }
                         },
-                        v -> {
-                            mCallback.onQuoteClick(consultPhrase.getQuote());
-                        },
+                        v -> mCallback.onQuoteClick(consultPhrase.getQuote()),
                         v -> {
                             phaseLongClick(consultPhrase, holder.getAdapterPosition());
                             return true;
                         },
-                        v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId()),
-                        consultPhrase.isChosen()
+                        v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId())
                 );
     }
 
@@ -768,26 +763,23 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private void bindConsultIsTypingVH(@NonNull final ConsultIsTypingViewHolderNew holder) {
-        final ChatStyle style = Config.instance.getChatStyle();
         final ConsultTyping consultTyping = (ConsultTyping) list.get(holder.getAdapterPosition());
-        holder.onBind(v -> mCallback.onConsultAvatarClick(consultTyping.getConsultId()));
-        final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultTyping.getAvatarPath());
-        Picasso.get()
-                .load(avatarPath)
-                .fit()
-                .error(style.defaultOperatorAvatar)
-                .placeholder(style.defaultOperatorAvatar)
-                .centerCrop()
-                .transform(new CircleTransformation())
-                .into(holder.mConsultAvatar);
+        holder.onBind(
+                consultTyping,
+                v -> mCallback.onConsultAvatarClick(consultTyping.getConsultId())
+        );
     }
 
     private void bindImageFromConsultVH(@NonNull final ImageFromConsultViewHolder holder, ConsultPhrase consultPhrase) {
         downloadImageIfNeeded(consultPhrase.getFileDescription());
         holder.onBind(
                 consultPhrase,
-                () -> mCallback.onImageClick(consultPhrase),
-                () -> mCallback.onPhraseLongClick(consultPhrase, holder.getAdapterPosition())
+                v -> mCallback.onImageClick(consultPhrase),
+                v -> {
+                    mCallback.onPhraseLongClick(consultPhrase, holder.getAdapterPosition());
+                    return true;
+                },
+                v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId())
         );
     }
 
@@ -821,18 +813,15 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         );
     }
 
-    private void bindFileFromConsultVH(@NonNull final ConsultFileViewHolder holder, ConsultPhrase consultPhrase) {
+    private void bindFileFromConsultVH(@NonNull ConsultFileViewHolder holder, @NonNull ConsultPhrase consultPhrase) {
         holder.onBind(
-                consultPhrase.getTimeStamp(),
-                consultPhrase.getFileDescription(),
-                consultPhrase.getAvatarPath(),
+                consultPhrase,
                 v -> mCallback.onFileClick(consultPhrase.getFileDescription()),
                 v -> {
                     phaseLongClick(consultPhrase, holder.getAdapterPosition());
                     return true;
                 },
-                consultPhrase.isAvatarVisible(),
-                consultPhrase.isChosen()
+                v -> mCallback.onConsultAvatarClick(consultPhrase.getConsultId())
         );
     }
 
