@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 apply plugin: 'maven-publish'
 
@@ -52,7 +53,9 @@ android {
 }
 
 repositories {
-    maven {url 'https://maven-pub.mfms.ru/repository/maven-public/' }
+    maven { url "https://jitpack.io" }
+    maven { url 'https://maven-pub.mfms.ru/repository/maven-public/' }
+    mavenCentral()
 }
 
 afterEvaluate {
@@ -106,8 +109,8 @@ afterEvaluate {
 
 dependencies {
 
-    implementation "androidx.preference:preference:$rootProject.androidXPreferenceVersion"
-    implementation "androidx.core:core:$rootProject.androidXCoreVersion"
+    implementation "androidx.preference:preference-ktx:$rootProject.androidXPreferenceVersion"
+    implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$rootProject.androidXSwiperefreshlayout"
     implementation "com.google.android.material:material:$rootProject.materialComponentsVersion"
 
@@ -130,4 +133,5 @@ dependencies {
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
     androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
