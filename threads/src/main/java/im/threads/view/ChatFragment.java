@@ -407,6 +407,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void afterRefresh(List<ChatItem> result) {
+        setChosen(result);
         int itemsBefore = chatAdapter.getItemCount();
         chatAdapter.addItems(result);
         scrollToPosition(chatAdapter.getItemCount() - itemsBefore);
@@ -417,6 +418,23 @@ public final class ChatFragment extends BaseFragment implements
                 binding.swipeRefresh.destroyDrawingCache();
                 binding.swipeRefresh.invalidate();
             }, i * 500);
+        }
+    }
+
+    private void setChosen(List<ChatItem> chatItemList) {
+        for (final ChatItem ci : chatItemList) {
+            if (ci instanceof ConsultPhrase) {
+                final ConsultPhrase cp = (ConsultPhrase) ci;
+                if (cp.isTheSameItem(mChosenPhrase)) {
+                    cp.setChosen(true);
+                }
+            }
+            if (ci instanceof UserPhrase) {
+                final UserPhrase up = (UserPhrase) ci;
+                if (up.isTheSameItem(mChosenPhrase)) {
+                    up.setChosen(true);
+                }
+            }
         }
     }
 
@@ -1072,6 +1090,7 @@ public final class ChatFragment extends BaseFragment implements
         if (list.size() == 0) {
             return;
         }
+        setChosen(list);
         int oldAdapterSize = chatAdapter.getList().size();
         welcomeScreenVisibility(false);
         chatAdapter.addItems(list);
@@ -1796,6 +1815,7 @@ public final class ChatFragment extends BaseFragment implements
                     mChatController.downloadMessagesTillEnd()
                             .observeOn(AndroidSchedulers.mainThread())
                             .map(list -> {
+                                setChosen(list);
                                 chatAdapter.addItems(list);
                                 final int itemHighlightedIndex = chatAdapter.setItemHighlighted(quote.getUuid());
                                 scrollToPosition(itemHighlightedIndex);
@@ -1805,7 +1825,11 @@ public final class ChatFragment extends BaseFragment implements
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    list -> chatAdapter.removeHighlight(),
+                                    list -> {
+                                        chatAdapter.removeHighlight();
+                                        setChosen(list);
+                                        chatAdapter.addItems(list);
+                                    },
                                     e -> ThreadsLogger.e(TAG, e.getMessage())
                             )
             );
