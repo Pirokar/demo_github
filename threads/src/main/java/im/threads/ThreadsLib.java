@@ -146,6 +146,10 @@ public final class ThreadsLib {
         }
     }
 
+    public boolean isUserInitialized() {
+        return !PrefUtils.isClientIdEmpty();
+    }
+
     public interface PendingIntentCreator {
         PendingIntent create(Context context, String appMarker);
     }
