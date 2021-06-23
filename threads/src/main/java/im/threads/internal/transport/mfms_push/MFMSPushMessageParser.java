@@ -4,8 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import com.edna.android.push_lite.repo.push.remote.model.PushMessage;
 import com.google.gson.JsonObject;
-import com.mfms.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;

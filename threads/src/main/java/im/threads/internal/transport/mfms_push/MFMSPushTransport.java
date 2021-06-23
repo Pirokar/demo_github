@@ -8,9 +8,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
-import com.mfms.android.push_lite.PushController;
-import com.mfms.android.push_lite.exception.PushServerErrorException;
-import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
+import com.edna.android.push_lite.PushController;
+import com.edna.android.push_lite.exception.PushServerErrorException;
+import com.edna.android.push_lite.repo.push.remote.api.InMessageSend;
 
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
