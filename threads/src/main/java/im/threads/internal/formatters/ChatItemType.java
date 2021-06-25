@@ -39,6 +39,7 @@ public enum ChatItemType {
     CLOSE_THREAD,
     REOPEN_THREAD,
     CLIENT_OFFLINE,
+    SPEECH_MESSAGE_UPDATED,
 
     UNKNOWN;
 

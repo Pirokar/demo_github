@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ThreadsStyleConsultPage" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowBackground">@color/threads_white_dark</item>

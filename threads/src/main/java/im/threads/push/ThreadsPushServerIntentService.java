@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.transport.mfms_push.MFMSPushMessageParser;
 import im.threads.internal.formatters.MessageFormatter;
 import im.threads.internal.model.ChatItem;
@@ -37,6 +38,9 @@ public class ThreadsPushServerIntentService extends PushServerIntentService {
                 if (chatItem != null) {
                     if (isCurrentClientId) {
                         ChatUpdateProcessor.getInstance().postNewMessage(chatItem);
+                    }
+                    if (chatItem instanceof SpeechMessageUpdate) {
+                        ChatUpdateProcessor.getInstance().postSpeechMessageUpdate((SpeechMessageUpdate) chatItem);
                     }
                     if (!(chatItem instanceof ScheduleInfo) && !(chatItem instanceof UserPhrase) && !TextUtils.isEmpty(pushMessage.shortMessage)) {
                         toShow.add(pushMessage);

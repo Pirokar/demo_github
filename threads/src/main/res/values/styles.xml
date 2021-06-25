@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ThreadsStyle" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ThreadsStyle" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@android:color/holo_green_light</item>
         <item name="colorPrimaryDark">@android:color/holo_green_dark</item>
@@ -11,7 +11,7 @@
 
     </style>
 
-    <style name="Translucent" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Translucent" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@android:color/holo_green_light</item>
         <item name="colorPrimaryDark">@android:color/holo_green_dark</item>
@@ -22,7 +22,7 @@
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
-    <style name="Transparent" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Transparent" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -31,16 +31,16 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
-    <!--<style name="FileDialogStyle" parent="Theme.AppCompat.Light.Dialog">-->
+    <!--<style name="FileDialogStyle" parent="Theme.MaterialComponents.Light.Dialog.Bridge">-->
         <!--<item name="android:textColor">@color/file_browser_dialog_text</item>-->
         <!--<item name="android:windowBackground">@color/file_browser_window_background</item>-->
     <!--</style>-->
 
-    <style name="FileDialogStyleTransparent" parent="Theme.AppCompat.Light.Dialog">
+    <style name="FileDialogStyleTransparent" parent="Theme.MaterialComponents.Light.Dialog.Bridge">
         <item name="android:textColor">@android:color/holo_green_light</item>
     </style>
 
-    <style name="ThreadsStyleConsultPage" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ThreadsStyleConsultPage" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <!--  <item name="colorPrimaryDark">@color/black_transparent</item>-->
         <item name="android:windowBackground">@color/threads_white_dark</item>
@@ -51,7 +51,7 @@
 
     </style>
 
-    <style name="ThreadsGalleryStyle" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ThreadsGalleryStyle" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimaryDark">#282828</item>
         <item name="windowActionBar">false</item>
@@ -136,6 +136,18 @@
         <item name="android:paddingRight">16dp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="ThemeOverlay.ChatCenter.Slider.User" parent="">
+        <item name="colorPrimary">@color/threads_white</item>
+    </style>
+
+    <style name="ThemeOverlay.ChatCenter.Slider.Consult" parent="">
+        <item name="colorPrimary">@color/threads_teal_009688</item>
+    </style>
+
+    <style name="ThemeOverlay.ChatCenter.Slider.Preview" parent="">
+        <item name="colorPrimary">@color/threads_black</item>
     </style>
 
 </resources>

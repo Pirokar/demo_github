@@ -8,6 +8,7 @@ import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.QuickReply;
+import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.transport.ChatItemProviderData;
 import im.threads.internal.transport.TransportException;
@@ -32,6 +33,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<Boolean> userInputEnableProcessor = PublishProcessor.create();
     private final FlowableProcessor<List<QuickReply>> quickRepliesProcessor = PublishProcessor.create();
     private final FlowableProcessor<ClientNotificationDisplayType> clientNotificationDisplayTypeProcessor = PublishProcessor.create();
+    private final FlowableProcessor<SpeechMessageUpdate> speechMessageUpdateProcessor = PublishProcessor.create();
 
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
 
@@ -56,6 +58,10 @@ public class ChatUpdateProcessor {
 
     public void postIncomingMessageWasRead(@NonNull String messageId) {
         incomingMessageReadProcessor.onNext(messageId);
+    }
+
+    public void postSpeechMessageUpdate(@NonNull SpeechMessageUpdate speechMessageUpdate) {
+        speechMessageUpdateProcessor.onNext(speechMessageUpdate);
     }
 
     public void postNewMessage(@NonNull ChatItem chatItem) {
@@ -112,6 +118,10 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<String> getIncomingMessageReadProcessor() {
         return incomingMessageReadProcessor;
+    }
+
+    public FlowableProcessor<SpeechMessageUpdate> getSpeechMessageUpdateProcessor() {
+        return speechMessageUpdateProcessor;
     }
 
     public FlowableProcessor<ChatItem> getNewMessageProcessor() {

@@ -81,6 +81,7 @@ public final class FileDescription implements Parcelable {
         this.timeStamp = timeStamp;
     }
 
+    @Nullable
     public String getDownloadPath() {
         return downloadPath;
     }
@@ -139,16 +140,14 @@ public final class FileDescription implements Parcelable {
 
         if (size != that.size) return false;
         if (timeStamp != that.timeStamp) return false;
+        if (!ObjectsCompat.equals(mimeType, that.mimeType)) return false;
         return ObjectsCompat.equals(from, that.from);
 
     }
 
     @Override
     public int hashCode() {
-        int result = from != null ? from.hashCode() : 0;
-        result = 31 * result + (int) (size ^ (size >>> 32));
-        result = 31 * result + (int) (timeStamp ^ (timeStamp >>> 32));
-        return result;
+        return ObjectsCompat.hash(size, timeStamp, mimeType, from);
     }
 
     @Override

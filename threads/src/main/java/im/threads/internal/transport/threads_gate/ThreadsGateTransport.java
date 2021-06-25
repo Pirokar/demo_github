@@ -26,6 +26,7 @@ import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
+import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.AuthInterceptor;
@@ -365,6 +366,11 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                                 AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(message.getContent(), AttachmentSettings.class);
                                 if (attachmentSettings.getClientId() != null) {
                                     ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
+                                }
+                            } else if (ChatItemType.SPEECH_MESSAGE_UPDATED.equals(type)) {
+                                ChatItem chatItem = ThreadsGateMessageParser.format(message);
+                                if (chatItem instanceof SpeechMessageUpdate) {
+                                    ChatUpdateProcessor.getInstance().postSpeechMessageUpdate((SpeechMessageUpdate) chatItem);
                                 }
                             } else if (ThreadsGateMessageParser.checkId(message, PrefUtils.getClientID())) {
                                 ChatItem chatItem = ThreadsGateMessageParser.format(message);

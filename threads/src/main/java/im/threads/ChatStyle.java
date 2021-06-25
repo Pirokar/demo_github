@@ -87,6 +87,17 @@ public final class ChatStyle implements Serializable {
     public int outgoingMessageLinkColor = R.color.threads_outgoing_message_link;
 
     @ColorRes
+    public int incomingPlayPauseButtonColor = R.color.threads_incoming_play_pause_button;
+    @ColorRes
+    public int outgoingPlayPauseButtonColor = R.color.threads_outgoing_play_pause_button;
+    @ColorRes
+    public int previewPlayPauseButtonColor = R.color.threads_preview_play_pause_button;
+    @DrawableRes
+    public int voiceMessagePlayButton = R.drawable.threads_voice_message_play;
+    @DrawableRes
+    public int voiceMessagePauseButton = R.drawable.threads_voice_message_pause;
+
+    @ColorRes
     public int chatBodyIconsTint = R.color.threads_chat_icons_tint;
     @ColorRes
     public int chatSystemMessageTextColor = R.color.threads_chat_connection_message;
@@ -128,6 +139,17 @@ public final class ChatStyle implements Serializable {
     public int unreadMsgCountTextColorResId = R.color.threads_chat_unread_msg_count_text;
     @ArrayRes
     public int threadsSwipeRefreshColors = R.array.threads_swipe_refresh_colors;
+
+    @DrawableRes
+    public int threadsRecordButtonBackground = R.drawable.threads_record_button_background;
+    @ColorRes
+    public int threadsRecordButtonBackgroundColor = R.color.threads_record_button_background;
+    @DrawableRes
+    public int threadsRecordButtonIcon = R.drawable.threads_record_button_icon;
+    @ColorRes
+    public int threadsRecordButtonIconColor = R.color.threads_record_button_icon;
+    @ColorRes
+    public int threadsRecordButtonSmallMicColor = R.color.threads_record_button_small_mic;
 
     //TODO #THREADS-3523
     //chat message statuses
@@ -266,6 +288,8 @@ public final class ChatStyle implements Serializable {
 
     public boolean selfieEnabled = false;
 
+    public boolean voiceMessageEnabled = false;
+
     // specify fonts
     @Nullable
     public String defaultFontBold;
@@ -346,6 +370,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setSelfieEnabled(final boolean selfieEnabled) {
         this.selfieEnabled = selfieEnabled;
+        return this;
+    }
+
+    public ChatStyle setVoiceMessageEnabled(final boolean voiceMessageEnabled) {
+        this.voiceMessageEnabled = voiceMessageEnabled;
         return this;
     }
 
@@ -861,10 +890,10 @@ public final class ChatStyle implements Serializable {
     public ChatStyle setScrollDownButtonStyle(
             @DrawableRes final int scrollDownIconResId,
             @DrawableRes final int scrollDownBackgroundResId,
-            @DrawableRes final int scrollDownButtonWidth,
-            @DrawableRes final int scrollDownButtonHeight,
-            @DrawableRes final int scrollDownButtonMargin,
-            @DrawableRes final int scrollDownButtonElevation,
+            @DimenRes final int scrollDownButtonWidth,
+            @DimenRes final int scrollDownButtonHeight,
+            @DimenRes final int scrollDownButtonMargin,
+            @DimenRes final int scrollDownButtonElevation,
             @ColorRes final int unreadMsgStickerColorResId,
             @ColorRes final int unreadMsgCountTextColorResId
     ) {
@@ -887,6 +916,56 @@ public final class ChatStyle implements Serializable {
      */
     public ChatStyle setSwipeRefreshColors(@ArrayRes final int threadsSwipeRefreshColors) {
         this.threadsSwipeRefreshColors = threadsSwipeRefreshColors;
+        return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param threadsRecordButtonBackground      - R.drawable.threads_record_button_background
+     * @param threadsRecordButtonBackgroundColor - R.color.threads_record_button_background
+     * @param threadsRecordButtonIcon            - R.drawable.threads_record_button_icon
+     * @param threadsRecordButtonIconColor       - R.color.threads_record_button_icon
+     * @param threadsRecordButtonSmallMicColor   - R.color.threads_record_button_small_mic
+     * @return Builder
+     */
+    public ChatStyle setRecordButtonStyle(
+            @DrawableRes final int threadsRecordButtonBackground,
+            @ColorRes final int threadsRecordButtonBackgroundColor,
+            @DrawableRes final int threadsRecordButtonIcon,
+            @ColorRes final int threadsRecordButtonIconColor,
+            @ColorRes final int threadsRecordButtonSmallMicColor
+    ) {
+        this.threadsRecordButtonBackground = threadsRecordButtonBackground;
+        this.threadsRecordButtonBackgroundColor = threadsRecordButtonBackgroundColor;
+        this.threadsRecordButtonIcon = threadsRecordButtonIcon;
+        this.threadsRecordButtonIconColor = threadsRecordButtonIconColor;
+        this.threadsRecordButtonSmallMicColor = threadsRecordButtonSmallMicColor;
+        return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param incomingPlayPauseButtonColor - R.color.threads_incoming_play_pause_button
+     * @param outgoingPlayPauseButtonColor - R.color.threads_outgoing_play_pause_button
+     * @param previewPlayPauseButtonColor - R.color.threads_preview_play_pause_button
+     * @param voiceMessagePlayButton       - R.drawable.threads_voice_message_play
+     * @param voiceMessagePauseButton      - R.drawable.threads_voice_message_pause
+     * @return Builder
+     */
+    public ChatStyle setPlayPauseButtonStyle(
+            @ColorRes final int incomingPlayPauseButtonColor,
+            @ColorRes final int outgoingPlayPauseButtonColor,
+            @ColorRes final int previewPlayPauseButtonColor,
+            @DrawableRes final int voiceMessagePlayButton,
+            @DrawableRes final int voiceMessagePauseButton
+    ) {
+        this.incomingPlayPauseButtonColor = incomingPlayPauseButtonColor;
+        this.outgoingPlayPauseButtonColor = outgoingPlayPauseButtonColor;
+        this.previewPlayPauseButtonColor = previewPlayPauseButtonColor;
+        this.voiceMessagePlayButton = voiceMessagePlayButton;
+        this.voiceMessagePauseButton = voiceMessagePauseButton;
         return this;
     }
 }

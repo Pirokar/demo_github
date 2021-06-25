@@ -6,6 +6,7 @@ import androidx.core.util.ObjectsCompat;
 
 import java.util.List;
 
+import im.threads.internal.formatters.SpeechStatus;
 import im.threads.internal.opengraph.OGData;
 import im.threads.internal.utils.FileUtils;
 
@@ -35,11 +36,12 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     private final boolean blockInput;
     //для поиска сообщений в чате
     private boolean found;
+    private SpeechStatus speechStatus;
 
     public ConsultPhrase(String uuid, String providerId, List<String> providerIds, FileDescription fileDescription, Quote quote, String consultName,
                          String phrase, String formattedPhrase, long timeStamp, String consultId, String avatarPath,
                          boolean isRead, String status, boolean sex, Long threadId, List<QuickReply> quickReplies,
-                         boolean blockInput) {
+                         boolean blockInput, SpeechStatus speechStatus) {
 
         super(avatarPath, consultId);
         this.uuid = uuid;
@@ -57,6 +59,7 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         this.threadId = threadId;
         this.quickReplies = quickReplies;
         this.blockInput = blockInput;
+        this.speechStatus = speechStatus;
     }
 
     public String getUuid() {
@@ -119,6 +122,10 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
         isAvatarVisible = avatarVisible;
     }
 
+    public SpeechStatus getSpeechStatus() {
+        return speechStatus;
+    }
+
     @Override
     public String getId() {
         return uuid;
@@ -131,7 +138,14 @@ public final class ConsultPhrase extends ConsultChatPhrase implements ChatPhrase
     }
 
     public boolean isOnlyDoc() {
-        return TextUtils.isEmpty(phrase) && !FileUtils.isImage(fileDescription);
+        return TextUtils.isEmpty(phrase)
+                && !FileUtils.isImage(fileDescription)
+                && !FileUtils.isVoiceMessage(fileDescription);
+    }
+
+    public boolean isVoiceMessage() {
+        return speechStatus != SpeechStatus.UNKNOWN
+                || FileUtils.isVoiceMessage(fileDescription);
     }
 
     @Override

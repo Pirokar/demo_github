@@ -27,6 +27,7 @@ public final class MessageFromHistory implements ChatItem {
     private List<MessageFromHistory> quotes;
     private String type;
     private boolean display;
+    private String speechStatus;
 
     //SURVEY
     private Long hideAfter;
@@ -174,6 +175,10 @@ public final class MessageFromHistory implements ChatItem {
 
     public void setDisplay(boolean display) {
         this.display = display;
+    }
+
+    public String getSpeechStatus() {
+        return speechStatus;
     }
 
     public Long getSendingId() {
