@@ -4,26 +4,19 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import static android.content.Context.NOTIFICATION_SERVICE;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.util.Pair;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.concurrent.TimeUnit;
-
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -54,6 +47,7 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.services.NotificationService;
+import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.CallbackNoError;
@@ -77,8 +71,11 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.concurrent.TimeUnit;
 
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
@@ -92,6 +89,7 @@ public final class ChatController {
     public static final int CONSULT_STATE_DEFAULT = 3;
     private static final String TAG = "ChatController ";
     private static final int PER_PAGE_COUNT = 100;
+    private static final long UPDATE_SPEECH_STATUS_DEBOUNCE = 400L;
 
     private static final int RESEND_MSG = 123;
 
@@ -108,6 +106,7 @@ public final class ChatController {
     private final ConsultWriter consultWriter;
     private boolean surveyCompletionInProgress = false;
     // Ссылка на фрагмент, которым управляет контроллер
+    @Nullable
     private ChatFragment fragment;
 
     // Для приема сообщений из сервиса по скачиванию файлов
@@ -404,7 +403,7 @@ public final class ChatController {
                 .subscribeOn(Schedulers.io());
     }
 
-    public void onImageDownloadRequest(final FileDescription fileDescription) {
+    public void onFileDownloadRequest(final FileDescription fileDescription) {
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
@@ -677,6 +676,7 @@ public final class ChatController {
         subscribeToDeviceAddressChanged();
         subscribeToQuickReplies();
         subscribeToClientNotificationDisplayTypeProcessor();
+        subscribeSpeechMessageUpdated();
     }
 
     private void subscribeToTyping() {
@@ -720,6 +720,29 @@ public final class ChatController {
                         .subscribe(id -> {
                             databaseHolder.setMessageWasRead(id);
                             UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+                        })
+        );
+    }
+
+    private void subscribeSpeechMessageUpdated() {
+        subscribe(
+                Flowable.fromPublisher(chatUpdateProcessor.getSpeechMessageUpdateProcessor())
+                        .debounce(UPDATE_SPEECH_STATUS_DEBOUNCE, TimeUnit.MILLISECONDS)
+                        .map(speechMessageUpdate -> {
+                            databaseHolder.saveSpeechMessageUpdate(speechMessageUpdate);
+                            ChatItem itemFromDb = databaseHolder.getChatItem(speechMessageUpdate.getUuid());
+                            if (itemFromDb == null) {
+                                return speechMessageUpdate;
+                            } else {
+                                return itemFromDb;
+                            }
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(chatItem -> {
+                            if (fragment != null) {
+                                fragment.addChatItem(chatItem);
+                            }
                         })
         );
     }

@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
+import im.threads.internal.formatters.SpeechStatus;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultPhrase;
@@ -26,6 +26,7 @@ import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
 import im.threads.internal.model.SimpleSystemMessage;
+import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.transport.models.Attachment;
@@ -34,11 +35,15 @@ import im.threads.internal.transport.models.MessageContent;
 import im.threads.internal.transport.models.Operator;
 import im.threads.internal.transport.models.OperatorJoinedContent;
 import im.threads.internal.transport.models.RequestResolveThreadContent;
+import im.threads.internal.transport.models.SpeechMessageUpdatedContent;
 import im.threads.internal.transport.models.SurveyContent;
 import im.threads.internal.transport.models.SystemMessageContent;
 import im.threads.internal.transport.models.TextContent;
+import im.threads.internal.utils.ThreadsLogger;
 
 public final class MessageParser {
+
+    private static final String TAG = MessageParser.class.getSimpleName();
 
     private MessageParser() {
     }
@@ -78,6 +83,18 @@ public final class MessageParser {
                 AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(fullMessage, AttachmentSettings.class);
                 if (attachmentSettings.getClientId() != null) {
                     ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
+                }
+                return null;
+            case SPEECH_MESSAGE_UPDATED:
+                SpeechMessageUpdatedContent content = Config.instance.gson.fromJson(fullMessage, SpeechMessageUpdatedContent.class);
+                if (content.getUuid() != null && content.getAttachments() != null) {
+                    return new SpeechMessageUpdate(
+                            content.getUuid(),
+                            SpeechStatus.Companion.fromString(content.getSpeechStatus()),
+                            getFileDescription(content.getAttachments(), null, sentAt)
+                    );
+                } else {
+                    ThreadsLogger.e(TAG, "SPEECH_MESSAGE_UPDATED with invalid params");
                 }
                 return null;
             case MESSAGE:
@@ -197,7 +214,8 @@ public final class MessageParser {
                     gender,
                     content.getThreadId(),
                     content.getQuickReplies(),
-                    content.getSettings() != null ? content.getSettings().isBlockInput() : !Config.instance.getChatStyle().inputEnabledDuringQuickReplies
+                    content.getSettings() != null ? content.getSettings().isBlockInput() : !Config.instance.getChatStyle().inputEnabledDuringQuickReplies,
+                    SpeechStatus.Companion.fromString(content.getSpeechStatus())
             );
         } else {
             FileDescription fileDescription = null;
@@ -223,6 +241,7 @@ public final class MessageParser {
             fileDescription.setDownloadPath(attachment.getResult());
             fileDescription.setIncomingName(attachment.getName());
             fileDescription.setSelfie(attachment.isSelfie());
+            fileDescription.setMimeType(attachment.getType());
         }
         return fileDescription;
     }

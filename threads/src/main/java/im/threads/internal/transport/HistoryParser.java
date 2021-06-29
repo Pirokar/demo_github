@@ -14,6 +14,7 @@ import java.util.List;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.ChatItemType;
+import im.threads.internal.formatters.SpeechStatus;
 import im.threads.internal.model.Attachment;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultConnectionMessage;
@@ -136,7 +137,8 @@ public final class HistoryParser {
                                             false,
                                             message.getThreadId(),
                                             message.getQuickReplies(),
-                                            message.getSettings() != null ? message.getSettings().isBlockInput() : !Config.instance.getChatStyle().inputEnabledDuringQuickReplies
+                                            message.getSettings() != null ? message.getSettings().isBlockInput() : !Config.instance.getChatStyle().inputEnabledDuringQuickReplies,
+                                            SpeechStatus.Companion.fromString(message.getSpeechStatus())
                                     )
                             );
                         } else {

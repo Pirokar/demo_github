@@ -1,15 +1,17 @@
 package im.threads.internal.database;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.List;
+
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
 import io.reactivex.Completable;
@@ -103,6 +105,10 @@ public final class DatabaseHolder {
 
     public void setMessageWasRead(String uuid) {
         mMyOpenHelper.setMessageWasRead(uuid);
+    }
+
+    public void saveSpeechMessageUpdate(SpeechMessageUpdate speechMessageUpdate) {
+        mMyOpenHelper.speechMessageUpdated(speechMessageUpdate);
     }
 
     // Survey

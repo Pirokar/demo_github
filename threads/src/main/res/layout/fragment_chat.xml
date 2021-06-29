@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="inputTextObservable" type="androidx.databinding.ObservableField&lt;String>"/>
+
+        <variable
+            name="inputTextObservable"
+            type="androidx.databinding.ObservableField&lt;String>" />
     </data>
 
     <RelativeLayout
@@ -43,7 +46,7 @@
                     android:layout_height="match_parent"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp"
-                    android:clipToPadding="false"/>
+                    android:clipToPadding="false" />
 
             </im.threads.internal.views.MySwipeRefreshLayout>
 
@@ -116,13 +119,15 @@
             <LinearLayout
                 android:id="@+id/quote_layout"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:layout_height="72dp"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <ImageButton
                     android:id="@+id/quote_past"
                     android:layout_width="60dp"
+                    tools:visibility="gone"
                     android:layout_height="match_parent"
                     android:background="@null"
                     app:srcCompat="@drawable/ic_reply_gray_24dp" />
@@ -136,19 +141,38 @@
                     android:scaleType="centerCrop"
                     android:visibility="gone" />
 
+                <ImageView
+                    android:id="@+id/quote_button_play_pause"
+                    android:layout_width="64dp"
+                    android:scaleType="centerInside"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    tools:tint="@color/colorAccent"
+                    tools:visibility="visible"
+                    app:srcCompat="@drawable/threads_voice_message_play"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:orientation="vertical">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/quote_slider"
+                        android:visibility="gone"
+                        android:theme="@style/ThemeOverlay.ChatCenter.Slider.Preview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
                     <im.threads.internal.widget.text_view.InputQuotedMessageAuthorTextView
                         android:id="@+id/quote_header"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="4dp"
                         android:textColor="@color/threads_incoming_message_text"
                         tools:text="title_title_title"
                         android:textSize="@dimen/text_medium" />
@@ -157,15 +181,23 @@
                         android:id="@+id/quote_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
                         android:ellipsize="end"
                         android:lines="1"
                         tools:text="text_text_text_text_text_text_text_text_text_text_text_text_text_text_text_text"
                         android:textColor="@color/threads_incoming_message_text" />
 
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/quote_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/threads_incoming_message_text"
+                    tools:text="00:00"
+                    android:textSize="@dimen/text_medium" />
 
                 <ImageButton
                     android:id="@+id/quote_clear"
@@ -193,40 +225,82 @@
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
                 android:background="@drawable/threads_quick_replies_background"
-                android:visibility="gone"/>
-            <LinearLayout
-                android:id="@+id/input_layout"
+                android:visibility="gone" />
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/threads_input_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
-                <ImageButton
-                    android:id="@+id/add_attachment"
-                    style="@style/Base.Widget.AppCompat.Button.Borderless"
-                    android:layout_width="60dp"
-                    android:layout_height="64dp"
-                    android:background="@android:color/transparent"
-                    app:srcCompat="@drawable/threads_ic_attachment_button" />
+                <LinearLayout
+                    android:id="@+id/input_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/threads_input_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <im.threads.internal.widget.CustomFontEditText
-                    android:id="@+id/input_edit_view"
-                    style="@style/InputEditTextStyle"
-                    android:hint="@string/threads_input_hint"
-                    android:inputType="textCapSentences|textMultiLine"
-                    android:text="@={inputTextObservable}"
-                    android:maxLines="7" />
+                    <ImageButton
+                        android:id="@+id/add_attachment"
+                        style="@style/Base.Widget.AppCompat.Button.Borderless"
+                        android:layout_width="60dp"
+                        android:layout_height="64dp"
+                        android:background="@android:color/transparent"
+                        app:srcCompat="@drawable/threads_ic_attachment_button" />
 
-                <ImageButton
-                    android:id="@+id/send_message"
-                    style="@style/Base.Widget.AppCompat.Button.Borderless"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:background="@android:color/transparent"
-                    app:srcCompat="@drawable/threads_ic_send_button" />
+                    <im.threads.internal.widget.CustomFontEditText
+                        android:id="@+id/input_edit_view"
+                        style="@style/InputEditTextStyle"
+                        android:hint="@string/threads_input_hint"
+                        android:inputType="textCapSentences|textMultiLine"
+                        android:text="@={inputTextObservable}"
+                        android:maxLines="7" />
 
-            </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/send_message"
+                        style="@style/Base.Widget.AppCompat.Button.Borderless"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@android:color/transparent"
+                        app:srcCompat="@drawable/threads_ic_send_button" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.devlomi.record_view.RecordView
+                        android:id="@+id/record_view"
+                        android:visibility="invisible"
+                        android:background="@color/threads_input_background"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_toLeftOf="@id/record_button"
+                        app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
+                        app:slide_to_cancel_arrow_color="#000000"
+                        app:slide_to_cancel_bounds="10dp"
+                        app:slide_to_cancel_margin_right="10dp"
+                        app:slide_to_cancel_text="Slide To Cancel"
+                        app:counter_time_color="#ff0000" />
+
+                    <com.devlomi.record_view.RecordButton
+                        android:id="@+id/record_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/threads_record_button_background"
+                        android:scaleType="centerInside"
+                        app:mic_icon="@drawable/threads_record_button_icon" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
         </LinearLayout>
 
