@@ -11,7 +11,7 @@
     <string name="threads_left_female">disconnected from dialog at</string>
     <string name="threads_left_dialog">disconnected from dialog at</string>
     <string name="threads_connected">connected to dialog</string>
-    <string name="threads_sent_at">sent at</string>
+    <string name="threads_sent_at">sent at %1$s</string>
     <string name="threads_image">Picture</string>
     <string name="threads_send">Send</string>
     <string name="threads_search_messages">Search message</string>

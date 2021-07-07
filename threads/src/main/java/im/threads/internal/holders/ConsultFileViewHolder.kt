@@ -69,7 +69,10 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
-                AppCompatResources.getDrawable(itemView.context, style.incomingMessageBubbleBackground)
+                AppCompatResources.getDrawable(
+                    itemView.context,
+                    style.incomingMessageBubbleBackground
+                )
             background.setColorFilter(
                 getColorInt(style.incomingMessageBubbleColor),
                 PorterDuff.Mode.SRC_ATOP
@@ -96,13 +99,15 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
         onAvatarClickListener: View.OnClickListener
     ) {
         val fileDescription = consultPhrase.fileDescription
-        mFileHeader.text = FileUtils.getFileName(fileDescription)
-        if (mFileHeader.text.toString().equals("null", ignoreCase = true)) mFileHeader.text = ""
-        val size = fileDescription.size
+        if (fileDescription != null) {
+            mFileHeader.text = FileUtils.getFileName(fileDescription)
+            if (mFileHeader.text.toString().equals("null", ignoreCase = true)) mFileHeader.text = ""
+            mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
+        }
+        val size = fileDescription?.size ?: 0
         mSizeTextView.text = Formatter.formatFileSize(itemView.context, size)
         mSizeTextView.visibility = if (size > 0) View.VISIBLE else View.GONE
         mTimeStampTextView.text = sdf.format(Date(consultPhrase.timeStamp))
-        mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
         val vg = itemView as ViewGroup
         for (i in 0 until vg.childCount) {
             vg.getChildAt(i).setOnLongClickListener(onLongClickListener)

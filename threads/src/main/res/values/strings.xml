@@ -8,7 +8,7 @@
     <string name="threads_left_dialog">покинул диалог в</string>
     <string name="threads_connected_female">подключилась к диалогу в</string>
     <string name="threads_connected">подключился к диалогу в</string>
-    <string name="threads_sent_at">отправлено</string>
+    <string name="threads_sent_at">отправлено %1$s</string>
     <string name="threads_image">изображение</string>
     <string name="threads_send">Отправить</string>
     <string name="threads_search_messages">Поиск сообщений</string>
