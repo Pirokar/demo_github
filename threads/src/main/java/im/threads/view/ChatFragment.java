@@ -330,7 +330,7 @@ public final class ChatFragment extends BaseFragment implements
             }
 
             @Override
-            public void onFinish(long recordTime) {
+            public void onFinish(long recordTime, boolean limitReached) {
                 Date start = new Date();
                 releaseRecorder();
                 if (voiceFilePath != null) {

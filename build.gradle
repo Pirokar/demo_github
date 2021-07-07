@@ -50,7 +50,7 @@ ext {
     gsonVersion = '2.8.6'
     pushVersion = '2.8.7'
     picassoVersion = '2.8'
-    recordViewVersion = '2.0.1'
+    recordViewVersion = '3.0.2'
     androidAudioConverterVersion = '0.0.8'
     streamVersion = '1.2.1'
 
