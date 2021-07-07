@@ -2174,7 +2174,7 @@ public final class ChatFragment extends BaseFragment implements
 
         @Override
         public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
-            mChatController.checkAndResendPhrase(userPhrase);
+            mChatController.forceResend(userPhrase);
         }
 
         @Override
@@ -2223,7 +2223,7 @@ public final class ChatFragment extends BaseFragment implements
             }
             if (chatPhrase instanceof UserPhrase) {
                 if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_WAS_READ) {
-                    mChatController.checkAndResendPhrase((UserPhrase) chatPhrase);
+                    mChatController.forceResend((UserPhrase) chatPhrase);
                 }
                 if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
                     Activity activity = getActivity();
