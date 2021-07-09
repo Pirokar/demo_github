@@ -2,14 +2,13 @@ package im.threads.internal.transport;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
@@ -112,10 +111,12 @@ public final class MessageParser {
      * @return true если в fullMessage есть поле clientId и оно совпадает с currentClientId
      */
     public static boolean checkId(final JsonObject fullMessage, final String currentClientId) {
-        return !TextUtils.isEmpty(currentClientId)
-                && fullMessage != null
-                && fullMessage.has(MessageAttributes.CLIENT_ID)
-                && currentClientId.equalsIgnoreCase(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString());
+        return Config.instance.clientIdIgnoreEnabled ||
+                (!TextUtils.isEmpty(currentClientId)
+                        && fullMessage != null
+                        && fullMessage.has(MessageAttributes.CLIENT_ID)
+                        && currentClientId.equalsIgnoreCase(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString())
+                );
     }
 
     private static MessageRead getMessageRead(final JsonObject fullMessage) {

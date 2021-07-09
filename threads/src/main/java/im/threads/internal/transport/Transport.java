@@ -1,18 +1,13 @@
 package im.threads.internal.transport;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.Lifecycle;
-
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
 import im.threads.ConfigBuilder;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.database.DatabaseHolder;
-import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultInfo;
-import im.threads.internal.model.ConsultPhrase;
-import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.SettingsResponse;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
@@ -39,7 +34,7 @@ public abstract class Transport {
                         .subscribe(
                                 () -> {
                                     ThreadsLogger.i(TAG, "messagesAreRead : " + uuidList);
-                                    for(String messageId: uuidList) {
+                                    for (String messageId : uuidList) {
                                         chatUpdateProcessor.postIncomingMessageWasRead(messageId);
                                     }
                                 },
@@ -54,26 +49,27 @@ public abstract class Transport {
 
     public void getSettings() {
         subscribe(
-            Single.fromCallable(() -> ApiGenerator.getThreadsApi().settings().execute())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(
-                            response -> {
-                                final SettingsResponse responseBody = response.body();
-                                if (responseBody != null) {
-                                    ThreadsLogger.i(TAG, "getting settings : " + responseBody);
-                                    final ClientNotificationDisplayType type = ClientNotificationDisplayType.fromString(responseBody.getClientNotificationDisplayType());
-                                    PrefUtils.setClientNotificationDisplayType(type);
-                                    chatUpdateProcessor.postClientNotificationDisplayType(type);
+                Single.fromCallable(() -> ApiGenerator.getThreadsApi().settings().execute())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(
+                                response -> {
+                                    final SettingsResponse responseBody = response.body();
+                                    if (responseBody != null) {
+                                        ThreadsLogger.i(TAG, "getting settings : " + responseBody);
+                                        final ClientNotificationDisplayType type = ClientNotificationDisplayType.fromString(responseBody.getClientNotificationDisplayType());
+                                        PrefUtils.setClientNotificationDisplayType(type);
+                                        chatUpdateProcessor.postClientNotificationDisplayType(type);
+                                    }
+                                },
+                                e -> {
+                                    ThreadsLogger.i(TAG, "error on getting settings : " + e.getMessage());
+                                    chatUpdateProcessor.postError(new TransportException(e.getMessage()));
                                 }
-                            },
-                            e -> {
-                                ThreadsLogger.i(TAG, "error on getting settings : " + e.getMessage());
-                                chatUpdateProcessor.postError(new TransportException(e.getMessage()));
-                            }
-                    )
+                        )
 
-    );
+        );
     }
+
     private boolean subscribe(final Disposable event) {
         if (compositeDisposable == null || compositeDisposable.isDisposed()) {
             compositeDisposable = new CompositeDisposable();

@@ -176,7 +176,7 @@ public final class PrefUtils {
     }
 
     public static boolean isClientIdNotEmpty() {
-        return !getClientID().isEmpty();
+        return !getClientID().isEmpty() || Config.instance.clientIdIgnoreEnabled;
     }
 
     @Nullable
