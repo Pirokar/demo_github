@@ -16,7 +16,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.retrofit.ThreadsApi;
+import im.threads.internal.retrofit.OldThreadsApi;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.FileUtils;
@@ -54,7 +54,7 @@ public final class OutgoingMessageCreator {
         object.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         object.addProperty("libVersion", AppInfoHelper.getLibVersion());
         object.addProperty("clientLocale", DeviceInfoHelper.getLocale(ctx));
-        object.addProperty("chatApiVersion", ThreadsApi.API_VERSION);
+        object.addProperty("chatApiVersion", OldThreadsApi.API_VERSION);
         object.addProperty(MessageAttributes.TYPE, ChatItemType.CLIENT_INFO.name());
         return object;
     }

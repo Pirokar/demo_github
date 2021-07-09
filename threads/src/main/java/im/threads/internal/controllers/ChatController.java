@@ -187,6 +187,9 @@ public final class ChatController {
     }
 
     private static void initClientId() {
+        if (Config.instance.clientIdIgnoreEnabled) {
+            return;
+        }
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
         ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
@@ -682,7 +685,7 @@ public final class ChatController {
     private void subscribeToTyping() {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getTypingProcessor())
-                        .filter(clientId -> ObjectsCompat.equals(PrefUtils.getClientID(), clientId))
+                        .filter(clientId -> Config.instance.clientIdIgnoreEnabled || ObjectsCompat.equals(PrefUtils.getClientID(), clientId))
                         .map(clientId ->
                                 new ConsultTyping(
                                         consultWriter.getCurrentConsultId(),
@@ -1089,7 +1092,7 @@ public final class ChatController {
     private void onDeviceAddressChanged() {
         ThreadsLogger.i(TAG, "onDeviceAddressChanged:");
         String clientId = PrefUtils.getClientID();
-        if (fragment != null && !TextUtils.isEmpty(clientId)) {
+        if (fragment != null && (!TextUtils.isEmpty(clientId) || Config.instance.clientIdIgnoreEnabled)) {
             subscribe(
                     Single.fromCallable(() -> {
                         Config.instance.transport.sendInitChatMessage();

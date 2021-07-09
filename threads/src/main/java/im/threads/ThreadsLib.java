@@ -95,9 +95,11 @@ public final class ThreadsLib {
     }
 
     public void initUser(UserInfoBuilder userInfoBuilder) {
-        final String currentClientId = PrefUtils.getClientID();
-        if (currentClientId != null && !ObjectsCompat.equals(currentClientId, userInfoBuilder.clientId)) {
-            logoutClient(currentClientId);
+        if (!Config.instance.clientIdIgnoreEnabled) {
+            final String currentClientId = PrefUtils.getClientID();
+            if (currentClientId != null && !ObjectsCompat.equals(currentClientId, userInfoBuilder.clientId)) {
+                logoutClient(currentClientId);
+            }
         }
         PrefUtils.setAppMarker(userInfoBuilder.appMarker);
         PrefUtils.setNewClientId(userInfoBuilder.clientId);

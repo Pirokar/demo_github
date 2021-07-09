@@ -36,7 +36,7 @@ public final class FilePoster {
         ThreadsLogger.i(TAG, "post: " + fileDescription);
         String token = PrefUtils.getClientID();
         ThreadsLogger.i(TAG, "token = " + token);
-        if (!token.isEmpty()) {
+        if (!token.isEmpty() || Config.instance.clientIdIgnoreEnabled) {
             if (fileDescription.getFileUri() != null) {
                 return sendFile(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription.getFileUri()), token);
             }

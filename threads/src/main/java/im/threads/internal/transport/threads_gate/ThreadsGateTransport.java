@@ -359,12 +359,12 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                             final ChatItemType type = ChatItemType.fromString(ThreadsGateMessageParser.getType(message));
                             if (ChatItemType.TYPING.equals(type)) {
                                 TypingContent content = Config.instance.gson.fromJson(message.getContent(), TypingContent.class);
-                                if (content.getClientId() != null) {
+                                if (content.getClientId() != null || Config.instance.clientIdIgnoreEnabled) {
                                     ChatUpdateProcessor.getInstance().postTyping(content.getClientId());
                                 }
                             } else if (ChatItemType.ATTACHMENT_SETTINGS.equals(type)) {
                                 AttachmentSettings attachmentSettings = Config.instance.gson.fromJson(message.getContent(), AttachmentSettings.class);
-                                if (attachmentSettings.getClientId() != null) {
+                                if (attachmentSettings.getClientId() != null || Config.instance.clientIdIgnoreEnabled) {
                                     ChatUpdateProcessor.getInstance().postAttachmentSettings(attachmentSettings);
                                 }
                             } else if (ChatItemType.SPEECH_MESSAGE_UPDATED.equals(type)) {
