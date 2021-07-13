@@ -299,6 +299,9 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         RecordView recordView = binding.recordView;
+        recordView.setRecordPermissionHandler(
+                () -> ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext())
+        );
         recordButton.setRecordView(recordView);
         if (!ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext())) {
             recordButton.setListenForRecord(false);
@@ -329,7 +332,11 @@ public final class ChatFragment extends BaseFragment implements
             public void onCancel() {
                 Date start = new Date();
                 ThreadsLogger.d(TAG, "RecordView: onCancel");
-                releaseRecorder();
+                subscribe(
+                        releaseRecorder()
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
+                );
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 ThreadsLogger.i(TAG, "onStart performance: " + (new Date().getTime() - start.getTime()));
             }
@@ -337,17 +344,23 @@ public final class ChatFragment extends BaseFragment implements
             @Override
             public void onFinish(long recordTime, boolean limitReached) {
                 Date start = new Date();
-                releaseRecorder();
-                if (voiceFilePath != null) {
-                    File file = new File(voiceFilePath);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        addVoiceMessagePreview(file);
-                    } else {
-                        convertToWav(file, convertedFile -> addVoiceMessagePreview(convertedFile));
-                    }
-                } else {
-                    ThreadsLogger.e(TAG, "error finishing voice message recording");
-                }
+                subscribe(
+                        releaseRecorder()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> {
+                                    if (voiceFilePath != null) {
+                                        File file = new File(voiceFilePath);
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                            addVoiceMessagePreview(file);
+                                        } else {
+                                            convertToWav(file, convertedFile -> addVoiceMessagePreview(convertedFile));
+                                        }
+                                    } else {
+                                        ThreadsLogger.e(TAG, "error finishing voice message recording");
+                                    }
+                                })
+                );
                 recordView.setVisibility(View.INVISIBLE);
                 ThreadsLogger.d(TAG, "RecordView: onFinish");
                 ThreadsLogger.d(TAG, "RecordTime: " + recordTime);
@@ -358,7 +371,11 @@ public final class ChatFragment extends BaseFragment implements
             @Override
             public void onLessThanSecond() {
                 recordView.setVisibility(View.INVISIBLE);
-                releaseRecorder();
+                subscribe(
+                        releaseRecorder()
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
+                );
                 showToast(getString(R.string.threads_hold_button_to_record_audio));
                 ThreadsLogger.d(TAG, "RecordView: onLessThanSecond");
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -399,27 +416,23 @@ public final class ChatFragment extends BaseFragment implements
                 );
             }
 
-            private void releaseRecorder() {
+            private Completable releaseRecorder() {
                 if (fdMediaPlayer != null) {
                     fdMediaPlayer.abandonAudioFocus();
                 }
-                subscribe(
-                        Completable.fromAction(() -> {
-                            synchronized (this) {
-                                if (recorder != null) {
-                                    try {
-                                        recorder.stop();
-                                        recorder.release();
-                                    } catch (RuntimeException runtimeException) {
-                                        ThreadsLogger.d(TAG, "Exception occurred in releaseRecorder but it's fine", runtimeException);
-                                    }
-                                    recorder = null;
-                                }
+                return Completable.fromAction(() -> {
+                    synchronized (this) {
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                recorder.release();
+                            } catch (RuntimeException runtimeException) {
+                                ThreadsLogger.d(TAG, "Exception occurred in releaseRecorder but it's fine", runtimeException);
                             }
-                        })
-                                .subscribeOn(Schedulers.io())
-                                .subscribe()
-                );
+                            recorder = null;
+                        }
+                    }
+                });
             }
         });
         recordView.setOnBasketAnimationEndListener(() -> {
@@ -437,7 +450,7 @@ public final class ChatFragment extends BaseFragment implements
 
             @Override
             public void onFailure(Exception error) {
-                ThreadsLogger.e(TAG, "error finishing voice message recording");
+                ThreadsLogger.e(TAG, "error finishing voice message recording", error);
             }
         };
         AndroidAudioConverter.with(requireContext())
