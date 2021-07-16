@@ -92,16 +92,18 @@ class ImageFromConsultViewHolder(
         mImage.setOnClickListener(buttonClickListener)
         mImage.setOnLongClickListener(onLongClickListener)
         mImage.setImageResource(0)
-        if (fileDescription.fileUri != null && !fileDescription.isDownloadError) {
-            Picasso.get()
-                .load(fileDescription.fileUri)
-                .error(style.imagePlaceholder)
-                .fit()
-                .centerCrop()
-                .transform(maskedTransformation)
-                .into(mImage)
-        } else if (fileDescription.isDownloadError) {
-            mImage.setImageResource(style.imagePlaceholder)
+        if (fileDescription != null) {
+            if (fileDescription.fileUri != null && !fileDescription.isDownloadError) {
+                Picasso.get()
+                    .load(fileDescription.fileUri)
+                    .error(style.imagePlaceholder)
+                    .fit()
+                    .centerCrop()
+                    .transform(maskedTransformation)
+                    .into(mImage)
+            } else if (fileDescription.isDownloadError) {
+                mImage.setImageResource(style.imagePlaceholder)
+            }
         }
         filterView.visibility =
             if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
