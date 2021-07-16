@@ -794,6 +794,12 @@ public final class ChatFragment extends BaseFragment implements
         } catch (Resources.NotFoundException e) {
             ThreadsLogger.e(TAG, "setFragmentStyle", e);
         }
+
+        binding.flEmpty.setBackgroundColor(ContextCompat.getColor(activity, style.emptyStateBackgroundColorResId));
+        Drawable progressDrawable = binding.progressBar.getIndeterminateDrawable().mutate();
+        ColorsHelper.setDrawableColor(activity, progressDrawable, style.emptyStateProgressBarColorResId);
+        binding.progressBar.setIndeterminateDrawable(progressDrawable);
+        ColorsHelper.setTextColor(activity, binding.tvEmptyStateHint, style.emptyStateHintColorResId);
     }
 
     @Override
@@ -2006,6 +2012,14 @@ public final class ChatFragment extends BaseFragment implements
             return ObjectsCompat.equals(fdMediaPlayer.getFileDescription(), getFileDescription());
         }
         return false;
+    }
+
+    public void showEmptyState() {
+        binding.flEmpty.setVisibility(View.VISIBLE);
+    }
+
+    public void hideEmptyState() {
+        binding.flEmpty.setVisibility(View.GONE);
     }
 
     private class QuoteLayoutHolder {

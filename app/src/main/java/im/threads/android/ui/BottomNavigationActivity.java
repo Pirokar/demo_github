@@ -5,8 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -15,11 +15,19 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.concurrent.TimeUnit;
+
 import im.threads.ThreadsLib;
 import im.threads.UserInfoBuilder;
 import im.threads.android.R;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.view.ChatFragment;
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Пример активности с нижней навигацией,
@@ -60,21 +68,17 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
     private BottomNavigationHomeFragment homeFragment;
     private ChatFragment chatFragment;
-
-    private enum TabItem {
-        TAB_HOME(R.id.navigation_home),
-        TAB_CHAT(R.id.navigation_chat);
-
-        private int menuId;
-
-        TabItem(final int menuId) {
-            this.menuId = menuId;
+    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
+        if (item.getItemId() == R.id.navigation_home) {
+            selectTab(TabItem.TAB_HOME);
+            return true;
+        } else if (item.getItemId() == R.id.navigation_chat) {
+            selectTab(TabItem.TAB_CHAT);
+            return true;
         }
-
-        public int getMenuId() {
-            return menuId;
-        }
-    }
+        return false;
+    };
+    private CompositeDisposable compositeDisposable;
 
     /**
      * @return intent для открытия BottomNavigationActivity
@@ -119,18 +123,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
         intent.putExtra(ARG_CHAT_DESIGN, chatDesign);
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                selectTab(TabItem.TAB_HOME);
-                return true;
-            case R.id.navigation_chat:
-                selectTab(TabItem.TAB_CHAT);
-                return true;
-        }
-        return false;
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +170,22 @@ public class BottomNavigationActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.login) {
+            login();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void selectTab(final TabItem newTabItem) {
         if (newTabItem == null) {
             return;
@@ -199,17 +207,9 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 fragment = homeFragment;
                 break;
             case TAB_CHAT:
-
                 if (chatFragment == null) {
                     chatFragment = ChatFragment.newInstance();
                 }
-                ThreadsLib.getInstance().initUser(
-                        new UserInfoBuilder(clientId)
-                                .setAuthData(authToken, authSchema)
-                                .setClientIdSignature(clientIdSignature)
-                                .setClientData(clientData)
-                                .setAppMarker(appMarker)
-                );
                 ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign));
                 fragment = chatFragment;
                 break;
@@ -270,5 +270,50 @@ public class BottomNavigationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unsubscribeAll();
+    }
+
+    private void login() {
+        subscribe(
+                Completable.timer(5, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> ThreadsLib.getInstance().initUser(
+                                        new UserInfoBuilder(clientId)
+                                                .setAuthData(authToken, authSchema)
+                                                .setClientIdSignature(clientIdSignature)
+                                                .setClientData(clientData)
+                                                .setAppMarker(appMarker)
+                                )
+                        )
+        );
+    }
+
+    private void subscribe(final Disposable event) {
+        if (compositeDisposable == null || compositeDisposable.isDisposed()) {
+            compositeDisposable = new CompositeDisposable();
+        }
+        compositeDisposable.add(event);
+    }
+
+    private void unsubscribeAll() {
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+            compositeDisposable = null;
+        }
+    }
+
+    private enum TabItem {
+        TAB_HOME(R.id.navigation_home),
+        TAB_CHAT(R.id.navigation_chat);
+
+        private final int menuId;
+
+        TabItem(final int menuId) {
+            this.menuId = menuId;
+        }
+
+        public int getMenuId() {
+            return menuId;
+        }
     }
 }

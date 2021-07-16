@@ -409,7 +409,7 @@ public final class ChatController {
     public Observable<List<ChatItem>> requestItems() {
         return Observable
                 .fromCallable(() -> {
-                    if (instance.fragment != null && PrefUtils.isClientIdNotEmpty()) {
+                    if (instance.fragment != null && !PrefUtils.isClientIdEmpty()) {
                         int currentOffset = instance.fragment.getCurrentItemsCount();
                         int count = Config.instance.historyLoadingCount;
                         try {
@@ -475,7 +475,7 @@ public final class ChatController {
         return firstUnreadUuidId;
     }
 
-    public void bindFragment(final ChatFragment f) {
+    public void bindFragment(@NonNull final ChatFragment f) {
         ThreadsLogger.i(TAG, "bindFragment: " + f.toString());
         final Activity activity = f.getActivity();
         if (activity == null) {
@@ -484,6 +484,9 @@ public final class ChatController {
         fragment = f;
         if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
+        }
+        if (PrefUtils.isClientIdEmpty()) {
+            fragment.showEmptyState();
         }
         subscribe(
                 Single.fromCallable(() -> {
@@ -583,6 +586,12 @@ public final class ChatController {
 
     public void sendInit() {
         Config.instance.transport.sendInitChatMessage();
+        Config.instance.transport.sendEnvironmentMessage();
+        if (!PrefUtils.isClientIdEmpty()) {
+            if (fragment != null) {
+                fragment.hideEmptyState();
+            }
+        }
     }
 
     public void loadHistory() {
