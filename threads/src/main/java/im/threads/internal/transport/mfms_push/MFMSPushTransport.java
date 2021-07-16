@@ -8,9 +8,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
-import com.mfms.android.push_lite.PushController;
-import com.mfms.android.push_lite.exception.PushServerErrorException;
-import com.mfms.android.push_lite.repo.push.remote.api.InMessageSend;
+import com.edna.android.push_lite.PushController;
+import com.edna.android.push_lite.exception.PushServerErrorException;
+import com.edna.android.push_lite.repo.push.remote.api.InMessageSend;
 
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
@@ -217,12 +217,14 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
     }
 
     @Override
-    public synchronized void setLifecycle(@NonNull Lifecycle lifecycle) {
+    public synchronized void setLifecycle(@Nullable Lifecycle lifecycle) {
         if (this.lifecycle != null) {
             this.lifecycle.removeObserver(this);
         }
         this.lifecycle = lifecycle;
-        this.lifecycle.addObserver(this);
+        if (this.lifecycle != null) {
+            this.lifecycle.addObserver(this);
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)

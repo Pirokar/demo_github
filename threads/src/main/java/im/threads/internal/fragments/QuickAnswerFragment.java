@@ -158,6 +158,12 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Config.instance.transport.setLifecycle(null);
+    }
+
     private void initUserInputState() {
         subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
