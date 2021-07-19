@@ -650,7 +650,7 @@ public final class ChatFragment extends BaseFragment implements
                         (s, fileDescriptionOptional) -> TextUtils.isEmpty(s) && fileDescriptionOptional.isEmpty()
                 )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty ? View.VISIBLE : View.GONE))
+                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty && style.voiceMessageEnabled ? View.VISIBLE : View.GONE))
         );
     }
 
