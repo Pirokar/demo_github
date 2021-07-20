@@ -23,7 +23,6 @@ public class ChatStyleBuilderHelper {
                 .setShowConsultSearching(true) //показывать загрузку при поиске консультанта
                 .setUseExternalCameraApp(true)
                 .setSelfieEnabled(false)
-                .setVoiceMessageEnabled(true)
                 .setScrollChatToEndIfUserTyping(false);
         switch (design) {
             case GREEN: {
@@ -39,7 +38,8 @@ public class ChatStyleBuilderHelper {
     }
 
     private static void configureGreenDesign(ChatStyle chatStyle) {
-        chatStyle.setChatSubtitleShowConsultOrgUnit(true);
+        chatStyle.setChatSubtitleShowConsultOrgUnit(true)
+                .setVoiceMessageEnabled(true);
         //Do nothing, using default threads design
     }
 
