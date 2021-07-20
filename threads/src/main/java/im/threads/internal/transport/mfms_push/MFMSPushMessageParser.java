@@ -2,6 +2,7 @@ package im.threads.internal.transport.mfms_push;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.edna.android.push_lite.repo.push.remote.model.PushMessage;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import im.threads.internal.Config;
 import im.threads.internal.model.ChatItem;
@@ -103,5 +105,14 @@ public final class MFMSPushMessageParser {
 
     private static boolean isThreadsOriginPush(final JsonObject fullMessage) {
         return PushMessageAttributes.THREADS.equalsIgnoreCase(fullMessage.get(PushMessageAttributes.ORIGIN).getAsString());
+    }
+
+    @NonNull
+    public static Bundle mapToBundle(final @NonNull Map<String, String> map) {
+        final Bundle bundle = new Bundle();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            bundle.putString(entry.getKey(), entry.getValue());
+        }
+        return bundle;
     }
 }
