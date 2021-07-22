@@ -206,7 +206,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.getContext()
                 .getString(R.string.threads_I) else quote.phraseOwnerTitle
             mRightTextDescr.text = quote.text
-            rightTextFileStamp.text = itemView.getContext().getString(R.string.threads_sent_at, quoteSdf.format(Date(quote.timeStamp)))
+            rightTextFileStamp.text = itemView.getContext()
+                .getString(R.string.threads_sent_at, quoteSdf.format(Date(quote.timeStamp)))
             val quoteFileDescription = quote.fileDescription
             if (quoteFileDescription != null) {
                 if (FileUtils.isVoiceMessage(quoteFileDescription)) {
@@ -249,16 +250,16 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     rightTextHeader.visibility = View.GONE
                 }
                 val fileSize = fileDescription.size
-                mRightTextDescr.text = """
-                    ${FileUtils.getFileName(fileDescription)}
-                    ${
-                    if (fileSize > 0) """
+                mRightTextDescr.text =
+                    FileUtils.getFileName(fileDescription) + if (fileSize > 0) """
+     
      
      ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
      """.trimIndent() else ""
-                }
-                    """.trimIndent()
-                rightTextFileStamp.text = itemView.getContext().getString(R.string.threads_sent_at, quoteSdf.format(Date(fileDescription.timeStamp)))
+                rightTextFileStamp.text = itemView.getContext().getString(
+                    R.string.threads_sent_at,
+                    quoteSdf.format(Date(fileDescription.timeStamp))
+                )
                 mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
             }
         }
