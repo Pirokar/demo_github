@@ -61,16 +61,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
-import androidx.core.util.Consumer;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
-import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
-import cafe.adriel.androidaudioconverter.model.AudioFormat;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -89,6 +85,8 @@ import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
+import im.threads.internal.media.ChatCenterAudioConverter;
+import im.threads.internal.media.ChatCenterAudioConverterCallback;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
@@ -131,7 +129,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public final class ChatFragment extends BaseFragment implements
         AttachmentBottomSheetDialogFragment.Callback,
-        PopupMenu.OnMenuItemClickListener, FilePickerFragment.SelectedListener {
+        PopupMenu.OnMenuItemClickListener, FilePickerFragment.SelectedListener, ChatCenterAudioConverterCallback {
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -185,6 +183,7 @@ public final class ChatFragment extends BaseFragment implements
     private List<Uri> mAttachedImages = new ArrayList<>();
     @Nullable
     private MediaRecorder recorder = null;
+    private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
     @Nullable
     private String voiceFilePath = null;
 
@@ -354,7 +353,7 @@ public final class ChatFragment extends BaseFragment implements
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                             addVoiceMessagePreview(file);
                                         } else {
-                                            convertToWav(file, convertedFile -> addVoiceMessagePreview(convertedFile));
+                                            audioConverter.convertToWav(file, ChatFragment.this);
                                         }
                                     } else {
                                         ThreadsLogger.e(TAG, "error finishing voice message recording");
@@ -439,31 +438,6 @@ public final class ChatFragment extends BaseFragment implements
             recordView.setVisibility(View.INVISIBLE);
             ThreadsLogger.d(TAG, "RecordView: Basket Animation Finished");
         });
-    }
-
-    private void convertToWav(File file, Consumer<File> convertedFileConsumer) {
-        IConvertCallback callback = new IConvertCallback() {
-            @Override
-            public void onSuccess(File convertedFile) {
-                convertedFileConsumer.accept(convertedFile);
-            }
-
-            @Override
-            public void onFailure(Exception error) {
-                ThreadsLogger.e(TAG, "error finishing voice message recording", error);
-            }
-        };
-        AndroidAudioConverter.with(requireContext())
-                // Your current audio file
-                .setFile(file)
-
-                // Your desired audio format
-                .setFormat(AudioFormat.WAV)
-                // An callback to know when conversion is finished
-                .setCallback(callback)
-
-                // Start conversion
-                .convert();
     }
 
     private void stopRecording() {
@@ -2034,6 +2008,11 @@ public final class ChatFragment extends BaseFragment implements
 
     public void hideEmptyState() {
         binding.flEmpty.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void acceptConvertedFile(@NonNull File convertedFile) {
+        addVoiceMessagePreview(convertedFile);
     }
 
     private class QuoteLayoutHolder {

@@ -12,7 +12,7 @@ import im.threads.internal.utils.FileUtils.isVoiceMessage
  */
 class ConsultPhrase(
     val uuid: String, //This this a mfms messageId required for read status updates
-    val providerId: String,
+    val providerId: String?,
     val providerIds: List<String>,
     private var fileDescription: FileDescription?,
     private val quote: Quote?,
