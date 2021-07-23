@@ -56,18 +56,11 @@
             android:theme="@style/Transparent"/>
 
         <service
-            android:name="im.threads.push.ThreadsPushServerIntentService"
-            android:exported="false"/>
-        <service
             android:name=".internal.services.FileDownloadService"
             android:exported="false"/>
         <service
             android:name=".internal.services.NotificationService"
             android:exported="false"/>
-
-        <meta-data
-            android:name="com.pushserver.android.service"
-            android:value="im.threads.push.ThreadsPushServerIntentService"/>
 
         <meta-data
             android:name="im.threads.threadsTransportType"

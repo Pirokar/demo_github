@@ -100,18 +100,16 @@ public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
             if (maf instanceof FileAndMediaItem) {
                 FileAndMediaItem fileAndMediaItem = (FileAndMediaItem) maf;
                 FileDescription fd = fileAndMediaItem.getFileDescription();
-                if (fd != null) {
-                    String lastPathSegment = fd.getFileUri() != null ? fd.getFileUri().getLastPathSegment() : null;
-                    if (lastPathSegment != null && lastPathSegment.toLowerCase().contains(filter.toLowerCase())) {
-                        filteredItems.add(fd);
-                    } else if (fd.getIncomingName() != null) {
-                        String name = fd.getIncomingName();
-                        if (name.toLowerCase().contains(filter.toLowerCase())) {
-                            filteredItems.add(fd);
-                        }
-                    } else if (fileAndMediaItem.getFileName().toLowerCase().contains(filter.toLowerCase())) {
+                String lastPathSegment = fd.getFileUri() != null ? fd.getFileUri().getLastPathSegment() : null;
+                if (lastPathSegment != null && lastPathSegment.toLowerCase().contains(filter.toLowerCase())) {
+                    filteredItems.add(fd);
+                } else if (fd.getIncomingName() != null) {
+                    String name = fd.getIncomingName();
+                    if (name.toLowerCase().contains(filter.toLowerCase())) {
                         filteredItems.add(fd);
                     }
+                } else if (fileAndMediaItem.getFileName().toLowerCase().contains(filter.toLowerCase())) {
+                    filteredItems.add(fd);
                 }
             }
         }

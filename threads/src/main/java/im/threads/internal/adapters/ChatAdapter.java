@@ -239,7 +239,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             bindUserPhraseVH((UserPhraseViewHolder) holder, (UserPhrase) list.get(position));
         }
         if (holder instanceof DateViewHolder) {
-            ((DateViewHolder) holder).onBind(((DateRow) list.get(position)).getDate());
+            ((DateViewHolder) holder).onBind(((DateRow) list.get(position)).getTimeStamp());
         }
         if (holder instanceof ConsultIsTypingViewHolderNew) {
             bindConsultIsTypingVH((ConsultIsTypingViewHolderNew) holder);

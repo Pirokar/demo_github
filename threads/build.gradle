@@ -55,7 +55,7 @@ android {
 
 repositories {
     maven { url "https://jitpack.io" }
-    maven { url 'https://maven-pub.mfms.ru/repository/maven-public/' }
+    maven { url 'https://maven-pub.edna.ru/repository/maven-public/' }
     mavenCentral()
 }
 
@@ -98,7 +98,7 @@ afterEvaluate {
 
         repositories {
             maven {
-                url 'https://maven-pub.mfms.ru/repository/maven-releases'
+                url 'https://maven-pub.edna.ru/repository/maven-releases'
                 credentials {
                     username "$mavenProdUser"
                     password "$mavenProdPass"
@@ -132,7 +132,7 @@ dependencies {
 
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
-    implementation "com.mfms.android:push-lite-release:$rootProject.pushVersion"
+    implementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"

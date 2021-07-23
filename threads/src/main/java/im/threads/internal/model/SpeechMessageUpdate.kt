@@ -7,15 +7,15 @@ data class SpeechMessageUpdate constructor(
     val speechStatus: SpeechStatus,
     val fileDescription: FileDescription
 ) : ChatItem {
-    override fun getTimeStamp(): Long {
-        return 0
-    }
+
+    override val timeStamp: Long
+        get() = 0
+
+    override val threadId: Long?
+        get() = null
 
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {
         return otherItem is SpeechMessageUpdate
     }
 
-    override fun getThreadId(): Long? {
-        return null
-    }
 }

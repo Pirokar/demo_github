@@ -145,7 +145,7 @@ public final class ThreadsLib {
      */
     public boolean sendMessage(@Nullable String message, @Nullable Uri fileUri) {
         ChatController chatController = ChatController.getInstance();
-        if (PrefUtils.isClientIdNotEmpty()) {
+        if (!PrefUtils.isClientIdEmpty()) {
             FileDescription fileDescription = null;
             if (fileUri != null) {
                 fileDescription = new FileDescription(
@@ -162,6 +162,10 @@ public final class ThreadsLib {
             ThreadsLogger.i(getClass().getSimpleName(), "You might need to initialize user first with ThreadsLib.userInfo()");
             return false;
         }
+    }
+
+    public boolean isUserInitialized() {
+        return !PrefUtils.isClientIdEmpty();
     }
 
     public interface PendingIntentCreator {

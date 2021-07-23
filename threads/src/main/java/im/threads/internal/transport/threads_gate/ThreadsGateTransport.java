@@ -190,12 +190,14 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
     }
 
     @Override
-    public synchronized void setLifecycle(@NonNull Lifecycle lifecycle) {
+    public synchronized void setLifecycle(@Nullable Lifecycle lifecycle) {
         if (this.lifecycle != null) {
             this.lifecycle.removeObserver(this);
         }
         this.lifecycle = lifecycle;
-        this.lifecycle.addObserver(this);
+        if (this.lifecycle != null) {
+            this.lifecycle.addObserver(this);
+        }
     }
 
     private void sendMessage(JsonObject content) {
@@ -311,8 +313,10 @@ public class ThreadsGateTransport extends Transport implements LifecycleObserver
                 if (action.equals(Action.REGISTER_DEVICE)) {
                     RegisterDeviceData data = Config.instance.gson.fromJson(response.getData().toString(), RegisterDeviceData.class);
                     PrefUtils.setDeviceAddress(data.getDeviceAddress());
-                    sendInitChatMessage();
-                    sendEnvironmentMessage();
+                    if (!TextUtils.isEmpty(PrefUtils.getClientID())) {
+                        sendInitChatMessage();
+                        sendEnvironmentMessage();
+                    }
                 }
                 if (action.equals(Action.SEND_MESSAGE)) {
                     SendMessageData data = Config.instance.gson.fromJson(response.getData().toString(), SendMessageData.class);

@@ -8,7 +8,7 @@
     <string name="threads_left_dialog">покинул диалог в</string>
     <string name="threads_connected_female">подключилась к диалогу в</string>
     <string name="threads_connected">подключился к диалогу в</string>
-    <string name="threads_sent_at">отправлено</string>
+    <string name="threads_sent_at">отправлено %1$s</string>
     <string name="threads_image">изображение</string>
     <string name="threads_send">Отправить</string>
     <string name="threads_search_messages">Поиск сообщений</string>
@@ -127,4 +127,5 @@
     <string name="threads_voice_message_slide_to_cancel">Влево - отмена</string>
     <string name="threads_voice_message_is_processing">Голосовое сообщение обрабатывается</string>
     <string name="threads_voice_message_error">Ошибка обработки голосового сообщения</string>
+    <string name="threads_empty_state_hint">Инициализация клиента</string>
 </resources>

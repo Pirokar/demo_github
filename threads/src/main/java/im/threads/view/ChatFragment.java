@@ -36,27 +36,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
-import androidx.core.util.Consumer;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.view.ViewCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
-import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
-import cafe.adriel.androidaudioconverter.model.AudioFormat;
+
 import com.annimon.stream.Optional;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.google.android.material.slider.Slider;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -75,6 +85,8 @@ import im.threads.internal.fragments.FilePickerFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
+import im.threads.internal.media.ChatCenterAudioConverter;
+import im.threads.internal.media.ChatCenterAudioConverterCallback;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
@@ -111,25 +123,13 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
  */
 public final class ChatFragment extends BaseFragment implements
         AttachmentBottomSheetDialogFragment.Callback,
-        PopupMenu.OnMenuItemClickListener, FilePickerFragment.SelectedListener {
+        PopupMenu.OnMenuItemClickListener, FilePickerFragment.SelectedListener, ChatCenterAudioConverterCallback {
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -165,7 +165,6 @@ public final class ChatFragment extends BaseFragment implements
     private FileDescriptionMediaPlayer fdMediaPlayer;
     @Nullable
     private AudioManager audioManager;
-    private Context appContext;
     private ChatController mChatController;
     private ChatAdapter chatAdapter;
     private ChatAdapter.Callback chatAdapterCallback;
@@ -178,13 +177,13 @@ public final class ChatFragment extends BaseFragment implements
     private boolean isSendBlocked = false;
     private ChatStyle style;
     private FragmentChatBinding binding;
-    private Toast mToast;
     private File externalCameraPhotoFile;
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
     private List<Uri> mAttachedImages = new ArrayList<>();
     @Nullable
     private MediaRecorder recorder = null;
+    private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
     @Nullable
     private String voiceFilePath = null;
 
@@ -200,7 +199,6 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Activity activity = getActivity();
-        appContext = Config.instance.context;
         style = Config.instance.getChatStyle();
 
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
@@ -211,7 +209,7 @@ public final class ChatFragment extends BaseFragment implements
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
         binding.setInputTextObservable(inputTextObservable);
         chatAdapterCallback = new ChatFragment.AdapterCallback();
-        audioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) requireContext().getSystemService(Context.AUDIO_SERVICE);
         fdMediaPlayer = new FileDescriptionMediaPlayer(audioManager);
         initViews();
         initRecording();
@@ -254,6 +252,12 @@ public final class ChatFragment extends BaseFragment implements
         chatIsShown = false;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Config.instance.transport.setLifecycle(null);
+    }
+
     private void initController() {
         Activity activity = getActivity();
         if (activity == null) {
@@ -294,6 +298,9 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         RecordView recordView = binding.recordView;
+        recordView.setRecordPermissionHandler(
+                () -> ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext())
+        );
         recordButton.setRecordView(recordView);
         if (!ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext())) {
             recordButton.setListenForRecord(false);
@@ -324,7 +331,11 @@ public final class ChatFragment extends BaseFragment implements
             public void onCancel() {
                 Date start = new Date();
                 ThreadsLogger.d(TAG, "RecordView: onCancel");
-                releaseRecorder();
+                subscribe(
+                        releaseRecorder()
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
+                );
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 ThreadsLogger.i(TAG, "onStart performance: " + (new Date().getTime() - start.getTime()));
             }
@@ -332,17 +343,23 @@ public final class ChatFragment extends BaseFragment implements
             @Override
             public void onFinish(long recordTime, boolean limitReached) {
                 Date start = new Date();
-                releaseRecorder();
-                if (voiceFilePath != null) {
-                    File file = new File(voiceFilePath);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        addVoiceMessagePreview(file);
-                    } else {
-                        convertToWav(file, convertedFile -> addVoiceMessagePreview(convertedFile));
-                    }
-                } else {
-                    ThreadsLogger.e(TAG, "error finishing voice message recording");
-                }
+                subscribe(
+                        releaseRecorder()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> {
+                                    if (voiceFilePath != null) {
+                                        File file = new File(voiceFilePath);
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                            addVoiceMessagePreview(file);
+                                        } else {
+                                            audioConverter.convertToWav(file, ChatFragment.this);
+                                        }
+                                    } else {
+                                        ThreadsLogger.e(TAG, "error finishing voice message recording");
+                                    }
+                                })
+                );
                 recordView.setVisibility(View.INVISIBLE);
                 ThreadsLogger.d(TAG, "RecordView: onFinish");
                 ThreadsLogger.d(TAG, "RecordTime: " + recordTime);
@@ -353,7 +370,11 @@ public final class ChatFragment extends BaseFragment implements
             @Override
             public void onLessThanSecond() {
                 recordView.setVisibility(View.INVISIBLE);
-                releaseRecorder();
+                subscribe(
+                        releaseRecorder()
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
+                );
                 showToast(getString(R.string.threads_hold_button_to_record_audio));
                 ThreadsLogger.d(TAG, "RecordView: onLessThanSecond");
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -394,58 +415,29 @@ public final class ChatFragment extends BaseFragment implements
                 );
             }
 
-            private void releaseRecorder() {
+            private Completable releaseRecorder() {
                 if (fdMediaPlayer != null) {
                     fdMediaPlayer.abandonAudioFocus();
                 }
-                subscribe(
-                        Completable.fromAction(() -> {
-                            synchronized (this) {
-                                if (recorder != null) {
-                                    try {
-                                        recorder.stop();
-                                        recorder.release();
-                                    } catch (RuntimeException runtimeException) {
-                                        ThreadsLogger.d(TAG, "Exception occurred in releaseRecorder but it's fine", runtimeException);
-                                    }
-                                    recorder = null;
-                                }
+                return Completable.fromAction(() -> {
+                    synchronized (this) {
+                        if (recorder != null) {
+                            try {
+                                recorder.stop();
+                                recorder.release();
+                            } catch (RuntimeException runtimeException) {
+                                ThreadsLogger.d(TAG, "Exception occurred in releaseRecorder but it's fine", runtimeException);
                             }
-                        })
-                                .subscribeOn(Schedulers.io())
-                                .subscribe()
-                );
+                            recorder = null;
+                        }
+                    }
+                });
             }
         });
         recordView.setOnBasketAnimationEndListener(() -> {
             recordView.setVisibility(View.INVISIBLE);
             ThreadsLogger.d(TAG, "RecordView: Basket Animation Finished");
         });
-    }
-
-    private void convertToWav(File file, Consumer<File> convertedFileConsumer) {
-        IConvertCallback callback = new IConvertCallback() {
-            @Override
-            public void onSuccess(File convertedFile) {
-                convertedFileConsumer.accept(convertedFile);
-            }
-
-            @Override
-            public void onFailure(Exception error) {
-                ThreadsLogger.e(TAG, "error finishing voice message recording");
-            }
-        };
-        AndroidAudioConverter.with(appContext)
-                // Your current audio file
-                .setFile(file)
-
-                // Your desired audio format
-                .setFormat(AudioFormat.WAV)
-                // An callback to know when conversion is finished
-                .setCallback(callback)
-
-                // Start conversion
-                .convert();
     }
 
     private void stopRecording() {
@@ -462,7 +454,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         FileDescription fd = new FileDescription(
-                appContext.getString(R.string.threads_voice_message).toLowerCase(),
+                requireContext().getString(R.string.threads_voice_message).toLowerCase(),
                 FileProviderHelper.getUriForFile(context, file),
                 file.length(),
                 System.currentTimeMillis()
@@ -632,7 +624,7 @@ public final class ChatFragment extends BaseFragment implements
                         (s, fileDescriptionOptional) -> TextUtils.isEmpty(s) && fileDescriptionOptional.isEmpty()
                 )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty ? View.VISIBLE : View.GONE))
+                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty && style.voiceMessageEnabled ? View.VISIBLE : View.GONE))
         );
     }
 
@@ -794,6 +786,12 @@ public final class ChatFragment extends BaseFragment implements
         } catch (Resources.NotFoundException e) {
             ThreadsLogger.e(TAG, "setFragmentStyle", e);
         }
+
+        binding.flEmpty.setBackgroundColor(ContextCompat.getColor(activity, style.emptyStateBackgroundColorResId));
+        Drawable progressDrawable = binding.progressBar.getIndeterminateDrawable().mutate();
+        ColorsHelper.setDrawableColor(activity, progressDrawable, style.emptyStateProgressBarColorResId);
+        binding.progressBar.setIndeterminateDrawable(progressDrawable);
+        ColorsHelper.setTextColor(activity, binding.tvEmptyStateHint, style.emptyStateHintColorResId);
     }
 
     @Override
@@ -819,7 +817,7 @@ public final class ChatFragment extends BaseFragment implements
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     ThreadsLogger.w(TAG, "Could not start external camera", e);
-                    showToast(appContext.getString(R.string.threads_camera_could_not_start_error));
+                    showToast(requireContext().getString(R.string.threads_camera_could_not_start_error));
                 }
 
             } else {
@@ -912,7 +910,7 @@ public final class ChatFragment extends BaseFragment implements
         String text = cp.getPhraseText();
         if (userPhrase != null) {
             mQuote = new Quote(userPhrase.getUuid(),
-                    appContext.getString(R.string.threads_I),
+                    requireContext().getString(R.string.threads_I),
                     userPhrase.getPhraseText(),
                     userPhrase.getFileDescription(),
                     userPhrase.getTimeStamp());
@@ -921,7 +919,7 @@ public final class ChatFragment extends BaseFragment implements
             mQuote = new Quote(consultPhrase.getUuid(),
                     consultPhrase.getConsultName() != null
                             ? consultPhrase.getConsultName()
-                            : appContext.getString(R.string.threads_consult),
+                            : requireContext().getString(R.string.threads_consult),
                     consultPhrase.getPhraseText(),
                     consultPhrase.getFileDescription(),
                     consultPhrase.getTimeStamp());
@@ -932,7 +930,7 @@ public final class ChatFragment extends BaseFragment implements
         if (FileUtils.isImage(cp.getFileDescription())) {
             mQuoteLayoutHolder.setContent(
                     TextUtils.isEmpty(mQuote.getPhraseOwnerTitle()) ? "" : mQuote.getPhraseOwnerTitle(),
-                    TextUtils.isEmpty(text) ? appContext.getString(R.string.threads_image) : text,
+                    TextUtils.isEmpty(text) ? requireContext().getString(R.string.threads_image) : text,
                     cp.getFileDescription().getFileUri()
             );
         } else if (cp.getFileDescription() != null) {
@@ -1012,7 +1010,7 @@ public final class ChatFragment extends BaseFragment implements
             Uri fileUri = mAttachedImages.get(0);
             messages.add(new UpcomingUserMessage(
                     new FileDescription(
-                            appContext.getString(R.string.threads_I),
+                            requireContext().getString(R.string.threads_I),
                             fileUri,
                             FileUtils.getFileSize(fileUri),
                             System.currentTimeMillis()),
@@ -1023,7 +1021,7 @@ public final class ChatFragment extends BaseFragment implements
             for (int i = 1; i < mAttachedImages.size(); i++) {
                 fileUri = mAttachedImages.get(i);
                 FileDescription fileDescription = new FileDescription(
-                        appContext.getString(R.string.threads_I),
+                        requireContext().getString(R.string.threads_I),
                         fileUri,
                         FileUtils.getFileSize(fileUri),
                         System.currentTimeMillis()
@@ -1035,7 +1033,7 @@ public final class ChatFragment extends BaseFragment implements
             }
             if (isSendBlocked) {
                 clearInput();
-                showToast(appContext.getString(R.string.threads_message_were_unsent));
+                showToast(requireContext().getString(R.string.threads_message_were_unsent));
             } else {
                 sendMessage(messages);
             }
@@ -1141,7 +1139,7 @@ public final class ChatFragment extends BaseFragment implements
         UpcomingUserMessage uum =
                 new UpcomingUserMessage(
                         new FileDescription(
-                                appContext.getString(R.string.threads_I),
+                                requireContext().getString(R.string.threads_I),
                                 fileUri,
                                 FileUtils.getFileSize(fileUri),
                                 System.currentTimeMillis()
@@ -1161,7 +1159,7 @@ public final class ChatFragment extends BaseFragment implements
             fileUri = photos.get(i);
             uum = new UpcomingUserMessage(
                     new FileDescription(
-                            appContext.getString(R.string.threads_I),
+                            requireContext().getString(R.string.threads_I),
                             fileUri,
                             FileUtils.getFileSize(fileUri),
                             System.currentTimeMillis()
@@ -1177,7 +1175,7 @@ public final class ChatFragment extends BaseFragment implements
     private void onExternalCameraPhotoResult() {
         setFileDescription(
                 new FileDescription(
-                        appContext.getString(R.string.threads_image),
+                        requireContext().getString(R.string.threads_image),
                         FileProviderHelper.getUriForFile(Config.instance.context, externalCameraPhotoFile),
                         externalCameraPhotoFile.length(),
                         System.currentTimeMillis()
@@ -1223,8 +1221,8 @@ public final class ChatFragment extends BaseFragment implements
 
     private void onFileResult(@NonNull Uri uri) {
         ThreadsLogger.i(TAG, "onFileSelected: " + uri);
-        setFileDescription(new FileDescription(appContext.getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
-        mQuoteLayoutHolder.setContent(appContext.getString(R.string.threads_I), FileUtils.getFileName(uri), null);
+        setFileDescription(new FileDescription(requireContext().getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
+        mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
         mQuote = null;
     }
 
@@ -1233,7 +1231,7 @@ public final class ChatFragment extends BaseFragment implements
         if (imageExtra != null) {
             File file = new File(imageExtra);
             FileDescription fileDescription = new FileDescription(
-                    appContext.getString(R.string.threads_image),
+                    requireContext().getString(R.string.threads_image),
                     FileProviderHelper.getUriForFile(requireContext(), file),
                     file.length(),
                     System.currentTimeMillis()
@@ -1402,10 +1400,10 @@ public final class ChatFragment extends BaseFragment implements
                     if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
                         binding.consultName.setText(info.getName());
                     } else {
-                        binding.consultName.setText(appContext.getString(R.string.threads_unknown_operator));
+                        binding.consultName.setText(requireContext().getString(R.string.threads_unknown_operator));
                     }
                     binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
-                            ? appContext.getString(style.chatSubtitleTextResId)
+                            ? requireContext().getString(style.chatSubtitleTextResId)
                             : info.getOrganizationUnit());
 
                     chatAdapter.removeConsultSearching();
@@ -1429,15 +1427,11 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void showConnectionError() {
-        showToast(appContext.getString(R.string.threads_message_not_sent));
+        showToast(requireContext().getString(R.string.threads_message_not_sent));
     }
 
     public void showToast(final String message) {
-        if (null != mToast) {
-            mToast.cancel();
-        }
-        mToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
-        mToast.show();
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
     public void setMessageState(String providerId, MessageState state) {
@@ -1583,7 +1577,7 @@ public final class ChatFragment extends BaseFragment implements
         binding.searchLo.setVisibility(View.GONE);
         binding.search.setText("");
         if (isAdded()) {
-            binding.consultName.setText(appContext.getString(R.string.threads_searching_operator));
+            binding.consultName.setText(requireContext().getString(R.string.threads_searching_operator));
         }
     }
 
@@ -2008,6 +2002,19 @@ public final class ChatFragment extends BaseFragment implements
         return false;
     }
 
+    public void showEmptyState() {
+        binding.flEmpty.setVisibility(View.VISIBLE);
+    }
+
+    public void hideEmptyState() {
+        binding.flEmpty.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void acceptConvertedFile(@NonNull File convertedFile) {
+        addVoiceMessagePreview(convertedFile);
+    }
+
     private class QuoteLayoutHolder {
         private boolean ignorePlayerUpdates = false;
         @NonNull
@@ -2174,7 +2181,7 @@ public final class ChatFragment extends BaseFragment implements
 
         @Override
         public void onUserPhraseClick(final UserPhrase userPhrase, int position) {
-            mChatController.checkAndResendPhrase(userPhrase);
+            mChatController.forceResend(userPhrase);
         }
 
         @Override
@@ -2223,7 +2230,7 @@ public final class ChatFragment extends BaseFragment implements
             }
             if (chatPhrase instanceof UserPhrase) {
                 if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_WAS_READ) {
-                    mChatController.checkAndResendPhrase((UserPhrase) chatPhrase);
+                    mChatController.forceResend((UserPhrase) chatPhrase);
                 }
                 if (((UserPhrase) chatPhrase).getSentState() != MessageState.STATE_NOT_SENT) {
                     Activity activity = getActivity();

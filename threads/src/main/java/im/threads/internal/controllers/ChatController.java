@@ -4,13 +4,20 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import static android.content.Context.NOTIFICATION_SERVICE;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.concurrent.TimeUnit;
+
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,7 +54,6 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.services.NotificationService;
-import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.CallbackNoError;
@@ -71,11 +77,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.concurrent.TimeUnit;
+import static android.content.Context.NOTIFICATION_SERVICE;
+import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
 
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
@@ -127,9 +130,9 @@ public final class ChatController {
     private boolean isDownloadingMessages;
 
     // TODO: вынести в отдельный класс отправку сообщений
-    private List<UserPhrase> unsendMessages = new ArrayList<>();
+    private final List<UserPhrase> unsendMessages = new ArrayList<>();
     private int resendTimeInterval;
-    private List<UserPhrase> sendQueue = new ArrayList<>();
+    private final List<UserPhrase> sendQueue = new ArrayList<>();
     private Handler unsendMessageHandler;
     private String firstUnreadUuidId;
 
@@ -154,11 +157,13 @@ public final class ChatController {
                             } else {
                                 // try to send all unsent messages
                                 unsendMessageHandler.removeMessages(RESEND_MSG);
-                                final ListIterator<UserPhrase> iterator = unsendMessages.listIterator();
-                                while (iterator.hasNext()) {
-                                    final UserPhrase phrase = iterator.next();
-                                    checkAndResendPhrase(phrase);
-                                    iterator.remove();
+                                synchronized (unsendMessages) {
+                                    final ListIterator<UserPhrase> iterator = unsendMessages.listIterator();
+                                    while (iterator.hasNext()) {
+                                        final UserPhrase phrase = iterator.next();
+                                        checkAndResendPhrase(phrase);
+                                        iterator.remove();
+                                    }
                                 }
                             }
                         }
@@ -346,6 +351,22 @@ public final class ChatController {
         }
     }
 
+    public void forceResend(final UserPhrase userPhrase) {
+        if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
+            synchronized (unsendMessages) {
+                Iterator<UserPhrase> iterator = unsendMessages.iterator();
+                while (iterator.hasNext()) {
+                    final UserPhrase queueItem = iterator.next();
+                    if (queueItem.isTheSameItem(userPhrase)) {
+                        iterator.remove();
+                        break;
+                    }
+                }
+                checkAndResendPhrase(userPhrase);
+            }
+        }
+    }
+
     public void checkAndResendPhrase(final UserPhrase userPhrase) {
         if (userPhrase.getSentState() == MessageState.STATE_NOT_SENT) {
             if (fragment != null) {
@@ -388,7 +409,7 @@ public final class ChatController {
     public Observable<List<ChatItem>> requestItems() {
         return Observable
                 .fromCallable(() -> {
-                    if (instance.fragment != null && PrefUtils.isClientIdNotEmpty()) {
+                    if (instance.fragment != null && !PrefUtils.isClientIdEmpty()) {
                         int currentOffset = instance.fragment.getCurrentItemsCount();
                         int count = Config.instance.historyLoadingCount;
                         try {
@@ -454,7 +475,7 @@ public final class ChatController {
         return firstUnreadUuidId;
     }
 
-    public void bindFragment(final ChatFragment f) {
+    public void bindFragment(@NonNull final ChatFragment f) {
         ThreadsLogger.i(TAG, "bindFragment: " + f.toString());
         final Activity activity = f.getActivity();
         if (activity == null) {
@@ -463,6 +484,9 @@ public final class ChatController {
         fragment = f;
         if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
+        }
+        if (PrefUtils.isClientIdEmpty()) {
+            fragment.showEmptyState();
         }
         subscribe(
                 Single.fromCallable(() -> {
@@ -562,6 +586,12 @@ public final class ChatController {
 
     public void sendInit() {
         Config.instance.transport.sendInitChatMessage();
+        Config.instance.transport.sendEnvironmentMessage();
+        if (!PrefUtils.isClientIdEmpty()) {
+            if (fragment != null) {
+                fragment.hideEmptyState();
+            }
+        }
     }
 
     public void loadHistory() {
@@ -834,10 +864,11 @@ public final class ChatController {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(chatItem -> {
                             if (chatItem instanceof UserPhrase) {
+                                UserPhrase userPhrase = (UserPhrase) chatItem;
                                 if (fragment != null) {
-                                    fragment.addChatItem(chatItem);
+                                    fragment.addChatItem(userPhrase);
                                 }
-                                proceedSendingQueue();
+                                proceedSendingQueue(userPhrase);
                             }
                         })
         );
@@ -874,7 +905,7 @@ public final class ChatController {
                                 if (!isActive) {
                                     NotificationService.addUnsentMessage(appContext, PrefUtils.getAppMarker());
                                 }
-                                proceedSendingQueue();
+                                proceedSendingQueue(userPhrase);
                             }
                         })
         );
@@ -964,7 +995,7 @@ public final class ChatController {
     }
 
     private void addMsgToResendQueue(final UserPhrase userPhrase) {
-        if (unsendMessages.indexOf(userPhrase) == -1) {
+        if (!unsendMessages.contains(userPhrase)) {
             unsendMessages.add(userPhrase);
             scheduleResend();
         }
@@ -1034,14 +1065,25 @@ public final class ChatController {
 
     private void queueMessageSending(UserPhrase userPhrase) {
         ThreadsLogger.i(TAG, "queueMessageSending: " + userPhrase);
-        sendQueue.add(userPhrase);
+        synchronized (sendQueue) {
+            sendQueue.add(userPhrase);
+        }
         if (sendQueue.size() == 1) {
             sendMessage(userPhrase);
         }
     }
 
-    private void proceedSendingQueue() {
-        sendQueue.remove(0);
+    private void proceedSendingQueue(UserPhrase chatItem) {
+        synchronized (sendQueue) {
+            Iterator<UserPhrase> iterator = sendQueue.iterator();
+            while (iterator.hasNext()) {
+                final UserPhrase queueItem = iterator.next();
+                if (queueItem.isTheSameItem(chatItem)) {
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
         if (sendQueue.size() > 0) {
             sendMessage(sendQueue.get(0));
         }

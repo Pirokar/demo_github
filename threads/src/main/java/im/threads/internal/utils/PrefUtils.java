@@ -13,7 +13,7 @@ import androidx.preference.PreferenceManager;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonSyntaxException;
-import com.mfms.android.push_lite.utils.CommonUtils;
+import com.edna.android.push_lite.utils.CommonUtils;
 
 import java.util.UUID;
 
@@ -175,8 +175,8 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static boolean isClientIdNotEmpty() {
-        return !getClientID().isEmpty() || Config.instance.clientIdIgnoreEnabled;
+    public static boolean isClientIdEmpty() {
+        return getClientID().isEmpty() && !Config.instance.clientIdIgnoreEnabled;
     }
 
     @Nullable

@@ -3,6 +3,7 @@ package im.threads.internal.transport;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import im.threads.ConfigBuilder;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
@@ -104,5 +105,5 @@ public abstract class Transport {
     @NonNull
     public abstract String getToken() throws TransportException;
 
-    public abstract void setLifecycle(Lifecycle lifecycle);
+    public abstract void setLifecycle(@Nullable Lifecycle lifecycle);
 }

@@ -11,7 +11,7 @@
     <string name="threads_left_female">disconnected from dialog at</string>
     <string name="threads_left_dialog">disconnected from dialog at</string>
     <string name="threads_connected">connected to dialog</string>
-    <string name="threads_sent_at">sent at</string>
+    <string name="threads_sent_at">sent at %1$s</string>
     <string name="threads_image">Picture</string>
     <string name="threads_send">Send</string>
     <string name="threads_search_messages">Search message</string>
@@ -116,4 +116,5 @@
     <string name="threads_voice_message_slide_to_cancel">Slide to cancel</string>
     <string name="threads_voice_message_is_processing">Voice message is processing</string>
     <string name="threads_voice_message_error">Voice message processing error</string>
+    <string name="threads_empty_state_hint">Client initialization</string>
 </resources>

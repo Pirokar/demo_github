@@ -163,7 +163,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mFileImageButton.setVisibility(View.GONE);
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
-            mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(quote.getTimeStamp()));
+            mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at, fileSdf.format(quote.getTimeStamp())));
             if (quote.getFileDescription() != null) {
                 if (FileUtils.isVoiceMessage(quote.getFileDescription())) {
                     mRightTextDescr.setText(R.string.threads_voice_message);
@@ -208,7 +208,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
                 mRightTextHeader.setText(quote == null ? fileDescription.getFrom() : quote.getPhraseOwnerTitle());
                 mRightTextTimeStamp
-                        .setText(itemView.getContext().getResources().getText(R.string.threads_sent_at) + " " + fileSdf.format(fileDescription.getTimeStamp()));
+                        .setText(itemView.getContext().getString(R.string.threads_sent_at, fileSdf.format(new Date(fileDescription.getTimeStamp()))));
                 if (fileClickListener != null) {
                     mFileImageButton.setOnClickListener(fileClickListener);
                 }
