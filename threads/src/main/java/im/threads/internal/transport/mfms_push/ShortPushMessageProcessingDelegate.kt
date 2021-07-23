@@ -36,7 +36,6 @@ object ShortPushMessageProcessingDelegate {
                         }
                     }
                 }
-                ChatItemType.REMOVE_PUSHES -> NotificationService.removeNotification(context)
                 ChatItemType.OPERATOR_LOOKUP_STARTED -> ChatUpdateProcessor.getInstance()
                     .postNewMessage(SearchingConsult())
                 ChatItemType.UNREAD_MESSAGE_NOTIFICATION -> {
@@ -47,7 +46,7 @@ object ShortPushMessageProcessingDelegate {
                 else -> {
                     ThreadsLogger.i(
                         TAG,
-                        "Unl"
+                        "Unknown notification type"
                     )
                 }
             }
