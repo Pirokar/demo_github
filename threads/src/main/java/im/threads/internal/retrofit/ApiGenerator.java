@@ -8,7 +8,6 @@ import im.threads.internal.Config;
 import im.threads.internal.transport.AuthInterceptor;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
-import im.threads.internal.utils.MetaDataUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -21,20 +20,16 @@ public final class ApiGenerator {
 
     private final ThreadsApi threadsApi;
 
-    public static ThreadsApi getThreadsApi() throws IOException {
+    public static ThreadsApi getThreadsApi() {
         if (apiGenerator == null) {
             apiGenerator = new ApiGenerator();
         }
         return apiGenerator.threadsApi;
     }
 
-    private ApiGenerator() throws IOException {
-        String baseUrl = MetaDataUtils.getDatastoreUrl(Config.instance.context);
-        if (baseUrl == null) {
-            throw new IOException("Empty im.threads.getServerUrl meta variable");
-        }
+    private ApiGenerator() {
         Retrofit build = new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(Config.instance.serverBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build();

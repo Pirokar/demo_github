@@ -157,7 +157,7 @@ object FileUtils {
     fun convertRelativeUrlToAbsolute(relativeUrl: String?): String? {
         return if (TextUtils.isEmpty(relativeUrl) || relativeUrl!!.startsWith("http")) {
             relativeUrl
-        } else MetaDataUtils.getDatastoreUrl(Config.instance.context) + "files/" + relativeUrl
+        } else Config.instance.serverBaseUrl + "files/" + relativeUrl
     }
 
     private fun getExtensionFromFileDescription(fileDescription: FileDescription): Int {

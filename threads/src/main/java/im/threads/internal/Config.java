@@ -4,12 +4,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
@@ -39,6 +38,8 @@ public final class Config {
     public final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener;
     @NonNull
     public final Transport transport;
+    @NonNull
+    public final String serverBaseUrl;
 
     public final boolean isDebugLoggingEnabled;
     /**
@@ -47,18 +48,22 @@ public final class Config {
     public final int historyLoadingCount;
 
     public final int surveyCompletionDelay;
-
-    public final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Uri.class, new UriSerializer())
-            .registerTypeAdapter(Uri.class, new UriDeserializer())
-            .create();
     public final boolean clientIdIgnoreEnabled;
 
     public final boolean newChatCenterApi;
 
     public final boolean attachmentEnabled;
 
+    public final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Uri.class, new UriSerializer())
+            .registerTypeAdapter(Uri.class, new UriDeserializer())
+            .create();
+
     public Config(@NonNull Context context,
+                  @Nullable String serverBaseUrl,
+                  @Nullable ConfigBuilder.TransportType transportType,
+                  @Nullable String threadsGateUrl,
+                  @Nullable String threadsGateProviderUid,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   boolean isDebugLoggingEnabled,
@@ -73,7 +78,8 @@ public final class Config {
         this.attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context);
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
-        this.transport = getTransport();
+        this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid);
+        this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
     }
 
     public void applyChatStyle(ChatStyle chatStyle) {
@@ -99,29 +105,46 @@ public final class Config {
         return localInstance;
     }
 
-    private Transport getTransport() {
-        ConfigBuilder.TransportType transportType = ConfigBuilder.TransportType.MFMS_PUSH;
-        String transportTypeValue = MetaDataUtils.getThreadsTransportType(this.context);
-        if (!TextUtils.isEmpty(transportTypeValue)) {
-            try {
-                transportType = ConfigBuilder.TransportType.fromString(transportTypeValue);
-            } catch (IllegalArgumentException e) {
-                ThreadsLogger.e(TAG, "Transport type has incorrect value (correct values: MFMS_PUSH, THREADS_GATE). Default to MFMS_PUSH");
-            }
+    private Transport getTransport(ConfigBuilder.TransportType providedTransportType, String providedThreadsGateUrl, String providedThreadsGateProviderUid) {
+        ConfigBuilder.TransportType transportType;
+        if (providedTransportType != null) {
+            transportType = providedTransportType;
         } else {
-            ThreadsLogger.e(TAG, "Transport type value is not set (correct values: MFMS_PUSH, THREADS_GATE). Default to MFMS_PUSH");
+            transportType = ConfigBuilder.TransportType.MFMS_PUSH;
+            String transportTypeValue = MetaDataUtils.getThreadsTransportType(this.context);
+            if (!TextUtils.isEmpty(transportTypeValue)) {
+                try {
+                    transportType = ConfigBuilder.TransportType.fromString(transportTypeValue);
+                } catch (IllegalArgumentException e) {
+                    ThreadsLogger.e(TAG, "Transport type has incorrect value (correct values: MFMS_PUSH, THREADS_GATE). Default to MFMS_PUSH");
+                }
+            } else {
+                ThreadsLogger.e(TAG, "Transport type value is not set (correct values: MFMS_PUSH, THREADS_GATE). Default to MFMS_PUSH");
+            }
         }
         if (ConfigBuilder.TransportType.THREADS_GATE == transportType) {
-            String threadsGateUrl = MetaDataUtils.getThreadsGateUrl(this.context);
+            String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl) ? providedThreadsGateUrl : MetaDataUtils.getThreadsGateUrl(this.context);
             if (TextUtils.isEmpty(threadsGateUrl)) {
                 throw new MetaConfigurationException("Threads gate url is not set");
             }
-            String threadsGateProviderUid = MetaDataUtils.getThreadsGateProviderUid(this.context);
+            String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid) ? providedThreadsGateProviderUid : MetaDataUtils.getThreadsGateProviderUid(this.context);
             if (TextUtils.isEmpty(threadsGateProviderUid)) {
                 throw new MetaConfigurationException("Threads gate provider uid is not set");
             }
             return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, isDebugLoggingEnabled);
         }
         return new MFMSPushTransport();
+    }
+
+    @NonNull
+    private String getServerBaseUrl(@Nullable String serverBaseUrl) {
+        String baseUrl = TextUtils.isEmpty(serverBaseUrl) ? MetaDataUtils.getDatastoreUrl(this.context) : serverBaseUrl;
+        if (baseUrl == null) {
+            throw new MetaConfigurationException("Neither im.threads.getServerUrl meta variable, nor serverBaseUrl were provided");
+        }
+        if (!baseUrl.endsWith("/")) {
+            baseUrl = baseUrl + "/";
+        }
+        return baseUrl;
     }
 }

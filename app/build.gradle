@@ -167,6 +167,7 @@ dependencies {
 
     implementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
