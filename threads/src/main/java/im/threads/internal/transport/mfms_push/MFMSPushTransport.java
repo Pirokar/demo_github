@@ -153,10 +153,12 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
                         .subscribe(
                                 response -> {
                                     long sentAt = response.getSentAt() == null ? 0 : response.getSentAt().getMillis();
-                                    chatUpdateProcessor.postChatItemSendSuccess(new ChatItemProviderData(userPhrase.getUuid(), response.getMessageId(), sentAt));
+                                    chatUpdateProcessor.postChatItemSendSuccess(new ChatItemProviderData(userPhrase.getId(), response.getMessageId(), sentAt));
                                 },
                                 e -> {
-                                    chatUpdateProcessor.postChatItemSendError(userPhrase.getUuid());
+                                    if (userPhrase.getId() != null) {
+                                        chatUpdateProcessor.postChatItemSendError(userPhrase.getId());
+                                    }
                                     chatUpdateProcessor.postError(new TransportException(e.getMessage()));
                                 }
                         )

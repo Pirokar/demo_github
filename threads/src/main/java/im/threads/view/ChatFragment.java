@@ -92,7 +92,6 @@ import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
-import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.DisplayUtils;
 import im.threads.internal.utils.FileUtils;
@@ -109,6 +108,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -171,7 +171,6 @@ public final class ChatFragment extends BaseFragment implements
     private QuoteLayoutHolder mQuoteLayoutHolder;
     private Quote mQuote = null;
     private CampaignMessage campaignMessage = null;
-    private ChatPhrase mChosenPhrase = null;
     private ChatReceiver mChatReceiver;
     private boolean isInMessageSearchMode;
     private boolean isResumed;
@@ -697,7 +696,6 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void afterRefresh(List<ChatItem> result) {
-        setChosen(result);
         int itemsBefore = chatAdapter.getItemCount();
         chatAdapter.addItems(result);
         scrollToPosition(chatAdapter.getItemCount() - itemsBefore);
@@ -708,23 +706,6 @@ public final class ChatFragment extends BaseFragment implements
                 binding.swipeRefresh.destroyDrawingCache();
                 binding.swipeRefresh.invalidate();
             }, i * 500);
-        }
-    }
-
-    private void setChosen(List<ChatItem> chatItemList) {
-        for (final ChatItem ci : chatItemList) {
-            if (ci instanceof ConsultPhrase) {
-                final ConsultPhrase cp = (ConsultPhrase) ci;
-                if (cp.isTheSameItem(mChosenPhrase)) {
-                    cp.setChosen(true);
-                }
-            }
-            if (ci instanceof UserPhrase) {
-                final UserPhrase up = (UserPhrase) ci;
-                if (up.isTheSameItem(mChosenPhrase)) {
-                    up.setChosen(true);
-                }
-            }
         }
     }
 
@@ -930,14 +911,14 @@ public final class ChatFragment extends BaseFragment implements
         ConsultPhrase consultPhrase = cp instanceof ConsultPhrase ? (ConsultPhrase) cp : null;
         String text = cp.getPhraseText();
         if (userPhrase != null) {
-            mQuote = new Quote(userPhrase.getUuid(),
+            mQuote = new Quote(userPhrase.getId(),
                     requireContext().getString(R.string.threads_I),
                     userPhrase.getPhraseText(),
                     userPhrase.getFileDescription(),
                     userPhrase.getTimeStamp());
             mQuote.setFromConsult(false);
         } else if (consultPhrase != null) {
-            mQuote = new Quote(consultPhrase.getUuid(),
+            mQuote = new Quote(consultPhrase.getId(),
                     consultPhrase.getConsultName() != null
                             ? consultPhrase.getConsultName()
                             : requireContext().getString(R.string.threads_consult),
@@ -1087,25 +1068,18 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void onSearch(String request, boolean forward) {
-        final ChatPhrase[] highlighted = {null};
-        mChatController.fancySearch(request, forward, new CallbackNoError<List<ChatItem>>() {
-            @Override
-            public void onCall(final List<ChatItem> data) {
-                onSearchEnd(data, highlighted);
-                if (highlighted[0] == null) return;
-                int index = chatAdapter.setItemHighlighted(highlighted[0]);
-                if (index != -1) scrollToPosition(index);
-            }
-        });
+        mChatController.fancySearch(request, forward, this::onSearchEnd);
     }
 
-    private void onSearchEnd(List<ChatItem> data, ChatPhrase[] highlighted) {
+    private void onSearchEnd(Pair<List<ChatItem>, ChatItem> dataPair) {
         int first = -1;
         int last = -1;
+        List<ChatItem> data = dataPair.getFirst();
+        ChatItem highlightedItem = dataPair.getSecond();
         //для поиска - ищем индекс первого совпадения
         for (int i = 0; i < data.size(); i++) {
             if (data.get(i) instanceof ChatPhrase) {
-                if (((ChatPhrase) data.get(i)).isFound()) {
+                if (((ChatPhrase) data.get(i)).getFound()) {
                     first = i;
                     break;
                 }
@@ -1114,7 +1088,7 @@ public final class ChatFragment extends BaseFragment implements
         //для поиска - ищем индекс последнего совпадения
         for (int i = data.size() - 1; i >= 0; i--) {
             if (data.get(i) instanceof ChatPhrase) {
-                if (((ChatPhrase) data.get(i)).isFound()) {
+                if (((ChatPhrase) data.get(i)).getFound()) {
                     last = i;
                     break;
                 }
@@ -1122,8 +1096,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         for (int i = 0; i < data.size(); i++) {
             if (data.get(i) instanceof ChatPhrase) {
-                if (((ChatPhrase) data.get(i)).isHighlight()) {
-                    highlighted[0] = (ChatPhrase) data.get(i);
+                if (((ChatPhrase) data.get(i)).equals(highlightedItem)) {
                     //для поиска - если можно перемещаться, подсвечиваем
                     if (first != -1 && i > first) {
                         binding.searchUpIb.setAlpha(ENABLED_ALPHA);
@@ -1141,7 +1114,10 @@ public final class ChatFragment extends BaseFragment implements
             }
         }
         chatAdapter.addItems(data);
-        chatAdapter.removeHighlight();
+        if (highlightedItem != null) {
+            chatAdapter.removeHighlight();
+            scrollToPosition(chatAdapter.setItemHighlighted(highlightedItem));
+        }
     }
 
     private void onPhotosResult(@NonNull Intent data) {
@@ -1357,7 +1333,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void scrollToPosition(int itemCount) {
         if (itemCount >= 0) {
-            binding.recycler.scrollToPosition(itemCount);
+            binding.recycler.smoothScrollToPosition(itemCount);
         }
     }
 
@@ -1376,7 +1352,6 @@ public final class ChatFragment extends BaseFragment implements
         if (list.size() == 0) {
             return;
         }
-        setChosen(list);
         int oldAdapterSize = chatAdapter.getList().size();
         welcomeScreenVisibility(false);
         chatAdapter.addItems(list);
@@ -1392,7 +1367,7 @@ public final class ChatFragment extends BaseFragment implements
             for (int i = 1; i < newList.size(); i++) {
                 if (newList.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) newList.get(i);
-                    if (firstUnreadUuid.equalsIgnoreCase(cp.getUuid())) {
+                    if (firstUnreadUuid.equalsIgnoreCase(cp.getId())) {
                         final int index = i;
                         h.postDelayed(
                                 () -> binding.recycler.post(() -> layoutManager.scrollToPositionWithOffset(index - 1, 0)),
@@ -1626,10 +1601,9 @@ public final class ChatFragment extends BaseFragment implements
 
     private void unChooseItem() {
         hideCopyControls();
-        if (chatAdapter != null && mChosenPhrase != null) {
-            chatAdapter.setItemChosen(false, mChosenPhrase);
+        if (chatAdapter != null) {
+            chatAdapter.removeHighlight();
         }
-        mChosenPhrase = null;
     }
 
     public void removeSchedule(boolean checkSchedule) {
@@ -1751,7 +1725,7 @@ public final class ChatFragment extends BaseFragment implements
             for (int i = 1; i < list.size(); i++) {
                 if (list.get(i) instanceof ConsultPhrase) {
                     ConsultPhrase cp = (ConsultPhrase) list.get(i);
-                    if (firstUnreadUuid.equalsIgnoreCase(cp.getUuid())) {
+                    if (firstUnreadUuid.equalsIgnoreCase(cp.getId())) {
                         final int index = i;
                         h.post(() -> {
                             if (!isInMessageSearchMode) {
@@ -1955,8 +1929,7 @@ public final class ChatFragment extends BaseFragment implements
             onReplyClick(chatPhrase, position);
             hideBackButton();
         });
-        mChosenPhrase = chatPhrase;
-        chatAdapter.setItemChosen(true, chatPhrase);
+        chatAdapter.setItemHighlighted(chatPhrase);
     }
 
     public void showQuickReplies(List<QuickReply> quickReplies) {
@@ -2217,7 +2190,6 @@ public final class ChatFragment extends BaseFragment implements
                     mChatController.downloadMessagesTillEnd()
                             .observeOn(AndroidSchedulers.mainThread())
                             .map(list -> {
-                                setChosen(list);
                                 chatAdapter.addItems(list);
                                 final int itemHighlightedIndex = chatAdapter.setItemHighlighted(quote.getUuid());
                                 scrollToPosition(itemHighlightedIndex);
@@ -2229,7 +2201,6 @@ public final class ChatFragment extends BaseFragment implements
                             .subscribe(
                                     list -> {
                                         chatAdapter.removeHighlight();
-                                        setChosen(list);
                                         chatAdapter.addItems(list);
                                     },
                                     e -> ThreadsLogger.e(TAG, e.getMessage())

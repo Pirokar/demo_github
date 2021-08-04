@@ -85,6 +85,7 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
         }
     }
 
+    @NonNull
     @Override
     public List<ChatItem> getChatItems(int offset, int limit) {
         return messagesTable.getChatItems(this, offset, limit);

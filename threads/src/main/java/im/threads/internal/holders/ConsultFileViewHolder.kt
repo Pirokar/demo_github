@@ -94,6 +94,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
 
     fun onBind(
         consultPhrase: ConsultPhrase,
+        highlighted: Boolean,
         buttonClickListener: View.OnClickListener,
         onLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
@@ -113,8 +114,8 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
             vg.getChildAt(i).setOnLongClickListener(onLongClickListener)
         }
         mCircularProgressButton.setOnClickListener(buttonClickListener)
-        filterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
-        secondFilterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
+        filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
+        secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
         if (consultPhrase.isAvatarVisible) {
             mConsultAvatar.visibility = View.VISIBLE
             mConsultAvatar.setOnClickListener(onAvatarClickListener)

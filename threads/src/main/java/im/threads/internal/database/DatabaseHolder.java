@@ -48,6 +48,7 @@ public final class DatabaseHolder {
         mMyOpenHelper.cleanDatabase();
     }
 
+    @NonNull
     public List<ChatItem> getChatItems(int offset, int limit) {
         return mMyOpenHelper.getChatItems(offset, limit);
     }

@@ -50,7 +50,7 @@ public final class QuickAnswerActivity
             }
             QuickAnswerFragment.getInstance(phrase.getAvatarPath(),
                     phrase.getConsultName(),
-                    phrase.getPhrase()).show(getSupportFragmentManager(), QuickAnswerFragment.TAG);
+                    phrase.getPhraseText()).show(getSupportFragmentManager(), QuickAnswerFragment.TAG);
         }
     }
 

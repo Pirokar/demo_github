@@ -127,9 +127,9 @@ public final class OutgoingMessageCreator {
         final FileDescription fileDescription = userPhrase.getFileDescription();
         final CampaignMessage campaignMessage = userPhrase.getCampaignMessage();
         JsonObject formattedMessage = new JsonObject();
-        formattedMessage.addProperty(MessageAttributes.UUID, userPhrase.getUuid());
+        formattedMessage.addProperty(MessageAttributes.UUID, userPhrase.getId());
         formattedMessage.addProperty(MessageAttributes.CLIENT_ID, clientId);
-        final String phrase = userPhrase.getPhrase();
+        final String phrase = userPhrase.getPhraseText();
         formattedMessage.addProperty(MessageAttributes.TEXT, phrase == null ? "" : phrase);
         formattedMessage.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         JsonArray quotes = new JsonArray();
@@ -145,7 +145,7 @@ public final class OutgoingMessageCreator {
             if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
                 quoteJson.add(MessageAttributes.ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
             }
-            if (userPhrase.getQuote().getUuid() != null) {
+            if (userPhrase.getQuote() != null && userPhrase.getQuote().getUuid() != null) {
                 quoteJson.addProperty(MessageAttributes.UUID, userPhrase.getQuote().getUuid());
             }
         }

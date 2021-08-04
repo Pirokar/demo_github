@@ -57,8 +57,8 @@ public final class MessageFormatter {
             if (ci instanceof ConsultPhrase) {
                 ConsultPhrase consultPhrase = (ConsultPhrase) ci;
                 isNeedAnswer = true;
-                if (!TextUtils.isEmpty(consultPhrase.getPhrase())) {
-                    phrase = consultPhrase.getPhrase();
+                if (!TextUtils.isEmpty(consultPhrase.getPhraseText())) {
+                    phrase = consultPhrase.getPhraseText();
                 }
                 sex = consultPhrase.getSex();
                 if (consultPhrase.getConsultName() != null) {
@@ -119,7 +119,7 @@ public final class MessageFormatter {
         }
         return new MessageContent(
                 titleText,
-                phrase,
+                phrase != null ? phrase : "",
                 !TextUtils.isEmpty(avatarPath),
                 imagesCount != 0,
                 plainFilesCount != 0,
