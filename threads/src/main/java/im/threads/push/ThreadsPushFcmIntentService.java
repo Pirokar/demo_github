@@ -30,12 +30,11 @@ public class ThreadsPushFcmIntentService extends FcmPushService {
 
     @Override
     public void onMessageReceived(RemoteMessage message) {
+        super.onMessageReceived(message);
         Map<String, String> data = message.getData();
         if (Config.instance.transport.getType() == ConfigBuilder.TransportType.MFMS_PUSH) {
             if (data.containsKey(CHL_SENT_AT) && (!data.containsKey(MESSAGE_ID) || !data.containsKey(SERVER_MESSAGE_ID))) {
                 ShortPushMessageProcessingDelegate.INSTANCE.process(this, MFMSPushMessageParser.mapToBundle(data), null);
-            } else {
-                super.onMessageReceived(message);
             }
         } else if (Config.instance.transport.getType() == ConfigBuilder.TransportType.THREADS_GATE) {
             if (MessageAttributes.THREADS.equals(data.get(MessageAttributes.ORIGIN))) {

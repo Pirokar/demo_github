@@ -1121,13 +1121,14 @@ public final class ChatController {
 
     private UserPhrase convert(@NonNull final UpcomingUserMessage message) {
         final UserPhrase up = new UserPhrase(
-                message.text,
-                message.quote,
+                message.getText(),
+                message.getQuote(),
                 System.currentTimeMillis(),
-                message.fileDescription,
+                message.getFileDescription(),
                 null
         );
-        up.setCopy(message.copyied);
+        up.setCopy(message.getCopyied());
+        up.setCampaignMessage(message.getCampaignMessage());
         return up;
     }
 

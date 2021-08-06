@@ -21,6 +21,7 @@ public final class UserPhrase implements ChatPhrase {
     private MessageState sentState;
     private long phraseTimeStamp;
     private FileDescription fileDescription;
+    private CampaignMessage campaignMessage;
     private boolean isChosen;
     private boolean isCopy = false;
     //для поиска сообщений в чате
@@ -144,6 +145,14 @@ public final class UserPhrase implements ChatPhrase {
 
     public void setFileDescription(FileDescription fileDescription) {
         this.fileDescription = fileDescription;
+    }
+
+    public CampaignMessage getCampaignMessage() {
+        return campaignMessage;
+    }
+
+    public void setCampaignMessage(CampaignMessage campaignMessage) {
+        this.campaignMessage = campaignMessage;
     }
 
     @Override

@@ -6,13 +6,21 @@ import android.text.TextUtils
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.database.DatabaseHolder
 import im.threads.internal.formatters.ChatItemType
+import im.threads.internal.model.CAMPAIGN_DATE_FORMAT
+import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.SearchingConsult
 import im.threads.internal.model.UserPhrase
 import im.threads.internal.services.NotificationService
+import im.threads.internal.utils.PrefUtils
 import im.threads.internal.utils.ThreadsLogger
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object ShortPushMessageProcessingDelegate {
+
     fun process(context: Context, bundle: Bundle, alert: String?) {
+        val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT, Locale.getDefault())
         if (MFMSPushMessageParser.isThreadsOriginPush(bundle)) {
             when (getKnownType(bundle)) {
                 ChatItemType.TYPING -> {
@@ -44,6 +52,24 @@ object ShortPushMessageProcessingDelegate {
                     NotificationService.addUnreadMessage(context, alert, operatorUrl, appMarker)
                 }
                 else -> {
+                    if (bundle.containsKey(PushMessageAttributes.GATE_MESSAGE_ID)) {
+                        val campaign = bundle.getString(PushMessageAttributes.CAMPAIGN) ?: ""
+                        PrefUtils.setCampaignMessage(
+                            CampaignMessage(
+                                alert ?: "",
+                                Date(),
+                                bundle.getString(PushMessageAttributes.GATE_MESSAGE_ID)?.toLong()
+                                    ?: 0,
+                                bundle.getString(PushMessageAttributes.EXPIRED_AT)
+                                    ?.let { sdf.parse(it) }
+                                    ?: Date(),
+                                bundle.getString(PushMessageAttributes.SKILL_ID)?.toInt() ?: 0,
+                                campaign,
+                                bundle.getString(PushMessageAttributes.PRIORITY)?.toInt() ?: 0,
+                            )
+                        )
+                        NotificationService.addCampaignMessage(context, campaign)
+                    }
                     ThreadsLogger.i(
                         TAG,
                         "Unknown notification type"
@@ -67,16 +93,7 @@ object ShortPushMessageProcessingDelegate {
                 return chatItemType
             }
         }
-        // old push format
-        if (pushType == null && bundle.getString("alert") != null && bundle.getString("advisa") == null && bundle.getString(
-                "GEO_FENCING"
-            ) == null
-        ) {
-            return ChatItemType.MESSAGE
-        }
-        return if (MFMSPushMessageParser.isThreadsOriginPush(bundle)) {
-            ChatItemType.CHAT_PUSH
-        } else ChatItemType.UNKNOWN
+        return ChatItemType.CHAT_PUSH
     }
 
     private const val TAG = "ShortPushMessageProcessingDelegate"

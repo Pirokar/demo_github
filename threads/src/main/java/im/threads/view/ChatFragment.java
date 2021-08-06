@@ -88,6 +88,7 @@ import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.media.ChatCenterAudioConverter;
 import im.threads.internal.media.ChatCenterAudioConverterCallback;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
+import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ClientNotificationDisplayType;
@@ -170,6 +171,7 @@ public final class ChatFragment extends BaseFragment implements
     private ChatAdapter.Callback chatAdapterCallback;
     private QuoteLayoutHolder mQuoteLayoutHolder;
     private Quote mQuote = null;
+    private CampaignMessage campaignMessage = null;
     private ChatPhrase mChosenPhrase = null;
     private ChatReceiver mChatReceiver;
     private boolean isInMessageSearchMode;
@@ -234,6 +236,16 @@ public final class ChatFragment extends BaseFragment implements
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
             mQuote = null;
+        }
+        CampaignMessage campaignMessage = PrefUtils.getCampaignMessage();
+        if (campaignMessage != null) {
+            this.campaignMessage = campaignMessage;
+            mQuoteLayoutHolder.setContent(
+                    campaignMessage.getCampaign(),
+                    campaignMessage.getText(),
+                    null
+            );
+            PrefUtils.setCampaignMessage(null);
         }
     }
 
@@ -646,6 +658,7 @@ public final class ChatFragment extends BaseFragment implements
         List<UpcomingUserMessage> input = new ArrayList<>();
         UpcomingUserMessage message = new UpcomingUserMessage(
                 getFileDescription(),
+                campaignMessage,
                 mQuote,
                 inputText.trim(),
                 isCopy(inputText)
@@ -1014,6 +1027,7 @@ public final class ChatFragment extends BaseFragment implements
                             fileUri,
                             FileUtils.getFileSize(fileUri),
                             System.currentTimeMillis()),
+                    campaignMessage,
                     mQuote,
                     inputText.trim(),
                     isCopy(inputText))
@@ -1027,7 +1041,7 @@ public final class ChatFragment extends BaseFragment implements
                         System.currentTimeMillis()
                 );
                 UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
-                        fileDescription, null, null, false
+                        fileDescription, null, null, null, false
                 );
                 messages.add(upcomingUserMessage);
             }
@@ -1144,6 +1158,7 @@ public final class ChatFragment extends BaseFragment implements
                                 FileUtils.getFileSize(fileUri),
                                 System.currentTimeMillis()
                         ),
+                        campaignMessage,
                         mQuote,
                         inputText.trim(),
                         isCopy(inputText)
@@ -1166,6 +1181,7 @@ public final class ChatFragment extends BaseFragment implements
                     ),
                     null,
                     null,
+                    null,
                     false
             );
             mChatController.onUserInput(uum);
@@ -1185,6 +1201,7 @@ public final class ChatFragment extends BaseFragment implements
         sendMessage(Collections.singletonList(
                 new UpcomingUserMessage(
                         getFileDescription(),
+                        campaignMessage,
                         mQuote,
                         inputText != null ? inputText.trim() : null,
                         false)
@@ -1243,6 +1260,7 @@ public final class ChatFragment extends BaseFragment implements
             String inputText = inputTextObservable.get();
             UpcomingUserMessage uum = new UpcomingUserMessage(
                     fileDescription,
+                    campaignMessage,
                     mQuote,
                     inputText != null ? inputText.trim() : null,
                     false
@@ -1948,6 +1966,7 @@ public final class ChatFragment extends BaseFragment implements
             String text = quickReply.getText();
             sendMessage(Collections.singletonList(
                     new UpcomingUserMessage(
+                            null,
                             null,
                             null,
                             text.trim(),
