@@ -202,7 +202,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
             } else {
                 if (fileDescription.getFileUri() != null) fileDescription.setDownloadProgress(100);
                 mRightTextRow.setVisibility(View.VISIBLE);
-                ViewUtils.setClickListener((ViewGroup) mRightTextRow, (View.OnClickListener) null);
+                ViewUtils.setClickListener(mRightTextRow, (View.OnClickListener) null);
                 mFileImageButton.setVisibility(View.VISIBLE);
                 long fileSize = fileDescription.getSize();
                 mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));

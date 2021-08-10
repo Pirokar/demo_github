@@ -786,7 +786,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         downloadImageIfNeeded(userPhrase.getFileDescription());
         holder.onBind(
                 userPhrase,
-                userPhrase.getPhrase(),
+                userPhrase.getPhrase() != null ? userPhrase.getPhrase().trim() : null,
                 userPhrase.getTimeStamp(),
                 userPhrase.getSentState(),
                 userPhrase.getQuote(),

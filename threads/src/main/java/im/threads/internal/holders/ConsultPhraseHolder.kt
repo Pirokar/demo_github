@@ -148,7 +148,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         onRowLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
-        val phrase = consultPhrase.phrase
+        val phrase = consultPhrase.phrase?.trim()
         val quote = consultPhrase.quote
         val fileDescription = consultPhrase.fileDescription
         ViewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)

@@ -199,11 +199,12 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
         }
         filterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
         secondFilterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
-        if (consultPhrase.phrase == null) {
+        val phrase = consultPhrase.phrase?.trim()
+        if (phrase == null) {
             phraseTextView.visibility = View.GONE
         } else {
             phraseTextView.visibility = View.VISIBLE
-            val url = UrlUtils.extractLink(consultPhrase.phrase)
+            val url = UrlUtils.extractLink(phrase)
             when {
                 consultPhrase.formattedPhrase != null -> {
                     phraseTextView.autoLinkMask = 0
@@ -211,13 +212,13 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
                         .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
                 }
                 url != null -> {
-                    val text = SpannableString(consultPhrase.phrase)
+                    val text = SpannableString(phrase)
                     LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "")
                     phraseTextView.text = text
                     phraseTextView.movementMethod = LinkMovementMethod.getInstance()
                 }
                 else -> {
-                    phraseTextView.text = consultPhrase.phrase
+                    phraseTextView.text = phrase
                 }
             }
         }
