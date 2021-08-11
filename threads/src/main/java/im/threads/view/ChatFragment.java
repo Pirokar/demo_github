@@ -153,7 +153,6 @@ public final class ChatFragment extends BaseFragment implements
     private static final long INPUT_DELAY = 3000;
 
     private static boolean chatIsShown = false;
-    private final Handler mSearchHandler = new Handler(Looper.getMainLooper());
     private final Handler h = new Handler(Looper.getMainLooper());
     private final SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault());
     @NonNull
@@ -553,13 +552,11 @@ public final class ChatFragment extends BaseFragment implements
         configureInputChangesSubscription();
         binding.searchUpIb.setOnClickListener(view -> {
             if (TextUtils.isEmpty(binding.search.getText())) return;
-            doFancySearch(binding.search.getText().toString(), true);
+            doFancySearch(binding.search.getText().toString(), false);
         });
         binding.searchDownIb.setOnClickListener(view -> {
-            if (TextUtils.isEmpty(binding.search.getText())) {
-                return;
-            }
-            doFancySearch(binding.search.getText().toString(), false);
+            if (TextUtils.isEmpty(binding.search.getText())) return;
+            doFancySearch(binding.search.getText().toString(), true);
         });
         binding.search.addTextChangedListener(new TextWatcher() {
             @Override
@@ -1082,13 +1079,11 @@ public final class ChatFragment extends BaseFragment implements
     private void doFancySearch(final String request, final boolean forward) {
         if (TextUtils.isEmpty(request)) {
             chatAdapter.removeHighlight();
-            mSearchHandler.removeCallbacksAndMessages(null);
             binding.searchUpIb.setAlpha(DISABLED_ALPHA);
             binding.searchDownIb.setAlpha(DISABLED_ALPHA);
             return;
         }
-        mSearchHandler.removeCallbacksAndMessages(null);
-        mSearchHandler.postDelayed(() -> onSearch(request, forward), 400);
+        onSearch(request, forward);
     }
 
     private void onSearch(String request, boolean forward) {
@@ -1096,12 +1091,10 @@ public final class ChatFragment extends BaseFragment implements
         mChatController.fancySearch(request, forward, new CallbackNoError<List<ChatItem>>() {
             @Override
             public void onCall(final List<ChatItem> data) {
-                h.post(() -> onSearchEnd(data, highlighted));
-                h.postDelayed(() -> {
-                    if (highlighted[0] == null) return;
-                    int index = chatAdapter.setItemHighlighted(highlighted[0]);
-                    if (index != -1) scrollToPosition(index);
-                }, 60);
+                onSearchEnd(data, highlighted);
+                if (highlighted[0] == null) return;
+                int index = chatAdapter.setItemHighlighted(highlighted[0]);
+                if (index != -1) scrollToPosition(index);
             }
         });
     }
@@ -1133,15 +1126,15 @@ public final class ChatFragment extends BaseFragment implements
                     highlighted[0] = (ChatPhrase) data.get(i);
                     //для поиска - если можно перемещаться, подсвечиваем
                     if (first != -1 && i > first) {
-                        binding.searchDownIb.setAlpha(ENABLED_ALPHA);
-                    } else {
-                        binding.searchDownIb.setAlpha(DISABLED_ALPHA);
-                    }
-                    //для поиска - если можно перемещаться, подсвечиваем
-                    if (last != -1 && i < last) {
                         binding.searchUpIb.setAlpha(ENABLED_ALPHA);
                     } else {
                         binding.searchUpIb.setAlpha(DISABLED_ALPHA);
+                    }
+                    //для поиска - если можно перемещаться, подсвечиваем
+                    if (last != -1 && i < last) {
+                        binding.searchDownIb.setAlpha(ENABLED_ALPHA);
+                    } else {
+                        binding.searchDownIb.setAlpha(DISABLED_ALPHA);
                     }
                     break;
                 }
