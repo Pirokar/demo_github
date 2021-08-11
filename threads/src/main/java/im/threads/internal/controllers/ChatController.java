@@ -130,7 +130,7 @@ public final class ChatController {
 
     // TODO: вынести в отдельный класс отправку сообщений
     private final List<UserPhrase> unsendMessages = new ArrayList<>();
-    private int resendTimeInterval;
+    private final int resendTimeInterval;
     private final List<UserPhrase> sendQueue = new ArrayList<>();
     private Handler unsendMessageHandler;
     private String firstUnreadUuidId;
