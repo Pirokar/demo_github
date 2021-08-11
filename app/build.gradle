@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
 
@@ -130,7 +131,6 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            def file = output.outputFile
             def appName = "THR"
             def fileName = appName + "_" + variant.flavorName + "-" + variant.buildType.name + ".apk"
             outputFileName = fileName
@@ -167,6 +167,7 @@ dependencies {
 
     implementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }

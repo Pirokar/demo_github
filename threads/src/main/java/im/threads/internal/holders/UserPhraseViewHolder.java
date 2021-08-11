@@ -14,19 +14,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.util.LinkifyCompat;
-
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
@@ -46,32 +39,35 @@ import im.threads.internal.widget.text_view.BubbleMessageTextView;
 import im.threads.internal.widget.text_view.BubbleTimeTextView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * layout/item_user_text_with_file.xml
  */
 public final class UserPhraseViewHolder extends BaseHolder {
     private static final String TAG = "UserPhraseViewHolder ";
-    private BubbleMessageTextView mPhraseTextView;
-    private TableRow mRightTextRow;
-    private ImageView mImage;
-    private TextView mRightTextDescr;
-    private TextView mRightTextHeader;
-    private TextView mRightTextTimeStamp;
-    private BubbleTimeTextView mTimeStampTextView;
-    private FrameLayout mPhraseFrame;
-    private CircularProgressButton mFileImageButton;
-    private SimpleDateFormat sdf;
-    private SimpleDateFormat fileSdf;
-    private View mFilterView;
-    private View mFilterViewSecond;
-    private ChatStyle style;
-    private View mBubble;
-    private ViewGroup ogDataLayout;
-    private ImageView ogImage;
-    private TextView ogTitle;
-    private TextView ogDescription;
-    private TextView ogUrl;
-    private TextView ogTimestamp;
+    private final BubbleMessageTextView mPhraseTextView;
+    private final TableRow mRightTextRow;
+    private final ImageView mImage;
+    private final TextView mRightTextDescr;
+    private final TextView mRightTextHeader;
+    private final TextView mRightTextTimeStamp;
+    private final BubbleTimeTextView mTimeStampTextView;
+    private final FrameLayout mPhraseFrame;
+    private final CircularProgressButton mFileImageButton;
+    private final SimpleDateFormat sdf;
+    private final SimpleDateFormat fileSdf;
+    private final View mFilterView;
+    private final View mFilterViewSecond;
+    private final ChatStyle style;
+    private final ViewGroup ogDataLayout;
+    private final ImageView ogImage;
+    private final TextView ogTitle;
+    private final TextView ogDescription;
+    private final TextView ogUrl;
+    private final TextView ogTimestamp;
 
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -92,7 +88,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
         mFilterViewSecond = itemView.findViewById(R.id.filter_bottom);
         mRightTextHeader = itemView.findViewById(R.id.to);
         mRightTextTimeStamp = itemView.findViewById(R.id.send_at);
-        mBubble = itemView.findViewById(R.id.bubble);
+        View mBubble = itemView.findViewById(R.id.bubble);
 
         sdf = new SimpleDateFormat("HH:mm", Locale.US);
         if (Locale.getDefault().getLanguage().equalsIgnoreCase("ru")) {
@@ -163,7 +159,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mFileImageButton.setVisibility(View.GONE);
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());
-            mRightTextTimeStamp.setText(itemView.getContext().getResources().getText(R.string.threads_sent_at, fileSdf.format(quote.getTimeStamp())));
+            mRightTextTimeStamp.setText(itemView.getContext().getResources().getString(R.string.threads_sent_at, fileSdf.format(new Date(quote.getTimeStamp()))));
             if (quote.getFileDescription() != null) {
                 if (FileUtils.isVoiceMessage(quote.getFileDescription())) {
                     mRightTextDescr.setText(R.string.threads_voice_message);
@@ -202,7 +198,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
             } else {
                 if (fileDescription.getFileUri() != null) fileDescription.setDownloadProgress(100);
                 mRightTextRow.setVisibility(View.VISIBLE);
-                ViewUtils.setClickListener((ViewGroup) mRightTextRow, (View.OnClickListener) null);
+                ViewUtils.setClickListener(mRightTextRow, (View.OnClickListener) null);
                 mFileImageButton.setVisibility(View.VISIBLE);
                 long fileSize = fileDescription.getSize();
                 mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));

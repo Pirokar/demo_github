@@ -28,8 +28,37 @@ public final class ConfigBuilder {
 
     private int surveyCompletionDelay = 2000;
 
+    @Nullable
+    private String serverBaseUrl = null;
+    @Nullable
+    private ConfigBuilder.TransportType transportType = null;
+    @Nullable
+    private String threadsGateUrl = null;
+    @Nullable
+    private String threadsGateProviderUid = null;
+
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
+    }
+
+    public ConfigBuilder serverBaseUrl(String serverBaseUrl) {
+        this.serverBaseUrl = serverBaseUrl;
+        return this;
+    }
+
+    public ConfigBuilder transportType(ConfigBuilder.TransportType transportType) {
+        this.transportType = transportType;
+        return this;
+    }
+
+    public ConfigBuilder threadsGateUrl(String threadsGateUrl) {
+        this.threadsGateUrl = threadsGateUrl;
+        return this;
+    }
+
+    public ConfigBuilder threadsGateProviderUid(String threadsGateProviderUid) {
+        this.threadsGateProviderUid = threadsGateProviderUid;
+        return this;
     }
 
     public ConfigBuilder pendingIntentCreator(@NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator) {
@@ -60,6 +89,10 @@ public final class ConfigBuilder {
     final Config build() {
         return new Config(
                 context,
+                serverBaseUrl,
+                transportType,
+                threadsGateUrl,
+                threadsGateProviderUid,
                 pendingIntentCreator,
                 unreadMessagesCountListener,
                 isDebugLoggingEnabled,
