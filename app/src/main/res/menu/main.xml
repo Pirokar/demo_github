@@ -8,4 +8,10 @@
         android:title="@string/title_home"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/edit_transport_config"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/edit_transport_config"
+        app:showAsAction="always" />
+
 </menu>
