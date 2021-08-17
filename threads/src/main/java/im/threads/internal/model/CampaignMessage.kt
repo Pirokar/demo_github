@@ -15,4 +15,5 @@ data class CampaignMessage(
     val priority: Int
 ) : Parcelable
 
-var CAMPAIGN_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ"
+const val CAMPAIGN_DATE_FORMAT_PARSE = "yyyy-MM-dd'T'HH:mm:ssZ"
+const val CAMPAIGN_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"

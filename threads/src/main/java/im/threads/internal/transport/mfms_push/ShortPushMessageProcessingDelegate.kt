@@ -6,7 +6,7 @@ import android.text.TextUtils
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.database.DatabaseHolder
 import im.threads.internal.formatters.ChatItemType
-import im.threads.internal.model.CAMPAIGN_DATE_FORMAT
+import im.threads.internal.model.CAMPAIGN_DATE_FORMAT_PARSE
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.SearchingConsult
 import im.threads.internal.model.UserPhrase
@@ -20,7 +20,7 @@ import java.util.Locale
 object ShortPushMessageProcessingDelegate {
 
     fun process(context: Context, bundle: Bundle, alert: String?) {
-        val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT, Locale.getDefault())
+        val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT_PARSE, Locale.getDefault())
         if (MFMSPushMessageParser.isThreadsOriginPush(bundle)) {
             when (getKnownType(bundle)) {
                 ChatItemType.TYPING -> {

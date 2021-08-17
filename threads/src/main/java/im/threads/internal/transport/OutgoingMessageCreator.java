@@ -149,7 +149,7 @@ public final class OutgoingMessageCreator {
             }
         }
         if (campaignMessage != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat(CampaignMessageKt.getCAMPAIGN_DATE_FORMAT(), Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat(CampaignMessageKt.CAMPAIGN_DATE_FORMAT, Locale.getDefault());
 
             JsonObject quoteJson = new JsonObject();
             quoteJson.addProperty(MessageAttributes.TEXT, campaignMessage.getText());
