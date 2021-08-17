@@ -241,7 +241,7 @@ public final class ChatFragment extends BaseFragment implements
         if (campaignMessage != null) {
             this.campaignMessage = campaignMessage;
             mQuoteLayoutHolder.setContent(
-                    campaignMessage.getCampaign(),
+                    "",
                     campaignMessage.getText(),
                     null
             );
