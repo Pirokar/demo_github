@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -150,6 +151,7 @@ public final class OutgoingMessageCreator {
         }
         if (campaignMessage != null) {
             SimpleDateFormat sdf = new SimpleDateFormat(CampaignMessageKt.CAMPAIGN_DATE_FORMAT, Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             JsonObject quoteJson = new JsonObject();
             quoteJson.addProperty(MessageAttributes.TEXT, campaignMessage.getText());
