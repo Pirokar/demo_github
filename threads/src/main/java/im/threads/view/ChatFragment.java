@@ -2104,6 +2104,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.quoteText.setText("");
             setIsVisible(false);
             mQuote = null;
+            campaignMessage = null;
             setFileDescription(null);
             resetProgress();
             if (fdMediaPlayer != null && isPreviewPlaying()) {
