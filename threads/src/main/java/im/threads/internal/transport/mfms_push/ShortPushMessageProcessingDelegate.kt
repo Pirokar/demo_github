@@ -68,7 +68,7 @@ object ShortPushMessageProcessingDelegate {
                                 bundle.getString(PushMessageAttributes.PRIORITY)?.toInt() ?: 0,
                             )
                         )
-                        NotificationService.addCampaignMessage(context, campaign)
+                        NotificationService.addCampaignMessage(context, alert)
                     }
                     ThreadsLogger.i(
                         TAG,
