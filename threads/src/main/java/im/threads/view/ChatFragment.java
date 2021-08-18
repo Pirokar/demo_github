@@ -120,6 +120,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -247,6 +248,8 @@ public final class ChatFragment extends BaseFragment implements
             if (from == OpenWay.DEFAULT) {
                 return;
             }
+            String uid = UUID.randomUUID().toString();
+            mQuote = new Quote(uid, "", campaignMessage.getText(), null, campaignMessage.getReceivedDate().getTime());
             this.campaignMessage = campaignMessage;
             mQuoteLayoutHolder.setContent(
                     "",
