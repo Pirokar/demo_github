@@ -7,27 +7,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.concurrent.TimeUnit;
-
 import im.threads.ThreadsLib;
 import im.threads.UserInfoBuilder;
 import im.threads.android.R;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.view.ChatFragment;
+import im.threads.view.OpenWay;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Пример активности с нижней навигацией,
@@ -203,7 +201,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 break;
             case TAB_CHAT:
                 ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign));
-                fragment = ChatFragment.newInstance();
+                fragment = ChatFragment.newInstance(getIntent().getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false) ? OpenWay.FROM_PUSH : OpenWay.DEFAULT);
                 break;
         }
         // добавляем фрагмент в контейнер

@@ -36,26 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
-
-import com.annimon.stream.Optional;
-import com.devlomi.record_view.OnRecordListener;
-import com.devlomi.record_view.RecordButton;
-import com.devlomi.record_view.RecordView;
-import com.google.android.material.slider.Slider;
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -67,6 +47,12 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.annimon.stream.Optional;
+import com.devlomi.record_view.OnRecordListener;
+import com.devlomi.record_view.RecordButton;
+import com.devlomi.record_view.RecordView;
+import com.google.android.material.slider.Slider;
+import com.squareup.picasso.Picasso;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -124,6 +110,18 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
@@ -141,10 +139,11 @@ public final class ChatFragment extends BaseFragment implements
     public static final int REQUEST_PERMISSION_CAMERA = 201;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 202;
     public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 203;
+    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 204;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
-    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 204;
+    private static final String ARG_OPEN_WAY = "arg_open_way";
     private static final String TAG = ChatFragment.class.getSimpleName();
     private static final float DISABLED_ALPHA = 0.5f;
     private static final float ENABLED_ALPHA = 1.0f;
@@ -189,8 +188,12 @@ public final class ChatFragment extends BaseFragment implements
     @Nullable
     private String voiceFilePath = null;
 
-    public static ChatFragment newInstance() {
-        return new ChatFragment();
+    public static ChatFragment newInstance(@OpenWay int from) {
+        Bundle arguments = new Bundle();
+        arguments.putInt(ARG_OPEN_WAY, from);
+        ChatFragment chatFragment = new ChatFragment();
+        chatFragment.setArguments(arguments);
+        return chatFragment;
     }
 
     public static boolean isShown() {
@@ -238,7 +241,12 @@ public final class ChatFragment extends BaseFragment implements
             mQuote = null;
         }
         CampaignMessage campaignMessage = PrefUtils.getCampaignMessage();
-        if (campaignMessage != null) {
+        Bundle arguments = getArguments();
+        if (arguments != null && campaignMessage != null) {
+            @OpenWay int from = arguments.getInt(ARG_OPEN_WAY);
+            if (from == OpenWay.DEFAULT) {
+                return;
+            }
             this.campaignMessage = campaignMessage;
             mQuoteLayoutHolder.setContent(
                     "",
