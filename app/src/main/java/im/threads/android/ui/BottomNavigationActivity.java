@@ -63,6 +63,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private TabItem selectedTab;
+    private Intent intent;
 
     private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
         if (item.getItemId() == R.id.navigation_home) {
@@ -124,7 +125,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottom_navigation);
-        Intent intent = getIntent();
+        this.intent = getIntent();
         clientId = intent.getStringExtra(ARG_CLIENT_ID);
         appMarker = intent.getStringExtra(ARG_APP_MARKER);
         clientData = intent.getStringExtra(ARG_CLIENT_DATA);
@@ -161,6 +162,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        this.intent = intent;
         if (intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
             bottomNavigationView.setSelectedItemId(TabItem.TAB_CHAT.getMenuId());
         }
@@ -189,7 +191,10 @@ public class BottomNavigationActivity extends AppCompatActivity {
         showActionBar(newTabItem);
         final FragmentManager fm = getSupportFragmentManager();
         final Fragment currentFragment = fm.findFragmentById(R.id.content);
-        if (currentFragment != null && selectedTab == newTabItem) {
+        boolean needToShowChat = intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false);
+        if (currentFragment != null &&
+                selectedTab == newTabItem &&
+                !needToShowChat) {
             // не показываем повторно текущую вкладку
             return;
         }
@@ -201,7 +206,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 break;
             case TAB_CHAT:
                 ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign));
-                fragment = ChatFragment.newInstance(getIntent().getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false) ? OpenWay.FROM_PUSH : OpenWay.DEFAULT);
+                fragment = ChatFragment.newInstance(needToShowChat ? OpenWay.FROM_PUSH : OpenWay.DEFAULT);
                 break;
         }
         // добавляем фрагмент в контейнер
