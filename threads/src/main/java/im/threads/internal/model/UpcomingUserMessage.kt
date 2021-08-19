@@ -5,5 +5,5 @@ data class UpcomingUserMessage(
     val campaignMessage: CampaignMessage?,
     val quote: Quote?,
     val text: String?,
-    val copyied: Boolean
+    val copied: Boolean
 )

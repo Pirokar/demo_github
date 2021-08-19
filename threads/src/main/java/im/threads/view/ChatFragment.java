@@ -249,10 +249,10 @@ public final class ChatFragment extends BaseFragment implements
                 return;
             }
             String uid = UUID.randomUUID().toString();
-            mQuote = new Quote(uid, "", campaignMessage.getText(), null, campaignMessage.getReceivedDate().getTime());
+            mQuote = new Quote(uid, campaignMessage.getSenderName(), campaignMessage.getText(), null, campaignMessage.getReceivedDate().getTime());
             this.campaignMessage = campaignMessage;
             mQuoteLayoutHolder.setContent(
-                    "",
+                    campaignMessage.getSenderName(),
                     campaignMessage.getText(),
                     null
             );

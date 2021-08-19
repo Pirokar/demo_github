@@ -53,10 +53,13 @@ object ShortPushMessageProcessingDelegate {
                 }
                 else -> {
                     if (bundle.containsKey(PushMessageAttributes.GATE_MESSAGE_ID)) {
+                        val alertStr = alert ?: ""
                         val campaign = bundle.getString(PushMessageAttributes.CAMPAIGN) ?: ""
+                        val senderName = bundle.getString(PushMessageAttributes.SENDER_NAME) ?: ""
                         PrefUtils.setCampaignMessage(
                             CampaignMessage(
-                                alert ?: "",
+                                alertStr,
+                                senderName,
                                 Date(),
                                 bundle.getString(PushMessageAttributes.GATE_MESSAGE_ID)?.toLong()
                                     ?: 0,

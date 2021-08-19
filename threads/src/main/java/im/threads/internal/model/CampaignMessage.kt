@@ -1,12 +1,13 @@
 package im.threads.internal.model
 
 import android.os.Parcelable
-import java.util.Date
 import kotlinx.parcelize.Parcelize
+import java.util.Date
 
 @Parcelize
 data class CampaignMessage(
     val text: String,
+    val senderName: String,
     val receivedDate: Date,
     val gateMessageId: Long,
     val expiredAt: Date,

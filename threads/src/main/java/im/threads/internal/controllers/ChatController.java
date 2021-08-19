@@ -1127,7 +1127,7 @@ public final class ChatController {
                 message.getFileDescription(),
                 null
         );
-        up.setCopy(message.getCopyied());
+        up.setCopy(message.getCopied());
         up.setCampaignMessage(message.getCampaignMessage());
         return up;
     }
