@@ -1,9 +1,9 @@
 package im.threads.internal.utils;
 
-import java.util.List;
-
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
+
+import java.util.List;
 
 public final class Seeker {
     private String lastQuery = "";
@@ -14,8 +14,9 @@ public final class Seeker {
         if (target == null || target.size() == 0) return target;
         if (query == null || query.length() == 0) {
             for (ChatItem ci : target) {
-                if (ci instanceof ChatPhrase) if (((ChatPhrase) ci).isHighlight())
+                if (ci instanceof ChatPhrase) if (((ChatPhrase) ci).isHighlight()) {
                     ((ChatPhrase) ci).setHighLighted(false);
+                }
             }
             lastQuery = "";
             return target;
@@ -33,8 +34,9 @@ public final class Seeker {
 
         }
         for (ChatItem ci : target) {
-            if (ci instanceof ChatPhrase) if (((ChatPhrase) ci).isHighlight())
+            if (ci instanceof ChatPhrase) if (((ChatPhrase) ci).isHighlight()) {
                 ((ChatPhrase) ci).setHighLighted(false);
+            }
         }
         lastQuery = query;
         //для поиска сообщений в чате - пробегаемся по всем сообщениям и отмечаем
@@ -60,12 +62,10 @@ public final class Seeker {
                         return target;
                     }
                 }
-                if (lastChosenIndex == -1) {
-                    return target;
-                } else {
+                if (lastChosenIndex != -1) {
                     ((ChatPhrase) target.get(lastChosenIndex)).setHighLighted(true);
-                    return target;
                 }
+                return target;
             }
         } else {
             if (lastChosenIndex == -1) {
