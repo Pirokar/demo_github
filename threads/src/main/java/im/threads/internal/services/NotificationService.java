@@ -2,7 +2,6 @@ package im.threads.internal.services;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -18,11 +17,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.util.Consumer;
-
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -32,6 +26,10 @@ import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.util.Consumer;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.R;
@@ -54,12 +52,14 @@ public final class NotificationService extends ThreadsService {
     public static final String EXTRA_OPERATOR_URL = "im.threads.internal.services.NotificationService.EXTRA_OPERATOR_URL";
     public static final String EXTRA_APP_MARKER = "im.threads.internal.services.NotificationService.EXTRA_APP_MARKER";
     public static final String EXTRA_MESSAGE_CONTENT = "im.threads.internal.services.NotificationService.EXTRA_MESSAGE_CONTENT";
+    public static final String EXTRA_CAMPAIGN_MESSAGE = "im.threads.internal.services.NotificationService.EXTRA_CAMPAIGN_MESSAGE";
     public static final int UNREAD_MESSAGE_PUSH_ID = 0;
     private static final String TAG = "NotificationService";
     private static final String ACTION_REMOVE_NOTIFICATION = "im.threads.internal.services.NotificationService.ACTION_REMOVE_NOTIFICATION";
     private static final String ACTION_ADD_UNREAD_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE";
     private static final String ACTION_ADD_UNREAD_MESSAGE_LIST = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE_LIST";
     private static final String ACTION_ADD_UNSENT_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNSENT_MESSAGE";
+    private static final String ACTION_ADD_CAMPAIGN_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_CAMPAIGN_MESSAGE";
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
     private final Handler h = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -93,6 +93,12 @@ public final class NotificationService extends ThreadsService {
         startService(context, new Intent(context, NotificationService.class)
                 .setAction(NotificationService.ACTION_ADD_UNSENT_MESSAGE)
                 .putExtra(NotificationService.EXTRA_APP_MARKER, appMarker));
+    }
+
+    public static void addCampaignMessage(final @NonNull Context context, String campaign) {
+        startService(context, new Intent(context, NotificationService.class)
+                .setAction(NotificationService.ACTION_ADD_CAMPAIGN_MESSAGE)
+                .putExtra(NotificationService.EXTRA_CAMPAIGN_MESSAGE, campaign));
     }
 
     @Nullable
@@ -141,14 +147,10 @@ public final class NotificationService extends ThreadsService {
                     }
                     break;
                 case ACTION_ADD_UNSENT_MESSAGE:
-                    final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
-                    notificationBuilder.setContentTitle(getString(R.string.threads_message_were_unsent));
-                    final PendingIntent pend = getChatIntent(intent.getStringExtra(EXTRA_APP_MARKER));
-                    final int iconResId = style.defPushIconResId;
-                    notificationBuilder.setSmallIcon(iconResId);
-                    notificationBuilder.setContentIntent(pend);
-                    notificationBuilder.setAutoCancel(true);
-                    h.postDelayed(() -> nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
+                    notifyAboutUnsent(nm, intent.getStringExtra(EXTRA_APP_MARKER));
+                    break;
+                case ACTION_ADD_CAMPAIGN_MESSAGE:
+                    notifyAboutCampaign(nm, intent.getStringExtra(EXTRA_CAMPAIGN_MESSAGE));
                     break;
             }
         }
@@ -416,5 +418,27 @@ public final class NotificationService extends ThreadsService {
 
     private PendingIntent getChatIntent(String appMarker) {
         return Config.instance.pendingIntentCreator.create(this, appMarker);
+    }
+
+    private void notifyAboutUnsent(NotificationManager nm, String appMarker) {
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
+        notificationBuilder.setContentTitle(getString(R.string.threads_message_were_unsent));
+        final PendingIntent pend = getChatIntent(appMarker);
+        final int iconResId = style.defPushIconResId;
+        notificationBuilder.setSmallIcon(iconResId);
+        notificationBuilder.setContentIntent(pend);
+        notificationBuilder.setAutoCancel(true);
+        h.postDelayed(() -> nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
+    }
+
+    private void notifyAboutCampaign(NotificationManager nm, String campaign) {
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
+        notificationBuilder.setContentText(campaign);
+        final PendingIntent pend = getChatIntent(null);
+        final int iconResId = style.defPushIconResId;
+        notificationBuilder.setSmallIcon(iconResId);
+        notificationBuilder.setContentIntent(pend);
+        notificationBuilder.setAutoCancel(true);
+        h.postDelayed(() -> nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
     }
 }

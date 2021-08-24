@@ -38,7 +38,7 @@ public final class QuickAnswerActivity
                 context,
                 1,
                 buttonIntent,
-                0
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0
         );
     }
 
@@ -58,7 +58,7 @@ public final class QuickAnswerActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ChatStyle style = Config.instance.getChatStyle();
-        if (Build.VERSION.SDK_INT > 20) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -93,7 +93,7 @@ public final class QuickAnswerActivity
                 finish();
             } else if (intent.getAction().equalsIgnoreCase(ACTION_ANSWER)) {
                 ThreadsLogger.i(TAG, "onReceive: ACTION_ANSWER");
-                controller.onUserAnswer(new UpcomingUserMessage(null, null, intent.getStringExtra(ACTION_ANSWER), false));
+                controller.onUserAnswer(new UpcomingUserMessage(null, null, null, intent.getStringExtra(ACTION_ANSWER), false));
                 finish();
             }
         }

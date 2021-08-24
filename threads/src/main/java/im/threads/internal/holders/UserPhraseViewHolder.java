@@ -155,7 +155,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
             mRightTextRow.setVisibility(View.GONE);
         } else {
             mRightTextRow.setVisibility(View.VISIBLE);
-            ViewUtils.setClickListener((ViewGroup) mRightTextRow, onQuoteClickListener);
+            ViewUtils.setClickListener(mRightTextRow, onQuoteClickListener);
             mFileImageButton.setVisibility(View.GONE);
             mRightTextDescr.setText(quote.getText());
             mRightTextHeader.setText(quote.getPhraseOwnerTitle());

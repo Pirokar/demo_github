@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.edna.android.push_lite.PushController;
+
 import java.io.File;
 
 import androidx.annotation.NonNull;
@@ -47,7 +49,7 @@ public final class ThreadsLib {
         Config.instance = configBuilder.build();
         instance = new ThreadsLib();
         PrefUtils.migrateToSeparateStorageIfNeeded();
-        Config.instance.transport.init();
+        PushController.getInstance(Config.instance.context).init();
         if (Config.instance.unreadMessagesCountListener != null) {
             Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(UnreadMessagesController.INSTANCE.getUnreadMessages());
             UnreadMessagesController.INSTANCE.getUnreadMessagesPublishProcessor()
@@ -155,7 +157,7 @@ public final class ThreadsLib {
                         System.currentTimeMillis()
                 );
             }
-            UpcomingUserMessage msg = new UpcomingUserMessage(fileDescription, null, message, false);
+            UpcomingUserMessage msg = new UpcomingUserMessage(fileDescription, null, null, message, false);
             chatController.onUserInput(msg);
             return true;
         } else {

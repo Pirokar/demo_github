@@ -40,7 +40,6 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
 
     @Override
     public void init() {
-        PushController.getInstance(Config.instance.context).init();
     }
 
     @Override

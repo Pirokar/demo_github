@@ -3,6 +3,7 @@ package im.threads;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,7 +18,11 @@ public final class ConfigBuilder {
     private ThreadsLib.PendingIntentCreator pendingIntentCreator = (context1, appMarker) -> {
         final Intent i = new Intent(context1, ChatActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        return PendingIntent.getActivity(context1, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+        int flagCancelCurrent = PendingIntent.FLAG_CANCEL_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flagCancelCurrent |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        return PendingIntent.getActivity(context1, 0, i, flagCancelCurrent);
     };
     @Nullable
     private ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener = null;

@@ -4,20 +4,13 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import static android.content.Context.NOTIFICATION_SERVICE;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,6 +47,7 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.services.NotificationService;
+import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.CallbackNoError;
@@ -77,8 +71,14 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
@@ -124,14 +124,13 @@ public final class ChatController {
 
     // TODO: вынести в отдельный класс поиск сообщений
     private Seeker seeker = new Seeker();
-    private long lastFancySearchDate = 0;
     private String lastSearchQuery = "";
     private boolean isAllMessagesDownloaded = false;
     private boolean isDownloadingMessages;
 
     // TODO: вынести в отдельный класс отправку сообщений
     private final List<UserPhrase> unsendMessages = new ArrayList<>();
-    private int resendTimeInterval;
+    private final int resendTimeInterval;
     private final List<UserPhrase> sendQueue = new ArrayList<>();
     private Handler unsendMessageHandler;
     private String firstUnreadUuidId;
@@ -256,44 +255,44 @@ public final class ChatController {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    list -> {
-                                    },
-                                    e -> {
-                                        ThreadsLogger.e(TAG, e.getMessage());
-                                    }
+                                    list -> { },
+                                    e -> ThreadsLogger.e(TAG, e.getMessage())
                             )
             );
         }
-        subscribe(Completable.fromAction(() -> {
-                    if (System.currentTimeMillis() > (lastFancySearchDate + 3000)) {
-                        final List<ChatItem> fromDb = databaseHolder.getChatItems(0, -1);
-                        if (lastItems != null && lastItems.size() != 0) {
-                            if (lastSearchQuery.equalsIgnoreCase(query)) {
-                                for (final ChatItem ci : lastItems) {
-                                    if (ci instanceof ChatPhrase) {
-                                        if (((ChatPhrase) ci).isHighlight()) {
-                                            final ChatPhrase cp = (ChatPhrase) ci;
-                                            if (fromDb.contains(cp)) {
-                                                ((ChatPhrase) fromDb.get(fromDb.lastIndexOf(cp))).setHighLighted(true);
-                                            }
+        subscribe(Single.fromCallable(() -> {
+                    final List<ChatItem> fromDb = databaseHolder.getChatItems(0, -1);
+                    Map<String, ChatPhrase> tmpMap = new LinkedHashMap<>(fromDb.size());
+                    for (ChatItem item : fromDb) {
+                        if (item instanceof ChatPhrase) {
+                            final ChatPhrase chatPhraseDb = (ChatPhrase) item;
+                            tmpMap.put(chatPhraseDb.getId(), chatPhraseDb);
+                        }
+                    }
+                    if (lastItems != null && lastItems.size() != 0) {
+                        if (lastSearchQuery.equalsIgnoreCase(query)) {
+                            for (final ChatItem ci : lastItems) {
+                                if (ci instanceof ChatPhrase) {
+                                    if (((ChatPhrase) ci).isHighlight()) {
+                                        final ChatPhrase cp = (ChatPhrase) ci;
+                                        final ChatPhrase searchedPhrase = tmpMap.get(cp.getId());
+                                        if (searchedPhrase != null) {
+                                            searchedPhrase.setHighLighted(true);
                                         }
                                     }
                                 }
                             }
                         }
-                        lastItems = fromDb;
-                        lastFancySearchDate = System.currentTimeMillis();
                     }
+                    lastItems = new ArrayList<>(tmpMap.values());
                     if (query.isEmpty() || !query.equals(lastSearchQuery)) seeker = new Seeker();
                     lastSearchQuery = query;
-                    final List<ChatItem> list = seeker.seek(lastItems, !forward, query);
-                    callback.onCall(list);
+                    return seeker.seek(lastItems, !forward, query);
                 })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                () -> {
-                                },
+                                callback::onCall,
                                 e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
         );
@@ -1121,13 +1120,14 @@ public final class ChatController {
 
     private UserPhrase convert(@NonNull final UpcomingUserMessage message) {
         final UserPhrase up = new UserPhrase(
-                message.text,
-                message.quote,
+                message.getText(),
+                message.getQuote(),
                 System.currentTimeMillis(),
-                message.fileDescription,
+                message.getFileDescription(),
                 null
         );
-        up.setCopy(message.copyied);
+        up.setCopy(message.getCopied());
+        up.setCampaignMessage(message.getCampaignMessage());
         return up;
     }
 

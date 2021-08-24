@@ -4,13 +4,18 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import im.threads.internal.formatters.ChatItemType;
+import im.threads.internal.model.CampaignMessage;
+import im.threads.internal.model.CampaignMessageKt;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Quote;
@@ -118,17 +123,17 @@ public final class OutgoingMessageCreator {
                                                      @Nullable String quoteMfmsFilePath,
                                                      @Nullable String mfmsFilePath,
                                                      @Nullable String clientId) {
-        Quote quote = userPhrase.getQuote();
-        FileDescription fileDescription = userPhrase.getFileDescription();
+        final Quote quote = userPhrase.getQuote();
+        final FileDescription fileDescription = userPhrase.getFileDescription();
+        final CampaignMessage campaignMessage = userPhrase.getCampaignMessage();
         JsonObject formattedMessage = new JsonObject();
         formattedMessage.addProperty(MessageAttributes.UUID, userPhrase.getUuid());
         formattedMessage.addProperty(MessageAttributes.CLIENT_ID, clientId);
         final String phrase = userPhrase.getPhrase();
         formattedMessage.addProperty(MessageAttributes.TEXT, phrase == null ? "" : phrase);
         formattedMessage.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
+        JsonArray quotes = new JsonArray();
         if (quote != null) {
-            JsonArray quotes = new JsonArray();
-            formattedMessage.add(MessageAttributes.QUOTES, quotes);
             JsonObject quoteJson = new JsonObject();
             quotes.add(quoteJson);
             if (!TextUtils.isEmpty(quote.getText())) {
@@ -144,6 +149,27 @@ public final class OutgoingMessageCreator {
                 quoteJson.addProperty(MessageAttributes.UUID, userPhrase.getQuote().getUuid());
             }
         }
+        if (campaignMessage != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat(CampaignMessageKt.CAMPAIGN_DATE_FORMAT, Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            JsonObject quoteJson = new JsonObject();
+            quoteJson.addProperty(MessageAttributes.TEXT, campaignMessage.getText());
+            quoteJson.addProperty(MessageAttributes.IS_MASS_PUSH_MESSAGE, true);
+            quoteJson.addProperty(MessageAttributes.CAMPAIGN, campaignMessage.getCampaign());
+            quoteJson.addProperty(MessageAttributes.RECEIVED_DATE, sdf.format(campaignMessage.getReceivedDate()));
+            quotes.add(quoteJson);
+
+            JsonObject routingParams = new JsonObject();
+            routingParams.addProperty(MessageAttributes.PRIORITY, campaignMessage.getPriority());
+            routingParams.addProperty(MessageAttributes.SKILL_ID, campaignMessage.getSkillId());
+            routingParams.addProperty(MessageAttributes.EXPIRED_AT, sdf.format(campaignMessage.getExpiredAt()));
+            formattedMessage.add(MessageAttributes.ROUTING_PARAMS, routingParams);
+        }
+        if (quotes.size() > 0) {
+            formattedMessage.add(MessageAttributes.QUOTES, quotes);
+        }
+        formattedMessage.add(MessageAttributes.QUOTES, quotes);
         if (fileDescription != null && mfmsFilePath != null) {
             formattedMessage.add(MessageAttributes.ATTACHMENTS, attachmentsFromFileDescription(fileDescription, mfmsFilePath));
         }
