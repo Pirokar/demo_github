@@ -36,26 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
-
-import com.annimon.stream.Optional;
-import com.devlomi.record_view.OnRecordListener;
-import com.devlomi.record_view.RecordButton;
-import com.devlomi.record_view.RecordView;
-import com.google.android.material.slider.Slider;
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -67,6 +47,12 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.annimon.stream.Optional;
+import com.devlomi.record_view.OnRecordListener;
+import com.devlomi.record_view.RecordButton;
+import com.devlomi.record_view.RecordView;
+import com.google.android.material.slider.Slider;
+import com.squareup.picasso.Picasso;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -88,6 +74,7 @@ import im.threads.internal.helpers.MediaHelper;
 import im.threads.internal.media.ChatCenterAudioConverter;
 import im.threads.internal.media.ChatCenterAudioConverterCallback;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
+import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ClientNotificationDisplayType;
@@ -123,6 +110,19 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
@@ -140,10 +140,11 @@ public final class ChatFragment extends BaseFragment implements
     public static final int REQUEST_PERMISSION_CAMERA = 201;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 202;
     public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 203;
+    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 204;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
-    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 204;
+    private static final String ARG_OPEN_WAY = "arg_open_way";
     private static final String TAG = ChatFragment.class.getSimpleName();
     private static final float DISABLED_ALPHA = 0.5f;
     private static final float ENABLED_ALPHA = 1.0f;
@@ -170,6 +171,7 @@ public final class ChatFragment extends BaseFragment implements
     private ChatAdapter.Callback chatAdapterCallback;
     private QuoteLayoutHolder mQuoteLayoutHolder;
     private Quote mQuote = null;
+    private CampaignMessage campaignMessage = null;
     private ChatPhrase mChosenPhrase = null;
     private ChatReceiver mChatReceiver;
     private boolean isInMessageSearchMode;
@@ -187,8 +189,12 @@ public final class ChatFragment extends BaseFragment implements
     @Nullable
     private String voiceFilePath = null;
 
-    public static ChatFragment newInstance() {
-        return new ChatFragment();
+    public static ChatFragment newInstance(@OpenWay int from) {
+        Bundle arguments = new Bundle();
+        arguments.putInt(ARG_OPEN_WAY, from);
+        ChatFragment chatFragment = new ChatFragment();
+        chatFragment.setArguments(arguments);
+        return chatFragment;
     }
 
     public static boolean isShown() {
@@ -234,6 +240,23 @@ public final class ChatFragment extends BaseFragment implements
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
             mQuote = null;
+        }
+        CampaignMessage campaignMessage = PrefUtils.getCampaignMessage();
+        Bundle arguments = getArguments();
+        if (arguments != null && campaignMessage != null) {
+            @OpenWay int from = arguments.getInt(ARG_OPEN_WAY);
+            if (from == OpenWay.DEFAULT) {
+                return;
+            }
+            String uid = UUID.randomUUID().toString();
+            mQuote = new Quote(uid, campaignMessage.getSenderName(), campaignMessage.getText(), null, campaignMessage.getReceivedDate().getTime());
+            this.campaignMessage = campaignMessage;
+            mQuoteLayoutHolder.setContent(
+                    campaignMessage.getSenderName(),
+                    campaignMessage.getText(),
+                    null
+            );
+            PrefUtils.setCampaignMessage(null);
         }
     }
 
@@ -646,6 +669,7 @@ public final class ChatFragment extends BaseFragment implements
         List<UpcomingUserMessage> input = new ArrayList<>();
         UpcomingUserMessage message = new UpcomingUserMessage(
                 getFileDescription(),
+                campaignMessage,
                 mQuote,
                 inputText.trim(),
                 isCopy(inputText)
@@ -1014,6 +1038,7 @@ public final class ChatFragment extends BaseFragment implements
                             fileUri,
                             FileUtils.getFileSize(fileUri),
                             System.currentTimeMillis()),
+                    campaignMessage,
                     mQuote,
                     inputText.trim(),
                     isCopy(inputText))
@@ -1027,7 +1052,7 @@ public final class ChatFragment extends BaseFragment implements
                         System.currentTimeMillis()
                 );
                 UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
-                        fileDescription, null, null, false
+                        fileDescription, null, null, null, false
                 );
                 messages.add(upcomingUserMessage);
             }
@@ -1144,6 +1169,7 @@ public final class ChatFragment extends BaseFragment implements
                                 FileUtils.getFileSize(fileUri),
                                 System.currentTimeMillis()
                         ),
+                        campaignMessage,
                         mQuote,
                         inputText.trim(),
                         isCopy(inputText)
@@ -1166,6 +1192,7 @@ public final class ChatFragment extends BaseFragment implements
                     ),
                     null,
                     null,
+                    null,
                     false
             );
             mChatController.onUserInput(uum);
@@ -1185,6 +1212,7 @@ public final class ChatFragment extends BaseFragment implements
         sendMessage(Collections.singletonList(
                 new UpcomingUserMessage(
                         getFileDescription(),
+                        campaignMessage,
                         mQuote,
                         inputText != null ? inputText.trim() : null,
                         false)
@@ -1243,6 +1271,7 @@ public final class ChatFragment extends BaseFragment implements
             String inputText = inputTextObservable.get();
             UpcomingUserMessage uum = new UpcomingUserMessage(
                     fileDescription,
+                    campaignMessage,
                     mQuote,
                     inputText != null ? inputText.trim() : null,
                     false
@@ -1950,6 +1979,7 @@ public final class ChatFragment extends BaseFragment implements
                     new UpcomingUserMessage(
                             null,
                             null,
+                            null,
                             text.trim(),
                             isCopy(text))
                     ),
@@ -2085,6 +2115,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.quoteText.setText("");
             setIsVisible(false);
             mQuote = null;
+            campaignMessage = null;
             setFileDescription(null);
             resetProgress();
             if (fdMediaPlayer != null && isPreviewPlaying()) {

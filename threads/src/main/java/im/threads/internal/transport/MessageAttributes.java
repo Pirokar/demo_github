@@ -18,4 +18,11 @@ public final class MessageAttributes {
     static final String ATTACHMENTS = "attachments";
     static final String UUID = "uuid";
     static final String READ_MESSAGE_ID= "readInMessageIds";
+    static final String IS_MASS_PUSH_MESSAGE = "isMassPushMessage";
+    static final String CAMPAIGN = "campaign";
+    static final String RECEIVED_DATE = "receivedDate";
+    static final String ROUTING_PARAMS = "routingParams";
+    static final String PRIORITY = "priority";
+    static final String SKILL_ID = "skillId";
+    static final String EXPIRED_AT = "expiredAt";
 }

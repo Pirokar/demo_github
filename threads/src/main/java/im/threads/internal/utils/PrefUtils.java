@@ -15,11 +15,14 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonSyntaxException;
 import com.edna.android.push_lite.utils.CommonUtils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.UUID;
 
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
+import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.FileDescription;
 
@@ -49,6 +52,7 @@ public final class PrefUtils {
     private static final String CLIENT_NOTIFICATION_DISPLAY_TYPE = "CLIENT_NOTIFICATION_DISPLAY_TYPE";
     private static final String THREAD_ID = "THREAD_ID";
     private static final String FILE_DESCRIPTION_DRAFT = "FILE_DESCRIPTION_DRAFT";
+    private static final String CAMPAIGN_MESSAGE = "CAMPAIGN_MESSAGE";
 
     private static final String UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT";
 
@@ -173,6 +177,22 @@ public final class PrefUtils {
                 .edit()
                 .putString(FILE_DESCRIPTION_DRAFT, value)
                 .commit();
+    }
+
+    public static void setCampaignMessage(@Nullable CampaignMessage campaignMessage) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(CAMPAIGN_MESSAGE, campaignMessage != null ? Config.instance.gson.toJson(campaignMessage) : null)
+                .commit();
+    }
+
+    @Nullable
+    public static CampaignMessage getCampaignMessage() {
+        String value = getDefaultSharedPreferences().getString(CAMPAIGN_MESSAGE, "");
+        if (TextUtils.isEmpty(value)) {
+            return null;
+        }
+        return Config.instance.gson.fromJson(value, CampaignMessage.class);
     }
 
     public static boolean isClientIdEmpty() {

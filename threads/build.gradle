@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 
 apply plugin: 'maven-publish'
@@ -130,7 +131,8 @@ dependencies {
 
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
-    implementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
+    releaseImplementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
+    debugImplementation "com.edna.android:push-lite-debug:$rootProject.pushVersion"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
