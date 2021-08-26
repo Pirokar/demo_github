@@ -131,8 +131,7 @@ dependencies {
 
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
-    releaseImplementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
-    debugImplementation "com.edna.android:push-lite-debug:$rootProject.pushVersion"
+    implementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
