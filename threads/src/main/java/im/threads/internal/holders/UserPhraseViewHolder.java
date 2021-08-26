@@ -167,7 +167,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
                     mFileImageButton.setVisibility(View.VISIBLE);
                     long fileSize = quote.getFileDescription().getSize();
                     mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
-                    if (fileClickListener != null) {
+                    if (onQuoteClickListener != null) {
                         mFileImageButton.setOnClickListener(onQuoteClickListener);
                     }
                     mFileImageButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
@@ -205,7 +205,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 mRightTextHeader.setText(quote == null ? fileDescription.getFrom() : quote.getPhraseOwnerTitle());
                 mRightTextTimeStamp
                         .setText(itemView.getContext().getString(R.string.threads_sent_at, fileSdf.format(new Date(fileDescription.getTimeStamp()))));
-                if (fileClickListener != null) {
+                if (onQuoteClickListener != null) {
                     mFileImageButton.setOnClickListener(onQuoteClickListener);
                 }
                 mFileImageButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
