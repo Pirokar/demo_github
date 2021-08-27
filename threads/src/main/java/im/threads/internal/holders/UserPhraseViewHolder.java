@@ -205,8 +205,8 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 mRightTextHeader.setText(quote == null ? fileDescription.getFrom() : quote.getPhraseOwnerTitle());
                 mRightTextTimeStamp
                         .setText(itemView.getContext().getString(R.string.threads_sent_at, fileSdf.format(new Date(fileDescription.getTimeStamp()))));
-                if (onQuoteClickListener != null) {
-                    mFileImageButton.setOnClickListener(onQuoteClickListener);
+                if (fileClickListener  != null) {
+                    mFileImageButton.setOnClickListener(fileClickListener);
                 }
                 mFileImageButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
             }

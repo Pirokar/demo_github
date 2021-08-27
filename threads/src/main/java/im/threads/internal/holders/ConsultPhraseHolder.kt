@@ -220,7 +220,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
      
      ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
      """.trimIndent() else ""
-                    mCircularProgressButton.setOnClickListener(fileClickListener)
+                    mCircularProgressButton.setOnClickListener(onQuoteClickListener)
                     mCircularProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
                 }
             }
