@@ -3,9 +3,6 @@ package im.threads.android.core;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.text.TextUtils;
-
-import java.util.List;
-
 import androidx.multidex.MultiDexApplication;
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
@@ -15,6 +12,8 @@ import im.threads.android.ui.BottomNavigationActivity;
 import im.threads.android.utils.ChatStyleBuilderHelper;
 import im.threads.android.utils.PrefUtils;
 import io.reactivex.subjects.BehaviorSubject;
+
+import java.util.List;
 
 public class ThreadsDemoApplication extends MultiDexApplication {
 
