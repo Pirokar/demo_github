@@ -169,7 +169,6 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 } else {
                     if(FileUtils.isImage(quote.getFileDescription())) {
                         mFileImage.setVisibility(View.VISIBLE);
-                        Drawable img = mFileImageButton.getBackground();
                         Picasso.get()
                                 .load(quote.getFileDescription().getDownloadPath())
                                 .resize(42, 42)
