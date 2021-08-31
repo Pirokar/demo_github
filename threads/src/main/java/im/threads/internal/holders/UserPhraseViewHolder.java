@@ -39,6 +39,7 @@ import im.threads.internal.widget.text_view.BubbleMessageTextView;
 import im.threads.internal.widget.text_view.BubbleTimeTextView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -56,6 +57,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
     private final TextView mRightTextTimeStamp;
     private final BubbleTimeTextView mTimeStampTextView;
     private final FrameLayout mPhraseFrame;
+    private final ImageView mFileImage;
     private final CircularProgressButton mFileImageButton;
     private final SimpleDateFormat sdf;
     private final SimpleDateFormat fileSdf;
@@ -76,6 +78,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
         mRightTextRow = itemView.findViewById(R.id.right_text_row);
         mRightTextDescr = itemView.findViewById(R.id.file_specs);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
+        mFileImage = itemView.findViewById(R.id.file_image);
         mFileImageButton = itemView.findViewById(R.id.button_download);
         mPhraseFrame = itemView.findViewById(R.id.phrase_frame);
         ogDataLayout = itemView.findViewById(R.id.og_data_layout);
@@ -164,13 +167,26 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 if (FileUtils.isVoiceMessage(quote.getFileDescription())) {
                     mRightTextDescr.setText(R.string.threads_voice_message);
                 } else {
-                    mFileImageButton.setVisibility(View.VISIBLE);
-                    long fileSize = quote.getFileDescription().getSize();
-                    mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
-                    if (onQuoteClickListener != null) {
-                        mFileImageButton.setOnClickListener(onQuoteClickListener);
+                    if(FileUtils.isImage(quote.getFileDescription())) {
+                        mFileImage.setVisibility(View.VISIBLE);
+                        Drawable img = mFileImageButton.getBackground();
+                        Picasso.get()
+                                .load(quote.getFileDescription().getDownloadPath())
+                                .resize(42, 42)
+                                .into(mFileImage);
+                        if (onQuoteClickListener != null) {
+                            mFileImage.setOnClickListener(onQuoteClickListener);
+                        }
                     }
-                    mFileImageButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
+                    else {
+                        mFileImageButton.setVisibility(View.VISIBLE);
+                        long fileSize = quote.getFileDescription().getSize();
+                        mRightTextDescr.setText(FileUtils.getFileName(quote.getFileDescription()) + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
+                        if (onQuoteClickListener != null) {
+                            mFileImageButton.setOnClickListener(onQuoteClickListener);
+                        }
+                        mFileImageButton.setProgress(quote.getFileDescription().getFileUri() != null ? 100 : quote.getFileDescription().getDownloadProgress());
+                    }
                 }
             }
         }
