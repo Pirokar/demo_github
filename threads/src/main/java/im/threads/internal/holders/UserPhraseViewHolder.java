@@ -171,7 +171,9 @@ public final class UserPhraseViewHolder extends BaseHolder {
                         mFileImage.setVisibility(View.VISIBLE);
                         Picasso.get()
                                 .load(quote.getFileDescription().getDownloadPath())
+                                .error(style.imagePlaceholder)
                                 .fit()
+                                .centerCrop()
                                 .into(mFileImage);
                         if (onQuoteClickListener != null) {
                             mFileImage.setOnClickListener(onQuoteClickListener);
