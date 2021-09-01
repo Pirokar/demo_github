@@ -62,10 +62,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/margin_half"
                 android:layout_marginBottom="@dimen/margin_half"
-                android:background="@drawable/file_image_user"
-                app:completed_drawable="@drawable/file_image_user"
-                app:in_progress_label="@drawable/ic_clear_blue_user_36dp"
-                app:start_download_label="@drawable/ic_vertical_align_bottom_user_24dp" />
+                android:background="@drawable/file_image_user" />
 
             <im.threads.internal.views.CircularProgressButton
                 android:id="@+id/button_download"
