@@ -212,16 +212,14 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     mRightTextDescr.setText(R.string.threads_voice_message)
                 } else {
                     if (isImage(quote.fileDescription)) {
-                        mFileImage.setVisibility(View.VISIBLE)
+                        mFileImage.visibility = View.VISIBLE
                         Picasso.get()
-                                .load(quote.fileDescription!!.downloadPath)
+                                .load(quoteFileDescription.downloadPath)
                                 .error(style.imagePlaceholder)
                                 .fit()
                                 .centerCrop()
                                 .into(mFileImage)
-                        if (onQuoteClickListener != null) {
                             mFileImage.setOnClickListener(onQuoteClickListener)
-                        }
                     } else {
                         mCircularProgressButton.visibility = View.VISIBLE
                         val fileSize = quoteFileDescription.size
