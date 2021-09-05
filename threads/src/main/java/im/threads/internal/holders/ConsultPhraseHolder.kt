@@ -27,18 +27,14 @@ import im.threads.internal.markdown.MarkdownProcessorHolder
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
 import im.threads.internal.opengraph.OGDataProvider
-import im.threads.internal.utils.CircleTransformation
-import im.threads.internal.utils.FileUtils
-import im.threads.internal.utils.ThreadsLogger
-import im.threads.internal.utils.UrlUtils
-import im.threads.internal.utils.ViewUtils
+import im.threads.internal.utils.*
+import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import im.threads.internal.widget.text_view.BubbleTimeTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 /**
  * layout/item_consultant_text_with_file.xml
@@ -57,9 +53,10 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 
     private val fileRow: View = itemView.findViewById(R.id.right_text_row)
     private val mCircularProgressButton =
-        itemView.findViewById<CircularProgressButton>(R.id.button_download).apply {
-            setBackgroundColorResId(style.chatBackgroundColor)
-        }
+            itemView.findViewById<CircularProgressButton>(R.id.button_download).apply {
+                setBackgroundColorResId(style.chatBackgroundColor)
+            }
+    private val mFileImage = itemView.findViewById<ImageView>(R.id.file_image)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val mImage: ImageView = itemView.findViewById(R.id.image)
     private val mRightTextDescr: TextView = itemView.findViewById(R.id.file_specs)
@@ -202,6 +199,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             fileRow.visibility = View.VISIBLE
             ViewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
+            mFileImage.visibility = View.GONE
             mCircularProgressButton.visibility = View.GONE
             rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.getContext()
                 .getString(R.string.threads_I) else quote.phraseOwnerTitle
@@ -213,15 +211,26 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 if (FileUtils.isVoiceMessage(quoteFileDescription)) {
                     mRightTextDescr.setText(R.string.threads_voice_message)
                 } else {
-                    mCircularProgressButton.visibility = View.VISIBLE
-                    val fileSize = quoteFileDescription.size
-                    mRightTextDescr.text =
-                        FileUtils.getFileName(quoteFileDescription) + if (fileSize > 0) """
+                    if (isImage(quote.fileDescription)) {
+                        mFileImage.visibility = View.VISIBLE
+                        Picasso.get()
+                                .load(quoteFileDescription.downloadPath)
+                                .error(style.imagePlaceholder)
+                                .fit()
+                                .centerCrop()
+                                .into(mFileImage)
+                            mFileImage.setOnClickListener(onQuoteClickListener)
+                    } else {
+                        mCircularProgressButton.visibility = View.VISIBLE
+                        val fileSize = quoteFileDescription.size
+                        mRightTextDescr.text =
+                                FileUtils.getFileName(quoteFileDescription) + if (fileSize > 0) """
      
      ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
      """.trimIndent() else ""
-                    mCircularProgressButton.setOnClickListener(fileClickListener)
-                    mCircularProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
+                        mCircularProgressButton.setOnClickListener(onQuoteClickListener)
+                        mCircularProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
+                    }
                 }
             }
         }
