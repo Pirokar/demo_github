@@ -120,6 +120,7 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
 
     fun onBind(
         consultPhrase: ConsultPhrase,
+        highlighted: Boolean,
         formattedDuration: String,
         onLongClick: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener,
@@ -197,14 +198,14 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
         } else {
             mConsultAvatar.visibility = View.INVISIBLE
         }
-        filterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
-        secondFilterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
-        val phrase = consultPhrase.phrase?.trim()
+        filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
+        secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
+        val phrase = consultPhrase.phraseText?.trim()
         if (phrase == null) {
             phraseTextView.visibility = View.GONE
         } else {
             phraseTextView.visibility = View.VISIBLE
-            val url = UrlUtils.extractLink(phrase)
+            val url = UrlUtils.extractLink(consultPhrase.phraseText)
             when {
                 consultPhrase.formattedPhrase != null -> {
                     phraseTextView.autoLinkMask = 0

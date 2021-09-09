@@ -8,14 +8,27 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.slider.Slider;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
+import im.threads.internal.helpers.ChatItemListHelper;
 import im.threads.internal.holders.BaseHolder;
 import im.threads.internal.holders.ConsultFileViewHolder;
 import im.threads.internal.holders.ConsultIsTypingViewHolderNew;
@@ -69,15 +82,6 @@ import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "ChatAdapter ";
 
@@ -116,6 +120,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final FileDescriptionMediaPlayer fdMediaPlayer;
     @NonNull
     private final MediaMetadataRetriever mediaMetadataRetriever;
+    @Nullable
+    private ChatItem highlightedItem = null;
     @NonNull
     private ClientNotificationDisplayType clientNotificationDisplayType;
     private long currentThreadId;
@@ -394,7 +400,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             if (item instanceof UnreadMessages) {
                 try {
-                    notifyItemRemoved(lastIndexOf(item));
+                    notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, item));
                 } catch (final Exception e) {
                     ThreadsLogger.e(TAG, "setAllMessagesRead", e);
                 }
@@ -421,18 +427,19 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void removeHighlight() {
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof ChatPhrase && ((ChatPhrase) list.get(i)).isHighlight()) {
-                ((ChatPhrase) list.get(i)).setHighLighted(false);
+            if (list.get(i).isTheSameItem(highlightedItem)) {
+                highlightedItem = null;
                 notifyItemChanged(i);
+                return;
             }
         }
     }
 
-    public int setItemHighlighted(final ChatPhrase chatPhrase) {
+    public int setItemHighlighted(@NonNull final ChatItem chatItem) {
         int index = -1;
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).equals(chatPhrase)) {
-                ((ChatPhrase) list.get(i)).setHighLighted(true);
+            if (list.get(i).isTheSameItem(chatItem)) {
+                highlightedItem = ((ChatPhrase) list.get(i));
                 index = i;
                 notifyItemChanged(index);
             }
@@ -444,7 +451,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         for (ChatItem chatItem : list) {
             if (chatItem instanceof ChatPhrase && ((ChatPhrase) chatItem).getId().equals(uuid)) {
                 setItemHighlighted((ChatPhrase) chatItem);
-                return lastIndexOf(chatItem);
+                return ChatItemListHelper.lastIndexOf(list, chatItem);
             }
         }
         return -1;
@@ -455,7 +462,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             final ChatItem cm = iter.next();
             if (cm instanceof ConsultTyping) {
                 try {
-                    notifyItemRemoved(lastIndexOf(cm));
+                    notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                 } catch (final Exception e) {
                     ThreadsLogger.e(TAG, "removeConsultIsTyping", e);
                 }
@@ -475,7 +482,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             final ChatItem cm = iter.next();
             if (cm instanceof RequestResolveThread) {
                 try {
-                    notifyItemRemoved(lastIndexOf(cm));
+                    notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                 } catch (final Exception e) {
                     ThreadsLogger.e(TAG, "removeResolveRequest", e);
                 }
@@ -499,7 +506,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final Survey survey = (Survey) cm;
                 if (sendingId == survey.getSendingId()) {
                     try {
-                        notifyItemRemoved(lastIndexOf(cm));
+                        notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, cm));
                     } catch (final Exception e) {
                         ThreadsLogger.e(TAG, "removeSurvey", e);
                     }
@@ -519,7 +526,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         final SearchingConsult sc = new SearchingConsult();
         list.add(sc);
-        notifyItemInserted(lastIndexOf(sc));
+        notifyItemInserted(ChatItemListHelper.lastIndexOf(list, sc));
     }
 
     public void removeConsultSearching() {
@@ -528,7 +535,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             final ChatItem ch = iter.next();
             if (ch instanceof SearchingConsult) {
                 try {
-                    notifyItemRemoved(lastIndexOf(ch));
+                    notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, ch));
                 } catch (final Exception e) {
                     ThreadsLogger.e(TAG, "removeConsultSearching", e);
                 }
@@ -599,7 +606,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final ScheduleInfo scheduleInfo = (ScheduleInfo) item;
                 if (!checkSchedule || scheduleInfo.isChatWorking()) {
                     try {
-                        notifyItemRemoved(lastIndexOf(scheduleInfo));
+                        notifyItemRemoved(ChatItemListHelper.lastIndexOf(list, scheduleInfo));
                     } catch (final Exception e) {
                         ThreadsLogger.e(TAG, "removeSchedule", e);
                     }
@@ -647,40 +654,22 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final ConsultPhrase cp = (ConsultPhrase) list.get(i);
                 if (ObjectsCompat.equals(cp.getFileDescription(), fileDescription)) {
                     cp.setFileDescription(fileDescription);
-                    notifyItemChanged(indexOf(cp));
+                    notifyItemChanged(ChatItemListHelper.indexOf(list, cp));
                 } else if (cp.getQuote() != null && ObjectsCompat.equals(cp.getQuote().getFileDescription(), fileDescription)) {
                     cp.getQuote().setFileDescription(fileDescription);
-                    notifyItemChanged(indexOf(cp));
+                    notifyItemChanged(ChatItemListHelper.indexOf(list, cp));
                 }
             } else if (list.get(i) instanceof UserPhrase) {
                 final UserPhrase up = (UserPhrase) list.get(i);
                 if (ObjectsCompat.equals(up.getFileDescription(), fileDescription)) {
                     up.setFileDescription(fileDescription);
-                    notifyItemChanged(indexOf(up));
+                    notifyItemChanged(ChatItemListHelper.indexOf(list, up));
                 } else if (up.getQuote() != null && ObjectsCompat.equals(up.getQuote().getFileDescription(), fileDescription)) {
                     up.getQuote().setFileDescription(fileDescription);
-                    notifyItemChanged(indexOf(up));
+                    notifyItemChanged(ChatItemListHelper.indexOf(list, up));
                 }
             }
         }
-    }
-
-    public void setItemChosen(final boolean isChosen, @Nullable final ChatPhrase cp) {
-        if (cp == null) {
-            return;
-        }
-        int position = indexOf(cp);
-        if (position < 0) {
-            return;
-        }
-        ChatItem chatItem = list.get(position);
-        if (cp instanceof UserPhrase) {
-            ((UserPhrase) chatItem).setChosen(isChosen);
-        }
-        if (cp instanceof ConsultPhrase) {
-            ((ConsultPhrase) chatItem).setChosen(isChosen);
-        }
-        notifyItemChanged(position);
     }
 
     public void onDownloadError(final FileDescription fileDescription) {
@@ -711,7 +700,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final String oldUrl = cp.getAvatarPath();
                 if (oldUrl == null || !oldUrl.equals(newUrl)) {
                     cp.setAvatarPath(newUrl);
-                    notifyItemChanged(lastIndexOf(cp));
+                    notifyItemChanged(ChatItemListHelper.lastIndexOf(list, cp));
                 }
             }
         }
@@ -721,27 +710,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return list;
     }
 
-    private int indexOf(@NonNull ChatItem chatItem) {
-        for (int i = 0; i < list.size(); i++) {
-            if (chatItem.isTheSameItem(list.get(i))) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private int lastIndexOf(@NonNull ChatItem chatItem) {
-        for (int i = list.size() - 1; i >= 0; i--) {
-            if (chatItem.isTheSameItem(list.get(i))) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     private void notifyItemChangedOnUi(final ChatItem chatItem) {
         ThreadUtils.runOnUiThread(() -> {
-            int position = indexOf(chatItem);
+            int position = ChatItemListHelper.indexOf(list, chatItem);
             notifyItemChanged(position);
         });
     }
@@ -761,6 +732,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder
                 .onBind(
                         consultPhrase,
+                        consultPhrase.equals(highlightedItem),
                         v -> mCallback.onImageClick(consultPhrase),
                         v -> {
                             if (consultPhrase.getQuote() != null && consultPhrase.getQuote().getFileDescription() != null) {
@@ -783,7 +755,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         downloadImageIfNeeded(userPhrase.getFileDescription());
         holder.onBind(
                 userPhrase,
-                userPhrase.getPhrase() != null ? userPhrase.getPhrase().trim() : null,
+                userPhrase.getPhraseText() != null ? userPhrase.getPhraseText().trim() : null,
                 userPhrase.getTimeStamp(),
                 userPhrase.getSentState(),
                 userPhrase.getQuote(),
@@ -806,7 +778,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     phraseLongClick(userPhrase, holder.getAdapterPosition());
                     return true;
                 },
-                userPhrase.isChosen()
+                userPhrase.equals(highlightedItem)
         );
     }
 
@@ -822,6 +794,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         downloadImageIfNeeded(consultPhrase.getFileDescription());
         holder.onBind(
                 consultPhrase,
+                consultPhrase.equals(highlightedItem),
                 v -> mCallback.onImageClick(consultPhrase),
                 v -> {
                     mCallback.onPhraseLongClick(consultPhrase, holder.getAdapterPosition());
@@ -835,6 +808,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         downloadImageIfNeeded(userPhrase.getFileDescription());
         if (userPhrase.getFileDescription() != null) {
             holder.onBind(userPhrase,
+                    userPhrase.equals(highlightedItem),
                     () -> mCallback.onImageClick(userPhrase),
                     () -> mCallback.onPhraseLongClick(userPhrase, holder.getAdapterPosition())
             );
@@ -862,7 +836,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 v -> {
                     phraseLongClick(userPhrase, holder.getAdapterPosition());
                     return true;
-                }, userPhrase.isChosen(),
+                },
+                userPhrase.equals(highlightedItem),
                 userPhrase.getSentState()
         );
     }
@@ -870,6 +845,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private void bindFileFromConsultVH(@NonNull ConsultFileViewHolder holder, @NonNull ConsultPhrase consultPhrase) {
         holder.onBind(
                 consultPhrase,
+                consultPhrase.equals(highlightedItem),
                 v -> mCallback.onFileClick(consultPhrase.getFileDescription()),
                 v -> {
                     phraseLongClick(consultPhrase, holder.getAdapterPosition());
@@ -913,7 +889,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         ignorePlayerUpdates = false;
                     }
                 },
-                userPhrase.isChosen(),
+                userPhrase.equals(highlightedItem),
                 userPhrase.getSentState()
         );
         if (ObjectsCompat.equals(holder.getFileDescription(), fdMediaPlayer.getFileDescription())) {
@@ -931,6 +907,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         downloadVoiceIfNeeded(consultPhrase.getFileDescription());
         holder.onBind(
                 consultPhrase,
+                consultPhrase.equals(highlightedItem),
                 getFormattedDuration(consultPhrase.getFileDescription()),
                 v -> {
                     phraseLongClick(consultPhrase, holder.getAdapterPosition());
@@ -1003,7 +980,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 resetPlayingHolder();
                 ChatItem chatItem = findByFileDescription(fileDescription);
                 if (chatItem != null) {
-                    notifyItemChanged(lastIndexOf(chatItem));
+                    notifyItemChanged(ChatItemListHelper.lastIndexOf(list, chatItem));
                 }
             }
         } else {

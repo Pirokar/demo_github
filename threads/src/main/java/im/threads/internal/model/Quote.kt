@@ -3,7 +3,7 @@ package im.threads.internal.model
 import androidx.core.util.ObjectsCompat
 
 class Quote(
-    var uuid: String,
+    var uuid: String?,
     var phraseOwnerTitle: String?,
     val text: String?,
     var fileDescription: FileDescription?,

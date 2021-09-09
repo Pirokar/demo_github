@@ -139,13 +139,14 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 
     fun onBind(
         consultPhrase: ConsultPhrase,
+        highlighted: Boolean,
         imageClickListener: View.OnClickListener,
         fileClickListener: View.OnClickListener,
         onQuoteClickListener: View.OnClickListener,
         onRowLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
     ) {
-        val phrase = consultPhrase.phrase?.trim()
+        val phrase = consultPhrase.phraseText?.trim()
         val quote = consultPhrase.quote
         val fileDescription = consultPhrase.fileDescription
         ViewUtils.setClickListener(itemView as ViewGroup, onRowLongClickListener)
@@ -302,8 +303,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             mConsultAvatar.visibility = View.INVISIBLE
         }
-        filterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
-        secondFilterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
+        filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
+        secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
     }
 
     private fun showDefIcon() {

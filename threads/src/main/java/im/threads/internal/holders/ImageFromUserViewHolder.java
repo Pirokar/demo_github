@@ -50,13 +50,13 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.outgoingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
     }
 
-    public void onBind(final UserPhrase userPhrase, final Runnable clickRunnable, final Runnable longClickRunnable) {
+    public void onBind(final UserPhrase userPhrase, boolean highlighted,  final Runnable clickRunnable, final Runnable longClickRunnable) {
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(v -> clickRunnable.run());
         }
         bindImage(userPhrase.getFileDescription(), longClickRunnable);
-        bindIsChosen(userPhrase.isChosen(), longClickRunnable);
+        bindIsChosen(highlighted, longClickRunnable);
         bindTimeStamp(userPhrase.getSentState(), userPhrase.getTimeStamp(), longClickRunnable);
     }
 
