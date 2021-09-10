@@ -563,8 +563,7 @@ public final class ChatController {
     }
 
     public void sendInit() {
-        Config.instance.transport.sendInitChatMessage();
-        Config.instance.transport.sendEnvironmentMessage();
+        Config.instance.transport.sendInit();
         if (!PrefUtils.isClientIdEmpty()) {
             if (fragment != null) {
                 fragment.hideEmptyState();
@@ -1117,8 +1116,7 @@ public final class ChatController {
         if (fragment != null && (!TextUtils.isEmpty(clientId) || Config.instance.clientIdIgnoreEnabled)) {
             subscribe(
                     Single.fromCallable(() -> {
-                        Config.instance.transport.sendInitChatMessage();
-                        Config.instance.transport.sendEnvironmentMessage();
+                        Config.instance.transport.sendInit();
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
                         List<ChatItem> chatItems = HistoryParser.getChatItems(response);
                         saveMessages(chatItems);

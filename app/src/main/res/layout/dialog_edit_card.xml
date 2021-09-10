@@ -91,7 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/card_add_button" />
+            android:text="@string/card_save_button" />
 
         <TextView
             android:id="@+id/cancelButton"

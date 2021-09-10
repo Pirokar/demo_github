@@ -99,33 +99,19 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
     }
 
     @Override
-    public void sendInitChatMessage() {
+    public void sendInit() {
         subscribe(
                 Completable.fromAction(() -> {
-                    String message = OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(), PrefUtils.getData()).toString();
-                    sendMessageMFMSSync(message, true);
-                })
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(
-                                () -> {
-                                },
-                                e -> chatUpdateProcessor.postError(new TransportException(e.getMessage()))
-                        )
-        );
-    }
-
-    @Override
-    public void sendEnvironmentMessage() {
-        subscribe(
-                Completable.fromAction(() -> {
-                    final String message = OutgoingMessageCreator.createEnvironmentMessage(
+                    String initMessage = OutgoingMessageCreator.createInitChatMessage(PrefUtils.getClientID(), PrefUtils.getData()).toString();
+                    sendMessageMFMSSync(initMessage, true);
+                    final String environmentMessage = OutgoingMessageCreator.createEnvironmentMessage(
                             PrefUtils.getUserName(),
                             PrefUtils.getClientID(),
                             PrefUtils.getClientIDEncrypted(),
                             PrefUtils.getData(),
                             Config.instance.context
                     ).toString();
-                    sendMessageMFMSSync(message, true);
+                    sendMessageMFMSSync(environmentMessage, true);
                 })
                         .subscribeOn(Schedulers.io())
                         .subscribe(
@@ -231,8 +217,7 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void sendUserInfo() {
         if (!TextUtils.isEmpty(PrefUtils.getClientID())) {
-            sendInitChatMessage();
-            sendEnvironmentMessage();
+            sendInit();
         }
     }
 
