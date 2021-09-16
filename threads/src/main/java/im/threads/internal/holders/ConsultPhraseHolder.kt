@@ -9,6 +9,7 @@ import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -56,7 +57,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             itemView.findViewById<CircularProgressButton>(R.id.button_download).apply {
                 setBackgroundColorResId(style.chatBackgroundColor)
             }
-    private val mFileImage = itemView.findViewById<ImageView>(R.id.file_image)
+    private val mFileImage = itemView.findViewById<ImageView>(R.id.file_image).apply {
+        visibility = GONE
+    }
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val mImage: ImageView = itemView.findViewById(R.id.image)
     private val mRightTextDescr: TextView = itemView.findViewById(R.id.file_specs)
@@ -200,7 +203,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             fileRow.visibility = View.VISIBLE
             ViewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
-            mFileImage?.visibility = View.GONE
+            mFileImage.visibility = View.GONE
             mCircularProgressButton?.visibility = View.GONE
             rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.getContext()
                 .getString(R.string.threads_I) else quote.phraseOwnerTitle
@@ -213,19 +216,14 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     mRightTextDescr.setText(R.string.threads_voice_message)
                 } else {
                     if (isImage(quote.fileDescription)) {
-                        if(mFileImage != null) {
-                            mFileImage.visibility = View.VISIBLE
-                            Picasso.get()
-                                    .load(quoteFileDescription.downloadPath)
-                                    .error(style.imagePlaceholder)
-                                    .fit()
-                                    .centerCrop()
-                                    .into(mFileImage)
-                            mFileImage.setOnClickListener(onQuoteClickListener)
-                        }
-                        else{
-                            //
-                        }
+                        mFileImage.visibility = View.VISIBLE
+                        Picasso.get()
+                                .load(quoteFileDescription.downloadPath)
+                                .error(style.imagePlaceholder)
+                                .fit()
+                                .centerCrop()
+                                .into(mFileImage)
+                        mFileImage.setOnClickListener(onQuoteClickListener)
                     } else {
                         mCircularProgressButton.visibility = View.VISIBLE
                         val fileSize = quoteFileDescription.size
@@ -243,6 +241,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         if (fileDescription != null) {
             if (FileUtils.isImage(fileDescription)) {
                 fileRow.visibility = View.GONE
+                mFileImage.visibility = View.GONE
                 mCircularProgressButton.visibility = View.GONE
                 mImage.visibility = View.VISIBLE
                 mImage.setOnClickListener(imageClickListener)
@@ -255,6 +254,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             } else {
                 fileRow.visibility = View.VISIBLE
                 ViewUtils.setClickListener(fileRow as ViewGroup, null as View.OnClickListener?)
+                mFileImage.visibility = View.VISIBLE
                 mCircularProgressButton.visibility = View.VISIBLE
                 mCircularProgressButton.setOnClickListener(fileClickListener)
                 rightTextHeader.text =
