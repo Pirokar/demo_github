@@ -57,9 +57,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             itemView.findViewById<CircularProgressButton>(R.id.button_download).apply {
                 setBackgroundColorResId(style.chatBackgroundColor)
             }
-    private val mFileImage = itemView.findViewById<ImageView>(R.id.file_image).apply {
-        visibility = GONE
-    }
+    private val mFileImage = itemView.findViewById<ImageView>(R.id.file_image)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val mImage: ImageView = itemView.findViewById(R.id.image)
     private val mRightTextDescr: TextView = itemView.findViewById(R.id.file_specs)
