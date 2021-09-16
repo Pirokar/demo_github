@@ -9,7 +9,6 @@ import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -202,7 +201,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             fileRow.visibility = View.VISIBLE
             ViewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
             mFileImage.visibility = View.GONE
-            mCircularProgressButton?.visibility = View.GONE
+            mCircularProgressButton.visibility = View.GONE
             rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.getContext()
                 .getString(R.string.threads_I) else quote.phraseOwnerTitle
             mRightTextDescr.text = quote.text
@@ -239,7 +238,6 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         if (fileDescription != null) {
             if (FileUtils.isImage(fileDescription)) {
                 fileRow.visibility = View.GONE
-                mFileImage.visibility = View.GONE
                 mCircularProgressButton.visibility = View.GONE
                 mImage.visibility = View.VISIBLE
                 mImage.setOnClickListener(imageClickListener)
@@ -252,7 +250,6 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             } else {
                 fileRow.visibility = View.VISIBLE
                 ViewUtils.setClickListener(fileRow as ViewGroup, null as View.OnClickListener?)
-                mFileImage.visibility = View.VISIBLE
                 mCircularProgressButton.visibility = View.VISIBLE
                 mCircularProgressButton.setOnClickListener(fileClickListener)
                 rightTextHeader.text =
