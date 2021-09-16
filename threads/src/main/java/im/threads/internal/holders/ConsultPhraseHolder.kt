@@ -200,8 +200,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         } else {
             fileRow.visibility = View.VISIBLE
             ViewUtils.setClickListener(fileRow as ViewGroup, onQuoteClickListener)
-            mFileImage.visibility = View.GONE
-            mCircularProgressButton.visibility = View.GONE
+            mFileImage?.visibility = View.GONE
+            mCircularProgressButton?.visibility = View.GONE
             rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.getContext()
                 .getString(R.string.threads_I) else quote.phraseOwnerTitle
             mRightTextDescr.text = quote.text
