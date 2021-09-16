@@ -167,8 +167,7 @@ dependencies {
 
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
 
-    releaseImplementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
-    debugImplementation "com.edna.android:push-lite-debug:$rootProject.pushVersion"
+    implementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
 

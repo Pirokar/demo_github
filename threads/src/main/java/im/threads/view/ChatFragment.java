@@ -187,6 +187,10 @@ public final class ChatFragment extends BaseFragment implements
     @Nullable
     private String voiceFilePath = null;
 
+    public static ChatFragment newInstance() {
+        return newInstance(OpenWay.DEFAULT);
+    }
+
     public static ChatFragment newInstance(@OpenWay int from) {
         Bundle arguments = new Bundle();
         arguments.putInt(ARG_OPEN_WAY, from);
