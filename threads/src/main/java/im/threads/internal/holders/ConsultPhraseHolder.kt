@@ -213,14 +213,19 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     mRightTextDescr.setText(R.string.threads_voice_message)
                 } else {
                     if (isImage(quote.fileDescription)) {
-                        mFileImage.visibility = View.VISIBLE
-                        Picasso.get()
-                                .load(quoteFileDescription.downloadPath)
-                                .error(style.imagePlaceholder)
-                                .fit()
-                                .centerCrop()
-                                .into(mFileImage)
+                        if(mFileImage != null) {
+                            mFileImage.visibility = View.VISIBLE
+                            Picasso.get()
+                                    .load(quoteFileDescription.downloadPath)
+                                    .error(style.imagePlaceholder)
+                                    .fit()
+                                    .centerCrop()
+                                    .into(mFileImage)
                             mFileImage.setOnClickListener(onQuoteClickListener)
+                        }
+                        else{
+                            //
+                        }
                     } else {
                         mCircularProgressButton.visibility = View.VISIBLE
                         val fileSize = quoteFileDescription.size
