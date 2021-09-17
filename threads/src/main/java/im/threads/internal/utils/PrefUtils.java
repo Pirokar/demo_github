@@ -318,19 +318,12 @@ public final class PrefUtils {
     @WorkerThread
     public static void migrateTransportIfNeeded() {
         String transportType = getTransportType();
-        if (TextUtils.isEmpty(transportType)) {
-            if ("THREADS_GATE".equals(Config.instance.transport.getType().toString())) {
-                setTransportType(Config.instance.transport.getType().toString());
-                resetPushToken();
-            } else {
-                setTransportType(ConfigBuilder.TransportType.MFMS_PUSH.toString());
-            }
-        } else {
+        if (!TextUtils.isEmpty(transportType)) {
             if (!ObjectsCompat.equals(transportType, Config.instance.transport.getType().toString())) {
-                setTransportType(Config.instance.transport.getType().toString());
                 resetPushToken();
             }
         }
+        setTransportType(Config.instance.transport.getType().toString());
     }
 
     private static void resetPushToken() {
