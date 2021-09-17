@@ -7,6 +7,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -173,12 +174,19 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 } else {
                     if (FileUtils.isImage(quote.getFileDescription())) {
                         mFileImage.setVisibility(View.VISIBLE);
-                        Picasso.get()
-                                .load(quote.getFileDescription().getDownloadPath())
-                                .error(style.imagePlaceholder)
-                                .fit()
-                                .centerCrop()
-                                .into(mFileImage);
+                        if (quote.getFileDescription().getFileUri() != null) {
+                            Picasso.get()
+                                    .load(quote.getFileDescription().getFileUri())
+                                    .fit()
+                                    .centerInside()
+                                    .into(mFileImage);
+                        } else if (quote.getFileDescription().getDownloadPath() != null) {
+                            Picasso.get()
+                                    .load(quote.getFileDescription().getDownloadPath())
+                                    .fit()
+                                    .centerInside()
+                                    .into(mFileImage);
+                        }
                         if (onQuoteClickListener != null) {
                             mFileImage.setOnClickListener(onQuoteClickListener);
                         }
