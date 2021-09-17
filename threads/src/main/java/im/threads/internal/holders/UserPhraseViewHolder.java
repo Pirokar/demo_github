@@ -111,7 +111,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
         itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mFileImageButton.setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mPhraseTextView.setLinkTextColor(getColorInt(style.outgoingMessageLinkColor));
-        setTintToProgressButtonUser(mFileImageButton, style.outgoingMessageTextColor, style.chatBodyIconsTint);
+        setTintToProgressButtonUser(mFileImageButton, style.chatBodyIconsTint);
         mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
     }

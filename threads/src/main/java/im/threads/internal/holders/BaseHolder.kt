@@ -37,8 +37,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
 
     fun setTintToProgressButtonUser(
         button: CircularProgressButton,
-        @ColorRes colorRes: Int,
-        @ColorRes colorResInsideCircle: Int
+        @ColorRes colorRes: Int
     ) {
         val completed = AppCompatResources.getDrawable(
             itemView.context,
@@ -52,8 +51,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             itemView.context,
             R.drawable.ic_vertical_align_bottom_user_24dp
         )?.mutate()
-        setTintToViews(arrayOf(completed), colorRes)
-        setTintToViews(arrayOf(inProgress, download), colorResInsideCircle)
+        setTintToViews(arrayOf(completed, inProgress, download), colorRes)
         button.setCompletedDrawable(completed)
         button.setStartDownloadDrawable(download)
         button.setInProgress(inProgress)
