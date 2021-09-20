@@ -60,7 +60,6 @@ public final class FileAndMediaViewHolder extends BaseHolder {
                         .centerInside()
                         .into(mImageButton);
             }
-
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }

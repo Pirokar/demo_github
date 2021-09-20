@@ -173,12 +173,19 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 } else {
                     if (FileUtils.isImage(quote.getFileDescription())) {
                         mFileImage.setVisibility(View.VISIBLE);
-                        Picasso.get()
-                                .load(quote.getFileDescription().getDownloadPath())
-                                .error(style.imagePlaceholder)
-                                .fit()
-                                .centerCrop()
-                                .into(mFileImage);
+                        if (quote.getFileDescription().getFileUri() != null) {
+                            Picasso.get()
+                                    .load(quote.getFileDescription().getFileUri())
+                                    .fit()
+                                    .centerInside()
+                                    .into(mFileImage);
+                        } else if (quote.getFileDescription().getDownloadPath() != null) {
+                            Picasso.get()
+                                    .load(quote.getFileDescription().getDownloadPath())
+                                    .fit()
+                                    .centerInside()
+                                    .into(mFileImage);
+                        }
                         if (onQuoteClickListener != null) {
                             mFileImage.setOnClickListener(onQuoteClickListener);
                         }
