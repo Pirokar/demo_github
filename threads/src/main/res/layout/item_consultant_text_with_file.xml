@@ -53,6 +53,16 @@
             android:orientation="horizontal"
             android:paddingTop="@dimen/margin_half">
 
+            <ImageView
+                android:id="@+id/file_image"
+                android:visibility="gone"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_half"
+                android:background="@drawable/file_image_user" />
+
             <im.threads.internal.views.CircularProgressButton
                 android:id="@+id/button_download"
                 style="@style/CircularProgressButtonStyle"

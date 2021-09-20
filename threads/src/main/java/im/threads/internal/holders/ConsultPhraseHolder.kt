@@ -220,7 +220,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                                 .fit()
                                 .centerCrop()
                                 .into(mFileImage)
-                            mFileImage.setOnClickListener(onQuoteClickListener)
+                        mFileImage.setOnClickListener(onQuoteClickListener)
                     } else {
                         mCircularProgressButton.visibility = View.VISIBLE
                         val fileSize = quoteFileDescription.size
