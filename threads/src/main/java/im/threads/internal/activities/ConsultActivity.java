@@ -56,15 +56,20 @@ public final class ConsultActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        style = Config.instance.getChatStyle();
         if (Build.VERSION.SDK_INT > 20) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             getWindow().setStatusBarColor(getResources().getColor(R.color.threads_black_transparent));
+            if (getResources().getBoolean(style.windowLightStatusBarResId)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                }
+            }
         }
         setContentView(R.layout.activity_consult_page);
         mToolbar = findViewById(R.id.toolbar);
-        style = Config.instance.getChatStyle();
         mConsulHeaderTextView = findViewById(R.id.consult_title);
         mConsultMotoTextView = findViewById(R.id.consult_moto);
         mConsultImageView = findViewById(R.id.image);

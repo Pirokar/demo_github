@@ -3,6 +3,7 @@ package im.threads;
 import android.view.Gravity;
 
 import androidx.annotation.ArrayRes;
+import androidx.annotation.BoolRes;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
@@ -36,6 +37,8 @@ public final class ChatStyle implements Serializable {
     public int chatToolbarContextMenuColorResId = R.color.threads_chat_toolbar_context_menu;
     @ColorRes
     public int chatStatusBarColorResId = R.color.threads_chat_status_bar;
+    @BoolRes
+    public int windowLightStatusBarResId = R.bool.threads_chat_is_light_status_bar;
     @ColorRes
     public int menuItemTextColorResId = R.color.threads_chat_toolbar_menu_item;
     @ColorRes
@@ -496,7 +499,7 @@ public final class ChatStyle implements Serializable {
         this.inputEnabledDuringQuickReplies = inputEnabledDuringQuickReplies;
         return this;
     }
-    
+
     /**
      * @see android.view.Gravity
      */
@@ -520,6 +523,7 @@ public final class ChatStyle implements Serializable {
      * @param chatToolbarHintTextColor         - R.color.threads_chat_toolbar_hint
      * @param showBackButton                   - showChatBackButton(boolean showBackButton)
      */
+    @Deprecated
     public ChatStyle setChatTitleStyle(
             @StringRes final int chatTitleTextResId,
             @StringRes final int chatSubtitleTextResId,
@@ -536,6 +540,44 @@ public final class ChatStyle implements Serializable {
         this.chatToolbarContextMenuColorResId = chatToolbarContextMenuColorResId;
         this.chatToolbarTextColorResId = chatToolbarTextColorResId;
         this.chatStatusBarColorResId = chatStatusBarColorResId;
+        this.menuItemTextColorResId = menuItemTextColorResId;
+        this.chatToolbarHintTextColor = chatToolbarHintTextColor;
+        this.showBackButton = showBackButton;
+        return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param chatTitleTextResId               - R.string.threads_contact_center
+     * @param chatSubtitleTextResId            - R.string.threads_operator_subtitle
+     * @param chatToolbarColorResId            - R.color.threads_chat_toolbar
+     * @param chatToolbarContextMenuColorResId - R.color.threads_chat_toolbar_context_menu
+     * @param chatToolbarTextColorResId        - R.color.threads_chat_toolbar_text
+     * @param chatStatusBarColorResId          - R.color.threads_chat_status_bar
+     * @param windowLightStatusBarResId        - R.bool.threads_chat_is_light_status_bar
+     * @param menuItemTextColorResId           - R.color.threads_chat_toolbar_menu_item
+     * @param chatToolbarHintTextColor         - R.color.threads_chat_toolbar_hint
+     * @param showBackButton                   - showChatBackButton(boolean showBackButton)
+     */
+    public ChatStyle setChatTitleStyle(
+            @StringRes final int chatTitleTextResId,
+            @StringRes final int chatSubtitleTextResId,
+            @ColorRes final int chatToolbarColorResId,
+            @ColorRes final int chatToolbarContextMenuColorResId,
+            @ColorRes final int chatToolbarTextColorResId,
+            @ColorRes final int chatStatusBarColorResId,
+            @BoolRes final int windowLightStatusBarResId,
+            @ColorRes final int menuItemTextColorResId,
+            @ColorRes final int chatToolbarHintTextColor,
+            final boolean showBackButton) {
+        this.chatTitleTextResId = chatTitleTextResId;
+        this.chatSubtitleTextResId = chatSubtitleTextResId;
+        this.chatToolbarColorResId = chatToolbarColorResId;
+        this.chatToolbarContextMenuColorResId = chatToolbarContextMenuColorResId;
+        this.chatToolbarTextColorResId = chatToolbarTextColorResId;
+        this.chatStatusBarColorResId = chatStatusBarColorResId;
+        this.windowLightStatusBarResId = windowLightStatusBarResId;
         this.menuItemTextColorResId = menuItemTextColorResId;
         this.chatToolbarHintTextColor = chatToolbarHintTextColor;
         this.showBackButton = showBackButton;
@@ -693,10 +735,10 @@ public final class ChatStyle implements Serializable {
     /**
      * Default values:
      *
-     * @param defPushIconResId                 - R.drawable.default_push_icon
-     * @param defTitleResId                    - R.string.threads_push_title
-     * @param pushBackgroundColorResId         - R.color.threads_push_background
-     * @param nougatPushAccentColorResId       - R.color.threads_nougat_push_accent
+     * @param defPushIconResId                             - R.drawable.default_push_icon
+     * @param defTitleResId                                - R.string.threads_push_title
+     * @param pushBackgroundColorResId                     - R.color.threads_push_background
+     * @param nougatPushAccentColorResId                   - R.color.threads_nougat_push_accent
      * @param notificationQuickReplyMessageBackgroundColor - R.color.threads_quick_reply_message_background
      * @param notificationQuickReplyMessageTextColor       - R.color.threads_quick_reply_message_text_color
      * @return Builder
@@ -869,7 +911,7 @@ public final class ChatStyle implements Serializable {
             @DimenRes final int systemMessageLeftRightPadding,
             final int systemMessageTextGravity,
             @ColorRes final int systemMessageLinkColor
-            ) {
+    ) {
         this.systemMessageFont = systemMessageFont;
         this.systemMessageTextSize = systemMessageTextSize;
         this.systemMessageTextColorResId = systemMessageTextColorResId;
@@ -954,7 +996,7 @@ public final class ChatStyle implements Serializable {
      *
      * @param incomingPlayPauseButtonColor - R.color.threads_incoming_play_pause_button
      * @param outgoingPlayPauseButtonColor - R.color.threads_outgoing_play_pause_button
-     * @param previewPlayPauseButtonColor - R.color.threads_preview_play_pause_button
+     * @param previewPlayPauseButtonColor  - R.color.threads_preview_play_pause_button
      * @param voiceMessagePlayButton       - R.drawable.threads_voice_message_play
      * @param voiceMessagePauseButton      - R.drawable.threads_voice_message_pause
      * @return Builder

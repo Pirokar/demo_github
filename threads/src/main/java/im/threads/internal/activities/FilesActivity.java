@@ -71,6 +71,11 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+            if (getResources().getBoolean(style.windowLightStatusBarResId)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                }
+            }
         }
         setContentView(R.layout.activity_files_and_media);
         mToolbar = findViewById(R.id.toolbar);

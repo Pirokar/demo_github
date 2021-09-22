@@ -216,7 +216,7 @@ public final class ChatFragment extends BaseFragment implements
 
         // Статус бар подкрашивается только при использовании чата в стандартном Activity.
         if (activity instanceof ChatActivity) {
-            ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId);
+            ColorsHelper.setStatusBarColor(activity, style.chatStatusBarColorResId, style.windowLightStatusBarResId);
         }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false);
