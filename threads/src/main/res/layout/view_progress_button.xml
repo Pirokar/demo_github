@@ -11,8 +11,8 @@
         />
     <View
         android:id="@+id/label_image"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_gravity="center"
         />
 

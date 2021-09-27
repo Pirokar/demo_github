@@ -56,6 +56,19 @@ import com.devlomi.record_view.RecordView;
 import com.google.android.material.slider.Slider;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -114,19 +127,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Pair;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
@@ -145,10 +145,10 @@ public final class ChatFragment extends BaseFragment implements
     public static final int REQUEST_PERMISSION_CAMERA = 201;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 202;
     public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 203;
-    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 204;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
+    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 204;
     private static final String ARG_OPEN_WAY = "arg_open_way";
     private static final String TAG = ChatFragment.class.getSimpleName();
     private static final float DISABLED_ALPHA = 0.5f;
@@ -166,6 +166,7 @@ public final class ChatFragment extends BaseFragment implements
     private final ObservableField<Optional<FileDescription>> fileDescription = new ObservableField<>(Optional.empty());
     @NonNull
     private final MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+    private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
     @Nullable
     private FileDescriptionMediaPlayer fdMediaPlayer;
     @Nullable
@@ -188,7 +189,6 @@ public final class ChatFragment extends BaseFragment implements
     private List<Uri> mAttachedImages = new ArrayList<>();
     @Nullable
     private MediaRecorder recorder = null;
-    private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
     @Nullable
     private String voiceFilePath = null;
 
@@ -595,7 +595,7 @@ public final class ChatFragment extends BaseFragment implements
             if (bottom < oldBottom) {
                 binding.recycler.postDelayed(() -> {
                     if (style.scrollChatToEndIfUserTyping) {
-                        scrollToPosition(chatAdapter.getItemCount() - 1);
+                        scrollToPosition(chatAdapter.getItemCount() - 1, false);
                     } else {
                         binding.recycler.smoothScrollBy(0, oldBottom - bottom);
                     }
@@ -628,7 +628,7 @@ public final class ChatFragment extends BaseFragment implements
             if (unreadCount > 0) {
                 scrollToNewMessages();
             } else {
-                scrollToPosition(chatAdapter.getItemCount() - 1);
+                scrollToPosition(chatAdapter.getItemCount() - 1, false);
             }
             chatAdapter.setAllMessagesRead();
             binding.scrollDownButtonContainer.setVisibility(View.GONE);
@@ -707,7 +707,7 @@ public final class ChatFragment extends BaseFragment implements
     private void afterRefresh(List<ChatItem> result) {
         int itemsBefore = chatAdapter.getItemCount();
         chatAdapter.addItems(result);
-        scrollToPosition(chatAdapter.getItemCount() - itemsBefore);
+        scrollToPosition(chatAdapter.getItemCount() - itemsBefore, true);
         for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
             h.postDelayed(() -> {
                 binding.swipeRefresh.setRefreshing(false);
@@ -915,7 +915,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void onReplyClick(ChatPhrase cp, int position) {
         hideCopyControls();
-        scrollToPosition(position);
+        scrollToPosition(position, true);
         UserPhrase userPhrase = cp instanceof UserPhrase ? (UserPhrase) cp : null;
         ConsultPhrase consultPhrase = cp instanceof ConsultPhrase ? (ConsultPhrase) cp : null;
         String text = cp.getPhraseText();
@@ -1125,7 +1125,7 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.addItems(data);
         if (highlightedItem != null) {
             chatAdapter.removeHighlight();
-            scrollToPosition(chatAdapter.setItemHighlighted(highlightedItem));
+            scrollToPosition(chatAdapter.setItemHighlighted(highlightedItem), true);
         }
     }
 
@@ -1267,7 +1267,7 @@ public final class ChatFragment extends BaseFragment implements
             setTitleStateCurrentOperatorConnected();
             if (bottomSheetDialogFragment == null) {
                 showBottomSheet();
-                scrollToPosition(chatAdapter.getItemCount() - 1);
+                scrollToPosition(chatAdapter.getItemCount() - 1, false);
             } else {
                 hideBottomSheet();
             }
@@ -1309,6 +1309,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void addChatItem(final ChatItem item) {
+        ThreadsLogger.i(TAG, "addChatItem: " + item);
         LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
         if (layoutManager == null) {
             return;
@@ -1333,16 +1334,21 @@ public final class ChatFragment extends BaseFragment implements
                     int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
                     boolean isUserSeesMessages = (itemCount - 1) - lastVisibleItemPosition < INVISIBLE_MSGS_COUNT;
                     if (isUserSeesMessages || item instanceof UserPhrase) {
-                        scrollToPosition(itemCount - 1);
+                        scrollToPosition(itemCount - 1, false);
                     }
                 }
             }, 100);
         }
     }
 
-    private void scrollToPosition(int itemCount) {
+    private void scrollToPosition(int itemCount, boolean smooth) {
+        ThreadsLogger.i(TAG, "scrollToPosition: " + itemCount);
         if (itemCount >= 0) {
-            binding.recycler.smoothScrollToPosition(itemCount);
+            if (smooth) {
+                binding.recycler.smoothScrollToPosition(itemCount);
+            } else {
+                binding.recycler.scrollToPosition(itemCount);
+            }
         }
     }
 
@@ -1389,7 +1395,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         int newAdapterSize = chatAdapter.getList().size();
         if (newAdapterSize > oldAdapterSize) {
-            h.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1), 100);
+            h.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
         }
     }
 
@@ -1847,7 +1853,7 @@ public final class ChatFragment extends BaseFragment implements
             isNeedToClose = false;
             hideSearchMode();
             if (chatAdapter != null) {
-                scrollToPosition(chatAdapter.getItemCount() - 1);
+                scrollToPosition(chatAdapter.getItemCount() - 1, false);
             }
         }
         if (mQuoteLayoutHolder.isVisible()) {
@@ -2203,7 +2209,7 @@ public final class ChatFragment extends BaseFragment implements
                             .map(list -> {
                                 chatAdapter.addItems(list);
                                 final int itemHighlightedIndex = chatAdapter.setItemHighlighted(quote.getUuid());
-                                scrollToPosition(itemHighlightedIndex);
+                                scrollToPosition(itemHighlightedIndex, true);
                                 return list;
                             })
                             .delay(1500, TimeUnit.MILLISECONDS)
