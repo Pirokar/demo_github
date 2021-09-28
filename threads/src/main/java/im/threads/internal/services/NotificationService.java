@@ -17,19 +17,21 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.util.Consumer;
+
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.util.Consumer;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.R;
@@ -53,14 +55,18 @@ public final class NotificationService extends ThreadsService {
     public static final String EXTRA_APP_MARKER = "im.threads.internal.services.NotificationService.EXTRA_APP_MARKER";
     public static final String EXTRA_MESSAGE_CONTENT = "im.threads.internal.services.NotificationService.EXTRA_MESSAGE_CONTENT";
     public static final String EXTRA_CAMPAIGN_MESSAGE = "im.threads.internal.services.NotificationService.EXTRA_CAMPAIGN_MESSAGE";
-    public static final int UNREAD_MESSAGE_PUSH_ID = 0;
     private static final String TAG = "NotificationService";
     private static final String ACTION_REMOVE_NOTIFICATION = "im.threads.internal.services.NotificationService.ACTION_REMOVE_NOTIFICATION";
     private static final String ACTION_ADD_UNREAD_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE";
     private static final String ACTION_ADD_UNREAD_MESSAGE_LIST = "im.threads.internal.services.NotificationService.ACTION_ADD_UNREAD_MESSAGE_LIST";
     private static final String ACTION_ADD_UNSENT_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_UNSENT_MESSAGE";
     private static final String ACTION_ADD_CAMPAIGN_MESSAGE = "im.threads.internal.services.NotificationService.ACTION_ADD_CAMPAIGN_MESSAGE";
+
+    private static final int UNREAD_MESSAGE_GROUP_PUSH_ID = 0;
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
+    private static final int CAMPAIGN_MESSAGE_PUSH_ID = 2;
+    private final String GROUP_KEY_PUSH = "im.threads.internal.services.NotificationService.UNREAD_MESSAGE_GROUP";
+
     private final Handler h = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -127,7 +133,7 @@ public final class NotificationService extends ThreadsService {
         if (action != null) {
             switch (action) {
                 case ACTION_REMOVE_NOTIFICATION:
-                    nm.cancel(UNREAD_MESSAGE_PUSH_ID);
+                    nm.cancel(UNREAD_MESSAGE_GROUP_PUSH_ID);
                     break;
                 case ACTION_ADD_UNREAD_MESSAGE:
                     final String message = intent.getStringExtra(EXTRA_MESSAGE);
@@ -170,7 +176,18 @@ public final class NotificationService extends ThreadsService {
                 fixPushCrash = true;
             }
             if (!fixPushCrash) {
-                nm.notify(UNREAD_MESSAGE_PUSH_ID, notification);
+                nm.notify(
+                        UNREAD_MESSAGE_GROUP_PUSH_ID,
+                        new NotificationCompat.Builder(this, CHANNEL_ID)
+                                .setSmallIcon(notification.icon)
+                                .setColor(NotificationCompat.getColor(notification))
+                                .setContentIntent(notification.contentIntent)
+                                .setAutoCancel(true)
+                                .setGroup(GROUP_KEY_PUSH)
+                                .setGroupSummary(true)
+                                .build()
+                );
+                nm.notify(new Date().hashCode(), notification);
             }
             if (Config.instance.transport.getType() == ConfigBuilder.TransportType.THREADS_GATE) {
                 UnreadMessagesController.INSTANCE.incrementUnreadPush();
@@ -185,6 +202,7 @@ public final class NotificationService extends ThreadsService {
         final RemoteViews pushBig = new RemoteViews(getPackageName(), R.layout.remote_push_expanded);
 
         builder.setContentTitle(getString(style.defTitleResId));
+        builder.setGroup(GROUP_KEY_PUSH);
         pushSmall.setTextViewText(R.id.title, getString(style.defTitleResId));
         pushBig.setTextViewText(R.id.title, getString(style.defTitleResId));
 
@@ -326,6 +344,7 @@ public final class NotificationService extends ThreadsService {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         final String appMarker = intent.getStringExtra(EXTRA_APP_MARKER);
         builder.setShowWhen(true);
+        builder.setGroup(GROUP_KEY_PUSH);
         builder.setColor(getColor(style.nougatPushAccentColorResId));
         final boolean unreadMessage = !TextUtils.isEmpty(message);
         if (unreadMessage) {
@@ -439,6 +458,6 @@ public final class NotificationService extends ThreadsService {
         notificationBuilder.setSmallIcon(iconResId);
         notificationBuilder.setContentIntent(pend);
         notificationBuilder.setAutoCancel(true);
-        h.postDelayed(() -> nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
+        h.postDelayed(() -> nm.notify(CAMPAIGN_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
     }
 }
