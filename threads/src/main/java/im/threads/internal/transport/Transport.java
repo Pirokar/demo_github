@@ -87,9 +87,7 @@ public abstract class Transport {
 
     public abstract void sendUserTying(String input);
 
-    public abstract void sendInitChatMessage();
-
-    public abstract void sendEnvironmentMessage();
+    public abstract void sendInit();
 
     /**
      * TODO THREADS-6292: this method can potentially lead to messages stuck in STATE_SENDING
