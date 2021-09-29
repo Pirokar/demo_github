@@ -2,6 +2,7 @@ package im.threads.internal.controllers;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +11,14 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.ImagesActivity;
+import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -27,6 +31,9 @@ public final class FilesAndMediaController extends Fragment {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FilesActivity activity;
+
+    // Для приема сообщений из сервиса по скачиванию файлов
+    private ProgressReceiver progressReceiver;
 
     public static FilesAndMediaController getInstance() {
         return new FilesAndMediaController();
@@ -55,6 +62,18 @@ public final class FilesAndMediaController extends Fragment {
 
     public void bindActivity(FilesActivity activity) {
         this.activity = activity;
+        progressReceiver = new ProgressReceiver(activity);
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ProgressReceiver.PROGRESS_BROADCAST);
+        intentFilter.addAction(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST);
+        intentFilter.addAction(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST);
+        LocalBroadcastManager.getInstance(activity).registerReceiver(progressReceiver, intentFilter);
+    }
+
+    public void unbindActivity() {
+        if (this.activity != null) {
+            LocalBroadcastManager.getInstance(this.activity).unregisterReceiver(progressReceiver);
+        }
     }
 
     public void getFilesAsync() {
@@ -68,10 +87,13 @@ public final class FilesAndMediaController extends Fragment {
                             }
                         },
                         e -> ThreadsLogger.e(TAG, "getAllFileDescriptions error: " + e.getMessage()))
-                );
+        );
     }
 
     public void onFileClick(FileDescription fileDescription) {
+        if (fileDescription.getFileUri() == null) {
+            return;
+        }
         if (FileUtils.isImage(fileDescription)) {
             activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
         } else {
@@ -86,4 +108,12 @@ public final class FilesAndMediaController extends Fragment {
             }
         }
     }
+
+    public void onDownloadFileClick(FileDescription fileDescription) {
+        if (fileDescription.getFileUri() == null) {
+            FileDownloadService.startDownloadFD(activity, fileDescription);
+        }
+    }
+
+
 }

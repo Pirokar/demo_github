@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -47,12 +48,14 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.annimon.stream.Optional;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.google.android.material.slider.Slider;
 import com.squareup.picasso.Picasso;
+
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -63,6 +66,7 @@ import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.adapters.ChatAdapter;
 import im.threads.internal.adapters.QuickRepliesAdapter;
+import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
@@ -129,6 +133,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ChatFragment extends BaseFragment implements
         AttachmentBottomSheetDialogFragment.Callback,
+        ProgressReceiver.Callback,
         PopupMenu.OnMenuItemClickListener, FilePickerFragment.SelectedListener, ChatCenterAudioConverterCallback {
 
     public static final int REQUEST_CODE_PHOTOS = 100;
@@ -1540,10 +1545,12 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
+    @Override
     public void updateProgress(FileDescription filedescription) {
         chatAdapter.updateProgress(filedescription);
     }
 
+    @Override
     public void onDownloadError(FileDescription fileDescription, Throwable t) {
         if (isAdded()) {
             Activity activity = getActivity();
