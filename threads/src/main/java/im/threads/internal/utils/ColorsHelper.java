@@ -11,19 +11,25 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.BoolRes;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 public final class ColorsHelper {
 
-    public static void setStatusBarColor(Activity activity, @ColorRes int colorResId) {
+    public static void setStatusBarColor(Activity activity, @ColorRes int colorResId, @BoolRes int isLightResId) {
         if (colorResId != 0 && Build.VERSION.SDK_INT > 20) {
             if (activity != null) {
                 Window window = activity.getWindow();
                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 window.setStatusBarColor(ContextCompat.getColor(activity, colorResId));
+                if (activity.getResources().getBoolean(isLightResId)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    }
+                }
             }
         }
     }
