@@ -32,7 +32,7 @@ class UserPhrase constructor(
     constructor(
         uuid: String?,
         providerId: String?,
-        phrase: String,
+        phrase: String?,
         mQuote: Quote?,
         phraseTimeStamp: Long,
         fileDescription: FileDescription?,
@@ -50,7 +50,7 @@ class UserPhrase constructor(
     )
 
     constructor(
-        phrase: String,
+        phrase: String?,
         mQuote: Quote?,
         phraseTimeStamp: Long,
         fileDescription: FileDescription?,
