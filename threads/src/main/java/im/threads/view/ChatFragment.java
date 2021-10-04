@@ -50,6 +50,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
@@ -123,6 +124,7 @@ import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Pair;
@@ -1011,45 +1013,60 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onSendClick() {
-        if (mAttachedImages != null && mAttachedImages.size() != 0) {
-            List<UpcomingUserMessage> messages = new ArrayList<>();
-
-            String inputText = inputTextObservable.get();
-            if (inputText == null) {
-                return;
-            }
-            Uri fileUri = mAttachedImages.get(0);
-            messages.add(new UpcomingUserMessage(
-                    new FileDescription(
-                            requireContext().getString(R.string.threads_I),
-                            fileUri,
-                            FileUtils.getFileSize(fileUri),
-                            System.currentTimeMillis()),
-                    campaignMessage,
-                    mQuote,
-                    inputText.trim(),
-                    isCopy(inputText))
-            );
-            for (int i = 1; i < mAttachedImages.size(); i++) {
-                fileUri = mAttachedImages.get(i);
-                FileDescription fileDescription = new FileDescription(
-                        requireContext().getString(R.string.threads_I),
-                        fileUri,
-                        FileUtils.getFileSize(fileUri),
-                        System.currentTimeMillis()
-                );
-                UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
-                        fileDescription, null, null, null, false
-                );
-                messages.add(upcomingUserMessage);
-            }
-            if (isSendBlocked) {
-                clearInput();
-                showToast(requireContext().getString(R.string.threads_message_were_unsent));
-            } else {
-                sendMessage(messages);
-            }
+        if (mAttachedImages == null || mAttachedImages.isEmpty()) {
+            showToast(getString(R.string.threads_failed_to_open_file));
+            return;
         }
+        subscribe(
+                Single.fromCallable(() -> Stream.of(mAttachedImages)
+                        .filter(value -> FileUtils.canBeSent(requireContext(), value))
+                        .toList()
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(filteredPhotos -> {
+                            if (filteredPhotos.isEmpty()) {
+                                showToast(getString(R.string.threads_failed_to_open_file));
+                                return;
+                            }
+                            String inputText = inputTextObservable.get();
+                            if (inputText == null) {
+                                return;
+                            }
+                            List<UpcomingUserMessage> messages = new ArrayList<>();
+                            Uri fileUri = filteredPhotos.get(0);
+                            messages.add(new UpcomingUserMessage(
+                                    new FileDescription(
+                                            requireContext().getString(R.string.threads_I),
+                                            fileUri,
+                                            FileUtils.getFileSize(fileUri),
+                                            System.currentTimeMillis()),
+                                    campaignMessage,
+                                    mQuote,
+                                    inputText.trim(),
+                                    isCopy(inputText))
+                            );
+                            for (int i = 1; i < filteredPhotos.size(); i++) {
+                                fileUri = filteredPhotos.get(i);
+                                FileDescription fileDescription = new FileDescription(
+                                        requireContext().getString(R.string.threads_I),
+                                        fileUri,
+                                        FileUtils.getFileSize(fileUri),
+                                        System.currentTimeMillis()
+                                );
+                                UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
+                                        fileDescription, null, null, null, false
+                                );
+                                messages.add(upcomingUserMessage);
+                            }
+                            if (isSendBlocked) {
+                                clearInput();
+                                showToast(requireContext().getString(R.string.threads_message_were_unsent));
+                            } else {
+                                sendMessage(messages);
+                            }
+                        }
+        ));
     }
 
     public void hideBottomSheet() {
@@ -1137,44 +1154,60 @@ public final class ChatFragment extends BaseFragment implements
         if (photos == null || photos.size() == 0 || inputText == null) {
             return;
         }
-        unChooseItem();
-        Uri fileUri = photos.get(0);
-        UpcomingUserMessage uum =
-                new UpcomingUserMessage(
-                        new FileDescription(
-                                requireContext().getString(R.string.threads_I),
-                                fileUri,
-                                FileUtils.getFileSize(fileUri),
-                                System.currentTimeMillis()
-                        ),
-                        campaignMessage,
-                        mQuote,
-                        inputText.trim(),
-                        isCopy(inputText)
-                );
-        if (isSendBlocked) {
-            showToast(getString(R.string.threads_message_were_unsent));
-        } else {
-            mChatController.onUserInput(uum);
-        }
-        inputTextObservable.set("");
-        mQuoteLayoutHolder.clear();
-        for (int i = 1; i < photos.size(); i++) {
-            fileUri = photos.get(i);
-            uum = new UpcomingUserMessage(
-                    new FileDescription(
-                            requireContext().getString(R.string.threads_I),
-                            fileUri,
-                            FileUtils.getFileSize(fileUri),
-                            System.currentTimeMillis()
-                    ),
-                    null,
-                    null,
-                    null,
-                    false
-            );
-            mChatController.onUserInput(uum);
-        }
+        subscribe(
+                Single.fromCallable(() -> Stream.of(photos)
+                        .filter(value -> FileUtils.canBeSent(requireContext(), value))
+                        .toList()
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(filteredPhotos -> {
+                            if (filteredPhotos.isEmpty()) {
+                                showToast(getString(R.string.threads_failed_to_open_file));
+                                return;
+                            }
+                            unChooseItem();
+                            Uri fileUri = filteredPhotos.get(0);
+                            UpcomingUserMessage uum =
+                                    new UpcomingUserMessage(
+                                            new FileDescription(
+                                                    requireContext().getString(R.string.threads_I),
+                                                    fileUri,
+                                                    FileUtils.getFileSize(fileUri),
+                                                    System.currentTimeMillis()
+                                            ),
+                                            campaignMessage,
+                                            mQuote,
+                                            inputText.trim(),
+                                            isCopy(inputText)
+                                    );
+                            if (isSendBlocked) {
+                                showToast(getString(R.string.threads_message_were_unsent));
+                            } else {
+                                mChatController.onUserInput(uum);
+                            }
+                            inputTextObservable.set("");
+                            mQuoteLayoutHolder.clear();
+                            for (int i = 1; i < filteredPhotos.size(); i++) {
+                                fileUri = filteredPhotos.get(i);
+                                uum = new UpcomingUserMessage(
+                                        new FileDescription(
+                                                requireContext().getString(R.string.threads_I),
+                                                fileUri,
+                                                FileUtils.getFileSize(fileUri),
+                                                System.currentTimeMillis()
+                                        ),
+                                        null,
+                                        null,
+                                        null,
+                                        false
+                                );
+                                mChatController.onUserInput(uum);
+                            }
+                        })
+        );
+
+
     }
 
     private void onExternalCameraPhotoResult() {
@@ -1203,16 +1236,21 @@ public final class ChatFragment extends BaseFragment implements
         if (uri != null) {
             if (FileHelper.INSTANCE.isAllowedFileExtension(FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))) {
                 if (FileHelper.INSTANCE.isAllowedFileSize(FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri))) {
-                    onFileResult(uri);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        final int takeFlags = data.getFlags()
-                                & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                        try {
-                            requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                        } catch (SecurityException e) {
-                            ThreadsLogger.e(TAG, e.getLocalizedMessage());
+                    try {
+                        if (FileUtils.canBeSent(requireContext(), uri)) {
+                            onFileResult(uri);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                final int takeFlags = data.getFlags()
+                                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                            }
+                        } else {
+                            showToast(getString(R.string.threads_failed_to_open_file));
                         }
+                    } catch (SecurityException e) {
+                        ThreadsLogger.e(TAG, "file can't be sent", e);
+                        showToast(getString(R.string.threads_failed_to_open_file));
                     }
                 } else {
                     // Недопустимый размер файла
@@ -1997,7 +2035,12 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onFileSelected(File file) {
-        onFileResult(FileProviderHelper.getUriForFile(requireContext(), file));
+        final Uri uri = FileProviderHelper.getUriForFile(requireContext(), file);
+        if (FileUtils.canBeSent(requireContext(), uri)) {
+            onFileResult(uri);
+        } else {
+            showToast(getString(R.string.threads_failed_to_open_file));
+        }
     }
 
     public void setClientNotificationDisplayType(ClientNotificationDisplayType type) {

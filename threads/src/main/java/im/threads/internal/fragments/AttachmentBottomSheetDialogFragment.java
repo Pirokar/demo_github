@@ -35,7 +35,7 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
     private Callback callback = null;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (getParentFragment() instanceof Callback) {
             callback = (Callback) getParentFragment();
