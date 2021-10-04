@@ -54,6 +54,7 @@ public class FileDescriptionMediaPlayer {
     public FileDescriptionMediaPlayer(@NonNull AudioManager audioManager) {
         this.audioManager = audioManager;
         disposable = Flowable.interval(UPDATE_PERIOD, TimeUnit.MILLISECONDS)
+                .onBackpressureDrop()
                 .timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(it -> mediaPlayerUpdateProcessor.onNext(true));
