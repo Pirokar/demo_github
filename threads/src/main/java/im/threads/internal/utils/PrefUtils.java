@@ -10,12 +10,10 @@ import androidx.annotation.WorkerThread;
 import androidx.core.util.ObjectsCompat;
 import androidx.preference.PreferenceManager;
 
+import com.edna.android.push_lite.utils.CommonUtils;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonSyntaxException;
-import com.edna.android.push_lite.utils.CommonUtils;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -179,13 +177,6 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static void setCampaignMessage(@Nullable CampaignMessage campaignMessage) {
-        getDefaultSharedPreferences()
-                .edit()
-                .putString(CAMPAIGN_MESSAGE, campaignMessage != null ? Config.instance.gson.toJson(campaignMessage) : null)
-                .commit();
-    }
-
     @Nullable
     public static CampaignMessage getCampaignMessage() {
         String value = getDefaultSharedPreferences().getString(CAMPAIGN_MESSAGE, "");
@@ -193,6 +184,13 @@ public final class PrefUtils {
             return null;
         }
         return Config.instance.gson.fromJson(value, CampaignMessage.class);
+    }
+
+    public static void setCampaignMessage(@Nullable CampaignMessage campaignMessage) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(CAMPAIGN_MESSAGE, campaignMessage != null ? Config.instance.gson.toJson(campaignMessage) : null)
+                .commit();
     }
 
     public static boolean isClientIdEmpty() {
