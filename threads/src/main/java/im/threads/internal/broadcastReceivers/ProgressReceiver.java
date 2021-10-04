@@ -11,7 +11,6 @@ import java.lang.ref.WeakReference;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.utils.ThreadsLogger;
-import im.threads.view.ChatFragment;
 
 /**
  * В чате есть возможность скачать файл из сообщения.
@@ -25,10 +24,10 @@ public final class ProgressReceiver extends BroadcastReceiver {
     public static final String DOWNLOADED_SUCCESSFULLY_BROADCAST = "im.threads.internal.controllers.DOWNLOADED_SUCCESSFULLY_BROADCAST";
     public static final String DOWNLOAD_ERROR_BROADCAST = "im.threads.internal.controllers.DOWNLOAD_ERROR_BROADCAST";
 
-    private final WeakReference<ChatFragment> fragment;
+    private final WeakReference<Callback> callback;
 
-    public ProgressReceiver(@NonNull ChatFragment fragment) {
-        this.fragment = new WeakReference<>(fragment);
+    public ProgressReceiver(@NonNull Callback callback) {
+        this.callback = new WeakReference<>(callback);
     }
 
     @Override
@@ -42,8 +41,8 @@ public final class ProgressReceiver extends BroadcastReceiver {
             case PROGRESS_BROADCAST: {
                 ThreadsLogger.i(TAG, "onReceive: PROGRESS_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(FileDownloadService.FD_TAG);
-                if (fragment.get() != null && fileDescription != null) {
-                    fragment.get().updateProgress(fileDescription);
+                if (callback.get() != null && fileDescription != null) {
+                    callback.get().updateProgress(fileDescription);
                 }
                 break;
             }
@@ -51,20 +50,26 @@ public final class ProgressReceiver extends BroadcastReceiver {
                 ThreadsLogger.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(FileDownloadService.FD_TAG);
                 fileDescription.setDownloadProgress(100);
-                if (fragment.get() != null) {
-                    fragment.get().updateProgress(fileDescription);
+                if (callback.get() != null) {
+                    callback.get().updateProgress(fileDescription);
                 }
                 break;
             }
             case DOWNLOAD_ERROR_BROADCAST: {
                 ThreadsLogger.e(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ");
                 FileDescription fileDescription = intent.getParcelableExtra(FileDownloadService.FD_TAG);
-                if (fragment.get() != null && fileDescription != null) {
+                if (callback.get() != null && fileDescription != null) {
                     Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
-                    fragment.get().onDownloadError(fileDescription, t);
+                    callback.get().onDownloadError(fileDescription, t);
                 }
                 break;
             }
         }
+    }
+
+    public interface Callback {
+        void updateProgress(FileDescription fileDescription);
+
+        void onDownloadError(FileDescription fileDescription, Throwable t);
     }
 }

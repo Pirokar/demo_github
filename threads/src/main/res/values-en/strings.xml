@@ -40,6 +40,7 @@
     <string name="threads_in">in</string>
     <string name="threads_search_more">Search more</string>
     <string name="threads_message_were_unsent">Message not sent</string>
+    <string name="threads_failed_to_open_file">Failed to open selected file</string>
     <string name="threads_saved_to_downloads">Saved to Downloads</string>
     <string name="threads_unable_to_save">Unable to save file</string>
     <string name="threads_push_left_female">left dialog</string>

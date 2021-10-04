@@ -160,6 +160,17 @@ object FileUtils {
         } else Config.instance.serverBaseUrl + "files/" + relativeUrl
     }
 
+    @JvmStatic
+    fun canBeSent(context: Context, uri: Uri): Boolean {
+        try {
+            context.contentResolver.openInputStream(uri)
+                .use { inputStream -> return inputStream != null && inputStream.read() != -1 }
+        } catch (e: IOException) {
+            ThreadsLogger.e(TAG, "file can't be sent", e)
+            return false
+        }
+    }
+
     private fun getExtensionFromFileDescription(fileDescription: FileDescription): Int {
         val mimeType = getMimeType(fileDescription)
         if (mimeType != UNKNOWN_MIME_TYPE) {

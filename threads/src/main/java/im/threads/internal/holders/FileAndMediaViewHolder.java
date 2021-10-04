@@ -22,9 +22,11 @@ import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
+import im.threads.internal.views.CircularProgressButton;
 
 public final class FileAndMediaViewHolder extends BaseHolder {
     private ImageButton mImageButton;
+    private CircularProgressButton mDownloadButton;
     private TextView fileHeaderTextView;
     private TextView fileSizeTextView;
     private TextView timeStampTextView;
@@ -34,6 +36,7 @@ public final class FileAndMediaViewHolder extends BaseHolder {
     public FileAndMediaViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_and_media, parent, false));
         mImageButton = itemView.findViewById(R.id.file_button);
+        mDownloadButton = itemView.findViewById(R.id.button_download_file);
         fileHeaderTextView = itemView.findViewById(R.id.file_title);
         fileSizeTextView = itemView.findViewById(R.id.file_size);
         timeStampTextView = itemView.findViewById(R.id.timestamp);
@@ -45,7 +48,19 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         timeStampTextView.setTextColor(getColorInt(style.filesAndMediaTextColor));
     }
 
-    public void onBind(FileDescription fileDescription, View.OnClickListener fileClickListener) {
+    public void onBind(FileDescription fileDescription,
+                       View.OnClickListener fileClickListener,
+                       View.OnClickListener fileDownloadListener
+    ) {
+        if (fileDescription.getFileUri() == null) {
+            mDownloadButton.setVisibility(View.VISIBLE);
+            mImageButton.setVisibility(View.GONE);
+            mDownloadButton.setOnClickListener(fileDownloadListener);
+        } else {
+            mDownloadButton.setVisibility(View.GONE);
+            mImageButton.setVisibility(View.VISIBLE);
+        }
+        mDownloadButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
         if (FileUtils.isImage(fileDescription)) {
             if (fileDescription.getFileUri() != null) {
                 Picasso.get()
@@ -60,7 +75,6 @@ public final class FileAndMediaViewHolder extends BaseHolder {
                         .centerInside()
                         .into(mImageButton);
             }
-
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }

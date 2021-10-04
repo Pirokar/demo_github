@@ -79,6 +79,7 @@ class ImageFromConsultViewHolder(
 
     fun onBind(
         consultPhrase: ConsultPhrase,
+        highlighted: Boolean,
         buttonClickListener: View.OnClickListener,
         onLongClickListener: OnLongClickListener,
         onAvatarClickListener: View.OnClickListener
@@ -106,9 +107,9 @@ class ImageFromConsultViewHolder(
             }
         }
         filterView.visibility =
-            if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
+            if (highlighted) View.VISIBLE else View.INVISIBLE
         secondFilterView.visibility =
-            if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
+            if (highlighted) View.VISIBLE else View.INVISIBLE
         @DrawableRes val resId = style.defaultOperatorAvatar
         val avatarPath = consultPhrase.avatarPath
         if (consultPhrase.isAvatarVisible) {

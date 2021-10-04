@@ -38,9 +38,9 @@ object ShortPushMessageProcessingDelegate {
                     for (readId in readMessagesIds) {
                         val userPhrase =
                             DatabaseHolder.getInstance().getChatItem(readId) as UserPhrase?
-                        if (userPhrase != null) {
+                        userPhrase?.providerId?.let {
                             ChatUpdateProcessor.getInstance()
-                                .postOutgoingMessageWasRead(userPhrase.providerId)
+                                .postOutgoingMessageWasRead(it)
                         }
                     }
                 }

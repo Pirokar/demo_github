@@ -1,22 +1,31 @@
 package im.threads.internal.controllers;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import static android.content.Context.NOTIFICATION_SERVICE;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
+
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.util.Pair;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -26,7 +35,6 @@ import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
-import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ConsultChatPhrase;
 import im.threads.internal.model.ConsultConnectionMessage;
 import im.threads.internal.model.ConsultInfo;
@@ -47,10 +55,8 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.services.NotificationService;
-import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
-import im.threads.internal.utils.CallbackNoError;
 import im.threads.internal.utils.ConsultWriter;
 import im.threads.internal.utils.DeviceInfoHelper;
 import im.threads.internal.utils.FilePoster;
@@ -70,15 +76,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * controller for chat Fragment. all bells and whistles in fragment,
@@ -107,31 +104,29 @@ public final class ChatController {
     private final DatabaseHolder databaseHolder;
     @NonNull
     private final ConsultWriter consultWriter;
-    private boolean surveyCompletionInProgress = false;
-    // Ссылка на фрагмент, которым управляет контроллер
-    @Nullable
-    private ChatFragment fragment;
-
-    // Для приема сообщений из сервиса по скачиванию файлов
-    private ProgressReceiver progressReceiver;
-    // this flag is keeping the visibility state of the request to resolve thread
-
-    // keep an active and visible for user survey id
-    private Survey activeSurvey = null;
-    private Long lastMessageTimestamp;
-    private boolean isActive;
-    private List<ChatItem> lastItems = new ArrayList<>();
-
-    // TODO: вынести в отдельный класс поиск сообщений
-    private Seeker seeker = new Seeker();
-    private String lastSearchQuery = "";
-    private boolean isAllMessagesDownloaded = false;
-    private boolean isDownloadingMessages;
-
     // TODO: вынести в отдельный класс отправку сообщений
     private final List<UserPhrase> unsendMessages = new ArrayList<>();
     private final int resendTimeInterval;
     private final List<UserPhrase> sendQueue = new ArrayList<>();
+    // this flag is keeping the visibility state of the request to resolve thread
+    private boolean surveyCompletionInProgress = false;
+    // Ссылка на фрагмент, которым управляет контроллер
+    @Nullable
+    private ChatFragment fragment;
+    // Для приема сообщений из сервиса по скачиванию файлов
+    private ProgressReceiver progressReceiver;
+    // keep an active and visible for user survey id
+    private Survey activeSurvey = null;
+    private Long lastMessageTimestamp;
+    private boolean isActive;
+    @NonNull
+    private List<ChatItem> lastItems = new ArrayList<>();
+    // TODO: вынести в отдельный класс поиск сообщений
+    private Seeker seeker = new Seeker();
+    private long lastFancySearchDate = 0;
+    private String lastSearchQuery = "";
+    private boolean isAllMessagesDownloaded = false;
+    private boolean isDownloadingMessages;
     private Handler unsendMessageHandler;
     private String firstUnreadUuidId;
 
@@ -248,51 +243,32 @@ public final class ChatController {
         queueMessageSending(um);
     }
 
-    public void fancySearch(final String query, final boolean forward, final CallbackNoError<List<ChatItem>> callback) {
-        if (!isAllMessagesDownloaded) {
-            subscribe(
-                    downloadMessagesTillEnd()
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    list -> { },
-                                    e -> ThreadsLogger.e(TAG, e.getMessage())
-                            )
-            );
-        }
-        subscribe(Single.fromCallable(() -> {
-                    final List<ChatItem> fromDb = databaseHolder.getChatItems(0, -1);
-                    Map<String, ChatPhrase> tmpMap = new LinkedHashMap<>(fromDb.size());
-                    for (ChatItem item : fromDb) {
-                        if (item instanceof ChatPhrase) {
-                            final ChatPhrase chatPhraseDb = (ChatPhrase) item;
-                            tmpMap.put(chatPhraseDb.getId(), chatPhraseDb);
-                        }
-                    }
-                    if (lastItems != null && lastItems.size() != 0) {
-                        if (lastSearchQuery.equalsIgnoreCase(query)) {
-                            for (final ChatItem ci : lastItems) {
-                                if (ci instanceof ChatPhrase) {
-                                    if (((ChatPhrase) ci).isHighlight()) {
-                                        final ChatPhrase cp = (ChatPhrase) ci;
-                                        final ChatPhrase searchedPhrase = tmpMap.get(cp.getId());
-                                        if (searchedPhrase != null) {
-                                            searchedPhrase.setHighLighted(true);
-                                        }
-                                    }
-                                }
+    public void fancySearch(final String query, final boolean forward, final Consumer<kotlin.Pair<List<ChatItem>, ChatItem>> consumer) {
+        subscribe(
+                Single.just(isAllMessagesDownloaded)
+                        .flatMap(isAllMessagesDownloaded -> {
+                            if (!isAllMessagesDownloaded) {
+                                return downloadMessagesTillEnd();
+                            } else {
+                                return Single.fromCallable((Callable<Object>) ArrayList::new);
                             }
-                        }
-                    }
-                    lastItems = new ArrayList<>(tmpMap.values());
-                    if (query.isEmpty() || !query.equals(lastSearchQuery)) seeker = new Seeker();
-                    lastSearchQuery = query;
-                    return seeker.seek(lastItems, !forward, query);
-                })
-                        .subscribeOn(Schedulers.io())
+                        })
+                        .flatMapCompletable(o -> Completable.fromAction(
+                                () -> {
+                                    if (System.currentTimeMillis() > (lastFancySearchDate + 3000)) {
+                                        lastItems = databaseHolder.getChatItems(0, -1);
+                                        lastFancySearchDate = System.currentTimeMillis();
+                                    }
+                                    if (query.isEmpty() || !query.equals(lastSearchQuery)) {
+                                        seeker = new Seeker();
+                                    }
+                                    lastSearchQuery = query;
+                                })
+                        )
+                        .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                callback::onCall,
+                                () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
                                 e -> ThreadsLogger.e(TAG, e.getMessage())
                         )
         );
@@ -301,28 +277,27 @@ public final class ChatController {
     public Single<List<ChatItem>> downloadMessagesTillEnd() {
         return Single.fromCallable(
                 () -> {
-                    if (!isDownloadingMessages) {
-                        isDownloadingMessages = true;
-                        ThreadsLogger.d(TAG, "downloadMessagesTillEnd");
-                        while (!isAllMessagesDownloaded) {
-                            final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
-                            final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
-                            if (serverItems.isEmpty()) {
-                                isAllMessagesDownloaded = true;
-                            } else {
-                                lastMessageTimestamp = serverItems.get(0).getTimeStamp();
-                                isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
-                                saveMessages(serverItems);
+                    synchronized (this) {
+                        if (!isDownloadingMessages) {
+                            isDownloadingMessages = true;
+                            ThreadsLogger.d(TAG, "downloadMessagesTillEnd");
+                            while (!isAllMessagesDownloaded) {
+                                final HistoryResponse response = HistoryLoader.getHistorySync(lastMessageTimestamp, PER_PAGE_COUNT);
+                                final List<ChatItem> serverItems = HistoryParser.getChatItems(response);
+                                if (serverItems.isEmpty()) {
+                                    isAllMessagesDownloaded = true;
+                                } else {
+                                    lastMessageTimestamp = serverItems.get(0).getTimeStamp();
+                                    isAllMessagesDownloaded = serverItems.size() < PER_PAGE_COUNT; // Backend can give us more than chunk anytime, it will give less only on history end
+                                    saveMessages(serverItems);
+                                }
                             }
                         }
+                        isDownloadingMessages = false;
+                        return databaseHolder.getChatItems(0, -1);
                     }
-                    return databaseHolder.getChatItems(0, -1);
                 }
         )
-                .map(list -> {
-                    isDownloadingMessages = false;
-                    return list;
-                })
                 .doOnError(throwable -> isDownloadingMessages = false);
     }
 
@@ -584,8 +559,7 @@ public final class ChatController {
     }
 
     public void sendInit() {
-        Config.instance.transport.sendInitChatMessage();
-        Config.instance.transport.sendEnvironmentMessage();
+        Config.instance.transport.sendInit();
         if (!PrefUtils.isClientIdEmpty()) {
             if (fragment != null) {
                 fragment.hideEmptyState();
@@ -689,7 +663,7 @@ public final class ChatController {
                                 () -> {
                                 },
                                 e -> {
-                                    chatUpdateProcessor.postChatItemSendError(userPhrase.getUuid());
+                                    chatUpdateProcessor.postChatItemSendError(userPhrase.getId());
                                     ThreadsLogger.e(TAG, e.getMessage());
                                 }
                         )
@@ -1025,7 +999,7 @@ public final class ChatController {
         if (chatItem instanceof ConsultPhrase && isActive) {
             ConsultPhrase consultPhrase = (ConsultPhrase) chatItem;
             handleQuickReplies(Collections.singletonList(consultPhrase));
-            Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getUuid()));
+            Config.instance.transport.markMessagesAsRead(Collections.singletonList(consultPhrase.getId()));
         }
         if (chatItem instanceof SimpleSystemMessage && isActive) {
             hideQuickReplies();
@@ -1090,6 +1064,7 @@ public final class ChatController {
 
     private void cleanAll() {
         ThreadsLogger.i(TAG, "cleanAll: ");
+        isAllMessagesDownloaded = false;
         sendQueue.clear();
         databaseHolder.cleanDatabase();
         if (fragment != null) {
@@ -1103,9 +1078,8 @@ public final class ChatController {
     }
 
     private void removePushNotification() {
-        final NotificationManager nm = (NotificationManager) appContext.getSystemService(NOTIFICATION_SERVICE);
-        if (nm != null) {
-            nm.cancel(UNREAD_MESSAGE_PUSH_ID);
+        if (fragment != null) {
+            NotificationService.removeNotification(fragment.requireContext());
         }
     }
 
@@ -1137,8 +1111,7 @@ public final class ChatController {
         if (fragment != null && (!TextUtils.isEmpty(clientId) || Config.instance.clientIdIgnoreEnabled)) {
             subscribe(
                     Single.fromCallable(() -> {
-                        Config.instance.transport.sendInitChatMessage();
-                        Config.instance.transport.sendEnvironmentMessage();
+                        Config.instance.transport.sendInit();
                         final HistoryResponse response = HistoryLoader.getHistorySync(null, true);
                         List<ChatItem> chatItems = HistoryParser.getChatItems(response);
                         saveMessages(chatItems);

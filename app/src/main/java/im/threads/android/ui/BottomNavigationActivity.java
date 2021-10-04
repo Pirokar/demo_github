@@ -4,16 +4,20 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import im.threads.ThreadsLib;
 import im.threads.UserInfoBuilder;
 import im.threads.android.R;
@@ -250,7 +254,15 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 bottomNavigationView.setSelectedItemId(TabItem.TAB_HOME.getMenuId());
             }
         } else {
-            super.onBackPressed();
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
+                    && isTaskRoot()
+                    && getSupportFragmentManager().getPrimaryNavigationFragment().getChildFragmentManager().getBackStackEntryCount() == 0
+                    && getSupportFragmentManager().getBackStackEntryCount() == 0
+            ) {
+                finishAfterTransition();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 

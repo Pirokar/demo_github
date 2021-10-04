@@ -83,7 +83,7 @@ public final class MyCircleProgress extends View {
 
     private void initPaint() {
         finishedPaint = new Paint();
-        finishedPaint.setColor(ContextCompat.getColor(getContext(), Config.instance.getChatStyle().chatToolbarColorResId));
+        finishedPaint.setColor(ContextCompat.getColor(getContext(), Config.instance.getChatStyle().chatBodyIconsTint));
         finishedPaint.setStyle(Paint.Style.STROKE);
         finishedPaint.setAntiAlias(true);
         finishedPaint.setStrokeWidth(finishedStrokeSize);

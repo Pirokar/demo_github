@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 
 import im.threads.internal.Config;
@@ -58,9 +59,35 @@ public final class FilePoster {
         return null;
     }
 
+    private static byte[] getBytes(InputStream inputStream) throws IOException {
+        try (ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream()) {
+            int bufferSize = 1024;
+            byte[] buffer = new byte[bufferSize];
+
+            int len = 0;
+            while ((len = inputStream.read(buffer)) != -1) {
+                byteBuffer.write(buffer, 0, len);
+            }
+            return byteBuffer.toByteArray();
+        }
+    }
+
+    private static boolean isJpeg(Uri uri) {
+        try (InputStream iStream = Config.instance.context.getContentResolver().openInputStream(uri)) {
+            byte[] inputData = getBytes(iStream);
+            //JPEG(JFIF) header: FF D8 FF
+            return inputData[0] == -1 && inputData[1] == -40 && inputData[2] == -1;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     private static RequestBody getFileRequestBody(Uri uri, String mimeType) throws IOException {
-        if (mimeType.equals("image/jpeg")) {
-            return getJpegRequestBody(uri);
+        if (isJpeg(uri)) {
+            RequestBody jpegRequestBody = getJpegRequestBody(uri);
+            if (jpegRequestBody != null) {
+                return jpegRequestBody;
+            }
         }
         return new InputStreamRequestBody(MediaType.parse(mimeType), Config.instance.context.getContentResolver(), uri);
     }
@@ -69,31 +96,36 @@ public final class FilePoster {
         ThreadsLogger.i(TAG, "sendFile: " + uri);
         File file = compressImage(uri);
         if (file == null) {
-            throw new IOException("Unable to create compressed file");
+            return null;
         }
         return RequestBody.create(MediaType.parse("image/jpeg"), file);
     }
 
 
     private static File compressImage(Uri uri) throws IOException {
-        Bitmap bitmap = Picasso.get()
-                .load(uri)
-                .resize(PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE)
-                .centerInside()
-                .onlyScaleDown()
-                .get();
-        File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-        try (FileOutputStream fileOutputStream = new FileOutputStream(downsizedImageFile)) {
-            fileOutputStream.write(byteArrayOutputStream.toByteArray());
-            fileOutputStream.flush();
-            bitmap.recycle();
-            return downsizedImageFile;
+        try {
+            Bitmap bitmap = Picasso.get()
+                    .load(uri)
+                    .resize(PHOTO_RESIZE_MAX_SIDE, PHOTO_RESIZE_MAX_SIDE)
+                    .centerInside()
+                    .onlyScaleDown()
+                    .get();
+            File downsizedImageFile = new File(Config.instance.context.getCacheDir(), FileUtils.getFileName(uri));
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(downsizedImageFile)) {
+                fileOutputStream.write(byteArrayOutputStream.toByteArray());
+                fileOutputStream.flush();
+                bitmap.recycle();
+                return downsizedImageFile;
+            } catch (IOException e) {
+                ThreadsLogger.e(TAG, "downsizeImage", e);
+                bitmap.recycle();
+                downsizedImageFile.delete();
+                return null;
+            }
         } catch (IOException e) {
-            ThreadsLogger.e(TAG, "downsizeImage", e);
-            bitmap.recycle();
-            downsizedImageFile.delete();
+            ThreadsLogger.e(TAG, "downsizeImage, Incorrect image file", e);
             return null;
         }
     }

@@ -97,7 +97,13 @@ afterEvaluate {
 
         repositories {
             maven {
-                url 'https://maven-pub.edna.ru/repository/maven-releases'
+                if ("$version".contains('SNAPSHOT')) {
+                    // dev
+                    url 'https://maven-pub.edna.ru/repository/maven-snapshots'
+                } else {
+                    // release
+                    url 'https://maven-pub.edna.ru/repository/maven-releases'
+                }
                 credentials {
                     username "$mavenProdUser"
                     password "$mavenProdPass"

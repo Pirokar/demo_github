@@ -10,12 +10,10 @@ import androidx.annotation.WorkerThread;
 import androidx.core.util.ObjectsCompat;
 import androidx.preference.PreferenceManager;
 
+import com.edna.android.push_lite.utils.CommonUtils;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonSyntaxException;
-import com.edna.android.push_lite.utils.CommonUtils;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -179,13 +177,6 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static void setCampaignMessage(@Nullable CampaignMessage campaignMessage) {
-        getDefaultSharedPreferences()
-                .edit()
-                .putString(CAMPAIGN_MESSAGE, campaignMessage != null ? Config.instance.gson.toJson(campaignMessage) : null)
-                .commit();
-    }
-
     @Nullable
     public static CampaignMessage getCampaignMessage() {
         String value = getDefaultSharedPreferences().getString(CAMPAIGN_MESSAGE, "");
@@ -193,6 +184,13 @@ public final class PrefUtils {
             return null;
         }
         return Config.instance.gson.fromJson(value, CampaignMessage.class);
+    }
+
+    public static void setCampaignMessage(@Nullable CampaignMessage campaignMessage) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(CAMPAIGN_MESSAGE, campaignMessage != null ? Config.instance.gson.toJson(campaignMessage) : null)
+                .commit();
     }
 
     public static boolean isClientIdEmpty() {
@@ -318,19 +316,12 @@ public final class PrefUtils {
     @WorkerThread
     public static void migrateTransportIfNeeded() {
         String transportType = getTransportType();
-        if (TextUtils.isEmpty(transportType)) {
-            if ("THREADS_GATE".equals(Config.instance.transport.getType().toString())) {
-                setTransportType(Config.instance.transport.getType().toString());
-                resetPushToken();
-            } else {
-                setTransportType(ConfigBuilder.TransportType.MFMS_PUSH.toString());
-            }
-        } else {
+        if (!TextUtils.isEmpty(transportType)) {
             if (!ObjectsCompat.equals(transportType, Config.instance.transport.getType().toString())) {
-                setTransportType(Config.instance.transport.getType().toString());
                 resetPushToken();
             }
         }
+        setTransportType(Config.instance.transport.getType().toString());
     }
 
     private static void resetPushToken() {

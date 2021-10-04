@@ -22,18 +22,18 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Iterator;
 import java.util.List;
 
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.adapters.FilesAndMediaAdapter;
+import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.controllers.FilesAndMediaController;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.Keyboard;
 
-public final class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.OnFileClick {
+public final class FilesActivity extends BaseActivity implements FilesAndMediaAdapter.OnFileClick, ProgressReceiver.Callback {
     private static final String TAG = "FilesActivity ";
     private FilesAndMediaController mFilesAndMediaController;
     private RecyclerView mRecyclerView;
@@ -47,10 +47,7 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
 
     public void onFileReceive(List<FileDescription> descriptions) {
         if (descriptions != null && descriptions.size() > 0) {
-            for (Iterator<FileDescription> iter = descriptions.iterator(); iter.hasNext(); ) {
-                if (iter.next().getFileUri() == null) iter.remove();
-            }
-            mFilesAndMediaAdapter = new FilesAndMediaAdapter(descriptions, this);
+            mFilesAndMediaAdapter = new FilesAndMediaAdapter(descriptions, this, this);
             mRecyclerView.setAdapter(mFilesAndMediaAdapter);
         }
     }
@@ -58,6 +55,11 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
     @Override
     public void onFileClick(FileDescription fileDescription) {
         mFilesAndMediaController.onFileClick(fileDescription);
+    }
+
+    @Override
+    public void onDownloadFileClick(FileDescription fileDescription) {
+        mFilesAndMediaController.onDownloadFileClick(fileDescription);
     }
 
     @Override
@@ -69,6 +71,11 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(style.chatStatusBarColorResId));
+            if (getResources().getBoolean(style.windowLightStatusBarResId)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                }
+            }
         }
         setContentView(R.layout.activity_files_and_media);
         mToolbar = findViewById(R.id.toolbar);
@@ -164,5 +171,21 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
         navigationIcon.mutate().setColorFilter(ContextCompat.getColor(this, style.chatToolbarTextColorResId), PorterDuff.Mode.SRC_ATOP);
         mToolbar.setNavigationIcon(navigationIcon);
         mSearchEditText.setHintTextColor(getColorInt(style.chatToolbarHintTextColor));
+    }
+
+    @Override
+    public void updateProgress(FileDescription fileDescription) {
+        mFilesAndMediaAdapter.updateProgress(fileDescription);
+    }
+
+    @Override
+    public void onDownloadError(FileDescription fileDescription, Throwable t) {
+        mFilesAndMediaAdapter.onDownloadError(fileDescription);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mFilesAndMediaController.unbindActivity();
     }
 }

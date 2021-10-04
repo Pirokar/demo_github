@@ -3,12 +3,14 @@ package im.threads.internal.adapters;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.ObjectsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import im.threads.internal.helpers.ChatItemListHelper;
 import im.threads.internal.holders.EmptyViewHolder;
 import im.threads.internal.holders.FileAndMediaViewHolder;
 import im.threads.internal.holders.FilesDateStampHolder;
@@ -25,13 +27,15 @@ public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
     private static final int TYPE_DATE_ROW = 1;
     private static final int TYPE_FILE_AND_MEDIA_ROW = 2;
     private OnFileClick mOnFileClick;
+    private OnFileClick mOnDownloadFileClick;
 
     private ArrayList<MediaAndFileItem> list;
     private ArrayList<MediaAndFileItem> backup;
 
-    public FilesAndMediaAdapter(List<FileDescription> list, OnFileClick onFileClick) {
+    public FilesAndMediaAdapter(List<FileDescription> list, OnFileClick onFileClick, OnFileClick onDownloadFileClick) {
         this.list = new ArrayList<>();
         mOnFileClick = onFileClick;
+        mOnDownloadFileClick = onDownloadFileClick;
         if (list.size() != 0) {
             addItems(list);
         }
@@ -65,6 +69,12 @@ public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
                         if (null != mOnFileClick) {
                             FileAndMediaItem item1 = (FileAndMediaItem) list.get(h.getAdapterPosition());
                             mOnFileClick.onFileClick(item1.getFileDescription());
+                        }
+                    },
+                    f -> {
+                        if (null != mOnDownloadFileClick) {
+                            FileAndMediaItem item1 = (FileAndMediaItem) list.get(h.getAdapterPosition());
+                            mOnDownloadFileClick.onDownloadFileClick(item1.getFileDescription());
                         }
                     }
             );
@@ -144,7 +154,36 @@ public final class FilesAndMediaAdapter extends RecyclerView.Adapter {
         }
     }
 
+    public void updateProgress(final FileDescription fileDescription) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) instanceof FileAndMediaItem) {
+                final FileAndMediaItem mediaItem = (FileAndMediaItem) list.get(i);
+                if (ObjectsCompat.equals(mediaItem.getFileDescription(), fileDescription)) {
+                    FileAndMediaItem itemCopy = mediaItem.copy(fileDescription, mediaItem.getFileName());
+                    list.set(i, itemCopy);
+                    notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
+    public void onDownloadError(final FileDescription fileDescription) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) instanceof FileAndMediaItem) {
+                final FileAndMediaItem mediaItem = (FileAndMediaItem) list.get(i);
+                int itemViewType = getItemViewType(i);
+                if (ObjectsCompat.equals(mediaItem.getFileDescription(), fileDescription)
+                        && (itemViewType == TYPE_FILE_AND_MEDIA_ROW)) {
+                    mediaItem.getFileDescription().setDownloadError(true);
+                    notifyItemChanged(i);
+                }
+            }
+        }
+    }
+
     public interface OnFileClick {
         void onFileClick(FileDescription fileDescription);
+
+        void onDownloadFileClick(FileDescription fileDescription);
     }
 }

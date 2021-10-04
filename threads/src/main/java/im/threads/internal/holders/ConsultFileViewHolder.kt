@@ -23,19 +23,18 @@ import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.views.CircularProgressButton
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
-    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_chat_file, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_consult_chat_file, parent, false)
 ) {
     private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     private val mCircularProgressButton =
-        itemView.findViewById<CircularProgressButton>(R.id.circ_button).apply {
-            setBackgroundColorResId(style.chatBackgroundColor)
-        }
+            itemView.findViewById<CircularProgressButton>(R.id.circ_button).apply {
+                setBackgroundColorResId(style.chatBackgroundColor)
+            }
     private val mFileHeader: TextView = itemView.findViewById(R.id.header)
     private val mSizeTextView: TextView = itemView.findViewById(R.id.file_size)
     private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timestamp).apply {
@@ -43,46 +42,46 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
     }
     private val mConsultAvatar = itemView.findViewById<ImageView>(R.id.consult_avatar).apply {
         layoutParams.height =
-            itemView.context.resources.getDimension(style.operatorAvatarSize)
-                .toInt()
+                itemView.context.resources.getDimension(style.operatorAvatarSize)
+                        .toInt()
         layoutParams.width =
-            itemView.context.resources.getDimension(style.operatorAvatarSize)
-                .toInt()
+                itemView.context.resources.getDimension(style.operatorAvatarSize)
+                        .toInt()
     }
     private val filterView = itemView.findViewById<View>(R.id.filter).apply {
         setBackgroundColor(
-            ContextCompat.getColor(
-                itemView.context,
-                style.chatHighlightingColor
-            )
+                ContextCompat.getColor(
+                        itemView.context,
+                        style.chatHighlightingColor
+                )
         )
     }
     private val secondFilterView = itemView.findViewById<View>(R.id.filter_second).apply {
         setBackgroundColor(
-            ContextCompat.getColor(
-                itemView.context,
-                style.chatHighlightingColor
-            )
+                ContextCompat.getColor(
+                        itemView.context,
+                        style.chatHighlightingColor
+                )
         )
     }
 
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
-                AppCompatResources.getDrawable(
-                    itemView.context,
-                    style.incomingMessageBubbleBackground
-                )
+                    AppCompatResources.getDrawable(
+                            itemView.context,
+                            style.incomingMessageBubbleBackground
+                    )
             background.setColorFilter(
-                getColorInt(style.incomingMessageBubbleColor),
-                PorterDuff.Mode.SRC_ATOP
+                    getColorInt(style.incomingMessageBubbleColor),
+                    PorterDuff.Mode.SRC_ATOP
             )
             val bubbleLeftMarginDp =
-                itemView.context.resources.getDimension(R.dimen.margin_quarter)
+                    itemView.context.resources.getDimension(R.dimen.margin_quarter)
             val bubbleLeftMarginPx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                bubbleLeftMarginDp,
-                itemView.resources.displayMetrics
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    bubbleLeftMarginDp,
+                    itemView.resources.displayMetrics
             ).toInt()
             val lp = layoutParams as RelativeLayout.LayoutParams
             lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
@@ -93,10 +92,11 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
     }
 
     fun onBind(
-        consultPhrase: ConsultPhrase,
-        buttonClickListener: View.OnClickListener,
-        onLongClickListener: OnLongClickListener,
-        onAvatarClickListener: View.OnClickListener
+            consultPhrase: ConsultPhrase,
+            highlighted: Boolean,
+            buttonClickListener: View.OnClickListener,
+            onLongClickListener: OnLongClickListener,
+            onAvatarClickListener: View.OnClickListener
     ) {
         val fileDescription = consultPhrase.fileDescription
         if (fileDescription != null) {
@@ -113,35 +113,35 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
             vg.getChildAt(i).setOnLongClickListener(onLongClickListener)
         }
         mCircularProgressButton.setOnClickListener(buttonClickListener)
-        filterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
-        secondFilterView.visibility = if (consultPhrase.isChosen) View.VISIBLE else View.INVISIBLE
+        filterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
+        secondFilterView.visibility = if (highlighted) View.VISIBLE else View.INVISIBLE
         if (consultPhrase.isAvatarVisible) {
             mConsultAvatar.visibility = View.VISIBLE
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
                 Picasso.get()
-                    .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                    .fit()
-                    .noPlaceholder()
-                    .transform(CircleTransformation())
-                    .into(mConsultAvatar, object : Callback {
-                        override fun onSuccess() {}
-                        override fun onError(e: Exception) {
-                            Picasso.get()
-                                .load(style.defaultOperatorAvatar)
-                                .fit()
-                                .noPlaceholder()
-                                .transform(CircleTransformation())
-                                .into(mConsultAvatar)
-                        }
-                    })
+                        .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
+                        .fit()
+                        .noPlaceholder()
+                        .transform(CircleTransformation())
+                        .into(mConsultAvatar, object : Callback {
+                            override fun onSuccess() {}
+                            override fun onError(e: Exception) {
+                                Picasso.get()
+                                        .load(style.defaultOperatorAvatar)
+                                        .fit()
+                                        .noPlaceholder()
+                                        .transform(CircleTransformation())
+                                        .into(mConsultAvatar)
+                            }
+                        })
             } else {
                 Picasso.get()
-                    .load(style.defaultOperatorAvatar)
-                    .fit()
-                    .noPlaceholder()
-                    .transform(CircleTransformation())
-                    .into(mConsultAvatar)
+                        .load(style.defaultOperatorAvatar)
+                        .fit()
+                        .noPlaceholder()
+                        .transform(CircleTransformation())
+                        .into(mConsultAvatar)
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE

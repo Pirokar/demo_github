@@ -127,6 +127,7 @@ public class MessagesTable extends Table {
         sqlHelper.getWritableDatabase().execSQL("delete from " + TABLE_MESSAGES);
     }
 
+    @NonNull
     public List<ChatItem> getChatItems(SQLiteOpenHelper sqlHelper, int offset, int limit) {
         List<ChatItem> items = new ArrayList<>();
         String query = String.format(Locale.US, "select * from (select * from %s order by %s desc limit %s offset %s) order by %s asc",
@@ -186,10 +187,10 @@ public class MessagesTable extends Table {
             final ConsultPhrase phrase = (ConsultPhrase) chatItem;
             insertOrUpdateMessage(sqlHelper, getConsultPhraseCV(phrase));
             if (phrase.getFileDescription() != null) {
-                fileDescriptionTable.putFileDescription(sqlHelper, phrase.getFileDescription(), phrase.getUuid(), false);
+                fileDescriptionTable.putFileDescription(sqlHelper, phrase.getFileDescription(), phrase.getId(), false);
             }
             if (phrase.getQuote() != null) {
-                quotesTable.putQuote(sqlHelper, phrase.getUuid(), phrase.getQuote());
+                quotesTable.putQuote(sqlHelper, phrase.getId(), phrase.getQuote());
             }
             if (phrase.getQuickReplies() != null) {
                 quickRepliesTable.putQuickReplies(sqlHelper, phrase.getId(), phrase.getQuickReplies());
@@ -200,10 +201,10 @@ public class MessagesTable extends Table {
             final UserPhrase phrase = (UserPhrase) chatItem;
             insertOrUpdateMessage(sqlHelper, getUserPhraseCV(phrase));
             if (phrase.getFileDescription() != null) {
-                fileDescriptionTable.putFileDescription(sqlHelper, phrase.getFileDescription(), phrase.getUuid(), false);
+                fileDescriptionTable.putFileDescription(sqlHelper, phrase.getFileDescription(), phrase.getId(), false);
             }
             if (phrase.getQuote() != null) {
-                quotesTable.putQuote(sqlHelper, phrase.getUuid(), phrase.getQuote());
+                quotesTable.putQuote(sqlHelper, phrase.getId(), phrase.getQuote());
             }
             return true;
         }
@@ -484,8 +485,8 @@ public class MessagesTable extends Table {
 
     private ContentValues getConsultPhraseCV(ConsultPhrase phrase) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_UUID, phrase.getUuid());
-        cv.put(COLUMN_PHRASE, phrase.getPhrase());
+        cv.put(COLUMN_MESSAGE_UUID, phrase.getId());
+        cv.put(COLUMN_PHRASE, phrase.getPhraseText());
         cv.put(COLUMN_FORMATTED_PHRASE, phrase.getFormattedPhrase());
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.CONSULT_PHRASE.ordinal());
@@ -505,10 +506,10 @@ public class MessagesTable extends Table {
 
     private ContentValues getUserPhraseCV(UserPhrase phrase) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_MESSAGE_UUID, phrase.getUuid());
+        cv.put(COLUMN_MESSAGE_UUID, phrase.getId());
         cv.put(COLUMN_PROVIDER_ID, phrase.getProviderId());
         cv.put(COLUMN_PROVIDER_IDS, listToString(phrase.getProviderIds()));
-        cv.put(COLUMN_PHRASE, phrase.getPhrase());
+        cv.put(COLUMN_PHRASE, phrase.getPhraseText());
         cv.put(COLUMN_TIMESTAMP, phrase.getTimeStamp());
         cv.put(COLUMN_MESSAGE_TYPE, MessageType.USER_PHRASE.ordinal());
         cv.put(COLUMN_MESSAGE_SEND_STATE, phrase.getSentState().ordinal());

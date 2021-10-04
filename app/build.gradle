@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -125,9 +126,6 @@ android {
 
     lintOptions {
         abortOnError false
-    }
-    dexOptions {
-        javaMaxHeapSize "12g"
     }
 
     buildFeatures {
