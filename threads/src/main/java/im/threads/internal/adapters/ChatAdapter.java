@@ -38,6 +38,7 @@ import im.threads.internal.holders.DateViewHolder;
 import im.threads.internal.holders.EmptyViewHolder;
 import im.threads.internal.holders.ImageFromConsultViewHolder;
 import im.threads.internal.holders.ImageFromUserViewHolder;
+import im.threads.internal.holders.QuickRepliesViewHolder;
 import im.threads.internal.holders.RatingStarsSentViewHolder;
 import im.threads.internal.holders.RatingStarsViewHolder;
 import im.threads.internal.holders.RatingThumbsSentViewHolder;
@@ -64,6 +65,8 @@ import im.threads.internal.model.DateRow;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuestionDTO;
+import im.threads.internal.model.QuickReply;
+import im.threads.internal.model.QuickReplyItem;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
@@ -105,6 +108,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int TYPE_REQ_RESOLVE_THREAD = 18;
     private static final int TYPE_VOICE_MESSAGE_FROM_USER = 19;
     private static final int TYPE_VOICE_MESSAGE_FROM_CONSULT = 20;
+    private static final int TYPE_QUICK_REPLIES = 21;
 
     private final Handler viewHandler = new Handler(Looper.getMainLooper());
     private final ArrayList<ChatItem> list = new ArrayList<>();
@@ -225,6 +229,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 return new UserVoiceMessageViewHolder(parent);
             case TYPE_VOICE_MESSAGE_FROM_CONSULT:
                 return new ConsultVoiceMessageViewHolder(parent);
+            case TYPE_QUICK_REPLIES:
+                return new QuickRepliesViewHolder(parent);
             default:
                 return new EmptyViewHolder(parent);
         }
@@ -295,6 +301,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         if (holder instanceof ConsultVoiceMessageViewHolder) {
             bindVoiceMessageFromConsultVH((ConsultVoiceMessageViewHolder) holder, (ConsultPhrase) list.get(position));
+        }
+        if (holder instanceof QuickRepliesViewHolder) {
+            ((QuickRepliesViewHolder) holder).bind((QuickReplyItem) list.get(position), mCallback);
         }
     }
 
@@ -373,6 +382,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     return TYPE_RATING_STARS;
                 }
             }
+        }
+        if (o instanceof QuickReplyItem) {
+            return TYPE_QUICK_REPLIES;
         }
         return super.getItemViewType(position);
     }
@@ -1022,6 +1034,14 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return VoiceTimeLabelFormatterKt.formatAsDuration(duration);
     }
 
+    public void removeItem(ChatItem chatItem) {
+        final int index = ChatItemListHelper.lastIndexOf(list, chatItem);
+        if (index != -1) {
+            notifyItemRemoved(index);
+            list.remove(index);
+        }
+    }
+
     public interface Callback {
         void onFileClick(FileDescription fileDescription);
 
@@ -1042,6 +1062,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onRatingClick(@NonNull Survey survey, int rating);
 
         void onResolveThreadClick(boolean approveResolve);
+
+        void onQiuckReplyClick(QuickReply quickReply);
     }
 
     private static class ChatMessagesOrderer {

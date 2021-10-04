@@ -46,6 +46,7 @@ import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.QuickReplyItem;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
@@ -919,7 +920,7 @@ public final class ChatController {
     private void subscribeToQuickReplies() {
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .subscribe(quickReplies -> {
-                    hasQuickReplies = !quickReplies.isEmpty();
+                    hasQuickReplies = !quickReplies.getItems().isEmpty();
                     refreshUserInputState();
                 })
         );
@@ -1286,14 +1287,15 @@ public final class ChatController {
         ConsultPhrase quickReplyMessageCandidate = getQuickReplyMessageCandidate(chatItems);
         if (quickReplyMessageCandidate != null) {
             inputEnabledDuringQuickReplies = !quickReplyMessageCandidate.isBlockInput();
-            chatUpdateProcessor.postQuickRepliesChanged(quickReplyMessageCandidate.getQuickReplies());
+            chatUpdateProcessor.postQuickRepliesChanged(
+                    new QuickReplyItem(quickReplyMessageCandidate.getQuickReplies(), quickReplyMessageCandidate.getTimeStamp() + 1));
         } else {
             hideQuickReplies();
         }
     }
 
     public void hideQuickReplies() {
-        chatUpdateProcessor.postQuickRepliesChanged(new ArrayList<>());
+        chatUpdateProcessor.postQuickRepliesChanged(new QuickReplyItem(new ArrayList<>(), 0));
     }
 
     @Nullable

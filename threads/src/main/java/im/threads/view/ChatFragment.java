@@ -81,7 +81,6 @@ import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.adapters.ChatAdapter;
-import im.threads.internal.adapters.QuickRepliesAdapter;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
@@ -105,6 +104,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
+import im.threads.internal.model.QuickReplyItem;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
@@ -114,7 +114,6 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.utils.ColorsHelper;
-import im.threads.internal.utils.DisplayUtils;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.FileUtilsKt;
 import im.threads.internal.utils.Keyboard;
@@ -196,6 +195,8 @@ public final class ChatFragment extends BaseFragment implements
     private MediaRecorder recorder = null;
     @Nullable
     private String voiceFilePath = null;
+
+    private QuickReplyItem quickReplyItem = null;
 
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);
@@ -509,7 +510,7 @@ public final class ChatFragment extends BaseFragment implements
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(quickReplies -> {
-                    if (quickReplies.isEmpty()) {
+                    if (quickReplies.getItems().isEmpty()) {
                         hideQuickReplies();
                     } else {
                         showQuickReplies(quickReplies);
@@ -1993,35 +1994,15 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.setItemHighlighted(chatPhrase);
     }
 
-    public void showQuickReplies(List<QuickReply> quickReplies) {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        binding.quickRepliesRv.setMaxHeight((int) (DisplayUtils.getDisplayHeight(activity) * 0.4));
-        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
-        binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
-            String text = quickReply.getText();
-            sendMessage(Collections.singletonList(
-                    new UpcomingUserMessage(
-                            null,
-                            null,
-                            null,
-                            text.trim(),
-                            isCopy(text))
-                    ),
-                    false
-            );
-        }));
-        if (binding.quickRepliesRv.getVisibility() == View.GONE) {
-            binding.quickRepliesRv.setVisibility(View.VISIBLE);
-        }
+    public void showQuickReplies(QuickReplyItem quickReplies) {
+        quickReplyItem = quickReplies;
+        addChatItem(quickReplyItem);
         hideBottomSheet();
     }
 
     public void hideQuickReplies() {
-        if (binding.quickRepliesRv.getVisibility() == View.VISIBLE) {
-            binding.quickRepliesRv.setVisibility(View.GONE);
+        if(chatAdapter != null && quickReplyItem != null) {
+            chatAdapter.removeItem(quickReplyItem);
         }
     }
 
@@ -2333,6 +2314,21 @@ public final class ChatFragment extends BaseFragment implements
             if (activity != null) {
                 mChatController.onResolveThreadClick(approveResolve);
             }
+        }
+
+        @Override
+        public void onQiuckReplyClick(QuickReply quickReply) {
+            hideQuickReplies();
+            sendMessage(Collections.singletonList(
+                    new UpcomingUserMessage(
+                            null,
+                            null,
+                            null,
+                            quickReply.getText().trim(),
+                            isCopy(quickReply.getText()))
+                    ),
+                    false
+            );
         }
     }
 
