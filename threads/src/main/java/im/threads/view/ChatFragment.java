@@ -50,11 +50,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.google.android.material.slider.Slider;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import im.threads.ChatStyle;
 import im.threads.R;
@@ -110,22 +124,10 @@ import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Pair;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Весь функционал чата находится здесь во фрагменте,
@@ -145,10 +147,10 @@ public final class ChatFragment extends BaseFragment implements
     public static final int REQUEST_PERMISSION_CAMERA = 201;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL = 202;
     public static final int REQUEST_PERMISSION_SELFIE_CAMERA = 203;
-    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 204;
     public static final String ACTION_SEARCH_CHAT_FILES = "ACTION_SEARCH_CHAT_FILES";
     public static final String ACTION_SEARCH = "ACTION_SEARCH";
     public static final String ACTION_SEND_QUICK_MESSAGE = "ACTION_SEND_QUICK_MESSAGE";
+    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 204;
     private static final String ARG_OPEN_WAY = "arg_open_way";
     private static final String TAG = ChatFragment.class.getSimpleName();
     private static final float DISABLED_ALPHA = 0.5f;
@@ -166,6 +168,7 @@ public final class ChatFragment extends BaseFragment implements
     private final ObservableField<Optional<FileDescription>> fileDescription = new ObservableField<>(Optional.empty());
     @NonNull
     private final MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+    private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
     @Nullable
     private FileDescriptionMediaPlayer fdMediaPlayer;
     @Nullable
@@ -188,7 +191,6 @@ public final class ChatFragment extends BaseFragment implements
     private List<Uri> mAttachedImages = new ArrayList<>();
     @Nullable
     private MediaRecorder recorder = null;
-    private final ChatCenterAudioConverter audioConverter = new ChatCenterAudioConverter();
     @Nullable
     private String voiceFilePath = null;
 
@@ -595,7 +597,7 @@ public final class ChatFragment extends BaseFragment implements
             if (bottom < oldBottom) {
                 binding.recycler.postDelayed(() -> {
                     if (style.scrollChatToEndIfUserTyping) {
-                        scrollToPosition(chatAdapter.getItemCount() - 1);
+                        scrollToPosition(chatAdapter.getItemCount() - 1, false);
                     } else {
                         binding.recycler.smoothScrollBy(0, oldBottom - bottom);
                     }
@@ -628,7 +630,7 @@ public final class ChatFragment extends BaseFragment implements
             if (unreadCount > 0) {
                 scrollToNewMessages();
             } else {
-                scrollToPosition(chatAdapter.getItemCount() - 1);
+                scrollToPosition(chatAdapter.getItemCount() - 1, false);
             }
             chatAdapter.setAllMessagesRead();
             binding.scrollDownButtonContainer.setVisibility(View.GONE);
@@ -707,7 +709,7 @@ public final class ChatFragment extends BaseFragment implements
     private void afterRefresh(List<ChatItem> result) {
         int itemsBefore = chatAdapter.getItemCount();
         chatAdapter.addItems(result);
-        scrollToPosition(chatAdapter.getItemCount() - itemsBefore);
+        scrollToPosition(chatAdapter.getItemCount() - itemsBefore, true);
         for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
             h.postDelayed(() -> {
                 binding.swipeRefresh.setRefreshing(false);
@@ -915,7 +917,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void onReplyClick(ChatPhrase cp, int position) {
         hideCopyControls();
-        scrollToPosition(position);
+        scrollToPosition(position, true);
         UserPhrase userPhrase = cp instanceof UserPhrase ? (UserPhrase) cp : null;
         ConsultPhrase consultPhrase = cp instanceof ConsultPhrase ? (ConsultPhrase) cp : null;
         String text = cp.getPhraseText();
@@ -1011,45 +1013,60 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onSendClick() {
-        if (mAttachedImages != null && mAttachedImages.size() != 0) {
-            List<UpcomingUserMessage> messages = new ArrayList<>();
-
-            String inputText = inputTextObservable.get();
-            if (inputText == null) {
-                return;
-            }
-            Uri fileUri = mAttachedImages.get(0);
-            messages.add(new UpcomingUserMessage(
-                    new FileDescription(
-                            requireContext().getString(R.string.threads_I),
-                            fileUri,
-                            FileUtils.getFileSize(fileUri),
-                            System.currentTimeMillis()),
-                    campaignMessage,
-                    mQuote,
-                    inputText.trim(),
-                    isCopy(inputText))
-            );
-            for (int i = 1; i < mAttachedImages.size(); i++) {
-                fileUri = mAttachedImages.get(i);
-                FileDescription fileDescription = new FileDescription(
-                        requireContext().getString(R.string.threads_I),
-                        fileUri,
-                        FileUtils.getFileSize(fileUri),
-                        System.currentTimeMillis()
-                );
-                UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
-                        fileDescription, null, null, null, false
-                );
-                messages.add(upcomingUserMessage);
-            }
-            if (isSendBlocked) {
-                clearInput();
-                showToast(requireContext().getString(R.string.threads_message_were_unsent));
-            } else {
-                sendMessage(messages);
-            }
+        if (mAttachedImages == null || mAttachedImages.isEmpty()) {
+            showToast(getString(R.string.threads_failed_to_open_file));
+            return;
         }
+        subscribe(
+                Single.fromCallable(() -> Stream.of(mAttachedImages)
+                        .filter(value -> FileUtils.canBeSent(requireContext(), value))
+                        .toList()
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(filteredPhotos -> {
+                            if (filteredPhotos.isEmpty()) {
+                                showToast(getString(R.string.threads_failed_to_open_file));
+                                return;
+                            }
+                            String inputText = inputTextObservable.get();
+                            if (inputText == null) {
+                                return;
+                            }
+                            List<UpcomingUserMessage> messages = new ArrayList<>();
+                            Uri fileUri = filteredPhotos.get(0);
+                            messages.add(new UpcomingUserMessage(
+                                    new FileDescription(
+                                            requireContext().getString(R.string.threads_I),
+                                            fileUri,
+                                            FileUtils.getFileSize(fileUri),
+                                            System.currentTimeMillis()),
+                                    campaignMessage,
+                                    mQuote,
+                                    inputText.trim(),
+                                    isCopy(inputText))
+                            );
+                            for (int i = 1; i < filteredPhotos.size(); i++) {
+                                fileUri = filteredPhotos.get(i);
+                                FileDescription fileDescription = new FileDescription(
+                                        requireContext().getString(R.string.threads_I),
+                                        fileUri,
+                                        FileUtils.getFileSize(fileUri),
+                                        System.currentTimeMillis()
+                                );
+                                UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
+                                        fileDescription, null, null, null, false
+                                );
+                                messages.add(upcomingUserMessage);
+                            }
+                            if (isSendBlocked) {
+                                clearInput();
+                                showToast(requireContext().getString(R.string.threads_message_were_unsent));
+                            } else {
+                                sendMessage(messages);
+                            }
+                        }
+        ));
     }
 
     public void hideBottomSheet() {
@@ -1125,7 +1142,7 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.addItems(data);
         if (highlightedItem != null) {
             chatAdapter.removeHighlight();
-            scrollToPosition(chatAdapter.setItemHighlighted(highlightedItem));
+            scrollToPosition(chatAdapter.setItemHighlighted(highlightedItem), true);
         }
     }
 
@@ -1137,44 +1154,60 @@ public final class ChatFragment extends BaseFragment implements
         if (photos == null || photos.size() == 0 || inputText == null) {
             return;
         }
-        unChooseItem();
-        Uri fileUri = photos.get(0);
-        UpcomingUserMessage uum =
-                new UpcomingUserMessage(
-                        new FileDescription(
-                                requireContext().getString(R.string.threads_I),
-                                fileUri,
-                                FileUtils.getFileSize(fileUri),
-                                System.currentTimeMillis()
-                        ),
-                        campaignMessage,
-                        mQuote,
-                        inputText.trim(),
-                        isCopy(inputText)
-                );
-        if (isSendBlocked) {
-            showToast(getString(R.string.threads_message_were_unsent));
-        } else {
-            mChatController.onUserInput(uum);
-        }
-        inputTextObservable.set("");
-        mQuoteLayoutHolder.clear();
-        for (int i = 1; i < photos.size(); i++) {
-            fileUri = photos.get(i);
-            uum = new UpcomingUserMessage(
-                    new FileDescription(
-                            requireContext().getString(R.string.threads_I),
-                            fileUri,
-                            FileUtils.getFileSize(fileUri),
-                            System.currentTimeMillis()
-                    ),
-                    null,
-                    null,
-                    null,
-                    false
-            );
-            mChatController.onUserInput(uum);
-        }
+        subscribe(
+                Single.fromCallable(() -> Stream.of(photos)
+                        .filter(value -> FileUtils.canBeSent(requireContext(), value))
+                        .toList()
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(filteredPhotos -> {
+                            if (filteredPhotos.isEmpty()) {
+                                showToast(getString(R.string.threads_failed_to_open_file));
+                                return;
+                            }
+                            unChooseItem();
+                            Uri fileUri = filteredPhotos.get(0);
+                            UpcomingUserMessage uum =
+                                    new UpcomingUserMessage(
+                                            new FileDescription(
+                                                    requireContext().getString(R.string.threads_I),
+                                                    fileUri,
+                                                    FileUtils.getFileSize(fileUri),
+                                                    System.currentTimeMillis()
+                                            ),
+                                            campaignMessage,
+                                            mQuote,
+                                            inputText.trim(),
+                                            isCopy(inputText)
+                                    );
+                            if (isSendBlocked) {
+                                showToast(getString(R.string.threads_message_were_unsent));
+                            } else {
+                                mChatController.onUserInput(uum);
+                            }
+                            inputTextObservable.set("");
+                            mQuoteLayoutHolder.clear();
+                            for (int i = 1; i < filteredPhotos.size(); i++) {
+                                fileUri = filteredPhotos.get(i);
+                                uum = new UpcomingUserMessage(
+                                        new FileDescription(
+                                                requireContext().getString(R.string.threads_I),
+                                                fileUri,
+                                                FileUtils.getFileSize(fileUri),
+                                                System.currentTimeMillis()
+                                        ),
+                                        null,
+                                        null,
+                                        null,
+                                        false
+                                );
+                                mChatController.onUserInput(uum);
+                            }
+                        })
+        );
+
+
     }
 
     private void onExternalCameraPhotoResult() {
@@ -1203,16 +1236,21 @@ public final class ChatFragment extends BaseFragment implements
         if (uri != null) {
             if (FileHelper.INSTANCE.isAllowedFileExtension(FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))) {
                 if (FileHelper.INSTANCE.isAllowedFileSize(FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri))) {
-                    onFileResult(uri);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        final int takeFlags = data.getFlags()
-                                & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                        try {
-                            requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                        } catch (SecurityException e) {
-                            ThreadsLogger.e(TAG, e.getLocalizedMessage());
+                    try {
+                        if (FileUtils.canBeSent(requireContext(), uri)) {
+                            onFileResult(uri);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                final int takeFlags = data.getFlags()
+                                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                                requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                            }
+                        } else {
+                            showToast(getString(R.string.threads_failed_to_open_file));
                         }
+                    } catch (SecurityException e) {
+                        ThreadsLogger.e(TAG, "file can't be sent", e);
+                        showToast(getString(R.string.threads_failed_to_open_file));
                     }
                 } else {
                     // Недопустимый размер файла
@@ -1267,7 +1305,7 @@ public final class ChatFragment extends BaseFragment implements
             setTitleStateCurrentOperatorConnected();
             if (bottomSheetDialogFragment == null) {
                 showBottomSheet();
-                scrollToPosition(chatAdapter.getItemCount() - 1);
+                scrollToPosition(chatAdapter.getItemCount() - 1, false);
             } else {
                 hideBottomSheet();
             }
@@ -1309,6 +1347,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void addChatItem(final ChatItem item) {
+        ThreadsLogger.i(TAG, "addChatItem: " + item);
         LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
         if (layoutManager == null) {
             return;
@@ -1333,16 +1372,21 @@ public final class ChatFragment extends BaseFragment implements
                     int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
                     boolean isUserSeesMessages = (itemCount - 1) - lastVisibleItemPosition < INVISIBLE_MSGS_COUNT;
                     if (isUserSeesMessages || item instanceof UserPhrase) {
-                        scrollToPosition(itemCount - 1);
+                        scrollToPosition(itemCount - 1, false);
                     }
                 }
             }, 100);
         }
     }
 
-    private void scrollToPosition(int itemCount) {
+    private void scrollToPosition(int itemCount, boolean smooth) {
+        ThreadsLogger.i(TAG, "scrollToPosition: " + itemCount);
         if (itemCount >= 0) {
-            binding.recycler.smoothScrollToPosition(itemCount);
+            if (smooth) {
+                binding.recycler.smoothScrollToPosition(itemCount);
+            } else {
+                binding.recycler.scrollToPosition(itemCount);
+            }
         }
     }
 
@@ -1389,7 +1433,7 @@ public final class ChatFragment extends BaseFragment implements
         }
         int newAdapterSize = chatAdapter.getList().size();
         if (newAdapterSize > oldAdapterSize) {
-            h.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1), 100);
+            h.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
         }
     }
 
@@ -1847,7 +1891,7 @@ public final class ChatFragment extends BaseFragment implements
             isNeedToClose = false;
             hideSearchMode();
             if (chatAdapter != null) {
-                scrollToPosition(chatAdapter.getItemCount() - 1);
+                scrollToPosition(chatAdapter.getItemCount() - 1, false);
             }
         }
         if (mQuoteLayoutHolder.isVisible()) {
@@ -1991,7 +2035,12 @@ public final class ChatFragment extends BaseFragment implements
 
     @Override
     public void onFileSelected(File file) {
-        onFileResult(FileProviderHelper.getUriForFile(requireContext(), file));
+        final Uri uri = FileProviderHelper.getUriForFile(requireContext(), file);
+        if (FileUtils.canBeSent(requireContext(), uri)) {
+            onFileResult(uri);
+        } else {
+            showToast(getString(R.string.threads_failed_to_open_file));
+        }
     }
 
     public void setClientNotificationDisplayType(ClientNotificationDisplayType type) {
@@ -2203,7 +2252,7 @@ public final class ChatFragment extends BaseFragment implements
                             .map(list -> {
                                 chatAdapter.addItems(list);
                                 final int itemHighlightedIndex = chatAdapter.setItemHighlighted(quote.getUuid());
-                                scrollToPosition(itemHighlightedIndex);
+                                scrollToPosition(itemHighlightedIndex, true);
                                 return list;
                             })
                             .delay(1500, TimeUnit.MILLISECONDS)

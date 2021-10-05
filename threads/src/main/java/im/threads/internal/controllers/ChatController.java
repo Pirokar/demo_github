@@ -1,10 +1,6 @@
 package im.threads.internal.controllers;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-import static im.threads.internal.services.NotificationService.UNREAD_MESSAGE_PUSH_ID;
-
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -1082,9 +1078,8 @@ public final class ChatController {
     }
 
     private void removePushNotification() {
-        final NotificationManager nm = (NotificationManager) appContext.getSystemService(NOTIFICATION_SERVICE);
-        if (nm != null) {
-            nm.cancel(UNREAD_MESSAGE_PUSH_ID);
+        if (fragment != null) {
+            NotificationService.removeNotification(fragment.requireContext());
         }
     }
 

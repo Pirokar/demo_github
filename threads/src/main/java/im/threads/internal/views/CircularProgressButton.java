@@ -72,30 +72,14 @@ public final class CircularProgressButton extends FrameLayout {
     public void setProgress(int progress) {
         mcp.setProgress(progress);
         if (progress > 0 && progress < 100) {
-            if (mcp.getVisibility() == INVISIBLE) mcp.setVisibility(VISIBLE);
-            if (background.getVisibility() == INVISIBLE) background.setVisibility(VISIBLE);
-            if (background.getBackground() == null
-                    || !background.getBackground().equals(progressBackgroundDrawable)) {
-                background.setBackground(progressBackgroundDrawable);
-            }
-            if (mImageLabel.getBackground() == null
-                    || !mImageLabel.getBackground().equals(inProgress)) {
-                mImageLabel.setBackground(inProgress);
-            }
-            if (getBackground() != null) {
-                setBackground(null);
-            }
+            mcp.setVisibility(VISIBLE);
+            mImageLabel.setBackground(inProgress);
         } else if (progress > 99) {
             mcp.setVisibility(INVISIBLE);
-            mImageLabel.setVisibility(INVISIBLE);
-            background.setVisibility(INVISIBLE);
-            this.setBackground(completedDrawable);
+            mImageLabel.setBackground(completedDrawable);
         } else if (progress == 0) {
-            mImageLabel.setVisibility(View.VISIBLE);
             mcp.setVisibility(VISIBLE);
-            background.setVisibility(VISIBLE);
             mImageLabel.setBackground(startDownloadDrawable);
-            this.setBackground(null);
         }
     }
 

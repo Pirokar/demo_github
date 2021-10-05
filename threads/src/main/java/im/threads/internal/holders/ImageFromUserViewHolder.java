@@ -76,6 +76,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             return true;
         });
         mImage.setImageResource(0);
+
         if (fileDescription.getFileUri() != null && !isDownloadError) {
             Picasso.get()
                     .load(fileDescription.getFileUri())
