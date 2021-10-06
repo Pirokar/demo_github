@@ -1,7 +1,6 @@
 package im.threads.android.utils;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.Gravity;
 
 import androidx.annotation.StringRes;
@@ -184,7 +183,6 @@ public class ChatStyleBuilderHelper {
         }
 
         public static ChatDesign enumOf(Context context, String name) {
-            Log.d("ChtStyleBldrHlpr", "------------- enumOf design for: " + name);
             for (ChatDesign design : ChatDesign.values()) {
                 if (design.getName(context).equalsIgnoreCase(name)) {
                     return design;
@@ -195,6 +193,10 @@ public class ChatStyleBuilderHelper {
 
         public String getName(Context context) {
             return context.getString(nameResId);
+        }
+
+        public static void setTheme(Context context, ChatDesign theme) {
+            PrefUtils.storeTheme(context, theme);
         }
     }
 }
