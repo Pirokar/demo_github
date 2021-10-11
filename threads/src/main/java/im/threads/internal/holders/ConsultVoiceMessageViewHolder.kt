@@ -11,12 +11,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.text.util.LinkifyCompat
 import com.google.android.material.slider.Slider
-import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
@@ -171,31 +169,14 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
         }
         if (consultPhrase.isAvatarVisible) {
             mConsultAvatar.visibility = View.VISIBLE
-            @DrawableRes val resID = style.defaultOperatorAvatar
+            mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (consultPhrase.avatarPath != null) {
                 Picasso.get()
-                        .load(convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                        .fit()
-                        .noPlaceholder()
-                        .transform(CircleTransformation())
-                        .into(mConsultAvatar, object : Callback {
-                            override fun onSuccess() {}
-                            override fun onError(e: Exception) {
-                                Picasso.get()
-                                        .load(resID)
-                                        .fit()
-                                        .noPlaceholder()
-                                        .transform(CircleTransformation())
-                                        .into(mConsultAvatar)
-                            }
-                        })
-            } else {
-                Picasso.get()
-                        .load(resID)
-                        .fit()
-                        .noPlaceholder()
-                        .transform(CircleTransformation())
-                        .into(mConsultAvatar)
+                    .load(convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
+                    .fit()
+                    .noPlaceholder()
+                    .transform(CircleTransformation())
+                    .into(mConsultAvatar)
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE

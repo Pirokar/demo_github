@@ -77,7 +77,7 @@ public class ChatStyleBuilderHelper {
                         R.color.alt_threads_files_medias_screen_background,
                         R.color.alt_threads_files_list,
                         R.color.alt_threads_icon_and_separators_color,
-                        R.drawable.alt_threads_operator_avatar_placeholder,
+                        R.drawable.ic_account_circle,
                         R.dimen.alt_threads_operator_photo_size,
                         R.dimen.alt_threads_system_operator_photo_size,
                         R.drawable.alt_threads_image_placeholder,

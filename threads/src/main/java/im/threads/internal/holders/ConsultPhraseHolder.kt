@@ -285,21 +285,15 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         if (consultPhrase.isAvatarVisible) {
             mConsultAvatar.visibility = View.VISIBLE
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
+            showDefIcon()
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
                 Picasso.get()
-                        .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                        .fit()
-                        .noPlaceholder()
-                        .centerCrop()
-                        .transform(CircleTransformation())
-                        .into(mConsultAvatar, object : Callback {
-                            override fun onSuccess() {}
-                            override fun onError(e: Exception) {
-                                showDefIcon()
-                            }
-                        })
-            } else {
-                showDefIcon()
+                    .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
+                    .fit()
+                    .noPlaceholder()
+                    .centerCrop()
+                    .transform(CircleTransformation())
+                    .into(mConsultAvatar)
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE
@@ -309,13 +303,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     }
 
     private fun showDefIcon() {
-        Picasso.get()
-                .load(style.defaultOperatorAvatar)
-                .centerInside()
-                .noPlaceholder()
-                .fit()
-                .transform(CircleTransformation())
-                .into(mConsultAvatar)
+        mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
     }
 
     private fun loadOGData(chatItem: ConsultPhrase, url: String) {

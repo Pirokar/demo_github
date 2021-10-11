@@ -45,12 +45,11 @@ class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
 
     fun onBind(consultTyping: ConsultTyping, consultClickListener: View.OnClickListener) {
         mConsultAvatar.setOnClickListener(consultClickListener)
+        mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
         val avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultTyping.avatarPath)
         Picasso.get()
             .load(avatarPath)
             .fit()
-            .error(style.defaultOperatorAvatar)
-            .placeholder(style.defaultOperatorAvatar)
             .centerCrop()
             .transform(CircleTransformation())
             .into(mConsultAvatar)
