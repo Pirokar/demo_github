@@ -114,6 +114,11 @@ android {
             applicationId "io.edna.chatcenter.android.gpb"
             resValue "string", "app_name1", "THR GPB Test"
         }
+        metabase {
+            dimension "server"
+            applicationId "io.edna.chatcenter.android.metabase"
+            resValue "string", "app_name1", "THR Metabase Demo"
+        }
         pushLib {
             dimension "transport"
             resValue "string", "transport_type", "MFMS_PUSH"
