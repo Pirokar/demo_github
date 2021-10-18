@@ -1,9 +1,9 @@
 package im.threads.internal.holders;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +23,11 @@ import im.threads.internal.utils.UrlUtils;
 public class SystemMessageViewHolder extends RecyclerView.ViewHolder {
     private TextView tvSystemMessage;
     private ChatStyle style;
+    private Context context;
 
     public SystemMessageViewHolder(@NonNull ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_system_message, parent, false));
+        context = parent.getContext();
         tvSystemMessage = itemView.findViewById(R.id.tv_system_message);
         if (style == null) {
             style = Config.instance.getChatStyle();
@@ -37,7 +39,13 @@ public class SystemMessageViewHolder extends RecyclerView.ViewHolder {
         LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
         tvSystemMessage.setText(text);
         tvSystemMessage.setLinkTextColor(ContextCompat.getColor(itemView.getContext(), style.systemMessageLinkColor));
-        tvSystemMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        tvSystemMessage.setOnClickListener(view -> {
+            String url = UrlUtils.extractLink(systemMessage.getText());
+            if (url != null) {
+                UrlUtils.openUrl(context, url);
+            }
+        });
+
         itemView.setOnClickListener(listener);
         if (!TextUtils.isEmpty(style.systemMessageFont)) {
             tvSystemMessage.setTypeface(Typeface.createFromAsset(itemView.getContext().getAssets(), style.systemMessageFont));
