@@ -20,7 +20,6 @@ public class ChatStyleBuilderHelper {
                 .setDefaultFontLight(LATO_LIGHT_FONT_PATH)
                 .setDefaultFontRegular(LATO_REGULAR_FONT_PATH)
                 .showChatBackButton(true)// показывать кнопку назад
-                .setShowConsultSearching(true) //показывать загрузку при поиске консультанта
                 .setUseExternalCameraApp(true)
                 .setSelfieEnabled(false)
                 .setScrollChatToEndIfUserTyping(false);
@@ -39,6 +38,7 @@ public class ChatStyleBuilderHelper {
 
     private static void configureGreenDesign(ChatStyle chatStyle) {
         chatStyle.setChatSubtitleShowConsultOrgUnit(true)
+                .setShowConsultSearching(true)
                 .setVoiceMessageEnabled(true);
         //Do nothing, using default threads design
     }

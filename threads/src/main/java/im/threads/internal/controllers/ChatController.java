@@ -43,6 +43,7 @@ import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Hidable;
 import im.threads.internal.model.HistoryResponse;
+import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.RequestResolveThread;
@@ -681,6 +682,7 @@ public final class ChatController {
         subscribeToRemoveChatItem();
         subscribeToDeviceAddressChanged();
         subscribeToQuickReplies();
+        subscribeToAttachAudioFiles();
         subscribeToClientNotificationDisplayTypeProcessor();
         subscribeSpeechMessageUpdated();
     }
@@ -918,6 +920,14 @@ public final class ChatController {
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .subscribe(quickReplies -> {
                     hasQuickReplies = !quickReplies.isEmpty();
+                    refreshUserInputState();
+                })
+        );
+    }
+
+    private void subscribeToAttachAudioFiles() {
+        subscribe(ChatUpdateProcessor.getInstance().getAttachAudioFilesProcessor()
+                .subscribe(hasFile -> {
                     refreshUserInputState();
                 })
         );
@@ -1245,16 +1255,30 @@ public final class ChatController {
     }
 
     private void refreshUserInputState() {
+        chatUpdateProcessor.postUserInputEnableChanged(new InputFieldEnableModel(isInputFieldEnabled(), isSendButtonEnabled()));
+    }
+
+    public boolean isInputFieldEnabled() {
+        if (fragment != null && fragment.getFileDescription() != null && FileUtils.isVoiceMessage(fragment.getFileDescription())) {
+            return false;
+        }
+        return isSendButtonEnabled();
+    }
+
+    public boolean isSendButtonEnabled() {
         if (hasQuickReplies && !inputEnabledDuringQuickReplies) {
-            chatUpdateProcessor.postUserInputEnableChanged(false);
+            return false;
+        }
+        return enableInputBySchedule();
+    }
+
+    private boolean enableInputBySchedule() {
+        //todo
+        // Это было до меня. Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
+        if (currentScheduleInfo == null) {
+            return true;
         } else {
-            // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
-            if (currentScheduleInfo == null) {
-                chatUpdateProcessor.postUserInputEnableChanged(true);
-            } else {
-                chatUpdateProcessor.postUserInputEnableChanged(
-                        currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive());
-            }
+            return currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive();
         }
     }
 

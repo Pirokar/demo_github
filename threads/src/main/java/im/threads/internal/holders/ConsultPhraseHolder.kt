@@ -1,11 +1,11 @@
 package im.threads.internal.holders
 
+import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.format.Formatter
-import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -40,8 +40,8 @@ import java.util.*
  * layout/item_consultant_text_with_file.xml
  */
 class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
-    LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_consultant_text_with_file, parent, false)
+        LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_consultant_text_with_file, parent, false)
 ) {
     private val style = Config.instance.chatStyle
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -62,35 +62,34 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     private val mRightTextDescr: TextView = itemView.findViewById(R.id.file_specs)
     private val rightTextFileStamp: TextView = itemView.findViewById(R.id.send_at)
     private val mTimeStampTextView =
-        itemView.findViewById<BubbleTimeTextView>(R.id.timestamp).apply {
-            setTextColor(getColorInt(style.incomingMessageTimeColor))
-        }
+            itemView.findViewById<BubbleTimeTextView>(R.id.timestamp).apply {
+                setTextColor(getColorInt(style.incomingMessageTimeColor))
+            }
     private val mPhraseTextView = itemView.findViewById<BubbleMessageTextView>(R.id.text).apply {
         setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
-        movementMethod = LinkMovementMethod.getInstance()
     }
     private val mConsultAvatar = itemView.findViewById<ImageView>(R.id.consult_avatar).apply {
         layoutParams.height =
-            itemView.context.resources.getDimension(style.operatorAvatarSize)
-                .toInt()
+                itemView.context.resources.getDimension(style.operatorAvatarSize)
+                        .toInt()
         layoutParams.width =
-            itemView.context.resources.getDimension(style.operatorAvatarSize)
-                .toInt()
+                itemView.context.resources.getDimension(style.operatorAvatarSize)
+                        .toInt()
     }
     private val filterView = itemView.findViewById<View>(R.id.filter).apply {
         setBackgroundColor(
-            ContextCompat.getColor(
-                itemView.context,
-                style.chatHighlightingColor
-            )
+                ContextCompat.getColor(
+                        itemView.context,
+                        style.chatHighlightingColor
+                )
         )
     }
     private val secondFilterView = itemView.findViewById<View>(R.id.filter_bottom).apply {
         setBackgroundColor(
-            ContextCompat.getColor(
-                itemView.context,
-                style.chatHighlightingColor
-            )
+                ContextCompat.getColor(
+                        itemView.context,
+                        style.chatHighlightingColor
+                )
         )
     }
     private val mPhraseFrame: View = itemView.findViewById(R.id.phrase_frame)
@@ -103,48 +102,51 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
 
+    var context: Context;
+
     init {
+        context = parent.context
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
-                AppCompatResources.getDrawable(
-                    itemView.context,
-                    style.incomingMessageBubbleBackground
-                )
+                    AppCompatResources.getDrawable(
+                            itemView.context,
+                            style.incomingMessageBubbleBackground
+                    )
             background.setColorFilter(
-                getColorInt(style.incomingMessageBubbleColor),
-                PorterDuff.Mode.SRC_ATOP
+                    getColorInt(style.incomingMessageBubbleColor),
+                    PorterDuff.Mode.SRC_ATOP
             )
             val bubbleLeftMarginDp = itemView.context.resources.getDimension(R.dimen.margin_quarter)
             val bubbleLeftMarginPx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                bubbleLeftMarginDp,
-                itemView.resources.displayMetrics
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    bubbleLeftMarginDp,
+                    itemView.resources.displayMetrics
             ).toInt()
             val lp = layoutParams as RelativeLayout.LayoutParams
             lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
             layoutParams = lp
         }
         itemView.findViewById<View>(R.id.delimeter)
-            .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
+                .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
         setTextColorToViews(
-            arrayOf(
-                mPhraseTextView,
-                rightTextHeader,
-                mRightTextDescr,
-                rightTextFileStamp
-            ), style.incomingMessageTextColor
+                arrayOf(
+                        mPhraseTextView,
+                        rightTextHeader,
+                        mRightTextDescr,
+                        rightTextFileStamp
+                ), style.incomingMessageTextColor
         )
         setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint)
     }
 
     fun onBind(
-        consultPhrase: ConsultPhrase,
-        highlighted: Boolean,
-        imageClickListener: View.OnClickListener,
-        fileClickListener: View.OnClickListener,
-        onQuoteClickListener: View.OnClickListener,
-        onRowLongClickListener: OnLongClickListener,
-        onAvatarClickListener: View.OnClickListener
+            consultPhrase: ConsultPhrase,
+            highlighted: Boolean,
+            imageClickListener: View.OnClickListener,
+            fileClickListener: View.OnClickListener,
+            onQuoteClickListener: View.OnClickListener,
+            onRowLongClickListener: OnLongClickListener,
+            onAvatarClickListener: View.OnClickListener
     ) {
         val phrase = consultPhrase.phraseText?.trim()
         val quote = consultPhrase.quote
@@ -160,17 +162,18 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mPhraseTextView.bindTimestampView(mTimeStampTextView)
             mPhraseTextView.visibility = View.VISIBLE
             val url = UrlUtils.extractLink(phrase)
+            mPhraseTextView.setOnClickListener(null)
             when {
                 consultPhrase.formattedPhrase != null -> {
                     mPhraseTextView.autoLinkMask = 0
                     mPhraseTextView.text = MarkdownProcessorHolder.getMarkdownProcessor()
-                        .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
+                            .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
                 }
                 url != null -> {
                     val text = SpannableString(phrase)
                     LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "")
                     mPhraseTextView.text = text
-                    mPhraseTextView.movementMethod = LinkMovementMethod.getInstance()
+                    mPhraseTextView.setOnClickListener { UrlUtils.openUrl(context, url) }
                 }
                 else -> {
                     mPhraseTextView.text = phrase
@@ -183,13 +186,13 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     bindOGData(consultPhrase.ogData, url)
                 }
                 ViewUtils.setClickListener(
-                    ogDataLayout,
-                    View.OnClickListener { v: View? ->
-                        UrlUtils.openUrl(
-                            itemView.getContext(),
-                            url
-                        )
-                    })
+                        ogDataLayout,
+                        View.OnClickListener { v: View? ->
+                            UrlUtils.openUrl(
+                                    itemView.getContext(),
+                                    url
+                            )
+                        })
             } else {
                 hideOGView()
             }
@@ -203,10 +206,10 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mFileImage.visibility = View.GONE
             mCircularProgressButton.visibility = View.GONE
             rightTextHeader.text = if (quote.phraseOwnerTitle == null) itemView.getContext()
-                .getString(R.string.threads_I) else quote.phraseOwnerTitle
+                    .getString(R.string.threads_I) else quote.phraseOwnerTitle
             mRightTextDescr.text = quote.text
             rightTextFileStamp.text = itemView.getContext()
-                .getString(R.string.threads_sent_at, quoteSdf.format(Date(quote.timeStamp)))
+                    .getString(R.string.threads_sent_at, quoteSdf.format(Date(quote.timeStamp)))
             val quoteFileDescription = quote.fileDescription
             if (quoteFileDescription != null) {
                 if (FileUtils.isVoiceMessage(quoteFileDescription)) {
@@ -242,18 +245,18 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 mImage.visibility = View.VISIBLE
                 mImage.setOnClickListener(imageClickListener)
                 Picasso.get()
-                    .load(fileDescription.downloadPath)
-                    .error(style.imagePlaceholder)
-                    .fit()
-                    .centerCrop()
-                    .into(mImage)
+                        .load(fileDescription.downloadPath)
+                        .error(style.imagePlaceholder)
+                        .fit()
+                        .centerCrop()
+                        .into(mImage)
             } else {
                 fileRow.visibility = View.VISIBLE
                 ViewUtils.setClickListener(fileRow as ViewGroup, null as View.OnClickListener?)
                 mCircularProgressButton.visibility = View.VISIBLE
                 mCircularProgressButton.setOnClickListener(fileClickListener)
                 rightTextHeader.text =
-                    if (fileDescription.from == null) "" else fileDescription.from
+                        if (fileDescription.from == null) "" else fileDescription.from
                 if (!TextUtils.isEmpty(rightTextHeader.text)) {
                     rightTextHeader.visibility = View.VISIBLE
                 } else {
@@ -261,14 +264,12 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 }
                 val fileSize = fileDescription.size
                 mRightTextDescr.text =
-                    FileUtils.getFileName(fileDescription) + if (fileSize > 0) """
-     
-     
+                        FileUtils.getFileName(fileDescription) + if (fileSize > 0) """  
      ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
      """.trimIndent() else ""
                 rightTextFileStamp.text = itemView.getContext().getString(
-                    R.string.threads_sent_at,
-                    quoteSdf.format(Date(fileDescription.timeStamp))
+                        R.string.threads_sent_at,
+                        quoteSdf.format(Date(fileDescription.timeStamp))
                 )
                 mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
             }
@@ -286,17 +287,17 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
                 Picasso.get()
-                    .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                    .fit()
-                    .noPlaceholder()
-                    .centerCrop()
-                    .transform(CircleTransformation())
-                    .into(mConsultAvatar, object : Callback {
-                        override fun onSuccess() {}
-                        override fun onError(e: Exception) {
-                            showDefIcon()
-                        }
-                    })
+                        .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
+                        .fit()
+                        .noPlaceholder()
+                        .centerCrop()
+                        .transform(CircleTransformation())
+                        .into(mConsultAvatar, object : Callback {
+                            override fun onSuccess() {}
+                            override fun onError(e: Exception) {
+                                showDefIcon()
+                            }
+                        })
             } else {
                 showDefIcon()
             }
@@ -309,26 +310,26 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 
     private fun showDefIcon() {
         Picasso.get()
-            .load(style.defaultOperatorAvatar)
-            .centerInside()
-            .noPlaceholder()
-            .fit()
-            .transform(CircleTransformation())
-            .into(mConsultAvatar)
+                .load(style.defaultOperatorAvatar)
+                .centerInside()
+                .noPlaceholder()
+                .fit()
+                .transform(CircleTransformation())
+                .into(mConsultAvatar)
     }
 
     private fun loadOGData(chatItem: ConsultPhrase, url: String) {
         hideOGView()
         subscribe(OGDataProvider.getInstance().getOGData(url)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ ogData: OGData? ->
-                ThreadsLogger.d(TAG, "OGData for url: $url\n received: $ogData")
-                if (ogData != null && !ogData.isEmpty) {
-                    chatItem.ogData = ogData
-                    chatItem.ogUrl = url
-                }
-                bindOGData(ogData, url)
-            }) { e: Throwable? -> ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ ogData: OGData? ->
+                    ThreadsLogger.d(TAG, "OGData for url: $url\n received: $ogData")
+                    if (ogData != null && !ogData.isEmpty) {
+                        chatItem.ogData = ogData
+                        chatItem.ogUrl = url
+                    }
+                    bindOGData(ogData, url)
+                }) { e: Throwable? -> ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e) }
         )
     }
 
@@ -356,23 +357,23 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             ogImage.visibility = View.GONE
         } else {
             Picasso.get()
-                .load(ogData.imageUrl)
-                .fetch(object : Callback {
-                    override fun onSuccess() {
-                        ogImage.visibility = View.VISIBLE
-                        Picasso.get()
-                            .load(ogData.imageUrl)
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerInside()
-                            .into(ogImage)
-                    }
+                    .load(ogData.imageUrl)
+                    .fetch(object : Callback {
+                        override fun onSuccess() {
+                            ogImage.visibility = View.VISIBLE
+                            Picasso.get()
+                                    .load(ogData.imageUrl)
+                                    .error(style.imagePlaceholder)
+                                    .fit()
+                                    .centerInside()
+                                    .into(ogImage)
+                        }
 
-                    override fun onError(e: Exception) {
-                        ogImage.visibility = View.GONE
-                        ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.message)
-                    }
-                })
+                        override fun onError(e: Exception) {
+                            ogImage.visibility = View.GONE
+                            ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.message)
+                        }
+                    })
         }
     }
 
