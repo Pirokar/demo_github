@@ -7,6 +7,7 @@ import java.util.List;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ClientNotificationDisplayType;
+import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
@@ -30,10 +31,11 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<ChatItemType> removeChatItemProcessor = PublishProcessor.create();
     private final FlowableProcessor<Survey> surveySendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
-    private final FlowableProcessor<Boolean> userInputEnableProcessor = PublishProcessor.create();
+    private final FlowableProcessor<InputFieldEnableModel> userInputEnableProcessor = PublishProcessor.create();
     private final FlowableProcessor<List<QuickReply>> quickRepliesProcessor = PublishProcessor.create();
     private final FlowableProcessor<ClientNotificationDisplayType> clientNotificationDisplayTypeProcessor = PublishProcessor.create();
     private final FlowableProcessor<SpeechMessageUpdate> speechMessageUpdateProcessor = PublishProcessor.create();
+    private final FlowableProcessor<Boolean> attachAudioFilesProcessor = PublishProcessor.create();
 
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
 
@@ -88,7 +90,7 @@ public class ChatUpdateProcessor {
         deviceAddressChangedProcessor.onNext(deviceAddress);
     }
 
-    public void postUserInputEnableChanged(Boolean enable) {
+    public void postUserInputEnableChanged(InputFieldEnableModel enable) {
         userInputEnableProcessor.onNext(enable);
     }
 
@@ -98,6 +100,10 @@ public class ChatUpdateProcessor {
 
     public void postClientNotificationDisplayType(ClientNotificationDisplayType type) {
         clientNotificationDisplayTypeProcessor.onNext(type);
+    }
+
+    public void postAttachAudioFile(Boolean attached) {
+        attachAudioFilesProcessor.onNext(attached);
     }
 
     public void postError(@NonNull TransportException error) {
@@ -148,7 +154,7 @@ public class ChatUpdateProcessor {
         return deviceAddressChangedProcessor;
     }
 
-    public FlowableProcessor<Boolean> getUserInputEnableProcessor() {
+    public FlowableProcessor<InputFieldEnableModel> getUserInputEnableProcessor() {
         return userInputEnableProcessor;
     }
 
@@ -158,6 +164,10 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<ClientNotificationDisplayType> getClientNotificationDisplayTypeProcessor() {
         return clientNotificationDisplayTypeProcessor;
+    }
+
+    public FlowableProcessor<Boolean> getAttachAudioFilesProcessor() {
+        return attachAudioFilesProcessor;
     }
 
     public FlowableProcessor<TransportException> getErrorProcessor() {

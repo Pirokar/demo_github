@@ -1,5 +1,7 @@
 package im.threads.view;
 
+import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -100,6 +102,7 @@ import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
 import im.threads.internal.model.Quote;
@@ -244,7 +247,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FileDescription fileDescriptionDraft = PrefUtils.getFileDescriptionDraft();
+        FileDescription fileDescriptionDraft = getFileDescriptionDraft();
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
@@ -686,7 +689,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Nullable
-    private FileDescription getFileDescription() {
+    public FileDescription getFileDescription() {
         Optional<FileDescription> fileDescriptionOptional = fileDescription.get();
         if (fileDescriptionOptional != null && fileDescriptionOptional.isPresent()) {
             return fileDescriptionOptional.get();
@@ -1025,48 +1028,48 @@ public final class ChatFragment extends BaseFragment implements
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(filteredPhotos -> {
-                            if (filteredPhotos.isEmpty()) {
-                                showToast(getString(R.string.threads_failed_to_open_file));
-                                return;
-                            }
-                            String inputText = inputTextObservable.get();
-                            if (inputText == null) {
-                                return;
-                            }
-                            List<UpcomingUserMessage> messages = new ArrayList<>();
-                            Uri fileUri = filteredPhotos.get(0);
-                            messages.add(new UpcomingUserMessage(
-                                    new FileDescription(
-                                            requireContext().getString(R.string.threads_I),
-                                            fileUri,
-                                            FileUtils.getFileSize(fileUri),
-                                            System.currentTimeMillis()),
-                                    campaignMessage,
-                                    mQuote,
-                                    inputText.trim(),
-                                    isCopy(inputText))
-                            );
-                            for (int i = 1; i < filteredPhotos.size(); i++) {
-                                fileUri = filteredPhotos.get(i);
-                                FileDescription fileDescription = new FileDescription(
-                                        requireContext().getString(R.string.threads_I),
-                                        fileUri,
-                                        FileUtils.getFileSize(fileUri),
-                                        System.currentTimeMillis()
-                                );
-                                UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
-                                        fileDescription, null, null, null, false
-                                );
-                                messages.add(upcomingUserMessage);
-                            }
-                            if (isSendBlocked) {
-                                clearInput();
-                                showToast(requireContext().getString(R.string.threads_message_were_unsent));
-                            } else {
-                                sendMessage(messages);
-                            }
-                        }
-        ));
+                                    if (filteredPhotos.isEmpty()) {
+                                        showToast(getString(R.string.threads_failed_to_open_file));
+                                        return;
+                                    }
+                                    String inputText = inputTextObservable.get();
+                                    if (inputText == null) {
+                                        return;
+                                    }
+                                    List<UpcomingUserMessage> messages = new ArrayList<>();
+                                    Uri fileUri = filteredPhotos.get(0);
+                                    messages.add(new UpcomingUserMessage(
+                                            new FileDescription(
+                                                    requireContext().getString(R.string.threads_I),
+                                                    fileUri,
+                                                    FileUtils.getFileSize(fileUri),
+                                                    System.currentTimeMillis()),
+                                            campaignMessage,
+                                            mQuote,
+                                            inputText.trim(),
+                                            isCopy(inputText))
+                                    );
+                                    for (int i = 1; i < filteredPhotos.size(); i++) {
+                                        fileUri = filteredPhotos.get(i);
+                                        FileDescription fileDescription = new FileDescription(
+                                                requireContext().getString(R.string.threads_I),
+                                                fileUri,
+                                                FileUtils.getFileSize(fileUri),
+                                                System.currentTimeMillis()
+                                        );
+                                        UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
+                                                fileDescription, null, null, null, false
+                                        );
+                                        messages.add(upcomingUserMessage);
+                                    }
+                                    if (isSendBlocked) {
+                                        clearInput();
+                                        showToast(requireContext().getString(R.string.threads_message_were_unsent));
+                                    } else {
+                                        sendMessage(messages);
+                                    }
+                                }
+                        ));
     }
 
     public void hideBottomSheet() {
@@ -1678,14 +1681,17 @@ public final class ChatFragment extends BaseFragment implements
         return style;
     }
 
-    private void updateInputEnable(boolean enabled) {
-        isSendBlocked = !enabled;
-        binding.inputEditView.setEnabled(enabled);
-        binding.addAttachment.setEnabled(enabled);
-        binding.sendMessage.setEnabled(enabled);
+    private void updateInputEnable(InputFieldEnableModel enableModel) {
+        isSendBlocked = !enableModel.isEnabledSendButton();
+        binding.sendMessage.setEnabled(enableModel.isEnabledSendButton());
+        ColorsHelper.setTint(getActivity(), binding.sendMessage, enableModel.isEnabledSendButton() ? style.chatBodyIconsTint : style.chatDisabledTextColor);
 
-        ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
-        ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
+        binding.inputEditView.setEnabled(enableModel.isEnabledInputField());
+        binding.addAttachment.setEnabled(enableModel.isEnabledInputField());
+        ColorsHelper.setTint(getActivity(), binding.addAttachment, enableModel.isEnabledInputField() ? style.chatBodyIconsTint : style.chatDisabledTextColor);
+        if (!enableModel.isEnabledInputField()) {
+            Keyboard.hide(requireContext(), binding.inputEditView, 100);
+        }
     }
 
     @Override
@@ -2148,6 +2154,7 @@ public final class ChatFragment extends BaseFragment implements
                 fdMediaPlayer.reset();
             }
             unChooseItem();
+            ChatUpdateProcessor.getInstance().postAttachAudioFile(false);
         }
 
         private void setContent(String header, String text, Uri imagePath) {
@@ -2186,6 +2193,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.quotePast.setVisibility(View.GONE);
             formattedDuration = getFormattedDuration(getFileDescription());
             binding.quoteDuration.setText(formattedDuration);
+            ChatUpdateProcessor.getInstance().postAttachAudioFile(true);
         }
 
         private void init(int maxValue, int progress, boolean isPlaying) {

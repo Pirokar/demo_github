@@ -31,6 +31,7 @@ import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -170,9 +171,9 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
                 .subscribe(this::updateInputEnable));
     }
 
-    private void updateInputEnable(boolean enabled) {
-        mEditText.setEnabled(enabled);
-        if (!enabled) {
+    private void updateInputEnable(InputFieldEnableModel enableModel) {
+        mEditText.setEnabled(enableModel.isEnabledInputField());
+        if (!enableModel.isEnabledInputField()) {
             Toast.makeText(requireContext(), R.string.threads_message_sending_is_unavailable, Toast.LENGTH_LONG)
                     .show();
         }
