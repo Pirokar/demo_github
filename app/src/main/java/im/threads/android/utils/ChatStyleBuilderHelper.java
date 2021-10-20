@@ -194,5 +194,9 @@ public class ChatStyleBuilderHelper {
         public String getName(Context context) {
             return context.getString(nameResId);
         }
+
+        public static void setTheme(Context context, ChatDesign theme) {
+            PrefUtils.storeTheme(context, theme);
+        }
     }
 }
