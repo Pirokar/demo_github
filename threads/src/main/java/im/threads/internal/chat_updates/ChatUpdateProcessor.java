@@ -2,13 +2,11 @@ package im.threads.internal.chat_updates;
 
 import androidx.annotation.NonNull;
 
-import java.util.List;
-
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.InputFieldEnableModel;
-import im.threads.internal.model.QuickReply;
+import im.threads.internal.model.QuickReplyItem;
 import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.Survey;
 import im.threads.internal.transport.ChatItemProviderData;
@@ -32,7 +30,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<Survey> surveySendSuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> deviceAddressChangedProcessor = PublishProcessor.create();
     private final FlowableProcessor<InputFieldEnableModel> userInputEnableProcessor = PublishProcessor.create();
-    private final FlowableProcessor<List<QuickReply>> quickRepliesProcessor = PublishProcessor.create();
+    private final FlowableProcessor<QuickReplyItem> quickRepliesProcessor = PublishProcessor.create();
     private final FlowableProcessor<ClientNotificationDisplayType> clientNotificationDisplayTypeProcessor = PublishProcessor.create();
     private final FlowableProcessor<SpeechMessageUpdate> speechMessageUpdateProcessor = PublishProcessor.create();
     private final FlowableProcessor<Boolean> attachAudioFilesProcessor = PublishProcessor.create();
@@ -94,7 +92,7 @@ public class ChatUpdateProcessor {
         userInputEnableProcessor.onNext(enable);
     }
 
-    public void postQuickRepliesChanged(List<QuickReply> quickReplies) {
+    public void postQuickRepliesChanged(QuickReplyItem quickReplies) {
         quickRepliesProcessor.onNext(quickReplies);
     }
 
@@ -158,7 +156,7 @@ public class ChatUpdateProcessor {
         return userInputEnableProcessor;
     }
 
-    public FlowableProcessor<List<QuickReply>> getQuickRepliesProcessor() {
+    public FlowableProcessor<QuickReplyItem> getQuickRepliesProcessor() {
         return quickRepliesProcessor;
     }
 
