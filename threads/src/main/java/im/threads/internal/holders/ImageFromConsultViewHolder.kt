@@ -110,27 +110,18 @@ class ImageFromConsultViewHolder(
             if (highlighted) View.VISIBLE else View.INVISIBLE
         secondFilterView.visibility =
             if (highlighted) View.VISIBLE else View.INVISIBLE
-        @DrawableRes val resId = style.defaultOperatorAvatar
         val avatarPath = consultPhrase.avatarPath
         if (consultPhrase.isAvatarVisible) {
             mConsultAvatar.visibility = View.VISIBLE
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
+            mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (avatarPath != null) {
                 Picasso.get()
                     .load(FileUtils.convertRelativeUrlToAbsolute(avatarPath))
-                    .error(style.defaultOperatorAvatar)
                     .fit()
                     .transform(CircleTransformation())
                     .centerInside()
                     .noPlaceholder()
-                    .into(mConsultAvatar)
-            } else {
-                Picasso.get()
-                    .load(resId)
-                    .fit()
-                    .noPlaceholder()
-                    .transform(CircleTransformation())
-                    .centerInside()
                     .into(mConsultAvatar)
             }
         } else {
