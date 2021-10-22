@@ -1,13 +1,12 @@
 package im.threads.internal.holders
 
-import android.view.Gravity
-import android.view.ViewGroup
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.google.android.flexbox.FlexboxLayout
 import im.threads.R
-import com.google.android.material.chip.Chip
 import im.threads.internal.adapters.ChatAdapter
 import im.threads.internal.model.QuickReplyItem
+import im.threads.internal.widget.CustomFontTextView
 
 /**
  * ViewHolder для отображения быстрых ответов
@@ -22,8 +21,7 @@ class QuickRepliesViewHolder(val parent: ViewGroup) : BaseHolder(
         for (repl in quickReplies.items) {
             val view =
                 LayoutInflater.from(parent.context).inflate(R.layout.layout_chip, null, false)
-            val newChip = view.findViewById<Chip>(R.id.chip)
-            newChip.gravity = Gravity.END
+            val newChip = view.findViewById<CustomFontTextView>(R.id.chip)
             newChip.text = repl.text
             newChip.setOnClickListener {
                 callback.onQiuckReplyClick(repl)

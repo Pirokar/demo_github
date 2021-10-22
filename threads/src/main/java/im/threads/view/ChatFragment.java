@@ -1997,11 +1997,12 @@ public final class ChatFragment extends BaseFragment implements
     public void showQuickReplies(QuickReplyItem quickReplies) {
         quickReplyItem = quickReplies;
         addChatItem(quickReplyItem);
+        scrollToPosition(chatAdapter.getItemCount() - 1, false);
         hideBottomSheet();
     }
 
     public void hideQuickReplies() {
-        if(chatAdapter != null && quickReplyItem != null) {
+        if (chatAdapter != null && quickReplyItem != null) {
             chatAdapter.removeItem(quickReplyItem);
         }
     }

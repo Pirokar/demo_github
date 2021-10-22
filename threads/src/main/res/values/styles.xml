@@ -32,8 +32,8 @@
     </style>
 
     <!--<style name="FileDialogStyle" parent="Theme.MaterialComponents.Light.Dialog.Bridge">-->
-        <!--<item name="android:textColor">@color/file_browser_dialog_text</item>-->
-        <!--<item name="android:windowBackground">@color/file_browser_window_background</item>-->
+    <!--<item name="android:textColor">@color/file_browser_dialog_text</item>-->
+    <!--<item name="android:windowBackground">@color/file_browser_window_background</item>-->
     <!--</style>-->
 
     <style name="FileDialogStyleTransparent" parent="Theme.MaterialComponents.Light.Dialog.Bridge">
@@ -139,16 +139,5 @@
 
     <style name="ThemeOverlay.ChatCenter.Slider.Preview" parent="">
         <item name="colorPrimary">@color/threads_black</item>
-    </style>
-
-    <style name="Widget.ChatCenter.Chip.Choice" parent="@style/Widget.MaterialComponents.Chip.Choice">
-        <item name="android:background">@drawable/threads_quick_reply_button_background</item>
-        <item name="android:textColor">@color/threads_quick_reply_button_text</item>
-        <item name="chipStrokeWidth">1dp</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
     </style>
 </resources>
