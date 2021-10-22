@@ -17,7 +17,7 @@
         android:paddingTop="@dimen/margin_half"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingBottom="@dimen/margin_half"
-        android:textColor="@color/threads_quick_reply_button_color"
+        android:textColor="@color/threads_quick_reply_text_color"
         android:textSize="@dimen/text_medium" />
 
 </FrameLayout>
