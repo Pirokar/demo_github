@@ -1,5 +1,7 @@
 package im.threads.view;
 
+import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -79,7 +81,6 @@ import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.adapters.ChatAdapter;
-import im.threads.internal.adapters.QuickRepliesAdapter;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
@@ -100,8 +101,10 @@ import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.QuickReply;
+import im.threads.internal.model.QuickReplyItem;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.Survey;
@@ -111,7 +114,6 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.utils.ColorsHelper;
-import im.threads.internal.utils.DisplayUtils;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.FileUtilsKt;
 import im.threads.internal.utils.Keyboard;
@@ -194,6 +196,8 @@ public final class ChatFragment extends BaseFragment implements
     @Nullable
     private String voiceFilePath = null;
 
+    private QuickReplyItem quickReplyItem = null;
+
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);
     }
@@ -244,7 +248,7 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        FileDescription fileDescriptionDraft = PrefUtils.getFileDescriptionDraft();
+        FileDescription fileDescriptionDraft = getFileDescriptionDraft();
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
@@ -506,7 +510,7 @@ public final class ChatFragment extends BaseFragment implements
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(quickReplies -> {
-                    if (quickReplies.isEmpty()) {
+                    if (quickReplies.getItems().isEmpty()) {
                         hideQuickReplies();
                     } else {
                         showQuickReplies(quickReplies);
@@ -686,7 +690,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Nullable
-    private FileDescription getFileDescription() {
+    public FileDescription getFileDescription() {
         Optional<FileDescription> fileDescriptionOptional = fileDescription.get();
         if (fileDescriptionOptional != null && fileDescriptionOptional.isPresent()) {
             return fileDescriptionOptional.get();
@@ -1025,48 +1029,48 @@ public final class ChatFragment extends BaseFragment implements
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(filteredPhotos -> {
-                            if (filteredPhotos.isEmpty()) {
-                                showToast(getString(R.string.threads_failed_to_open_file));
-                                return;
-                            }
-                            String inputText = inputTextObservable.get();
-                            if (inputText == null) {
-                                return;
-                            }
-                            List<UpcomingUserMessage> messages = new ArrayList<>();
-                            Uri fileUri = filteredPhotos.get(0);
-                            messages.add(new UpcomingUserMessage(
-                                    new FileDescription(
-                                            requireContext().getString(R.string.threads_I),
-                                            fileUri,
-                                            FileUtils.getFileSize(fileUri),
-                                            System.currentTimeMillis()),
-                                    campaignMessage,
-                                    mQuote,
-                                    inputText.trim(),
-                                    isCopy(inputText))
-                            );
-                            for (int i = 1; i < filteredPhotos.size(); i++) {
-                                fileUri = filteredPhotos.get(i);
-                                FileDescription fileDescription = new FileDescription(
-                                        requireContext().getString(R.string.threads_I),
-                                        fileUri,
-                                        FileUtils.getFileSize(fileUri),
-                                        System.currentTimeMillis()
-                                );
-                                UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
-                                        fileDescription, null, null, null, false
-                                );
-                                messages.add(upcomingUserMessage);
-                            }
-                            if (isSendBlocked) {
-                                clearInput();
-                                showToast(requireContext().getString(R.string.threads_message_were_unsent));
-                            } else {
-                                sendMessage(messages);
-                            }
-                        }
-        ));
+                                    if (filteredPhotos.isEmpty()) {
+                                        showToast(getString(R.string.threads_failed_to_open_file));
+                                        return;
+                                    }
+                                    String inputText = inputTextObservable.get();
+                                    if (inputText == null) {
+                                        return;
+                                    }
+                                    List<UpcomingUserMessage> messages = new ArrayList<>();
+                                    Uri fileUri = filteredPhotos.get(0);
+                                    messages.add(new UpcomingUserMessage(
+                                            new FileDescription(
+                                                    requireContext().getString(R.string.threads_I),
+                                                    fileUri,
+                                                    FileUtils.getFileSize(fileUri),
+                                                    System.currentTimeMillis()),
+                                            campaignMessage,
+                                            mQuote,
+                                            inputText.trim(),
+                                            isCopy(inputText))
+                                    );
+                                    for (int i = 1; i < filteredPhotos.size(); i++) {
+                                        fileUri = filteredPhotos.get(i);
+                                        FileDescription fileDescription = new FileDescription(
+                                                requireContext().getString(R.string.threads_I),
+                                                fileUri,
+                                                FileUtils.getFileSize(fileUri),
+                                                System.currentTimeMillis()
+                                        );
+                                        UpcomingUserMessage upcomingUserMessage = new UpcomingUserMessage(
+                                                fileDescription, null, null, null, false
+                                        );
+                                        messages.add(upcomingUserMessage);
+                                    }
+                                    if (isSendBlocked) {
+                                        clearInput();
+                                        showToast(requireContext().getString(R.string.threads_message_were_unsent));
+                                    } else {
+                                        sendMessage(messages);
+                                    }
+                                }
+                        ));
     }
 
     public void hideBottomSheet() {
@@ -1678,14 +1682,17 @@ public final class ChatFragment extends BaseFragment implements
         return style;
     }
 
-    private void updateInputEnable(boolean enabled) {
-        isSendBlocked = !enabled;
-        binding.inputEditView.setEnabled(enabled);
-        binding.addAttachment.setEnabled(enabled);
-        binding.sendMessage.setEnabled(enabled);
+    private void updateInputEnable(InputFieldEnableModel enableModel) {
+        isSendBlocked = !enableModel.isEnabledSendButton();
+        binding.sendMessage.setEnabled(enableModel.isEnabledSendButton());
+        ColorsHelper.setTint(getActivity(), binding.sendMessage, enableModel.isEnabledSendButton() ? style.chatBodyIconsTint : style.chatDisabledTextColor);
 
-        ColorsHelper.setTint(getActivity(), binding.addAttachment, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
-        ColorsHelper.setTint(getActivity(), binding.sendMessage, enabled ? style.chatBodyIconsTint : style.chatDisabledTextColor);
+        binding.inputEditView.setEnabled(enableModel.isEnabledInputField());
+        binding.addAttachment.setEnabled(enableModel.isEnabledInputField());
+        ColorsHelper.setTint(getActivity(), binding.addAttachment, enableModel.isEnabledInputField() ? style.chatBodyIconsTint : style.chatDisabledTextColor);
+        if (!enableModel.isEnabledInputField()) {
+            Keyboard.hide(requireContext(), binding.inputEditView, 100);
+        }
     }
 
     @Override
@@ -1987,35 +1994,16 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.setItemHighlighted(chatPhrase);
     }
 
-    public void showQuickReplies(List<QuickReply> quickReplies) {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        binding.quickRepliesRv.setMaxHeight((int) (DisplayUtils.getDisplayHeight(activity) * 0.4));
-        binding.quickRepliesRv.setLayoutManager(new LinearLayoutManager(activity));
-        binding.quickRepliesRv.setAdapter(new QuickRepliesAdapter(quickReplies, quickReply -> {
-            String text = quickReply.getText();
-            sendMessage(Collections.singletonList(
-                    new UpcomingUserMessage(
-                            null,
-                            null,
-                            null,
-                            text.trim(),
-                            isCopy(text))
-                    ),
-                    false
-            );
-        }));
-        if (binding.quickRepliesRv.getVisibility() == View.GONE) {
-            binding.quickRepliesRv.setVisibility(View.VISIBLE);
-        }
+    public void showQuickReplies(QuickReplyItem quickReplies) {
+        quickReplyItem = quickReplies;
+        addChatItem(quickReplyItem);
+        scrollToPosition(chatAdapter.getItemCount() - 1, false);
         hideBottomSheet();
     }
 
     public void hideQuickReplies() {
-        if (binding.quickRepliesRv.getVisibility() == View.VISIBLE) {
-            binding.quickRepliesRv.setVisibility(View.GONE);
+        if (chatAdapter != null && quickReplyItem != null) {
+            chatAdapter.removeItem(quickReplyItem);
         }
     }
 
@@ -2148,6 +2136,7 @@ public final class ChatFragment extends BaseFragment implements
                 fdMediaPlayer.reset();
             }
             unChooseItem();
+            ChatUpdateProcessor.getInstance().postAttachAudioFile(false);
         }
 
         private void setContent(String header, String text, Uri imagePath) {
@@ -2186,6 +2175,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.quotePast.setVisibility(View.GONE);
             formattedDuration = getFormattedDuration(getFileDescription());
             binding.quoteDuration.setText(formattedDuration);
+            ChatUpdateProcessor.getInstance().postAttachAudioFile(true);
         }
 
         private void init(int maxValue, int progress, boolean isPlaying) {
@@ -2325,6 +2315,21 @@ public final class ChatFragment extends BaseFragment implements
             if (activity != null) {
                 mChatController.onResolveThreadClick(approveResolve);
             }
+        }
+
+        @Override
+        public void onQiuckReplyClick(QuickReply quickReply) {
+            hideQuickReplies();
+            sendMessage(Collections.singletonList(
+                    new UpcomingUserMessage(
+                            null,
+                            null,
+                            null,
+                            quickReply.getText().trim(),
+                            isCopy(quickReply.getText()))
+                    ),
+                    false
+            );
         }
     }
 

@@ -13,7 +13,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
@@ -118,26 +117,10 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
         if (consultPhrase.isAvatarVisible) {
             mConsultAvatar.visibility = View.VISIBLE
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
+            mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
                 Picasso.get()
                         .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                        .fit()
-                        .noPlaceholder()
-                        .transform(CircleTransformation())
-                        .into(mConsultAvatar, object : Callback {
-                            override fun onSuccess() {}
-                            override fun onError(e: Exception) {
-                                Picasso.get()
-                                        .load(style.defaultOperatorAvatar)
-                                        .fit()
-                                        .noPlaceholder()
-                                        .transform(CircleTransformation())
-                                        .into(mConsultAvatar)
-                            }
-                        })
-            } else {
-                Picasso.get()
-                        .load(style.defaultOperatorAvatar)
                         .fit()
                         .noPlaceholder()
                         .transform(CircleTransformation())

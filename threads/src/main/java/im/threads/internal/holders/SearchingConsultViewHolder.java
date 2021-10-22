@@ -21,5 +21,6 @@ public final class SearchingConsultViewHolder extends RecyclerView.ViewHolder {
         ChatStyle style = Config.instance.getChatStyle();
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatToolbarColorResId), PorterDuff.Mode.SRC_ATOP);
         itemView.setVisibility(style.showConsultSearching ? View.VISIBLE : View.GONE);
+        progressBar.setVisibility(style.showConsultSearching ? View.VISIBLE : View.GONE);
     }
 }

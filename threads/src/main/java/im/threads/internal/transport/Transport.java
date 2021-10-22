@@ -17,6 +17,7 @@ import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -52,14 +53,18 @@ public abstract class Transport {
         subscribe(
                 Single.fromCallable(() -> ApiGenerator.getThreadsApi().settings().execute())
                         .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 response -> {
                                     final SettingsResponse responseBody = response.body();
                                     if (responseBody != null) {
                                         ThreadsLogger.i(TAG, "getting settings : " + responseBody);
-                                        final ClientNotificationDisplayType type = ClientNotificationDisplayType.fromString(responseBody.getClientNotificationDisplayType());
-                                        PrefUtils.setClientNotificationDisplayType(type);
-                                        chatUpdateProcessor.postClientNotificationDisplayType(type);
+                                        String clientNotificationType = responseBody.getClientNotificationDisplayType();
+                                        if (clientNotificationType != null && !clientNotificationType.isEmpty()) {
+                                            final ClientNotificationDisplayType type = ClientNotificationDisplayType.fromString(clientNotificationType);
+                                            PrefUtils.setClientNotificationDisplayType(type);
+                                            chatUpdateProcessor.postClientNotificationDisplayType(type);
+                                        }
                                     }
                                 },
                                 e -> {

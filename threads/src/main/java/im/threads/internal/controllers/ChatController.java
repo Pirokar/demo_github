@@ -43,8 +43,10 @@ import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.Hidable;
 import im.threads.internal.model.HistoryResponse;
+import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.model.MessageRead;
 import im.threads.internal.model.MessageState;
+import im.threads.internal.model.QuickReplyItem;
 import im.threads.internal.model.RequestResolveThread;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SearchingConsult;
@@ -681,6 +683,7 @@ public final class ChatController {
         subscribeToRemoveChatItem();
         subscribeToDeviceAddressChanged();
         subscribeToQuickReplies();
+        subscribeToAttachAudioFiles();
         subscribeToClientNotificationDisplayTypeProcessor();
         subscribeSpeechMessageUpdated();
     }
@@ -917,7 +920,15 @@ public final class ChatController {
     private void subscribeToQuickReplies() {
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .subscribe(quickReplies -> {
-                    hasQuickReplies = !quickReplies.isEmpty();
+                    hasQuickReplies = !quickReplies.getItems().isEmpty();
+                    refreshUserInputState();
+                })
+        );
+    }
+
+    private void subscribeToAttachAudioFiles() {
+        subscribe(ChatUpdateProcessor.getInstance().getAttachAudioFilesProcessor()
+                .subscribe(hasFile -> {
                     refreshUserInputState();
                 })
         );
@@ -1245,16 +1256,30 @@ public final class ChatController {
     }
 
     private void refreshUserInputState() {
+        chatUpdateProcessor.postUserInputEnableChanged(new InputFieldEnableModel(isInputFieldEnabled(), isSendButtonEnabled()));
+    }
+
+    public boolean isInputFieldEnabled() {
+        if (fragment != null && fragment.getFileDescription() != null && FileUtils.isVoiceMessage(fragment.getFileDescription())) {
+            return false;
+        }
+        return isSendButtonEnabled();
+    }
+
+    public boolean isSendButtonEnabled() {
         if (hasQuickReplies && !inputEnabledDuringQuickReplies) {
-            chatUpdateProcessor.postUserInputEnableChanged(false);
+            return false;
+        }
+        return enableInputBySchedule();
+    }
+
+    private boolean enableInputBySchedule() {
+        //todo
+        // Это было до меня. Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
+        if (currentScheduleInfo == null) {
+            return true;
         } else {
-            // Временное решение пока нет ответа по https://track.brooma.ru/issue/THREADS-7708
-            if (currentScheduleInfo == null) {
-                chatUpdateProcessor.postUserInputEnableChanged(true);
-            } else {
-                chatUpdateProcessor.postUserInputEnableChanged(
-                        currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive());
-            }
+            return currentScheduleInfo.isChatWorking() || currentScheduleInfo.isSendDuringInactive();
         }
     }
 
@@ -1262,14 +1287,15 @@ public final class ChatController {
         ConsultPhrase quickReplyMessageCandidate = getQuickReplyMessageCandidate(chatItems);
         if (quickReplyMessageCandidate != null) {
             inputEnabledDuringQuickReplies = !quickReplyMessageCandidate.isBlockInput();
-            chatUpdateProcessor.postQuickRepliesChanged(quickReplyMessageCandidate.getQuickReplies());
+            chatUpdateProcessor.postQuickRepliesChanged(
+                    new QuickReplyItem(quickReplyMessageCandidate.getQuickReplies(), quickReplyMessageCandidate.getTimeStamp() + 1));
         } else {
             hideQuickReplies();
         }
     }
 
     public void hideQuickReplies() {
-        chatUpdateProcessor.postQuickRepliesChanged(new ArrayList<>());
+        chatUpdateProcessor.postQuickRepliesChanged(new QuickReplyItem(new ArrayList<>(), 0));
     }
 
     @Nullable

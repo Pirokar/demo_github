@@ -1,12 +1,14 @@
 package im.threads.internal.holders;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.Formatter;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +44,6 @@ import im.threads.internal.widget.text_view.BubbleMessageTextView;
 import im.threads.internal.widget.text_view.BubbleTimeTextView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -73,9 +74,11 @@ public final class UserPhraseViewHolder extends BaseHolder {
     private final TextView ogDescription;
     private final TextView ogUrl;
     private final TextView ogTimestamp;
+    private Context context;
 
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
+        context = parent.getContext();
         mPhraseTextView = itemView.findViewById(R.id.text);
         mImage = itemView.findViewById(R.id.image);
         mRightTextRow = itemView.findViewById(R.id.right_text_row);
@@ -142,7 +145,9 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 final SpannableString text = new SpannableString(phrase);
                 LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
                 mPhraseTextView.setText(text);
-                mPhraseTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                mPhraseTextView.setOnClickListener(view -> {
+                    UrlUtils.openUrl(context, url);
+                });
                 if (userPhrase.ogData == null) {
                     loadOGData(userPhrase, url);
                 } else {
@@ -150,6 +155,7 @@ public final class UserPhraseViewHolder extends BaseHolder {
                 }
             } else {
                 mPhraseTextView.setText(phrase);
+                mPhraseTextView.setOnClickListener(null);
                 hideOGView();
             }
         }
