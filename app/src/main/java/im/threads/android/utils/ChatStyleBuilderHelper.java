@@ -168,6 +168,10 @@ public class ChatStyleBuilderHelper {
                         R.color.alt_threads_empty_state_background,
                         R.color.alt_threads_empty_state_progress,
                         R.color.alt_threads_empty_state_hint
+                )
+                .setQuickReplyChipChoiceStyle(
+                        R.drawable.alt_threads_quick_reply_button_background,
+                        R.color.alt_threads_quick_reply_text_color
                 );
     }
 
@@ -191,12 +195,12 @@ public class ChatStyleBuilderHelper {
             return GREEN;
         }
 
-        public String getName(Context context) {
-            return context.getString(nameResId);
-        }
-
         public static void setTheme(Context context, ChatDesign theme) {
             PrefUtils.storeTheme(context, theme);
+        }
+
+        public String getName(Context context) {
+            return context.getString(nameResId);
         }
     }
 }

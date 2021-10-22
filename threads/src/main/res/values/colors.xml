@@ -118,7 +118,7 @@
     </color>
 
     <!-- Quick Replies chat -->
-    <color name="threads_quick_reply_button_color">@color/threads_teal_009688</color>
+    <color name="threads_quick_reply_text_color">@color/threads_black</color>
 
     <!-- System messages -->
     <color name="threads_chat_new_system_message">@color/threads_gray_text</color>

@@ -291,6 +291,10 @@ public final class ChatStyle implements Serializable {
     public int systemMessageTextGravity = Gravity.CENTER;
     @ColorRes
     public int systemMessageLinkColor = R.color.threads_system_message_link;
+    @DrawableRes
+    public int quickReplyButtonBackground = R.drawable.threads_quick_reply_button_background;
+    @ColorRes
+    public int quickReplyTextColor = R.color.threads_quick_reply_text_color;
 
     // set can show specialist info
     public boolean canShowSpecialistInfo = true;
@@ -1031,6 +1035,18 @@ public final class ChatStyle implements Serializable {
         this.emptyStateBackgroundColorResId = emptyStateBackgroundColorResId;
         this.emptyStateProgressBarColorResId = emptyStateProgressBarColorResId;
         this.emptyStateHintColorResId = emptyStateHintColorResId;
+        return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param quickReplyButtonBackground - R.drawable.threads_quick_reply_button_background
+     * @param quickReplyTextColor - R.color.threads_quick_reply_text_color
+     */
+    public ChatStyle setQuickReplyChipChoiceStyle(@DrawableRes final int quickReplyButtonBackground, @ColorRes final int quickReplyTextColor) {
+        this.quickReplyButtonBackground = quickReplyButtonBackground;
+        this.quickReplyTextColor = quickReplyTextColor;
         return this;
     }
 }
