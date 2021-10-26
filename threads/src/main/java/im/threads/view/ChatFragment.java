@@ -1,7 +1,5 @@
 package im.threads.view;
 
-import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -39,18 +37,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.view.ViewCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.devlomi.record_view.OnRecordListener;
@@ -72,6 +58,17 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -131,6 +128,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Pair;
 
+import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
+
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
@@ -162,6 +161,7 @@ public final class ChatFragment extends BaseFragment implements
     private static final long INPUT_DELAY = 3000;
 
     private static boolean chatIsShown = false;
+    private static boolean afterResume = false;
     private final Handler h = new Handler(Looper.getMainLooper());
     private final SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault());
     @NonNull
@@ -1418,7 +1418,7 @@ public final class ChatFragment extends BaseFragment implements
                 isInMessageSearchMode) {
             return;
         }
-        String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
+        /*String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
         ArrayList<ChatItem> newList = chatAdapter.getList();
         if (newList != null && !newList.isEmpty() && firstUnreadUuid != null) {
             for (int i = 1; i < newList.size(); i++) {
@@ -1434,10 +1434,16 @@ public final class ChatFragment extends BaseFragment implements
                     }
                 }
             }
-        }
+        }*/
         int newAdapterSize = chatAdapter.getList().size();
-        if (newAdapterSize > oldAdapterSize) {
+        if (oldAdapterSize == 0) {
+            scrollToPosition(chatAdapter.getItemCount() - 1, false);
+        } else if (afterResume) {
+            scrollToPosition(chatAdapter.getItemCount() - 1, false);
+            afterResume = false;
+        } else if (newAdapterSize > oldAdapterSize) {
             h.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
+            afterResume = false;
         }
     }
 
@@ -1764,6 +1770,7 @@ public final class ChatFragment extends BaseFragment implements
         scrollToFirstUnreadMessage();
         isResumed = true;
         chatIsShown = true;
+        afterResume = true;
     }
 
     private void scrollToNewMessages() {
