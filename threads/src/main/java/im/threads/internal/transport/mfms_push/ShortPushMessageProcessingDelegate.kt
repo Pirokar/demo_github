@@ -49,7 +49,7 @@ object ShortPushMessageProcessingDelegate {
                 ChatItemType.UNREAD_MESSAGE_NOTIFICATION -> {
                     val operatorUrl: String? = bundle.getString(PushMessageAttributes.OPERATOR_URL)
                     val appMarker: String? = bundle.getString(PushMessageAttributes.APP_MARKER_KEY)
-                    NotificationService.addUnreadMessage(context, alert, operatorUrl, appMarker)
+                    NotificationService.addUnreadMessage(context, Date().hashCode(), alert, operatorUrl, appMarker)
                 }
                 else -> {
                     if (bundle.containsKey(PushMessageAttributes.GATE_MESSAGE_ID)) {
