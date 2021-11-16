@@ -1447,19 +1447,20 @@ public final class ChatFragment extends BaseFragment implements
         }
         h.post(
                 () -> {
-                    if (!isInMessageSearchMode) {
-                        binding.subtitle.setVisibility(View.VISIBLE);
-                        binding.consultName.setVisibility(View.VISIBLE);
+                    if (!getResources().getBoolean(style.fixedChatTitle)) {
+                        if (!isInMessageSearchMode) {
+                            binding.subtitle.setVisibility(View.VISIBLE);
+                            binding.consultName.setVisibility(View.VISIBLE);
+                        }
+                        if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
+                            binding.consultName.setText(info.getName());
+                        } else {
+                            binding.consultName.setText(requireContext().getString(R.string.threads_unknown_operator));
+                        }
+                        binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
+                                ? requireContext().getString(style.chatSubtitleTextResId)
+                                : info.getOrganizationUnit());
                     }
-                    if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
-                        binding.consultName.setText(info.getName());
-                    } else {
-                        binding.consultName.setText(requireContext().getString(R.string.threads_unknown_operator));
-                    }
-                    binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
-                            ? requireContext().getString(style.chatSubtitleTextResId)
-                            : info.getOrganizationUnit());
-
                     chatAdapter.removeConsultSearching();
                     showOverflowMenu();
                 }
@@ -1535,6 +1536,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void setTitleStateCurrentOperatorConnected() {
         if (isInMessageSearchMode) return;
+
         if (mChatController.isConsultFound()) {
             binding.subtitle.setVisibility(View.VISIBLE);
             binding.consultName.setVisibility(View.VISIBLE);
@@ -1628,11 +1630,12 @@ public final class ChatFragment extends BaseFragment implements
         if (isInMessageSearchMode) {
             return;
         }
+
         binding.subtitle.setVisibility(View.GONE);
         binding.consultName.setVisibility(View.VISIBLE);
         binding.searchLo.setVisibility(View.GONE);
         binding.search.setText("");
-        if (isAdded()) {
+        if (isAdded() && !getResources().getBoolean(style.fixedChatTitle)) {
             binding.consultName.setText(requireContext().getString(R.string.threads_searching_operator));
         }
     }
@@ -1847,6 +1850,9 @@ public final class ChatFragment extends BaseFragment implements
 
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
         showOverflowMenu();
+        if (getResources().getBoolean(style.fixedChatTitle)) {
+            setTitleStateDefault();
+        }
     }
 
     private void showOverflowMenu() {
@@ -1932,7 +1938,6 @@ public final class ChatFragment extends BaseFragment implements
                 setTitleStateSearchingConsult();
                 break;
         }
-
         hideBackButton();
     }
 
