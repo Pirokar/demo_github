@@ -172,7 +172,9 @@ public class ChatStyleBuilderHelper {
                 .setQuickReplyChipChoiceStyle(
                         R.drawable.alt_threads_quick_reply_button_background,
                         R.color.alt_threads_quick_reply_text_color
-                );
+                )
+                .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images);
+        ;
     }
 
     public enum ChatDesign {

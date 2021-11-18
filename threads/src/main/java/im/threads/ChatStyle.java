@@ -7,6 +7,7 @@ import androidx.annotation.BoolRes;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntegerRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
@@ -295,6 +296,10 @@ public final class ChatStyle implements Serializable {
     public int quickReplyButtonBackground = R.drawable.threads_quick_reply_button_background;
     @ColorRes
     public int quickReplyTextColor = R.color.threads_quick_reply_text_color;
+    @IntegerRes
+    public int maxGalleryImagesCount = R.integer.max_count_attached_images;
+    @IntegerRes
+    public int maxGalleryImagesCountFixedBySystem = R.integer.max_count_attached_images_final;
 
     // set can show specialist info
     public boolean canShowSpecialistInfo = true;
@@ -1047,6 +1052,17 @@ public final class ChatStyle implements Serializable {
     public ChatStyle setQuickReplyChipChoiceStyle(@DrawableRes final int quickReplyButtonBackground, @ColorRes final int quickReplyTextColor) {
         this.quickReplyButtonBackground = quickReplyButtonBackground;
         this.quickReplyTextColor = quickReplyTextColor;
+        return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param maxGalleryImagesCount - R.integer.max_count_attached_images
+     * @return Builder
+     */
+    public ChatStyle setMaxGalleryImagesCount(@IntegerRes final int maxGalleryImagesCount) {
+        this.maxGalleryImagesCount = maxGalleryImagesCount;
         return this;
     }
 }
