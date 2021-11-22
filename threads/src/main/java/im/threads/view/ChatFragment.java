@@ -273,6 +273,14 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
+    public void showProgressBar() {
+        binding.loader.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar() {
+        binding.loader.setVisibility(View.GONE);
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -808,6 +816,10 @@ public final class ChatFragment extends BaseFragment implements
         Drawable progressDrawable = binding.progressBar.getIndeterminateDrawable().mutate();
         ColorsHelper.setDrawableColor(activity, progressDrawable, style.emptyStateProgressBarColorResId);
         binding.progressBar.setIndeterminateDrawable(progressDrawable);
+
+        Drawable loaderDrawable = binding.loader.getIndeterminateDrawable().mutate();
+        ColorsHelper.setDrawableColor(activity, loaderDrawable, style.chatToolbarColorResId);
+        binding.loader.setIndeterminateDrawable(loaderDrawable);
         ColorsHelper.setTextColor(activity, binding.tvEmptyStateHint, style.emptyStateHintColorResId);
     }
 

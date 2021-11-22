@@ -443,6 +443,13 @@
 
         </androidx.appcompat.widget.Toolbar>
 
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/loader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
         <LinearLayout
             android:id="@+id/fl_empty"
             android:layout_width="match_parent"
