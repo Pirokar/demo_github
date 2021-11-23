@@ -606,7 +606,9 @@ public final class ChatController {
                                     },
                                     e -> {
                                         isDownloadingMessages = false;
-                                        fragment.hideProgressBar();
+                                        if (fragment != null) {
+                                            fragment.hideProgressBar();
+                                        }
                                         ThreadsLogger.e(TAG, e.getMessage());
                                     }
                             )
