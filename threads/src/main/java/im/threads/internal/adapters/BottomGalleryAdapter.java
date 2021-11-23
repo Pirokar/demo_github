@@ -36,9 +36,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
         final BottomGalleryItem item = list.get(position);
         holder.onBind(list.get(position), v -> {
             if (!item.isChosen() &&
-                    (mChosenItems.size() >= Config.instance.context.getResources().getInteger(Config.instance.getChatStyle().maxGalleryImagesCount) ||
-                            mChosenItems.size() >= Config.instance.context.getResources().getInteger(Config.instance.getChatStyle().maxGalleryImagesCountFixedBySystem))
-            ) {
+                    mChosenItems.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(Config.instance.context)) {
                 if (Config.instance.context != null) {
                     Toast.makeText(Config.instance.context, Config.instance.context.getString(R.string.threads_achieve_images_count_limit_mesage), Toast.LENGTH_SHORT)
                             .show();

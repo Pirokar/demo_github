@@ -174,7 +174,6 @@ public class ChatStyleBuilderHelper {
                         R.color.alt_threads_quick_reply_text_color
                 )
                 .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images);
-        ;
     }
 
     public enum ChatDesign {

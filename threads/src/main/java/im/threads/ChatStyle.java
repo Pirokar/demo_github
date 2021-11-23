@@ -1,5 +1,6 @@
 package im.threads;
 
+import android.content.Context;
 import android.view.Gravity;
 
 import androidx.annotation.ArrayRes;
@@ -8,6 +9,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntegerRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
@@ -1064,5 +1066,19 @@ public final class ChatStyle implements Serializable {
     public ChatStyle setMaxGalleryImagesCount(@IntegerRes final int maxGalleryImagesCount) {
         this.maxGalleryImagesCount = maxGalleryImagesCount;
         return this;
+    }
+
+    /**
+     * Определяет максимальное количество приложенных к сообщению файлов
+     *
+     * @param context
+     * @return Максимальное количество приложенных к сообщению файлов
+     */
+    public int getMaxGalleryImagesCount(@NonNull Context context) {
+        int count = context.getResources().getInteger(maxGalleryImagesCount);
+        int maxCount = context.getResources().getInteger(maxGalleryImagesCountFixedBySystem);
+        if(count <= maxCount && count > 0)
+            return count;
+        return maxCount;
     }
 }

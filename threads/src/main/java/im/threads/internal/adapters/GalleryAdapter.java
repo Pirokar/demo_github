@@ -42,9 +42,7 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
                     } else {
                         Context context = Config.instance.context;
                         if (context != null) {
-                            if (chosenList.size() >= context.getResources().getInteger(Config.instance.getChatStyle().maxGalleryImagesCount) ||
-                                    chosenList.size() >= context.getResources().getInteger(Config.instance.getChatStyle().maxGalleryImagesCountFixedBySystem)
-                            ) {
+                            if (chosenList.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(context)) {
                                 Toast.makeText(context, context.getString(R.string.threads_achieve_images_count_limit_mesage), Toast.LENGTH_SHORT)
                                         .show();
                             } else {
