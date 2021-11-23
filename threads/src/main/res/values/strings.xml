@@ -129,4 +129,5 @@
     <string name="threads_voice_message_is_processing">Голосовое сообщение обрабатывается</string>
     <string name="threads_voice_message_error">Ошибка обработки голосового сообщения</string>
     <string name="threads_empty_state_hint">Инициализация клиента</string>
+    <string name="threads_achieve_images_count_limit_mesage">Вы достигли лимита изображений для отправки</string>
 </resources>
