@@ -173,6 +173,7 @@ public class ChatStyleBuilderHelper {
                         R.drawable.alt_threads_quick_reply_button_background,
                         R.color.alt_threads_quick_reply_text_color
                 )
+                .setFixedChatTitle(R.bool.alt_threads_chat_fixed_chat_title)
                 .setLoaderTextResId(R.string.alt_loading);
     }
 

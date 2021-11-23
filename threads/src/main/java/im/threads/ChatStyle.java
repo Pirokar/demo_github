@@ -45,6 +45,8 @@ public final class ChatStyle implements Serializable {
     public int chatToolbarTextColorResId = R.color.threads_chat_toolbar_text;
     @ColorRes
     public int chatToolbarHintTextColor = R.color.threads_chat_toolbar_hint;
+    @BoolRes
+    public int fixedChatTitle = R.bool.threads_chat_fixed_chat_title;
     public boolean showBackButton = false;
     public boolean chatSubtitleShowOrgUnit = false;
 
@@ -357,6 +359,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle showChatBackButton(final boolean showBackButton) {
         this.showBackButton = showBackButton;
+        return this;
+    }
+
+    public ChatStyle setFixedChatTitle(@BoolRes final int fixedChatTitle) {
+        this.fixedChatTitle = fixedChatTitle;
         return this;
     }
 
