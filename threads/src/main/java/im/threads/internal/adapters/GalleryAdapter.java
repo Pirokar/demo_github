@@ -41,13 +41,11 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
                         photo.setChecked(false);
                     } else {
                         Context context = Config.instance.context;
-                        if (context != null) {
-                            if (chosenList.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(context)) {
-                                Toast.makeText(context, context.getString(R.string.threads_achieve_images_count_limit_mesage), Toast.LENGTH_SHORT)
-                                        .show();
-                            } else {
-                                photo.setChecked(true);
-                            }
+                        if (chosenList.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(context)) {
+                            Toast.makeText(context, context.getString(R.string.threads_achieve_images_count_limit_mesage), Toast.LENGTH_SHORT)
+                                    .show();
+                        } else {
+                            photo.setChecked(true);
                         }
                     }
                     if (null != onGalleryItemClick) {
