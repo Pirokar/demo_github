@@ -1,12 +1,17 @@
 package im.threads.internal.adapters;
 
+import android.content.Context;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import im.threads.R;
+import im.threads.internal.Config;
 import im.threads.internal.holders.GalleryItemHolder;
 import im.threads.internal.model.MediaPhoto;
 
@@ -35,7 +40,13 @@ public final class GalleryAdapter extends RecyclerView.Adapter<GalleryItemHolder
                     if (photo.isChecked()) {
                         photo.setChecked(false);
                     } else {
-                        photo.setChecked(true);
+                        Context context = Config.instance.context;
+                        if (chosenList.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(context)) {
+                            Toast.makeText(context, context.getString(R.string.threads_achieve_images_count_limit_mesage), Toast.LENGTH_SHORT)
+                                    .show();
+                        } else {
+                            photo.setChecked(true);
+                        }
                     }
                     if (null != onGalleryItemClick) {
                         chosenList.clear();

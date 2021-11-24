@@ -174,6 +174,7 @@ public class ChatStyleBuilderHelper {
                         R.color.alt_threads_quick_reply_text_color
                 )
                 .setFixedChatTitle(R.bool.alt_threads_chat_fixed_chat_title)
+                .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images)
                 .setLoaderTextResId(R.string.alt_loading);
     }
 
