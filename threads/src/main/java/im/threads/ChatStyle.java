@@ -1,5 +1,6 @@
 package im.threads;
 
+import android.content.Context;
 import android.view.Gravity;
 
 import androidx.annotation.ArrayRes;
@@ -7,6 +8,8 @@ import androidx.annotation.BoolRes;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntegerRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
@@ -300,6 +303,10 @@ public final class ChatStyle implements Serializable {
     public int quickReplyButtonBackground = R.drawable.threads_quick_reply_button_background;
     @ColorRes
     public int quickReplyTextColor = R.color.threads_quick_reply_text_color;
+    @IntegerRes
+    public int maxGalleryImagesCount = R.integer.max_count_attached_images;
+    @IntegerRes
+    public int maxGalleryImagesCountFixedBySystem = R.integer.max_count_attached_images_final;
 
     // set can show specialist info
     public boolean canShowSpecialistInfo = true;
@@ -1063,5 +1070,30 @@ public final class ChatStyle implements Serializable {
         this.quickReplyButtonBackground = quickReplyButtonBackground;
         this.quickReplyTextColor = quickReplyTextColor;
         return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param maxGalleryImagesCount - R.integer.max_count_attached_images
+     * @return Builder
+     */
+    public ChatStyle setMaxGalleryImagesCount(@IntegerRes final int maxGalleryImagesCount) {
+        this.maxGalleryImagesCount = maxGalleryImagesCount;
+        return this;
+    }
+
+    /**
+     * Определяет максимальное количество приложенных к сообщению файлов
+     *
+     * @param context
+     * @return Максимальное количество приложенных к сообщению файлов
+     */
+    public int getMaxGalleryImagesCount(@NonNull Context context) {
+        int count = context.getResources().getInteger(maxGalleryImagesCount);
+        int maxCount = context.getResources().getInteger(maxGalleryImagesCountFixedBySystem);
+        if(count <= maxCount && count > 0)
+            return count;
+        return maxCount;
     }
 }
