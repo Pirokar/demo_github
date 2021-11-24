@@ -2060,9 +2060,19 @@ public final class ChatFragment extends BaseFragment implements
 
     public void showEmptyState() {
         binding.flEmpty.setVisibility(View.VISIBLE);
+        binding.tvEmptyStateHint.setText(R.string.threads_empty_state_hint);
     }
 
     public void hideEmptyState() {
+        binding.flEmpty.setVisibility(View.GONE);
+    }
+
+    public void showProgressBar() {
+        binding.flEmpty.setVisibility(View.VISIBLE);
+        binding.tvEmptyStateHint.setText(style.loaderTextResId);
+    }
+
+    public void hideProgressBar() {
         binding.flEmpty.setVisibility(View.GONE);
     }
 

@@ -283,6 +283,8 @@ public final class ChatStyle implements Serializable {
     public int emptyStateProgressBarColorResId = R.color.threads_empty_state_progress;
     @ColorRes
     public int emptyStateHintColorResId = R.color.threads_empty_state_hint;
+    @StringRes
+    public int loaderTextResId = R.string.loading;
 
     // system messages
     @DimenRes
@@ -504,6 +506,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setSystemMessageFont(final String path) {
         this.systemMessageFont = path;
+        return this;
+    }
+
+    public ChatStyle setLoaderTextResId(final int loaderTextResId) {
+        this.loaderTextResId = loaderTextResId;
         return this;
     }
 

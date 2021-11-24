@@ -458,6 +458,7 @@ public final class ChatController {
             return;
         }
         fragment = f;
+        fragment.showProgressBar();
         if (consultWriter.isSearchingConsult()) {
             fragment.setStateSearchingConsult();
         }
@@ -600,10 +601,14 @@ public final class ChatController {
                                             if (info != null) {
                                                 fragment.setStateConsultConnected(info);
                                             }
+                                            fragment.hideProgressBar();
                                         }
                                     },
                                     e -> {
                                         isDownloadingMessages = false;
+                                        if (fragment != null) {
+                                            fragment.hideProgressBar();
+                                        }
                                         ThreadsLogger.e(TAG, e.getMessage());
                                     }
                             )
