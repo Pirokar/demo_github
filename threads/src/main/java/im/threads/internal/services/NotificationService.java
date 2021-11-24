@@ -26,8 +26,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,7 +39,6 @@ import im.threads.internal.controllers.UnreadMessagesController;
 import im.threads.internal.formatters.MessageFormatter;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
-import im.threads.internal.utils.TargetNoError;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.view.ChatFragment;
 
@@ -50,6 +47,7 @@ import im.threads.view.ChatFragment;
  */
 public final class NotificationService extends ThreadsService {
 
+    public static final String EXTRA_NOTIFICATION_ID = "im.threads.internal.services.NotificationService.EXTRA_NOTIFICATION_ID";
     public static final String EXTRA_MESSAGE = "im.threads.internal.services.NotificationService.EXTRA_MESSAGE";
     public static final String EXTRA_OPERATOR_URL = "im.threads.internal.services.NotificationService.EXTRA_OPERATOR_URL";
     public static final String EXTRA_APP_MARKER = "im.threads.internal.services.NotificationService.EXTRA_APP_MARKER";
@@ -66,7 +64,6 @@ public final class NotificationService extends ThreadsService {
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
     private static final int CAMPAIGN_MESSAGE_PUSH_ID = 2;
     private final String GROUP_KEY_PUSH = "im.threads.internal.services.NotificationService.UNREAD_MESSAGE_GROUP";
-
     private final Handler h = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -80,9 +77,10 @@ public final class NotificationService extends ThreadsService {
                 .setAction(NotificationService.ACTION_REMOVE_NOTIFICATION));
     }
 
-    public static void addUnreadMessage(final @NonNull Context context, String message, String operatorUrl, String appMarker) {
+    public static void addUnreadMessage(final @NonNull Context context, int notificationId, String message, String operatorUrl, String appMarker) {
         startService(context, new Intent(context, NotificationService.class)
                 .setAction(NotificationService.ACTION_ADD_UNREAD_MESSAGE)
+                .putExtra(NotificationService.EXTRA_NOTIFICATION_ID, notificationId)
                 .putExtra(NotificationService.EXTRA_MESSAGE, message)
                 .putExtra(NotificationService.EXTRA_OPERATOR_URL, operatorUrl)
                 .putExtra(NotificationService.EXTRA_APP_MARKER, appMarker));
@@ -136,20 +134,21 @@ public final class NotificationService extends ThreadsService {
                     nm.cancel(UNREAD_MESSAGE_GROUP_PUSH_ID);
                     break;
                 case ACTION_ADD_UNREAD_MESSAGE:
+                    final int notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, 0);
                     final String message = intent.getStringExtra(EXTRA_MESSAGE);
                     if (Build.VERSION.SDK_INT < 24) {
-                        notifyUnreadMessagesCountChanged(nm, getPreNStyleNotification(intent, null, message));
+                        notifyUnreadMessagesCountChanged(nm, getPreNStyleNotification(intent, null, message), notificationId);
                     } else {
-                        getNStyleNotification(intent, null, notification -> notifyUnreadMessagesCountChanged(nm, notification), message);
+                        getNStyleNotification(intent, null, notification -> notifyUnreadMessagesCountChanged(nm, notification, notificationId), message);
                     }
                     break;
                 case ACTION_ADD_UNREAD_MESSAGE_LIST:
                     final MessageFormatter.MessageContent messageContent = intent.getParcelableExtra(EXTRA_MESSAGE_CONTENT);
                     if (Build.VERSION.SDK_INT < 24) {
                         final Notification notification = getPreNStyleNotification(intent, messageContent, null);
-                        notifyUnreadMessagesCountChanged(nm, notification);
+                        notifyUnreadMessagesCountChanged(nm, notification, new Date().hashCode());
                     } else {
-                        getNStyleNotification(intent, messageContent, notification -> notifyUnreadMessagesCountChanged(nm, notification), null);
+                        getNStyleNotification(intent, messageContent, notification -> notifyUnreadMessagesCountChanged(nm, notification, new Date().hashCode()), null);
                     }
                     break;
                 case ACTION_ADD_UNSENT_MESSAGE:
@@ -167,7 +166,7 @@ public final class NotificationService extends ThreadsService {
         return !ChatFragment.isShown();
     }
 
-    private void notifyUnreadMessagesCountChanged(@NonNull final NotificationManager nm, final Notification notification) {
+    private void notifyUnreadMessagesCountChanged(@NonNull final NotificationManager nm, final Notification notification, int notificationId) {
         notification.defaults |= Notification.DEFAULT_SOUND;
         notification.defaults |= Notification.DEFAULT_VIBRATE;
         if (needsShowNotification()) {
@@ -187,7 +186,7 @@ public final class NotificationService extends ThreadsService {
                                 .setGroupSummary(true)
                                 .build()
                 );
-                nm.notify(new Date().hashCode(), notification);
+                nm.notify(notificationId, notification);
             }
             if (Config.instance.transport.getType() == ConfigBuilder.TransportType.THREADS_GATE) {
                 UnreadMessagesController.INSTANCE.incrementUnreadPush();
@@ -341,97 +340,62 @@ public final class NotificationService extends ThreadsService {
 
     @TargetApi(Build.VERSION_CODES.N)
     private void getNStyleNotification(final Intent intent, @Nullable final MessageFormatter.MessageContent messageContent, final Consumer<Notification> completionHandler, @Nullable final String message) {
+        String avatarPath = null;
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
         final String appMarker = intent.getStringExtra(EXTRA_APP_MARKER);
+        builder.setContentIntent(getChatIntent(appMarker));
         builder.setShowWhen(true);
         builder.setGroup(GROUP_KEY_PUSH);
         builder.setColor(getColor(style.nougatPushAccentColorResId));
         final boolean unreadMessage = !TextUtils.isEmpty(message);
         if (unreadMessage) {
+            avatarPath = FileUtils.convertRelativeUrlToAbsolute(intent.getStringExtra(EXTRA_OPERATOR_URL));
             builder.setContentText(message);
             builder.setSmallIcon(style.defPushIconResId);
-            final String operatorUrl = intent.getStringExtra(EXTRA_OPERATOR_URL);
-            if (!TextUtils.isEmpty(operatorUrl)) {
-                final TargetNoError avatarTarget = new TargetNoError() {
-                    @Override
-                    public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {
-                        builder.setLargeIcon(bitmap);
-                    }
-                };
-                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(operatorUrl);
-                Picasso.get()
-                        .load(avatarPath)
-                        .transform(new CircleTransformation())
-                        .into(avatarTarget);
-            }
-            executor.execute(() -> {
-                builder.setContentIntent(getChatIntent(appMarker));
-                builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
-                completionHandler.accept(builder.build());
-
-            });
+            builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
         } else if (messageContent != null) {
+            avatarPath = FileUtils.convertRelativeUrlToAbsolute(messageContent.avatarPath);
             builder.setContentTitle(messageContent.titleText);
             if (messageContent.hasImage || messageContent.hasPlainFiles || messageContent.phrasesCount <= 1) {
                 builder.setContentText(messageContent.contentText);
             }
-            if (messageContent.hasAvatar) {
-                final TargetNoError avatarTarget = new TargetNoError() {
-                    @Override
-                    public void onBitmapLoaded(final Bitmap bitmap, final Picasso.LoadedFrom from) {
-                        builder.setLargeIcon(bitmap);
-                    }
-                };
-                final String avatarPath = FileUtils.convertRelativeUrlToAbsolute(messageContent.avatarPath);
-                Picasso.get()
-                        .load(avatarPath)
-                        .transform(new CircleTransformation())
-                        .into(avatarTarget);
+            if (messageContent.isNeedAnswer) {
+                builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
             }
             if (!messageContent.hasImage && !messageContent.hasPlainFiles) {
                 builder.setSmallIcon(style.defPushIconResId);
-                executor.execute(() -> {
-                    builder.setContentIntent(getChatIntent(appMarker));
-                    if (messageContent.isNeedAnswer) {
-                        builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
-                    }
-                    completionHandler.accept(builder.build());
-
-                });
-                return;
-            }
-            if (messageContent.hasImage && !messageContent.hasPlainFiles && messageContent.imagesCount == 1) {
-                final NotificationCompat.BigPictureStyle pictureStyle = new androidx.core.app.NotificationCompat.BigPictureStyle();
-                executor.execute(() -> {
-                    try {
-                        final URLConnection url = new URL(messageContent.lastImagePath).openConnection();
-                        final Bitmap b = BitmapFactory.decodeStream(url.getInputStream());
-                        pictureStyle.bigPicture(b);
-                        builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
-                        builder.setStyle(pictureStyle);
-                        builder.setContentIntent(getChatIntent(appMarker));
-                        if (messageContent.isNeedAnswer) {
-                            builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
-                        }
-                        completionHandler.accept(builder.build());
-                    } catch (final IOException e) {
-                        ThreadsLogger.e(TAG, "getNStyleNotification", e);
-                    }
-                });
-                return;
-            }
-            if (messageContent.hasPlainFiles) {
+            } else if (messageContent.hasPlainFiles) {
                 builder.setSmallIcon(R.drawable.attach_file_grey_48x48);
             } else {
                 builder.setSmallIcon(R.drawable.insert_photo_grey_48x48);
             }
-            executor.execute(() -> {
-                builder.setContentIntent(getChatIntent(appMarker));
-                if (messageContent.isNeedAnswer) {
-                    builder.addAction(0, getString(R.string.threads_answer), QuickAnswerActivity.createPendingIntent(this));
+        }
+
+        final String finalAvatarPath = avatarPath;
+        executor.execute(() -> {
+            if (messageContent != null) {
+                if (messageContent.hasImage && !messageContent.hasPlainFiles && messageContent.imagesCount == 1) {
+                    final NotificationCompat.BigPictureStyle pictureStyle = new androidx.core.app.NotificationCompat.BigPictureStyle();
+                    pictureStyle.bigPicture(getBitmapFromUrl(messageContent.lastImagePath));
+                    builder.setStyle(pictureStyle);
                 }
-                completionHandler.accept(builder.build());
-            });
+            }
+            builder.setLargeIcon(getBitmapFromUrl(finalAvatarPath));
+            completionHandler.accept(builder.build());
+        });
+    }
+
+    private Bitmap getBitmapFromUrl(String url) {
+        if (TextUtils.isEmpty(url))
+            return null;
+
+        try {
+            return Picasso.get()
+                    .load(url)
+                    .transform(new CircleTransformation()).get();
+        } catch (IOException e) {
+            ThreadsLogger.e(TAG, "getBitmapFromUrl", e);
+            return null;
         }
     }
 

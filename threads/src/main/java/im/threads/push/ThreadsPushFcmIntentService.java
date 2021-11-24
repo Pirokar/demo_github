@@ -3,6 +3,7 @@ package im.threads.push;
 import com.edna.android.push_lite.fcm.FcmPushService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Date;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -41,7 +42,7 @@ public class ThreadsPushFcmIntentService extends FcmPushService {
                 String operatorUrl = data.get(MessageAttributes.OPERATOR_URL);
                 String appMarker = data.get(MessageAttributes.APP_MARKER_KEY);
                 String text = data.get(MessageAttributes.MESSAGE);
-                NotificationService.addUnreadMessage(this, text, operatorUrl, appMarker);
+                NotificationService.addUnreadMessage(this, new Date().hashCode(), text, operatorUrl, appMarker);
             }
         }
     }

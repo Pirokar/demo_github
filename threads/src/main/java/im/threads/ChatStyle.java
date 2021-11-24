@@ -1,5 +1,6 @@
 package im.threads;
 
+import android.content.Context;
 import android.view.Gravity;
 
 import androidx.annotation.ArrayRes;
@@ -7,6 +8,8 @@ import androidx.annotation.BoolRes;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntegerRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
@@ -45,6 +48,9 @@ public final class ChatStyle implements Serializable {
     public int chatToolbarTextColorResId = R.color.threads_chat_toolbar_text;
     @ColorRes
     public int chatToolbarHintTextColor = R.color.threads_chat_toolbar_hint;
+    @BoolRes
+    public int fixedChatTitle = R.bool.threads_chat_fixed_chat_title;
+
     public boolean showBackButton = false;
     public boolean chatSubtitleShowOrgUnit = false;
 
@@ -280,6 +286,8 @@ public final class ChatStyle implements Serializable {
     public int emptyStateProgressBarColorResId = R.color.threads_empty_state_progress;
     @ColorRes
     public int emptyStateHintColorResId = R.color.threads_empty_state_hint;
+    @StringRes
+    public int loaderTextResId = R.string.loading;
 
     // system messages
     @DimenRes
@@ -295,6 +303,10 @@ public final class ChatStyle implements Serializable {
     public int quickReplyButtonBackground = R.drawable.threads_quick_reply_button_background;
     @ColorRes
     public int quickReplyTextColor = R.color.threads_quick_reply_text_color;
+    @IntegerRes
+    public int maxGalleryImagesCount = R.integer.max_count_attached_images;
+    @IntegerRes
+    public int maxGalleryImagesCountFixedBySystem = R.integer.max_count_attached_images_final;
 
     // set can show specialist info
     public boolean canShowSpecialistInfo = true;
@@ -355,6 +367,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle showChatBackButton(final boolean showBackButton) {
         this.showBackButton = showBackButton;
+        return this;
+    }
+
+    public ChatStyle setFixedChatTitle(@BoolRes final int fixedChatTitle) {
+        this.fixedChatTitle = fixedChatTitle;
         return this;
     }
 
@@ -496,6 +513,11 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setSystemMessageFont(final String path) {
         this.systemMessageFont = path;
+        return this;
+    }
+
+    public ChatStyle setLoaderTextResId(final int loaderTextResId) {
+        this.loaderTextResId = loaderTextResId;
         return this;
     }
 
@@ -1042,11 +1064,36 @@ public final class ChatStyle implements Serializable {
      * Default values:
      *
      * @param quickReplyButtonBackground - R.drawable.threads_quick_reply_button_background
-     * @param quickReplyTextColor - R.color.threads_quick_reply_text_color
+     * @param quickReplyTextColor        - R.color.threads_quick_reply_text_color
      */
     public ChatStyle setQuickReplyChipChoiceStyle(@DrawableRes final int quickReplyButtonBackground, @ColorRes final int quickReplyTextColor) {
         this.quickReplyButtonBackground = quickReplyButtonBackground;
         this.quickReplyTextColor = quickReplyTextColor;
         return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param maxGalleryImagesCount - R.integer.max_count_attached_images
+     * @return Builder
+     */
+    public ChatStyle setMaxGalleryImagesCount(@IntegerRes final int maxGalleryImagesCount) {
+        this.maxGalleryImagesCount = maxGalleryImagesCount;
+        return this;
+    }
+
+    /**
+     * Определяет максимальное количество приложенных к сообщению файлов
+     *
+     * @param context
+     * @return Максимальное количество приложенных к сообщению файлов
+     */
+    public int getMaxGalleryImagesCount(@NonNull Context context) {
+        int count = context.getResources().getInteger(maxGalleryImagesCount);
+        int maxCount = context.getResources().getInteger(maxGalleryImagesCountFixedBySystem);
+        if(count <= maxCount && count > 0)
+            return count;
+        return maxCount;
     }
 }

@@ -1,7 +1,5 @@
 package im.threads.view;
 
-import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -39,18 +37,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.view.ViewCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.devlomi.record_view.OnRecordListener;
@@ -72,6 +58,17 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -131,6 +128,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Pair;
 
+import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
+
 /**
  * Весь функционал чата находится здесь во фрагменте,
  * чтобы чат можно было встроить в приложене в навигацией на фрагментах
@@ -162,6 +161,7 @@ public final class ChatFragment extends BaseFragment implements
     private static final long INPUT_DELAY = 3000;
 
     private static boolean chatIsShown = false;
+    private static boolean afterResume = false;
     private final Handler h = new Handler(Looper.getMainLooper());
     private final SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault());
     @NonNull
@@ -1418,7 +1418,7 @@ public final class ChatFragment extends BaseFragment implements
                 isInMessageSearchMode) {
             return;
         }
-        String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
+        /*String firstUnreadUuid = mChatController.getFirstUnreadUuidId();
         ArrayList<ChatItem> newList = chatAdapter.getList();
         if (newList != null && !newList.isEmpty() && firstUnreadUuid != null) {
             for (int i = 1; i < newList.size(); i++) {
@@ -1434,10 +1434,16 @@ public final class ChatFragment extends BaseFragment implements
                     }
                 }
             }
-        }
+        }*/
         int newAdapterSize = chatAdapter.getList().size();
-        if (newAdapterSize > oldAdapterSize) {
+        if (oldAdapterSize == 0) {
+            scrollToPosition(chatAdapter.getItemCount() - 1, false);
+        } else if (afterResume) {
+            scrollToPosition(chatAdapter.getItemCount() - 1, false);
+            afterResume = false;
+        } else if (newAdapterSize > oldAdapterSize) {
             h.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
+            afterResume = false;
         }
     }
 
@@ -1447,19 +1453,20 @@ public final class ChatFragment extends BaseFragment implements
         }
         h.post(
                 () -> {
-                    if (!isInMessageSearchMode) {
-                        binding.subtitle.setVisibility(View.VISIBLE);
-                        binding.consultName.setVisibility(View.VISIBLE);
+                    if (!getResources().getBoolean(style.fixedChatTitle)) {
+                        if (!isInMessageSearchMode) {
+                            binding.subtitle.setVisibility(View.VISIBLE);
+                            binding.consultName.setVisibility(View.VISIBLE);
+                        }
+                        if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
+                            binding.consultName.setText(info.getName());
+                        } else {
+                            binding.consultName.setText(requireContext().getString(R.string.threads_unknown_operator));
+                        }
+                        binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
+                                ? requireContext().getString(style.chatSubtitleTextResId)
+                                : info.getOrganizationUnit());
                     }
-                    if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
-                        binding.consultName.setText(info.getName());
-                    } else {
-                        binding.consultName.setText(requireContext().getString(R.string.threads_unknown_operator));
-                    }
-                    binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
-                            ? requireContext().getString(style.chatSubtitleTextResId)
-                            : info.getOrganizationUnit());
-
                     chatAdapter.removeConsultSearching();
                     showOverflowMenu();
                 }
@@ -1535,6 +1542,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void setTitleStateCurrentOperatorConnected() {
         if (isInMessageSearchMode) return;
+
         if (mChatController.isConsultFound()) {
             binding.subtitle.setVisibility(View.VISIBLE);
             binding.consultName.setVisibility(View.VISIBLE);
@@ -1628,11 +1636,12 @@ public final class ChatFragment extends BaseFragment implements
         if (isInMessageSearchMode) {
             return;
         }
+
         binding.subtitle.setVisibility(View.GONE);
         binding.consultName.setVisibility(View.VISIBLE);
         binding.searchLo.setVisibility(View.GONE);
         binding.search.setText("");
-        if (isAdded()) {
+        if (isAdded() && !getResources().getBoolean(style.fixedChatTitle)) {
             binding.consultName.setText(requireContext().getString(R.string.threads_searching_operator));
         }
     }
@@ -1761,6 +1770,7 @@ public final class ChatFragment extends BaseFragment implements
         scrollToFirstUnreadMessage();
         isResumed = true;
         chatIsShown = true;
+        afterResume = true;
     }
 
     private void scrollToNewMessages() {
@@ -1847,6 +1857,9 @@ public final class ChatFragment extends BaseFragment implements
 
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
         showOverflowMenu();
+        if (getResources().getBoolean(style.fixedChatTitle)) {
+            setTitleStateDefault();
+        }
     }
 
     private void showOverflowMenu() {
@@ -1932,7 +1945,6 @@ public final class ChatFragment extends BaseFragment implements
                 setTitleStateSearchingConsult();
                 break;
         }
-
         hideBackButton();
     }
 
@@ -2048,9 +2060,19 @@ public final class ChatFragment extends BaseFragment implements
 
     public void showEmptyState() {
         binding.flEmpty.setVisibility(View.VISIBLE);
+        binding.tvEmptyStateHint.setText(R.string.threads_empty_state_hint);
     }
 
     public void hideEmptyState() {
+        binding.flEmpty.setVisibility(View.GONE);
+    }
+
+    public void showProgressBar() {
+        binding.flEmpty.setVisibility(View.VISIBLE);
+        binding.tvEmptyStateHint.setText(style.loaderTextResId);
+    }
+
+    public void hideProgressBar() {
         binding.flEmpty.setVisibility(View.GONE);
     }
 

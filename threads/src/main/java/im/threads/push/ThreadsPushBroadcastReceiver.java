@@ -4,17 +4,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.edna.android.push_lite.PushBroadcastReceiver;
 import com.edna.android.push_lite.repo.push.remote.model.PushMessage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.Nullable;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.formatters.MessageFormatter;
 import im.threads.internal.model.ChatItem;
+import im.threads.internal.model.ConsultConnectionMessage;
+import im.threads.internal.model.ConsultPhrase;
 import im.threads.internal.model.ScheduleInfo;
 import im.threads.internal.model.SpeechMessageUpdate;
 import im.threads.internal.model.UserPhrase;
@@ -61,18 +62,17 @@ public class ThreadsPushBroadcastReceiver extends PushBroadcastReceiver {
             }
         }
         if (toShow.size() > 0) {
-            HashMap<String, ArrayList<PushMessage>> appMarkerMessagesMap = new HashMap<>();
             for (PushMessage pushMessage : toShow) {
                 String appMarker = MFMSPushMessageParser.getAppMarker(pushMessage);
-                if (!appMarkerMessagesMap.containsKey(appMarker)) {
-                    appMarkerMessagesMap.put(appMarker, new ArrayList<>());
+                ChatItem chatItem = MFMSPushMessageParser.format(pushMessage);
+                String avatarPath = null;
+                if (chatItem instanceof ConsultConnectionMessage) {
+                    avatarPath = ((ConsultConnectionMessage) chatItem).getAvatarPath();
                 }
-                appMarkerMessagesMap.get(appMarker).add(pushMessage);
-            }
-            for (String appMarker : appMarkerMessagesMap.keySet()) {
-                List<ChatItem> chatItems = MFMSPushMessageParser.formatMessages(appMarkerMessagesMap.get(appMarker));
-                MessageFormatter.MessageContent messageContent = MessageFormatter.parseMessageContent(context, chatItems);
-                NotificationService.addUnreadMessageList(context, appMarker, messageContent);
+                if (chatItem instanceof ConsultPhrase) {
+                    avatarPath = ((ConsultPhrase) chatItem).getAvatarPath();
+                }
+                NotificationService.addUnreadMessage(context, pushMessage.messageId.hashCode(), pushMessage.shortMessage, avatarPath, appMarker);
             }
         }
         return true;

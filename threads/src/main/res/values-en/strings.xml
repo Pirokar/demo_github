@@ -118,4 +118,6 @@
     <string name="threads_voice_message_is_processing">Voice message is processing</string>
     <string name="threads_voice_message_error">Voice message processing error</string>
     <string name="threads_empty_state_hint">Client initialization</string>
+    <string name="threads_achieve_images_count_limit_mesage">You\'ve reached the limit of images to send</string>
+    <string name="loading"></string>
 </resources>

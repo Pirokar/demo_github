@@ -3,14 +3,13 @@ package im.threads.internal.model;
 import androidx.core.util.ObjectsCompat;
 
 import java.util.Calendar;
-import java.util.Objects;
 
 public final class SearchingConsult implements ChatItem {
     private long date;
 
     public SearchingConsult() {
         final Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR, 23);
+        c.set(Calendar.HOUR_OF_DAY, 23);
         c.set(Calendar.MINUTE, 59);
         c.set(Calendar.SECOND, 59);
         this.date = c.getTimeInMillis();
