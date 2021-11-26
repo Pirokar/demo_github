@@ -188,19 +188,34 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
             phraseTextView.visibility = View.GONE
         } else {
             phraseTextView.visibility = View.VISIBLE
-            val url = UrlUtils.extractLink(consultPhrase.phraseText)
-            phraseTextView.setOnClickListener(null)
+            val deepLink = UrlUtils.extractDeepLink(phrase)
+            val url = UrlUtils.extractLink(phrase)
+            when {
+                deepLink != null -> {
+                    phraseTextView.setOnClickListener { UrlUtils.openUrl(context, deepLink) }
+                }
+                url != null -> {
+                    phraseTextView.setOnClickListener { UrlUtils.openUrl(context, url) }
+                }
+                else -> {
+                    phraseTextView.setOnClickListener(null)
+                }
+            }
             when {
                 consultPhrase.formattedPhrase != null -> {
                     phraseTextView.autoLinkMask = 0
                     phraseTextView.text = MarkdownProcessorHolder.getMarkdownProcessor()
-                            .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
+                        .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
+                }
+                deepLink != null -> {
+                    val text = SpannableString(phrase)
+                    LinkifyCompat.addLinks(text, UrlUtils.DEEPLINK_URL, "")
+                    phraseTextView.text = text
                 }
                 url != null -> {
                     val text = SpannableString(phrase)
                     LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "")
                     phraseTextView.text = text
-                    phraseTextView.setOnClickListener { UrlUtils.openUrl(context, url) }
                 }
                 else -> {
                     phraseTextView.text = phrase

@@ -1093,9 +1093,7 @@ public final class ChatController {
     }
 
     private void removePushNotification() {
-        if (fragment != null) {
-            NotificationService.removeNotification(fragment.requireContext());
-        }
+        NotificationService.removeNotification(appContext);
     }
 
     private void setSurveyStateSent(final Survey survey) {
