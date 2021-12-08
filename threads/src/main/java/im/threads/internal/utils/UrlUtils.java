@@ -4,16 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
-
 public final class UrlUtils {
 
+    public static final Pattern DEEPLINK_URL = Pattern.compile("[a-z0-9+.-]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     private static final String TAG = "UrlUtils";
-
     /**
      * Valid UCS characters defined in RFC 3987. Excludes space characters.
      */
@@ -36,56 +38,42 @@ public final class UrlUtils {
             "\uDB00\uDC00-\uDB3F\uDFFD" +
             "\uDB44\uDC00-\uDB7F\uDFFD" +
             "&&[^\u00A0[\u2000-\u200A]\u2028\u2029\u202F\u3000]]";
-
     private static final String IP_ADDRESS_STRING =
             "((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
                     + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
                     + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
                     + "|[1-9][0-9]|[0-9]))";
-
     /**
      * Valid characters for IRI label defined in RFC 3987.
      */
     private static final String LABEL_CHAR = "a-zA-Z0-9" + UCS_CHAR;
-
     /**
      * Valid characters for IRI TLD defined in RFC 3987.
      */
     private static final String TLD_CHAR = "a-zA-Z" + UCS_CHAR;
-
     /**
      * RFC 1035 Section 2.3.4 limits the labels to a maximum 63 octets.
      */
     private static final String IRI_LABEL =
             "[" + LABEL_CHAR + "](?:[" + LABEL_CHAR + "_\\-]{0,4048}[" + LABEL_CHAR + "]){0,1}";
-
     /**
      * /**
      * RFC 3492 references RFC 1034 and limits Punycode algorithm output to 63 characters.
      */
     private static final String PUNYCODE_TLD = "xn\\-\\-[\\w\\-]{0,58}\\w";
-
     private static final String TLD = "(" + PUNYCODE_TLD + "|" + "[" + TLD_CHAR + "]{2,63}" + ")";
-
     private static final String HOST_NAME = "(" + IRI_LABEL + "\\.)+" + TLD;
-
     private static final String DOMAIN_NAME_STR = "(" + HOST_NAME + "|" + IP_ADDRESS_STRING + ")";
-
-    private static final String PROTOCOL = "(?i:http|https|rtsp)://";
-
+    private static final String PROTOCOL = "(?i:http|https|rtsp|webview)://";
     /* A word boundary or end of input.  This is to stop foo.sure from matching as foo.su */
     private static final String WORD_BOUNDARY = "(?:\\/|\\b|$|^)";
-
     private static final String USER_INFO = "(?:[a-zA-Z0-9\\$\\-\\_\\.\\+\\!\\*\\'\\(\\)"
             + "\\,\\;\\?\\&\\=]|(?:\\%[a-fA-F0-9]{2})){1,64}(?:\\:(?:[a-zA-Z0-9\\$\\-\\_"
             + "\\.\\+\\!\\*\\'\\(\\)\\,\\;\\?\\&\\=]|(?:\\%[a-fA-F0-9]{2})){1,25})?\\@";
-
     private static final String PORT_NUMBER = "\\:\\d{1,5}";
-
     private static final String PATH_AND_QUERY = "[/?](?:(?:[" + LABEL_CHAR
             + ";/?:@&=#~"  // plus optional query params
             + "\\-.\\+!\\*'\\(\\),_\\$])|(?:%[a-fA-F0-9]{2}))*";
-
     /**
      * Regular expression pattern to match most part of RFC 3987
      * Internationalized URLs, aka IRIs.
@@ -99,9 +87,9 @@ public final class UrlUtils {
             + "(" + PATH_AND_QUERY + ")?"
             + WORD_BOUNDARY
             + ")");
+    private static final Pattern WEB_URL_WITH_BRACKETS = Pattern.compile("\\[.*\\]\\(" + WEB_URL.toString() + "\\)");
 
-    private static Pattern WEB_URL_WITH_BRACKETS = Pattern.compile("\\[.*\\]\\(" + WEB_URL.toString() + "\\)");
-
+    @Nullable
     public static String extractLink(@NonNull String text) {
         Matcher matcherWithBrackets = WEB_URL_WITH_BRACKETS.matcher(text);
         while (matcherWithBrackets.find()) {
@@ -119,14 +107,25 @@ public final class UrlUtils {
         return null;
     }
 
-    public static void openUrl(Context context, String url) {
+    @Nullable
+    public static String extractDeepLink(@NonNull String text) {
+        Matcher deeplinkMatcher = DEEPLINK_URL.matcher(text);
+        if (deeplinkMatcher.find()) {
+            return deeplinkMatcher.group();
+        }
+        return null;
+    }
+
+    public static void openUrl(@NonNull Context context, @NonNull String url) {
         Uri uri = Uri.parse(url);
         if (TextUtils.isEmpty(uri.getScheme())) {
-            uri = Uri.parse("http://" + url);
+            uri = Uri.parse("https://" + url);
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
         if (browserIntent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(browserIntent);
+        } else {
+            Toast.makeText(context, "No application support this type of link", Toast.LENGTH_SHORT).show();
         }
     }
 }

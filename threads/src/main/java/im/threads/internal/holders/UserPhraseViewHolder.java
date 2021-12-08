@@ -140,8 +140,16 @@ public final class UserPhraseViewHolder extends BaseHolder {
         } else {
             mPhraseTextView.setVisibility(View.VISIBLE);
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
+            String deepLink = UrlUtils.extractDeepLink(phrase);
             String url = UrlUtils.extractLink(phrase);
-            if (url != null) {
+            if (deepLink != null) {
+                final SpannableString text = new SpannableString(phrase);
+                LinkifyCompat.addLinks(text, UrlUtils.DEEPLINK_URL, "");
+                mPhraseTextView.setText(text);
+                mPhraseTextView.setOnClickListener(view -> {
+                    UrlUtils.openUrl(context, deepLink);
+                });
+            } else if (url != null) {
                 final SpannableString text = new SpannableString(phrase);
                 LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
                 mPhraseTextView.setText(text);
