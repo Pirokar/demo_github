@@ -307,6 +307,8 @@ public final class ChatStyle implements Serializable {
     public int maxGalleryImagesCount = R.integer.max_count_attached_images;
     @IntegerRes
     public int maxGalleryImagesCountFixedBySystem = R.integer.max_count_attached_images_final;
+    @ColorRes
+    public int consultSearchingProgressColor = R.color.threads_consult_searching_progress_color;
 
     // set can show specialist info
     public boolean canShowSpecialistInfo = true;
@@ -1069,6 +1071,17 @@ public final class ChatStyle implements Serializable {
     public ChatStyle setQuickReplyChipChoiceStyle(@DrawableRes final int quickReplyButtonBackground, @ColorRes final int quickReplyTextColor) {
         this.quickReplyButtonBackground = quickReplyButtonBackground;
         this.quickReplyTextColor = quickReplyTextColor;
+        return this;
+    }
+
+    /**
+     * Default values:
+     *
+     * @param consultSearchingProgressColor - R.color.threads_consult_searching_progress_color
+     * @return Builder
+     */
+    public ChatStyle setConsultSearchingProgressColor(@ColorRes final int consultSearchingProgressColor) {
+        this.consultSearchingProgressColor = consultSearchingProgressColor;
         return this;
     }
 

@@ -143,7 +143,6 @@ dependencies {
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
     androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
 }
