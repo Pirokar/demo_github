@@ -1,13 +1,19 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-parcelize'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
+}
 
 android {
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
     }
 
     compileSdkVersion rootProject.compileSdkVersion
@@ -159,9 +165,6 @@ dependencies {
     implementation "androidx.multidex:multidex:$rootProject.androidXMultidexVersion"
     implementation "com.google.android.material:material:$rootProject.materialComponentsVersion"
 
-    implementation "com.google.firebase:firebase-analytics:$rootProject.firebaseAnalyticsVersion"
-    implementation "com.google.firebase:firebase-crashlytics:$rootProject.firebaseCrashlyticsVersion"
-
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
@@ -174,10 +177,7 @@ dependencies {
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
 
     implementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
