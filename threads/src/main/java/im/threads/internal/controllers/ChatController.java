@@ -10,14 +10,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.Consumer;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -26,6 +18,13 @@ import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -1094,9 +1093,7 @@ public final class ChatController {
     }
 
     private void removePushNotification() {
-        if (fragment != null) {
-            NotificationService.removeNotification(fragment.requireContext());
-        }
+        NotificationService.removeNotification(appContext);
     }
 
     private void setSurveyStateSent(final Survey survey) {
@@ -1189,6 +1186,8 @@ public final class ChatController {
                     final String type = ((SystemMessage) chatItem).getType();
                     if (ChatItemType.OPERATOR_JOINED.toString().equalsIgnoreCase(type) ||
                             ChatItemType.THREAD_ENQUEUED.toString().equalsIgnoreCase(type) ||
+                            ChatItemType.THREAD_WILL_BE_REASSIGNED.toString().equalsIgnoreCase(type) ||
+                            ChatItemType.AVERAGE_WAIT_TIME.toString().equalsIgnoreCase(type) ||
                             ChatItemType.THREAD_CLOSED.toString().equalsIgnoreCase(type)) {
                         if (latestSystemMessage == null || latestSystemMessage.getTimeStamp() <= chatItem.getTimeStamp()) {
                             latestSystemMessage = chatItem;
@@ -1251,7 +1250,9 @@ public final class ChatController {
                     fragment.setCurrentThreadId(systemMessage.getThreadId());
                 }
             }
-            if (ChatItemType.THREAD_ENQUEUED.name().equalsIgnoreCase(type)) {
+            if (ChatItemType.THREAD_ENQUEUED.name().equalsIgnoreCase(type) ||
+                    ChatItemType.THREAD_WILL_BE_REASSIGNED.name().equalsIgnoreCase(type) ||
+                    ChatItemType.AVERAGE_WAIT_TIME.name().equalsIgnoreCase(type)) {
                 if (fragment != null) {
                     fragment.setStateSearchingConsult();
                 }

@@ -72,22 +72,19 @@ public final class ThreadsLib {
             });
         }
         ChatController.getInstance();
-        Consumer<? super Throwable> errorHandler = RxJavaPlugins.getErrorHandler();
-        RxJavaPlugins.setErrorHandler(throwable -> {
-            if (errorHandler != null) {
-                errorHandler.accept(throwable);
-            }
-            if (throwable instanceof UndeliverableException) {
-                throwable = throwable.getCause();
-                if (throwable != null) {
-                    ThreadsLogger.e(TAG, "global handler: ", throwable);
+        if (RxJavaPlugins.getErrorHandler() == null) {
+            RxJavaPlugins.setErrorHandler(throwable -> {
+                if (throwable instanceof UndeliverableException) {
+                    throwable = throwable.getCause();
+                    if (throwable != null) {
+                        ThreadsLogger.e(TAG, "global handler: ", throwable);
+                    }
+                    return;
                 }
-                return;
-            }
-            Thread.currentThread().getUncaughtExceptionHandler()
-                    .uncaughtException(Thread.currentThread(), throwable);
-        });
-
+                Thread.currentThread().getUncaughtExceptionHandler()
+                        .uncaughtException(Thread.currentThread(), throwable);
+            });
+        }
     }
 
     public static ThreadsLib getInstance() {

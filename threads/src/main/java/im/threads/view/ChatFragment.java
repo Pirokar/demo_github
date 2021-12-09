@@ -1453,22 +1453,25 @@ public final class ChatFragment extends BaseFragment implements
         }
         h.post(
                 () -> {
-                    if (!getResources().getBoolean(style.fixedChatTitle)) {
-                        if (!isInMessageSearchMode) {
-                            binding.subtitle.setVisibility(View.VISIBLE);
-                            binding.consultName.setVisibility(View.VISIBLE);
+                    Context context = getContext();
+                    if(context != null && isAdded()) {
+                        if (!getResources().getBoolean(style.fixedChatTitle)) {
+                            if (!isInMessageSearchMode) {
+                                binding.subtitle.setVisibility(View.VISIBLE);
+                                binding.consultName.setVisibility(View.VISIBLE);
+                            }
+                            if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
+                                binding.consultName.setText(info.getName());
+                            } else {
+                                binding.consultName.setText(context.getString(R.string.threads_unknown_operator));
+                            }
+                            binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
+                                    ? context.getString(style.chatSubtitleTextResId)
+                                    : info.getOrganizationUnit());
                         }
-                        if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
-                            binding.consultName.setText(info.getName());
-                        } else {
-                            binding.consultName.setText(requireContext().getString(R.string.threads_unknown_operator));
-                        }
-                        binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
-                                ? requireContext().getString(style.chatSubtitleTextResId)
-                                : info.getOrganizationUnit());
+                        chatAdapter.removeConsultSearching();
+                        showOverflowMenu();
                     }
-                    chatAdapter.removeConsultSearching();
-                    showOverflowMenu();
                 }
         );
     }

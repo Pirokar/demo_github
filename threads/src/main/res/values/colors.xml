@@ -134,4 +134,5 @@
     <color name="threads_empty_state_background">@color/threads_white</color>
     <color name="threads_empty_state_progress">@color/threads_teal_009688</color>
     <color name="threads_empty_state_hint">@color/threads_black</color>
+    <color name="threads_consult_searching_progress_color">@color/threads_teal_009688</color>
 </resources>

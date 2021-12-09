@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  */
 class HyperLinkSyntax extends TextSyntaxAdapter {
     private static final String PATTERN = ".*[\\[]{1}.*[\\](]{1}.*[)]{1}.*";
-    private static final String AUTO_LINK_PATTERN = "https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+    private static final String AUTO_LINK_PATTERN = "[a-z0-9+.-]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 
     private int mColor;
     private boolean isUnderLine;
