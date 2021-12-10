@@ -154,6 +154,7 @@ public final class OutgoingMessageCreator {
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             JsonObject quoteJson = new JsonObject();
+            quoteJson.addProperty(MessageAttributes.UUID, campaignMessage.getChatMessageId());
             quoteJson.addProperty(MessageAttributes.TEXT, campaignMessage.getText());
             quoteJson.addProperty(MessageAttributes.IS_MASS_PUSH_MESSAGE, true);
             quoteJson.addProperty(MessageAttributes.CAMPAIGN, campaignMessage.getCampaign());

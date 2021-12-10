@@ -61,6 +61,8 @@ object ShortPushMessageProcessingDelegate {
                                 alertStr,
                                 senderName,
                                 Date(),
+                                bundle.getString(PushMessageAttributes.CHAT_MESSAGE_ID)
+                                    ?: "",
                                 bundle.getString(PushMessageAttributes.GATE_MESSAGE_ID)?.toLong()
                                     ?: 0,
                                 bundle.getString(PushMessageAttributes.EXPIRED_AT)
