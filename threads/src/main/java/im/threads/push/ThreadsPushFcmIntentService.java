@@ -23,9 +23,7 @@ public class ThreadsPushFcmIntentService extends FcmPushService {
 
     @Override
     public void onNewToken(@NonNull String token) {
-        if (Config.instance.transport.getType() == ConfigBuilder.TransportType.MFMS_PUSH) {
-            super.onNewToken(token);
-        }
+        super.onNewToken(token);
         PrefUtils.setFcmToken(token);
     }
 

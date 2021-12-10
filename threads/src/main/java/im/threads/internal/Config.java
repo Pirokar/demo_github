@@ -128,10 +128,11 @@ public final class Config {
                 throw new MetaConfigurationException("Threads gate url is not set");
             }
             String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid) ? providedThreadsGateProviderUid : MetaDataUtils.getThreadsGateProviderUid(this.context);
+            String threadsGateHCMProviderUid = MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
             if (TextUtils.isEmpty(threadsGateProviderUid)) {
                 throw new MetaConfigurationException("Threads gate provider uid is not set");
             }
-            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, isDebugLoggingEnabled);
+            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, threadsGateHCMProviderUid, isDebugLoggingEnabled);
         }
         return new MFMSPushTransport();
     }
