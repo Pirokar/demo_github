@@ -23,6 +23,7 @@ import im.threads.internal.Config;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.transport.CloudMessagingType;
 
 public final class PrefUtils {
     private static final String TAG = "PrefUtils ";
@@ -41,8 +42,10 @@ public final class PrefUtils {
     private static final String TAG_THREAD_ID = "THREAD_ID";
     private static final String APP_MARKER_KEY = "APP_MARKER";
     private static final String FCM_TOKEN = "FCM_TOKEN";
+    private static final String HCM_TOKEN = "HCM_TOKEN";
     private static final String DEVICE_ADDRESS = "DEVICE_ADDRESS";
     private static final String TRANSPORT_TYPE = "TRANSPORT_TYPE";
+    private static final String CLOUD_MESSAGING_TYPE = "CLOUD_MESSAGING_TYPE";
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String AUTH_TOKEN = "AUTH_TOKEN";
     private static final String AUTH_SCHEMA = "AUTH_SCHEMA";
@@ -237,9 +240,29 @@ public final class PrefUtils {
     }
 
     public static void setFcmToken(String fcmToken) {
+        String cloudMessagingType = PrefUtils.getCloudMessagingType();
+        if (cloudMessagingType == null) {
+            PrefUtils.setCloudMessagingType(CloudMessagingType.FCM.toString());
+        }
         getDefaultSharedPreferences()
                 .edit()
                 .putString(FCM_TOKEN, fcmToken)
+                .commit();
+    }
+
+    public static String getHcmToken() {
+        String hcmToken = getDefaultSharedPreferences().getString(HCM_TOKEN, "");
+        return hcmToken.length() > 0 ? hcmToken : null;
+    }
+
+    public static void setHcmToken(String hcmToken) {
+        String cloudMessagingType = PrefUtils.getCloudMessagingType();
+        if (cloudMessagingType == null) {
+            PrefUtils.setCloudMessagingType(CloudMessagingType.HCM.toString());
+        }
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(HCM_TOKEN, hcmToken)
                 .commit();
     }
 
@@ -324,6 +347,27 @@ public final class PrefUtils {
         setTransportType(Config.instance.transport.getType().toString());
     }
 
+    public static int getUnreadPushCount() {
+        return getDefaultSharedPreferences().getInt(UNREAD_PUSH_COUNT, 0);
+    }
+
+    public static void setUnreadPushCount(int unreadPushCount) {
+        getDefaultSharedPreferences().edit().putInt(UNREAD_PUSH_COUNT, unreadPushCount).commit();
+    }
+
+    @Nullable
+    public static String getCloudMessagingType() {
+        String cloudMessagingType = getDefaultSharedPreferences().getString(CLOUD_MESSAGING_TYPE, "");
+        return !TextUtils.isEmpty(cloudMessagingType) ? cloudMessagingType : null;
+    }
+
+    public static void setCloudMessagingType(String cloudMessagingType) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(CLOUD_MESSAGING_TYPE, cloudMessagingType)
+                .commit();
+    }
+
     private static void resetPushToken() {
         new Thread(() -> {
             try {
@@ -337,17 +381,9 @@ public final class PrefUtils {
         }).start();
     }
 
-    public static int getUnreadPushCount() {
-        return getDefaultSharedPreferences().getInt(UNREAD_PUSH_COUNT, 0);
-    }
-
-    public static void setUnreadPushCount(int unreadPushCount) {
-        getDefaultSharedPreferences().edit().putInt(UNREAD_PUSH_COUNT, unreadPushCount).commit();
-    }
-
     private static String getTransportType() {
         String transportType = getDefaultSharedPreferences().getString(TRANSPORT_TYPE, "");
-        return transportType.length() > 0 ? transportType : null;
+        return !TextUtils.isEmpty(transportType) ? transportType : null;
     }
 
     private static void setTransportType(String transportType) {

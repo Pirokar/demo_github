@@ -16,6 +16,7 @@ import im.threads.internal.model.ConsultInfo
 import im.threads.internal.model.SpeechMessageUpdate
 import im.threads.internal.model.Survey
 import im.threads.internal.model.UserPhrase
+import im.threads.internal.transport.ApplicationConfig
 import im.threads.internal.transport.AuthInterceptor
 import im.threads.internal.transport.ChatItemProviderData
 import im.threads.internal.transport.MessageAttributes
@@ -50,12 +51,13 @@ import java.util.concurrent.TimeUnit
 class ThreadsGateTransport(
     threadsGateUrl: String,
     threadsGateProviderUid: String,
+    threadsGateHuaweiProviderUid: String?,
     isDebugLoggingEnabled: Boolean
 ) : Transport(), LifecycleObserver {
     private val client: OkHttpClient
     private val request: Request
     private val listener: WebSocketListener
-    private val threadsGateProviderUid: String
+    private val applicationConfig: ApplicationConfig
     private val messageInProcessIds: MutableList<String> = ArrayList()
     private val surveysInProcess: MutableMap<Long, Survey> = HashMap()
     private var webSocket: WebSocket? = null
@@ -76,7 +78,7 @@ class ThreadsGateTransport(
             .url(threadsGateUrl)
             .build()
         listener = WebSocketListener()
-        this.threadsGateProviderUid = threadsGateProviderUid
+        applicationConfig = ApplicationConfig(threadsGateProviderUid, threadsGateHuaweiProviderUid)
     }
 
     override fun init() {}
@@ -240,8 +242,8 @@ class ThreadsGateTransport(
         val data = RegisterDeviceRequest.Data(
             AppInfoHelper.getAppId(),
             AppInfoHelper.getAppVersion(),
-            threadsGateProviderUid,
-            PrefUtils.getFcmToken(),
+            applicationConfig.getProviderUid(),
+            applicationConfig.getCloudMessagingToken(),
             PrefUtils.getDeviceUid(),
             "Android",
             DeviceInfoHelper.getOsVersion(),
