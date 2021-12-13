@@ -61,7 +61,7 @@ android {
             applicationId "com.sequenia.appwithchatdev"
             resValue "string", "app_name1", "THR Test"
         }
-        broomaIncoming {
+        broomaincoming {
             dimension "server"
             applicationId "io.edna.chatcenter.android.brooma.incoming"
             resValue "string", "app_name1", "THR Incoming"
@@ -177,10 +177,8 @@ dependencies {
 
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
 
-    debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
-    debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
-    releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
-    releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+    implementation "com.edna.android:push-lite-release:$pushVersion"
+    implementation "com.edna.android:push-lite-huawei-release:$pushVersion"
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
