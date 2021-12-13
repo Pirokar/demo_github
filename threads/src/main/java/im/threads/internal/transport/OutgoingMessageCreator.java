@@ -133,22 +133,6 @@ public final class OutgoingMessageCreator {
         formattedMessage.addProperty(MessageAttributes.TEXT, phrase == null ? "" : phrase);
         formattedMessage.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         JsonArray quotes = new JsonArray();
-        if (quote != null) {
-            JsonObject quoteJson = new JsonObject();
-            quotes.add(quoteJson);
-            if (!TextUtils.isEmpty(quote.getText())) {
-                quoteJson.addProperty(MessageAttributes.TEXT, quote.getText());
-            }
-            if (consultInfo != null) {
-                quoteJson.add("operator", consultInfo.toJson());//TODO #THREADS-5270 What is it for?
-            }
-            if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
-                quoteJson.add(MessageAttributes.ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
-            }
-            if (userPhrase.getQuote() != null && userPhrase.getQuote().getUuid() != null) {
-                quoteJson.addProperty(MessageAttributes.UUID, userPhrase.getQuote().getUuid());
-            }
-        }
         if (campaignMessage != null) {
             SimpleDateFormat sdf = new SimpleDateFormat(CampaignMessageKt.CAMPAIGN_DATE_FORMAT, Locale.getDefault());
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -166,6 +150,21 @@ public final class OutgoingMessageCreator {
             routingParams.addProperty(MessageAttributes.SKILL_ID, campaignMessage.getSkillId());
             routingParams.addProperty(MessageAttributes.EXPIRED_AT, sdf.format(campaignMessage.getExpiredAt()));
             formattedMessage.add(MessageAttributes.ROUTING_PARAMS, routingParams);
+        } else if (quote != null) {
+            JsonObject quoteJson = new JsonObject();
+            quotes.add(quoteJson);
+            if (!TextUtils.isEmpty(quote.getText())) {
+                quoteJson.addProperty(MessageAttributes.TEXT, quote.getText());
+            }
+            if (consultInfo != null) {
+                quoteJson.add("operator", consultInfo.toJson());//TODO #THREADS-5270 What is it for?
+            }
+            if (quote.getFileDescription() != null && quoteMfmsFilePath != null) {
+                quoteJson.add(MessageAttributes.ATTACHMENTS, attachmentsFromFileDescription(quote.getFileDescription(), quoteMfmsFilePath));
+            }
+            if (userPhrase.getQuote() != null && userPhrase.getQuote().getUuid() != null) {
+                quoteJson.addProperty(MessageAttributes.UUID, userPhrase.getQuote().getUuid());
+            }
         }
         if (quotes.size() > 0) {
             formattedMessage.add(MessageAttributes.QUOTES, quotes);

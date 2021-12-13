@@ -261,6 +261,8 @@ public final class ChatFragment extends BaseFragment implements
             if (from == OpenWay.DEFAULT) {
                 return;
             }
+            String uid = UUID.randomUUID().toString();
+            mQuote = new Quote(uid, campaignMessage.getSenderName(), campaignMessage.getText(), null, campaignMessage.getReceivedDate().getTime());
             this.campaignMessage = campaignMessage;
             mQuoteLayoutHolder.setContent(
                     campaignMessage.getSenderName(),

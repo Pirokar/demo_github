@@ -33,6 +33,72 @@
         android:paddingRight="19dp"
         android:paddingBottom="@dimen/margin_quarter">
 
+        <TableRow
+            android:id="@+id/quote_text_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="@dimen/margin_quarter"
+            android:paddingTop="@dimen/margin_quarter">
+
+            <ImageView
+                android:id="@+id/quote_image"
+                android:visibility="gone"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_half"
+                android:background="@drawable/file_image_user" />
+
+            <View
+                android:id="@+id/quote_delimeter"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/margin_quarter"
+                android:layout_marginTop="@dimen/margin_quarter"
+                android:background="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingRight="2dp">
+
+                <im.threads.internal.widget.text_view.QuoteAuthorTextView
+                    android:id="@+id/quote_to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+                    android:paddingRight="80dp"
+                    tools:text="Иван Петров"
+                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textStyle="bold" />
+
+                <im.threads.internal.widget.text_view.QuoteMessageTextView
+                    android:id="@+id/quote_file_specs"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+                    tools:text="счет на оплату 1,2mb 436666666666364"
+                    android:textColor="@color/threads_outgoing_message_text" />
+
+                <im.threads.internal.widget.text_view.QuoteTimeTextView
+                    android:id="@+id/quote_send_at"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginTop="2dp"
+                    tools:text="отправлено 21 апр 2016"
+                    android:textColor="@color/threads_outgoing_message_text"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </TableRow>
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -53,16 +119,6 @@
             android:layout_gravity="left"
             android:layout_marginBottom="@dimen/margin_quarter"
             android:paddingTop="@dimen/margin_quarter">
-
-            <ImageView
-                android:id="@+id/file_image"
-                android:visibility="gone"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_half"
-                android:background="@drawable/file_image_user" />
 
             <im.threads.internal.views.CircularProgressButton
                 android:id="@+id/button_download"
@@ -144,6 +200,47 @@
                 android:textColorLink="@color/threads_outgoing_message_link"
                 android:textSize="16sp"
                 app:last_line_padding_symbols="16" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/voice_message"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:paddingEnd="17dp"
+                android:background="@drawable/thread_outgoing_bubble">
+
+                <ImageView
+                    android:id="@+id/voice_message_user_button_play_pause"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginStart="@dimen/margin_half"
+                    android:background="@null"
+                    app:srcCompat="@drawable/threads_voice_message_play" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/voice_message_user_slider"
+                    android:theme="@style/ThemeOverlay.ChatCenter.Slider.User"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@+id/voice_message_user_button_play_pause"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <im.threads.internal.widget.text_view.BubbleMessageTextView
+                    android:id="@+id/file_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@+id/voice_message_user_slider"
+                    app:layout_constraintTop_toBottomOf="@+id/voice_message_user_slider"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="@dimen/margin_quarter"
+                    android:paddingBottom="@dimen/margin_half"
+                    tools:text="1:20"
+                    android:textColor="@color/threads_outgoing_message_text"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <im.threads.internal.widget.text_view.BubbleTimeTextView
                 android:id="@+id/timestamp"
