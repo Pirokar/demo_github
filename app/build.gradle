@@ -61,7 +61,7 @@ android {
             applicationId "com.sequenia.appwithchatdev"
             resValue "string", "app_name1", "THR Test"
         }
-        broomaIncoming {
+        broomaincoming {
             dimension "server"
             applicationId "io.edna.chatcenter.android.brooma.incoming"
             resValue "string", "app_name1", "THR Incoming"
