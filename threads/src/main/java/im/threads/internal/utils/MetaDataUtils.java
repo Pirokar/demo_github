@@ -15,6 +15,7 @@ public class MetaDataUtils {
     private static final String DATASTORE_URL = "im.threads.getServerUrl";
     private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
     private static final String THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid";
+    private static final String THREADS_GATE_HCM_PROVIDER_UID = "im.threads.threadsGateHCMProviderUid";
     private static final String THREADS_TRANSPORT_TYPE = "im.threads.threadsTransportType";
     private static final String CLIENT_ID_IGNORE_ENABLED = "im.threads.clientIdIgnoreEnabled";
     private static final String NEW_CHAT_CENTER_API = "im.threads.newChatCenterApi";
@@ -43,6 +44,15 @@ public class MetaDataUtils {
         Bundle metaData = getMetaData(context);
         if (metaData != null && metaData.containsKey(THREADS_GATE_PROVIDER_UID)) {
             return metaData.getString(THREADS_GATE_PROVIDER_UID);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String getThreadsGateHCMProviderUid(@NonNull Context context) {
+        Bundle metaData = getMetaData(context);
+        if (metaData != null && metaData.containsKey(THREADS_GATE_HCM_PROVIDER_UID)) {
+            return metaData.getString(THREADS_GATE_HCM_PROVIDER_UID);
         }
         return null;
     }

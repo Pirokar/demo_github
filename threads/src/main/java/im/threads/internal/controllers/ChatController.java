@@ -56,6 +56,7 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.services.NotificationService;
+import im.threads.internal.transport.HCMTokenRefresher;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.ConsultWriter;
@@ -183,6 +184,7 @@ public final class ChatController {
             instance = new ChatController();
         }
         initClientId();
+        requestHCMToken();
         return instance;
     }
 
@@ -213,6 +215,19 @@ public final class ChatController {
                             )
             );
         }
+    }
+
+    private static void requestHCMToken() {
+        instance.subscribe(
+                Completable.fromAction(() -> HCMTokenRefresher.INSTANCE.collectTokenIfNeeded(instance.appContext))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                },
+                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                        )
+        );
     }
 
     public void onRatingClick(@NonNull final Survey survey) {

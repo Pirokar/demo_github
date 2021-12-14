@@ -4,6 +4,7 @@ public final class MessageAttributes {
     public static final String APP_MARKER_KEY = "appMarker";
     public static final String OPERATOR_URL = "operatorPhotoUrl";
     public static final String MESSAGE = "message";
+    public static final String ALERT = "alert";
     public static final String TYPE = "type";
     public static final String ORIGIN = "origin";
     public static final String THREADS = "threads";

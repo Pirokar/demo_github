@@ -1,9 +1,10 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-parcelize'
-apply plugin: 'kotlin-kapt'
-
-apply plugin: 'maven-publish'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'maven-publish'
+}
 
 def mavenProdUser = "threads"
 def mavenProdPass = "ple70Bip5Q%xAuJ%"
@@ -11,8 +12,11 @@ def mavenProdPass = "ple70Bip5Q%xAuJ%"
 android {
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
     }
     compileSdkVersion rootProject.compileSdkVersion
 
@@ -137,7 +141,8 @@ dependencies {
 
 //    debugImplementation 'com.mfms.android:push-lite-debug:2.6.21'
 //    releaseImplementation 'com.mfms.android:push-lite-release:2.6.21'
-    implementation "com.edna.android:push-lite-release:$rootProject.pushVersion"
+    implementation "com.edna.android:push-lite-release:$pushVersion"
+    implementation "com.edna.android:push-lite-huawei-release:$pushVersion"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
