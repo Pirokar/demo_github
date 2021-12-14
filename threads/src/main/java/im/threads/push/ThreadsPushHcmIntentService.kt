@@ -11,7 +11,7 @@ import im.threads.internal.transport.mfms_push.ShortPushMessageProcessingDelegat
 import im.threads.internal.utils.PrefUtils
 import java.util.Date
 
-class ThreadsPushHcmIntentService : HcmPushService() {
+open class ThreadsPushHcmIntentService : HcmPushService() {
 
     override fun onNewToken(newToken: String) {
         super.onNewToken(newToken)
