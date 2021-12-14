@@ -4,6 +4,7 @@
     <string name="serverBaseUrl" translatable="false">https://polarbear.threads.im</string>
     <string name="threadsGateUrl" translatable="false">https://polarbear.threads.im/socket</string>
     <string name="threadsGateProviderUid" translatable="false">3a3c6a5f-06d3-4251-a12a-e69062ab14ff</string>
+    <string name="threadsGateHCMProviderUid" translatable="false">QHJIMzpGRCxdK0A6WEYzQDtdVXJEZVdgN0BWJ1hp</string>
     <string name="transport_type" translatable="false">THREADS_GATE</string>
     <bool name="client_id_ignore_enabled">false</bool>
     <bool name="new_chat_center_api">false</bool>
