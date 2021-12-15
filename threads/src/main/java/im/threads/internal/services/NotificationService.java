@@ -10,17 +10,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.util.Consumer;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -30,6 +23,10 @@ import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.util.Consumer;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.R;
@@ -64,7 +61,6 @@ public final class NotificationService extends ThreadsService {
     private static final int UNSENT_MESSAGE_PUSH_ID = 1;
     private static final int CAMPAIGN_MESSAGE_PUSH_ID = 2;
     private final String GROUP_KEY_PUSH = "im.threads.internal.services.NotificationService.UNREAD_MESSAGE_GROUP";
-    private final Handler h = new Handler(Looper.getMainLooper());
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private ChatStyle style;
@@ -132,6 +128,7 @@ public final class NotificationService extends ThreadsService {
             switch (action) {
                 case ACTION_REMOVE_NOTIFICATION:
                     nm.cancel(UNREAD_MESSAGE_GROUP_PUSH_ID);
+                    nm.cancel(CAMPAIGN_MESSAGE_PUSH_ID);
                     break;
                 case ACTION_ADD_UNREAD_MESSAGE:
                     final int notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, 0);
@@ -411,7 +408,7 @@ public final class NotificationService extends ThreadsService {
         notificationBuilder.setSmallIcon(iconResId);
         notificationBuilder.setContentIntent(pend);
         notificationBuilder.setAutoCancel(true);
-        h.postDelayed(() -> nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
+        nm.notify(UNSENT_MESSAGE_PUSH_ID, notificationBuilder.build());
     }
 
     private void notifyAboutCampaign(NotificationManager nm, String campaign) {
@@ -422,6 +419,6 @@ public final class NotificationService extends ThreadsService {
         notificationBuilder.setSmallIcon(iconResId);
         notificationBuilder.setContentIntent(pend);
         notificationBuilder.setAutoCancel(true);
-        h.postDelayed(() -> nm.notify(CAMPAIGN_MESSAGE_PUSH_ID, notificationBuilder.build()), 1500);
+        nm.notify(CAMPAIGN_MESSAGE_PUSH_ID, notificationBuilder.build());
     }
 }

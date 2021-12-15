@@ -240,7 +240,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                     mFileImageButton.setVisibility(View.VISIBLE);
                     long fileSize = fileDescription.getSize();
                     mRightTextDescr.setText(FileUtils.getFileName(fileDescription) + "\n" + (fileSize > 0 ? "\n" + Formatter.formatFileSize(itemView.getContext(), fileSize) : ""));
-                    mRightTextHeader.setText(quote == null ? fileDescription.getFrom() : quote.getPhraseOwnerTitle());
+                    mRightTextHeader.setText(fileDescription.getFrom());
                     mRightTextTimeStamp
                             .setText(itemView.getContext().getString(R.string.threads_sent_at, fileSdf.format(new Date(fileDescription.getTimeStamp()))));
                     if (fileClickListener != null) {
