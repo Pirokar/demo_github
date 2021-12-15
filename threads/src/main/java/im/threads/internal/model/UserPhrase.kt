@@ -68,6 +68,7 @@ class UserPhrase constructor(
                 && quote == null && isVoiceMessage(fileDescription))
     val isOnlyDoc: Boolean
         get() = (TextUtils.isEmpty(phraseText)
+                && quote == null
                 && !isImage(fileDescription)
                 && !isVoiceMessage(fileDescription))
 

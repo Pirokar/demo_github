@@ -857,7 +857,7 @@ public final class ChatController {
                             return Maybe.fromCallable(() -> chatItem);
                         })
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(chatItem -> {
+                        .map(chatItem -> {
                             if (chatItem instanceof UserPhrase) {
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 if (fragment != null) {
@@ -865,7 +865,12 @@ public final class ChatController {
                                 }
                                 proceedSendingQueue(userPhrase);
                             }
+                            return chatItem;
                         })
+                        .observeOn(Schedulers.io())
+                        .filter(chatItem -> chatItem instanceof UserPhrase && ((UserPhrase) chatItem).getQuote() != null)
+                        .delay(1000, TimeUnit.MILLISECONDS)
+                        .subscribe(chatItem -> loadHistory())
         );
     }
 

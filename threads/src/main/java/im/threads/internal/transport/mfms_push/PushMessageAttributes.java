@@ -11,6 +11,7 @@ public final class PushMessageAttributes {
     public static final String EXPIRED_AT = "expiredAt";
     public static final String SKILL_ID = "skillId";
     public static final String GATE_MESSAGE_ID = "gateMessageId";
+    public static final String CHAT_MESSAGE_ID = "chatMessageId";
     static final String SENDER_NAME = "sender_name";
     public static final String CAMPAIGN = "campaign";
     public static final String PRIORITY = "priority";

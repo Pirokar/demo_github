@@ -252,7 +252,6 @@ public final class ChatFragment extends BaseFragment implements
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
-            mQuote = null;
         }
         CampaignMessage campaignMessage = PrefUtils.getCampaignMessage();
         Bundle arguments = getArguments();
@@ -497,7 +496,6 @@ public final class ChatFragment extends BaseFragment implements
         );
         setFileDescription(fd);
         mQuoteLayoutHolder.setVoice();
-        mQuote = null;
     }
 
     private void initUserInputState() {
@@ -1271,7 +1269,6 @@ public final class ChatFragment extends BaseFragment implements
         ThreadsLogger.i(TAG, "onFileSelected: " + uri);
         setFileDescription(new FileDescription(requireContext().getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
         mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
-        mQuote = null;
     }
 
     private void onPhotoResult(@NonNull Intent data, boolean selfie) {
