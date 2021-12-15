@@ -168,7 +168,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
         bottomNavigationView.setItemTextColor(iconColorStates);
 
         // При открытии экрана из пуш уведомления нужно сразу открыть чат,
-        // а не главную страницуchatDisabledTextColor
+        // а не главную страницу
         if (intent.getBooleanExtra(ARG_NEEDS_SHOW_CHAT, false)) {
             bottomNavigationView.setSelectedItemId(TabItem.TAB_CHAT.getMenuId());
         }
