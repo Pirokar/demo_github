@@ -28,6 +28,8 @@
     <string name="threads_press">Press</string>
     <string name="threads_to_photo">to take photo</string>
     <string name="threads_no_cameras_detected">Your device doesn\'t have a camera</string>
+    <string name="threads_front_camera_could_not_start_error">Failed to start the front camera.</string>
+    <string name="threads_back_camera_could_not_start_error">Failed to start the rear camera.</string>
     <string name="threads_retake">Retake</string>
     <string name="threads_consult">Consultant</string>
     <string name="threads_error_no_file">Unfortunately, file was deleted from server</string>
