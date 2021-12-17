@@ -66,6 +66,11 @@ android {
             applicationId "io.edna.chatcenter.android.brooma.incoming"
             resValue "string", "app_name1", "THR Incoming"
         }
+        beta3 {
+            dimension "server"
+            applicationId "dte.chc.beta3.android"
+            resValue "string", "app_name1", "THR beta3(chc.dte)"
+        }
         // АРМ = polarbear.threads.im
         polarbear {
             dimension "server"
