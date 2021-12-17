@@ -16,6 +16,7 @@ import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
+import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.Survey;
 import im.threads.internal.model.UserPhrase;
@@ -139,6 +140,10 @@ public final class MFMSPushTransport extends Transport implements LifecycleObser
                         .subscribe(
                                 response -> {
                                     long sentAt = response.getSentAt() == null ? 0 : response.getSentAt().getMillis();
+                                    CampaignMessage campaignMessage = userPhrase.getCampaignMessage();
+                                    if (campaignMessage != null) {
+                                        chatUpdateProcessor.postCampaignMessageReplySuccess(campaignMessage);
+                                    }
                                     chatUpdateProcessor.postChatItemSendSuccess(new ChatItemProviderData(userPhrase.getId(), response.getMessageId(), sentAt));
                                 },
                                 e -> {

@@ -12,10 +12,7 @@ import im.threads.ConfigBuilder.TransportType
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.formatters.ChatItemType
-import im.threads.internal.model.ConsultInfo
-import im.threads.internal.model.SpeechMessageUpdate
-import im.threads.internal.model.Survey
-import im.threads.internal.model.UserPhrase
+import im.threads.internal.model.*
 import im.threads.internal.transport.ApplicationConfig
 import im.threads.internal.transport.AuthInterceptor
 import im.threads.internal.transport.ChatItemProviderData
@@ -60,6 +57,7 @@ class ThreadsGateTransport(
     private val applicationConfig: ApplicationConfig
     private val messageInProcessIds: MutableList<String> = ArrayList()
     private val surveysInProcess: MutableMap<Long, Survey> = HashMap()
+    private val campaignsInProcess: MutableMap<String?, CampaignMessage> = HashMap()
     private var webSocket: WebSocket? = null
     private var lifecycle: Lifecycle? = null
 
@@ -134,6 +132,9 @@ class ThreadsGateTransport(
             TAG,
             "sendMessage: userPhrase = $userPhrase, consultInfo = $consultInfo, filePath = $filePath, quoteFilePath = $quoteFilePath"
         )
+        userPhrase.campaignMessage?.let {
+            campaignsInProcess[userPhrase.id] = it
+        }
         val content = OutgoingMessageCreator.createUserPhraseMessage(
             userPhrase,
             consultInfo,
@@ -348,12 +349,19 @@ class ThreadsGateTransport(
                     val tokens = response.correlationId.split(CORRELATION_ID_DIVIDER).toTypedArray()
                     if (tokens.size > 1) {
                         when (ChatItemType.fromString(tokens[0])) {
-                            ChatItemType.MESSAGE -> ChatUpdateProcessor.getInstance()
-                                .postChatItemSendSuccess(
-                                    ChatItemProviderData(
-                                        tokens[1], data.messageId, data.sentAt.time
+                            ChatItemType.MESSAGE -> {
+                                if (campaignsInProcess.containsKey(tokens[1])) {
+                                    val campaignMessage = campaignsInProcess[tokens[1]]
+                                    ChatUpdateProcessor.getInstance().postCampaignMessageReplySuccess(campaignMessage)
+                                    campaignsInProcess.remove(tokens[1])
+                                }
+                                ChatUpdateProcessor.getInstance()
+                                    .postChatItemSendSuccess(
+                                        ChatItemProviderData(
+                                            tokens[1], data.messageId, data.sentAt.time
+                                        )
                                     )
-                                )
+                            }
                             ChatItemType.SURVEY_QUESTION_ANSWER -> {
                                 val sendingId = tokens[1].toLong()
                                 if (surveysInProcess.containsKey(sendingId)) {
