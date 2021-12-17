@@ -3,6 +3,7 @@ package im.threads.internal.chat_updates;
 import androidx.annotation.NonNull;
 
 import im.threads.internal.formatters.ChatItemType;
+import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.InputFieldEnableModel;
@@ -25,6 +26,7 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<String> incomingMessageReadProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItem> newMessageProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemProviderData> messageSendSuccessProcessor = PublishProcessor.create();
+    private final FlowableProcessor<CampaignMessage> campaignMessageReplySuccessProcessor = PublishProcessor.create();
     private final FlowableProcessor<String> messageSendErrorProcessor = PublishProcessor.create();
     private final FlowableProcessor<ChatItemType> removeChatItemProcessor = PublishProcessor.create();
     private final FlowableProcessor<Survey> surveySendSuccessProcessor = PublishProcessor.create();
@@ -82,6 +84,10 @@ public class ChatUpdateProcessor {
 
     public void postSurveySendSuccess(Survey survey) {
         surveySendSuccessProcessor.onNext(survey);
+    }
+
+    public void postCampaignMessageReplySuccess(CampaignMessage campaignMessage) {
+        campaignMessageReplySuccessProcessor.onNext(campaignMessage);
     }
 
     public void postDeviceAddressChanged(String deviceAddress) {
@@ -146,6 +152,10 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<Survey> getSurveySendSuccessProcessor() {
         return surveySendSuccessProcessor;
+    }
+
+    public FlowableProcessor<CampaignMessage> getCampaignMessageReplySuccessProcessor() {
+        return campaignMessageReplySuccessProcessor;
     }
 
     public FlowableProcessor<String> getDeviceAddressChangedProcessor() {

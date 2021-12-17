@@ -133,7 +133,24 @@ public final class OutgoingMessageCreator {
         formattedMessage.addProperty(MessageAttributes.TEXT, phrase == null ? "" : phrase);
         formattedMessage.addProperty(MessageAttributes.APP_MARKER_KEY, PrefUtils.getAppMarker());
         JsonArray quotes = new JsonArray();
-        if (quote != null) {
+        if (campaignMessage != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat(CampaignMessageKt.CAMPAIGN_DATE_FORMAT, Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            JsonObject quoteJson = new JsonObject();
+            quoteJson.addProperty(MessageAttributes.UUID, campaignMessage.getChatMessageId());
+            quoteJson.addProperty(MessageAttributes.TEXT, campaignMessage.getText());
+            quoteJson.addProperty(MessageAttributes.IS_MASS_PUSH_MESSAGE, true);
+            quoteJson.addProperty(MessageAttributes.CAMPAIGN, campaignMessage.getCampaign());
+            quoteJson.addProperty(MessageAttributes.RECEIVED_DATE, sdf.format(campaignMessage.getReceivedDate()));
+            quotes.add(quoteJson);
+
+            JsonObject routingParams = new JsonObject();
+            routingParams.addProperty(MessageAttributes.PRIORITY, campaignMessage.getPriority());
+            routingParams.addProperty(MessageAttributes.SKILL_ID, campaignMessage.getSkillId());
+            routingParams.addProperty(MessageAttributes.EXPIRED_AT, sdf.format(campaignMessage.getExpiredAt()));
+            formattedMessage.add(MessageAttributes.ROUTING_PARAMS, routingParams);
+        } else if (quote != null) {
             JsonObject quoteJson = new JsonObject();
             quotes.add(quoteJson);
             if (!TextUtils.isEmpty(quote.getText())) {
@@ -148,23 +165,6 @@ public final class OutgoingMessageCreator {
             if (userPhrase.getQuote() != null && userPhrase.getQuote().getUuid() != null) {
                 quoteJson.addProperty(MessageAttributes.UUID, userPhrase.getQuote().getUuid());
             }
-        }
-        if (campaignMessage != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat(CampaignMessageKt.CAMPAIGN_DATE_FORMAT, Locale.getDefault());
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-            JsonObject quoteJson = new JsonObject();
-            quoteJson.addProperty(MessageAttributes.TEXT, campaignMessage.getText());
-            quoteJson.addProperty(MessageAttributes.IS_MASS_PUSH_MESSAGE, true);
-            quoteJson.addProperty(MessageAttributes.CAMPAIGN, campaignMessage.getCampaign());
-            quoteJson.addProperty(MessageAttributes.RECEIVED_DATE, sdf.format(campaignMessage.getReceivedDate()));
-            quotes.add(quoteJson);
-
-            JsonObject routingParams = new JsonObject();
-            routingParams.addProperty(MessageAttributes.PRIORITY, campaignMessage.getPriority());
-            routingParams.addProperty(MessageAttributes.SKILL_ID, campaignMessage.getSkillId());
-            routingParams.addProperty(MessageAttributes.EXPIRED_AT, sdf.format(campaignMessage.getExpiredAt()));
-            formattedMessage.add(MessageAttributes.ROUTING_PARAMS, routingParams);
         }
         if (quotes.size() > 0) {
             formattedMessage.add(MessageAttributes.QUOTES, quotes);

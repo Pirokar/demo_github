@@ -160,6 +160,9 @@ public final class ChatFragment extends BaseFragment implements
     private static final int INVISIBLE_MSGS_COUNT = 3;
     private static final long INPUT_DELAY = 3000;
 
+    private static final int INPUT_EDIT_VIEW_MIN_LINES_COUNT = 1;
+    private static final int INPUT_EDIT_VIEW_MAX_LINES_COUNT = 7;
+
     private static boolean chatIsShown = false;
     private static boolean afterResume = false;
     private final Handler h = new Handler(Looper.getMainLooper());
@@ -252,7 +255,6 @@ public final class ChatFragment extends BaseFragment implements
         if (FileUtils.isVoiceMessage(fileDescriptionDraft)) {
             setFileDescription(fileDescriptionDraft);
             mQuoteLayoutHolder.setVoice();
-            mQuote = null;
         }
         CampaignMessage campaignMessage = PrefUtils.getCampaignMessage();
         Bundle arguments = getArguments();
@@ -497,7 +499,6 @@ public final class ChatFragment extends BaseFragment implements
         );
         setFileDescription(fd);
         mQuoteLayoutHolder.setVoice();
-        mQuote = null;
     }
 
     private void initUserInputState() {
@@ -762,6 +763,21 @@ public final class ChatFragment extends BaseFragment implements
         binding.inputEditView.setMinHeight((int) activity.getResources().getDimension(style.inputHeight));
         binding.inputEditView.setBackground(AppCompatResources.getDrawable(activity, style.inputBackground));
         binding.inputEditView.setHint(style.inputHint);
+        binding.inputEditView.setMaxLines(INPUT_EDIT_VIEW_MIN_LINES_COUNT);
+        binding.inputEditView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(TextUtils.isEmpty(binding.inputEditView.getText())) {
+                    binding.inputEditView.setMaxLines(INPUT_EDIT_VIEW_MIN_LINES_COUNT);
+                } else {
+                    binding.inputEditView.setMaxLines(INPUT_EDIT_VIEW_MAX_LINES_COUNT);
+                }
+            }
+        });
 
         binding.addAttachment.setImageResource(style.attachmentsIconResId);
 
@@ -1271,7 +1287,6 @@ public final class ChatFragment extends BaseFragment implements
         ThreadsLogger.i(TAG, "onFileSelected: " + uri);
         setFileDescription(new FileDescription(requireContext().getString(R.string.threads_I), uri, FileUtils.getFileSize(uri), System.currentTimeMillis()));
         mQuoteLayoutHolder.setContent(requireContext().getString(R.string.threads_I), FileUtils.getFileName(uri), null);
-        mQuote = null;
     }
 
     private void onPhotoResult(@NonNull Intent data, boolean selfie) {

@@ -9,6 +9,7 @@ data class CampaignMessage(
     val text: String,
     val senderName: String,
     val receivedDate: Date,
+    val chatMessageId: String,
     val gateMessageId: Long,
     val expiredAt: Date,
     val skillId: Int,
