@@ -37,6 +37,7 @@ import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import im.threads.internal.widget.text_view.BubbleTimeTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -200,10 +201,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 }
             }
             if (url != null) {
-                if (consultPhrase.ogData == null) {
+                val ogData = consultPhrase.ogData
+                if (ogData == null) {
                     loadOGData(consultPhrase, url)
                 } else {
-                    bindOGData(consultPhrase.ogData, url)
+                    bindOGData(ogData, url)
                 }
                 ViewUtils.setClickListener(
                     ogDataLayout,
@@ -328,21 +330,28 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
 
     private fun loadOGData(chatItem: ConsultPhrase, url: String) {
         hideOGView()
-        subscribe(OGDataProvider.getInstance().getOGData(url)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ ogData: OGData? ->
-                ThreadsLogger.d(TAG, "OGData for url: $url\n received: $ogData")
-                if (ogData != null && !ogData.isEmpty) {
-                    chatItem.ogData = ogData
-                    chatItem.ogUrl = url
-                }
-                bindOGData(ogData, url)
-            }) { e: Throwable? -> ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e) }
+        subscribe(
+            OGDataProvider.getInstance().getOGData(url)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { ogData: OGData ->
+                        ThreadsLogger.d(TAG, "OGData for url: $url\n received: $ogData")
+                        if (!ogData.isEmpty) {
+                            chatItem.ogData = ogData
+                            chatItem.ogUrl = url
+                        }
+                        bindOGData(ogData, url)
+                    },
+                    { e: Throwable ->
+                        ThreadsLogger.e(TAG, "OpenGraph data load failed: ", e)
+                    }
+                )
         )
     }
 
-    private fun bindOGData(ogData: OGData?, url: String) {
-        if (ogData == null || ogData.areTextsEmpty()) {
+    private fun bindOGData(ogData: OGData, url: String) {
+        if (ogData.areTextsEmpty()) {
             hideOGView()
             return
         }

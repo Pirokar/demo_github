@@ -49,6 +49,7 @@ import im.threads.internal.views.VoiceTimeLabelFormatterKt;
 import im.threads.internal.widget.text_view.BubbleMessageTextView;
 import im.threads.internal.widget.text_view.BubbleTimeTextView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * layout/item_user_text_with_file.xml
@@ -180,24 +181,23 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                 final SpannableString text = new SpannableString(phrase);
                 LinkifyCompat.addLinks(text, UrlUtils.DEEPLINK_URL, "");
                 mPhraseTextView.setText(text);
-                mPhraseTextView.setOnClickListener(view -> {
-                    UrlUtils.openUrl(context, deepLink);
-                });
+                mPhraseTextView.setOnClickListener(view -> UrlUtils.openUrl(context, deepLink));
             } else if (url != null) {
                 final SpannableString text = new SpannableString(phrase);
                 LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
                 mPhraseTextView.setText(text);
-                mPhraseTextView.setOnClickListener(view -> {
-                    UrlUtils.openUrl(context, url);
-                });
+                mPhraseTextView.setOnClickListener(view -> UrlUtils.openUrl(context, url));
+            } else {
+                mPhraseTextView.setText(phrase);
+                mPhraseTextView.setOnClickListener(null);
+            }
+            if (url != null) {
                 if (userPhrase.ogData == null) {
                     loadOGData(userPhrase, url);
                 } else {
                     bindOGData(userPhrase.ogData, url);
                 }
             } else {
-                mPhraseTextView.setText(phrase);
-                mPhraseTextView.setOnClickListener(null);
                 hideOGView();
             }
         }
@@ -389,21 +389,26 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
 
     private void loadOGData(final UserPhrase chatItem, final String url) {
         hideOGView();
-        subscribe(OGDataProvider.getInstance().getOGData(url)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ogData -> {
-                    ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
-                    if (ogData != null && !ogData.isEmpty()) {
-                        chatItem.ogData = ogData;
-                        chatItem.ogUrl = url;
-                    }
-                    bindOGData(ogData, url);
-                }, e -> ThreadsLogger.w(TAG, "OpenGraph data load failed: ", e))
+        subscribe(
+                OGDataProvider.getInstance().getOGData(url)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                ogData -> {
+                                    ThreadsLogger.d(TAG, "OGData for url: " + url + "\n received: " + ogData);
+                                    if (!ogData.isEmpty()) {
+                                        chatItem.ogData = ogData;
+                                        chatItem.ogUrl = url;
+                                    }
+                                    bindOGData(ogData, url);
+                                },
+                                e -> ThreadsLogger.e(TAG, "OpenGraph data load failed: ", e)
+                        )
         );
     }
 
     private void bindOGData(final OGData ogData, String url) {
-        if (ogData == null || ogData.areTextsEmpty()) {
+        if (ogData.areTextsEmpty()) {
             hideOGView();
             return;
         }

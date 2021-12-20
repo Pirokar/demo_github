@@ -1,11 +1,14 @@
 package im.threads.internal.opengraph;
 
+import com.annimon.stream.Optional;
+
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 import im.threads.internal.retrofit.ApiGenerator;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.Maybe;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.Single;
 
 public final class OGDataProvider {
 
@@ -27,25 +30,24 @@ public final class OGDataProvider {
     }
 
     public Maybe<OGData> getOGData(final String url) {
-        return Maybe
-                .fromCallable(() -> {
+        return Single
+                .fromCallable((Callable<Optional<OGResponse>>) () -> {
                     try {
                         if (!url.toLowerCase().startsWith("http")) {
                             OGResponse ogResponse = ApiGenerator.getThreadsApi().openGraph("http://" + url).execute().body();
                             if (ogResponse == null || ogResponse.getOgdata() == null) {
                                 ogResponse = ApiGenerator.getThreadsApi().openGraph("https://" + url).execute().body();
                             }
-                            return ogResponse;
+                            return Optional.ofNullable(ogResponse);
                         } else {
-                            return ApiGenerator.getThreadsApi().openGraph(url).execute().body();
+                            return Optional.ofNullable(ApiGenerator.getThreadsApi().openGraph(url).execute().body());
                         }
                     } catch (IOException e) {
                         ThreadsLogger.e(TAG, "getOGData failed: ", e);
                     }
-                    return null;
+                    return Optional.empty();
                 })
-                .filter(ogResponse -> ogResponse.getOgdata() != null)
-                .map(OGResponse::getOgdata)
-                .subscribeOn(Schedulers.io());
+                .filter(ogOptional -> ogOptional.isPresent() && ogOptional.get().getOgdata() != null)
+                .map(ogResponseOptional -> ogResponseOptional.get().getOgdata());
     }
 }
