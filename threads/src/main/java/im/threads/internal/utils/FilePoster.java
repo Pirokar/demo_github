@@ -21,6 +21,7 @@ import im.threads.internal.transport.InputStreamRequestBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import retrofit2.Response;
 
 /**
  * TODO THREADS-6288: this class needs refactoring, it contains one static method that does a lot of things making it untestable
@@ -52,11 +53,15 @@ public final class FilePoster {
         ThreadsLogger.i(TAG, "sendFile: " + uri);
         MultipartBody.Part part = MultipartBody.Part
                 .createFormData("file", URLEncoder.encode(FileUtils.getFileName(uri), "utf-8"), getFileRequestBody(uri, mimeType));
-        FileUploadResponse body = ApiGenerator.getThreadsApi().upload(part, token).execute().body();
-        if (body != null) {
-            return body.getResult();
+        Response<FileUploadResponse> response = ApiGenerator.getThreadsApi().upload(part, token).execute();
+        if (response.isSuccessful()) {
+            FileUploadResponse body = response.body();
+            if (body != null) {
+                return body.getResult();
+            }
         }
-        return null;
+        ThreadsLogger.e(TAG, "response = " + response.toString());
+        throw new IOException(response.toString());
     }
 
     private static byte[] getBytes(InputStream inputStream) throws IOException {

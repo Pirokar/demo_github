@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = this
         binding.designSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(arg0: AdapterView<*>?, arg1: View, arg2: Int, arg3: Long) {
+            override fun onItemSelected(arg0: AdapterView<*>?, arg1: View?, arg2: Int, arg3: Long) {
                 val theme = binding.designSpinner.selectedItem.toString()
                 ChatStyleBuilderHelper.ChatDesign.setTheme(
                     this@MainActivity,

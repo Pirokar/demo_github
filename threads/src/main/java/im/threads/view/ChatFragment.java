@@ -331,7 +331,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private void initRecording() {
         final RecordButton recordButton = binding.recordButton;
-        if (!style.voiceMessageEnabled) {
+        if (!style.voiceMessageEnabled || !Config.instance.attachmentEnabled) {
             recordButton.setVisibility(View.GONE);
             return;
         }
@@ -673,7 +673,7 @@ public final class ChatFragment extends BaseFragment implements
                         (s, fileDescriptionOptional) -> TextUtils.isEmpty(s) && fileDescriptionOptional.isEmpty()
                 )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty && style.voiceMessageEnabled ? View.VISIBLE : View.GONE),
+                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty && style.voiceMessageEnabled && Config.instance.attachmentEnabled ? View.VISIBLE : View.GONE),
                         error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription " + error.getMessage())
                 )
         );
