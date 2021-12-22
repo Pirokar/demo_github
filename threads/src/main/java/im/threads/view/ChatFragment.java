@@ -521,6 +521,7 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         subscribe(fdMediaPlayer.getUpdateProcessor()
+                .onBackpressureDrop()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(update -> {
                     if (fdMediaPlayer == null) {
