@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,15 +26,15 @@ public final class CircularProgressButton extends FrameLayout {
 
     public CircularProgressButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs);
+        init(attrs);
     }
 
     public CircularProgressButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs);
+        init(attrs);
     }
 
-    private void init(Context context, AttributeSet attributeSet) {
+    private void init(AttributeSet attributeSet) {
         ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_progress_button, this, true);
         mcp = findViewById(R.id.circular_progress);
         mImageLabel = findViewById(R.id.label_image);
@@ -43,21 +42,9 @@ public final class CircularProgressButton extends FrameLayout {
                 attributeSet,
                 R.styleable.CircularProgressButton,
                 0, 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
-            inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
-            startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
-        } else {
-            final int completedDrawableId = ta.getResourceId(R.styleable.CircularProgressButton_completed_drawable, -1);
-            final int inProgressId = ta.getResourceId(R.styleable.CircularProgressButton_in_progress_label, -1);
-            final int startDownloadDrawableId = ta.getResourceId(R.styleable.CircularProgressButton_start_download_label, -1);
-            if (completedDrawableId != -1)
-                completedDrawable = AppCompatResources.getDrawable(context, completedDrawableId);
-            if (inProgressId != -1)
-                inProgress = AppCompatResources.getDrawable(context, inProgressId);
-            if (startDownloadDrawableId != -1)
-                startDownloadDrawable = AppCompatResources.getDrawable(context, startDownloadDrawableId);
-        }
+        completedDrawable = ta.getDrawable(R.styleable.CircularProgressButton_completed_drawable);
+        inProgress = ta.getDrawable(R.styleable.CircularProgressButton_in_progress_label);
+        startDownloadDrawable = ta.getDrawable(R.styleable.CircularProgressButton_start_download_label);
         background = findViewById(R.id.background);
         ta.recycle();
         mImageLabel.setVisibility(View.VISIBLE);

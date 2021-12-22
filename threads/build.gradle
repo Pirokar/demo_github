@@ -18,7 +18,7 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk rootProject.compileSdkVersion
 
     lintOptions {
         disable 'InvalidPackage'
@@ -29,8 +29,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
+        minSdk rootProject.minSdkVersion
+        targetSdk rootProject.targetSdkVersion
 
         vectorDrawables.useSupportLibrary = true
 
