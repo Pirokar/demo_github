@@ -10,6 +10,14 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,13 +26,6 @@ import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.Consumer;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -697,6 +698,7 @@ public final class ChatController {
         subscribeToIncomingMessageRead();
         subscribeToNewMessage();
         subscribeToMessageSendSuccess();
+        subscribeToCampaignMessageReplySuccess();
         subscribeToMessageSendError();
         subscribeToSurveySendSuccess();
         subscribeToRemoveChatItem();
@@ -705,6 +707,15 @@ public final class ChatController {
         subscribeToAttachAudioFiles();
         subscribeToClientNotificationDisplayTypeProcessor();
         subscribeSpeechMessageUpdated();
+    }
+
+    private void subscribeToCampaignMessageReplySuccess() {
+        subscribe(
+                Flowable.fromPublisher(chatUpdateProcessor.getCampaignMessageReplySuccessProcessor())
+                        .observeOn(Schedulers.io())
+                        .delay(1000, TimeUnit.MILLISECONDS)
+                        .subscribe(chatItem -> loadHistory())
+        );
     }
 
     private void subscribeToTyping() {
@@ -857,7 +868,7 @@ public final class ChatController {
                             return Maybe.fromCallable(() -> chatItem);
                         })
                         .observeOn(AndroidSchedulers.mainThread())
-                        .map(chatItem -> {
+                        .subscribe(chatItem -> {
                             if (chatItem instanceof UserPhrase) {
                                 UserPhrase userPhrase = (UserPhrase) chatItem;
                                 if (fragment != null) {
@@ -865,12 +876,7 @@ public final class ChatController {
                                 }
                                 proceedSendingQueue(userPhrase);
                             }
-                            return chatItem;
                         })
-                        .observeOn(Schedulers.io())
-                        .filter(chatItem -> chatItem instanceof UserPhrase && ((UserPhrase) chatItem).getQuote() != null)
-                        .delay(1000, TimeUnit.MILLISECONDS)
-                        .subscribe(chatItem -> loadHistory())
         );
     }
 
