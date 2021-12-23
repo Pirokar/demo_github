@@ -143,10 +143,6 @@ dependencies {
     //debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
     //releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
     //releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
-<<<<<<< HEAD
-
-=======
->>>>>>> rc/3.9.2
     implementation "com.edna.android:push-lite-release:$pushVersion"
     implementation "com.edna.android:push-lite-huawei-release:$pushVersion"
 

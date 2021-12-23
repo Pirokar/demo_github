@@ -181,15 +181,8 @@ dependencies {
     //debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
     //releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
     //releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
-<<<<<<< HEAD
-
     implementation "com.edna.android:push-lite-release:$pushVersion"
     implementation "com.edna.android:push-lite-huawei-release:$pushVersion"
-
-=======
-    implementation "com.edna.android:push-lite-release:$pushVersion"
-    implementation "com.edna.android:push-lite-huawei-release:$pushVersion"
->>>>>>> rc/3.9.2
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
