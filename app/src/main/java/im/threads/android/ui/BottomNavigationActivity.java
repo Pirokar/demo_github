@@ -129,7 +129,11 @@ public class BottomNavigationActivity extends AppCompatActivity {
         intent.putExtra(ARG_AUTH_TOKEN, authToken);
         intent.putExtra(ARG_AUTH_SCHEMA, authSchema);
         intent.putExtra(ARG_CHAT_DESIGN, chatDesign);
-        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        int flags = PendingIntent.FLAG_CANCEL_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        return PendingIntent.getActivity(context, 0, intent, flags);
     }
 
     @Override

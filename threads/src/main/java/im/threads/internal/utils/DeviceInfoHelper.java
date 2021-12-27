@@ -23,13 +23,8 @@ public final class DeviceInfoHelper {
     public static String getLocale(Context ctx) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return ctx.getResources().getConfiguration().getLocales().get(0).toLanguageTag();
-
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return ctx.getResources().getConfiguration().locale.toLanguageTag();
-
         } else {
-            return ctx.getResources().getConfiguration().locale.getLanguage()
-                    + "-" + ctx.getResources().getConfiguration().locale.getCountry();
+            return ctx.getResources().getConfiguration().locale.toLanguageTag();
         }
     }
 

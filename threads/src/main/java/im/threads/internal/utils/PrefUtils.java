@@ -4,21 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.gson.JsonSyntaxException;
+
+import java.util.UUID;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.ObjectsCompat;
 import androidx.preference.PreferenceManager;
-
-import com.edna.android.push_lite.utils.CommonUtils;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.gson.JsonSyntaxException;
-
-import java.util.UUID;
-
 import im.threads.ChatStyle;
-import im.threads.ConfigBuilder;
 import im.threads.internal.Config;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ClientNotificationDisplayType;
@@ -369,16 +365,10 @@ public final class PrefUtils {
     }
 
     private static void resetPushToken() {
-        new Thread(() -> {
-            try {
-                String senderId = CommonUtils.getStringResourceByName(Config.instance.context, "gcm_defaultSenderId");
-                FirebaseInstanceId.getInstance().deleteToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE);
-                setFcmToken(null);
-                setFcmToken(FirebaseInstanceId.getInstance().getToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE));
-            } catch (Exception e) {
-                ThreadsLogger.w(TAG, "resetPushToken failed: ", e);
-            }
-        }).start();
+        FirebaseInstallations.getInstance().delete()
+                .addOnCompleteListener(
+                        task -> FirebaseInstallations.getInstance().getId()
+                );
     }
 
     private static String getTransportType() {

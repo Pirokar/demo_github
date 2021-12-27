@@ -114,7 +114,6 @@ import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.FileUtilsKt;
 import im.threads.internal.utils.Keyboard;
-import im.threads.internal.utils.MyFileFilter;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -845,9 +844,8 @@ public final class ChatFragment extends BaseFragment implements
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
                     ThreadsLogger.d(TAG, "Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) { // https://stackoverflow.com/a/48391446/1321401
-                        MediaHelper.grantPermissions(activity, intent, photoUri);
-                    }
+                    // https://stackoverflow.com/a/48391446/1321401
+                    MediaHelper.grantPermissions(activity, intent, photoUri);
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     ThreadsLogger.w(TAG, "Could not start external camera", e);
@@ -1260,12 +1258,10 @@ public final class ChatFragment extends BaseFragment implements
                     try {
                         if (FileUtils.canBeSent(requireContext(), uri)) {
                             onFileResult(uri);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                final int takeFlags = data.getFlags()
-                                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                                requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                            }
+                            final int takeFlags = data.getFlags()
+                                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
                         } else {
                             showToast(getString(R.string.threads_failed_to_open_file));
                         }
@@ -2039,17 +2035,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void openFile() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            startActivityForResult(
-                    new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                            .addCategory(Intent.CATEGORY_OPENABLE)
-                            .setType("*/*"), REQUEST_CODE_FILE);
-        } else {
-            FilePickerFragment frag = FilePickerFragment.newInstance();
-            frag.setFileFilter(new MyFileFilter());
-            frag.setOnDirSelectedListener(this);
-            frag.show(getChildFragmentManager(), null);
-        }
+        startActivityForResult(
+                new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("*/*"), REQUEST_CODE_FILE);
     }
 
     @Override

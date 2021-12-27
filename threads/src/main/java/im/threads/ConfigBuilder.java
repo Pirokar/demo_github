@@ -18,11 +18,11 @@ public final class ConfigBuilder {
     private ThreadsLib.PendingIntentCreator pendingIntentCreator = (context1, appMarker) -> {
         final Intent i = new Intent(context1, ChatActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        int flagCancelCurrent = PendingIntent.FLAG_CANCEL_CURRENT;
+        int flags = PendingIntent.FLAG_CANCEL_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            flagCancelCurrent |= PendingIntent.FLAG_IMMUTABLE;
+            flags |= PendingIntent.FLAG_IMMUTABLE;
         }
-        return PendingIntent.getActivity(context1, 0, i, flagCancelCurrent);
+        return PendingIntent.getActivity(context1, 0, i, flags);
     };
     @Nullable
     private ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener = null;

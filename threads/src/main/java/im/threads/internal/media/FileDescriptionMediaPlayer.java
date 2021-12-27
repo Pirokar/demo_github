@@ -106,7 +106,7 @@ public class FileDescriptionMediaPlayer {
         audioManager.requestAudioFocus(
                 onAudioFocusChangeListener,
                 AudioManager.STREAM_MUSIC,
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE : AudioManager.AUDIOFOCUS_GAIN
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE
         );
     }
 
