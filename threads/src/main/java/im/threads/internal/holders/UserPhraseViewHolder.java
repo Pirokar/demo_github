@@ -15,6 +15,12 @@ import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.text.util.LinkifyCompat;
+
 import com.google.android.material.slider.Slider;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -23,11 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
-import androidx.core.text.util.LinkifyCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;

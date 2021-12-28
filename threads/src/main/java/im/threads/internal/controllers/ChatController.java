@@ -393,7 +393,7 @@ public final class ChatController {
                         .subscribe(aLong -> {
                             removePushNotification();
                             UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
-                        })
+                        }, e -> ThreadsLogger.e(TAG, e.getMessage()))
         );
     }
 
@@ -542,14 +542,18 @@ public final class ChatController {
                         .throttleLast(Config.instance.surveyCompletionDelay, TimeUnit.MILLISECONDS)
                         .firstElement()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(survey -> Config.instance.transport.sendRatingDone(survey))
+                        .subscribe(survey -> Config.instance.transport.sendRatingDone(survey),
+                                error -> ThreadsLogger.e(TAG, "subscribeToSurveyCompletion: " + error.getMessage())
+                        )
         );
     }
 
     void setAllMessagesWereRead() {
         removePushNotification();
         subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereRead()
-                .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount));
+                .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount,
+                        error -> ThreadsLogger.e(TAG, "setAllMessagesWereRead() " + error.getMessage()))
+        );
         if (fragment != null) {
             fragment.setAllMessagesWereRead();
         }
@@ -714,7 +718,8 @@ public final class ChatController {
                 Flowable.fromPublisher(chatUpdateProcessor.getCampaignMessageReplySuccessProcessor())
                         .observeOn(Schedulers.io())
                         .delay(1000, TimeUnit.MILLISECONDS)
-                        .subscribe(chatItem -> loadHistory())
+                        .subscribe(chatItem -> loadHistory(),
+                                onError -> ThreadsLogger.e(TAG, "subscribeToCampaignMessageReplySuccess " + onError.getMessage()))
         );
     }
 
@@ -731,7 +736,8 @@ public final class ChatController {
                         )
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                this::addMessage
+                                this::addMessage,
+                                error -> ThreadsLogger.e(TAG, "subscribeToTyping " + error.getMessage())
                         )
         );
     }
@@ -747,7 +753,8 @@ public final class ChatController {
                                     if (fragment != null) {
                                         fragment.setMessageState(providerId, MessageState.STATE_WAS_READ);
                                     }
-                                }
+                                },
+                                error -> ThreadsLogger.e(TAG, "subscribeToOutgoingMessageRead " + error.getMessage())
                         )
         );
     }
@@ -757,9 +764,11 @@ public final class ChatController {
                 Flowable.fromPublisher(chatUpdateProcessor.getIncomingMessageReadProcessor())
                         .observeOn(Schedulers.io())
                         .subscribe(id -> {
-                            databaseHolder.setMessageWasRead(id);
-                            UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
-                        })
+                                    databaseHolder.setMessageWasRead(id);
+                                    UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+                                },
+                                error -> ThreadsLogger.e(TAG, "subscribeToIncomingMessageRead " + error.getMessage())
+                        )
         );
     }
 
@@ -779,10 +788,12 @@ public final class ChatController {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(chatItem -> {
-                            if (fragment != null) {
-                                fragment.addChatItem(chatItem);
-                            }
-                        })
+                                    if (fragment != null) {
+                                        fragment.addChatItem(chatItem);
+                                    }
+                                },
+                                error -> ThreadsLogger.e(TAG, "subscribeSpeechMessageUpdated " + error.getMessage())
+                        )
         );
     }
 
@@ -869,14 +880,16 @@ public final class ChatController {
                         })
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(chatItem -> {
-                            if (chatItem instanceof UserPhrase) {
-                                UserPhrase userPhrase = (UserPhrase) chatItem;
-                                if (fragment != null) {
-                                    fragment.addChatItem(userPhrase);
-                                }
-                                proceedSendingQueue(userPhrase);
-                            }
-                        })
+                                    if (chatItem instanceof UserPhrase) {
+                                        UserPhrase userPhrase = (UserPhrase) chatItem;
+                                        if (fragment != null) {
+                                            fragment.addChatItem(userPhrase);
+                                        }
+                                        proceedSendingQueue(userPhrase);
+                                    }
+                                },
+                                error -> ThreadsLogger.e(TAG, "subscribeToMessageSendSuccess " + error.getMessage())
+                        )
         );
     }
 
@@ -899,21 +912,23 @@ public final class ChatController {
                         })
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(chatItem -> {
-                            if (chatItem instanceof UserPhrase) {
-                                UserPhrase userPhrase = (UserPhrase) chatItem;
-                                if (fragment != null) {
-                                    fragment.setMessageState(userPhrase.getProviderId(), userPhrase.getSentState());
-                                }
-                                addMsgToResendQueue(userPhrase);
-                                if (fragment != null && isActive) {
-                                    fragment.showConnectionError();
-                                }
-                                if (!isActive) {
-                                    NotificationService.addUnsentMessage(appContext, PrefUtils.getAppMarker());
-                                }
-                                proceedSendingQueue(userPhrase);
-                            }
-                        })
+                                    if (chatItem instanceof UserPhrase) {
+                                        UserPhrase userPhrase = (UserPhrase) chatItem;
+                                        if (fragment != null) {
+                                            fragment.setMessageState(userPhrase.getProviderId(), userPhrase.getSentState());
+                                        }
+                                        addMsgToResendQueue(userPhrase);
+                                        if (fragment != null && isActive) {
+                                            fragment.showConnectionError();
+                                        }
+                                        if (!isActive) {
+                                            NotificationService.addUnsentMessage(appContext, PrefUtils.getAppMarker());
+                                        }
+                                        proceedSendingQueue(userPhrase);
+                                    }
+                                },
+                                error -> ThreadsLogger.e(TAG, "subscribeToMessageSendError " + error.getMessage())
+                        )
         );
     }
 
@@ -923,10 +938,12 @@ public final class ChatController {
                         .observeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(survey -> {
-                            surveyCompletionInProgress = false;
-                            setSurveyStateSent(survey);
-                            resetActiveSurvey();
-                        })
+                                    surveyCompletionInProgress = false;
+                                    setSurveyStateSent(survey);
+                                    resetActiveSurvey();
+                                },
+                                error -> ThreadsLogger.e(TAG, "subscribeToSurveySendSuccess " + error.getMessage())
+                        )
         );
     }
 
@@ -935,7 +952,9 @@ public final class ChatController {
                 Flowable.fromPublisher(chatUpdateProcessor.getRemoveChatItemProcessor())
                         .observeOn(AndroidSchedulers.mainThread())
                         .filter(chatItemType -> chatItemType.equals(ChatItemType.REQUEST_CLOSE_THREAD))
-                        .subscribe(chatItemType -> removeResolveRequest())
+                        .subscribe(chatItemType -> removeResolveRequest(),
+                                error -> ThreadsLogger.e(TAG, "subscribeToRemoveChatItem " + error.getMessage())
+                        )
         );
     }
 
@@ -943,24 +962,30 @@ public final class ChatController {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getDeviceAddressChangedProcessor())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(chatItemType -> onDeviceAddressChanged())
+                        .subscribe(chatItemType -> onDeviceAddressChanged(),
+                                error -> ThreadsLogger.e(TAG, "subscribeToDeviceAddressChanged " + error.getMessage())
+                        )
         );
     }
 
     private void subscribeToQuickReplies() {
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .subscribe(quickReplies -> {
-                    hasQuickReplies = !quickReplies.getItems().isEmpty();
-                    refreshUserInputState();
-                })
+                            hasQuickReplies = !quickReplies.getItems().isEmpty();
+                            refreshUserInputState();
+                        },
+                        error -> ThreadsLogger.e(TAG, "subscribeToQuickReplies " + error.getMessage())
+                )
         );
     }
 
     private void subscribeToAttachAudioFiles() {
         subscribe(ChatUpdateProcessor.getInstance().getAttachAudioFilesProcessor()
                 .subscribe(hasFile -> {
-                    refreshUserInputState();
-                })
+                            refreshUserInputState();
+                        },
+                        error -> ThreadsLogger.e(TAG, "subscribeToAttachAudioFiles " + error.getMessage())
+                )
         );
     }
 
@@ -1056,9 +1081,11 @@ public final class ChatController {
                         .filter(value -> isActive)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(aLong -> {
-                            removePushNotification();
-                            UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
-                        })
+                                    removePushNotification();
+                                    UnreadMessagesController.INSTANCE.refreshUnreadMessagesCount();
+                                },
+                                error -> ThreadsLogger.e(TAG, "addMessage " + error.getMessage())
+                        )
         );
         // Если пришло сообщение от оператора,
         // или новое расписание в котором сейчас чат работает

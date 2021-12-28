@@ -2,7 +2,6 @@ package im.threads.internal.media;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,7 +56,9 @@ public class FileDescriptionMediaPlayer {
                 .onBackpressureDrop()
                 .timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(it -> mediaPlayerUpdateProcessor.onNext(true));
+                .subscribe(it -> mediaPlayerUpdateProcessor.onNext(true),
+                        error -> ThreadsLogger.e(TAG, "FileDescriptionMediaPlayer " + error.getMessage())
+                );
     }
 
     public void processPlayPause(@NonNull FileDescription fileDescription) {
