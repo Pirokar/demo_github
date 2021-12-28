@@ -58,17 +58,21 @@ public final class ThreadsLib {
                     .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count));
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            AndroidAudioConverter.load(Config.instance.context, new ILoadCallback() {
-                @Override
-                public void onSuccess() {
-                    ThreadsLogger.i(TAG, "AndroidAudioConverter was successfully loaded");
-                }
+            try {
+                AndroidAudioConverter.load(Config.instance.context, new ILoadCallback() {
+                    @Override
+                    public void onSuccess() {
+                        ThreadsLogger.i(TAG, "AndroidAudioConverter was successfully loaded");
+                    }
 
-                @Override
-                public void onFailure(Exception error) {
-                    ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load", error);
-                }
-            });
+                    @Override
+                    public void onFailure(Exception error) {
+                        ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load", error);
+                    }
+                });
+            } catch (UnsatisfiedLinkError e) {
+                ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load (UnsatisfiedLinkError)", e);
+            }
         }
         ChatController.getInstance();
         if (RxJavaPlugins.getErrorHandler() == null) {
