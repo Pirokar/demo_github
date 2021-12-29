@@ -12,7 +12,7 @@ import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.transport.models.AttachmentSettings;
 import im.threads.internal.utils.ThreadsLogger;
 
-public enum  FileHelper {
+public enum FileHelper {
 
     INSTANCE;
 
@@ -22,7 +22,9 @@ public enum  FileHelper {
 
     FileHelper() {
         ChatUpdateProcessor.getInstance().getAttachmentSettingsProcessor()
-                .subscribe(attachmentSettings -> saveAttachmentSettings(attachmentSettings.getContent()));
+                .subscribe(attachmentSettings -> saveAttachmentSettings(attachmentSettings.getContent()),
+                        error -> ThreadsLogger.e("FileHelper", "FileHelper " + error.getMessage())
+                );
     }
 
     public static File createImageFile(Context context) {
@@ -72,6 +74,6 @@ public enum  FileHelper {
     }
 
     private AttachmentSettings.Content getDefaultAttachmentSettings() {
-        return new AttachmentSettings.Content(30, new String[] {"jpeg", "jpg", "png", "pdf", "doc", "docx", "rtf"});
+        return new AttachmentSettings.Content(30, new String[]{"jpeg", "jpg", "png", "pdf", "doc", "docx", "rtf"});
     }
 }

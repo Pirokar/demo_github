@@ -27,20 +27,15 @@ import im.threads.internal.markdown.MarkdownProcessorHolder
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
 import im.threads.internal.opengraph.OGDataProvider
-import im.threads.internal.utils.CircleTransformation
-import im.threads.internal.utils.FileUtils
+import im.threads.internal.utils.*
 import im.threads.internal.utils.FileUtils.isImage
-import im.threads.internal.utils.ThreadsLogger
-import im.threads.internal.utils.UrlUtils
-import im.threads.internal.utils.ViewUtils
 import im.threads.internal.views.CircularProgressButton
 import im.threads.internal.widget.text_view.BubbleMessageTextView
 import im.threads.internal.widget.text_view.BubbleTimeTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 /**
  * layout/item_consultant_text_with_file.xml

@@ -55,7 +55,8 @@ public final class ThreadsLib {
             UnreadMessagesController.INSTANCE.getUnreadMessagesPublishProcessor()
                     .distinctUntilChanged()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count));
+                    .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count),
+                            error -> ThreadsLogger.e(TAG, "init " + error.getMessage()));
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             try {

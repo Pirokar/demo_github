@@ -34,6 +34,7 @@ import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
+import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public final class QuickAnswerFragment extends BaseDialogFragment {
@@ -168,7 +169,9 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
     private void initUserInputState() {
         subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::updateInputEnable));
+                .subscribe(this::updateInputEnable,
+                        error -> ThreadsLogger.e(TAG, "initUserInputState " + error.getMessage())
+                ));
     }
 
     private void updateInputEnable(InputFieldEnableModel enableModel) {
