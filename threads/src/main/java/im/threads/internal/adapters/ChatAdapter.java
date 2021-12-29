@@ -1100,7 +1100,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 items.remove(sc);
                 items.add(sc);
             }
-            boolean hasUnread = false;
+            /*boolean hasUnread = false;
             for (final ChatItem ci : items) {
                 if (ci instanceof ConsultPhrase) {
                     if (!((ConsultPhrase) ci).isRead()) {
@@ -1113,7 +1113,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final int counter = getUnreadCount(items);
                 removeUnreadMessagesTitle(items);
                 items.add(new UnreadMessages(lastUnreadStamp - 1, counter));
-            }
+            }*/
             Collections.sort(items, (lhs, rhs) -> Long.compare(lhs.getTimeStamp(), rhs.getTimeStamp()));
             boolean isWithTyping = false;
             ConsultTyping ct = null;
