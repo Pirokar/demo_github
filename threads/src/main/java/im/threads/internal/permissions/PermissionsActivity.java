@@ -1,7 +1,6 @@
 package im.threads.internal.permissions;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -13,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import im.threads.R;
 
 /**
@@ -20,18 +20,19 @@ import im.threads.R;
  */
 public final class PermissionsActivity extends AppCompatActivity {
 
+    public static final int RESPONSE_GRANTED = 10;
+    public static final int RESPONSE_DENIED = 20;
+    public static final int RESPONSE_NEVER_AGAIN = 30;
     private static final int PERMISSION_REQUEST_CODE = 0;
     private static final String EXTRA_PERMISSIONS = "EXTRA_PERMISSIONS";   // Ключ для передачи разрешений
     private static final String EXTRA_PERMISSION_TEXT = "EXTRA_PERMISSION_TEXT";   // Ключ для передачи разрешений
     private static final String PACKAGE_URL_SCHEME = "package:";           // Для открытия настроек
-
     private static final int TEXT_DEFAULT = -1;
-
-    public static final int RESPONSE_GRANTED = 10;
-    public static final int RESPONSE_DENIED = 20;
-    public static final int RESPONSE_NEVER_AGAIN = 30;
-
     private boolean requiresCheck;
+
+    private String[] permissions;
+    private int textId = TEXT_DEFAULT;
+
 
     /**
      * Запуск активити
@@ -60,11 +61,20 @@ public final class PermissionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent() == null || !getIntent().hasExtra(EXTRA_PERMISSIONS)) {
-            throw new RuntimeException("This Activity needs to be launched using the static startActivityForResult() method.");
+        if (getIntent() != null) {
+            permissions = getIntent().getStringArrayExtra(EXTRA_PERMISSIONS);
+            textId = getIntent().getIntExtra(EXTRA_PERMISSION_TEXT, TEXT_DEFAULT);
+        }
+
+        if (permissions == null) {
+            permissions = savedInstanceState.getStringArray(EXTRA_PERMISSIONS);
+            textId = savedInstanceState.getInt(EXTRA_PERMISSION_TEXT);
+        }
+
+        if (permissions == null) {
+            finish();
         }
         setContentView(R.layout.activity_permissions);
-
         requiresCheck = true;
     }
 
@@ -72,7 +82,6 @@ public final class PermissionsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (requiresCheck) {
-            String[] permissions = getPermissions();
             // Если разрешения не выданы, то нужно открыть диалог с разрешениями
             if (PermissionsChecker.permissionsDenied(PermissionsActivity.this, permissions)) {
                 requestPermissions(permissions);
@@ -83,10 +92,6 @@ public final class PermissionsActivity extends AppCompatActivity {
         } else {
             requiresCheck = true;
         }
-    }
-
-    private String[] getPermissions() {
-        return getIntent().getStringArrayExtra(EXTRA_PERMISSIONS);
     }
 
     private void allPermissionsGranted() {
@@ -138,7 +143,7 @@ public final class PermissionsActivity extends AppCompatActivity {
         dialogBuilder.setTitle(R.string.threads_permissions_help);
         dialogBuilder.setMessage(getPermissionText());
         dialogBuilder.setNegativeButton(R.string.threads_permissions_quit, (dialog, which) -> {
-            if (PermissionsChecker.clickedNeverAskAgain(PermissionsActivity.this, getPermissions())) {
+            if (PermissionsChecker.clickedNeverAskAgain(PermissionsActivity.this, permissions)) {
                 // Если во всех кликнуто - БОЛЬШЕ НЕ ПОКАЗЫВАТЬ, то закрыть с соответствующим результатом
                 neverAskAgain();
             } else {
@@ -157,12 +162,9 @@ public final class PermissionsActivity extends AppCompatActivity {
     }
 
     private int getPermissionText() {
-        int textId = getIntent().getIntExtra(EXTRA_PERMISSION_TEXT, TEXT_DEFAULT);
-
         if (textId == TEXT_DEFAULT) {
             textId = R.string.threads_permissions_string_help_text;
         }
-
         return textId;
     }
 

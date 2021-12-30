@@ -37,15 +37,15 @@ import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.utils.ThreadsLogger;
 
 public final class CameraActivity extends BaseActivity {
-    private static final String TAG = "CameraActivity ";
     public static final String IMAGE_EXTRA = "IMAGE_EXTRA";
+    public static final int FLASH_ON = 1;
+    public static final int FLASH_OFF = 2;
+    public static final int FLASH_AUTO = 3;
+    private static final String TAG = "CameraActivity ";
     private static final String SELFIE_MODE_EXTRA = "SELFIE_MODE_EXTRA";
     private Camera mCamera;
     private SurfaceView mSurfaceView;
     private int mFlashMode = 3;
-    public static final int FLASH_ON = 1;
-    public static final int FLASH_OFF = 2;
-    public static final int FLASH_AUTO = 3;
     private boolean isFrontCamera;
     private boolean isCameraReleased = false;
     private String mCurrentPhoto;
@@ -284,16 +284,22 @@ public final class CameraActivity extends BaseActivity {
 
     private void restoreCamera() {
         releaseCamera();
-        mCamera = Camera.open(isFrontCamera ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
         try {
+            mCamera = Camera.open(isFrontCamera ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
             setUpCameraInitialParameters();
             mCamera.setPreviewDisplay(mSurfaceView.getHolder());
             mCamera.startPreview();
             isCameraReleased = false;
+            mCamera.setParameters(setFlashState(mFlashMode, mCamera.getParameters()));
         } catch (IOException e) {
             ThreadsLogger.e(TAG, "restoreCamera", e);
+        } catch (RuntimeException ex) {
+            String error = getResources().getString(isFrontCamera ?
+                    R.string.threads_front_camera_could_not_start_error
+                    : R.string.threads_back_camera_could_not_start_error);
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            ThreadsLogger.e(TAG, "restoreCamera", ex);
         }
-        mCamera.setParameters(setFlashState(mFlashMode, mCamera.getParameters()));
     }
 
     private void setUpCameraInitialParameters() {

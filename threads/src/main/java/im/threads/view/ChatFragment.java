@@ -1,5 +1,7 @@
 package im.threads.view;
 
+import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -37,6 +39,18 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableField;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.devlomi.record_view.OnRecordListener;
@@ -58,17 +72,6 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.view.ViewCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableField;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
@@ -114,7 +117,6 @@ import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.FileUtilsKt;
 import im.threads.internal.utils.Keyboard;
-import im.threads.internal.utils.MyFileFilter;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.RxUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -127,8 +129,6 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Pair;
-
-import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
 
 /**
  * Весь функционал чата находится здесь во фрагменте,
@@ -372,7 +372,8 @@ public final class ChatFragment extends BaseFragment implements
                 subscribe(
                         releaseRecorder()
                                 .subscribeOn(Schedulers.io())
-                                .subscribe()
+                                .subscribe(() -> {},
+                                        error -> ThreadsLogger.e(TAG, "initRecording -> onCancel " + error.getMessage()))
                 );
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 ThreadsLogger.i(TAG, "onStart performance: " + (new Date().getTime() - start.getTime()));
@@ -386,17 +387,19 @@ public final class ChatFragment extends BaseFragment implements
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(() -> {
-                                    if (voiceFilePath != null) {
-                                        File file = new File(voiceFilePath);
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                            addVoiceMessagePreview(file);
-                                        } else {
-                                            audioConverter.convertToWav(file, ChatFragment.this);
-                                        }
-                                    } else {
-                                        ThreadsLogger.e(TAG, "error finishing voice message recording");
-                                    }
-                                })
+                                            if (voiceFilePath != null) {
+                                                File file = new File(voiceFilePath);
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                                    addVoiceMessagePreview(file);
+                                                } else {
+                                                    audioConverter.convertToWav(file, ChatFragment.this);
+                                                }
+                                            } else {
+                                                ThreadsLogger.e(TAG, "error finishing voice message recording");
+                                            }
+                                        },
+                                        error -> ThreadsLogger.e(TAG, "ChatFragment onFinish " + error.getMessage())
+                                )
                 );
                 recordView.setVisibility(View.INVISIBLE);
                 ThreadsLogger.d(TAG, "RecordView: onFinish");
@@ -411,7 +414,8 @@ public final class ChatFragment extends BaseFragment implements
                 subscribe(
                         releaseRecorder()
                                 .subscribeOn(Schedulers.io())
-                                .subscribe()
+                                .subscribe(() -> {},
+                                        error -> ThreadsLogger.e(TAG, "initRecording -> onLessThanSecond " + error.getMessage()))
                 );
                 showToast(getString(R.string.threads_hold_button_to_record_audio));
                 ThreadsLogger.d(TAG, "RecordView: onLessThanSecond");
@@ -449,7 +453,8 @@ public final class ChatFragment extends BaseFragment implements
                             }
                         })
                                 .subscribeOn(Schedulers.io())
-                                .subscribe()
+                                .subscribe(() -> {},
+                                        error -> ThreadsLogger.e(TAG, "initRecording -> startRecorder " + error.getMessage()))
                 );
             }
 
@@ -504,19 +509,23 @@ public final class ChatFragment extends BaseFragment implements
     private void initUserInputState() {
         subscribe(ChatUpdateProcessor.getInstance().getUserInputEnableProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::updateInputEnable));
+                .subscribe(this::updateInputEnable,
+                        error -> ThreadsLogger.e(TAG, "initUserInputState " + error.getMessage())
+                ));
     }
 
     private void initQuickReplies() {
         subscribe(ChatUpdateProcessor.getInstance().getQuickRepliesProcessor()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(quickReplies -> {
-                    if (quickReplies.getItems().isEmpty()) {
-                        hideQuickReplies();
-                    } else {
-                        showQuickReplies(quickReplies);
-                    }
-                }));
+                            if (quickReplies.getItems().isEmpty()) {
+                                hideQuickReplies();
+                            } else {
+                                showQuickReplies(quickReplies);
+                            }
+                        },
+                        error -> ThreadsLogger.e(TAG, "initQuickReplies " + error.getMessage())
+                ));
     }
 
     private void initMediaPlayer() {
@@ -527,24 +536,26 @@ public final class ChatFragment extends BaseFragment implements
                 .onBackpressureDrop()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(update -> {
-                    if (fdMediaPlayer == null) {
-                        return;
-                    }
-                    if (isPreviewPlaying()) {
-                        if (mQuoteLayoutHolder.ignorePlayerUpdates) {
-                            return;
-                        }
-                        MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
-                        if (mediaPlayer != null) {
-                            mQuoteLayoutHolder.updateProgress(mediaPlayer.getCurrentPosition());
-                            mQuoteLayoutHolder.updateIsPlaying(mediaPlayer.isPlaying());
-                        }
-                        chatAdapter.resetPlayingHolder();
-                    } else {
-                        chatAdapter.playerUpdate();
-                        mQuoteLayoutHolder.resetProgress();
-                    }
-                })
+                            if (fdMediaPlayer == null) {
+                                return;
+                            }
+                            if (isPreviewPlaying()) {
+                                if (mQuoteLayoutHolder.ignorePlayerUpdates) {
+                                    return;
+                                }
+                                MediaPlayer mediaPlayer = fdMediaPlayer.getMediaPlayer();
+                                if (mediaPlayer != null) {
+                                    mQuoteLayoutHolder.updateProgress(mediaPlayer.getCurrentPosition());
+                                    mQuoteLayoutHolder.updateIsPlaying(mediaPlayer.isPlaying());
+                                }
+                                chatAdapter.resetPlayingHolder();
+                            } else {
+                                chatAdapter.playerUpdate();
+                                mQuoteLayoutHolder.resetProgress();
+                            }
+                        },
+                        error -> ThreadsLogger.e(TAG, "initMediaPlayer " + error.getMessage())
+                )
         );
     }
 
@@ -651,7 +662,9 @@ public final class ChatFragment extends BaseFragment implements
                 .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
                 .filter(charSequence -> charSequence.length() > 0)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(input -> mChatController.onUserTyping(input))
+                .subscribe(input -> mChatController.onUserTyping(input),
+                        error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription " + error.getMessage())
+                )
         );
         subscribe(Observable.combineLatest
                 (
@@ -660,7 +673,9 @@ public final class ChatFragment extends BaseFragment implements
                         (s, fileDescriptionOptional) -> TextUtils.isEmpty(s) && fileDescriptionOptional.isEmpty()
                 )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty && style.voiceMessageEnabled ? View.VISIBLE : View.GONE))
+                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty && style.voiceMessageEnabled ? View.VISIBLE : View.GONE),
+                        error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription " + error.getMessage())
+                )
         );
     }
 
@@ -709,7 +724,9 @@ public final class ChatFragment extends BaseFragment implements
         subscribe(mChatController.requestItems()
                 .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::afterRefresh));
+                .subscribe(this::afterRefresh,
+                        onError -> ThreadsLogger.e(TAG, "onRefresh " + onError.getMessage()))
+        );
     }
 
     private void afterRefresh(List<ChatItem> result) {
@@ -767,12 +784,16 @@ public final class ChatFragment extends BaseFragment implements
         binding.inputEditView.setMaxLines(INPUT_EDIT_VIEW_MIN_LINES_COUNT);
         binding.inputEditView.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             @Override
             public void afterTextChanged(Editable s) {
-                if(TextUtils.isEmpty(binding.inputEditView.getText())) {
+                if (TextUtils.isEmpty(binding.inputEditView.getText())) {
                     binding.inputEditView.setMaxLines(INPUT_EDIT_VIEW_MIN_LINES_COUNT);
                 } else {
                     binding.inputEditView.setMaxLines(INPUT_EDIT_VIEW_MAX_LINES_COUNT);
@@ -845,9 +866,8 @@ public final class ChatFragment extends BaseFragment implements
                     Uri photoUri = FileProviderHelper.getUriForFile(activity, externalCameraPhotoFile);
                     ThreadsLogger.d(TAG, "Image File uri resolved: " + photoUri.toString());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) { // https://stackoverflow.com/a/48391446/1321401
-                        MediaHelper.grantPermissions(activity, intent, photoUri);
-                    }
+                    // https://stackoverflow.com/a/48391446/1321401
+                    MediaHelper.grantPermissions(activity, intent, photoUri);
                     startActivityForResult(intent, REQUEST_EXTERNAL_CAMERA_PHOTO);
                 } catch (IllegalArgumentException e) {
                     ThreadsLogger.w(TAG, "Could not start external camera", e);
@@ -1086,6 +1106,8 @@ public final class ChatFragment extends BaseFragment implements
                                     } else {
                                         sendMessage(messages);
                                     }
+                                }, onError -> {
+                                    ThreadsLogger.i(TAG, "onSendClick " + onError.getMessage());
                                 }
                         ));
     }
@@ -1225,6 +1247,8 @@ public final class ChatFragment extends BaseFragment implements
                                 );
                                 mChatController.onUserInput(uum);
                             }
+                        }, onError -> {
+                            ThreadsLogger.i(TAG, "onPhotosResult " + onError.getMessage());
                         })
         );
 
@@ -1260,12 +1284,10 @@ public final class ChatFragment extends BaseFragment implements
                     try {
                         if (FileUtils.canBeSent(requireContext(), uri)) {
                             onFileResult(uri);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                final int takeFlags = data.getFlags()
-                                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                                requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                            }
+                            final int takeFlags = data.getFlags()
+                                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            requireActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
                         } else {
                             showToast(getString(R.string.threads_failed_to_open_file));
                         }
@@ -1470,7 +1492,7 @@ public final class ChatFragment extends BaseFragment implements
         h.post(
                 () -> {
                     Context context = getContext();
-                    if(context != null && isAdded()) {
+                    if (context != null && isAdded()) {
                         if (!getResources().getBoolean(style.fixedChatTitle)) {
                             if (!isInMessageSearchMode) {
                                 binding.subtitle.setVisibility(View.VISIBLE);
@@ -2039,17 +2061,10 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void openFile() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            startActivityForResult(
-                    new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                            .addCategory(Intent.CATEGORY_OPENABLE)
-                            .setType("*/*"), REQUEST_CODE_FILE);
-        } else {
-            FilePickerFragment frag = FilePickerFragment.newInstance();
-            frag.setFileFilter(new MyFileFilter());
-            frag.setOnDirSelectedListener(this);
-            frag.show(getChildFragmentManager(), null);
-        }
+        startActivityForResult(
+                new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("*/*"), REQUEST_CODE_FILE);
     }
 
     @Override

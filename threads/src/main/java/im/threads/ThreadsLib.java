@@ -27,7 +27,6 @@ import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.UndeliverableException;
-import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ThreadsLib {
@@ -56,20 +55,25 @@ public final class ThreadsLib {
             UnreadMessagesController.INSTANCE.getUnreadMessagesPublishProcessor()
                     .distinctUntilChanged()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count));
+                    .subscribe(count -> Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(count),
+                            error -> ThreadsLogger.e(TAG, "init " + error.getMessage()));
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            AndroidAudioConverter.load(Config.instance.context, new ILoadCallback() {
-                @Override
-                public void onSuccess() {
-                    ThreadsLogger.i(TAG, "AndroidAudioConverter was successfully loaded");
-                }
+            try {
+                AndroidAudioConverter.load(Config.instance.context, new ILoadCallback() {
+                    @Override
+                    public void onSuccess() {
+                        ThreadsLogger.i(TAG, "AndroidAudioConverter was successfully loaded");
+                    }
 
-                @Override
-                public void onFailure(Exception error) {
-                    ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load", error);
-                }
-            });
+                    @Override
+                    public void onFailure(Exception error) {
+                        ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load", error);
+                    }
+                });
+            } catch (UnsatisfiedLinkError e) {
+                ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load (UnsatisfiedLinkError)", e);
+            }
         }
         ChatController.getInstance();
         if (RxJavaPlugins.getErrorHandler() == null) {

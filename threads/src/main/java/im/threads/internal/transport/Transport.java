@@ -1,10 +1,11 @@
 package im.threads.internal.transport;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
+
+import java.util.List;
+
 import im.threads.ConfigBuilder;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.ClientNotificationDisplayType;
@@ -25,8 +26,8 @@ import io.reactivex.schedulers.Schedulers;
 public abstract class Transport {
 
     private static final String TAG = Transport.class.getSimpleName();
-    private CompositeDisposable compositeDisposable;
     private final ChatUpdateProcessor chatUpdateProcessor = ChatUpdateProcessor.getInstance();
+    private CompositeDisposable compositeDisposable;
 
     public void markMessagesAsRead(List<String> uuidList) {
         ThreadsLogger.i(TAG, "markMessagesAsRead : " + uuidList);
