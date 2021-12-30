@@ -22,6 +22,7 @@ android {
     defaultConfig {
         minSdk rootProject.minSdkVersion
         targetSdk rootProject.targetSdkVersion
+        applicationId "com.sequenia.appwithchat.polarbear"
 
         versionCode 89
         versionName "${version}"
