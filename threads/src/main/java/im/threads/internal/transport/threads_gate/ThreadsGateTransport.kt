@@ -240,11 +240,12 @@ class ThreadsGateTransport(
         val deviceModel = Build.MANUFACTURER + ' ' + Build.MODEL
         val deviceName =
             Settings.Secure.getString(Config.instance.context.contentResolver, "bluetooth_name")
+        val cloudPair = applicationConfig.getCloudPair()
         val data = RegisterDeviceRequest.Data(
             AppInfoHelper.getAppId(),
             AppInfoHelper.getAppVersion(),
-            applicationConfig.getProviderUid(),
-            applicationConfig.getCloudMessagingToken(),
+            cloudPair.providerUid,
+            cloudPair.token,
             PrefUtils.getDeviceUid(),
             "Android",
             DeviceInfoHelper.getOsVersion(),

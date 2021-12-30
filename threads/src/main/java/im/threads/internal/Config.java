@@ -16,7 +16,6 @@ import im.threads.internal.exceptions.MetaConfigurationException;
 import im.threads.internal.model.gson.UriDeserializer;
 import im.threads.internal.model.gson.UriSerializer;
 import im.threads.internal.transport.Transport;
-import im.threads.internal.transport.mfms_push.MFMSPushTransport;
 import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
 import im.threads.internal.utils.MetaDataUtils;
 import im.threads.internal.utils.PrefUtils;
@@ -110,31 +109,31 @@ public final class Config {
         if (providedTransportType != null) {
             transportType = providedTransportType;
         } else {
-            transportType = ConfigBuilder.TransportType.MFMS_PUSH;
+            transportType = ConfigBuilder.TransportType.THREADS_GATE;
             String transportTypeValue = MetaDataUtils.getThreadsTransportType(this.context);
             if (!TextUtils.isEmpty(transportTypeValue)) {
                 try {
                     transportType = ConfigBuilder.TransportType.fromString(transportTypeValue);
                 } catch (IllegalArgumentException e) {
-                    ThreadsLogger.e(TAG, "Transport type has incorrect value (correct values: MFMS_PUSH, THREADS_GATE). Default to MFMS_PUSH");
+                    ThreadsLogger.e(TAG, "Transport type has incorrect value (correct value: THREADS_GATE). Default to THREADS_GATE");
                 }
             } else {
-                ThreadsLogger.e(TAG, "Transport type value is not set (correct values: MFMS_PUSH, THREADS_GATE). Default to MFMS_PUSH");
+                ThreadsLogger.e(TAG, "Transport type value is not set (correct value: THREADS_GATE). Default to THREADS_GATE");
             }
         }
-        if (ConfigBuilder.TransportType.THREADS_GATE == transportType) {
-            String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl) ? providedThreadsGateUrl : MetaDataUtils.getThreadsGateUrl(this.context);
-            if (TextUtils.isEmpty(threadsGateUrl)) {
-                throw new MetaConfigurationException("Threads gate url is not set");
-            }
-            String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid) ? providedThreadsGateProviderUid : MetaDataUtils.getThreadsGateProviderUid(this.context);
-            String threadsGateHCMProviderUid = MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
-            if (TextUtils.isEmpty(threadsGateProviderUid)) {
-                throw new MetaConfigurationException("Threads gate provider uid is not set");
-            }
-            return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, threadsGateHCMProviderUid, isDebugLoggingEnabled);
+        if (ConfigBuilder.TransportType.MFMS_PUSH == transportType) {
+            throw new MetaConfigurationException("MFMS push transport is not supported anymore");
         }
-        return new MFMSPushTransport();
+        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl) ? providedThreadsGateUrl : MetaDataUtils.getThreadsGateUrl(this.context);
+        if (TextUtils.isEmpty(threadsGateUrl)) {
+            throw new MetaConfigurationException("Threads gate url is not set");
+        }
+        String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid) ? providedThreadsGateProviderUid : MetaDataUtils.getThreadsGateProviderUid(this.context);
+        String threadsGateHCMProviderUid = MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
+        if (TextUtils.isEmpty(threadsGateProviderUid)) {
+            throw new MetaConfigurationException("Threads gate provider uid is not set");
+        }
+        return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, threadsGateHCMProviderUid, isDebugLoggingEnabled);
     }
 
     @NonNull

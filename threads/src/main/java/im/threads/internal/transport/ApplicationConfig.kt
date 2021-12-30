@@ -7,25 +7,19 @@ class ApplicationConfig(
     private val threadsGateHuaweiProviderUid: String?
 ) {
 
-    fun getProviderUid(): String {
-        val cloudMessagingType = PrefUtils.getCloudMessagingType()
-        if (threadsGateHuaweiProviderUid != null && cloudMessagingType != null && CloudMessagingType.valueOf(
-                cloudMessagingType
-            ) == CloudMessagingType.HCM
-        ) {
-            return threadsGateHuaweiProviderUid
+    fun getCloudPair(): CloudPair {
+        return when {
+            PrefUtils.getFcmToken() != null -> CloudPair(
+                threadsGateProviderUid,
+                PrefUtils.getFcmToken()
+            )
+            threadsGateHuaweiProviderUid != null && PrefUtils.getHcmToken() != null -> CloudPair(
+                threadsGateHuaweiProviderUid,
+                PrefUtils.getHcmToken()
+            )
+            else -> CloudPair(threadsGateProviderUid, null)
         }
-        return threadsGateProviderUid
-    }
-
-    fun getCloudMessagingToken(): String? {
-        val cloudMessagingType = PrefUtils.getCloudMessagingType()
-        if (threadsGateHuaweiProviderUid != null && cloudMessagingType != null && CloudMessagingType.valueOf(
-                cloudMessagingType
-            ) == CloudMessagingType.HCM
-        ) {
-            return PrefUtils.getHcmToken()
-        }
-        return PrefUtils.getFcmToken()
     }
 }
+
+data class CloudPair(val providerUid: String, val token: String?)
