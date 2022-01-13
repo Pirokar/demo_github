@@ -5,9 +5,10 @@ plugins {
     id 'kotlin-kapt'
     id 'maven-publish'
 }
-
-def mavenProdUser = "threads"
-def mavenProdPass = "ple70Bip5Q%xAuJ%"
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def mavenProdUser = properties.getProperty('mavenProdUser')
+def mavenProdPass = properties.getProperty('mavenProdPass')
 
 android {
 
