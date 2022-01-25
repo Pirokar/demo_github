@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
-import com.edna.android.push_lite.PushController;
-
 import java.io.File;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
@@ -49,7 +47,6 @@ public final class ThreadsLib {
         Config.instance = configBuilder.build();
         instance = new ThreadsLib();
         PrefUtils.migrateToSeparateStorageIfNeeded();
-        PushController.getInstance(Config.instance.context).init();
         if (Config.instance.unreadMessagesCountListener != null) {
             Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(UnreadMessagesController.INSTANCE.getUnreadMessages());
             UnreadMessagesController.INSTANCE.getUnreadMessagesPublishProcessor()
@@ -179,5 +176,4 @@ public final class ThreadsLib {
     public interface UnreadMessagesCountListener {
         void onUnreadMessagesCountChanged(int count);
     }
-
 }

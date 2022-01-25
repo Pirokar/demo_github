@@ -10,14 +10,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.Consumer;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -26,6 +18,13 @@ import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -57,7 +56,6 @@ import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.services.NotificationService;
-import im.threads.internal.transport.HCMTokenRefresher;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.ConsultWriter;
@@ -185,7 +183,6 @@ public final class ChatController {
             instance = new ChatController();
         }
         initClientId();
-        requestHCMToken();
         return instance;
     }
 
@@ -216,19 +213,6 @@ public final class ChatController {
                             )
             );
         }
-    }
-
-    private static void requestHCMToken() {
-        instance.subscribe(
-                Completable.fromAction(() -> HCMTokenRefresher.INSTANCE.collectTokenIfNeeded(instance.appContext))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> {
-                                },
-                                e -> ThreadsLogger.e(TAG, e.getMessage())
-                        )
-        );
     }
 
     public void onRatingClick(@NonNull final Survey survey) {
