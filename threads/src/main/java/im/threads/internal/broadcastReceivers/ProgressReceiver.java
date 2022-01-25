@@ -9,8 +9,8 @@ import androidx.annotation.NonNull;
 import java.lang.ref.WeakReference;
 
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.workers.FileDownloadWorker;
 
 /**
  * В чате есть возможность скачать файл из сообщения.
@@ -40,7 +40,7 @@ public final class ProgressReceiver extends BroadcastReceiver {
         switch (action) {
             case PROGRESS_BROADCAST: {
                 ThreadsLogger.i(TAG, "onReceive: PROGRESS_BROADCAST ");
-                FileDescription fileDescription = intent.getParcelableExtra(FileDownloadService.FD_TAG);
+                FileDescription fileDescription = intent.getParcelableExtra(FileDownloadWorker.FD_TAG);
                 if (callback.get() != null && fileDescription != null) {
                     callback.get().updateProgress(fileDescription);
                 }
@@ -48,7 +48,7 @@ public final class ProgressReceiver extends BroadcastReceiver {
             }
             case DOWNLOADED_SUCCESSFULLY_BROADCAST: {
                 ThreadsLogger.i(TAG, "onReceive: DOWNLOADED_SUCCESSFULLY_BROADCAST ");
-                FileDescription fileDescription = intent.getParcelableExtra(FileDownloadService.FD_TAG);
+                FileDescription fileDescription = intent.getParcelableExtra(FileDownloadWorker.FD_TAG);
                 fileDescription.setDownloadProgress(100);
                 if (callback.get() != null) {
                     callback.get().updateProgress(fileDescription);
@@ -57,7 +57,7 @@ public final class ProgressReceiver extends BroadcastReceiver {
             }
             case DOWNLOAD_ERROR_BROADCAST: {
                 ThreadsLogger.e(TAG, "onReceive: DOWNLOAD_ERROR_BROADCAST ");
-                FileDescription fileDescription = intent.getParcelableExtra(FileDownloadService.FD_TAG);
+                FileDescription fileDescription = intent.getParcelableExtra(FileDownloadWorker.FD_TAG);
                 if (callback.get() != null && fileDescription != null) {
                     Throwable t = (Throwable) intent.getSerializableExtra(DOWNLOAD_ERROR_BROADCAST);
                     callback.get().onDownloadError(fileDescription, t);

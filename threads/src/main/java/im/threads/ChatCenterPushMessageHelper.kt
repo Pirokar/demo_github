@@ -5,11 +5,11 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import im.threads.internal.model.CAMPAIGN_DATE_FORMAT_PARSE
 import im.threads.internal.model.CampaignMessage
-import im.threads.internal.services.NotificationService
 import im.threads.internal.transport.MessageAttributes
 import im.threads.internal.transport.PushMessageAttributes
 import im.threads.internal.utils.PrefUtils
 import im.threads.internal.utils.ThreadsLogger
+import im.threads.internal.workers.NotificationWorker
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -63,14 +63,14 @@ object ChatCenterPushMessageHelper {
                     PrefUtils.setCampaignMessage(
                         campaignMessage
                     )
-                    NotificationService.addCampaignMessage(context, alertStr)
+                    NotificationWorker.addCampaignMessage(context, alertStr)
                     ThreadsLogger.i(TAG, "campaign message handled: $campaignMessage")
                 }
                 bundle.containsKey(PushMessageAttributes.MESSAGE) || bundle.containsKey(PushMessageAttributes.ALERT) -> {
                     val operatorUrl = bundle[PushMessageAttributes.OPERATOR_URL] as String?
                     val appMarker = bundle[PushMessageAttributes.APP_MARKER_KEY] as String?
                     val text = bundle[PushMessageAttributes.MESSAGE] as String? ?: bundle[PushMessageAttributes.ALERT] as String?
-                    NotificationService.addUnreadMessage(
+                    NotificationWorker.addUnreadMessage(
                         context,
                         Date().hashCode(),
                         text,
