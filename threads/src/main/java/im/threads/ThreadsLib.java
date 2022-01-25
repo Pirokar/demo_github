@@ -101,6 +101,9 @@ public final class ThreadsLib {
             if (currentClientId != null && !ObjectsCompat.equals(currentClientId, userInfoBuilder.clientId)) {
                 logoutClient(currentClientId);
             }
+        } else {
+            // it will only affect GPB, every time they try to init user we will delete user related data
+            ChatController.getInstance().cleanAll();
         }
         PrefUtils.setAppMarker(userInfoBuilder.appMarker);
         PrefUtils.setNewClientId(userInfoBuilder.clientId);

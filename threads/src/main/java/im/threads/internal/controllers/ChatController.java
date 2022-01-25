@@ -1114,7 +1114,7 @@ public final class ChatController {
         }
     }
 
-    private void cleanAll() {
+    public void cleanAll() {
         ThreadsLogger.i(TAG, "cleanAll: ");
         isAllMessagesDownloaded = false;
         sendQueue.clear();
