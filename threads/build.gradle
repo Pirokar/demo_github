@@ -140,12 +140,7 @@ dependencies {
     implementation "com.github.3llomi:RecordView:$rootProject.recordViewVersion"
     implementation "com.github.adrielcafe:AndroidAudioConverter:$rootProject.androidAudioConverterVersion"
 
-    //debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
-    //debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
-    //releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
-    //releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
-    implementation "com.edna.android:push-lite-release:$pushVersion"
-    implementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+    implementation "com.google.firebase:firebase-messaging:$fcmVersion"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"

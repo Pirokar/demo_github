@@ -75,7 +75,6 @@ public final class ConfigBuilder {
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         return this;
     }
-
     public ConfigBuilder isDebugLoggingEnabled(boolean isDebugLoggingEnabled) {
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         return this;
@@ -107,6 +106,7 @@ public final class ConfigBuilder {
     }
 
     public enum TransportType {
+        @Deprecated
         MFMS_PUSH,
         THREADS_GATE;
 
