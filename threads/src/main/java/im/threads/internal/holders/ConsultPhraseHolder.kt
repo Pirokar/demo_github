@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.format.Formatter
+import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -180,6 +181,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                     mPhraseTextView.autoLinkMask = 0
                     mPhraseTextView.text = MarkdownProcessorHolder.getMarkdownProcessor()
                         .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
+                    mPhraseTextView.movementMethod = LinkMovementMethod.getInstance()
                 }
                 deepLink != null -> {
                     val text = SpannableString(phrase)
