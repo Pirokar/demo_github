@@ -3,7 +3,12 @@ package im.threads.internal.workers
 import android.content.Context
 import android.content.Intent
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.work.*
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import im.threads.internal.Config
 import im.threads.internal.broadcastReceivers.ProgressReceiver
 import im.threads.internal.database.DatabaseHolder
@@ -12,21 +17,20 @@ import im.threads.internal.model.FileDescription
 import im.threads.internal.utils.FileDownloader
 import im.threads.internal.utils.FileDownloader.DownloadLister
 import im.threads.internal.utils.ThreadsLogger
-import java.io.File
-import java.lang.Exception
-import java.util.*
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import im.threads.internal.utils.WorkerUtils.marshall
 import im.threads.internal.utils.WorkerUtils.unmarshall
+import java.io.File
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
-class FileDownloadWorker (val context: Context, workerParameters: WorkerParameters): Worker(context, workerParameters) {
+class FileDownloadWorker(val context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters) {
 
     private var runningDownloads = HashMap<FileDescription, FileDownloader>()
     private val executor: Executor = Executors.newFixedThreadPool(3)
 
     override fun doWork(): Result {
-        var data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
+        val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
         val fileDescription: FileDescription = FileDescription.CREATOR.createFromParcel(data)
             ?: return Result.failure()
 
@@ -40,20 +44,18 @@ class FileDownloadWorker (val context: Context, workerParameters: WorkerParamete
             context,
             object : DownloadLister {
                 override fun onProgress(progress: Double) {
-                    var progress = progress
-                    if (progress < 1) progress = 1.0
-                    fileDescription.downloadProgress = progress.toInt()
+                    var downloadProgress = progress
+                    if (downloadProgress < 1) downloadProgress = 1.0
+                    fileDescription.downloadProgress = downloadProgress.toInt()
                     DatabaseHolder.getInstance().updateFileDescription(fileDescription)
                     sendDownloadProgressBroadcast(fileDescription)
                 }
 
                 override fun onComplete(file: File) {
                     fileDescription.downloadProgress = 100
-                    fileDescription.setFileUri(
-                        FileProviderHelper.getUriForFile(
-                            Config.instance.context,
-                            file
-                        )
+                    fileDescription.fileUri = FileProviderHelper.getUriForFile(
+                        Config.instance.context,
+                        file
                     )
                     DatabaseHolder.getInstance().updateFileDescription(fileDescription)
                     runningDownloads.remove(fileDescription)
@@ -70,9 +72,9 @@ class FileDownloadWorker (val context: Context, workerParameters: WorkerParamete
 
         if (START_DOWNLOAD_FD_TAG == inputData.getString(START_DOWNLOAD_ACTION)) {
             if (runningDownloads.containsKey(fileDescription)) {
-                val tfileDownloader = runningDownloads[fileDescription]
+                val downloader = runningDownloads[fileDescription]
                 runningDownloads.remove(fileDescription)
-                tfileDownloader?.stop()
+                downloader?.stop()
                 fileDescription.downloadProgress = 0
                 sendDownloadProgressBroadcast(fileDescription)
                 DatabaseHolder.getInstance().updateFileDescription(fileDescription)
@@ -101,7 +103,10 @@ class FileDownloadWorker (val context: Context, workerParameters: WorkerParamete
 
     private fun sendFinishBroadcast(fileDescription: FileDescription) {
         LocalBroadcastManager.getInstance(context).sendBroadcast(
-            Intent(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST).putExtra(FD_TAG, fileDescription)
+            Intent(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST).putExtra(
+                FD_TAG,
+                fileDescription
+            )
         )
     }
 
@@ -116,13 +121,15 @@ class FileDownloadWorker (val context: Context, workerParameters: WorkerParamete
 
     companion object {
 
-        private val TAG = "FileDownloadWorker"
-        const val WORKER_NAME = "im.threads.internal.workers.FileDownloadWorker"
+        const val TAG = "FileDownloadWorker"
+        private const val WORKER_NAME = "im.threads.internal.workers.FileDownloadWorker"
 
         const val FD_TAG = "im.threads.internal.workers.FileDownloadWorker.FD_TAG"
         const val START_DOWNLOAD_ACTION = "im.threads.internal.workers.FileDownloadWorker.Action"
-        const val START_DOWNLOAD_FD_TAG = "im.threads.internal.workers.FileDownloadWorker.START_DOWNLOAD_FD_TAG"
-        const val START_DOWNLOAD_WITH_NO_STOP = "im.threads.internal.workers.FileDownloadWorker.START_DOWNLOAD_WITH_NO_STOP"
+        const val START_DOWNLOAD_FD_TAG =
+            "im.threads.internal.workers.FileDownloadWorker.START_DOWNLOAD_FD_TAG"
+        const val START_DOWNLOAD_WITH_NO_STOP =
+            "im.threads.internal.workers.FileDownloadWorker.START_DOWNLOAD_WITH_NO_STOP"
 
         @JvmStatic
         fun startDownloadFD(context: Context, fileDescription: FileDescription) {
