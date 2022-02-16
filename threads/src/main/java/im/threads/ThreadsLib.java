@@ -20,6 +20,8 @@ import im.threads.internal.controllers.UnreadMessagesController;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.UpcomingUserMessage;
+import im.threads.internal.useractivity.LastUserActivityTimeCounter;
+import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -73,6 +75,7 @@ public final class ThreadsLib {
             }
         }
         ChatController.getInstance();
+        LastUserActivityTimeCounterSingletonProvider.INSTANCE.getLastUserActivityTimeCounter();
         if (RxJavaPlugins.getErrorHandler() == null) {
             RxJavaPlugins.setErrorHandler(throwable -> {
                 if (throwable instanceof UndeliverableException) {
@@ -166,6 +169,15 @@ public final class ThreadsLib {
             ThreadsLogger.i(getClass().getSimpleName(), "You might need to initialize user first with ThreadsLib.userInfo()");
             return false;
         }
+    }
+
+    /**
+     * @return time in seconds since the last user activity
+     */
+    public long getSecondsSinceLastActivity() {
+        LastUserActivityTimeCounter timeCounter = LastUserActivityTimeCounterSingletonProvider
+                .INSTANCE.getLastUserActivityTimeCounter();
+        return timeCounter.getSecondsSinceLastActivity();
     }
 
     public boolean isUserInitialized() {

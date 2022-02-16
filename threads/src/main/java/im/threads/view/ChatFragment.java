@@ -113,6 +113,8 @@ import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.permissions.PermissionsActivity;
+import im.threads.internal.useractivity.LastUserActivityTimeCounter;
+import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.FileUtilsKt;
@@ -662,7 +664,10 @@ public final class ChatFragment extends BaseFragment implements
                 .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
                 .filter(charSequence -> charSequence.length() > 0)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(input -> mChatController.onUserTyping(input),
+                .subscribe(input -> {
+                            mChatController.onUserTyping(input);
+                            updateLastUserActivityTime();
+                        },
                         error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription " + error.getMessage())
                 )
         );
@@ -677,6 +682,12 @@ public final class ChatFragment extends BaseFragment implements
                         error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription " + error.getMessage())
                 )
         );
+    }
+
+    private void updateLastUserActivityTime() {
+        LastUserActivityTimeCounter timeCounter = LastUserActivityTimeCounterSingletonProvider
+                .INSTANCE.getLastUserActivityTimeCounter();
+        timeCounter.updateLastUserActivityTime();
     }
 
     private void showUnreadMsgsCount(int unreadCount) {
@@ -1127,6 +1138,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void doFancySearch(final String request, final boolean forward) {
+        updateLastUserActivityTime();
         if (TextUtils.isEmpty(request)) {
             chatAdapter.removeHighlight();
             binding.searchUpIb.setAlpha(DISABLED_ALPHA);
