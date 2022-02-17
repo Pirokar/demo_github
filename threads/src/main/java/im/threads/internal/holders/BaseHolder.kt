@@ -77,14 +77,11 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         button.setInProgress(inProgress)
     }
 
-    protected fun getErrorImageResByErrorCode(code: ErrorStateEnum): Int {
-        when (code) {
-            ErrorStateEnum.DISALLOWED -> return R.drawable.im_wrong_file
-            ErrorStateEnum.TIMEOUT -> return R.drawable.im_unexpected
-            ErrorStateEnum.Unexpected -> return R.drawable.im_unexpected
-            ErrorStateEnum.ANY -> return R.drawable.im_unexpected
-            else -> return return 0
-        }
+    protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
+        ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
+        ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
+        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
+        ErrorStateEnum.ANY -> R.drawable.im_unexpected
     }
 
     protected fun subscribe(event: Disposable): Boolean {
