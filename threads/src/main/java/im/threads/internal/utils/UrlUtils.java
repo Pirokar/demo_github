@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public final class UrlUtils {
 
-    public static final Pattern DEEPLINK_URL = Pattern.compile("[a-z0-9+.-]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+    public static final Pattern DEEPLINK_URL = Pattern.compile("[a-z0-9+.-]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|*]*");
     private static final String TAG = "UrlUtils";
     /**
      * Valid UCS characters defined in RFC 3987. Excludes space characters.
