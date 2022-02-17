@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
@@ -233,6 +234,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+        Log.e(TAG, "onBindViewHolder(...)    "+holder.getClass().getName());
         if (holder instanceof SystemMessageViewHolder) {
             bindSystemMessageVH((SystemMessageViewHolder) holder, (SystemMessage) list.get(position));
         }

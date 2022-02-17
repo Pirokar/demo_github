@@ -2,20 +2,26 @@ package im.threads.internal.holders;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.model.AttachmentStateEnum;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.utils.FileUtils;
@@ -26,10 +32,12 @@ public final class UserFileViewHolder extends BaseHolder {
     private TextView mFileHeader;
     private TextView fileSizeTextView;
     private TextView mTimeStampTextView;
+    private TextView errortext;
     private View mFilterView;
     private View mFilterSecond;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private View mBubble;
+    private ImageView loader;
 
     public UserFileViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_chat_file, parent, false));
@@ -40,6 +48,8 @@ public final class UserFileViewHolder extends BaseHolder {
         mFilterView = itemView.findViewById(R.id.filter);
         mFilterSecond = itemView.findViewById(R.id.filter_second);
         mBubble = itemView.findViewById(R.id.bubble);
+        loader = itemView.findViewById(R.id.loader);
+        errortext = itemView.findViewById(R.id.errortext);
         ChatStyle style = Config.instance.getChatStyle();
         setTextColorToViews(new TextView[]{mFileHeader, fileSizeTextView}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
@@ -76,8 +86,35 @@ public final class UserFileViewHolder extends BaseHolder {
             vg.getChildAt(i).setOnLongClickListener(onLongClick);
             vg.getChildAt(i).setOnClickListener(rowClickListener);
         }
-        mCircularProgressButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
-        mCircularProgressButton.setOnClickListener(buttonClickListener);
+
+        if (fileDescription.getState() == AttachmentStateEnum.ERROR) {
+            mCircularProgressButton.setVisibility(View.INVISIBLE);
+            loader.setImageResource(getErrorImageResByErrorCode(fileDescription.getErrorCode()));
+            loader.setVisibility(View.VISIBLE);
+            errortext.setVisibility(View.VISIBLE);
+            if (TextUtils.isEmpty(fileDescription.getErrorMessage())) {
+                errortext.setText(Config.instance.context.getString(R.string.threads_some_error_durring_load_file));
+            } else {
+                errortext.setText(fileDescription.getErrorMessage());
+            }
+        } else if (fileDescription.getState() == AttachmentStateEnum.PENDING) {
+            mCircularProgressButton.setVisibility(View.INVISIBLE);
+            loader.setImageResource(R.drawable.im_loading);
+            loader.setVisibility(View.VISIBLE);
+            errortext.setVisibility(View.GONE);
+            RotateAnimation rotate = new RotateAnimation(0, 360,
+                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                    0.5f);
+            rotate.setDuration(3000);
+            rotate.setRepeatCount(Animation.INFINITE);
+            loader.setAnimation(rotate);
+        } else {
+            loader.setVisibility(View.INVISIBLE);
+            errortext.setVisibility(View.GONE);
+            mCircularProgressButton.setVisibility(View.VISIBLE);
+            mCircularProgressButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
+            mCircularProgressButton.setOnClickListener(buttonClickListener);
+        }
         if (isFilterVisible) {
             mFilterView.setVisibility(View.VISIBLE);
             mFilterSecond.setVisibility(View.VISIBLE);
