@@ -2,6 +2,8 @@ package im.threads.internal.chat_updates;
 
 import androidx.annotation.NonNull;
 
+import java.util.Map;
+
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ChatItem;
@@ -36,8 +38,14 @@ public class ChatUpdateProcessor {
     private final FlowableProcessor<ClientNotificationDisplayType> clientNotificationDisplayTypeProcessor = PublishProcessor.create();
     private final FlowableProcessor<SpeechMessageUpdate> speechMessageUpdateProcessor = PublishProcessor.create();
     private final FlowableProcessor<Boolean> attachAudioFilesProcessor = PublishProcessor.create();
-
     private final FlowableProcessor<TransportException> errorProcessor = PublishProcessor.create();
+
+    /**
+     * Передаёт ответы от коллбэков сокетного соединения.
+     * Предоставляется с целью обработки ошибок разрыва соединений.
+     */
+    private final FlowableProcessor<Map<String, Object>> socketResponseMapProcessor =
+            PublishProcessor.create();
 
     public static ChatUpdateProcessor getInstance() {
         if (instance == null) {
@@ -114,6 +122,10 @@ public class ChatUpdateProcessor {
         errorProcessor.onNext(error);
     }
 
+    public void postSocketResponseMap(@NonNull Map<String, Object> socketResponseMap) {
+        socketResponseMapProcessor.onNext(socketResponseMap);
+    }
+
     public FlowableProcessor<String> getTypingProcessor() {
         return typingProcessor;
     }
@@ -180,5 +192,9 @@ public class ChatUpdateProcessor {
 
     public FlowableProcessor<TransportException> getErrorProcessor() {
         return errorProcessor;
+    }
+
+    public FlowableProcessor<Map<String, Object>> getSocketResponseMapProcessor() {
+        return socketResponseMapProcessor;
     }
 }

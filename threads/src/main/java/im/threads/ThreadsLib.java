@@ -11,10 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
 import java.io.File;
+import java.util.Map;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
 import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
 import im.threads.internal.Config;
+import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.controllers.ChatController;
 import im.threads.internal.controllers.UnreadMessagesController;
 import im.threads.internal.helpers.FileProviderHelper;
@@ -26,6 +28,7 @@ import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.FlowableProcessor;
 
 public final class ThreadsLib {
 
@@ -170,6 +173,13 @@ public final class ThreadsLib {
 
     public boolean isUserInitialized() {
         return !PrefUtils.isClientIdEmpty();
+    }
+
+    /**
+     * @return FlowableProcessor that emits responses from WebSocket connection
+     */
+    public FlowableProcessor<Map<String, Object>> getSocketResponseMapProcessor() {
+        return ChatUpdateProcessor.getInstance().getSocketResponseMapProcessor();
     }
 
     public interface PendingIntentCreator {
