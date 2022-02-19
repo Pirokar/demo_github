@@ -90,6 +90,24 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int incomingImageTimeBackgroundColor = R.color.threads_incoming_time_underlay;
 
+    @DimenRes
+    public int bubbleOutgoingPaddingLeft = R.dimen.bubbleOutgoingPaddingLeft;
+    @DimenRes
+    public int bubbleOutgoingPaddingTop = R.dimen.bubbleOutgoingPaddingTop;
+    @DimenRes
+    public int bubbleOutgoingPaddingRight = R.dimen.bubbleOutgoingPaddingRight;
+    @DimenRes
+    public int bubbleOutgoingPaddingBottom = R.dimen.bubbleOutgoingPaddingBottom;
+
+    @DimenRes
+    public int bubbleIncomingPaddingLeft = R.dimen.bubbleIncomingPaddingLeft;
+    @DimenRes
+    public int bubbleIncomingPaddingTop = R.dimen.bubbleIncomingPaddingTop;
+    @DimenRes
+    public int bubbleIncomingPaddingRight = R.dimen.bubbleIncomingPaddingRight;
+    @DimenRes
+    public int bubbleIncomingPaddingBottom = R.dimen.bubbleIncomingPaddingBottom;
+
     @ColorRes
     public int incomingMessageLinkColor = R.color.threads_incoming_message_link;
     @ColorRes
@@ -792,7 +810,8 @@ public final class ChatStyle implements Serializable {
             @DrawableRes final int imagePlaceholder,
             @StyleRes final int fileBrowserDialogStyleResId,
             final boolean showConsultSearching,
-            final boolean scrollChatToEndIfUserTyping) {
+            final boolean scrollChatToEndIfUserTyping
+    ) {
 
         this.chatBackgroundColor = chatBackgroundColor;
         this.chatHighlightingColor = chatHighlightingColor;
@@ -1208,6 +1227,32 @@ public final class ChatStyle implements Serializable {
      */
     public ChatStyle setMaxGalleryImagesCount(@IntegerRes final int maxGalleryImagesCount) {
         this.maxGalleryImagesCount = maxGalleryImagesCount;
+        return this;
+    }
+
+    public ChatStyle setOutgoingPadding(
+            @DimenRes int left,
+            @DimenRes int top,
+            @DimenRes int right,
+            @DimenRes int bottom
+    ) {
+        this.bubbleOutgoingPaddingLeft = left;
+        this.bubbleOutgoingPaddingTop = top;
+        this.bubbleOutgoingPaddingRight = right;
+        this.bubbleOutgoingPaddingBottom = bottom;
+        return this;
+    }
+
+    public ChatStyle setIngoingPadding(
+            @DimenRes int left,
+            @DimenRes int top,
+            @DimenRes int right,
+            @DimenRes int bottom
+    ) {
+        this.bubbleIncomingPaddingLeft = left;
+        this.bubbleIncomingPaddingTop = top;
+        this.bubbleIncomingPaddingRight = right;
+        this.bubbleIncomingPaddingBottom = bottom;
         return this;
     }
 
