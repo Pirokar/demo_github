@@ -56,13 +56,6 @@
             android:screenOrientation="unspecified"
             android:theme="@style/Transparent"/>
 
-        <service
-            android:name=".internal.services.FileDownloadService"
-            android:exported="false"/>
-        <service
-            android:name=".internal.services.NotificationService"
-            android:exported="false"/>
-
         <provider
             android:name=".internal.utils.ThreadsFileProvider"
             android:authorities="${applicationId}.im.threads.fileprovider"

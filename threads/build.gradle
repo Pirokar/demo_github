@@ -148,4 +148,6 @@ dependencies {
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
 
     implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
+
+    implementation("androidx.work:work-runtime-ktx:$work_version")
 }

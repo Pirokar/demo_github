@@ -54,8 +54,6 @@ import im.threads.internal.model.Survey;
 import im.threads.internal.model.SystemMessage;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.services.FileDownloadService;
-import im.threads.internal.services.NotificationService;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.ConsultWriter;
@@ -66,6 +64,8 @@ import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.Seeker;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.workers.FileDownloadWorker;
+import im.threads.internal.workers.NotificationWorker;
 import im.threads.view.ChatFragment;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -308,7 +308,7 @@ public final class ChatController {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
                 if (fileDescription.getFileUri() == null) {
-                    FileDownloadService.startDownloadFD(activity, fileDescription);
+                    FileDownloadWorker.startDownloadFD(activity, fileDescription);
                 } else if (FileUtils.isImage(fileDescription)) {
                     activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
                 } else {
@@ -406,7 +406,7 @@ public final class ChatController {
         if (fragment != null && fragment.isAdded()) {
             final Activity activity = fragment.getActivity();
             if (activity != null) {
-                FileDownloadService.startDownloadWithNoStop(activity, fileDescription);
+                FileDownloadWorker.startDownloadWithNoStop(activity, fileDescription);
             }
         }
     }
@@ -906,7 +906,7 @@ public final class ChatController {
                                             fragment.showConnectionError();
                                         }
                                         if (!isActive) {
-                                            NotificationService.addUnsentMessage(appContext, PrefUtils.getAppMarker());
+                                            NotificationWorker.addUnsentMessage(appContext, PrefUtils.getAppMarker());
                                         }
                                         proceedSendingQueue(userPhrase);
                                     }
@@ -1130,7 +1130,7 @@ public final class ChatController {
     }
 
     private void removePushNotification() {
-        NotificationService.removeNotification(appContext);
+        NotificationWorker.removeNotification(appContext);
     }
 
     private void setSurveyStateSent(final Survey survey) {
