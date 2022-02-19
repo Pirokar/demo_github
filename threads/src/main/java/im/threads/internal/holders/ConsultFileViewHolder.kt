@@ -71,6 +71,12 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
                             itemView.context,
                             style.incomingMessageBubbleBackground
                     )
+            setPadding(
+                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingRight),
+                context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
+            )
             background.setColorFilter(
                     getColorInt(style.incomingMessageBubbleColor),
                     PorterDuff.Mode.SRC_ATOP

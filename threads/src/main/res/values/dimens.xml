@@ -43,4 +43,14 @@
     <dimen name="threads_welcome_logo_height">200dp</dimen>
     <dimen name="threads_welcome_logo_width">200dp</dimen>
 
+    <dimen name="bubbleOutgoingPaddingLeft">8dp</dimen>
+    <dimen name="bubbleOutgoingPaddingTop">8dp</dimen>
+    <dimen name="bubbleOutgoingPaddingRight">8dp</dimen>
+    <dimen name="bubbleOutgoingPaddingBottom">8dp</dimen>
+
+    <dimen name="bubbleIncomingPaddingLeft">8dp</dimen>
+    <dimen name="bubbleIncomingPaddingTop">8dp</dimen>
+    <dimen name="bubbleIncomingPaddingRight">8dp</dimen>
+    <dimen name="bubbleIncomingPaddingBottom">8dp</dimen>
+
 </resources>

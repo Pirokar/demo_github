@@ -173,6 +173,19 @@ public class ChatStyleBuilderHelper {
                         R.drawable.alt_threads_quick_reply_button_background,
                         R.color.alt_threads_quick_reply_text_color
                 )
+                .setOutgoingPadding(
+                        R.dimen.alt_bubbleOutgoingPaddingLeft,
+                        R.dimen.alt_bubbleOutgoingPaddingTop,
+                        R.dimen.alt_bubbleOutgoingPaddingRight,
+                        R.dimen.alt_bubbleOutgoingPaddingBottom
+                )
+                .setIngoingPadding(
+                        R.dimen.alt_bubbleIncomingPaddingLeft,
+                        R.dimen.alt_bubbleIncomingPaddingTop,
+                        R.dimen.alt_bubbleIncomingPaddingRight,
+                        R.dimen.alt_bubbleIncomingPaddingBottom
+                )
+
                 .setFixedChatTitle(R.bool.alt_threads_chat_fixed_chat_title)
                 .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images)
                 .setLoaderTextResId(R.string.alt_loading)
