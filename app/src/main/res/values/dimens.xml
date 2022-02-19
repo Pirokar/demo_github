@@ -20,6 +20,8 @@
     <dimen name="alt_threads_operator_photo_size">55dp</dimen>
     <dimen name="alt_threads_system_operator_photo_size">55dp</dimen>
 
+    <dimen name="alt_threads_attachments_no_files_header_text_size">20sp</dimen>
+    <dimen name="alt_threads_attachments_no_files_description_text_size">18sp</dimen>
     <dimen name="alt_threads_attachments_author_text_size">18sp</dimen>
     <dimen name="alt_threads_attachments_date_text_size">18sp</dimen>
 
