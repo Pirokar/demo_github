@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -32,6 +33,8 @@ import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.model.InputFieldEnableModel;
+import im.threads.internal.useractivity.LastUserActivityTimeCounter;
+import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -123,12 +126,24 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
         return ContextCompat.getColor(requireContext(), colorResId);
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog d = super.onCreateDialog(savedInstanceState);
+        Dialog dialog = new Dialog(requireContext(), getTheme()) {
+            @Override
+            public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
+                LastUserActivityTimeCounter timeCounter =
+                        LastUserActivityTimeCounterSingletonProvider.INSTANCE
+                                .getLastUserActivityTimeCounter();
+                if (MotionEvent.ACTION_DOWN == ev.getAction()) {
+                    timeCounter.updateLastUserActivityTime();
+                }
+                return super.dispatchTouchEvent(ev);
+            }
+        };
         int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9f);
-        d.getWindow().setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT);
-        return d;
+        dialog.getWindow().setLayout(width, FrameLayout.LayoutParams.WRAP_CONTENT);
+        return dialog;
     }
 
     @Override
