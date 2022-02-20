@@ -2,13 +2,14 @@ package im.threads.internal.transport;
 
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.Nullable;
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.formatters.ChatItemType;
@@ -243,6 +244,11 @@ public final class MessageParser {
             fileDescription.setIncomingName(attachment.getName());
             fileDescription.setSelfie(attachment.isSelfie());
             fileDescription.setMimeType(attachment.getType());
+            fileDescription.setState(attachment.getState());
+            if (attachment.getErrorCode() != null) {
+                fileDescription.setErrorCode(attachment.getErrorCode());
+                fileDescription.setErrorMessage(attachment.getErrorMessage());
+            }
         }
         return fileDescription;
     }
