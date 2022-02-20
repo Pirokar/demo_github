@@ -53,7 +53,8 @@ public final class FilePoster {
         ThreadsLogger.i(TAG, "sendFile: " + uri);
         MultipartBody.Part part = MultipartBody.Part
                 .createFormData("file", URLEncoder.encode(FileUtils.getFileName(uri), "utf-8"), getFileRequestBody(uri, mimeType));
-        Response<FileUploadResponse> response = ApiGenerator.getThreadsApi().upload(part, token).execute();
+        RequestBody agent = RequestBody.create(token, MediaType.parse("text/plain"));
+        Response<FileUploadResponse> response = ApiGenerator.getThreadsApi().upload(part, agent, token).execute();
         if (response.isSuccessful()) {
             FileUploadResponse body = response.body();
             if (body != null) {
