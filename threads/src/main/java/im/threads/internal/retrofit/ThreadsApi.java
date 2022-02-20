@@ -1,8 +1,9 @@
 package im.threads.internal.retrofit;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import im.threads.internal.Config;
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.model.HistoryResponse;

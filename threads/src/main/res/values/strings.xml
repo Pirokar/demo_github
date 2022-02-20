@@ -135,5 +135,6 @@
     <string name="threads_voice_message_error">Ошибка обработки голосового сообщения</string>
     <string name="threads_empty_state_hint">Инициализация клиента</string>
     <string name="threads_achieve_images_count_limit_mesage">Вы достигли лимита изображений для отправки</string>
+    <string name="threads_some_error_durring_load_file">Произошла ошибка при загрузке\nили проверке файла.</string>
     <string name="loading"></string>
 </resources>

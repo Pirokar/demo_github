@@ -10,12 +10,13 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
+import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.views.CircularProgressButton
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    
+
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
 
     @ColorInt
@@ -74,6 +75,13 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         button.setCompletedDrawable(completed)
         button.setStartDownloadDrawable(download)
         button.setInProgress(inProgress)
+    }
+
+    protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {
+        ErrorStateEnum.DISALLOWED -> R.drawable.im_wrong_file
+        ErrorStateEnum.TIMEOUT -> R.drawable.im_unexpected
+        ErrorStateEnum.Unexpected -> R.drawable.im_unexpected
+        ErrorStateEnum.ANY -> R.drawable.im_unexpected
     }
 
     protected fun subscribe(event: Disposable): Boolean {
