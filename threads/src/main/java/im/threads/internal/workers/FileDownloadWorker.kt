@@ -20,16 +20,14 @@ import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.WorkerUtils.marshall
 import im.threads.internal.utils.WorkerUtils.unmarshall
 import java.io.File
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 class FileDownloadWorker(val context: Context, workerParameters: WorkerParameters) :
     Worker(context, workerParameters) {
 
     private var runningDownloads = HashMap<FileDescription, FileDownloader>()
-    private val executor: Executor = Executors.newFixedThreadPool(3)
 
     override fun doWork(): Result {
+
         val data = inputData.getByteArray(FD_TAG)?.let { unmarshall(it) }
         val fileDescription: FileDescription = FileDescription.CREATOR.createFromParcel(data)
             ?: return Result.failure()
@@ -38,6 +36,11 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
             ThreadsLogger.e(TAG, "cant download with fileDescription = $fileDescription")
             return Result.failure()
         }
+
+        if (runningDownloads.containsKey(fileDescription)) {
+            return Result.failure()
+        }
+
         val fileDownloader = FileDownloader(
             fileDescription.downloadPath!!,
             fileDescription.incomingName,
@@ -70,6 +73,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 }
             })
 
+
         if (START_DOWNLOAD_FD_TAG == inputData.getString(START_DOWNLOAD_ACTION)) {
             if (runningDownloads.containsKey(fileDescription)) {
                 val downloader = runningDownloads[fileDescription]
@@ -82,14 +86,16 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
                 sendDownloadProgressBroadcast(fileDescription)
-                executor.execute { fileDownloader.download() }
+                runningDownloads.put(fileDescription, fileDownloader)
+                fileDownloader.download()
             }
         } else if (START_DOWNLOAD_WITH_NO_STOP == inputData.getString(START_DOWNLOAD_ACTION)) {
             if (!runningDownloads.containsKey(fileDescription)) {
                 runningDownloads[fileDescription] = fileDownloader
                 fileDescription.downloadProgress = 1
                 sendDownloadProgressBroadcast(fileDescription)
-                executor.execute { fileDownloader.download() }
+                runningDownloads.put(fileDescription, fileDownloader)
+                fileDownloader.download()
             }
         }
         return Result.success()
@@ -141,7 +147,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 .setInputData(inputData.build())
                 .build()
             WorkManager.getInstance(context)
-                .enqueueUniqueWork(WORKER_NAME, ExistingWorkPolicy.KEEP, workRequest)
+                .enqueueUniqueWork(WORKER_NAME+fileDescription.downloadPath, ExistingWorkPolicy.KEEP, workRequest)
         }
 
         @JvmStatic
@@ -154,7 +160,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 .setInputData(inputData.build())
                 .build()
             WorkManager.getInstance(context)
-                .enqueueUniqueWork(WORKER_NAME, ExistingWorkPolicy.KEEP, workRequest)
+                .enqueueUniqueWork(WORKER_NAME+fileDescription.downloadPath, ExistingWorkPolicy.KEEP, workRequest)
         }
     }
 }
