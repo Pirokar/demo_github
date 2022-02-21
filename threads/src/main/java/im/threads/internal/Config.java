@@ -52,6 +52,7 @@ public final class Config {
     public final boolean newChatCenterApi;
 
     public final boolean attachmentEnabled;
+    public final boolean filesAndMediaMenuItemEnabled;
 
     public final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Uri.class, new UriSerializer())
@@ -75,6 +76,7 @@ public final class Config {
         this.clientIdIgnoreEnabled = MetaDataUtils.getClientIdIgnoreEnabled(this.context);
         this.newChatCenterApi = MetaDataUtils.getNewChatCenterApi(this.context);
         this.attachmentEnabled = MetaDataUtils.getAttachmentEnabled(this.context);
+        this.filesAndMediaMenuItemEnabled = MetaDataUtils.getFilesAndMeniaMenuItemEnabled(this.context);
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
         this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid);
