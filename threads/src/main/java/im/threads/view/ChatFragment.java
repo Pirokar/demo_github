@@ -938,7 +938,7 @@ public final class ChatFragment extends BaseFragment implements
             s2.setSpan(new ForegroundColorSpan(ContextCompat.getColor(activity, style.menuItemTextColorResId)), 0, s2.length(), 0);
             filesAndMedia.setTitle(s2);
         }
-
+        filesAndMedia.setVisible(Config.instance.filesAndMediaMenuItemEnabled);
         popup.show();
     }
 
