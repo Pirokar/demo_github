@@ -19,7 +19,7 @@
     <string name="threads_find_photos">Найти фотографии</string>
     <string name="threads_on_your_device">на вашем устройстве</string>
     <string name="threads_cancel">Отмена</string>
-    <string name="threads_search_photos">Поиск изображений...</string>
+    <string name="threads_search_photos">Поиск изображений…</string>
     <string name="threads_nothing_found">Ничего не найден</string>
     <string name="threads_press">Нажмите</string>
     <string name="threads_to_photo">для фото</string>
@@ -31,6 +31,8 @@
     <string name="threads_consult">Консультант</string>
 
     <string name="threads_error_no_file">Файл удалён на сервере</string>
+    <string name="threads_no_media_and_files_header">Медиа-файлы отсутствуют</string>
+    <string name="threads_no_media_and_files_description">Добавьте новые с помощью кнопки\n«Прикрепить» на экране чата</string>
     <string name="threads_I">Я</string>
     <string name="threads_choose_file">Выберите файл</string>
     <string name="threads_folder_up">Выше</string>
@@ -44,6 +46,7 @@
     <string name="threads_saved_to_downloads">Сохранено в Загрузки</string>
     <string name="threads_unable_to_save">Сейчас невозможно сохранить файл</string>
     <string name="threads_search_files">Искать файлы</string>
+    <string name="threads_talkback_search_icon">Иконка поиска</string>
     <string name="threads_push_left_female">покинула диалог</string>
     <string name="threads_push_left">покинул диалог</string>
     <string name="threads_push_connected_female">подключилась к диалогу</string>
@@ -106,7 +109,7 @@
     <string name="threads_media_description">Threads</string>
 
     <string name="threads_contact_center">Контакт центр</string>
-    <string name="threads_searching_operator">Поиск оператора...</string>
+    <string name="threads_searching_operator">Поиск оператора…</string>
     <string name="threads_operator_subtitle">Оператор</string>
     <string name="threads_unknown_operator">Неизвестный</string>
 
@@ -118,7 +121,7 @@
 
     <string name="threads_welcome_screen_title_text">Добро пожаловать</string>
     <string name="threads_welcome_screen_subtitle_text">Отправьте ваш вопрос</string>
-    <string name="threads_input_hint">Ваше сообщение...</string>
+    <string name="threads_input_hint">Ваше сообщение…</string>
     <string name="threads_selfie">Селфи</string>
     <string name="threads_selfie_hint">Убедитесь, что на фото ваше лицо размещено прямо и его отчетливо видно</string>
 
@@ -132,5 +135,6 @@
     <string name="threads_voice_message_error">Ошибка обработки голосового сообщения</string>
     <string name="threads_empty_state_hint">Инициализация клиента</string>
     <string name="threads_achieve_images_count_limit_mesage">Вы достигли лимита изображений для отправки</string>
+    <string name="threads_some_error_durring_load_file">Произошла ошибка при загрузке\nили проверке файла.</string>
     <string name="loading"></string>
 </resources>

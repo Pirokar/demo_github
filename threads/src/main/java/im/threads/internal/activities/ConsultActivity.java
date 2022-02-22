@@ -133,6 +133,7 @@ public final class ConsultActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.threads_menu_main, menu);
+        menu.findItem(R.id.files_and_media).setVisible(Config.instance.filesAndMediaMenuItemEnabled);
         return true;
     }
 

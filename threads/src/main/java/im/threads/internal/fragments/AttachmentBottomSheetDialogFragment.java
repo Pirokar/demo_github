@@ -8,21 +8,26 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.helpers.MediaHelper;
+import im.threads.internal.useractivity.LastUserActivityTimeCounter;
+import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.views.BottomGallery;
 import im.threads.internal.views.BottomSheetView;
@@ -56,7 +61,18 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Dialog dialog = new BottomSheetDialog(requireContext(), getTheme()) {
+            @Override
+            public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
+                LastUserActivityTimeCounter timeCounter =
+                        LastUserActivityTimeCounterSingletonProvider.INSTANCE
+                                .getLastUserActivityTimeCounter();
+                if (MotionEvent.ACTION_DOWN == ev.getAction()) {
+                    timeCounter.updateLastUserActivityTime();
+                }
+                return super.dispatchTouchEvent(ev);
+            }
+        };
         Window window = dialog.getWindow();
         if (window != null) {
             window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,

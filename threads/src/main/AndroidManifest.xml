@@ -56,32 +56,6 @@
             android:screenOrientation="unspecified"
             android:theme="@style/Transparent"/>
 
-        <service
-            android:name=".internal.services.FileDownloadService"
-            android:exported="false"/>
-        <service
-            android:name=".internal.services.NotificationService"
-            android:exported="false"/>
-
-        <meta-data
-            android:name="im.threads.threadsTransportType"
-            android:value="MFMS_PUSH"/>
-
-        <service android:name=".push.ThreadsPushFcmIntentService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name=".push.ThreadsPushHcmIntentService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
         <provider
             android:name=".internal.utils.ThreadsFileProvider"
             android:authorities="${applicationId}.im.threads.fileprovider"

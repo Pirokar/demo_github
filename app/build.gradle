@@ -53,7 +53,7 @@ android {
         }
     }
 
-    flavorDimensions "server", "transport"
+    flavorDimensions "server"
     productFlavors {
         // АРМ = threads.brooma.ru
         brooma {
@@ -65,6 +65,11 @@ android {
             dimension "server"
             applicationId "io.edna.chatcenter.android.brooma.incoming"
             resValue "string", "app_name1", "THR Incoming"
+        }
+        beta3 {
+            dimension "server"
+            applicationId "dte.chc.beta3.android"
+            resValue "string", "app_name1", "THR beta3(chc.dte)"
         }
         // АРМ = polarbear.threads.im
         polarbear {
@@ -126,13 +131,10 @@ android {
             applicationId "io.edna.chatcenter.android.metabase"
             resValue "string", "app_name1", "THR Metabase Demo"
         }
-        pushLib {
-            dimension "transport"
-            resValue "string", "transport_type", "MFMS_PUSH"
-        }
-        threadsGate {
-            dimension "transport"
-            resValue "string", "transport_type", "THREADS_GATE"
+        mobile1 {
+            dimension "server"
+            applicationId "dte.chc.mobile1.android"
+            resValue "string", "app_name1", "THR Mobile1 Demo"
         }
     }
 
@@ -178,12 +180,10 @@ dependencies {
 
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
 
-    //debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
-    //debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
-    //releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
-    //releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
-    implementation "com.edna.android:push-lite-release:$pushVersion"
-    implementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+    debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
+    debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
+    releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
+    releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'

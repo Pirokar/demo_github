@@ -18,9 +18,9 @@ import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.database.DatabaseHolder;
 import im.threads.internal.model.FileDescription;
-import im.threads.internal.services.FileDownloadService;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.workers.FileDownloadWorker;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -111,9 +111,7 @@ public final class FilesAndMediaController extends Fragment {
 
     public void onDownloadFileClick(FileDescription fileDescription) {
         if (fileDescription.getFileUri() == null) {
-            FileDownloadService.startDownloadFD(activity, fileDescription);
+            FileDownloadWorker.startDownloadFD(activity, fileDescription);
         }
     }
-
-
 }

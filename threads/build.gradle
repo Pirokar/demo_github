@@ -5,9 +5,10 @@ plugins {
     id 'kotlin-kapt'
     id 'maven-publish'
 }
-
-def mavenProdUser = "threads"
-def mavenProdPass = "ple70Bip5Q%xAuJ%"
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def mavenProdUser = properties.getProperty('mavenProdUser')
+def mavenProdPass = properties.getProperty('mavenProdPass')
 
 android {
 
@@ -139,12 +140,7 @@ dependencies {
     implementation "com.github.3llomi:RecordView:$rootProject.recordViewVersion"
     implementation "com.github.adrielcafe:AndroidAudioConverter:$rootProject.androidAudioConverterVersion"
 
-    //debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
-    //debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
-    //releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
-    //releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
-    implementation "com.edna.android:push-lite-release:$pushVersion"
-    implementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+    implementation "com.google.firebase:firebase-messaging:$fcmVersion"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
@@ -152,4 +148,6 @@ dependencies {
     androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
 
     implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
+
+    implementation("androidx.work:work-runtime-ktx:$work_version")
 }

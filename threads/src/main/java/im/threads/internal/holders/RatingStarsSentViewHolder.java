@@ -47,6 +47,13 @@ public final class RatingStarsSentViewHolder extends BaseHolder {
         style = Config.instance.getChatStyle();
         rateStarsCount.setTextColor(getColorInt(style.outgoingMessageBubbleColor));
         mBubble.setBackground(AppCompatResources.getDrawable(itemView.getContext(), style.outgoingMessageBubbleBackground));
+
+        mBubble.setPadding(
+                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingLeft),
+                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingTop),
+                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingRight),
+                itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
+        );
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTextColorToViews(new TextView[]{mHeader, from, totalStarsCount}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));

@@ -11,6 +11,9 @@ public final class FileDescription implements Parcelable {
     public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<FileDescription>() {
         @Override
         public FileDescription createFromParcel(Parcel source) {
+            String state = source.readString();
+            String errorCode = source.readString();
+            String errorMessage = source.readString();
             String from = source.readString();
             Uri filePath = source.readParcelable(Uri.class.getClassLoader());
             String downloadPath = source.readString();
@@ -21,6 +24,9 @@ public final class FileDescription implements Parcelable {
             int progress = source.readInt();
             boolean selfie = source.readInt() == 1;
             FileDescription fd = new FileDescription(from, filePath, size, timeStamp);
+            fd.setState(AttachmentStateEnum.valueOf(state));
+            fd.setErrorCode(ErrorStateEnum.valueOf(errorCode));
+            fd.setErrorMessage(errorMessage);
             fd.setIncomingName(incomingName);
             fd.setMimeType(mimeType);
             fd.setDownloadPath(downloadPath);
@@ -44,6 +50,9 @@ public final class FileDescription implements Parcelable {
     private int downloadProgress;
     private boolean downloadError = false;
     private boolean selfie = false;
+    private AttachmentStateEnum state = AttachmentStateEnum.ANY;
+    private ErrorStateEnum errorCode = ErrorStateEnum.ANY;
+    private String errorMessage = "";
 
     public FileDescription(String from, Uri fileUri, long size, long timeStamp) {
         this.from = from;
@@ -130,6 +139,29 @@ public final class FileDescription implements Parcelable {
         this.selfie = selfie;
     }
 
+    public AttachmentStateEnum getState() {
+        return state;
+    }
+
+    public void setState(AttachmentStateEnum state) {
+        this.state = state;
+    }
+
+    public ErrorStateEnum getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(ErrorStateEnum errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -157,6 +189,9 @@ public final class FileDescription implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(state.getState());
+        dest.writeString(errorCode.getState());
+        dest.writeString(errorMessage);
         dest.writeString(from);
         dest.writeParcelable(fileUri, 0);
         dest.writeString(downloadPath);
@@ -178,6 +213,9 @@ public final class FileDescription implements Parcelable {
                 ", size=" + size +
                 ", timeStamp=" + timeStamp +
                 ", downloadProgress=" + downloadProgress +
+                ", state=" + state.getState() +
+                ", errorCode=" + errorCode.getState() +
+                ", errorMessage=" + errorMessage +
                 '}';
     }
 

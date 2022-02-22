@@ -90,6 +90,24 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int incomingImageTimeBackgroundColor = R.color.threads_incoming_time_underlay;
 
+    @DimenRes
+    public int bubbleOutgoingPaddingLeft = R.dimen.bubbleOutgoingPaddingLeft;
+    @DimenRes
+    public int bubbleOutgoingPaddingTop = R.dimen.bubbleOutgoingPaddingTop;
+    @DimenRes
+    public int bubbleOutgoingPaddingRight = R.dimen.bubbleOutgoingPaddingRight;
+    @DimenRes
+    public int bubbleOutgoingPaddingBottom = R.dimen.bubbleOutgoingPaddingBottom;
+
+    @DimenRes
+    public int bubbleIncomingPaddingLeft = R.dimen.bubbleIncomingPaddingLeft;
+    @DimenRes
+    public int bubbleIncomingPaddingTop = R.dimen.bubbleIncomingPaddingTop;
+    @DimenRes
+    public int bubbleIncomingPaddingRight = R.dimen.bubbleIncomingPaddingRight;
+    @DimenRes
+    public int bubbleIncomingPaddingBottom = R.dimen.bubbleIncomingPaddingBottom;
+
     @ColorRes
     public int incomingMessageLinkColor = R.color.threads_incoming_message_link;
     @ColorRes
@@ -110,10 +128,6 @@ public final class ChatStyle implements Serializable {
     public int chatBodyIconsTint = R.color.threads_chat_icons_tint;
     @ColorRes
     public int chatSystemMessageTextColor = R.color.threads_chat_connection_message;
-    @ColorRes
-    public int filesAndMediaScreenBackgroundColor = R.color.threads_files_medias_screen_background;
-    @ColorRes
-    public int filesAndMediaTextColor = R.color.threads_files_list;
 
     @ColorRes
     public int iconsAndSeparatorsColor = R.color.threads_icon_and_separators_color;
@@ -208,6 +222,40 @@ public final class ChatStyle implements Serializable {
     public int inputHeight = R.dimen.threads_input_height;
     @DrawableRes
     public int inputBackground = R.drawable.threads_chat_input_background;
+
+    // Media and files screen
+    @BoolRes
+    public int mediaAndFilesWindowLightStatusBarResId = R.bool.threads_chat_is_light_status_bar;
+    @ColorRes
+    public int mediaAndFilesStatusBarColorResId = R.color.threads_chat_status_bar;
+    @ColorRes
+    public int mediaAndFilesToolbarColorResId = R.color.threads_chat_toolbar;
+    @ColorRes
+    public int mediaAndFilesToolbarTextColorResId = R.color.threads_chat_toolbar_text;
+    @ColorRes
+    public int mediaAndFilesToolbarHintTextColor = R.color.threads_chat_toolbar_hint;
+    @ColorRes
+    public int mediaAndFilesScreenBackgroundColor = R.color.threads_files_medias_screen_background;
+    @ColorRes
+    public int mediaAndFilesTextColor = R.color.threads_files_list;
+
+    // Empty Media and files screen header
+    @StringRes
+    public int emptyMediaAndFilesHeaderText = R.string.threads_no_media_and_files_header;
+    public String emptyMediaAndFilesHeaderFontPath;
+    @DimenRes
+    public int emptyMediaAndFilesHeaderTextSize = R.dimen.text_medium;
+    @ColorRes
+    public int emptyMediaAndFilesHeaderTextColor = R.color.threads_files_list;
+
+    // Empty Media and files screen description
+    @StringRes
+    public int emptyMediaAndFilesDescriptionText = R.string.threads_no_media_and_files_description;
+    public String emptyMediaAndFilesDescriptionFontPath;
+    @DimenRes
+    public int emptyMediaAndFilesDescriptionTextSize = R.dimen.text_regular;
+    @ColorRes
+    public int emptyMediaAndFilesDescriptionTextColor = R.color.threads_files_list;
 
     // push notification style
     @DrawableRes
@@ -528,6 +576,91 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    // <editor-fold defaultstate="collapsed" desc="MediaAndFiles Screen">
+    public ChatStyle setMediaAndFilesWindowLightStatusBarResId(@BoolRes final int mediaAndFilesWindowLightStatusBarResId) {
+        this.mediaAndFilesWindowLightStatusBarResId = mediaAndFilesWindowLightStatusBarResId;
+        return this;
+    }
+
+    public ChatStyle setMediaAndFilesStatusBarColorResId(@ColorRes final int mediaAndFilesStatusBarColorResId) {
+        this.mediaAndFilesStatusBarColorResId = mediaAndFilesStatusBarColorResId;
+        return this;
+    }
+
+    public ChatStyle setMediaAndFilesToolbarColorResId(@ColorRes final int mediaAndFilesToolbarColorResId) {
+        this.mediaAndFilesToolbarColorResId = mediaAndFilesToolbarColorResId;
+        return this;
+    }
+
+    public ChatStyle setMediaAndFilesToolbarTextColorResId(@ColorRes final int mediaAndFilesToolbarTextColorResId) {
+        this.mediaAndFilesToolbarTextColorResId = mediaAndFilesToolbarTextColorResId;
+        return this;
+    }
+
+    public ChatStyle setMediaAndFilesToolbarHintTextColor(@ColorRes final int mediaAndFilesToolbarHintTextColor) {
+        this.mediaAndFilesToolbarHintTextColor = mediaAndFilesToolbarHintTextColor;
+        return this;
+    }
+
+    public ChatStyle setMediaAndFilesScreenBackgroundColor(@ColorRes final int mediaAndFilesScreenBackgroundColor) {
+        this.mediaAndFilesScreenBackgroundColor = mediaAndFilesScreenBackgroundColor;
+        return this;
+    }
+
+    public ChatStyle setMediaAndFilesTextColor(@ColorRes final int mediaAndFilesTextColor) {
+        this.mediaAndFilesTextColor = mediaAndFilesTextColor;
+        return this;
+    }
+
+    public ChatStyle setEmptyMediaAndFilesHeaderTextResId(@StringRes final int headerTextResId) {
+        this.emptyMediaAndFilesHeaderText = headerTextResId;
+        return this;
+    }
+
+    /**
+     * @param headerFontPath path like "fonts/lato-regular.ttf"
+     * @return ChatStyle
+     */
+    public ChatStyle setEmptyMediaAndFilesHeaderFontPath(@NonNull final String headerFontPath) {
+        this.emptyMediaAndFilesHeaderFontPath = headerFontPath;
+        return this;
+    }
+
+    public ChatStyle setEmptyMediaAndFilesHeaderTextSize(@DimenRes final int headerTextSizeResId) {
+        this.emptyMediaAndFilesHeaderTextSize = headerTextSizeResId;
+        return this;
+    }
+
+    public ChatStyle setEmptyMediaAndFilesHeaderTextColor(@ColorRes final int headerTextColorResId) {
+        this.emptyMediaAndFilesHeaderTextColor = headerTextColorResId;
+        return this;
+    }
+
+    public ChatStyle setEmptyMediaAndFilesDescriptionTextResId(@StringRes final int descriptionTextResId) {
+        this.emptyMediaAndFilesDescriptionText = descriptionTextResId;
+        return this;
+    }
+
+    /**
+     * @param descriptionFontPath path like "fonts/lato-regular.ttf"
+     * @return ChatStyle
+     */
+    public ChatStyle setEmptyMediaAndFilesDescriptionFontPath(@NonNull final String descriptionFontPath) {
+        this.emptyMediaAndFilesDescriptionFontPath = descriptionFontPath;
+        return this;
+    }
+
+    public ChatStyle setEmptyMediaAndFilesDescriptionTextSize(@DimenRes final int descriptionTextSizeResId) {
+        this.emptyMediaAndFilesDescriptionTextSize = descriptionTextSizeResId;
+        return this;
+    }
+
+    public ChatStyle setEmptyMediaAndFilesDescriptionTextColor(@ColorRes final int descriptionTextColorResId) {
+        this.emptyMediaAndFilesDescriptionTextColor = descriptionTextColorResId;
+        return this;
+    }
+    // </editor-fold>
+
     /**
      * @see android.view.Gravity
      */
@@ -635,8 +768,8 @@ public final class ChatStyle implements Serializable {
      * @param outgoingMessageLinkColor           - R.color.threads_outgoing_message_linkIcon
      * @param chatBodyIconsTint                  - R.color.threads_chat_icons_tint
      * @param chatSystemMessageTextColor         - R.color.threads_chat_connection_message
-     * @param filesAndMediaScreenBackgroundColor - R.color.threads_files_medias_screen_background
-     * @param filesAndMediaTextColor             - R.color.threads_files_list
+     * @param mediaAndFilesScreenBackgroundColor - R.color.threads_files_medias_screen_background
+     * @param mediaAndFilesTextColor             - R.color.threads_files_list
      * @param iconsAndSeparatorsColor            - R.color.threads_icon_and_separators_color
      * @param defaultOperatorAvatar              - R.drawable.threads_operator_avatar_placeholder
      * @param operatorAvatarSize                 - R.dimen.threads_operator_photo_size
@@ -668,8 +801,8 @@ public final class ChatStyle implements Serializable {
             @ColorRes int outgoingMessageLinkColor,
             @ColorRes final int chatBodyIconsTint,
             @ColorRes final int chatSystemMessageTextColor,
-            @ColorRes final int filesAndMediaScreenBackgroundColor,
-            @ColorRes int filesAndMediaTextColor,
+            @ColorRes final int mediaAndFilesScreenBackgroundColor,
+            @ColorRes int mediaAndFilesTextColor,
             @ColorRes final int iconsAndSeparatorsColor,
             @DrawableRes final int defaultOperatorAvatar,
             @DimenRes final int operatorAvatarSize,
@@ -677,7 +810,8 @@ public final class ChatStyle implements Serializable {
             @DrawableRes final int imagePlaceholder,
             @StyleRes final int fileBrowserDialogStyleResId,
             final boolean showConsultSearching,
-            final boolean scrollChatToEndIfUserTyping) {
+            final boolean scrollChatToEndIfUserTyping
+    ) {
 
         this.chatBackgroundColor = chatBackgroundColor;
         this.chatHighlightingColor = chatHighlightingColor;
@@ -711,8 +845,8 @@ public final class ChatStyle implements Serializable {
         this.chatBodyIconsTint = chatBodyIconsTint;
         this.chatSystemMessageTextColor = chatSystemMessageTextColor;
 
-        this.filesAndMediaScreenBackgroundColor = filesAndMediaScreenBackgroundColor;
-        this.filesAndMediaTextColor = filesAndMediaTextColor;
+        this.mediaAndFilesScreenBackgroundColor = mediaAndFilesScreenBackgroundColor;
+        this.mediaAndFilesTextColor = mediaAndFilesTextColor;
 
         this.iconsAndSeparatorsColor = iconsAndSeparatorsColor;
         this.fileBrowserDialogStyleResId = fileBrowserDialogStyleResId;
@@ -1096,6 +1230,32 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    public ChatStyle setOutgoingPadding(
+            @DimenRes int left,
+            @DimenRes int top,
+            @DimenRes int right,
+            @DimenRes int bottom
+    ) {
+        this.bubbleOutgoingPaddingLeft = left;
+        this.bubbleOutgoingPaddingTop = top;
+        this.bubbleOutgoingPaddingRight = right;
+        this.bubbleOutgoingPaddingBottom = bottom;
+        return this;
+    }
+
+    public ChatStyle setIngoingPadding(
+            @DimenRes int left,
+            @DimenRes int top,
+            @DimenRes int right,
+            @DimenRes int bottom
+    ) {
+        this.bubbleIncomingPaddingLeft = left;
+        this.bubbleIncomingPaddingTop = top;
+        this.bubbleIncomingPaddingRight = right;
+        this.bubbleIncomingPaddingBottom = bottom;
+        return this;
+    }
+
     /**
      * Определяет максимальное количество приложенных к сообщению файлов
      *
@@ -1105,7 +1265,7 @@ public final class ChatStyle implements Serializable {
     public int getMaxGalleryImagesCount(@NonNull Context context) {
         int count = context.getResources().getInteger(maxGalleryImagesCount);
         int maxCount = context.getResources().getInteger(maxGalleryImagesCountFixedBySystem);
-        if(count <= maxCount && count > 0)
+        if (count <= maxCount && count > 0)
             return count;
         return maxCount;
     }

@@ -1,17 +1,21 @@
 package im.threads.internal.retrofit;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import im.threads.internal.Config;
 import im.threads.internal.model.FileUploadResponse;
 import im.threads.internal.model.HistoryResponse;
 import im.threads.internal.model.SettingsResponse;
 import im.threads.internal.opengraph.OGResponse;
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 
 public final class ThreadsApi {
+
+    private static final String SIGNATURE_STRING = "super-duper-signature-string:";
 
     @NonNull
     private final OldThreadsApi oldThreadsApi;
@@ -56,11 +60,11 @@ public final class ThreadsApi {
         }
     }
 
-    public Call<FileUploadResponse> upload(MultipartBody.Part file, String token) {
+    public Call<FileUploadResponse> upload(MultipartBody.Part file, RequestBody agent, String token) {
         if (Config.instance.newChatCenterApi) {
-            return newThreadsApi.upload(file, token);
+            return newThreadsApi.upload(file, agent, SIGNATURE_STRING + token);
         } else {
-            return oldThreadsApi.upload(file, token);
+            return oldThreadsApi.upload(file, agent, SIGNATURE_STRING + token);
         }
     }
 }

@@ -1,5 +1,7 @@
 package im.threads;
 
+import static im.threads.internal.utils.PicassoUtils.setPicasso;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -44,6 +46,7 @@ public final class ConfigBuilder {
 
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
+        setPicasso(context);
     }
 
     public ConfigBuilder serverBaseUrl(String serverBaseUrl) {
@@ -75,7 +78,6 @@ public final class ConfigBuilder {
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         return this;
     }
-
     public ConfigBuilder isDebugLoggingEnabled(boolean isDebugLoggingEnabled) {
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         return this;
@@ -107,6 +109,7 @@ public final class ConfigBuilder {
     }
 
     public enum TransportType {
+        @Deprecated
         MFMS_PUSH,
         THREADS_GATE;
 

@@ -69,6 +69,7 @@ public class FileDownloader {
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.getClientID());
                 urlConnection.setDoOutput(false);
                 urlConnection.setUseCaches(false);
                 urlConnection.setDoInput(true);
@@ -85,6 +86,7 @@ public class FileDownloader {
                 } catch (NumberFormatException e) {
                     ThreadsLogger.e(TAG, "download", e);
                 }
+
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 int len1;
                 long bytesReaded = 0;

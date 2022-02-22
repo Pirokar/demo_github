@@ -16,10 +16,12 @@ public class MetaDataUtils {
     private static final String THREADS_GATE_URL = "im.threads.threadsGateUrl";
     private static final String THREADS_GATE_PROVIDER_UID = "im.threads.threadsGateProviderUid";
     private static final String THREADS_GATE_HCM_PROVIDER_UID = "im.threads.threadsGateHCMProviderUid";
+    @Deprecated
     private static final String THREADS_TRANSPORT_TYPE = "im.threads.threadsTransportType";
     private static final String CLIENT_ID_IGNORE_ENABLED = "im.threads.clientIdIgnoreEnabled";
     private static final String NEW_CHAT_CENTER_API = "im.threads.newChatCenterApi";
     private static final String ATTACHMENT_ENABLED = "im.threads.attachmentEnabled";
+    private static final String FILES_AND_MEDIA_MENU_ITEM_ENABLED = "im.threads.filesAndMediaMenuItemEnabled";
 
     @Nullable
     public static String getDatastoreUrl(@NonNull Context context) {
@@ -86,6 +88,14 @@ public class MetaDataUtils {
         Bundle metaData = getMetaData(context);
         if (metaData != null && metaData.containsKey(ATTACHMENT_ENABLED)) {
             return metaData.getBoolean(ATTACHMENT_ENABLED);
+        }
+        return true;
+    }
+
+    public static boolean getFilesAndMeniaMenuItemEnabled(@NonNull Context context) {
+        Bundle metaData = getMetaData(context);
+        if (metaData != null && metaData.containsKey(FILES_AND_MEDIA_MENU_ITEM_ENABLED)) {
+            return metaData.getBoolean(FILES_AND_MEDIA_MENU_ITEM_ENABLED);
         }
         return true;
     }
