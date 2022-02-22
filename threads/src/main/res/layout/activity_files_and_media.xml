@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/threads_files_medias_screen_background"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:visibility="gone"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="63dp"
+        android:background="@drawable/toolbar_shadow" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/threads_chat_toolbar"
+        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+        app:title="@string/threads_files_and_media"
+        app:titleTextColor="@color/threads_chat_toolbar_text">
+
+        <im.threads.internal.widget.CustomFontEditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="40dp"
+            android:background="@null"
+            android:hint="@string/threads_search_files"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:lines="1"
+            android:textColor="@color/threads_chat_toolbar_text"
+            android:textColorHint="@color/threads_chat_toolbar_hint"
+            android:textCursorDrawable="@null"
+            android:textSize="@dimen/text_big"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/search"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/threads_talkback_search_icon"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_search_white_24dp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/empty_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:layout_marginStart="@dimen/margin_material"
+        android:layout_marginEnd="@dimen/margin_material"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/empty_list_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:text="@string/threads_no_media_and_files_header" />
+
+        <TextView
+            android:id="@+id/empty_list_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_half"
+            android:gravity="center"
+            tools:text="@string/threads_no_media_and_files_description" />
+
+    </LinearLayout>
+</RelativeLayout>

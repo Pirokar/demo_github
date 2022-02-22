@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="datastore_url" translatable="false">http://datastore.mobile1.chc.dte/</string>
+    <string name="serverBaseUrl" translatable="false">http://arm.mobile1.chc.dte</string>
+    <string name="threadsGateUrl" translatable="false">http://tg.mobile1.chc.dte/socket</string>
+    <string name="threadsGateProviderUid" translatable="false">MOBILE1_93jLrvripZeDXSKJzdRfEu9QpMMvIe5LKKHQl</string>
+</resources>

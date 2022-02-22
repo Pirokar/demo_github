@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="datastore_url" translatable="false">https://datastore.threads.im/</string>
+    <string name="serverBaseUrl" translatable="false">https://threads.brooma.ru</string>
+    <string name="threadsGateUrl" translatable="false">https://threads.brooma.ru/socket</string>
+    <string name="threadsGateProviderUid" translatable="false">aa609cee-2652-4912-b1be-86e0960fa8c9</string>
+</resources>
