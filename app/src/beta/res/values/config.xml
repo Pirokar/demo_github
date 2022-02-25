@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="datastore_url" translatable="false">https://betastore.threads.im/</string>
-    <string name="serverBaseUrl" translatable="false">https://beta.threads.im</string>
-    <string name="threadsGateUrl" translatable="false">https://beta.threads.im/socket</string>
-    <string name="threadsGateProviderUid" translatable="false">uid</string>
-</resources>

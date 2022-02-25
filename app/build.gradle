@@ -55,81 +55,10 @@ android {
 
     flavorDimensions "server"
     productFlavors {
-        // АРМ = threads.brooma.ru
-        brooma {
-            dimension "server"
-            applicationId "com.sequenia.appwithchatdev"
-            resValue "string", "app_name1", "THR Test"
-        }
-        broomaincoming {
-            dimension "server"
-            applicationId "io.edna.chatcenter.android.brooma.incoming"
-            resValue "string", "app_name1", "THR Incoming"
-        }
         beta3 {
             dimension "server"
             applicationId "dte.chc.beta3.android"
             resValue "string", "app_name1", "THR beta3(chc.dte)"
-        }
-        // АРМ = polarbear.threads.im
-        polarbear {
-            dimension "server"
-            applicationId "com.sequenia.appwithchat.polarbear"
-            resValue "string", "app_name1", "THR Polarbear"
-        }
-        polarbearChannel2 {
-            dimension "server"
-            applicationId "com.sequenia.appwithchat.polarbear.channel2"
-            resValue "string", "app_name1", "THR Polarbear Channel 2"
-        }
-        // АРМ = winlab.threads.im
-        winlab {
-            dimension "server"
-            applicationId "com.sequenia.appwithchat.beta4"
-            resValue "string", "app_name1", "THR Winlab (Beta4)"
-        }
-
-        winlabChannel2 {
-            dimension "server"
-            applicationId "com.sequenia.appwithchat.beta4.channel2"
-            resValue "string", "app_name1", "THR Winlab (Beta4) Channel 2"
-        }
-
-        winlab0 {
-            dimension "server"
-            applicationId "com.threads.android.winlab0"
-            resValue "string", "app_name1", "THR Winlab0"
-        }
-
-        bobtail {
-            dimension "server"
-            applicationId "com.threads.android.bobtail"
-            resValue "string", "app_name1", "THR Bobtail"
-        }
-        beta {
-            dimension "server"
-            applicationId "com.threads.android.beta"
-            resValue "string", "app_name1", "THR Beta"
-        }
-        amurTiger {
-            dimension "server"
-            applicationId "com.brooma.threads.android.amurtiger"
-            resValue "string", "app_name1", "THR AmurTiger"
-        }
-        gatetest18048 {
-            dimension "server"
-            applicationId "com.threads.android.gatetest18048"
-            resValue "string", "app_name1", "THR Gatetest18048"
-        }
-        gpbTest {
-            dimension "server"
-            applicationId "io.edna.chatcenter.android.gpb"
-            resValue "string", "app_name1", "THR GPB Test"
-        }
-        metabase {
-            dimension "server"
-            applicationId "io.edna.chatcenter.android.metabase"
-            resValue "string", "app_name1", "THR Metabase Demo"
         }
         mobile1 {
             dimension "server"
