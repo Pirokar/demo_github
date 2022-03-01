@@ -167,7 +167,7 @@ public final class ChatFragment extends BaseFragment implements
 
     private static boolean chatIsShown = false;
     private static boolean afterResume = false;
-    private final Handler h = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private final SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("dd.MM.yyyy.HH:mm:ss.S", Locale.getDefault());
     @NonNull
     private final ObservableField<String> inputTextObservable = new ObservableField<>("");
@@ -200,6 +200,7 @@ public final class ChatFragment extends BaseFragment implements
     private MediaRecorder recorder = null;
     @Nullable
     private String voiceFilePath = null;
+    private boolean isNewMessageUpdateTimeoutOn = false;
 
     private QuickReplyItem quickReplyItem = null;
 
@@ -631,7 +632,7 @@ public final class ChatFragment extends BaseFragment implements
                 if (layoutManager != null) {
                     int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
                     int itemCount = chatAdapter.getItemCount();
-                    if (itemCount - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
+                    if (itemCount - 1 - lastVisibleItemPosition > INVISIBLE_MSGS_COUNT) {
                         if (binding.scrollDownButtonContainer.getVisibility() != View.VISIBLE) {
                             binding.scrollDownButtonContainer.setVisibility(View.VISIBLE);
                             showUnreadMsgsCount(chatAdapter.getUnreadCount());
@@ -745,7 +746,7 @@ public final class ChatFragment extends BaseFragment implements
         chatAdapter.addItems(result);
         scrollToPosition(chatAdapter.getItemCount() - itemsBefore, true);
         for (int i = 1; i < 5; i++) {//for solving bug with refresh layout doesn't stop refresh animation
-            h.postDelayed(() -> {
+            handler.postDelayed(() -> {
                 binding.swipeRefresh.setRefreshing(false);
                 binding.swipeRefresh.clearAnimation();
                 binding.swipeRefresh.destroyDrawingCache();
@@ -1402,33 +1403,57 @@ public final class ChatFragment extends BaseFragment implements
 
     public void addChatItem(final ChatItem item) {
         ThreadsLogger.i(TAG, "addChatItem: " + item);
-        LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
+        LinearLayoutManager layoutManager =
+                (LinearLayoutManager) binding.recycler.getLayoutManager();
         if (layoutManager == null) {
             return;
         }
-        boolean isUserSeesMessage = (chatAdapter.getItemCount() - layoutManager.findLastVisibleItemPosition()) < INVISIBLE_MSGS_COUNT;
+        boolean isLastMessageVisible =
+                (chatAdapter.getItemCount() - 1 - layoutManager.findLastVisibleItemPosition())
+                        < INVISIBLE_MSGS_COUNT;
         if (item instanceof ConsultPhrase) {
-            ((ConsultPhrase) item).setRead(isUserSeesMessage && isResumed && !isInMessageSearchMode);
-        }
-        if (item instanceof ConsultPhrase) {
-            chatAdapter.setAvatar(((ConsultPhrase) item).getConsultId(), ((ConsultPhrase) item).getAvatarPath());
+            ConsultPhrase consultPhrase = (ConsultPhrase) item;
+            consultPhrase.setRead(isLastMessageVisible && isResumed && !isInMessageSearchMode);
+            chatAdapter.setAvatar(consultPhrase.getConsultId(), consultPhrase.getAvatarPath());
         }
         if (needsAddMessage(item)) {
             welcomeScreenVisibility(false);
             chatAdapter.addItems(Collections.singletonList(item));
-            if (!isUserSeesMessage) {
+            if (!isLastMessageVisible) {
+                binding.scrollDownButtonContainer.setVisibility(View.VISIBLE);
                 showUnreadMsgsCount(chatAdapter.getUnreadCount());
             }
-            // only scroll when recycler view is near bottom or when message belongs to user
-            h.postDelayed(() -> {
+            scrollDelayedOnNewMessageReceived(item instanceof UserPhrase, isLastMessageVisible);
+        }
+    }
+
+    /**
+     * Отлистывает сообщения до последнего в случаях, когда сообщение отправлено пользователем или
+     * когда отображается последнее сообщение. <p>
+     * Подробнее о логике подкрутки сообщений: https://jira.edna.ru/browse/EC-12190. <p>
+     * После отправки сообщения пользователем чат-бот может ответить сразу несколькими
+     * сообщениями. Установка флага isNewMessageUpdateTimeoutOn нужна, чтобы handler
+     * запустился только 1 раз в течение указанной задержки delayMillis. <p>
+     * Значение isLastMessageVisible берётся перед добавлением нового сообщения и используется
+     * при срабатывании Runnable хендлера, itemCount используется актуальный на момент
+     * срабатывания Runnable.
+     *
+     * @param isUserPhrase         true, если добавляется сообщение от пользователя
+     * @param isLastMessageVisible отображается ли на экране последнее сообщение на момент получения
+     *                             нового сообщения
+     */
+    private void scrollDelayedOnNewMessageReceived(boolean isUserPhrase,
+                                                   boolean isLastMessageVisible) {
+        if (!isNewMessageUpdateTimeoutOn) {
+            isNewMessageUpdateTimeoutOn = true;
+            handler.postDelayed(() -> {
                 if (!isInMessageSearchMode) {
                     int itemCount = chatAdapter.getItemCount();
-                    int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-                    boolean isUserSeesMessages = (itemCount - 1) - lastVisibleItemPosition < INVISIBLE_MSGS_COUNT;
-                    if (isUserSeesMessages || item instanceof UserPhrase) {
+                    if (isLastMessageVisible || isUserPhrase) {
                         scrollToPosition(itemCount - 1, false);
                     }
                 }
+                isNewMessageUpdateTimeoutOn = false;
             }, 100);
         }
     }
@@ -1492,7 +1517,7 @@ public final class ChatFragment extends BaseFragment implements
             scrollToPosition(chatAdapter.getItemCount() - 1, false);
             afterResume = false;
         } else if (newAdapterSize > oldAdapterSize) {
-            h.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
+            handler.postDelayed(() -> scrollToPosition(chatAdapter.getItemCount() - 1, false), 100);
             afterResume = false;
         }
     }
@@ -1501,7 +1526,7 @@ public final class ChatFragment extends BaseFragment implements
         if (!isAdded()) {
             return;
         }
-        h.post(
+        handler.post(
                 () -> {
                     Context context = getContext();
                     if (context != null && isAdded()) {
@@ -1527,7 +1552,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void setTitleStateDefault() {
-        h.post(
+        handler.post(
                 () -> {
                     if (!isInMessageSearchMode) {
                         binding.subtitle.setVisibility(View.GONE);
@@ -1609,7 +1634,7 @@ public final class ChatFragment extends BaseFragment implements
         if (!isAdded() || activity == null) {
             return;
         }
-        h.post(() -> {
+        handler.post(() -> {
             if (fdMediaPlayer == null) {
                 return;
             }
@@ -1678,7 +1703,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void notifyConsultAvatarChanged(final String newAvatarUrl, final String consultId) {
-        h.post(() -> {
+        handler.post(() -> {
             if (chatAdapter != null) {
                 chatAdapter.notifyAvatarChanged(newAvatarUrl, consultId);
             }
@@ -1707,7 +1732,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     public void setStateSearchingConsult() {
-        h.post(() -> {
+        handler.post(() -> {
             setTitleStateSearchingConsult();
             chatAdapter.setSearchingConsult();
         });
@@ -1833,8 +1858,12 @@ public final class ChatFragment extends BaseFragment implements
         }
         List<ChatItem> list = chatAdapter.getList();
         for (int i = 1; i < list.size(); i++) {
-            if (list.get(i) instanceof UnreadMessages) {
+            ChatItem currentItem = list.get(i);
+            if (currentItem instanceof UnreadMessages ||
+                    currentItem instanceof ConsultPhrase
+                            && !((ConsultPhrase) currentItem).isRead()) {
                 layoutManager.scrollToPositionWithOffset(i - 1, 0);
+                break;
             }
         }
     }
@@ -1852,7 +1881,7 @@ public final class ChatFragment extends BaseFragment implements
                     ConsultPhrase cp = (ConsultPhrase) list.get(i);
                     if (firstUnreadUuid.equalsIgnoreCase(cp.getId())) {
                         final int index = i;
-                        h.post(() -> {
+                        handler.post(() -> {
                             if (!isInMessageSearchMode) {
                                 binding.recycler.post(() -> layoutManager.scrollToPositionWithOffset(index - 1, 0));
                             }
