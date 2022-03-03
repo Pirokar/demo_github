@@ -65,6 +65,21 @@ android {
             applicationId "dte.chc.mobile1.android"
             resValue "string", "app_name1", "THR Mobile1 Demo"
         }
+        mobile2 {
+            dimension "server"
+            applicationId "dte.chc.mobile2.android"
+            resValue "string", "app_name1", "THR Mobile2 Demo"
+        }
+        mobile3 {
+            dimension "server"
+            applicationId "dte.chc.mobile3.android"
+            resValue "string", "app_name1", "THR Mobile3 Demo"
+        }
+        mobile4 {
+            dimension "server"
+            applicationId "dte.chc.mobile4.android"
+            resValue "string", "app_name1", "THR Mobile4 Demo"
+        }
     }
 
     lintOptions {
