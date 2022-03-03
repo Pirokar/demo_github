@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="datastore_url" translatable="false">https://winlab0store.threads.im/</string>
-    <string name="serverBaseUrl" translatable="false">http://winlab0.threads.im</string>
-    <string name="threadsGateUrl" translatable="false">http://winlab0.threads.im/socket</string>
-    <string name="threadsGateProviderUid" translatable="false"></string>
-</resources>

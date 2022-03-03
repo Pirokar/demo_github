@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="datastore_url" translatable="false">https://amurtigerstore.threads.im/</string>
-    <string name="serverBaseUrl" translatable="false">https://amurtiger.threads.im</string>
-    <string name="threadsGateUrl" translatable="false">https://amurtiger.threads.im/socket</string>
-    <string name="threadsGateProviderUid" translatable="false">PH5ucnVkYXMtbmV3LTE1MzE5MTQ2NTk4MDItZ2VuZXJhdGVkV2l0aFVJfj4=</string>
-</resources>
