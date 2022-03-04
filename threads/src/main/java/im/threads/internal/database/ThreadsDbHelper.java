@@ -25,7 +25,7 @@ import im.threads.internal.model.UserPhrase;
 /**
  * обертка для БД
  */
-final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
+public final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
 
     private static final int VERSION = 15;
 
@@ -36,7 +36,7 @@ final class ThreadsDbHelper extends SQLiteOpenHelper implements DBHelper {
     private MessagesTable messagesTable;
     private boolean isTablesPrepared = false;
 
-    ThreadsDbHelper(Context context) {
+    public ThreadsDbHelper(Context context) {
         super(context, "messages.db", null, VERSION);
         initTables();
     }

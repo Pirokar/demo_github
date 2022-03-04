@@ -31,7 +31,7 @@ import im.threads.internal.activities.ConsultActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultChatPhrase;

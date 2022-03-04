@@ -55,6 +55,8 @@ ext {
     processPhoenixVersion = '2.0.0'
     flexboxVersion = '3.0.0'
     work_version = "2.7.1"
+    sqlcipher_version = "4.5.0@aar"
+    sqlite_version = "2.0.1"
 
     robolectricVersion = '4.6.1'
     androidXJunitVersion = '1.1.3'

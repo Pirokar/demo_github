@@ -7,9 +7,6 @@ import im.threads.internal.opengraph.OGData
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.FileUtils.isVoiceMessage
 
-/**
- * сообщение оператора
- */
 class ConsultPhrase constructor(
     override var id: String?, //This this a mfms messageId required for read status updates
     val providerId: String?,
@@ -48,7 +45,7 @@ class ConsultPhrase constructor(
         get() = (speechStatus !== SpeechStatus.UNKNOWN
                 || isVoiceMessage(fileDescription))
 
-    override val timeStamp: Long
+    override val timeStamp
         get() = date
 
     fun hasSameContent(consultPhrase: ConsultPhrase?): Boolean {

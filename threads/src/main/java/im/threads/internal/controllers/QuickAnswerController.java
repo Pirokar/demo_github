@@ -7,7 +7,7 @@ import java.util.List;
 
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;

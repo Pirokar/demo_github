@@ -1,10 +1,10 @@
 package im.threads.internal.controllers;
 
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.utils.PrefUtils;
 import io.reactivex.processors.BehaviorProcessor;
 
-public enum  UnreadMessagesController {
+public enum UnreadMessagesController {
 
     INSTANCE;
 
@@ -42,5 +42,4 @@ public enum  UnreadMessagesController {
     public int getUnreadMessages() {
         return DatabaseHolder.getInstance().getUnreadMessagesCount() + PrefUtils.getUnreadPushCount();
     }
-
 }

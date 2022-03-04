@@ -21,6 +21,7 @@ import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.Quote;
 import im.threads.internal.model.UserPhrase;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class DatabaseHolderTest {

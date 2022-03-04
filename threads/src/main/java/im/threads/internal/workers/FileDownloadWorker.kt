@@ -11,9 +11,9 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import im.threads.internal.Config
 import im.threads.internal.broadcastReceivers.ProgressReceiver
-import im.threads.internal.database.DatabaseHolder
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.FileDescription
+import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.FileDownloader
 import im.threads.internal.utils.FileDownloader.DownloadLister
 import im.threads.internal.utils.ThreadsLogger
