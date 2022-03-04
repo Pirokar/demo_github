@@ -20,7 +20,7 @@ import java.util.List;
 
 import im.threads.R;
 import im.threads.internal.adapters.ImagesAdapter;
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.utils.ColorsHelper;
