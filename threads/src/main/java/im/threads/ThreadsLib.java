@@ -27,6 +27,7 @@ import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProv
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -125,6 +126,24 @@ public final class ThreadsLib {
 
     public void applyChatStyle(ChatStyle chatStyle) {
         Config.instance.applyChatStyle(chatStyle);
+    }
+
+    public void applyStoragePermissionDescriptionDialogStyle(
+            @NonNull PermissionDescriptionDialogStyle dialogStyle
+    ) {
+        Config.instance.applyStoragePermissionDescriptionDialogStyle(dialogStyle);
+    }
+
+    public void applyRecordAudioPermissionDescriptionDialogStyle(
+            @NonNull PermissionDescriptionDialogStyle dialogStyle
+    ) {
+        Config.instance.applyRecordAudioPermissionDescriptionDialogStyle(dialogStyle);
+    }
+
+    public void applyCameraPermissionDescriptionDialogStyle(
+            @NonNull PermissionDescriptionDialogStyle dialogStyle
+    ) {
+        Config.instance.applyCameraPermissionDescriptionDialogStyle(dialogStyle);
     }
 
     /**

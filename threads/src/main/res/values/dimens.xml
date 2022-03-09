@@ -5,11 +5,20 @@
     <dimen name="margin_three_fourth">12dp</dimen>
     <dimen name="margin_half">8dp</dimen>
     <dimen name="margin_quarter">4dp</dimen>
+    <dimen name="threads_margin_zero">0dp</dimen>
+
+    <dimen name="threads_padding_material">16dp</dimen>
+    <dimen name="threads_padding_half">8dp</dimen>
+    <dimen name="threads_padding_quarter">4dp</dimen>
 
     <dimen name="text_small">12sp</dimen>
     <dimen name="text_regular">14sp</dimen>
     <dimen name="text_medium">16sp</dimen>
     <dimen name="text_big">20sp</dimen>
+
+    <dimen name="threads_radius_big">16dp</dimen>
+
+    <dimen name="threads_stroke_width_small">1dp</dimen>
 
     <dimen name="consultant_margin_right">52dp</dimen>
     <dimen name="threads_operator_photo_size">40dp</dimen>

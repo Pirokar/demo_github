@@ -23,11 +23,14 @@ import im.threads.android.ui.EditCardDialog.EditCardDialogActionsListener
 import im.threads.android.ui.YesNoDialog.YesNoDialogActionListener
 import im.threads.android.utils.CardsLinearLayoutManager
 import im.threads.android.utils.CardsSnapHelper
+import im.threads.android.utils.ChatDesign
 import im.threads.android.utils.ChatStyleBuilderHelper
+import im.threads.android.utils.PermissionDescriptionDialogStyleBuilderHelper
 import im.threads.android.utils.PrefUtils.getCards
 import im.threads.android.utils.PrefUtils.getTheme
 import im.threads.android.utils.PrefUtils.storeCards
 import im.threads.internal.utils.ThreadsLogger
+import im.threads.styles.permissions.PermissionDescriptionType
 import im.threads.view.ChatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -59,9 +62,9 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         binding.designSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(arg0: AdapterView<*>?, arg1: View?, arg2: Int, arg3: Long) {
                 val theme = binding.designSpinner.selectedItem.toString()
-                ChatStyleBuilderHelper.ChatDesign.setTheme(
+                ChatDesign.setTheme(
                         this@MainActivity,
-                        ChatStyleBuilderHelper.ChatDesign.enumOf(this@MainActivity, theme)
+                        ChatDesign.enumOf(this@MainActivity, theme)
                 )
             }
 
@@ -134,8 +137,31 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
                         .setClientIdSignature(currentCard.clientIdSignature)
                         .setAppMarker(currentCard.appMarker)
         )
-        ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(getTheme(this)))
+        applyChatStyles()
         startActivity(Intent(this, ChatActivity::class.java))
+    }
+
+    private fun applyChatStyles() {
+        val chatDesign = getTheme(this)
+        ThreadsLib.getInstance().applyChatStyle(ChatStyleBuilderHelper.getChatStyle(chatDesign))
+        ThreadsLib.getInstance().applyStoragePermissionDescriptionDialogStyle(
+            PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
+                chatDesign,
+                PermissionDescriptionType.STORAGE
+            )
+        )
+        ThreadsLib.getInstance().applyRecordAudioPermissionDescriptionDialogStyle(
+            PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
+                chatDesign,
+                PermissionDescriptionType.RECORD_AUDIO
+            )
+        )
+        ThreadsLib.getInstance().applyCameraPermissionDescriptionDialogStyle(
+            PermissionDescriptionDialogStyleBuilderHelper.getDialogStyle(
+                chatDesign,
+                PermissionDescriptionType.CAMERA
+            )
+        )
     }
 
     /**

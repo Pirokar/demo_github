@@ -1,9 +1,6 @@
 package im.threads.android.utils;
 
-import android.content.Context;
 import android.view.Gravity;
-
-import androidx.annotation.StringRes;
 
 import im.threads.ChatStyle;
 import im.threads.android.R;
@@ -22,7 +19,8 @@ public class ChatStyleBuilderHelper {
                 .showChatBackButton(true)// показывать кнопку назад
                 .setUseExternalCameraApp(true)
                 .setSelfieEnabled(false)
-                .setScrollChatToEndIfUserTyping(false);
+                .setScrollChatToEndIfUserTyping(false)
+                .arePermissionDescriptionDialogsEnabled(true);
         switch (design) {
             case GREEN: {
                 configureGreenDesign(chatStyle);
@@ -204,34 +202,5 @@ public class ChatStyleBuilderHelper {
                 .setEmptyMediaAndFilesDescriptionFontPath(LATO_LIGHT_FONT_PATH)
                 .setEmptyMediaAndFilesDescriptionTextSize(R.dimen.alt_threads_attachments_no_files_description_text_size)
                 .setEmptyMediaAndFilesDescriptionTextColor(R.color.white);
-    }
-
-    public enum ChatDesign {
-        GREEN(R.string.design_green_enum),
-        BLUE(R.string.design_blue_enum);
-
-        @StringRes
-        private int nameResId;
-
-        ChatDesign(@StringRes int nameResId) {
-            this.nameResId = nameResId;
-        }
-
-        public static ChatDesign enumOf(Context context, String name) {
-            for (ChatDesign design : ChatDesign.values()) {
-                if (design.getName(context).equalsIgnoreCase(name)) {
-                    return design;
-                }
-            }
-            return GREEN;
-        }
-
-        public static void setTheme(Context context, ChatDesign theme) {
-            PrefUtils.storeTheme(context, theme);
-        }
-
-        public String getName(Context context) {
-            return context.getString(nameResId);
-        }
     }
 }

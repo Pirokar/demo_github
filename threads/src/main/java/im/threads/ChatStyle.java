@@ -25,6 +25,8 @@ import java.io.Serializable;
  */
 public final class ChatStyle implements Serializable {
 
+    public boolean arePermissionDescriptionDialogsEnabled = false;
+
     //common styles
     @ColorRes
     public int chatDisabledTextColor = R.color.threads_disabled_text_color;
@@ -413,6 +415,11 @@ public final class ChatStyle implements Serializable {
     public MarkdownConfiguration incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
 
     public ChatStyle() {
+    }
+
+    public ChatStyle arePermissionDescriptionDialogsEnabled(final boolean areEnabled) {
+        this.arePermissionDescriptionDialogsEnabled = areEnabled;
+        return this;
     }
 
     public ChatStyle showChatBackButton(final boolean showBackButton) {

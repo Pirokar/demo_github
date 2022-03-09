@@ -2,6 +2,7 @@
     <string name="threads_push_title">Threads</string>
     <string name="threads_media_description">Threads</string>
     <string name="threads_input_hint">Your message…</string>
+    <string name="threads_allow">Allow</string>
     <string name="threads_close">Close</string>
     <string name="threads_camera">Camera</string>
     <string name="threads_gallery">Gallery</string>
@@ -68,14 +69,22 @@
     <string name="threads_item_user_rate_header">Evaluation of the solution</string>
     <string name="threads_item_user_rate_text">from</string>
 
+    <!-- Разрешения. Диалоги при отказе от предоставления разрешений. -->
     <string name="threads_permissions_help">Help</string>
     <string name="threads_permissions_string_help_text">Permission is not available.\n\nTo provide permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
     <string name="threads_permissions_camera_and_write_external_storage_help_text">There are no permissions to the Camera and External Storage\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
     <string name="threads_permissions_write_external_storage_help_text">Memory permission is missing (Write to external storage).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
     <string name="threads_permissions_read_external_storage_help_text">There is no permission to Memory (Reading from external storage).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
     <string name="threads_permissions_record_audio_help_text">Audio recording permission is missing (Microphone).\n\nTo grant permissions, click "Settings", then "Permissions" and enable them.\n\nThen return to the application.</string>
-    <string name="threads_permissions_quit">Close</string>
     <string name="threads_permissions_settings">Settings</string>
+
+    <!-- Разрешения. Диалоги описания причины запроса доступа. -->
+    <string name="threads_permission_description_access_to_files_title">Allow the app to access files on your device</string>
+    <string name="threads_permission_description_access_to_files_message">It is required to send files</string>
+    <string name="threads_permission_description_access_to_audio_recording_title">Allow the app to record audio</string>
+    <string name="threads_permission_description_access_to_audio_recording_message">It is required to send voice messages</string>
+    <string name="threads_permission_description_access_to_camera_title">Allow the app to take pictures</string>
+    <string name="threads_permission_description_access_to_camera_message">It is required to send photos</string>
 
     <string name="threads_contact_center">Contact center</string>
     <string name="threads_searching_operator">Searching operator…</string>

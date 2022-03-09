@@ -1,4 +1,5 @@
 <resources>
+    <string name="threads_allow">Разрешить</string>
     <string name="threads_close">Закрыть</string>
     <string name="threads_camera">Камера</string>
     <string name="threads_gallery">Галерея</string>
@@ -20,7 +21,7 @@
     <string name="threads_on_your_device">на вашем устройстве</string>
     <string name="threads_cancel">Отмена</string>
     <string name="threads_search_photos">Поиск изображений…</string>
-    <string name="threads_nothing_found">Ничего не найден</string>
+    <string name="threads_nothing_found">Ничего не найдено</string>
     <string name="threads_press">Нажмите</string>
     <string name="threads_to_photo">для фото</string>
     <string name="threads_no_cameras_detected">На устройстве отсутствует камера</string>
@@ -65,14 +66,23 @@
     <string name="threads_item_user_rate_header">Оценка решения вопроса</string>
     <string name="threads_item_user_rate_text">из</string>
 
+    <!-- Разрешения. Диалоги при отказе от предоставления разрешений. -->
     <string name="threads_permissions_help">Помощь</string>
     <string name="threads_permissions_string_help_text">Отсутствуют разрешения.\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
     <string name="threads_permissions_camera_and_write_external_storage_help_text">Отсутствуют разрешения на Камеру и Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
     <string name="threads_permissions_write_external_storage_help_text">Отсутствует разрешение на Память (Запись на внешнее хранилище).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
     <string name="threads_permissions_read_external_storage_help_text">Отсутствует разрешение на Память (Чтение с вешнего хранилища).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
     <string name="threads_permissions_record_audio_help_text">Отсутствует разрешение на Аудиозапись (Микрофон).\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
-    <string name="threads_permissions_quit">Закрыть</string>
     <string name="threads_permissions_settings">Настройки</string>
+
+    <!-- Разрешения. Диалоги описания причины запроса доступа. -->
+    <string name="threads_permission_description_access_to_files_title">Разрешите приложению доступ к файлам на вашем устройстве</string>
+    <string name="threads_permission_description_access_to_files_message">Это необходимо для отправки файлов</string>
+    <string name="threads_permission_description_access_to_audio_recording_title">Разрешите приложению записывать аудио</string>
+    <string name="threads_permission_description_access_to_audio_recording_message">Это необходимо для отправки голосовых сообщений</string>
+    <string name="threads_permission_description_access_to_camera_title">Разрешите приложению снимать фото</string>
+    <string name="threads_permission_description_access_to_camera_message">Это необходимо для отправки фото</string>
+
 
     <string name="threads_user_agent" formatted="false" translatable="false">Platform:Android,osVersion:%1$s,device:%2$s,ip:%3$s,appVersion:%4$s,appBundle:%5$s,libVersion:%6$s</string>
 

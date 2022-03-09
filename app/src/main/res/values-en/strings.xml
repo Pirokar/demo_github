@@ -1,4 +1,7 @@
 <resources>
+    <string name="demo_continue">Continue</string>
+    <string name="demo_skip">Skip</string>
+
     <string name="client_info_updated">Client info was updated</string>
     <string name="send_text_message">Send message</string>
     <string name="send_text_message_success">Message was successfully sent!</string>
