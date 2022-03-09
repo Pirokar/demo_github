@@ -28,9 +28,9 @@
         android:layout_height="wrap_content"
         android:background="@drawable/thread_outgoing_bubble"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/margin_quarter"
+        android:paddingStart="@dimen/margin_quarter"
         android:paddingTop="@dimen/margin_quarter"
-        android:paddingRight="19dp"
+        android:paddingEnd="19dp"
         android:paddingBottom="@dimen/margin_quarter">
 
         <TableRow
@@ -43,19 +43,19 @@
 
             <ImageView
                 android:id="@+id/quote_image"
-                android:visibility="gone"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/margin_half"
                 android:layout_marginBottom="@dimen/margin_half"
-                android:background="@drawable/file_image_user" />
+                android:background="@drawable/file_image_user"
+                android:visibility="gone" />
 
             <View
                 android:id="@+id/quote_delimeter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/margin_quarter"
+                android:layout_marginStart="@dimen/margin_quarter"
                 android:layout_marginTop="@dimen/margin_quarter"
                 android:background="@android:color/white" />
 
@@ -63,39 +63,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingRight="2dp">
+                android:paddingEnd="2dp">
 
                 <im.threads.internal.widget.text_view.QuoteAuthorTextView
                     android:id="@+id/quote_to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:paddingRight="80dp"
-                    tools:text="Иван Петров"
+                    android:paddingEnd="80dp"
                     android:textColor="@color/threads_outgoing_message_text"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:text="Иван Петров" />
 
                 <im.threads.internal.widget.text_view.QuoteMessageTextView
                     android:id="@+id/quote_file_specs"
-                    android:maxLines="3"
-                    android:ellipsize="end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    tools:text="счет на оплату 1,2mb 436666666666364"
-                    android:textColor="@color/threads_outgoing_message_text" />
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="@color/threads_outgoing_message_text"
+                    tools:text="счет на оплату 1,2mb 436666666666364" />
 
                 <im.threads.internal.widget.text_view.QuoteTimeTextView
                     android:id="@+id/quote_send_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    tools:text="отправлено 21 апр 2016"
                     android:textColor="@color/threads_outgoing_message_text"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tools:text="отправлено 21 апр 2016" />
             </LinearLayout>
         </TableRow>
 
@@ -108,6 +108,7 @@
                 android:id="@+id/image"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
+                android:layout_marginEnd="@dimen/margin_three_fourth"
                 android:minWidth="240dp" />
 
         </FrameLayout>
@@ -122,13 +123,13 @@
 
             <im.threads.internal.views.CircularProgressButton
                 android:id="@+id/button_download"
-                android:visibility="gone"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/margin_half"
                 android:layout_marginBottom="@dimen/margin_half"
                 android:background="@drawable/file_image_user"
+                android:visibility="gone"
                 app:completed_drawable="@drawable/file_image_user"
                 app:in_progress_label="@drawable/ic_clear_blue_user_36dp"
                 app:start_download_label="@drawable/ic_vertical_align_bottom_user_24dp" />
@@ -137,7 +138,7 @@
                 android:id="@+id/delimeter"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/margin_quarter"
+                android:layout_marginStart="@dimen/margin_quarter"
                 android:layout_marginTop="@dimen/margin_quarter"
                 android:background="@android:color/white" />
 
@@ -145,39 +146,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingRight="2dp">
+                android:paddingEnd="2dp">
 
                 <im.threads.internal.widget.text_view.QuoteAuthorTextView
                     android:id="@+id/to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    android:paddingRight="80dp"
-                    tools:text="Иван Петров"
+                    android:paddingEnd="80dp"
                     android:textColor="@color/threads_outgoing_message_text"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:text="Иван Петров" />
 
                 <im.threads.internal.widget.text_view.QuoteMessageTextView
                     android:id="@+id/file_specs"
-                    android:maxLines="3"
-                    android:ellipsize="end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    tools:text="счет на оплату 1,2mb 436666666666364"
-                    android:textColor="@color/threads_outgoing_message_text" />
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="@color/threads_outgoing_message_text"
+                    tools:text="счет на оплату 1,2mb 436666666666364" />
 
                 <im.threads.internal.widget.text_view.QuoteTimeTextView
                     android:id="@+id/send_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginTop="2dp"
-                    tools:text="отправлено 21 апр 2016"
                     android:textColor="@color/threads_outgoing_message_text"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tools:text="отправлено 21 апр 2016" />
             </LinearLayout>
         </TableRow>
 
@@ -192,53 +193,53 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:lineSpacingMultiplier="1.25"
-                android:paddingLeft="4dp"
+                android:paddingStart="4dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="@dimen/margin_half"
-                tools:text="user text google.com"
                 android:textColor="@color/threads_outgoing_message_text"
                 android:textColorLink="@color/threads_outgoing_message_link"
                 android:textSize="16sp"
-                app:last_line_padding_symbols="16" />
+                app:last_line_padding_symbols="16"
+                tools:text="user text google.com" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/voice_message"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:paddingEnd="17dp"
-                android:background="@drawable/thread_outgoing_bubble">
+                android:background="@drawable/thread_outgoing_bubble"
+                android:paddingEnd="17dp">
 
                 <ImageView
                     android:id="@+id/voice_message_user_button_play_pause"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginStart="@dimen/margin_half"
                     android:background="@null"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/threads_voice_message_play" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/voice_message_user_slider"
-                    android:theme="@style/ThemeOverlay.ChatCenter.Slider.User"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintStart_toEndOf="@+id/voice_message_user_button_play_pause"
+                    android:theme="@style/ThemeOverlay.ChatCenter.Slider.User"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintStart_toEndOf="@+id/voice_message_user_button_play_pause"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView
                     android:id="@+id/file_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="@+id/voice_message_user_slider"
-                    app:layout_constraintTop_toBottomOf="@+id/voice_message_user_slider"
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="@dimen/margin_quarter"
                     android:paddingBottom="@dimen/margin_half"
-                    tools:text="1:20"
-                    android:textColor="@color/threads_outgoing_message_text"/>
+                    android:textColor="@color/threads_outgoing_message_text"
+                    app:layout_constraintStart_toStartOf="@+id/voice_message_user_slider"
+                    app:layout_constraintTop_toBottomOf="@+id/voice_message_user_slider"
+                    tools:text="1:20" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -249,8 +250,8 @@
                 android:layout_gravity="bottom|right"
                 android:drawablePadding="@dimen/margin_quarter"
                 android:padding="@dimen/margin_half"
-                tools:text="10:19"
-                android:textColor="@color/threads_user_message_timestamp" />
+                android:textColor="@color/threads_user_message_timestamp"
+                tools:text="10:19" />
 
         </FrameLayout>
 
@@ -276,7 +277,7 @@
                     android:id="@+id/og_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_quarter"
+                    android:layout_marginStart="@dimen/margin_quarter"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:paddingTop="@dimen/margin_half"
@@ -289,7 +290,7 @@
                     android:id="@+id/og_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_quarter"
+                    android:layout_marginStart="@dimen/margin_quarter"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:textColor="@color/threads_outgoing_message_text"
@@ -300,11 +301,11 @@
                     android:id="@+id/og_url"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_quarter"
+                    android:layout_marginStart="@dimen/margin_quarter"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:paddingTop="@dimen/margin_half"
-                    android:paddingRight="74dp"
+                    android:paddingEnd="74dp"
                     android:textColor="@color/threads_outgoing_message_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -317,7 +318,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:drawablePadding="@dimen/margin_quarter"
-                android:paddingRight="@dimen/margin_half"
+                android:paddingEnd="@dimen/margin_half"
                 android:textColor="@color/threads_user_message_timestamp"
                 tools:text="10:19" />
         </FrameLayout>
