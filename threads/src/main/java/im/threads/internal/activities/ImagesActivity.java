@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
@@ -20,7 +21,8 @@ import java.util.List;
 
 import im.threads.R;
 import im.threads.internal.adapters.ImagesAdapter;
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.secureDatabase.DatabaseHolder;
+import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.permissions.PermissionsActivity;
 import im.threads.internal.utils.ColorsHelper;
@@ -28,12 +30,14 @@ import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.ThreadsPermissionChecker;
+import im.threads.styles.permissions.PermissionDescriptionType;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
+public final class ImagesActivity extends BaseActivity implements ViewPager.OnPageChangeListener,
+        PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener {
     private static final String TAG = "ImagesActivity ";
     private static final int CODE_REQUEST_DOWNLOAD = 1;
 
@@ -41,6 +45,8 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
     private ViewPager mViewPager;
     private List<FileDescription> files;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    @Nullable
+    private PermissionDescriptionAlertDialogFragment permissionDescriptionAlertDialogFragment;
 
     public static Intent getStartIntent(Context context, FileDescription fileDescription) {
         return new Intent(context, ImagesActivity.class).putExtra("FileDescription", fileDescription);
@@ -128,9 +134,15 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
 
     private void downloadImage() {
         if (files.get(mViewPager.getCurrentItem()).getFileUri() == null) return;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !ThreadsPermissionChecker.isWriteExternalPermissionGranted(this)) {
-            PermissionsActivity.startActivityForResult(this, CODE_REQUEST_DOWNLOAD,
-                    R.string.threads_permissions_write_external_storage_help_text, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                && !ThreadsPermissionChecker.isWriteExternalPermissionGranted(this)) {
+            if (permissionDescriptionAlertDialogFragment == null) {
+                permissionDescriptionAlertDialogFragment =
+                        PermissionDescriptionAlertDialogFragment.newInstance(
+                                PermissionDescriptionType.STORAGE, CODE_REQUEST_DOWNLOAD);
+                permissionDescriptionAlertDialogFragment.show(getSupportFragmentManager(),
+                        PermissionDescriptionAlertDialogFragment.TAG);
+            }
             return;
         }
         compositeDisposable.add(Completable.fromAction(() -> FileUtils.saveToDownloads(files.get(mViewPager.getCurrentItem())))
@@ -144,6 +156,20 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
                         }
                 )
         );
+    }
+
+    @Override
+    public void onClick(@NonNull PermissionDescriptionType type, int requestCode) {
+        if (PermissionDescriptionType.STORAGE == type && CODE_REQUEST_DOWNLOAD == requestCode) {
+            PermissionsActivity.startActivityForResult(this, CODE_REQUEST_DOWNLOAD,
+                    R.string.threads_permissions_write_external_storage_help_text,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
+    @Override
+    public void onDialogDetached() {
+        permissionDescriptionAlertDialogFragment = null;
     }
 
     @Override

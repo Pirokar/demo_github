@@ -16,7 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import im.threads.internal.activities.FilesActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
-import im.threads.internal.database.DatabaseHolder;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;

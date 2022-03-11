@@ -142,7 +142,7 @@ public final class PermissionsActivity extends AppCompatActivity {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(PermissionsActivity.this);
         dialogBuilder.setTitle(R.string.threads_permissions_help);
         dialogBuilder.setMessage(getPermissionText());
-        dialogBuilder.setNegativeButton(R.string.threads_permissions_quit, (dialog, which) -> {
+        dialogBuilder.setNegativeButton(R.string.threads_close, (dialog, which) -> {
             if (PermissionsChecker.clickedNeverAskAgain(PermissionsActivity.this, permissions)) {
                 // Если во всех кликнуто - БОЛЬШЕ НЕ ПОКАЗЫВАТЬ, то закрыть с соответствующим результатом
                 neverAskAgain();

@@ -1,30 +1,43 @@
 package im.threads.internal.utils;
 
+import static im.threads.ConfigBuilder.TransportType.THREADS_GATE;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-
-import com.google.firebase.installations.FirebaseInstallations;
-import com.google.gson.JsonSyntaxException;
-
-import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.ObjectsCompat;
 import androidx.preference.PreferenceManager;
+
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.gson.JsonSyntaxException;
+
+import java.io.Serializable;
+import java.util.UUID;
+
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.transport.CloudMessagingType;
-
-import static im.threads.ConfigBuilder.TransportType.THREADS_GATE;
+import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
+import im.threads.styles.permissions.PermissionDescriptionType;
 
 public final class PrefUtils {
     private static final String TAG = "PrefUtils ";
+
+    //styles
+    private static final String APP_STYLE = "APP_STYLE";
+    private static final String STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE =
+            "STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE";
+    private static final String RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE =
+            "RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE";
+    private static final String CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE =
+            "CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE";
 
     private static final String TAG_CLIENT_ID = "TAG_CLIENT_ID";
     private static final String TAG_CLIENT_ID_ENCRYPTED = "TAG_CLIENT_ID_ENCRYPTED";
@@ -35,7 +48,6 @@ public final class PrefUtils {
     private static final String CLIENT_NAME = "DEFAULT_CLIENT_NAMETITLE_TAG";
     private static final String EXTRA_DATA = "EXTRA_DATE";
     private static final String LAST_COPY_TEXT = "LAST_COPY_TEXT";
-    private static final String APP_STYLE = "APP_STYLE";
     @Deprecated
     private static final String TAG_THREAD_ID = "THREAD_ID";
     private static final String APP_MARKER_KEY = "APP_MARKER";
@@ -201,23 +213,75 @@ public final class PrefUtils {
 
     @Nullable
     public static ChatStyle getIncomingStyle() {
-        ChatStyle style = null;
+        return getIncomingStyle(APP_STYLE, ChatStyle.class);
+    }
+
+    @Nullable
+    public static PermissionDescriptionDialogStyle getIncomingStyle(
+            @NonNull PermissionDescriptionType type) {
+        PermissionDescriptionDialogStyle style = null;
+        switch (type) {
+            case STORAGE:
+                style = getIncomingStyle(STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                        PermissionDescriptionDialogStyle.class);
+                break;
+            case RECORD_AUDIO:
+                style = getIncomingStyle(RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                        PermissionDescriptionDialogStyle.class);
+                break;
+            case CAMERA:
+                style = getIncomingStyle(CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE,
+                        PermissionDescriptionDialogStyle.class);
+                break;
+            default:
+                break;
+        }
+        return style;
+    }
+
+    @Nullable
+    private static <T extends Serializable> T getIncomingStyle(@NonNull String key,
+                                                               @NonNull Class<T> styleClass) {
+        T style = null;
         try {
             SharedPreferences sharedPreferences = getDefaultSharedPreferences();
-            if (sharedPreferences.getString(APP_STYLE, null) != null) {
-                String sharedPreferencesString = sharedPreferences.getString(APP_STYLE, null);
-                style = Config.instance.gson.fromJson(sharedPreferencesString, ChatStyle.class);
+            if (sharedPreferences.getString(key, null) != null) {
+                String sharedPreferencesString = sharedPreferences.getString(key, null);
+                style = Config.instance.gson.fromJson(sharedPreferencesString, styleClass);
             }
         } catch (IllegalStateException | JsonSyntaxException ex) {
-            ThreadsLogger.w(TAG, "getIncomingStyle failed: ", ex);
+            ThreadsLogger.w(TAG, "getIncomingStyle " + styleClass.getCanonicalName()
+                    + " failed: ", ex);
         }
         return style;
     }
 
     public static void setIncomingStyle(@NonNull ChatStyle style) {
+        setIncomingStyle(APP_STYLE, style);
+    }
+
+    public static void setIncomingStyle(@NonNull PermissionDescriptionType type,
+                                        @NonNull PermissionDescriptionDialogStyle style) {
+        switch (type) {
+            case STORAGE:
+                setIncomingStyle(STORAGE_PERMISSION_DESCRIPTION_DIALOG_STYLE, style);
+                break;
+            case RECORD_AUDIO:
+                setIncomingStyle(RECORD_AUDIO_PERMISSION_DESCRIPTION_DIALOG_STYLE, style);
+                break;
+            case CAMERA:
+                setIncomingStyle(CAMERA_PERMISSION_DESCRIPTION_DIALOG_STYLE, style);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private static <T extends Serializable> void setIncomingStyle(@NonNull String key,
+                                                                  @NonNull T style) {
         getDefaultSharedPreferences()
                 .edit()
-                .putString(APP_STYLE, Config.instance.gson.toJson(style))
+                .putString(key, Config.instance.gson.toJson(style))
                 .commit();
     }
 
