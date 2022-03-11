@@ -11,36 +11,36 @@
 	},
 	"client":{
 		"cp_id":"890007000000001335",
-		"product_id":"737518067793980135",
-		"client_id":"778961019304166720",
-		"client_secret":"07EF8209F422EE4BBCF73365014CCD29136ADDCDF6D4F1E7A205F3BBCE16C0E5",
-		"project_id":"737518067793980135",
-		"app_id":"105094955",
-		"api_key":"CwEAAAAAf8tLxmvGNa5EskdcijNbRtA4tlSNfIjSS0MSLVTiItFdjVcxUfM/+TVC1ibHFkyRf3ueLAIMJlvgHHCPEr9grzy0wkk=",
-		"package_name":"com.sequenia.appwithchat.polarbear"
+		"product_id":"737518067793980174",
+		"client_id":"778964831960040512",
+		"client_secret":"15853E12B3261DC2F7A960425D7385C0AC0F084A01CF0B509B148F1ECCFF2F50",
+		"project_id":"737518067793980174",
+		"app_id":"105095007",
+		"api_key":"CwEAAAAAMz248oQY54dJ5QIWsRRcwyDL/P3QnOgv5mxSA14K6f98NmC4T0i9arNx1HSw+0ZyR5uIIxDk/euHt+GuX07TXZEpqkM=",
+		"package_name":"dte.chc.mobile1.android"
 	},
 	"oauth_client":{
-		"client_id":"105094955",
+		"client_id":"105095007",
 		"client_type":1
 	},
 	"app_info":{
-		"app_id":"105094955",
-		"package_name":"com.sequenia.appwithchat.polarbear"
+		"app_id":"105095007",
+		"package_name":"dte.chc.mobile1.android"
 	},
 	"configuration_version":"3.0",
 	"appInfos":[
 		{
-			"package_name":"com.sequenia.appwithchat.polarbear",
+			"package_name":"dte.chc.mobile1.android",
 			"client":{
-				"app_id":"105094955"
+				"app_id":"105095007"
 			},
 			"app_info":{
-				"package_name":"com.sequenia.appwithchat.polarbear",
-				"app_id":"105094955"
+				"package_name":"dte.chc.mobile1.android",
+				"app_id":"105095007"
 			},
 			"oauth_client":{
 				"client_type":1,
-				"client_id":"105094955"
+				"client_id":"105095007"
 			}
 		}
 	]
