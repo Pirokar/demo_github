@@ -68,11 +68,11 @@ class FileDescriptionsTable : Table() {
             fd.mimeType = cursorGetString(c, COLUMN_FD_MIME_TYPE)
             fd.state = AttachmentStateEnum.READY
             cursorGetString(c, COLUMN_FD_ATTACHMENT_STATE)?.let {
-                fd.state = AttachmentStateEnum.valueOf(it)
+                fd.state = AttachmentStateEnum.attachmentStateEnumFromString(it)
             }
             fd.errorCode = ErrorStateEnum.ANY
             cursorGetString(c, COLUMN_FD_ERROR_CODE)?.let {
-                fd.errorCode = ErrorStateEnum.valueOf(it)
+                fd.errorCode = ErrorStateEnum.errorStateStateEnumFromString(it)
             }
             fd.errorMessage = cursorGetString(c, COLUMN_FD_ERROR_MESSAGE)
             fd.mimeType = cursorGetString(c, COLUMN_FD_MIME_TYPE)
@@ -156,11 +156,11 @@ class FileDescriptionsTable : Table() {
                 fd.isSelfie = cursorGetBool(c, COLUMN_FD_SELFIE)
                 fd.state = AttachmentStateEnum.READY
                 cursorGetString(c, COLUMN_FD_ATTACHMENT_STATE)?.let {
-                    fd.state = AttachmentStateEnum.valueOf(it)
+                    fd.state = AttachmentStateEnum.attachmentStateEnumFromString(it)
                 }
                 fd.errorCode = ErrorStateEnum.ANY
                 cursorGetString(c, COLUMN_FD_ERROR_CODE)?.let {
-                    fd.errorCode = ErrorStateEnum.valueOf(it)
+                    fd.errorCode = ErrorStateEnum.errorStateStateEnumFromString(it)
                 }
                 fd.errorMessage = cursorGetString(c, COLUMN_FD_ERROR_MESSAGE)
                 list.add(fd)
