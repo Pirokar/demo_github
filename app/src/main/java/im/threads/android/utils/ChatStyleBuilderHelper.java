@@ -44,8 +44,8 @@ public class ChatStyleBuilderHelper {
     private static void configureBlueDesign(ChatStyle chatStyle) {
         chatStyle
                 .setWelcomeScreenStyle(R.drawable.alt_threads_welcome_logo,
-                        R.string.alt_threads_welcome_screen_title_text,
-                        R.string.alt_threads_welcome_screen_subtitle_text,
+                        R.string.demo_alt_threads_welcome_screen_title_text,
+                        R.string.demo_alt_threads_welcome_screen_subtitle_text,
                         R.color.alt_threads_welcome_screen_title,
                         R.color.alt_threads_welcome_screen_subtitle,
                         R.dimen.alt_threads_welcome_screen_title,
@@ -88,11 +88,11 @@ public class ChatStyleBuilderHelper {
                         null,
                         R.drawable.alt_threads_ic_attachment_button,
                         R.drawable.alt_threads_ic_send_button,
-                        R.string.alt_threads_input_hint,
+                        R.string.demo_alt_threads_input_hint,
                         R.dimen.alt_threads_input_height,
                         R.drawable.alt_threads_chat_input_background)
-                .setChatTitleStyle(R.string.alt_threads_contact_center,
-                        R.string.alt_threads_operator_subtitle,
+                .setChatTitleStyle(R.string.demo_alt_threads_contact_center,
+                        R.string.demo_alt_threads_operator_subtitle,
                         R.color.alt_threads_chat_toolbar,
                         R.color.alt_threads_chat_context_menu,
                         R.color.alt_threads_chat_toolbar_text,
@@ -102,7 +102,7 @@ public class ChatStyleBuilderHelper {
                         R.color.alt_threads_chat_toolbar_hint,
                         false)
                 .setPushNotificationStyle(R.drawable.alt_default_push_icon,
-                        R.string.alt_threads_push_title,
+                        R.string.demo_alt_threads_push_title,
                         R.color.alt_threads_push_background,
                         R.color.alt_threads_nougat_push_accent,
                         R.color.alt_threads_quick_reply_message_background,
@@ -113,9 +113,9 @@ public class ChatStyleBuilderHelper {
                         R.color.alt_threads_attachments_date_text_color,
                         R.dimen.alt_threads_attachments_author_text_size,
                         R.dimen.alt_threads_attachments_date_text_size)
-                .setRequestResolveThreadStyle(R.string.alt_threads_request_to_resolve_thread,
-                        R.string.alt_threads_request_to_resolve_thread_close,
-                        R.string.alt_threads_request_to_resolve_thread_open)
+                .setRequestResolveThreadStyle(R.string.demo_alt_threads_request_to_resolve_thread,
+                        R.string.demo_alt_threads_request_to_resolve_thread_close,
+                        R.string.demo_alt_threads_request_to_resolve_thread_open)
                 .setScheduleMessageStyle(R.drawable.alt_threads_schedule_icon,
                         R.color.alt_threads_schedule_text)
                 .setSurveyStyle(R.drawable.alt_threads_binary_survey_like_unselected,

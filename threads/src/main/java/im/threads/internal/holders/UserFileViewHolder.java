@@ -93,7 +93,7 @@ public final class UserFileViewHolder extends BaseHolder {
             loader.setVisibility(View.VISIBLE);
             errortext.setVisibility(View.VISIBLE);
             if (TextUtils.isEmpty(fileDescription.getErrorMessage())) {
-                errortext.setText(Config.instance.context.getString(R.string.threads_some_error_durring_load_file));
+                errortext.setText(Config.instance.context.getString(R.string.threads_some_error_during_load_file));
             } else {
                 errortext.setText(fileDescription.getErrorMessage());
             }

@@ -119,7 +119,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
                 loader.setImageResource(getErrorImageResByErrorCode(fileDescription.errorCode))
                 if (fileDescription.errorMessage.isNullOrEmpty()) {
                     errortext.text =
-                        Config.instance.context.getString(R.string.threads_some_error_durring_load_file)
+                        Config.instance.context.getString(R.string.threads_some_error_during_load_file)
                 } else {
                     errortext.text = fileDescription.errorMessage
                 }

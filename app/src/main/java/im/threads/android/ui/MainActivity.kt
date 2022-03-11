@@ -84,9 +84,9 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
             override fun onDelete(card: Card) {
                 cardForDelete = card
                 YesNoDialog.open(
-                        this@MainActivity, getString(R.string.card_delete_text),
-                        getString(R.string.card_delete_yes),
-                        getString(R.string.card_delete_no),
+                        this@MainActivity, getString(R.string.demo_card_delete_text),
+                        getString(R.string.demo_yes),
+                        getString(R.string.demo_no),
                         YES_NO_DIALOG_REQUEST_CODE
                 )
             }
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
         val currentCard = currentCard
         if (currentCard == null) {
-            displayError(R.string.error_empty_user)
+            displayError(R.string.demo_error_empty_user)
             return
         }
         currentCard.userId
@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         subscribeOnSocketResponses()
         val currentCard = currentCard
         if (currentCard == null) {
-            displayError(R.string.error_empty_user)
+            displayError(R.string.demo_error_empty_user)
             return
         }
         currentCard.userId
@@ -245,7 +245,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         }
         val currentCard = currentCard
         if (currentCard == null) {
-            displayError(R.string.error_empty_user)
+            displayError(R.string.demo_error_empty_user)
             return
         }
         val userInfoBuilder = UserInfoBuilder(currentCard.userId)
@@ -298,7 +298,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         val indexOf = cards.indexOf(newCard)
         if (indexOf != -1) {
             cards[indexOf] = newCard
-            Toast.makeText(this, R.string.client_info_updated, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.demo_client_info_updated, Toast.LENGTH_LONG).show()
         } else {
             cards.add(newCard)
         }

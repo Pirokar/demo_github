@@ -13,8 +13,8 @@ import im.threads.android.utils.PrefUtils.storeTheme
 enum class ChatDesign(
     @StringRes private val nameResId: Int
 ) {
-    GREEN(R.string.design_green_enum),
-    BLUE(R.string.design_blue_enum);
+    GREEN(R.string.demo_design_green_style),
+    BLUE(R.string.demo_design_blue_style);
 
     fun getName(context: Context): String {
         return context.getString(nameResId)
