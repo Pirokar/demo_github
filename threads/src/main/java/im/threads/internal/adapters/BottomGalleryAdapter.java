@@ -38,7 +38,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
             if (!item.isChosen() &&
                     mChosenItems.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(Config.instance.context)) {
                 if (Config.instance.context != null) {
-                    Toast.makeText(Config.instance.context, Config.instance.context.getString(R.string.threads_achieve_images_count_limit_mesage), Toast.LENGTH_SHORT)
+                    Toast.makeText(Config.instance.context, Config.instance.context.getString(R.string.threads_achieve_images_count_limit_message), Toast.LENGTH_SHORT)
                             .show();
                 }
                 return;

@@ -4,11 +4,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
@@ -20,6 +21,8 @@ import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
 import im.threads.internal.utils.MetaDataUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
+import im.threads.styles.permissions.PermissionDescriptionType;
 
 public final class Config {
 
@@ -30,6 +33,12 @@ public final class Config {
     public final Context context;
 
     private volatile ChatStyle chatStyle = null;
+    private volatile PermissionDescriptionDialogStyle
+            storagePermissionDescriptionDialogStyle = null;
+    private volatile PermissionDescriptionDialogStyle
+            recordAudioPermissionDescriptionDialogStyle = null;
+    private volatile PermissionDescriptionDialogStyle
+            cameraPermissionDescriptionDialogStyle = null;
 
     @NonNull
     public final ThreadsLib.PendingIntentCreator pendingIntentCreator;
@@ -88,6 +97,27 @@ public final class Config {
         PrefUtils.setIncomingStyle(chatStyle);
     }
 
+    public void applyStoragePermissionDescriptionDialogStyle(
+            @NonNull PermissionDescriptionDialogStyle dialogStyle
+    ) {
+        this.storagePermissionDescriptionDialogStyle = dialogStyle;
+        PrefUtils.setIncomingStyle(PermissionDescriptionType.STORAGE, dialogStyle);
+    }
+
+    public void applyRecordAudioPermissionDescriptionDialogStyle(
+            @NonNull PermissionDescriptionDialogStyle dialogStyle
+    ) {
+        this.recordAudioPermissionDescriptionDialogStyle = dialogStyle;
+        PrefUtils.setIncomingStyle(PermissionDescriptionType.RECORD_AUDIO, dialogStyle);
+    }
+
+    public void applyCameraPermissionDescriptionDialogStyle(
+            @NonNull PermissionDescriptionDialogStyle dialogStyle
+    ) {
+        this.cameraPermissionDescriptionDialogStyle = dialogStyle;
+        PrefUtils.setIncomingStyle(PermissionDescriptionType.CAMERA, dialogStyle);
+    }
+
     @NonNull
     public ChatStyle getChatStyle() {
         ChatStyle localInstance = chatStyle;
@@ -100,6 +130,64 @@ public final class Config {
                         localInstance = new ChatStyle();
                     }
                     chatStyle = localInstance;
+                }
+            }
+        }
+        return localInstance;
+    }
+
+    @NonNull
+    public PermissionDescriptionDialogStyle getStoragePermissionDescriptionDialogStyle() {
+        PermissionDescriptionDialogStyle localInstance = storagePermissionDescriptionDialogStyle;
+        if (localInstance == null) {
+            synchronized (PermissionDescriptionDialogStyle.class) {
+                localInstance = storagePermissionDescriptionDialogStyle;
+                if (localInstance == null) {
+                    localInstance = PrefUtils.getIncomingStyle(PermissionDescriptionType.STORAGE);
+                    if (localInstance == null) {
+                        localInstance = PermissionDescriptionDialogStyle
+                                .getDefaultDialogStyle(PermissionDescriptionType.STORAGE);
+                    }
+                    storagePermissionDescriptionDialogStyle = localInstance;
+                }
+            }
+        }
+        return localInstance;
+    }
+
+    @NonNull
+    public PermissionDescriptionDialogStyle getRecordAudioPermissionDescriptionDialogStyle() {
+        PermissionDescriptionDialogStyle localInstance = recordAudioPermissionDescriptionDialogStyle;
+        if (localInstance == null) {
+            synchronized (PermissionDescriptionDialogStyle.class) {
+                localInstance = recordAudioPermissionDescriptionDialogStyle;
+                if (localInstance == null) {
+                    localInstance =
+                            PrefUtils.getIncomingStyle(PermissionDescriptionType.RECORD_AUDIO);
+                    if (localInstance == null) {
+                        localInstance = PermissionDescriptionDialogStyle
+                                .getDefaultDialogStyle(PermissionDescriptionType.RECORD_AUDIO);
+                    }
+                    recordAudioPermissionDescriptionDialogStyle = localInstance;
+                }
+            }
+        }
+        return localInstance;
+    }
+
+    @NonNull
+    public PermissionDescriptionDialogStyle getCameraPermissionDescriptionDialogStyle() {
+        PermissionDescriptionDialogStyle localInstance = cameraPermissionDescriptionDialogStyle;
+        if (localInstance == null) {
+            synchronized (PermissionDescriptionDialogStyle.class) {
+                localInstance = cameraPermissionDescriptionDialogStyle;
+                if (localInstance == null) {
+                    localInstance = PrefUtils.getIncomingStyle(PermissionDescriptionType.CAMERA);
+                    if (localInstance == null) {
+                        localInstance = PermissionDescriptionDialogStyle
+                                .getDefaultDialogStyle(PermissionDescriptionType.CAMERA);
+                    }
+                    cameraPermissionDescriptionDialogStyle = localInstance;
                 }
             }
         }

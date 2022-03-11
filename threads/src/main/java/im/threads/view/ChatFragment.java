@@ -87,6 +87,7 @@ import im.threads.internal.controllers.ChatController;
 import im.threads.internal.fragments.AttachmentBottomSheetDialogFragment;
 import im.threads.internal.fragments.BaseFragment;
 import im.threads.internal.fragments.FilePickerFragment;
+import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
@@ -125,6 +126,7 @@ import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.ThreadsPermissionChecker;
 import im.threads.internal.views.VoiceTimeLabelFormatter;
 import im.threads.internal.views.VoiceTimeLabelFormatterKt;
+import im.threads.styles.permissions.PermissionDescriptionType;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -139,7 +141,10 @@ import kotlin.Pair;
 public final class ChatFragment extends BaseFragment implements
         AttachmentBottomSheetDialogFragment.Callback,
         ProgressReceiver.Callback,
-        PopupMenu.OnMenuItemClickListener, FilePickerFragment.SelectedListener, ChatCenterAudioConverterCallback {
+        PopupMenu.OnMenuItemClickListener,
+        FilePickerFragment.SelectedListener,
+        ChatCenterAudioConverterCallback,
+        PermissionDescriptionAlertDialogFragment.OnAllowPermissionClickListener {
 
     public static final int REQUEST_CODE_PHOTOS = 100;
     public static final int REQUEST_CODE_PHOTO = 101;
@@ -195,6 +200,9 @@ public final class ChatFragment extends BaseFragment implements
     private File externalCameraPhotoFile;
     @Nullable
     private AttachmentBottomSheetDialogFragment bottomSheetDialogFragment;
+    @Nullable
+    private PermissionDescriptionAlertDialogFragment permissionDescriptionAlertDialogFragment;
+    private List<String> cameraPermissions;
     private List<Uri> mAttachedImages = new ArrayList<>();
     @Nullable
     private MediaRecorder recorder = null;
@@ -345,7 +353,16 @@ public final class ChatFragment extends BaseFragment implements
         recordButton.setRecordView(recordView);
         if (!ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext())) {
             recordButton.setListenForRecord(false);
-            recordButton.setOnRecordClickListener(v -> PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_RECORD_AUDIO, R.string.threads_permissions_record_audio_help_text, android.Manifest.permission.RECORD_AUDIO));
+            recordButton.setOnRecordClickListener(v -> {
+                if (permissionDescriptionAlertDialogFragment == null) {
+                    permissionDescriptionAlertDialogFragment =
+                            PermissionDescriptionAlertDialogFragment.newInstance(
+                                    PermissionDescriptionType.RECORD_AUDIO,
+                                    REQUEST_PERMISSION_RECORD_AUDIO);
+                    permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
+                            PermissionDescriptionAlertDialogFragment.TAG);
+                }
+            });
         }
         Drawable drawable = AppCompatResources.getDrawable(requireContext(), style.threadsRecordButtonBackground).mutate();
         ColorsHelper.setDrawableColor(requireContext(), drawable, style.threadsRecordButtonBackgroundColor);
@@ -375,7 +392,8 @@ public final class ChatFragment extends BaseFragment implements
                 subscribe(
                         releaseRecorder()
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(() -> {},
+                                .subscribe(() -> {
+                                        },
                                         error -> ThreadsLogger.e(TAG, "initRecording -> onCancel " + error.getMessage()))
                 );
                 recordButton.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -417,7 +435,8 @@ public final class ChatFragment extends BaseFragment implements
                 subscribe(
                         releaseRecorder()
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(() -> {},
+                                .subscribe(() -> {
+                                        },
                                         error -> ThreadsLogger.e(TAG, "initRecording -> onLessThanSecond " + error.getMessage()))
                 );
                 showToast(getString(R.string.threads_hold_button_to_record_audio));
@@ -428,35 +447,36 @@ public final class ChatFragment extends BaseFragment implements
             private void startRecorder() {
                 subscribe(
                         Completable.fromAction(() -> {
-                            synchronized (this) {
-                                Context context = getContext();
-                                if (context == null) {
-                                    return;
-                                }
-                                recorder = new MediaRecorder();
-                                recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                    voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.ogg", fileNameDateFormat.format(new Date()));
-                                    recorder.setOutputFormat(MediaRecorder.OutputFormat.OGG);
-                                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.OPUS);
-                                } else {
-                                    voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.wav", fileNameDateFormat.format(new Date()));
-                                    recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
-                                    recorder.setAudioEncodingBitRate(128000);
-                                    recorder.setAudioSamplingRate(44100);
-                                }
-                                recorder.setOutputFile(voiceFilePath);
-                                try {
-                                    recorder.prepare();
-                                } catch (IOException e) {
-                                    ThreadsLogger.e(TAG, "prepare() failed");
-                                }
-                                recorder.start();
-                            }
-                        })
+                                    synchronized (this) {
+                                        Context context = getContext();
+                                        if (context == null) {
+                                            return;
+                                        }
+                                        recorder = new MediaRecorder();
+                                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                            voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.ogg", fileNameDateFormat.format(new Date()));
+                                            recorder.setOutputFormat(MediaRecorder.OutputFormat.OGG);
+                                            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.OPUS);
+                                        } else {
+                                            voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.wav", fileNameDateFormat.format(new Date()));
+                                            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                                            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+                                            recorder.setAudioEncodingBitRate(128000);
+                                            recorder.setAudioSamplingRate(44100);
+                                        }
+                                        recorder.setOutputFile(voiceFilePath);
+                                        try {
+                                            recorder.prepare();
+                                        } catch (IOException e) {
+                                            ThreadsLogger.e(TAG, "prepare() failed");
+                                        }
+                                        recorder.start();
+                                    }
+                                })
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(() -> {},
+                                .subscribe(() -> {
+                                        },
                                         error -> ThreadsLogger.e(TAG, "initRecording -> startRecorder " + error.getMessage()))
                 );
             }
@@ -673,11 +693,11 @@ public final class ChatFragment extends BaseFragment implements
                 )
         );
         subscribe(Observable.combineLatest
-                (
-                        RxUtils.toObservableImmediately(inputTextObservable),
-                        RxUtils.toObservableImmediately(fileDescription),
-                        (s, fileDescriptionOptional) -> TextUtils.isEmpty(s) && fileDescriptionOptional.isEmpty()
-                )
+                        (
+                                RxUtils.toObservableImmediately(inputTextObservable),
+                                RxUtils.toObservableImmediately(fileDescription),
+                                (s, fileDescriptionOptional) -> TextUtils.isEmpty(s) && fileDescriptionOptional.isEmpty()
+                        )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty && style.voiceMessageEnabled && Config.instance.attachmentEnabled ? View.VISIBLE : View.GONE),
                         error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription " + error.getMessage())
@@ -862,6 +882,70 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Override
+    public void onClick(@NonNull PermissionDescriptionType type, int requestCode) {
+        switch (type) {
+            case STORAGE:
+                startStoragePermissionActivity(requestCode);
+                break;
+            case RECORD_AUDIO:
+                startRecordAudioPermissionActivity(requestCode);
+                break;
+            case CAMERA:
+                startCameraPermissionActivity(requestCode);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void startStoragePermissionActivity(int requestCode) {
+        if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL) {
+            PermissionsActivity.startActivityForResult(
+                    this,
+                    REQUEST_PERMISSION_READ_EXTERNAL,
+                    R.string.threads_permissions_read_external_storage_help_text,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        } else if (requestCode == REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY) {
+            PermissionsActivity.startActivityForResult(
+                    this,
+                    REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY,
+                    R.string.threads_permissions_read_external_storage_help_text,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+    }
+
+    private void startRecordAudioPermissionActivity(int requestCode) {
+        if (requestCode == REQUEST_PERMISSION_RECORD_AUDIO) {
+            PermissionsActivity.startActivityForResult(
+                    this,
+                    REQUEST_PERMISSION_RECORD_AUDIO,
+                    R.string.threads_permissions_record_audio_help_text,
+                    android.Manifest.permission.RECORD_AUDIO);
+        }
+    }
+
+    private void startCameraPermissionActivity(int requestCode) {
+        if (requestCode == REQUEST_PERMISSION_CAMERA) {
+            PermissionsActivity.startActivityForResult(
+                    this,
+                    REQUEST_PERMISSION_CAMERA,
+                    R.string.threads_permissions_camera_and_write_external_storage_help_text,
+                    cameraPermissions.toArray(new String[]{}));
+        } else if (requestCode == REQUEST_PERMISSION_SELFIE_CAMERA) {
+            PermissionsActivity.startActivityForResult(this,
+                    REQUEST_PERMISSION_SELFIE_CAMERA,
+                    R.string.threads_permissions_camera_and_write_external_storage_help_text,
+                    cameraPermissions.toArray(new String[]{}));
+        }
+    }
+
+    @Override
+    public void onDialogDetached() {
+        cameraPermissions = null;
+        permissionDescriptionAlertDialogFragment = null;
+    }
+
+    @Override
     public void onCameraClick() {
         Activity activity = getActivity();
         if (activity == null) {
@@ -898,7 +982,14 @@ public final class ChatFragment extends BaseFragment implements
             if (!isWriteGranted) {
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
-            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_CAMERA, R.string.threads_permissions_camera_and_write_external_storage_help_text, permissions.toArray(new String[]{}));
+            if (permissionDescriptionAlertDialogFragment == null) {
+                cameraPermissions = permissions;
+                permissionDescriptionAlertDialogFragment =
+                        PermissionDescriptionAlertDialogFragment.newInstance(
+                                PermissionDescriptionType.CAMERA, REQUEST_PERMISSION_CAMERA);
+                permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
+                        PermissionDescriptionAlertDialogFragment.TAG);
+            }
         }
     }
 
@@ -1038,8 +1129,12 @@ public final class ChatFragment extends BaseFragment implements
         setBottomStateDefault();
         if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
             openFile();
-        } else {
-            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_READ_EXTERNAL, R.string.threads_permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        } else if (permissionDescriptionAlertDialogFragment == null) {
+            permissionDescriptionAlertDialogFragment =
+                    PermissionDescriptionAlertDialogFragment.newInstance(
+                            PermissionDescriptionType.STORAGE, REQUEST_PERMISSION_READ_EXTERNAL);
+            permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
+                    PermissionDescriptionAlertDialogFragment.TAG);
         }
     }
 
@@ -1060,7 +1155,14 @@ public final class ChatFragment extends BaseFragment implements
             if (!isWriteGranted) {
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
-            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_SELFIE_CAMERA, R.string.threads_permissions_camera_and_write_external_storage_help_text, permissions.toArray(new String[]{}));
+            if (permissionDescriptionAlertDialogFragment == null) {
+                cameraPermissions = permissions;
+                permissionDescriptionAlertDialogFragment =
+                        PermissionDescriptionAlertDialogFragment.newInstance(
+                                PermissionDescriptionType.CAMERA, REQUEST_PERMISSION_SELFIE_CAMERA);
+                permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
+                        PermissionDescriptionAlertDialogFragment.TAG);
+            }
         }
     }
 
@@ -1072,9 +1174,9 @@ public final class ChatFragment extends BaseFragment implements
         }
         subscribe(
                 Single.fromCallable(() -> Stream.of(mAttachedImages)
-                        .filter(value -> FileUtils.canBeSent(requireContext(), value))
-                        .toList()
-                )
+                                .filter(value -> FileUtils.canBeSent(requireContext(), value))
+                                .toList()
+                        )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(filteredPhotos -> {
@@ -1212,9 +1314,9 @@ public final class ChatFragment extends BaseFragment implements
         }
         subscribe(
                 Single.fromCallable(() -> Stream.of(photos)
-                        .filter(value -> FileUtils.canBeSent(requireContext(), value))
-                        .toList()
-                )
+                                .filter(value -> FileUtils.canBeSent(requireContext(), value))
+                                .toList()
+                        )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(filteredPhotos -> {
@@ -1279,12 +1381,12 @@ public final class ChatFragment extends BaseFragment implements
         );
         String inputText = inputTextObservable.get();
         sendMessage(Collections.singletonList(
-                new UpcomingUserMessage(
-                        getFileDescription(),
-                        campaignMessage,
-                        mQuote,
-                        inputText != null ? inputText.trim() : null,
-                        false)
+                        new UpcomingUserMessage(
+                                getFileDescription(),
+                                campaignMessage,
+                                mQuote,
+                                inputText != null ? inputText.trim() : null,
+                                false)
                 )
         );
     }
@@ -1364,8 +1466,13 @@ public final class ChatFragment extends BaseFragment implements
             } else {
                 hideBottomSheet();
             }
-        } else {
-            PermissionsActivity.startActivityForResult(this, REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY, R.string.threads_permissions_read_external_storage_help_text, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        } else if (permissionDescriptionAlertDialogFragment == null) {
+            permissionDescriptionAlertDialogFragment =
+                    PermissionDescriptionAlertDialogFragment.newInstance(
+                            PermissionDescriptionType.STORAGE,
+                            REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY);
+            permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
+                    PermissionDescriptionAlertDialogFragment.TAG);
         }
     }
 
@@ -2418,12 +2525,12 @@ public final class ChatFragment extends BaseFragment implements
         public void onQiuckReplyClick(QuickReply quickReply) {
             hideQuickReplies();
             sendMessage(Collections.singletonList(
-                    new UpcomingUserMessage(
-                            null,
-                            null,
-                            null,
-                            quickReply.getText().trim(),
-                            isCopy(quickReply.getText()))
+                            new UpcomingUserMessage(
+                                    null,
+                                    null,
+                                    null,
+                                    quickReply.getText().trim(),
+                                    isCopy(quickReply.getText()))
                     ),
                     false
             );
