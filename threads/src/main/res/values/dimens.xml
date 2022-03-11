@@ -54,7 +54,7 @@
 
     <dimen name="bubbleOutgoingPaddingLeft">8dp</dimen>
     <dimen name="bubbleOutgoingPaddingTop">8dp</dimen>
-    <dimen name="bubbleOutgoingPaddingRight">8dp</dimen>
+    <dimen name="bubbleOutgoingPaddingRight">24dp</dimen>
     <dimen name="bubbleOutgoingPaddingBottom">8dp</dimen>
 
     <dimen name="bubbleIncomingPaddingLeft">8dp</dimen>
