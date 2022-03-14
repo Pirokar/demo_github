@@ -19,8 +19,7 @@ public class ChatStyleBuilderHelper {
                 .showChatBackButton(true)// показывать кнопку назад
                 .setUseExternalCameraApp(true)
                 .setSelfieEnabled(false)
-                .setScrollChatToEndIfUserTyping(false)
-                .arePermissionDescriptionDialogsEnabled(true);
+                .setScrollChatToEndIfUserTyping(false);
         switch (design) {
             case GREEN: {
                 configureGreenDesign(chatStyle);
@@ -43,6 +42,7 @@ public class ChatStyleBuilderHelper {
 
     private static void configureBlueDesign(ChatStyle chatStyle) {
         chatStyle
+                .setArePermissionDescriptionDialogsEnabled(true)
                 .setWelcomeScreenStyle(R.drawable.alt_threads_welcome_logo,
                         R.string.demo_alt_threads_welcome_screen_title_text,
                         R.string.demo_alt_threads_welcome_screen_subtitle_text,

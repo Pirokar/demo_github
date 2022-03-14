@@ -355,13 +355,11 @@ public final class ChatFragment extends BaseFragment implements
         if (!ThreadsPermissionChecker.isRecordAudioPermissionGranted(requireContext())) {
             recordButton.setListenForRecord(false);
             recordButton.setOnRecordClickListener(v -> {
-                if (permissionDescriptionAlertDialogFragment == null) {
-                    permissionDescriptionAlertDialogFragment =
-                            PermissionDescriptionAlertDialogFragment.newInstance(
-                                    PermissionDescriptionType.RECORD_AUDIO,
-                                    REQUEST_PERMISSION_RECORD_AUDIO);
-                    permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
-                            PermissionDescriptionAlertDialogFragment.TAG);
+                if (style.arePermissionDescriptionDialogsEnabled) {
+                    showSafelyPermissionDescriptionDialog(PermissionDescriptionType.RECORD_AUDIO,
+                            REQUEST_PERMISSION_RECORD_AUDIO);
+                } else {
+                    startRecordAudioPermissionActivity(REQUEST_PERMISSION_RECORD_AUDIO);
                 }
             });
         }
@@ -897,7 +895,7 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     @Override
-    public void onClick(@NonNull PermissionDescriptionType type, int requestCode) {
+    public void onAllowClick(@NonNull PermissionDescriptionType type, int requestCode) {
         switch (type) {
             case STORAGE:
                 startStoragePermissionActivity(requestCode);
@@ -997,13 +995,11 @@ public final class ChatFragment extends BaseFragment implements
             if (!isWriteGranted) {
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
-            if (permissionDescriptionAlertDialogFragment == null) {
-                cameraPermissions = permissions;
-                permissionDescriptionAlertDialogFragment =
-                        PermissionDescriptionAlertDialogFragment.newInstance(
-                                PermissionDescriptionType.CAMERA, REQUEST_PERMISSION_CAMERA);
-                permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
-                        PermissionDescriptionAlertDialogFragment.TAG);
+            if (style.arePermissionDescriptionDialogsEnabled) {
+                showSafelyCameraPermissionDescriptionDialog(REQUEST_PERMISSION_CAMERA, permissions);
+            } else {
+                this.cameraPermissions = permissions;
+                startCameraPermissionActivity(REQUEST_PERMISSION_CAMERA);
             }
         }
     }
@@ -1144,12 +1140,11 @@ public final class ChatFragment extends BaseFragment implements
         setBottomStateDefault();
         if (ThreadsPermissionChecker.isReadExternalPermissionGranted(activity)) {
             openFile();
-        } else if (permissionDescriptionAlertDialogFragment == null) {
-            permissionDescriptionAlertDialogFragment =
-                    PermissionDescriptionAlertDialogFragment.newInstance(
-                            PermissionDescriptionType.STORAGE, REQUEST_PERMISSION_READ_EXTERNAL);
-            permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
-                    PermissionDescriptionAlertDialogFragment.TAG);
+        } else if (style.arePermissionDescriptionDialogsEnabled) {
+            showSafelyPermissionDescriptionDialog(PermissionDescriptionType.STORAGE,
+                    REQUEST_PERMISSION_READ_EXTERNAL);
+        } else {
+            startStoragePermissionActivity(REQUEST_PERMISSION_READ_EXTERNAL);
         }
     }
 
@@ -1170,13 +1165,12 @@ public final class ChatFragment extends BaseFragment implements
             if (!isWriteGranted) {
                 permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
-            if (permissionDescriptionAlertDialogFragment == null) {
-                cameraPermissions = permissions;
-                permissionDescriptionAlertDialogFragment =
-                        PermissionDescriptionAlertDialogFragment.newInstance(
-                                PermissionDescriptionType.CAMERA, REQUEST_PERMISSION_SELFIE_CAMERA);
-                permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
-                        PermissionDescriptionAlertDialogFragment.TAG);
+            if (style.arePermissionDescriptionDialogsEnabled) {
+                showSafelyCameraPermissionDescriptionDialog(REQUEST_PERMISSION_SELFIE_CAMERA,
+                        permissions);
+            } else {
+                this.cameraPermissions = permissions;
+                startCameraPermissionActivity(REQUEST_PERMISSION_SELFIE_CAMERA);
             }
         }
     }
@@ -1481,13 +1475,11 @@ public final class ChatFragment extends BaseFragment implements
             } else {
                 hideBottomSheet();
             }
-        } else if (permissionDescriptionAlertDialogFragment == null) {
-            permissionDescriptionAlertDialogFragment =
-                    PermissionDescriptionAlertDialogFragment.newInstance(
-                            PermissionDescriptionType.STORAGE,
-                            REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY);
-            permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
-                    PermissionDescriptionAlertDialogFragment.TAG);
+        } else if (style.arePermissionDescriptionDialogsEnabled) {
+            showSafelyPermissionDescriptionDialog(PermissionDescriptionType.STORAGE,
+                    REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY);
+        } else {
+            startStoragePermissionActivity(REQUEST_PERMISSION_BOTTOM_GALLERY_GALLERY);
         }
     }
 
@@ -2276,6 +2268,30 @@ public final class ChatFragment extends BaseFragment implements
     @Override
     public void acceptConvertedFile(@NonNull File convertedFile) {
         addVoiceMessagePreview(convertedFile);
+    }
+
+    private void showSafelyCameraPermissionDescriptionDialog(
+            int requestCode,
+            @NonNull List<String> cameraPermissions) {
+        if (permissionDescriptionAlertDialogFragment == null) {
+            this.cameraPermissions = cameraPermissions;
+            showPermissionDescriptionDialog(PermissionDescriptionType.CAMERA, requestCode);
+        }
+    }
+
+    private void showSafelyPermissionDescriptionDialog(@NonNull PermissionDescriptionType type,
+                                                       int requestCode) {
+        if (permissionDescriptionAlertDialogFragment == null) {
+            showPermissionDescriptionDialog(type, requestCode);
+        }
+    }
+
+    private void showPermissionDescriptionDialog(@NonNull PermissionDescriptionType type,
+                                                 int requestCode) {
+        permissionDescriptionAlertDialogFragment =
+                PermissionDescriptionAlertDialogFragment.newInstance(type, requestCode);
+        permissionDescriptionAlertDialogFragment.show(getChildFragmentManager(),
+                PermissionDescriptionAlertDialogFragment.TAG);
     }
 
     private class QuoteLayoutHolder {
