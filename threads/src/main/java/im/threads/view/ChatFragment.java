@@ -131,6 +131,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Pair;
 
@@ -599,7 +600,8 @@ public final class ChatFragment extends BaseFragment implements
                 chatAdapterCallback.onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
             }
         });
-        configureInputChangesSubscription();
+        configureUserTypingSubscription();
+        configureRecordButtonVisibility();
         binding.searchUpIb.setOnClickListener(view -> {
             if (TextUtils.isEmpty(binding.search.getText())) return;
             doFancySearch(binding.search.getText().toString(), false);
@@ -680,35 +682,48 @@ public final class ChatFragment extends BaseFragment implements
         });
     }
 
-    private void configureInputChangesSubscription() {
-        subscribe(RxUtils.toObservable(inputTextObservable)
+    private void configureUserTypingSubscription() {
+        Disposable userTypingDisposable = RxUtils.toObservable(inputTextObservable)
                 .throttleLatest(INPUT_DELAY, TimeUnit.MILLISECONDS)
                 .filter(charSequence -> charSequence.length() > 0)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(input -> {
-                            mChatController.onUserTyping(input);
-                            updateLastUserActivityTime();
-                        },
-                        error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription " + error.getMessage())
-                )
-        );
-        subscribe(Observable.combineLatest
-                        (
-                                RxUtils.toObservableImmediately(inputTextObservable),
-                                RxUtils.toObservableImmediately(fileDescription),
-                                (s, fileDescriptionOptional) -> TextUtils.isEmpty(s) && fileDescriptionOptional.isEmpty()
-                        )
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isEmpty -> binding.recordButton.setVisibility(isEmpty && style.voiceMessageEnabled && Config.instance.attachmentEnabled ? View.VISIBLE : View.GONE),
-                        error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription " + error.getMessage())
-                )
-        );
+                .subscribe(this::onInputChanged,
+                        error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription "
+                                + error.getMessage())
+                );
+        subscribe(userTypingDisposable);
+    }
+
+    private void onInputChanged(@NonNull String input) {
+        mChatController.onUserTyping(input);
+        updateLastUserActivityTime();
     }
 
     private void updateLastUserActivityTime() {
         LastUserActivityTimeCounter timeCounter = LastUserActivityTimeCounterSingletonProvider
                 .INSTANCE.getLastUserActivityTimeCounter();
         timeCounter.updateLastUserActivityTime();
+    }
+
+    private void configureRecordButtonVisibility() {
+        Disposable recordButtonVisibilityDisposable = Observable.combineLatest(
+                        RxUtils.toObservableImmediately(inputTextObservable),
+                        RxUtils.toObservableImmediately(fileDescription),
+                        (s, fileDescriptionOptional) -> (TextUtils.isEmpty(s) || s.trim().isEmpty())
+                                && fileDescriptionOptional.isEmpty()
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::setRecordButtonVisibility,
+                        error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription "
+                                + error.getMessage())
+                );
+        subscribe(recordButtonVisibilityDisposable);
+    }
+
+    private void setRecordButtonVisibility(@NonNull Boolean isInputEmpty) {
+        boolean isButtonVisible = isInputEmpty && style.voiceMessageEnabled
+                && Config.instance.attachmentEnabled;
+        binding.recordButton.setVisibility(isButtonVisible ? View.VISIBLE : View.GONE);
     }
 
     private void showUnreadMsgsCount(int unreadCount) {
