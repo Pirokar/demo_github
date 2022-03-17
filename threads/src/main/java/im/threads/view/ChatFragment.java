@@ -9,7 +9,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -251,7 +250,7 @@ public final class ChatFragment extends BaseFragment implements
         initToolbar();
         setHasOptionsMenu(true);
         initController();
-        setFragmentStyle(style);
+        setFragmentStyle();
 
         initUserInputState();
         initQuickReplies();
@@ -328,6 +327,7 @@ public final class ChatFragment extends BaseFragment implements
         if (activity == null || fdMediaPlayer == null) {
             return;
         }
+        initInputLayout(activity);
         mQuoteLayoutHolder = new QuoteLayoutHolder();
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         binding.recycler.setLayoutManager(mLayoutManager);
@@ -339,6 +339,21 @@ public final class ChatFragment extends BaseFragment implements
         binding.recycler.setAdapter(chatAdapter);
         binding.searchDownIb.setAlpha(DISABLED_ALPHA);
         binding.searchUpIb.setAlpha(DISABLED_ALPHA);
+    }
+
+    private void initInputLayout(@NonNull Activity activity) {
+        int iconTint = style.chatBodyIconsTint == 0
+                ? style.inputIconTintResId : style.chatBodyIconsTint;
+
+        int attachmentVisibility = Config.instance.attachmentEnabled ? View.VISIBLE : View.GONE;
+        binding.addAttachment.setVisibility(attachmentVisibility);
+        binding.addAttachment.setImageResource(style.attachmentIconResId);
+        ColorsHelper.setTint(activity, binding.addAttachment, iconTint);
+        binding.addAttachment.setOnClickListener(v -> openBottomSheetAndGallery());
+
+        binding.sendMessage.setImageResource(style.sendMessageIconResId);
+        ColorsHelper.setTint(activity, binding.sendMessage, iconTint);
+        binding.sendMessage.setOnClickListener(v -> onSendButtonClick());
     }
 
     private void initRecording() {
@@ -365,9 +380,14 @@ public final class ChatFragment extends BaseFragment implements
                 }
             });
         }
-        Drawable drawable = AppCompatResources.getDrawable(requireContext(), style.threadsRecordButtonBackground).mutate();
-        ColorsHelper.setDrawableColor(requireContext(), drawable, style.threadsRecordButtonBackgroundColor);
-        recordButton.setBackground(drawable);
+        Drawable drawable = AppCompatResources.getDrawable(requireContext(),
+                style.threadsRecordButtonBackground);
+        if (drawable != null) {
+            drawable = drawable.mutate();
+            ColorsHelper.setDrawableColor(requireContext(), drawable,
+                    style.threadsRecordButtonBackgroundColor);
+            recordButton.setBackground(drawable);
+        }
         recordButton.setImageResource(style.threadsRecordButtonIcon);
         recordButton.setColorFilter(ContextCompat.getColor(requireContext(), style.threadsRecordButtonIconColor), PorterDuff.Mode.SRC_ATOP);
         recordView.setCancelBounds(8);
@@ -586,10 +606,7 @@ public final class ChatFragment extends BaseFragment implements
     private void bindViews() {
         binding.swipeRefresh.setSwipeListener(() -> {
         });
-        binding.addAttachment.setVisibility(Config.instance.attachmentEnabled ? View.VISIBLE : View.GONE);
-        binding.addAttachment.setOnClickListener(v -> openBottomSheetAndGallery());
         binding.swipeRefresh.setOnRefreshListener(ChatFragment.this::onRefresh);
-        binding.sendMessage.setOnClickListener(v -> onSendButtonClick());
         binding.consultName.setOnClickListener(v -> {
             if (mChatController.isConsultFound()) {
                 chatAdapterCallback.onConsultAvatarClick(mChatController.getCurrentConsultInfo().getId());
@@ -790,7 +807,7 @@ public final class ChatFragment extends BaseFragment implements
         }
     }
 
-    private void setFragmentStyle(@NonNull ChatStyle style) {
+    private void setFragmentStyle() {
         Activity activity = getActivity();
         if (activity == null) {
             return;
@@ -848,13 +865,7 @@ public final class ChatFragment extends BaseFragment implements
             }
         });
 
-        binding.addAttachment.setImageResource(style.attachmentsIconResId);
-
-        binding.sendMessage.setImageResource(style.sendMessageIconResId);
-
         ColorsHelper.setTextColor(activity, binding.search, style.chatToolbarTextColorResId);
-        ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
-        ColorsHelper.setDrawableColor(activity, binding.chatBackButton.getDrawable(), style.chatToolbarTextColorResId);
         ColorsHelper.setTextColor(activity, binding.subtitle, style.chatToolbarTextColorResId);
         ColorsHelper.setTextColor(activity, binding.consultName, style.chatToolbarTextColorResId);
 
@@ -875,19 +886,11 @@ public final class ChatFragment extends BaseFragment implements
                 ThreadsLogger.e(TAG, "setFragmentStyle", e);
             }
         }
-        ColorsHelper.setTint(activity, binding.contentCopy, style.chatBodyIconsTint);
-        ColorsHelper.setTint(activity, binding.reply, style.chatBodyIconsTint);
-        ColorsHelper.setTint(activity, binding.sendMessage, style.chatBodyIconsTint);
-        ColorsHelper.setTint(activity, binding.addAttachment, style.chatBodyIconsTint);
-        ColorsHelper.setTint(activity, binding.quoteClear, style.chatBodyIconsTint);
 
-        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
-        try {
-            Drawable overflowDrawable = binding.popupMenuButton.getDrawable();
-            ColorsHelper.setDrawableColor(activity, overflowDrawable, style.chatToolbarTextColorResId);
-        } catch (Resources.NotFoundException e) {
-            ThreadsLogger.e(TAG, "setFragmentStyle", e);
-        }
+        binding.quoteClear.setImageResource(style.quoteClearIconResId);
+        int quoteClearIconTintResId = style.chatBodyIconsTint == 0
+                ? style.quoteClearIconTintResId : style.chatBodyIconsTint;
+        ColorsHelper.setTint(activity, binding.quoteClear, quoteClearIconTintResId);
 
         binding.flEmpty.setBackgroundColor(ContextCompat.getColor(activity, style.emptyStateBackgroundColorResId));
         Drawable progressDrawable = binding.progressBar.getIndeterminateDrawable().mutate();
@@ -1719,10 +1722,8 @@ public final class ChatFragment extends BaseFragment implements
             return;
         }
         setTitleStateCurrentOperatorConnected();
-        Drawable d = AppCompatResources.getDrawable(activity, R.drawable.ic_arrow_back_white_24dp).mutate();
-        ColorsHelper.setDrawableColor(activity, d, style.chatToolbarTextColorResId);
-        binding.chatBackButton.setImageDrawable(d);
-        ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatToolbarTextColorResId);
+        ColorsHelper.setTint(activity, binding.chatBackButton, style.chatToolbarTextColorResId);
+        ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId);
         ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
 
         binding.copyControls.setVisibility(View.GONE);
@@ -1894,11 +1895,19 @@ public final class ChatFragment extends BaseFragment implements
     private void updateInputEnable(InputFieldEnableModel enableModel) {
         isSendBlocked = !enableModel.isEnabledSendButton();
         binding.sendMessage.setEnabled(enableModel.isEnabledSendButton());
-        ColorsHelper.setTint(getActivity(), binding.sendMessage, enableModel.isEnabledSendButton() ? style.chatBodyIconsTint : style.chatDisabledTextColor);
+        int enabledIconTint = style.chatBodyIconsTint == 0
+                ? style.inputIconTintResId : style.chatBodyIconsTint;
+        int sendMessageColorResId = enableModel.isEnabledSendButton()
+                ? enabledIconTint
+                : style.chatDisabledTextColor;
+        ColorsHelper.setTint(getActivity(), binding.sendMessage, sendMessageColorResId);
 
         binding.inputEditView.setEnabled(enableModel.isEnabledInputField());
         binding.addAttachment.setEnabled(enableModel.isEnabledInputField());
-        ColorsHelper.setTint(getActivity(), binding.addAttachment, enableModel.isEnabledInputField() ? style.chatBodyIconsTint : style.chatDisabledTextColor);
+        int addAttachmentColorResId = enableModel.isEnabledInputField()
+                ? enabledIconTint
+                : style.chatDisabledTextColor;
+        ColorsHelper.setTint(getActivity(), binding.addAttachment, addAttachmentColorResId);
         if (!enableModel.isEnabledInputField()) {
             Keyboard.hide(requireContext(), binding.inputEditView, 100);
         }
@@ -2049,18 +2058,32 @@ public final class ChatFragment extends BaseFragment implements
     }
 
     private void initToolbar() {
-        binding.toolbar.setTitle("");
-
         Activity activity = getActivity();
+        if (activity == null) return;
+        binding.toolbar.setTitle("");
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
+
         if (activity instanceof ChatActivity) {
             binding.chatBackButton.setVisibility(View.VISIBLE);
         } else {
             binding.chatBackButton.setVisibility(style.showBackButton ? View.VISIBLE : View.GONE);
         }
         binding.chatBackButton.setOnClickListener(v -> onActivityBackPressed());
+        binding.chatBackButton.setImageResource(style.chatToolbarBackIconResId);
+        ColorsHelper.setTint(activity, binding.chatBackButton, style.chatToolbarTextColorResId);
 
+        binding.popupMenuButton.setImageResource(style.chatToolbarPopUpMenuIconResId);
+        ColorsHelper.setTint(activity, binding.popupMenuButton, style.chatToolbarTextColorResId);
         binding.popupMenuButton.setOnClickListener(v -> showPopup());
         showOverflowMenu();
+
+        int toolbarInverseIconTint = style.chatBodyIconsTint == 0
+                ? style.chatToolbarInverseIconTintResId : style.chatBodyIconsTint;
+        binding.contentCopy.setImageResource(style.chatToolbarContentCopyIconResId);
+        ColorsHelper.setTint(activity, binding.contentCopy, toolbarInverseIconTint);
+        binding.reply.setImageResource(style.chatToolbarReplyIconResId);
+        ColorsHelper.setTint(activity, binding.reply, toolbarInverseIconTint);
+
         if (getResources().getBoolean(style.fixedChatTitle)) {
             setTitleStateDefault();
         }
@@ -2184,13 +2207,15 @@ public final class ChatFragment extends BaseFragment implements
         if (activity == null) {
             return;
         }
-        Drawable d = AppCompatResources.getDrawable(activity, R.drawable.ic_arrow_back_blue_24dp);
 
-        ColorsHelper.setDrawableColor(activity, binding.popupMenuButton.getDrawable(), style.chatBodyIconsTint);
-        ColorsHelper.setDrawableColor(activity, d, style.chatBodyIconsTint);
-        binding.chatBackButton.setImageDrawable(d);
+        int toolbarInverseIconTint = style.chatBodyIconsTint == 0
+                ? style.chatToolbarInverseIconTintResId : style.chatBodyIconsTint;
+        //для случая, если popupMenuButton отображается при выделении сообщения
+        ColorsHelper.setTint(activity, binding.popupMenuButton, toolbarInverseIconTint);
+        ColorsHelper.setTint(activity, binding.chatBackButton, toolbarInverseIconTint);
 
-        ColorsHelper.setBackgroundColor(getContext(), binding.toolbar, style.chatToolbarContextMenuColorResId);
+        ColorsHelper.setBackgroundColor(activity, binding.toolbar,
+                style.chatToolbarContextMenuColorResId);
 
         binding.copyControls.setVisibility(View.VISIBLE);
         binding.consultName.setVisibility(View.GONE);

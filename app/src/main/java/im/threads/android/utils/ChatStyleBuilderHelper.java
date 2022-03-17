@@ -82,6 +82,13 @@ public class ChatStyleBuilderHelper {
                         R.style.AltFileDialogStyleTransparent,
                         false,
                         false)
+                .setChatBodyIconsTint(0)
+                .setChatToolbarInverseIconTintResId(R.color.alt_threads_chat_icons_tint)
+                .setQuoteClearIconTintResId(R.color.alt_threads_chat_icons_tint)
+                .setInputIconTintResId(R.color.alt_threads_chat_icons_tint)
+                .setAttachmentBottomSheetButtonTintResId(R.color.alt_threads_chat_icons_tint)
+                .setDownloadButtonTintResId(R.color.alt_threads_chat_icons_tint)
+                .setMediaAndFilesFileIconTintResId(R.color.alt_threads_chat_icons_tint)
                 .setChatInputStyle(R.color.alt_threads_input_hint,
                         R.color.alt_threads_input_background,
                         R.color.alt_threads_input_text,

@@ -23,6 +23,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.helpers.MediaHelper;
@@ -84,17 +85,24 @@ public class AttachmentBottomSheetDialogFragment extends BottomSheetDialogFragme
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        ChatStyle chatStyle = Config.instance.getChatStyle();
         View view = inflater.inflate(R.layout.bottom_sheet_dialog_attachment, container, false);
         BottomSheetView fileInputSheet = view.findViewById(R.id.file_input_sheet);
         BottomGallery bottomGallery = view.findViewById(R.id.bottom_gallery);
-        fileInputSheet.setButtonsTint(Config.instance.getChatStyle().chatBodyIconsTint);
+        int attachmentBottomSheetButtonTintResId = chatStyle.chatBodyIconsTint == 0
+                ? chatStyle.attachmentBottomSheetButtonTintResId : chatStyle.chatBodyIconsTint;
+        fileInputSheet.setButtonsTint(attachmentBottomSheetButtonTintResId);
         fileInputSheet.setButtonsListener(this);
         ArrayList<Uri> allItems = new ArrayList<>();
         Context context = getContext();
         if (context != null) {
-            ColorsHelper.setBackgroundColor(context, fileInputSheet, Config.instance.getChatStyle().chatMessageInputColor);
-            ColorsHelper.setBackgroundColor(context, bottomGallery, Config.instance.getChatStyle().chatMessageInputColor);
+            ColorsHelper.setBackgroundColor(context, fileInputSheet,
+                    chatStyle.chatMessageInputColor);
+            ColorsHelper.setBackgroundColor(context, bottomGallery,
+                    chatStyle.chatMessageInputColor);
             try (Cursor c = MediaHelper.getAllPhotos(context)) {
                 if (c != null) {
                     int _ID = c.getColumnIndex(MediaStore.Images.Media._ID);

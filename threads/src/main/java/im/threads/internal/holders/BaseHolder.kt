@@ -1,16 +1,18 @@
 package im.threads.internal.holders
 
-import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import im.threads.R
+import im.threads.internal.Config
 import im.threads.internal.model.ErrorStateEnum
+import im.threads.internal.utils.ColorsHelper
 import im.threads.internal.views.CircularProgressButton
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -30,51 +32,25 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         }
     }
 
-    fun setTintToViews(views: Array<Drawable?>, @ColorRes colorRes: Int) {
-        for (tv in views) {
-            tv?.setColorFilter(getColorInt(colorRes), PorterDuff.Mode.SRC_ATOP)
+    fun setUpProgressButton(button: CircularProgressButton) {
+        val chatStyle = Config.instance.chatStyle
+        val downloadButtonTintResId = if (chatStyle.chatBodyIconsTint == 0) {
+            chatStyle.downloadButtonTintResId
+        } else {
+            chatStyle.chatBodyIconsTint
         }
+        val startDownload = setUpDrawable(chatStyle.startDownloadIconResId, downloadButtonTintResId)
+        val inProgress = setUpDrawable(chatStyle.inProgressIconResId, downloadButtonTintResId)
+        val completed = setUpDrawable(chatStyle.completedIconResId, downloadButtonTintResId)
+        button.setStartDownloadDrawable(startDownload)
+        button.setInProgress(inProgress)
+        button.setCompletedDrawable(completed)
     }
 
-    fun setTintToProgressButtonUser(
-        button: CircularProgressButton,
-        @ColorRes colorRes: Int
-    ) {
-        val completed = AppCompatResources.getDrawable(
-            itemView.context,
-            R.drawable.file_image_user
-        )?.mutate()
-        val inProgress = AppCompatResources.getDrawable(
-            itemView.context,
-            R.drawable.ic_clear_blue_user_36dp
-        )?.mutate()
-        val download = AppCompatResources.getDrawable(
-            itemView.context,
-            R.drawable.ic_vertical_align_bottom_user_24dp
-        )?.mutate()
-        setTintToViews(arrayOf(completed, inProgress, download), colorRes)
-        button.setCompletedDrawable(completed)
-        button.setStartDownloadDrawable(download)
-        button.setInProgress(inProgress)
-    }
-
-    fun setTintToProgressButtonConsult(button: CircularProgressButton, @ColorRes colorRes: Int) {
-        val completed = AppCompatResources.getDrawable(
-            itemView.context,
-            R.drawable.file_image_consult
-        )?.mutate()
-        val inProgress = AppCompatResources.getDrawable(
-            itemView.context,
-            R.drawable.ic_clear_blue_consult_36dp
-        )?.mutate()
-        val download = AppCompatResources.getDrawable(
-            itemView.context,
-            R.drawable.ic_vertical_align_bottom_consult_24dp
-        )?.mutate()
-        setTintToViews(arrayOf(completed, inProgress, download), colorRes)
-        button.setCompletedDrawable(completed)
-        button.setStartDownloadDrawable(download)
-        button.setInProgress(inProgress)
+    private fun setUpDrawable(@DrawableRes iconResId: Int, @ColorRes colorRes: Int): Drawable? {
+        val drawable = AppCompatResources.getDrawable(itemView.context, iconResId)?.mutate()
+        ColorsHelper.setDrawableColor(itemView.context, drawable, colorRes)
+        return drawable
     }
 
     protected fun getErrorImageResByErrorCode(code: ErrorStateEnum) = when (code) {

@@ -1,6 +1,5 @@
 package im.threads.internal.holders;
 
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 
 import com.squareup.picasso.Picasso;
 
@@ -21,6 +19,7 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.model.FileDescription;
+import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.views.CircularProgressButton;
 
@@ -40,12 +39,21 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         fileHeaderTextView = itemView.findViewById(R.id.file_title);
         fileSizeTextView = itemView.findViewById(R.id.file_size);
         timeStampTextView = itemView.findViewById(R.id.timestamp);
-        tintedDrawable = AppCompatResources.getDrawable(itemView.getContext(), R.drawable.ic_insert_file_blue_36dp);
         ChatStyle style = Config.instance.getChatStyle();
-        tintedDrawable.setColorFilter(ContextCompat.getColor(itemView.getContext(), style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
+        setUpTintedDrawable(style);
         fileSizeTextView.setTextColor(getColorInt(style.mediaAndFilesTextColor));
         fileHeaderTextView.setTextColor(getColorInt(style.mediaAndFilesTextColor));
         timeStampTextView.setTextColor(getColorInt(style.mediaAndFilesTextColor));
+    }
+
+    private void setUpTintedDrawable(ChatStyle style) {
+        tintedDrawable = AppCompatResources.getDrawable(itemView.getContext(),
+                style.mediaAndFilesFileIconResId);
+        int tintResId = style.chatBodyIconsTint == 0 ? style.mediaAndFilesFileIconTintResId
+                : style.chatBodyIconsTint;
+        if (tintedDrawable != null) {
+            ColorsHelper.setDrawableColor(itemView.getContext(), tintedDrawable, tintResId);
+        }
     }
 
     public void onBind(FileDescription fileDescription,

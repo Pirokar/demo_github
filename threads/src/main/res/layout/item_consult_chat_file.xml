@@ -45,9 +45,9 @@
             android:layout_marginRight="@dimen/margin_quarter"
             android:layout_marginBottom="@dimen/margin_three_fourth"
             android:background="@color/threads_chat_background"
-            app:completed_drawable="@drawable/file_image_consult"
-            app:in_progress_label="@drawable/ic_clear_blue_consult_36dp"
-            app:start_download_label="@drawable/ic_vertical_align_bottom_consult_24dp" />
+            app:completed_drawable="@drawable/threads_ic_file_outline_24dp"
+            app:in_progress_label="@drawable/threads_ic_clear_36dp"
+            app:start_download_label="@drawable/threads_ic_vertical_align_bottom_18dp" />
 
         <ImageView
             android:id="@+id/loader"
