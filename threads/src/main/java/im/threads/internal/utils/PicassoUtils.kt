@@ -1,35 +1,35 @@
 package im.threads.internal.utils
 
 import android.content.Context
-import android.os.Parcel
-import android.os.Parcelable
 import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
-import okhttp3.Interceptor
+import im.threads.config.HttpClientSettings
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 object PicassoUtils {
 
     @JvmStatic
-    fun getOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(object : Interceptor {
-            @Throws(IOException::class)
-            override fun intercept(chain: Interceptor.Chain): Response {
+    fun getOkHttpClient(httpClientSettings: HttpClientSettings): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor { chain ->
                 val newRequest: Request = chain.request().newBuilder()
                     .addHeader("X-Ext-Client-ID", PrefUtils.getClientID())
                     .build()
-                return chain.proceed(newRequest)
+                chain.proceed(newRequest)
             }
-        })
-        .build()
+            .connectTimeout(httpClientSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .readTimeout(httpClientSettings.readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .writeTimeout(httpClientSettings.writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .build()
 
     @JvmStatic
-    fun setPicasso(context: Context)  {
-        Picasso.setSingletonInstance(Picasso.Builder(context)
-            .downloader(OkHttp3Downloader(getOkHttpClient()))
-            .build())
+    fun setPicasso(context: Context, httpClientSettings: HttpClientSettings) {
+        Picasso.setSingletonInstance(
+            Picasso.Builder(context)
+                .downloader(OkHttp3Downloader(getOkHttpClient(httpClientSettings)))
+                .build()
+        )
     }
 }

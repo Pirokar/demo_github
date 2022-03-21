@@ -1,5 +1,7 @@
 package im.threads.internal;
 
+import static im.threads.internal.utils.PicassoUtils.setPicasso;
+
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -13,6 +15,8 @@ import com.google.gson.GsonBuilder;
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
+import im.threads.config.RequestConfig;
+import im.threads.config.SocketClientSettings;
 import im.threads.internal.exceptions.MetaConfigurationException;
 import im.threads.internal.model.gson.UriDeserializer;
 import im.threads.internal.model.gson.UriSerializer;
@@ -32,6 +36,7 @@ public final class Config {
     @NonNull
     public final Context context;
 
+    public final RequestConfig requestConfig;
     private volatile ChatStyle chatStyle = null;
     private volatile PermissionDescriptionDialogStyle
             storagePermissionDescriptionDialogStyle = null;
@@ -78,7 +83,8 @@ public final class Config {
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
-                  int surveyCompletionDelay) {
+                  int surveyCompletionDelay,
+                  @NonNull RequestConfig requestConfig) {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
@@ -90,8 +96,10 @@ public final class Config {
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
         this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid,
-                threadsGateHCMProviderUid);
+                threadsGateHCMProviderUid,requestConfig.getSocketClientSettings());
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
+        this.requestConfig = requestConfig;
+        setPicasso(this.context, requestConfig.getPicassoHttpClientSettings());
     }
 
     public void applyChatStyle(ChatStyle chatStyle) {
@@ -199,7 +207,8 @@ public final class Config {
     private Transport getTransport(@Nullable ConfigBuilder.TransportType providedTransportType,
                                    @Nullable String providedThreadsGateUrl,
                                    @Nullable String providedThreadsGateProviderUid,
-                                   @Nullable String providedThreadsGateHCMProviderUid) {
+                                   @Nullable String providedThreadsGateHCMProviderUid,
+                                   SocketClientSettings socketClientSettings) {
         ConfigBuilder.TransportType transportType;
         if (providedTransportType != null) {
             transportType = providedTransportType;
@@ -235,7 +244,7 @@ public final class Config {
             throw new MetaConfigurationException("Threads gate provider uid is not set");
         }
         return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid,
-                threadsGateHCMProviderUid, isDebugLoggingEnabled);
+                threadsGateHCMProviderUid, isDebugLoggingEnabled, socketClientSettings);
     }
 
     @NonNull

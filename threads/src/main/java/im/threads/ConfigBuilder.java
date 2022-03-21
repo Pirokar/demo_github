@@ -1,7 +1,5 @@
 package im.threads;
 
-import static im.threads.internal.utils.PicassoUtils.setPicasso;
-
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +8,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import im.threads.config.RequestConfig;
 import im.threads.internal.Config;
 import im.threads.view.ChatActivity;
 
@@ -46,9 +45,10 @@ public final class ConfigBuilder {
     @Nullable
     private String threadsGateHCMProviderUid = null;
 
+    private RequestConfig requestConfig  = new RequestConfig();
+
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
-        setPicasso(context);
     }
 
     public ConfigBuilder serverBaseUrl(String serverBaseUrl) {
@@ -100,6 +100,11 @@ public final class ConfigBuilder {
         return this;
     }
 
+    public ConfigBuilder requestConfig(final RequestConfig requestConfig) {
+        this.requestConfig = requestConfig;
+        return this;
+    }
+    
     Config build() {
         return new Config(
                 context,
@@ -112,7 +117,8 @@ public final class ConfigBuilder {
                 unreadMessagesCountListener,
                 isDebugLoggingEnabled,
                 historyLoadingCount,
-                surveyCompletionDelay
+                surveyCompletionDelay,
+                requestConfig
         );
     }
 
