@@ -146,4 +146,7 @@
     <string name="threads_achieve_images_count_limit_message">Вы достигли лимита изображений для отправки</string>
     <string name="threads_some_error_during_load_file">Произошла ошибка при загрузке\nили проверке файла.</string>
     <string name="loading"></string>
+
+    <string name="threads_history_loading_message">Выполняется загрузка сообщений из истории, подождите завершения</string>
+
 </resources>

@@ -249,6 +249,12 @@ public final class ChatController {
                 Single.just(isAllMessagesDownloaded)
                         .flatMap(isAllMessagesDownloaded -> {
                             if (!isAllMessagesDownloaded) {
+                                if(query.length() == 1) {
+                                    ThreadUtils.runOnUiThread(() -> {
+                                        fragment.showProgressBar();
+                                        Toast.makeText(appContext, appContext.getString(R.string.threads_history_loading_message), Toast.LENGTH_LONG).show();
+                                    });
+                                }
                                 return downloadMessagesTillEnd();
                             } else {
                                 return Single.fromCallable((Callable<Object>) ArrayList::new);
@@ -264,13 +270,21 @@ public final class ChatController {
                                         seeker = new Seeker();
                                     }
                                     lastSearchQuery = query;
+                                    ThreadUtils.runOnUiThread(() -> {
+                                        fragment.hideProgressBar();
+                                    });
                                 })
                         )
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
-                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                                e ->  {
+                                    ThreadsLogger.e(TAG, e.getMessage());
+                                    ThreadUtils.runOnUiThread(() -> {
+                                        fragment.hideProgressBar();
+                                    });
+                                }
                         )
         );
     }

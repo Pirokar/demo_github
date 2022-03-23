@@ -136,4 +136,7 @@
     <string name="threads_achieve_images_count_limit_message">You\'ve reached the limit of images to send</string>
     <string name="threads_some_error_during_load_file">An error occurred while loading\nor validating the file</string>
     <string name="loading"></string>
+
+    <string name="threads_history_loading_message">Message history is loading, please wait</string>
+
 </resources>
