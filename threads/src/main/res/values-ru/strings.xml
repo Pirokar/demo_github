@@ -30,6 +30,8 @@
     <string name="threads_back_camera_could_not_start_error">Не удалось запустить тыльную камеру.</string>
     <string name="threads_retake">Переснять</string>
     <string name="threads_consult">Консультант</string>
+    <string name="threads_bot">Бот</string>
+    <string name="threads_operator">Оператор</string>
 
     <string name="threads_error_no_file">Файл удалён на сервере</string>
     <string name="threads_no_media_and_files_header">Медиа-файлы отсутствуют</string>
@@ -119,7 +121,7 @@
 
     <string name="threads_contact_center">Контакт центр</string>
     <string name="threads_searching_operator">Поиск оператора…</string>
-    <string name="threads_operator_subtitle">Оператор</string>
+    <string name="threads_operator_subtitle">@string/threads_operator</string>
     <string name="threads_unknown_operator">Неизвестный</string>
 
     <string name="threads_channel_name">Контакт центр</string>

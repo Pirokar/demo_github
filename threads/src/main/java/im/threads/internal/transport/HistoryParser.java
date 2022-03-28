@@ -70,12 +70,14 @@ public final class HistoryParser {
                 String operatorId = null;
                 boolean sex = false;
                 String orgUnit = null;
+                String role = null;
                 if (operator != null) {
                     name = operator.getAliasOrName();
                     photoUrl = !TextUtils.isEmpty(operator.getPhotoUrl()) ? operator.getPhotoUrl() : null;
                     operatorId = operator.getId() != null ? String.valueOf(operator.getId()) : null;
                     sex = Operator.Gender.MALE.equals(operator.getGender());
                     orgUnit = operator.getOrgUnit();
+                    role = operator.getRole();
                 }
                 ChatItemType type = ChatItemType.fromString(message.getType());
                 switch (type) {
@@ -89,7 +91,10 @@ public final class HistoryParser {
                         break;
                     case OPERATOR_JOINED:
                     case OPERATOR_LEFT:
-                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds, operatorId, message.getType(), name, sex, timeStamp, photoUrl, null, null, orgUnit, message.isDisplay(), message.getText(), message.getThreadId()));
+                        out.add(new ConsultConnectionMessage(uuid, providerId, providerIds,
+                                operatorId, message.getType(), name, sex, timeStamp, photoUrl,
+                                null, null, orgUnit, role, message.isDisplay(),
+                                message.getText(), message.getThreadId()));
                         break;
                     case SURVEY:
                         Survey survey = getSurveyFromJsonString(message.getText());

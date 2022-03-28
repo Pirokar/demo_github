@@ -1,10 +1,10 @@
 package im.threads.internal.model;
 
+import androidx.core.util.ObjectsCompat;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
-
-import androidx.core.util.ObjectsCompat;
 
 public final class ConsultConnectionMessage extends ConsultChatPhrase implements ChatItem, SystemMessage {
 
@@ -13,16 +13,19 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
     private final boolean sex;
     private final long date;
     private final String status;
-    private String uuid;
+    private final String uuid;
     private String providerId; //This this a mfms messageId required for read status updates
-    private List<String> providerIds;
-    private String title;
-    private String orgUnit;
+    private final List<String> providerIds;
+    private final String title;
+    private final String orgUnit;
+    private final String role;
     @SerializedName("display")
-    private boolean displayMessage;
-    private String text;
+    private final boolean displayMessage;
+    private final String text;
     private final Long threadId;
 
+    /** Используется в старой БД. */
+    @Deprecated
     public ConsultConnectionMessage(
             String uuid,
             String providerId,
@@ -51,6 +54,42 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
         this.status = status;
         this.title = title;
         this.orgUnit = orgUnit;
+        this.role = null;
+        this.displayMessage = displayMessage;
+        this.text = text;
+        this.threadId = threadId;
+    }
+
+    public ConsultConnectionMessage(
+            String uuid,
+            String providerId,
+            List<String> providerIds,
+            String consultId,
+            String type,
+            String name,
+            boolean sex,
+            long date,
+            String avatarPath,
+            String status,
+            String title,
+            String orgUnit,
+            String role,
+            boolean displayMessage,
+            String text,
+            Long threadId
+    ) {
+        super(avatarPath, consultId);
+        this.uuid = uuid;
+        this.providerId = providerId;
+        this.providerIds = providerIds;
+        this.type = type;
+        this.name = name;
+        this.sex = sex;
+        this.date = date;
+        this.status = status;
+        this.title = title;
+        this.orgUnit = orgUnit;
+        this.role = role;
         this.displayMessage = displayMessage;
         this.text = text;
         this.threadId = threadId;
@@ -87,6 +126,10 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
 
     public String getOrgUnit() {
         return orgUnit;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public String getStatus() {
@@ -146,11 +189,13 @@ public final class ConsultConnectionMessage extends ConsultChatPhrase implements
                 ObjectsCompat.equals(status, that.status) &&
                 ObjectsCompat.equals(title, that.title) &&
                 ObjectsCompat.equals(orgUnit, that.orgUnit) &&
+                ObjectsCompat.equals(role, that.role) &&
                 ObjectsCompat.equals(text, that.text);
     }
 
     @Override
     public int hashCode() {
-        return ObjectsCompat.hash(uuid, providerId, providerIds, type, name, sex, date, status, title, orgUnit, displayMessage, text);
+        return ObjectsCompat.hash(uuid, providerId, providerIds, type, name, sex, date, status,
+                title, orgUnit, role, displayMessage, text);
     }
 }
