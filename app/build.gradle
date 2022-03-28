@@ -80,6 +80,11 @@ android {
             applicationId "dte.chc.mobile4.android"
             resValue "string", "app_name1", "THR Mobile4 Demo"
         }
+        prod {
+            dimension "server"
+            applicationId "dte.chc.prod.android"
+            resValue "string", "app_name1", "THR Prod Demo"
+        }
     }
 
     lintOptions {
