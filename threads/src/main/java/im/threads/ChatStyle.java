@@ -417,7 +417,7 @@ public final class ChatStyle implements Serializable {
     public ChatStyle() {
     }
 
-    public ChatStyle arePermissionDescriptionDialogsEnabled(final boolean areEnabled) {
+    public ChatStyle setArePermissionDescriptionDialogsEnabled(final boolean areEnabled) {
         this.arePermissionDescriptionDialogsEnabled = areEnabled;
         return this;
     }
