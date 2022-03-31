@@ -131,7 +131,7 @@ class ThreadsDbHelper(val context: Context) :
     }
 
     companion object {
-        private const val VERSION = 1
+        private const val VERSION = 2
         const val DB_PASSWORD = "password"
     }
 }

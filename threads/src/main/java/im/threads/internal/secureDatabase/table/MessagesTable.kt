@@ -18,8 +18,6 @@ import im.threads.internal.secureDatabase.ThreadsDbHelper.Companion.DB_PASSWORD
 import im.threads.internal.utils.ThreadsLogger
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteOpenHelper
-import java.util.ArrayList
-import java.util.HashSet
 import java.util.Locale
 
 class MessagesTable(
@@ -47,8 +45,9 @@ class MessagesTable(
                         "%s text," +  //consultid
                         "%s text," +  //COLUMN_CONSULT_STATUS
                         "%s text" //COLUMN_CONSULT_TITLE
-                        + ", " + COLUMN_CONSULT_ORG_UNIT + " text," +  //COLUMN_CONSULT_ORG_UNIT
-                        "%s text," +  //connection type
+                        + ", " + COLUMN_CONSULT_ORG_UNIT + " text"  //COLUMN_CONSULT_ORG_UNIT
+                        + ", " + COLUMN_CONSULT_ROLE + " text"  //COLUMN_CONSULT_ROLE
+                        + ", " + "%s text," +  //connection type
                         "%s integer," +  //isRead
                         "%s text, " +  //COLUMN_PROVIDER_ID
                         "%s text " //COLUMN_PROVIDER_IDS
@@ -82,9 +81,6 @@ class MessagesTable(
     }
 
     override fun upgradeTable(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        if (oldVersion < 2) {
-            db.execSQL("ALTER TABLE $TABLE_MESSAGES ADD COLUMN $COLUMN_DISPLAY_MESSAGE INTEGER DEFAULT 0")
-        }
         if (oldVersion < newVersion) {
             db.execSQL("DROP TABLE IF EXISTS $TABLE_MESSAGES")
         }
@@ -216,6 +212,7 @@ class MessagesTable(
                     id,
                     cursorGetString(c, COLUMN_CONSULT_STATUS),
                     cursorGetString(c, COLUMN_CONSULT_ORG_UNIT),
+                    cursorGetString(c, COLUMN_CONSULT_ROLE),
                     cursorGetString(c, COLUMN_AVATAR_PATH)
                 )
             }
@@ -395,6 +392,7 @@ class MessagesTable(
                     cursorGetString(c, COLUMN_CONSULT_STATUS),
                     cursorGetString(c, COLUMN_CONSULT_TITLE),
                     cursorGetString(c, COLUMN_CONSULT_ORG_UNIT),
+                    cursorGetString(c, COLUMN_CONSULT_ROLE),
                     cursorGetBool(c, COLUMN_DISPLAY_MESSAGE),
                     cursorGetString(c, COLUMN_PHRASE),
                     cursorGetLong(c, COLUMN_THREAD_ID)
@@ -544,6 +542,7 @@ class MessagesTable(
         cv.put(COLUMN_CONSULT_STATUS, consultConnectionMessage.status)
         cv.put(COLUMN_CONSULT_TITLE, consultConnectionMessage.title)
         cv.put(COLUMN_CONSULT_ORG_UNIT, consultConnectionMessage.orgUnit)
+        cv.put(COLUMN_CONSULT_ROLE, consultConnectionMessage.role)
         cv.put(COLUMN_MESSAGE_UUID, consultConnectionMessage.uuid)
         cv.put(COLUMN_DISPLAY_MESSAGE, consultConnectionMessage.isDisplayMessage)
         cv.put(COLUMN_PHRASE, consultConnectionMessage.text)
@@ -700,6 +699,7 @@ private const val COLUMN_CONSULT_ID = "COLUMN_CONSULT_ID"
 private const val COLUMN_CONSULT_STATUS = "COLUMN_CONSULT_STATUS"
 private const val COLUMN_CONSULT_TITLE = "COLUMN_CONSULT_TITLE"
 private const val COLUMN_CONSULT_ORG_UNIT = "COLUMN_CONSULT_ORG_UNIT"
+private const val COLUMN_CONSULT_ROLE = "COLUMN_CONSULT_ROLE"
 private const val COLUMN_CONNECTION_TYPE = "COLUMN_CONNECTION_TYPE"
 private const val COLUMN_IS_READ = "COLUMN_IS_READ"
 private const val COLUMN_DISPLAY_MESSAGE = "COLUMN_DISPLAY_MESSAGE"

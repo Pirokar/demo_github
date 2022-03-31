@@ -100,6 +100,7 @@ import im.threads.internal.model.ChatPhrase;
 import im.threads.internal.model.ClientNotificationDisplayType;
 import im.threads.internal.model.ConsultInfo;
 import im.threads.internal.model.ConsultPhrase;
+import im.threads.internal.model.ConsultRole;
 import im.threads.internal.model.ConsultTyping;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.InputFieldEnableModel;
@@ -1644,25 +1645,45 @@ public final class ChatFragment extends BaseFragment implements
                 () -> {
                     Context context = getContext();
                     if (context != null && isAdded()) {
+                        if (!isInMessageSearchMode) {
+                            binding.consultName.setVisibility(View.VISIBLE);
+                        }
                         if (!getResources().getBoolean(style.fixedChatTitle)) {
                             if (!isInMessageSearchMode) {
                                 binding.subtitle.setVisibility(View.VISIBLE);
-                                binding.consultName.setVisibility(View.VISIBLE);
                             }
                             if (!TextUtils.isEmpty(info.getName()) && !info.getName().equals("null")) {
                                 binding.consultName.setText(info.getName());
                             } else {
                                 binding.consultName.setText(context.getString(R.string.threads_unknown_operator));
                             }
-                            binding.subtitle.setText((!style.chatSubtitleShowOrgUnit || info.getOrganizationUnit() == null)
-                                    ? context.getString(style.chatSubtitleTextResId)
-                                    : info.getOrganizationUnit());
+                            setSubtitle(info, context);
                         }
                         chatAdapter.removeConsultSearching();
                         showOverflowMenu();
                     }
                 }
         );
+    }
+
+    private void setSubtitle(@NonNull ConsultInfo info, @NonNull Context context) {
+        String subtitle;
+        if (style.chatSubtitleShowOrgUnit
+                && !TextUtils.isEmpty(info.getOrganizationUnit())) {
+            subtitle = info.getOrganizationUnit();
+        } else if (getResources().getBoolean(style.fixedChatSubtitle)
+                || TextUtils.isEmpty(info.getRole())) {
+            subtitle = context.getString(style.chatSubtitleTextResId);
+        } else {
+            ConsultRole role = ConsultRole.consultRoleFromString(info.getRole());
+            if (ConsultRole.BOT == role
+                    || ConsultRole.EXTERNAL_BOT == role) {
+                subtitle = context.getString(R.string.threads_bot);
+            } else {
+                subtitle = context.getString(R.string.threads_operator);
+            }
+        }
+        binding.subtitle.setText(subtitle);
     }
 
     public void setTitleStateDefault() {
@@ -1721,7 +1742,8 @@ public final class ChatFragment extends BaseFragment implements
         if (!isInMessageSearchMode) {
             binding.consultName.setVisibility(View.VISIBLE);
         }
-        if (mChatController != null && mChatController.isConsultFound() && !isInMessageSearchMode) {
+        if (mChatController != null && mChatController.isConsultFound() && !isInMessageSearchMode
+                && !getResources().getBoolean(style.fixedChatTitle)) {
             binding.subtitle.setVisibility(View.VISIBLE);
         }
     }
@@ -1736,7 +1758,9 @@ public final class ChatFragment extends BaseFragment implements
         if (isInMessageSearchMode) return;
 
         if (mChatController.isConsultFound()) {
-            binding.subtitle.setVisibility(View.VISIBLE);
+            if (!getResources().getBoolean(style.fixedChatTitle)) {
+                binding.subtitle.setVisibility(View.VISIBLE);
+            }
             binding.consultName.setVisibility(View.VISIBLE);
             binding.searchLo.setVisibility(View.GONE);
             binding.search.setText("");

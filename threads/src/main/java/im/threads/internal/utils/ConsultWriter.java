@@ -10,10 +10,11 @@ public final class ConsultWriter {
     private static final String OPERATOR_NAME = "OPERATOR_NAME";
     private static final String OPERATOR_TITLE = "OPERATOR_TITLE";
     private static final String OPERATOR_ORG_UNIT = "OPERATOR_ORG_UNIT";
+    private static final String OPERATOR_ROLE = "OPERATOR_ROLE";
     private static final String OPERATOR_PHOTO = "OPERATOR_PHOTO";
     private static final String OPERATOR_ID = "OPERATOR_ID";
     private static final String SEARCHING_CONSULT = "SEARCHING_CONSULT";
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
     public ConsultWriter(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
@@ -30,12 +31,15 @@ public final class ConsultWriter {
     public void setCurrentConsultInfo(ConsultConnectionMessage message) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String consultId = message.getConsultId();
-        editor.putString(OPERATOR_ID, consultId).commit();
-        editor.putString(OPERATOR_STATUS + consultId, message.getStatus()).commit();
-        editor.putString(OPERATOR_NAME + consultId, message.getName()).commit();
-        editor.putString(OPERATOR_TITLE + consultId, message.getTitle()).commit();
-        editor.putString(OPERATOR_ORG_UNIT + consultId, message.getOrgUnit()).commit();
-        editor.putString(OPERATOR_PHOTO + consultId, message.getAvatarPath()).commit();
+        editor
+                .putString(OPERATOR_ID, consultId)
+                .putString(OPERATOR_STATUS + consultId, message.getStatus())
+                .putString(OPERATOR_NAME + consultId, message.getName())
+                .putString(OPERATOR_TITLE + consultId, message.getTitle())
+                .putString(OPERATOR_ORG_UNIT + consultId, message.getOrgUnit())
+                .putString(OPERATOR_ROLE + consultId, message.getRole())
+                .putString(OPERATOR_PHOTO + consultId, message.getAvatarPath())
+                .commit();
     }
 
     public String getName(String id) {
@@ -48,6 +52,10 @@ public final class ConsultWriter {
 
     private String getOrgUnit(String id) {
         return sharedPreferences.getString(OPERATOR_ORG_UNIT + id, null);
+    }
+
+    private String getRole(String id) {
+        return sharedPreferences.getString(OPERATOR_ROLE + id, null);
     }
 
     private String getPhotoUrl(String id) {
@@ -72,7 +80,7 @@ public final class ConsultWriter {
 
     public ConsultInfo getConsultInfo(String id) {
         return new ConsultInfo(getName(id), id,
-                getStatus(id), getOrgUnit(id), getPhotoUrl(id));
+                getStatus(id), getOrgUnit(id), getRole(id), getPhotoUrl(id));
     }
 
     public ConsultInfo getCurrentConsultInfo() {

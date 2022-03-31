@@ -27,7 +27,8 @@ public final class HistoryResponse {
                         String.valueOf(operator.getId()),
                         operator.getStatus(),
                         operator.getOrganizationUnit(),
-                        operator.getPhotoUrl()
+                        operator.getPhotoUrl(),
+                        operator.getRole()
                 );
             }
         }
