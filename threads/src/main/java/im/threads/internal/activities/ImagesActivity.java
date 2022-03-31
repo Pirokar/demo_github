@@ -93,11 +93,16 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
 
     private void initToolbar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
-        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp).mutate();
-        ColorsHelper.setDrawableColor(this, d, R.color.threads_attachments_toolbar_text);
+        Drawable drawable = AppCompatResources.getDrawable(this,
+                R.drawable.ic_arrow_back_white_24dp);
+        if (drawable != null) {
+            drawable = drawable.mutate();
+            ColorsHelper.setDrawableColor(this, drawable,
+                    R.color.threads_attachments_toolbar_text);
+            toolbar.setNavigationIcon(drawable);
+        }
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         toolbar.setTitle("");
-        toolbar.setNavigationIcon(d);
     }
 
     @Override
@@ -113,7 +118,8 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_gallery, menu);
         if (menu.size() > 0) {
-            ColorsHelper.setDrawableColor(this, menu.getItem(0).getIcon(), R.color.threads_attachments_toolbar_text);
+            ColorsHelper.setDrawableColor(this, menu.getItem(0).getIcon(),
+                    R.color.threads_attachments_toolbar_text);
             menu.getItem(0).getIcon();
         }
         return super.onCreateOptionsMenu(menu);

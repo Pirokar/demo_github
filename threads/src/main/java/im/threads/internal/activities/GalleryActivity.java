@@ -12,7 +12,6 @@ import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
@@ -58,9 +57,6 @@ public final class GalleryActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Workaround on vectors not working in background selector
-        // - see GalleryItemHolder mCheckBox.setButtonDrawable R.drawable.bk_checkbox_blue
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_gallery);
         binding.setViewModel(this);
         initViews();

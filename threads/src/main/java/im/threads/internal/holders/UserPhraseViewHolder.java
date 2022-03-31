@@ -144,7 +144,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mFileImageButton.setBackgroundColorResId(style.outgoingMessageTextColor);
         mPhraseTextView.setLinkTextColor(getColorInt(style.outgoingMessageLinkColor));
-        setTintToProgressButtonUser(mFileImageButton, style.chatBodyIconsTint);
+        setUpProgressButton(mFileImageButton);
         mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         mFilterViewSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         buttonPlayPause.setColorFilter(getColorInt(style.outgoingPlayPauseButtonColor), PorterDuff.Mode.SRC_ATOP);

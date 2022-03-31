@@ -58,6 +58,17 @@ public final class ChatStyle implements Serializable {
     public boolean showBackButton = false;
     public boolean chatSubtitleShowOrgUnit = false;
 
+    @ColorRes
+    public int chatToolbarInverseIconTintResId = R.color.threads_green_83B144;
+    @DrawableRes
+    public int chatToolbarBackIconResId = R.drawable.threads_ic_arrow_back_24dp;
+    @DrawableRes
+    public int chatToolbarPopUpMenuIconResId = R.drawable.threads_ic_more_vert_24dp;
+    @DrawableRes
+    public int chatToolbarContentCopyIconResId = R.drawable.threads_ic_content_copy_24dp;
+    @DrawableRes
+    public int chatToolbarReplyIconResId = R.drawable.threads_ic_reply_24dp;
+
     // chat body style
     @ColorRes
     public int chatBackgroundColor = R.color.threads_chat_background;
@@ -129,7 +140,7 @@ public final class ChatStyle implements Serializable {
     public int voiceMessagePauseButton = R.drawable.threads_voice_message_pause;
 
     @ColorRes
-    public int chatBodyIconsTint = R.color.threads_chat_icons_tint;
+    public int chatBodyIconsTint = R.color.threads_green_83B144;
     @ColorRes
     public int chatSystemMessageTextColor = R.color.threads_chat_connection_message;
 
@@ -178,6 +189,18 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int threadsRecordButtonSmallMicColor = R.color.threads_record_button_small_mic;
 
+    //download button
+    @ColorRes
+    public int downloadButtonTintResId = R.color.threads_green_83B144;
+    @ColorRes
+    public int loaderTintResId = R.color.threads_green_83B144;
+    @DrawableRes
+    public int startDownloadIconResId = R.drawable.threads_ic_vertical_align_bottom_18dp;
+    @DrawableRes
+    public int inProgressIconResId = R.drawable.threads_ic_clear_36dp;
+    @DrawableRes
+    public int completedIconResId = R.drawable.threads_ic_file_outline_24dp;
+
     //TODO #THREADS-3523
     //chat message statuses
 //    R.color.threads_outgoing_message_sent_icon - цвет иконки статуса "Отправлено" (галочка) на сообщении клиента
@@ -207,6 +230,12 @@ public final class ChatStyle implements Serializable {
     @DimenRes
     public int imagesScreenDateTextSize = R.dimen.threads_attachments_date_text_size;
 
+    // quote style
+    @ColorRes
+    public int quoteClearIconTintResId = R.color.threads_green_83B144;
+    @DrawableRes
+    public int quoteClearIconResId = R.drawable.threads_ic_clear_36dp;
+
     // chat input style
     @ColorRes
     public int chatMessageInputColor = R.color.threads_input_background;
@@ -216,8 +245,10 @@ public final class ChatStyle implements Serializable {
     public int inputTextColor = R.color.threads_input_text;
     @Nullable
     public String inputTextFont;
+    @ColorRes
+    public int inputIconTintResId = R.color.threads_green_83B144;
     @DrawableRes
-    public int attachmentsIconResId = R.drawable.threads_ic_attachment_button;
+    public int attachmentIconResId = R.drawable.threads_ic_attachment_button;
     @DrawableRes
     public int sendMessageIconResId = R.drawable.threads_ic_send_button;
     @StringRes
@@ -226,6 +257,22 @@ public final class ChatStyle implements Serializable {
     public int inputHeight = R.dimen.threads_input_height;
     @DrawableRes
     public int inputBackground = R.drawable.threads_chat_input_background;
+
+    //attachment bottom sheet style
+    @ColorRes
+    public int attachmentBottomSheetButtonTintResId = R.color.threads_green_83B144;
+    @DrawableRes
+    public int attachmentDoneIconResId = R.drawable.threads_ic_circle_done_36dp;
+    @DrawableRes
+    public int attachmentCameraIconResId = R.drawable.threads_ic_camera_42dp;
+    @DrawableRes
+    public int attachmentGalleryIconResId = R.drawable.threads_ic_photo_42dp;
+    @DrawableRes
+    public int attachmentFileIconResId = R.drawable.threads_ic_file_fill_42dp;
+    @DrawableRes
+    public int attachmentSelfieCameraIconResId = R.drawable.threads_ic_camera_front_42dp;
+    @DrawableRes
+    public int attachmentSendIconResId = R.drawable.threads_ic_send_42dp;
 
     // Media and files screen
     @BoolRes
@@ -242,6 +289,10 @@ public final class ChatStyle implements Serializable {
     public int mediaAndFilesScreenBackgroundColor = R.color.threads_files_medias_screen_background;
     @ColorRes
     public int mediaAndFilesTextColor = R.color.threads_files_list;
+    @ColorRes
+    public int mediaAndFilesFileIconTintResId = R.color.threads_green_83B144;
+    @DrawableRes
+    public int mediaAndFilesFileIconResId = R.drawable.threads_ic_file_fill_36dp;
 
     // Empty Media and files screen header
     @StringRes
@@ -424,6 +475,7 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    // <editor-fold defaultState="collapsed" desc="chat title style">
     public ChatStyle showChatBackButton(final boolean showBackButton) {
         this.showBackButton = showBackButton;
         return this;
@@ -443,6 +495,37 @@ public final class ChatStyle implements Serializable {
         this.chatSubtitleShowOrgUnit = showConsultOrgUnit;
         return this;
     }
+
+    public ChatStyle setChatToolbarInverseIconTintResId(
+            @ColorRes int chatToolbarInverseIconTintResId) {
+        this.chatToolbarInverseIconTintResId = chatToolbarInverseIconTintResId;
+        return this;
+    }
+
+    public ChatStyle setChatToolbarBackIconResId(
+            @DrawableRes int chatToolbarBackIconResId) {
+        this.chatToolbarBackIconResId = chatToolbarBackIconResId;
+        return this;
+    }
+
+    public ChatStyle setChatToolbarPopUpMenuIconResId(
+            @DrawableRes int chatToolbarPopUpMenuIconResId) {
+        this.chatToolbarPopUpMenuIconResId = chatToolbarPopUpMenuIconResId;
+        return this;
+    }
+
+    public ChatStyle setChatToolbarContentCopyIconResId(
+            @DrawableRes int chatToolbarContentCopyIconResId) {
+        this.chatToolbarContentCopyIconResId = chatToolbarContentCopyIconResId;
+        return this;
+    }
+
+    public ChatStyle setChatToolbarReplyIconResId(
+            @DrawableRes int chatToolbarReplyIconResId) {
+        this.chatToolbarReplyIconResId = chatToolbarReplyIconResId;
+        return this;
+    }
+    // </editor-fold>
 
     public ChatStyle setShowConsultSearching(final boolean show) {
         this.showConsultSearching = show;
@@ -590,7 +673,56 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    // <editor-fold defaultstate="collapsed" desc="MediaAndFiles Screen">
+    // <editor-fold defaultState="collapsed" desc="quote style">
+    public ChatStyle setQuoteClearIconTintResId(@ColorRes final int quoteClearIconTintResId) {
+        this.quoteClearIconTintResId = quoteClearIconTintResId;
+        return this;
+    }
+
+    public ChatStyle setQuoteClearIconResId(@DrawableRes final int quoteClearIconResId) {
+        this.quoteClearIconResId = quoteClearIconResId;
+        return this;
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultState="collapsed" desc="attachment bottom sheet style">
+    public ChatStyle setAttachmentBottomSheetButtonTintResId(@ColorRes final int attachmentBottomSheetButtonTintResId) {
+        this.attachmentBottomSheetButtonTintResId = attachmentBottomSheetButtonTintResId;
+        return this;
+    }
+
+    public ChatStyle setAttachmentDoneIconResId(@DrawableRes final int attachmentDoneIconResId) {
+        this.attachmentDoneIconResId = attachmentDoneIconResId;
+        return this;
+    }
+
+    public ChatStyle setAttachmentCameraIconResId(@DrawableRes final int attachmentCameraIconResId) {
+        this.attachmentCameraIconResId = attachmentCameraIconResId;
+        return this;
+    }
+
+    public ChatStyle setAttachmentGalleryIconResId(@DrawableRes final int attachmentGalleryIconResId) {
+        this.attachmentGalleryIconResId = attachmentGalleryIconResId;
+        return this;
+    }
+
+    public ChatStyle setAttachmentFileIconResId(@DrawableRes final int attachmentFileIconResId) {
+        this.attachmentFileIconResId = attachmentFileIconResId;
+        return this;
+    }
+
+    public ChatStyle setAttachmentSelfieCameraIconResId(@DrawableRes final int attachmentSelfieCameraIconResId) {
+        this.attachmentSelfieCameraIconResId = attachmentSelfieCameraIconResId;
+        return this;
+    }
+
+    public ChatStyle setAttachmentSendIconResId(@DrawableRes final int attachmentSendIconResId) {
+        this.attachmentSendIconResId = attachmentSendIconResId;
+        return this;
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultState="collapsed" desc="MediaAndFiles Screen">
     public ChatStyle setMediaAndFilesWindowLightStatusBarResId(@BoolRes final int mediaAndFilesWindowLightStatusBarResId) {
         this.mediaAndFilesWindowLightStatusBarResId = mediaAndFilesWindowLightStatusBarResId;
         return this;
@@ -623,6 +755,16 @@ public final class ChatStyle implements Serializable {
 
     public ChatStyle setMediaAndFilesTextColor(@ColorRes final int mediaAndFilesTextColor) {
         this.mediaAndFilesTextColor = mediaAndFilesTextColor;
+        return this;
+    }
+
+    public ChatStyle setMediaAndFilesFileIconTintResId(@ColorRes final int mediaAndFilesFileIconTintResId) {
+        this.mediaAndFilesFileIconTintResId = mediaAndFilesFileIconTintResId;
+        return this;
+    }
+
+    public ChatStyle setMediaAndFilesFileIconResId(@DrawableRes final int mediaAndFilesFileIconResId) {
+        this.mediaAndFilesFileIconResId = mediaAndFilesFileIconResId;
         return this;
     }
 
@@ -674,6 +816,51 @@ public final class ChatStyle implements Serializable {
         return this;
     }
     // </editor-fold>
+
+    public ChatStyle setChatBodyIconsTint(@ColorRes final int chatBodyIconsTint) {
+        this.chatBodyIconsTint = chatBodyIconsTint;
+        return this;
+    }
+
+    public ChatStyle setInputIconTintResId(@ColorRes final int inputIconTintResId) {
+        this.inputIconTintResId = inputIconTintResId;
+        return this;
+    }
+
+    public ChatStyle setAttachmentIconResId(@DrawableRes final int attachmentIconResId) {
+        this.attachmentIconResId = attachmentIconResId;
+        return this;
+    }
+
+    public ChatStyle setSendMessageIconResId(@DrawableRes final int sendMessageIconResId) {
+        this.sendMessageIconResId = sendMessageIconResId;
+        return this;
+    }
+
+    public ChatStyle setDownloadButtonTintResId(@ColorRes final int downloadButtonTintResId) {
+        this.downloadButtonTintResId = downloadButtonTintResId;
+        return this;
+    }
+
+    public ChatStyle setLoaderTintResId(@ColorRes final int loaderTintResId) {
+        this.loaderTintResId = loaderTintResId;
+        return this;
+    }
+
+    public ChatStyle setStartDownloadIconResId(@DrawableRes final int startDownloadIconResId) {
+        this.startDownloadIconResId = startDownloadIconResId;
+        return this;
+    }
+
+    public ChatStyle setInProgressIconResId(@DrawableRes final int inProgressIconResId) {
+        this.inProgressIconResId = inProgressIconResId;
+        return this;
+    }
+
+    public ChatStyle setCompletedIconResId(@DrawableRes final int completedIconResId) {
+        this.completedIconResId = completedIconResId;
+        return this;
+    }
 
     /**
      * @see android.view.Gravity
@@ -880,7 +1067,7 @@ public final class ChatStyle implements Serializable {
      * @param chatMessageInputColor         - R.color.threads_input_background
      * @param inputTextColor                - R.color.threads_input_text
      * @param inputTextFont                 - setInputTextFont(String path)
-     * @param attachmentsIconResId          - R.drawable.threads_ic_attachment_button
+     * @param attachmentIconResId          - R.drawable.threads_ic_attachment_button
      * @param sendMessageIconResId          - R.drawable.threads_ic_send_button
      * @param inputHint                     - R.string.threads_input_hint
      * @param inputHeight                   - R.dimen.threads_input_height
@@ -891,7 +1078,7 @@ public final class ChatStyle implements Serializable {
             @ColorRes final int chatMessageInputColor,
             @ColorRes final int inputTextColor,
             final String inputTextFont,
-            @DrawableRes final int attachmentsIconResId,
+            @DrawableRes final int attachmentIconResId,
             @DrawableRes final int sendMessageIconResId,
             @StringRes final int inputHint,
             @DimenRes final int inputHeight,
@@ -900,7 +1087,7 @@ public final class ChatStyle implements Serializable {
         this.chatMessageInputHintTextColor = chatMessageInputHintTextColor;
         this.inputTextColor = inputTextColor;
         this.inputTextFont = inputTextFont;
-        this.attachmentsIconResId = attachmentsIconResId;
+        this.attachmentIconResId = attachmentIconResId;
         this.sendMessageIconResId = sendMessageIconResId;
         this.inputHint = inputHint;
         this.inputHeight = inputHeight;

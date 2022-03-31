@@ -3,8 +3,6 @@ package im.threads.internal.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -36,6 +34,7 @@ import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
 import im.threads.internal.utils.CircleTransformation;
+import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -66,7 +65,7 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
         TextView textView = v.findViewById(R.id.question);
         mEditText = v.findViewById(R.id.answer);
         ImageView imageView = v.findViewById(R.id.consult_image);
-        ImageButton imageButton = v.findViewById(R.id.send);
+        initSendButton(style, v);
         v.findViewById(R.id.close_button).setOnClickListener(v1 -> {
             LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(new Intent(QuickAnswerActivity.ACTION_CANCEL));
             dismiss();
@@ -90,17 +89,6 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
                 textView.setText(consultPhrase);
 
         }
-        imageButton.setOnClickListener(v12 -> {
-            if (mEditText.getText().toString().trim().length() == 0) {
-                return;
-            }
-            LocalBroadcastManager.getInstance(requireContext())
-                    .sendBroadcast(
-                            new Intent(QuickAnswerActivity.ACTION_ANSWER)
-                                    .putExtra(QuickAnswerActivity.ACTION_ANSWER, mEditText.getText().toString()));
-            mEditText.setText("");
-            dismiss();
-        });
         v.findViewById(R.id.layout_root).setBackgroundColor(getColorInt(style.chatBackgroundColor));
         v.findViewById(R.id.header).setBackgroundColor(getColorInt(style.chatToolbarColorResId));
 
@@ -110,15 +98,30 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
         mEditText.setTextColor(getColorInt(style.incomingMessageTextColor));
         v.findViewById(R.id.answer_layout).setBackgroundColor(getColorInt(style.chatMessageInputColor));
 
-        Drawable d = imageButton.getDrawable();
-        d.setColorFilter(getColorInt(style.chatBodyIconsTint), PorterDuff.Mode.SRC_ATOP);
-        imageButton.setImageDrawable(d);
-
         mEditText.setHintTextColor(getColorInt(style.chatMessageInputHintTextColor));
         mEditText.getLayoutParams().height = (int) requireContext().getResources().getDimension(style.inputHeight);
         mEditText.setBackground(AppCompatResources.getDrawable(requireContext(), style.inputBackground));
         initUserInputState();
         return v;
+    }
+
+    private void initSendButton(@NonNull ChatStyle style, @NonNull View view) {
+        ImageButton sendButton = view.findViewById(R.id.send);
+        sendButton.setImageResource(style.sendMessageIconResId);
+        int iconTint = style.chatBodyIconsTint == 0
+                ? style.inputIconTintResId : style.chatBodyIconsTint;
+        ColorsHelper.setTint(requireContext(), sendButton, iconTint);
+
+        sendButton.setOnClickListener(v12 -> {
+            if (mEditText.getText().toString().trim().length() == 0) {
+                return;
+            }
+            Intent intent = new Intent(QuickAnswerActivity.ACTION_ANSWER)
+                    .putExtra(QuickAnswerActivity.ACTION_ANSWER, mEditText.getText().toString());
+            LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent);
+            mEditText.setText("");
+            dismiss();
+        });
     }
 
     @ColorInt
