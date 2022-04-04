@@ -4,11 +4,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.multidex.MultiDexApplication;
+
 import com.edna.android.push_lite.PushController;
 
 import java.util.List;
 
-import androidx.multidex.MultiDexApplication;
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
 import im.threads.android.data.Card;
@@ -61,7 +62,8 @@ public class ThreadsDemoApplication extends MultiDexApplication {
         if (transportConfig != null) {
             configBuilder.serverBaseUrl(transportConfig.getBaseUrl())
                     .threadsGateUrl(transportConfig.getThreadsGateUrl())
-                    .threadsGateProviderUid(transportConfig.getThreadsGateProviderUid());
+                    .threadsGateProviderUid(transportConfig.getThreadsGateProviderUid())
+                    .threadsGateHCMProviderUid(transportConfig.getThreadsGateHCMProviderUid());
         }
         ThreadsLib.init(configBuilder);
     }

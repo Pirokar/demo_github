@@ -43,6 +43,8 @@ public final class ConfigBuilder {
     private String threadsGateUrl = null;
     @Nullable
     private String threadsGateProviderUid = null;
+    @Nullable
+    private String threadsGateHCMProviderUid = null;
 
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -66,6 +68,11 @@ public final class ConfigBuilder {
 
     public ConfigBuilder threadsGateProviderUid(String threadsGateProviderUid) {
         this.threadsGateProviderUid = threadsGateProviderUid;
+        return this;
+    }
+
+    public ConfigBuilder threadsGateHCMProviderUid(@Nullable String threadsGateHCMProviderUid) {
+        this.threadsGateHCMProviderUid = threadsGateHCMProviderUid;
         return this;
     }
 
@@ -93,13 +100,14 @@ public final class ConfigBuilder {
         return this;
     }
 
-    final Config build() {
+    Config build() {
         return new Config(
                 context,
                 serverBaseUrl,
                 transportType,
                 threadsGateUrl,
                 threadsGateProviderUid,
+                threadsGateHCMProviderUid,
                 pendingIntentCreator,
                 unreadMessagesCountListener,
                 isDebugLoggingEnabled,
