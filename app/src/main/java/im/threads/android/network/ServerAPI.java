@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 import im.threads.android.R;
 import im.threads.android.core.ThreadsDemoApplication;
+import im.threads.config.HttpClientSettings;
+import im.threads.internal.Config;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -32,14 +34,17 @@ class ServerAPI {
     }
 
     private static IServerAPI createServerAPI(String serverBaseUrl) {
+        HttpClientSettings httpSettings = Config.instance.requestConfig.getAuthHttpClientSettings();
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(serverBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor()
-                        .setLevel(HttpLoggingInterceptor.Level.BODY));
-        httpClient.connectTimeout(2, TimeUnit.SECONDS);
+                        .setLevel(HttpLoggingInterceptor.Level.BODY))
+                .connectTimeout(httpSettings.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
+                .readTimeout(httpSettings.getReadTimeoutMillis(), TimeUnit.MILLISECONDS)
+                .writeTimeout(httpSettings.getWriteTimeoutMillis(), TimeUnit.MILLISECONDS);
         builder.client(httpClient.build());
         Retrofit retrofit = builder.build();
         return retrofit.create(IServerAPI.class);

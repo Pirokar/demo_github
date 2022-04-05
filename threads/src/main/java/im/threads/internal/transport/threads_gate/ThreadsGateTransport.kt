@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonObject
 import im.threads.ConfigBuilder.TransportType
+import im.threads.config.SocketClientSettings
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.formatters.ChatItemType
@@ -54,7 +55,8 @@ class ThreadsGateTransport(
         threadsGateUrl: String,
         threadsGateProviderUid: String,
         threadsGateHuaweiProviderUid: String?,
-        isDebugLoggingEnabled: Boolean
+        isDebugLoggingEnabled: Boolean,
+        socketSettings: SocketClientSettings
 ) : Transport(), LifecycleObserver {
     private val client: OkHttpClient
     private val request: Request
@@ -68,8 +70,11 @@ class ThreadsGateTransport(
 
     init {
         val clientBuilder = OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor())
-                .pingInterval(10000, TimeUnit.MILLISECONDS)
+            .addInterceptor(AuthInterceptor())
+            .pingInterval(socketSettings.resendPingIntervalMillis.toLong(), TimeUnit.MILLISECONDS)
+            .connectTimeout(socketSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .readTimeout(socketSettings.readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .writeTimeout(socketSettings.writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
         if (isDebugLoggingEnabled) {
             clientBuilder.addInterceptor(
                     HttpLoggingInterceptor()

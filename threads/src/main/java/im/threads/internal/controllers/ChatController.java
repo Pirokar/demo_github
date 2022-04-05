@@ -26,6 +26,7 @@ import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
@@ -108,7 +109,6 @@ public final class ChatController {
     private final ConsultWriter consultWriter;
     // TODO: вынести в отдельный класс отправку сообщений
     private final List<UserPhrase> unsendMessages = new ArrayList<>();
-    private final int resendTimeInterval;
     private final List<UserPhrase> sendQueue = new ArrayList<>();
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean surveyCompletionInProgress = false;
@@ -134,17 +134,20 @@ public final class ChatController {
 
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
-    private boolean hasQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
-    private boolean inputEnabledDuringQuickReplies = Config.instance.getChatStyle().inputEnabledDuringQuickReplies; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    private boolean hasQuickReplies = false;
+    // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    private boolean inputEnabledDuringQuickReplies;
 
     private CompositeDisposable compositeDisposable;
 
     private ChatController() {
+        ChatStyle chatStyle = Config.instance.getChatStyle();
+        inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
         appContext = Config.instance.context;
         chatUpdateProcessor = ChatUpdateProcessor.getInstance();
         databaseHolder = DatabaseHolder.getInstance();
         consultWriter = new ConsultWriter(appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE));
-        resendTimeInterval = appContext.getResources().getInteger(R.integer.check_internet_interval_ms);
         ThreadUtils.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
                     if (msg.what == RESEND_MSG) {
                         if (!unsendMessages.isEmpty()) {
@@ -1041,7 +1044,9 @@ public final class ChatController {
 
     private void scheduleResend() {
         if (!unsendMessageHandler.hasMessages(RESEND_MSG)) {
-            unsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendTimeInterval);
+            int resendInterval = Config.instance.requestConfig.getSocketClientSettings()
+                    .getResendIntervalMillis();
+            unsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendInterval);
         }
     }
 

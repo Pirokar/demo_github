@@ -1,9 +1,9 @@
 package im.threads.internal.retrofit;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import im.threads.R;
+import im.threads.config.HttpClientSettings;
 import im.threads.internal.Config;
 import im.threads.internal.transport.AuthInterceptor;
 import im.threads.internal.utils.AppInfoHelper;
@@ -40,6 +40,8 @@ public final class ApiGenerator {
     }
 
     private OkHttpClient createOkHttpClient() {
+        HttpClientSettings httpSettings = Config.instance.requestConfig
+                .getThreadsApiHttpClientSettings();
         OkHttpClient.Builder httpClient = new OkHttpClient
                 .Builder()
                 .addInterceptor(chain -> chain.proceed(
@@ -50,7 +52,9 @@ public final class ApiGenerator {
                         )
                 )
                 .addInterceptor(new AuthInterceptor())
-                .connectTimeout(60, TimeUnit.SECONDS);
+                .connectTimeout(httpSettings.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
+                .readTimeout(httpSettings.getReadTimeoutMillis(), TimeUnit.MILLISECONDS)
+                .writeTimeout(httpSettings.getWriteTimeoutMillis(), TimeUnit.MILLISECONDS);
         if (Config.instance.isDebugLoggingEnabled) {
             httpClient.addInterceptor(new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BODY));
