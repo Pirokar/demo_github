@@ -12,6 +12,7 @@ import androidx.work.WorkerParameters
 import im.threads.internal.Config
 import im.threads.internal.broadcastReceivers.ProgressReceiver
 import im.threads.internal.helpers.FileProviderHelper
+import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.FileDescription
 import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.FileDownloader
@@ -34,6 +35,11 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
 
         if (fileDescription.downloadPath == null || fileDescription.fileUri != null) {
             ThreadsLogger.e(TAG, "cant download with fileDescription = $fileDescription")
+            return Result.failure()
+        }
+
+        if (fileDescription.state != AttachmentStateEnum.READY) {
+            ThreadsLogger.e(TAG, "cant download with fileDescription = $fileDescription. File state not READY")
             return Result.failure()
         }
 
