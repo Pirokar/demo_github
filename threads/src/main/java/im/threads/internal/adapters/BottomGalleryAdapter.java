@@ -74,7 +74,8 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                     return true;
                 } else {
                     // Недопустимый размер файла
-                    showToast(context.getString(R.string.threads_not_allowed_file_size), context);
+                    showToast(context.getString(R.string.threads_not_allowed_file_size,
+                            FileHelper.INSTANCE.getMaxAllowedFileSize()), context);
                     return false;
                 }
             } else {
