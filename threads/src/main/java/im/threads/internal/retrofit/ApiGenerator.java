@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import im.threads.R;
 import im.threads.config.HttpClientSettings;
 import im.threads.internal.Config;
+import im.threads.internal.model.SslSocketFactoryConfig;
 import im.threads.internal.transport.AuthInterceptor;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
@@ -40,10 +41,9 @@ public final class ApiGenerator {
     }
 
     private OkHttpClient createOkHttpClient() {
-        HttpClientSettings httpSettings = Config.instance.requestConfig
-                .getThreadsApiHttpClientSettings();
-        OkHttpClient.Builder httpClient = new OkHttpClient
-                .Builder()
+        Config config = Config.instance;
+        HttpClientSettings httpSettings = config.requestConfig.getThreadsApiHttpClientSettings();
+        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
                 .addInterceptor(chain -> chain.proceed(
                         chain.request()
                                 .newBuilder()
@@ -56,10 +56,17 @@ public final class ApiGenerator {
                 .readTimeout(httpSettings.getReadTimeoutMillis(), TimeUnit.MILLISECONDS)
                 .writeTimeout(httpSettings.getWriteTimeoutMillis(), TimeUnit.MILLISECONDS);
         if (Config.instance.isDebugLoggingEnabled) {
-            httpClient.addInterceptor(new HttpLoggingInterceptor()
+            httpClientBuilder.addInterceptor(new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BODY));
         }
-        return httpClient.build();
+        SslSocketFactoryConfig sslSocketFactoryConfig = config.sslSocketFactoryConfig;
+        if (sslSocketFactoryConfig != null) {
+            httpClientBuilder.sslSocketFactory(
+                    sslSocketFactoryConfig.getSslSocketFactory(),
+                    sslSocketFactoryConfig.getTrustManager()
+            );
+        }
+        return httpClientBuilder.build();
     }
 
     private String getUserAgent() {
