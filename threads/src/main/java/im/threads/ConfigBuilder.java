@@ -8,6 +8,9 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collections;
+import java.util.List;
+
 import im.threads.config.RequestConfig;
 import im.threads.internal.Config;
 import im.threads.view.ChatActivity;
@@ -46,6 +49,7 @@ public final class ConfigBuilder {
     private String threadsGateHCMProviderUid = null;
 
     private RequestConfig requestConfig  = new RequestConfig();
+    private List<Integer> certificateRawResIds = Collections.emptyList();
 
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
@@ -104,6 +108,11 @@ public final class ConfigBuilder {
         this.requestConfig = requestConfig;
         return this;
     }
+
+    public ConfigBuilder certificateRawResIds(final List<Integer> certificateRawResIds) {
+        this.certificateRawResIds = certificateRawResIds;
+        return this;
+    }
     
     Config build() {
         return new Config(
@@ -118,7 +127,8 @@ public final class ConfigBuilder {
                 isDebugLoggingEnabled,
                 historyLoadingCount,
                 surveyCompletionDelay,
-                requestConfig
+                requestConfig,
+                certificateRawResIds
         );
     }
 

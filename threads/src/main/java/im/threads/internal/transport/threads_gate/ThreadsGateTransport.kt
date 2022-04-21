@@ -16,6 +16,7 @@ import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.ConsultInfo
 import im.threads.internal.model.SpeechMessageUpdate
+import im.threads.internal.model.SslSocketFactoryConfig
 import im.threads.internal.model.Survey
 import im.threads.internal.model.UserPhrase
 import im.threads.internal.transport.ApplicationConfig
@@ -51,12 +52,14 @@ import java.util.Calendar
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+
 class ThreadsGateTransport(
         threadsGateUrl: String,
         threadsGateProviderUid: String,
         threadsGateHuaweiProviderUid: String?,
         isDebugLoggingEnabled: Boolean,
-        socketSettings: SocketClientSettings
+        socketSettings: SocketClientSettings,
+        sslSocketFactoryConfig: SslSocketFactoryConfig? = null
 ) : Transport(), LifecycleObserver {
     private val client: OkHttpClient
     private val request: Request
@@ -69,19 +72,25 @@ class ThreadsGateTransport(
     private var lifecycle: Lifecycle? = null
 
     init {
-        val clientBuilder = OkHttpClient.Builder()
+        val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor())
             .pingInterval(socketSettings.resendPingIntervalMillis.toLong(), TimeUnit.MILLISECONDS)
             .connectTimeout(socketSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .readTimeout(socketSettings.readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .writeTimeout(socketSettings.writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
         if (isDebugLoggingEnabled) {
-            clientBuilder.addInterceptor(
+            httpClientBuilder.addInterceptor(
                     HttpLoggingInterceptor()
                             .setLevel(HttpLoggingInterceptor.Level.BODY)
             )
         }
-        client = clientBuilder.build()
+        if (sslSocketFactoryConfig != null) {
+            httpClientBuilder.sslSocketFactory(
+                sslSocketFactoryConfig.sslSocketFactory,
+                sslSocketFactoryConfig.trustManager
+            )
+        }
+        client = httpClientBuilder.build()
         request = Request.Builder()
                 .url(threadsGateUrl)
                 .build()

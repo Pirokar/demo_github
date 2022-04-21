@@ -9,6 +9,7 @@ import im.threads.android.R;
 import im.threads.android.core.ThreadsDemoApplication;
 import im.threads.config.HttpClientSettings;
 import im.threads.internal.Config;
+import im.threads.internal.model.SslSocketFactoryConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -34,18 +35,26 @@ class ServerAPI {
     }
 
     private static IServerAPI createServerAPI(String serverBaseUrl) {
-        HttpClientSettings httpSettings = Config.instance.requestConfig.getAuthHttpClientSettings();
+        Config config = Config.instance;
+        HttpClientSettings httpSettings = config.requestConfig.getAuthHttpClientSettings();
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(serverBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
+        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor()
                         .setLevel(HttpLoggingInterceptor.Level.BODY))
                 .connectTimeout(httpSettings.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
                 .readTimeout(httpSettings.getReadTimeoutMillis(), TimeUnit.MILLISECONDS)
                 .writeTimeout(httpSettings.getWriteTimeoutMillis(), TimeUnit.MILLISECONDS);
-        builder.client(httpClient.build());
+        SslSocketFactoryConfig sslSocketFactoryConfig = config.sslSocketFactoryConfig;
+        if (sslSocketFactoryConfig != null) {
+            httpClientBuilder.sslSocketFactory(
+                    sslSocketFactoryConfig.getSslSocketFactory(),
+                    sslSocketFactoryConfig.getTrustManager()
+            );
+        }
+        builder.client(httpClientBuilder.build());
         Retrofit retrofit = builder.build();
         return retrofit.create(IServerAPI.class);
     }

@@ -8,10 +8,12 @@ import androidx.multidex.MultiDexApplication;
 
 import com.edna.android.push_lite.PushController;
 
+import java.util.Collections;
 import java.util.List;
 
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
+import im.threads.android.R;
 import im.threads.android.data.Card;
 import im.threads.android.data.TransportConfig;
 import im.threads.android.push.HCMTokenRefresher;
@@ -28,7 +30,7 @@ public class ThreadsDemoApplication extends MultiDexApplication {
     private static Context appContext;
     private Disposable disposable;
 
-    private static BehaviorSubject<Integer> unreadMessagesSubject = BehaviorSubject.create();
+    private static final BehaviorSubject<Integer> unreadMessagesSubject = BehaviorSubject.create();
 
     public static Context getAppContext() {
         return appContext;
@@ -54,10 +56,11 @@ public class ThreadsDemoApplication extends MultiDexApplication {
         PushController.getInstance(this).init();
         ConfigBuilder configBuilder = new ConfigBuilder(this)
                 .pendingIntentCreator(new CustomPendingIntentCreator())
-                .unreadMessagesCountListener(count -> unreadMessagesSubject.onNext(count))
+                .unreadMessagesCountListener(unreadMessagesSubject::onNext)
                 .surveyCompletionDelay(2000)
                 .historyLoadingCount(50)
-                .isDebugLoggingEnabled(true);
+                .isDebugLoggingEnabled(true)
+                .certificateRawResIds(Collections.singletonList(R.raw.arm_mobile4_chc_dte_crt));
         TransportConfig transportConfig = PrefUtils.getTransportConfig(this);
         if (transportConfig != null) {
             configBuilder.serverBaseUrl(transportConfig.getBaseUrl())
