@@ -127,7 +127,7 @@
     </plurals>
 
     <string name="threads_not_allowed_file_extension">Not allowed file format</string>
-    <string name="threads_not_allowed_file_size">The file exceeds the maximum allowed size of %1$dMB </string>
+    <string name="threads_not_allowed_file_size">The file exceeds the maximum allowed size of %1$d MB</string>
     <string name="threads_message_sending_is_unavailable">You cannot send message at the moment</string>
     <string name="threads_hold_button_to_record_audio">Hold record button to send voice message</string>
     <string name="threads_voice_message">Voice message</string>
@@ -139,6 +139,6 @@
     <string name="threads_some_error_during_load_file">An error occurred while loading\nor validating the file</string>
     <string name="loading"></string>
 
-    <string name="threads_history_loading_message">Message history is loading, please wait</string>
+    <string name="threads_history_loading_message">The chat history is being loaded, please wait</string>
 
 </resources>

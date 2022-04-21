@@ -137,7 +137,7 @@
     <string name="threads_selfie_hint">Убедитесь, что на фото ваше лицо размещено прямо и его отчетливо видно</string>
 
     <string name="threads_not_allowed_file_extension">Недопустимый формат файла</string>
-    <string name="threads_not_allowed_file_size">Файл превышает максимально допустимый размер %1$dмб</string>
+    <string name="threads_not_allowed_file_size">Файл превышает максимально допустимый размер %1$d МБ</string>
     <string name="threads_message_sending_is_unavailable">Отправка сообщения временно недоступна</string>
     <string name="threads_hold_button_to_record_audio">Удерживайте кнопку записи для отправки голосового сообщения</string>
     <string name="threads_voice_message">Голосовое сообщение</string>
