@@ -65,6 +65,7 @@ public final class ApiGenerator {
                     sslSocketFactoryConfig.getSslSocketFactory(),
                     sslSocketFactoryConfig.getTrustManager()
             );
+            httpClientBuilder.hostnameVerifier((hostname, session) -> true);
         }
         return httpClientBuilder.build();
     }

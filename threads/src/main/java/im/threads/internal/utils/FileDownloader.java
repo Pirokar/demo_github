@@ -10,9 +10,12 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import im.threads.internal.Config;
 
 public class FileDownloader {
     private static final String TAG = "FileDownloader ";
@@ -63,30 +66,37 @@ public class FileDownloader {
         isStopped = true;
     }
 
+    public Long getFileLength(HttpsURLConnection urlConnection) {
+        try {
+            List<String> values = urlConnection.getHeaderFields().get("Content-Length");
+            if (values != null && !values.isEmpty()) {
+                return Long.parseLong((String) values.get(0));
+            }
+        } catch (Exception e) {
+            ThreadsLogger.e(TAG, "download", e);
+        }
+        return null;
+    }
+
     public void download() {
         try {
             URL url = new URL(this.path);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            if (Config.instance.sslSocketFactoryConfig != null) {
+                HttpsURLConnection.setDefaultSSLSocketFactory(Config.instance.sslSocketFactoryConfig.getSslSocketFactory());
+            }
+            HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.getClientID());
                 urlConnection.setDoOutput(false);
                 urlConnection.setUseCaches(false);
                 urlConnection.setDoInput(true);
-                urlConnection.setConnectTimeout(15000);
-                urlConnection.setReadTimeout(15000);
+                urlConnection.setConnectTimeout(60000);
+                urlConnection.setReadTimeout(60000);
+                urlConnection.setHostnameVerifier((hostname, session) -> true);
 
+                Long length = getFileLength(urlConnection);
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                List<String> values = urlConnection.getHeaderFields().get("Content-Length");
-                Long length = null;
-                try {
-                    if (values != null && !values.isEmpty()) {
-                        length = Long.parseLong((String) values.get(0));
-                    }
-                } catch (NumberFormatException e) {
-                    ThreadsLogger.e(TAG, "download", e);
-                }
-
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 int len1;
                 long bytesReaded = 0;

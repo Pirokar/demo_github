@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <base-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">mobile4.dev.flex.mfms.ru/</domain>
         <trust-anchors>
             <certificates src="@raw/edna"/>
-            <certificates src="system"/>
         </trust-anchors>
-    </base-config>
+    </domain-config>
 </network-security-config>
