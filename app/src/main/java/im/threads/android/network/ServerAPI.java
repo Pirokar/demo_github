@@ -53,6 +53,7 @@ class ServerAPI {
                     sslSocketFactoryConfig.getSslSocketFactory(),
                     sslSocketFactoryConfig.getTrustManager()
             );
+            httpClientBuilder.hostnameVerifier((hostname, session) -> true);
         }
         builder.client(httpClientBuilder.build());
         Retrofit retrofit = builder.build();
