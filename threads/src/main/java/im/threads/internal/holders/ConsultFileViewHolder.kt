@@ -100,7 +100,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
             layoutParams = lp
         }
         setTextColorToViews(arrayOf(mFileHeader, mSizeTextView), style.incomingMessageTextColor)
-        setTintToProgressButtonConsult(mCircularProgressButton, style.chatBodyIconsTint)
+        setUpProgressButton(mCircularProgressButton)
     }
 
     fun onBind(

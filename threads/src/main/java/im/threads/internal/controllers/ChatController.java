@@ -10,6 +10,14 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
+import androidx.core.util.ObjectsCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,20 +26,13 @@ import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.Consumer;
-import androidx.core.util.ObjectsCompat;
-import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.ConsultActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.broadcastReceivers.ProgressReceiver;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
-import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ConsultChatPhrase;
@@ -54,6 +55,7 @@ import im.threads.internal.model.Survey;
 import im.threads.internal.model.SystemMessage;
 import im.threads.internal.model.UpcomingUserMessage;
 import im.threads.internal.model.UserPhrase;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.transport.HistoryLoader;
 import im.threads.internal.transport.HistoryParser;
 import im.threads.internal.utils.ConsultWriter;
@@ -107,7 +109,6 @@ public final class ChatController {
     private final ConsultWriter consultWriter;
     // TODO: вынести в отдельный класс отправку сообщений
     private final List<UserPhrase> unsendMessages = new ArrayList<>();
-    private final int resendTimeInterval;
     private final List<UserPhrase> sendQueue = new ArrayList<>();
     // this flag is keeping the visibility state of the request to resolve thread
     private boolean surveyCompletionInProgress = false;
@@ -133,17 +134,20 @@ public final class ChatController {
 
     // На основе этих переменных определяется возможность отправки сообщений в чат
     private ScheduleInfo currentScheduleInfo;
-    private boolean hasQuickReplies = false; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
-    private boolean inputEnabledDuringQuickReplies = Config.instance.getChatStyle().inputEnabledDuringQuickReplies; // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    private boolean hasQuickReplies = false;
+    // Если пользователь не ответил на вопрос (quickReply), то блокируем поле ввода
+    private boolean inputEnabledDuringQuickReplies;
 
     private CompositeDisposable compositeDisposable;
 
     private ChatController() {
+        ChatStyle chatStyle = Config.instance.getChatStyle();
+        inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
         appContext = Config.instance.context;
         chatUpdateProcessor = ChatUpdateProcessor.getInstance();
         databaseHolder = DatabaseHolder.getInstance();
         consultWriter = new ConsultWriter(appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE));
-        resendTimeInterval = appContext.getResources().getInteger(R.integer.check_internet_interval_ms);
         ThreadUtils.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
                     if (msg.what == RESEND_MSG) {
                         if (!unsendMessages.isEmpty()) {
@@ -249,6 +253,12 @@ public final class ChatController {
                 Single.just(isAllMessagesDownloaded)
                         .flatMap(isAllMessagesDownloaded -> {
                             if (!isAllMessagesDownloaded) {
+                                if(query.length() == 1) {
+                                    ThreadUtils.runOnUiThread(() -> {
+                                        fragment.showProgressBar();
+                                        Toast.makeText(appContext, appContext.getString(R.string.threads_history_loading_message), Toast.LENGTH_LONG).show();
+                                    });
+                                }
                                 return downloadMessagesTillEnd();
                             } else {
                                 return Single.fromCallable((Callable<Object>) ArrayList::new);
@@ -264,13 +274,21 @@ public final class ChatController {
                                         seeker = new Seeker();
                                     }
                                     lastSearchQuery = query;
+                                    ThreadUtils.runOnUiThread(() -> {
+                                        fragment.hideProgressBar();
+                                    });
                                 })
                         )
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> consumer.accept(seeker.seek(lastItems, !forward, query)),
-                                e -> ThreadsLogger.e(TAG, e.getMessage())
+                                e ->  {
+                                    ThreadsLogger.e(TAG, e.getMessage());
+                                    ThreadUtils.runOnUiThread(() -> {
+                                        fragment.hideProgressBar();
+                                    });
+                                }
                         )
         );
     }
@@ -1026,7 +1044,9 @@ public final class ChatController {
 
     private void scheduleResend() {
         if (!unsendMessageHandler.hasMessages(RESEND_MSG)) {
-            unsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendTimeInterval);
+            int resendInterval = Config.instance.requestConfig.getSocketClientSettings()
+                    .getResendIntervalMillis();
+            unsendMessageHandler.sendEmptyMessageDelayed(RESEND_MSG, resendInterval);
         }
     }
 
@@ -1263,7 +1283,8 @@ public final class ChatController {
                                 ccm.getConsultId(),
                                 ccm.getStatus(),
                                 ccm.getOrgUnit(),
-                                ccm.getAvatarPath()
+                                ccm.getAvatarPath(),
+                                ccm.getRole()
                         )
                 );
             }

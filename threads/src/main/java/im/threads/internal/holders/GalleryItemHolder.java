@@ -1,5 +1,6 @@
 package im.threads.internal.holders;
 
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +13,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.internal.Config;
+import im.threads.internal.utils.ColorsHelper;
 
 public final class GalleryItemHolder extends RecyclerView.ViewHolder {
-    private ImageView mImageView;
-    private AppCompatCheckBox mCheckBox;
+    private final ImageView mImageView;
+    private final AppCompatCheckBox mCheckBox;
+    private final ChatStyle mStyle;
 
     public GalleryItemHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_image, parent, false));
 
         mImageView = itemView.findViewById(R.id.image);
         mCheckBox = itemView.findViewById(R.id.checkbox);
-        mCheckBox.setButtonDrawable(AppCompatResources.getDrawable(itemView.getContext(), R.drawable.bk_checkbox_blue));
+        mStyle = Config.instance.getChatStyle();
     }
 
     public void onBind(final Uri imagePath, final View.OnClickListener listener, final boolean isChecked) {
@@ -34,8 +39,28 @@ public final class GalleryItemHolder extends RecyclerView.ViewHolder {
                     .centerCrop()
                     .into(mImageView);
             mCheckBox.setChecked(isChecked);
+            setButtonDrawable(isChecked);
             mCheckBox.setOnClickListener(listener);
             mImageView.setOnClickListener(listener);
         }
+    }
+
+    private void setButtonDrawable(boolean isChecked) {
+        Drawable drawable;
+        if (isChecked) {
+            drawable = AppCompatResources.getDrawable(itemView.getContext(),
+                    mStyle.attachmentDoneIconResId);
+            if (drawable != null) {
+                int attachmentBottomSheetButtonTintResId = mStyle.chatBodyIconsTint == 0
+                        ? mStyle.attachmentBottomSheetButtonTintResId
+                        : mStyle.chatBodyIconsTint;
+                ColorsHelper.setDrawableColor(itemView.getContext(), drawable.mutate(),
+                        attachmentBottomSheetButtonTintResId);
+            }
+        } else {
+            drawable = AppCompatResources.getDrawable(itemView.getContext(),
+                    R.drawable.ic_panorama_fish_eye_white_36dp);
+        }
+        mCheckBox.setButtonDrawable(drawable);
     }
 }

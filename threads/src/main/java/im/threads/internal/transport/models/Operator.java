@@ -12,6 +12,7 @@ public final class Operator {
     private String photoUrl;
     private String gender;
     private String organizationUnit;
+    private String role;
 
     public long getId() {
         return id;
@@ -39,6 +40,10 @@ public final class Operator {
 
     public String getOrganizationUnit() {
         return organizationUnit;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     @Nullable

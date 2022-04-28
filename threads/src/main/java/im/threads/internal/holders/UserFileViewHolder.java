@@ -62,7 +62,7 @@ public final class UserFileViewHolder extends BaseHolder {
                 itemView.getContext().getResources().getDimensionPixelSize(style.bubbleOutgoingPaddingBottom)
         );
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
-        setTintToProgressButtonUser(mCircularProgressButton, style.chatBodyIconsTint);
+        setUpProgressButton(mCircularProgressButton);
         mFilterView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         mFilterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
     }

@@ -19,12 +19,14 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
+import im.threads.ChatStyle;
 import im.threads.R;
+import im.threads.internal.Config;
 import im.threads.internal.adapters.ImagesAdapter;
-import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.permissions.PermissionsActivity;
+import im.threads.internal.secureDatabase.DatabaseHolder;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadUtils;
@@ -41,6 +43,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
     private static final String TAG = "ImagesActivity ";
     private static final int CODE_REQUEST_DOWNLOAD = 1;
 
+    private ChatStyle style;
     private int collectionSize;
     private ViewPager mViewPager;
     private List<FileDescription> files;
@@ -59,6 +62,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         mViewPager = findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
         initToolbar(findViewById(R.id.toolbar));
+        style = Config.instance.getChatStyle();
         compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
                 .doOnSuccess(data -> {
                     files = new ArrayList<>();
@@ -89,11 +93,16 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
 
     private void initToolbar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
-        Drawable d = AppCompatResources.getDrawable(this, R.drawable.ic_arrow_back_white_24dp).mutate();
-        ColorsHelper.setDrawableColor(this, d, R.color.threads_attachments_toolbar_text);
+        Drawable drawable = AppCompatResources.getDrawable(this,
+                R.drawable.ic_arrow_back_white_24dp);
+        if (drawable != null) {
+            drawable = drawable.mutate();
+            ColorsHelper.setDrawableColor(this, drawable,
+                    R.color.threads_attachments_toolbar_text);
+            toolbar.setNavigationIcon(drawable);
+        }
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         toolbar.setTitle("");
-        toolbar.setNavigationIcon(d);
     }
 
     @Override
@@ -109,7 +118,8 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_gallery, menu);
         if (menu.size() > 0) {
-            ColorsHelper.setDrawableColor(this, menu.getItem(0).getIcon(), R.color.threads_attachments_toolbar_text);
+            ColorsHelper.setDrawableColor(this, menu.getItem(0).getIcon(),
+                    R.color.threads_attachments_toolbar_text);
             menu.getItem(0).getIcon();
         }
         return super.onCreateOptionsMenu(menu);
@@ -136,13 +146,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         if (files.get(mViewPager.getCurrentItem()).getFileUri() == null) return;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
                 && !ThreadsPermissionChecker.isWriteExternalPermissionGranted(this)) {
-            if (permissionDescriptionAlertDialogFragment == null) {
-                permissionDescriptionAlertDialogFragment =
-                        PermissionDescriptionAlertDialogFragment.newInstance(
-                                PermissionDescriptionType.STORAGE, CODE_REQUEST_DOWNLOAD);
-                permissionDescriptionAlertDialogFragment.show(getSupportFragmentManager(),
-                        PermissionDescriptionAlertDialogFragment.TAG);
-            }
+            requestPermission();
             return;
         }
         compositeDisposable.add(Completable.fromAction(() -> FileUtils.saveToDownloads(files.get(mViewPager.getCurrentItem())))
@@ -158,10 +162,35 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         );
     }
 
+    private void requestPermission() {
+        if (style.arePermissionDescriptionDialogsEnabled) {
+            showStoragePermissionDescriptionDialog();
+        } else {
+            startStoragePermissionActivity(CODE_REQUEST_DOWNLOAD);
+        }
+    }
+
+    private void showStoragePermissionDescriptionDialog() {
+        if (permissionDescriptionAlertDialogFragment == null) {
+            permissionDescriptionAlertDialogFragment =
+                    PermissionDescriptionAlertDialogFragment.newInstance(
+                            PermissionDescriptionType.STORAGE, CODE_REQUEST_DOWNLOAD);
+            permissionDescriptionAlertDialogFragment.show(getSupportFragmentManager(),
+                    PermissionDescriptionAlertDialogFragment.TAG);
+        }
+    }
+
     @Override
-    public void onClick(@NonNull PermissionDescriptionType type, int requestCode) {
-        if (PermissionDescriptionType.STORAGE == type && CODE_REQUEST_DOWNLOAD == requestCode) {
-            PermissionsActivity.startActivityForResult(this, CODE_REQUEST_DOWNLOAD,
+    public void onAllowClick(@NonNull PermissionDescriptionType type, int requestCode) {
+        if (PermissionDescriptionType.STORAGE == type) {
+            startStoragePermissionActivity(requestCode);
+        }
+    }
+
+    private void startStoragePermissionActivity(int requestCode) {
+        if (requestCode == CODE_REQUEST_DOWNLOAD) {
+            PermissionsActivity.startActivityForResult(this,
+                    CODE_REQUEST_DOWNLOAD,
                     R.string.threads_permissions_write_external_storage_help_text,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }

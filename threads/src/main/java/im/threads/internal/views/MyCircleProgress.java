@@ -8,6 +8,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
+
+import im.threads.ChatStyle;
 import im.threads.internal.Config;
 
 public final class MyCircleProgress extends View {
@@ -82,8 +84,20 @@ public final class MyCircleProgress extends View {
     }
 
     private void initPaint() {
+        ChatStyle style = Config.instance.getChatStyle();
+        int tintResId;
+        if (style.chatBodyIconsTint != 0) {
+            tintResId = style.chatBodyIconsTint;
+        } else if (style.downloadButtonTintResId != 0) {
+            tintResId = style.downloadButtonTintResId;
+        } else {
+            tintResId = style.loaderTintResId;
+        }
+
         finishedPaint = new Paint();
-        finishedPaint.setColor(ContextCompat.getColor(getContext(), Config.instance.getChatStyle().chatBodyIconsTint));
+        if (tintResId != 0) {
+            finishedPaint.setColor(ContextCompat.getColor(getContext(), tintResId));
+        }
         finishedPaint.setStyle(Paint.Style.STROKE);
         finishedPaint.setAntiAlias(true);
         finishedPaint.setStrokeWidth(finishedStrokeSize);

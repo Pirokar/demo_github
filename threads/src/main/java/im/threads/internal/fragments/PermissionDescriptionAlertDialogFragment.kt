@@ -36,7 +36,7 @@ import im.threads.styles.permissions.PermissionDescriptionType
 
 
 /**
- * Диалоговое окно с описанием запроса разрешения.
+ * Диалоговое окно с описанием причины запроса разрешения.
  */
 class PermissionDescriptionAlertDialogFragment : DialogFragment() {
 
@@ -98,7 +98,7 @@ class PermissionDescriptionAlertDialogFragment : DialogFragment() {
             dialogView.findViewById(R.id.positive_button),
             dialogStyle.positiveButtonStyle
         ) {
-            onAllowPermissionClickListener?.onClick(type, requestCode)
+            onAllowPermissionClickListener?.onAllowClick(type, requestCode)
             dismiss()
         }
         setButtonStyle(
@@ -303,7 +303,7 @@ class PermissionDescriptionAlertDialogFragment : DialogFragment() {
     }
 
     interface OnAllowPermissionClickListener {
-        fun onClick(type: PermissionDescriptionType, requestCode: Int)
+        fun onAllowClick(type: PermissionDescriptionType, requestCode: Int)
         fun onDialogDetached()
     }
 

@@ -140,6 +140,7 @@ public final class MessageParser {
                 operator.getStatus(),
                 shortMessage == null ? null : shortMessage.split(" ")[0],
                 operator.getOrganizationUnit(),
+                operator.getRole(),
                 content.isDisplay(),
                 content.getText(),
                 content.getThreadId()

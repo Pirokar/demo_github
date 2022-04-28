@@ -9,12 +9,14 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.gson.JsonObject
 import im.threads.ConfigBuilder.TransportType
+import im.threads.config.SocketClientSettings
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.formatters.ChatItemType
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.model.ConsultInfo
 import im.threads.internal.model.SpeechMessageUpdate
+import im.threads.internal.model.SslSocketFactoryConfig
 import im.threads.internal.model.Survey
 import im.threads.internal.model.UserPhrase
 import im.threads.internal.transport.ApplicationConfig
@@ -49,12 +51,16 @@ import org.json.JSONObject
 import java.util.Calendar
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLSession
+
 
 class ThreadsGateTransport(
         threadsGateUrl: String,
         threadsGateProviderUid: String,
         threadsGateHuaweiProviderUid: String?,
-        isDebugLoggingEnabled: Boolean
+        isDebugLoggingEnabled: Boolean,
+        socketSettings: SocketClientSettings,
+        sslSocketFactoryConfig: SslSocketFactoryConfig? = null
 ) : Transport(), LifecycleObserver {
     private val client: OkHttpClient
     private val request: Request
@@ -67,16 +73,26 @@ class ThreadsGateTransport(
     private var lifecycle: Lifecycle? = null
 
     init {
-        val clientBuilder = OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor())
-                .pingInterval(10000, TimeUnit.MILLISECONDS)
+        val httpClientBuilder = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor())
+            .pingInterval(socketSettings.resendPingIntervalMillis.toLong(), TimeUnit.MILLISECONDS)
+            .connectTimeout(socketSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .readTimeout(socketSettings.readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
+            .writeTimeout(socketSettings.writeTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
         if (isDebugLoggingEnabled) {
-            clientBuilder.addInterceptor(
+            httpClientBuilder.addInterceptor(
                     HttpLoggingInterceptor()
                             .setLevel(HttpLoggingInterceptor.Level.BODY)
             )
         }
-        client = clientBuilder.build()
+        if (sslSocketFactoryConfig != null) {
+            httpClientBuilder.sslSocketFactory(
+                sslSocketFactoryConfig.sslSocketFactory,
+                sslSocketFactoryConfig.trustManager
+            )
+            httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
+        }
+        client = httpClientBuilder.build()
         request = Request.Builder()
                 .url(threadsGateUrl)
                 .build()

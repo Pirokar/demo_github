@@ -1,5 +1,6 @@
 package im.threads.internal.adapters;
 
+import android.content.Context;
 import android.net.Uri;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -12,8 +13,10 @@ import java.util.List;
 
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.holders.BottomGalleryImageHolder;
 import im.threads.internal.model.BottomGalleryItem;
+import im.threads.internal.utils.FileUtils;
 
 public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalleryImageHolder> {
     private List<BottomGalleryItem> list;
@@ -35,6 +38,7 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
     public void onBindViewHolder(@NonNull final BottomGalleryImageHolder holder, int position) {
         final BottomGalleryItem item = list.get(position);
         holder.onBind(list.get(position), v -> {
+            if (!isSendingAllowed(item, holder.itemView.getContext())) return;
             if (!item.isChosen() &&
                     mChosenItems.size() >= Config.instance.getChatStyle().getMaxGalleryImagesCount(Config.instance.context)) {
                 if (Config.instance.context != null) {
@@ -55,6 +59,36 @@ public final class BottomGalleryAdapter extends RecyclerView.Adapter<BottomGalle
                 mOnChooseItemsListener.onChosenItems(mChosenItems);
             }
         });
+    }
+
+    private boolean isSendingAllowed(@NonNull BottomGalleryItem item,
+                                     @NonNull Context context) {
+        Uri uri = item.getImagePath();
+        if (uri != null) {
+            if (FileHelper.INSTANCE.isAllowedFileExtension(
+                    FileUtils.getExtensionFromMediaStore(Config.instance.context, uri))
+            ) {
+                if (FileHelper.INSTANCE.isAllowedFileSize(
+                        FileUtils.getFileSizeFromMediaStore(Config.instance.context, uri))
+                ) {
+                    return true;
+                } else {
+                    // Недопустимый размер файла
+                    showToast(context.getString(R.string.threads_not_allowed_file_size,
+                            FileHelper.INSTANCE.getMaxAllowedFileSize()), context);
+                    return false;
+                }
+            } else {
+                // Недопустимое расширение файла
+                showToast(context.getString(R.string.threads_not_allowed_file_extension), context);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private void showToast(final String message, @NonNull Context context) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     @Override

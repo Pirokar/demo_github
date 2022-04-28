@@ -1,11 +1,16 @@
 package im.threads.internal.holders;
 
+import static im.threads.internal.model.MessageState.STATE_SENDING;
+
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
@@ -22,6 +27,7 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.model.AttachmentStateEnum;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.UserPhrase;
@@ -35,6 +41,8 @@ public final class ImageFromUserViewHolder extends BaseHolder {
     private View filter;
     private View filterSecond;
     private ChatStyle style;
+    private ImageView loader;
+    private RelativeLayout loaderLayout;
 
     public ImageFromUserViewHolder(ViewGroup parent, MaskedTransformation maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
@@ -45,17 +53,19 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         filterSecond = itemView.findViewById(R.id.filter_second);
         filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
+        loader = itemView.findViewById(R.id.loader);
+        loaderLayout = itemView.findViewById(R.id.loaderLayout);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
         mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.outgoingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
     }
 
-    public void onBind(final UserPhrase userPhrase, boolean highlighted,  final Runnable clickRunnable, final Runnable longClickRunnable) {
+    public void onBind(final UserPhrase userPhrase, boolean highlighted, final Runnable clickRunnable, final Runnable longClickRunnable) {
         ViewGroup vg = (ViewGroup) itemView;
         for (int i = 0; i < vg.getChildCount(); i++) {
             vg.getChildAt(i).setOnClickListener(v -> clickRunnable.run());
         }
-        bindImage(userPhrase.getFileDescription(), longClickRunnable);
+        bindImage(userPhrase.getFileDescription(), userPhrase.getSentState(), longClickRunnable);
         bindIsChosen(highlighted, longClickRunnable);
         bindTimeStamp(userPhrase.getSentState(), userPhrase.getTimeStamp(), longClickRunnable);
     }
@@ -69,13 +79,29 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         filterSecond.setVisibility(isChosen ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private void bindImage(FileDescription fileDescription, Runnable longClickRunnable) {
+    private void bindImage(FileDescription fileDescription, MessageState messageState, Runnable longClickRunnable) {
         boolean isDownloadError = fileDescription.isDownloadError();
         mImage.setOnLongClickListener(view -> {
             longClickRunnable.run();
             return true;
         });
         mImage.setImageResource(0);
+
+        mImage.setVisibility(View.VISIBLE);
+        loaderLayout.setVisibility(View.GONE);
+
+        if (fileDescription.getState() == AttachmentStateEnum.PENDING || messageState == STATE_SENDING) {
+            mImage.setVisibility(View.GONE);
+            loaderLayout.setVisibility(View.VISIBLE);
+            loader.setImageResource(R.drawable.im_loading);
+            RotateAnimation rotate = new RotateAnimation(0, 360,
+                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                    0.5f);
+            rotate.setDuration(3000);
+            rotate.setRepeatCount(Animation.INFINITE);
+            loader.setAnimation(rotate);
+        }
+
 
         if (fileDescription.getFileUri() != null && !isDownloadError) {
             Picasso.get()

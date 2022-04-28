@@ -30,6 +30,8 @@
     <string name="threads_back_camera_could_not_start_error">Не удалось запустить тыльную камеру.</string>
     <string name="threads_retake">Переснять</string>
     <string name="threads_consult">Консультант</string>
+    <string name="threads_bot">Бот</string>
+    <string name="threads_operator">Оператор</string>
 
     <string name="threads_error_no_file">Файл удалён на сервере</string>
     <string name="threads_no_media_and_files_header">Медиа-файлы отсутствуют</string>
@@ -119,7 +121,7 @@
 
     <string name="threads_contact_center">Контакт центр</string>
     <string name="threads_searching_operator">Поиск оператора…</string>
-    <string name="threads_operator_subtitle">Оператор</string>
+    <string name="threads_operator_subtitle">@string/threads_operator</string>
     <string name="threads_unknown_operator">Неизвестный</string>
 
     <string name="threads_channel_name">Контакт центр</string>
@@ -135,7 +137,7 @@
     <string name="threads_selfie_hint">Убедитесь, что на фото ваше лицо размещено прямо и его отчетливо видно</string>
 
     <string name="threads_not_allowed_file_extension">Недопустимый формат файла</string>
-    <string name="threads_not_allowed_file_size">Файл превышает максимально допустимый размер %1$dмб</string>
+    <string name="threads_not_allowed_file_size">Файл превышает максимально допустимый размер %1$d МБ</string>
     <string name="threads_message_sending_is_unavailable">Отправка сообщения временно недоступна</string>
     <string name="threads_hold_button_to_record_audio">Удерживайте кнопку записи для отправки голосового сообщения</string>
     <string name="threads_voice_message">Голосовое сообщение</string>
@@ -146,4 +148,7 @@
     <string name="threads_achieve_images_count_limit_message">Вы достигли лимита изображений для отправки</string>
     <string name="threads_some_error_during_load_file">Произошла ошибка при загрузке\nили проверке файла.</string>
     <string name="loading"></string>
+
+    <string name="threads_history_loading_message">Выполняется загрузка сообщений из истории, подождите завершения</string>
+
 </resources>

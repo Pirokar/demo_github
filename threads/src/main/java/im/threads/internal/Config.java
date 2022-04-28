@@ -1,5 +1,7 @@
 package im.threads.internal;
 
+import static im.threads.internal.utils.PicassoUtils.setPicasso;
+
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -10,10 +12,20 @@ import androidx.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.security.KeyStore;
+import java.util.List;
+
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import im.threads.ChatStyle;
 import im.threads.ConfigBuilder;
 import im.threads.ThreadsLib;
+import im.threads.config.RequestConfig;
+import im.threads.config.SocketClientSettings;
 import im.threads.internal.exceptions.MetaConfigurationException;
+import im.threads.internal.model.SslSocketFactoryConfig;
 import im.threads.internal.model.gson.UriDeserializer;
 import im.threads.internal.model.gson.UriSerializer;
 import im.threads.internal.transport.Transport;
@@ -21,6 +33,7 @@ import im.threads.internal.transport.threads_gate.ThreadsGateTransport;
 import im.threads.internal.utils.MetaDataUtils;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
+import im.threads.internal.utils.TlsConfigurationUtils;
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
 import im.threads.styles.permissions.PermissionDescriptionType;
 
@@ -32,6 +45,8 @@ public final class Config {
     @NonNull
     public final Context context;
 
+    public final RequestConfig requestConfig;
+    public final SslSocketFactoryConfig sslSocketFactoryConfig;
     private volatile ChatStyle chatStyle = null;
     private volatile PermissionDescriptionDialogStyle
             storagePermissionDescriptionDialogStyle = null;
@@ -73,11 +88,14 @@ public final class Config {
                   @Nullable ConfigBuilder.TransportType transportType,
                   @Nullable String threadsGateUrl,
                   @Nullable String threadsGateProviderUid,
+                  @Nullable String threadsGateHCMProviderUid,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
-                  int surveyCompletionDelay) {
+                  int surveyCompletionDelay,
+                  @NonNull RequestConfig requestConfig,
+                  List<Integer> certificateRawResIds) {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
@@ -88,8 +106,25 @@ public final class Config {
         this.filesAndMediaMenuItemEnabled = MetaDataUtils.getFilesAndMeniaMenuItemEnabled(this.context);
         this.historyLoadingCount = historyLoadingCount;
         this.surveyCompletionDelay = surveyCompletionDelay;
-        this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid);
+        this.sslSocketFactoryConfig = getSslSocketFactoryConfig(certificateRawResIds);
+        this.transport = getTransport(transportType, threadsGateUrl, threadsGateProviderUid,
+                threadsGateHCMProviderUid, requestConfig.getSocketClientSettings());
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
+        this.requestConfig = requestConfig;
+        setPicasso(this.context, requestConfig.getPicassoHttpClientSettings(),
+                sslSocketFactoryConfig);
+    }
+
+    private SslSocketFactoryConfig getSslSocketFactoryConfig(List<Integer> certificateRawResIds) {
+        KeyStore keyStore = TlsConfigurationUtils.createTlsPinningKeyStore(
+                context.getResources(),
+                certificateRawResIds
+        );
+        TrustManager[] trustManagers = TlsConfigurationUtils.getTrustManagers(keyStore);
+        X509TrustManager trustManager = TlsConfigurationUtils.getX509TrustManager(trustManagers);
+        SSLSocketFactory sslSocketFactory =
+                TlsConfigurationUtils.createTlsPinningSocketFactory(trustManagers);
+        return new SslSocketFactoryConfig(sslSocketFactory, trustManager);
     }
 
     public void applyChatStyle(ChatStyle chatStyle) {
@@ -194,7 +229,11 @@ public final class Config {
         return localInstance;
     }
 
-    private Transport getTransport(ConfigBuilder.TransportType providedTransportType, String providedThreadsGateUrl, String providedThreadsGateProviderUid) {
+    private Transport getTransport(@Nullable ConfigBuilder.TransportType providedTransportType,
+                                   @Nullable String providedThreadsGateUrl,
+                                   @Nullable String providedThreadsGateProviderUid,
+                                   @Nullable String providedThreadsGateHCMProviderUid,
+                                   SocketClientSettings socketClientSettings) {
         ConfigBuilder.TransportType transportType;
         if (providedTransportType != null) {
             transportType = providedTransportType;
@@ -214,16 +253,27 @@ public final class Config {
         if (ConfigBuilder.TransportType.MFMS_PUSH == transportType) {
             throw new MetaConfigurationException("MFMS push transport is not supported anymore");
         }
-        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl) ? providedThreadsGateUrl : MetaDataUtils.getThreadsGateUrl(this.context);
+        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
+                ? providedThreadsGateUrl
+                : MetaDataUtils.getThreadsGateUrl(this.context);
         if (TextUtils.isEmpty(threadsGateUrl)) {
             throw new MetaConfigurationException("Threads gate url is not set");
         }
-        String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid) ? providedThreadsGateProviderUid : MetaDataUtils.getThreadsGateProviderUid(this.context);
-        String threadsGateHCMProviderUid = MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
+        String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
+                ? providedThreadsGateProviderUid
+                : MetaDataUtils.getThreadsGateProviderUid(this.context);
+        String threadsGateHCMProviderUid = !TextUtils.isEmpty(providedThreadsGateHCMProviderUid)
+                ? providedThreadsGateHCMProviderUid
+                : MetaDataUtils.getThreadsGateHCMProviderUid(this.context);
         if (TextUtils.isEmpty(threadsGateProviderUid)) {
             throw new MetaConfigurationException("Threads gate provider uid is not set");
         }
-        return new ThreadsGateTransport(threadsGateUrl, threadsGateProviderUid, threadsGateHCMProviderUid, isDebugLoggingEnabled);
+        return new ThreadsGateTransport(threadsGateUrl,
+                threadsGateProviderUid,
+                threadsGateHCMProviderUid,
+                isDebugLoggingEnabled,
+                socketClientSettings,
+                sslSocketFactoryConfig);
     }
 
     @NonNull

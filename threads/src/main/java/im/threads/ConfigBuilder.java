@@ -1,7 +1,5 @@
 package im.threads;
 
-import static im.threads.internal.utils.PicassoUtils.setPicasso;
-
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +8,10 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collections;
+import java.util.List;
+
+import im.threads.config.RequestConfig;
 import im.threads.internal.Config;
 import im.threads.view.ChatActivity;
 
@@ -43,10 +45,14 @@ public final class ConfigBuilder {
     private String threadsGateUrl = null;
     @Nullable
     private String threadsGateProviderUid = null;
+    @Nullable
+    private String threadsGateHCMProviderUid = null;
+
+    private RequestConfig requestConfig  = new RequestConfig();
+    private List<Integer> certificateRawResIds = Collections.emptyList();
 
     public ConfigBuilder(@NonNull Context context) {
         this.context = context;
-        setPicasso(context);
     }
 
     public ConfigBuilder serverBaseUrl(String serverBaseUrl) {
@@ -66,6 +72,11 @@ public final class ConfigBuilder {
 
     public ConfigBuilder threadsGateProviderUid(String threadsGateProviderUid) {
         this.threadsGateProviderUid = threadsGateProviderUid;
+        return this;
+    }
+
+    public ConfigBuilder threadsGateHCMProviderUid(@Nullable String threadsGateHCMProviderUid) {
+        this.threadsGateHCMProviderUid = threadsGateHCMProviderUid;
         return this;
     }
 
@@ -93,18 +104,31 @@ public final class ConfigBuilder {
         return this;
     }
 
-    final Config build() {
+    public ConfigBuilder requestConfig(final RequestConfig requestConfig) {
+        this.requestConfig = requestConfig;
+        return this;
+    }
+
+    public ConfigBuilder certificateRawResIds(final List<Integer> certificateRawResIds) {
+        this.certificateRawResIds = certificateRawResIds;
+        return this;
+    }
+    
+    Config build() {
         return new Config(
                 context,
                 serverBaseUrl,
                 transportType,
                 threadsGateUrl,
                 threadsGateProviderUid,
+                threadsGateHCMProviderUid,
                 pendingIntentCreator,
                 unreadMessagesCountListener,
                 isDebugLoggingEnabled,
                 historyLoadingCount,
-                surveyCompletionDelay
+                surveyCompletionDelay,
+                requestConfig,
+                certificateRawResIds
         );
     }
 

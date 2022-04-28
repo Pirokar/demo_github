@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <View
         android:id="@+id/filter"
@@ -10,42 +10,59 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/image"
         android:layout_alignParentTop="true"
-        android:background="@color/threads_chat_highlighting"/>
+        android:background="@color/threads_chat_highlighting" />
 
     <View
         android:id="@+id/filter_second"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_quarter"
         android:layout_below="@+id/filter"
-        android:background="@color/threads_chat_highlighting"/>
+        android:background="@color/threads_chat_highlighting" />
+
+    <RelativeLayout
+        android:id="@+id/loaderLayout"
+        style="@style/userBubble"
+        android:layout_gravity="end"
+        android:background="@drawable/thread_outgoing_bubble"
+        android:paddingRight="17dp">
+
+        <ImageView
+            android:id="@+id/loader"
+            android:layout_width="@dimen/threads_operator_photo_size"
+            android:layout_height="@dimen/threads_operator_photo_size"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginTop="@dimen/margin_big"
+            android:layout_marginBottom="@dimen/margin_big"
+            app:srcCompat="@drawable/im_loading" />
+
+    </RelativeLayout>
+
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="@dimen/margin_quarter"
         android:layout_marginLeft="@dimen/user_margin_left"
-        android:layout_marginRight="@dimen/user_margin_right"
         android:layout_marginTop="@dimen/margin_quarter"
-        android:minHeight="240dp"
+        android:layout_marginRight="@dimen/user_margin_right"
+        android:layout_marginBottom="@dimen/margin_quarter"
         android:minWidth="240dp"
+        android:minHeight="240dp"
         android:scaleType="fitCenter" />
-
 
     <im.threads.internal.widget.text_view.BubbleTimeTextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/image"
-        android:layout_alignRight="@+id/image"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="@dimen/margin_big"
-        android:layout_marginRight="@dimen/margin_big"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="@dimen/consultant_margin_right"
+        android:layout_marginBottom="@dimen/margin_half"
         android:background="@drawable/timestamp_outgoing_underlayer"
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:text="10:19"
         android:textColor="@color/threads_outgoing_message_time" />
 
-</RelativeLayout>
+</FrameLayout>
