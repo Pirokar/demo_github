@@ -51,6 +51,7 @@ import org.json.JSONObject
 import java.util.Calendar
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLSession
 
 
 class ThreadsGateTransport(
@@ -89,6 +90,7 @@ class ThreadsGateTransport(
                 sslSocketFactoryConfig.sslSocketFactory,
                 sslSocketFactoryConfig.trustManager
             )
+            httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
         }
         client = httpClientBuilder.build()
         request = Request.Builder()

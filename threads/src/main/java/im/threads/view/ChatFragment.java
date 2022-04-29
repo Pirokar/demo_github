@@ -1425,7 +1425,8 @@ public final class ChatFragment extends BaseFragment implements
                     }
                 } else {
                     // Недопустимый размер файла
-                    showToast(getString(R.string.threads_not_allowed_file_size));
+                    showToast(getString(R.string.threads_not_allowed_file_size,
+                            FileHelper.INSTANCE.getMaxAllowedFileSize()));
                 }
             } else {
                 // Недопустимое расширение файла

@@ -8,6 +8,7 @@ import im.threads.internal.model.SslSocketFactoryConfig
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLSession
 
 object PicassoUtils {
 
@@ -30,6 +31,7 @@ object PicassoUtils {
                 sslSocketFactoryConfig.sslSocketFactory,
                 sslSocketFactoryConfig.trustManager
             )
+            httpClientBuilder.hostnameVerifier { hostname: String, session: SSLSession -> true }
         }
         return httpClientBuilder.build()
     }

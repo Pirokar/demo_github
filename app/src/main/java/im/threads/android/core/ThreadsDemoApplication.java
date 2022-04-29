@@ -27,10 +27,9 @@ import io.reactivex.subjects.BehaviorSubject;
 
 public class ThreadsDemoApplication extends MultiDexApplication {
 
+    private static final BehaviorSubject<Integer> unreadMessagesSubject = BehaviorSubject.create();
     private static Context appContext;
     private Disposable disposable;
-
-    private static final BehaviorSubject<Integer> unreadMessagesSubject = BehaviorSubject.create();
 
     public static Context getAppContext() {
         return appContext;
@@ -54,13 +53,14 @@ public class ThreadsDemoApplication extends MultiDexApplication {
                         }
                 );
         PushController.getInstance(this).init();
+
         ConfigBuilder configBuilder = new ConfigBuilder(this)
                 .pendingIntentCreator(new CustomPendingIntentCreator())
                 .unreadMessagesCountListener(unreadMessagesSubject::onNext)
                 .surveyCompletionDelay(2000)
                 .historyLoadingCount(50)
                 .isDebugLoggingEnabled(true)
-                .certificateRawResIds(Collections.singletonList(R.raw.arm_mobile4_chc_dte_crt));
+                .certificateRawResIds(Collections.singletonList(R.raw.edna));
         TransportConfig transportConfig = PrefUtils.getTransportConfig(this);
         if (transportConfig != null) {
             configBuilder.serverBaseUrl(transportConfig.getBaseUrl())

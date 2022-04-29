@@ -4,5 +4,5 @@
     <string name="serverBaseUrl" translatable="false">http://arm.beta3.chc.dte</string>
     <string name="threadsGateUrl" translatable="false">http://tg.beta3.chc.dte/socket</string>
     <string name="threadsGateProviderUid" translatable="false">KtfvH538KBfjoMMY9Q9ha65CtWeMshQb6nBPhAY12SMH8</string>
-    <bool name="files_and_media_menu_item_enabled">false</bool>
+    <bool name="files_and_media_menu_item_enabled">true</bool>
 </resources>
