@@ -85,6 +85,16 @@ android {
             applicationId "dte.chc.prod.android"
             resValue "string", "app_name1", "THR Prod Demo"
         }
+        amurtiger {
+            dimension "server"
+            applicationId "dte.chc.amurtiger.android"
+            resValue "string", "app_name1", "THR AmurTiger Demo"
+        }
+        gpb {
+            dimension "server"
+            applicationId "dte.chc.gpb.android"
+            resValue "string", "app_name1", "THR GPB Test Demo"
+        }
     }
 
     lintOptions {
