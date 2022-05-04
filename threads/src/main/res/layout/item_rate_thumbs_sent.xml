@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                xmlns:tools="http://schemas.android.com/tools">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:id="@+id/bubble"
         style="@style/userBubble"
-        android:paddingRight="24dp"
+        android:paddingEnd="24dp"
+        android:paddingStart="0dp"
         android:layout_marginBottom="@dimen/margin_half"
         android:background="@drawable/thread_outgoing_bubble">
 
@@ -17,25 +19,25 @@
             android:layout_height="42dp"
             android:layout_centerVertical="true"
             tools:src="@drawable/threads_binary_survey_like_selected"
-            android:tint="@color/threads_outgoing_message_text"
+            app:tint="@color/threads_outgoing_message_text"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/margin_half" />
+            android:layout_marginStart="@dimen/margin_half" />
 
         <im.threads.internal.widget.text_view.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginStart="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
-            android:layout_toRightOf="@+id/thumb"
+            android:layout_toEndOf="@+id/thumb"
             tools:text="@string/threads_item_user_rate_header"
             android:textColor="@color/threads_outgoing_message_text" />
 
         <im.threads.internal.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
             style="@style/timestamp"
-            android:layout_alignParentRight="true"
-            android:layout_alignRight="@+id/header"
+            android:layout_alignParentEnd="true"
+            android:layout_alignEnd="@+id/header"
             android:layout_below="@+id/header"
             android:drawablePadding="@dimen/margin_quarter"
             android:layout_marginTop="@dimen/margin_quarter"
@@ -43,6 +45,4 @@
             tools:text="10:19" />
 
     </RelativeLayout>
-
-
 </RelativeLayout>

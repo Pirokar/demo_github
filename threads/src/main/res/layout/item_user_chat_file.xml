@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:contentDescription="chatText">
+    android:contentDescription="chatText"
+    tools:ignore="HardcodedText">
 
     <View
         android:id="@+id/filter"
@@ -24,7 +26,8 @@
         android:id="@+id/bubble"
         style="@style/userBubble"
         android:background="@drawable/thread_outgoing_bubble"
-        android:paddingRight="17dp">
+        android:paddingEnd="17dp"
+        android:paddingStart="0dp">
 
         <im.threads.internal.views.CircularProgressButton
             android:id="@+id/button_download"
@@ -32,7 +35,7 @@
             android:layout_height="42dp"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/margin_quarter"
+            android:layout_marginStart="@dimen/margin_quarter"
             android:background="@drawable/threads_ic_file_outline_24dp"
             app:completed_drawable="@drawable/threads_ic_file_outline_24dp"
             app:in_progress_label="@drawable/threads_ic_clear_36dp"
@@ -43,7 +46,7 @@
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginStart="@dimen/margin_half"
             app:srcCompat="@drawable/im_loading" />
 
         <View
@@ -51,17 +54,17 @@
             android:layout_width="1dp"
             android:layout_height="100dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/margin_quarter"
-            android:layout_toRightOf="@+id/loader"
+            android:layout_marginStart="@dimen/margin_quarter"
+            android:layout_toEndOf="@+id/loader"
             android:background="@color/threads_outgoing_message_text" />
 
         <im.threads.internal.widget.text_view.BubbleMessageTextView
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginStart="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
-            android:layout_toRightOf="@+id/delimiter"
+            android:layout_toEndOf="@+id/delimiter"
             android:text="счетddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.pdf"
             android:textColor="@color/threads_outgoing_message_text" />
 
@@ -72,9 +75,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/header"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/margin_half"
+            android:layout_marginStart="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
-            android:layout_toRightOf="@+id/delimiter"
+            android:layout_toEndOf="@+id/delimiter"
             android:paddingBottom="@dimen/margin_half"
             android:textSize="11sp"
             android:text="1,2 mb"
@@ -84,8 +87,8 @@
             android:id="@+id/timestamp"
             style="@style/timestamp"
             android:layout_below="@+id/header"
-            android:layout_alignRight="@+id/header"
-            android:layout_alignParentRight="true"
+            android:layout_alignEnd="@+id/header"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="@dimen/margin_half"
             android:textSize="11sp"
             android:text="10:19"
@@ -98,8 +101,9 @@
         android:id="@+id/errortext"
         style="@style/timestamp"
         android:layout_below="@+id/bubble"
-        android:layout_alignParentRight="true"
-        android:paddingRight="17dp"
+        android:layout_alignParentEnd="true"
+        android:paddingEnd="17dp"
+        android:paddingStart="0dp"
         android:layout_marginTop="@dimen/margin_half"
         android:textSize="11sp"
         android:text="10:19"
