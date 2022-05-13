@@ -48,7 +48,7 @@ public final class ConfigBuilder {
     @Nullable
     private String threadsGateHCMProviderUid = null;
 
-    private RequestConfig requestConfig  = new RequestConfig();
+    private RequestConfig requestConfig = new RequestConfig();
     private List<Integer> certificateRawResIds = Collections.emptyList();
 
     public ConfigBuilder(@NonNull Context context) {
@@ -89,6 +89,7 @@ public final class ConfigBuilder {
         this.unreadMessagesCountListener = unreadMessagesCountListener;
         return this;
     }
+
     public ConfigBuilder isDebugLoggingEnabled(boolean isDebugLoggingEnabled) {
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         return this;
@@ -113,7 +114,7 @@ public final class ConfigBuilder {
         this.certificateRawResIds = certificateRawResIds;
         return this;
     }
-    
+
     Config build() {
         return new Config(
                 context,

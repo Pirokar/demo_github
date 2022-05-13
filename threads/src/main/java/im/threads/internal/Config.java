@@ -111,11 +111,13 @@ public final class Config {
                 threadsGateHCMProviderUid, requestConfig.getSocketClientSettings());
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
         this.requestConfig = requestConfig;
-        setPicasso(this.context, requestConfig.getPicassoHttpClientSettings(),
-                sslSocketFactoryConfig);
+        setPicasso(this.context, requestConfig.getPicassoHttpClientSettings(), sslSocketFactoryConfig);
     }
 
     private SslSocketFactoryConfig getSslSocketFactoryConfig(List<Integer> certificateRawResIds) {
+        if (certificateRawResIds == null || certificateRawResIds.size() == 0)
+            return null;
+
         KeyStore keyStore = TlsConfigurationUtils.createTlsPinningKeyStore(
                 context.getResources(),
                 certificateRawResIds
