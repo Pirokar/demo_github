@@ -52,7 +52,7 @@ public final class ThreadsLib {
         }
         Config.instance = configBuilder.build();
         instance = new ThreadsLib();
-        PrefUtils.migrateToSeparateStorageIfNeeded();
+        PrefUtils.migrateSharedPreferences();
         if (Config.instance.unreadMessagesCountListener != null) {
             Config.instance.unreadMessagesCountListener.onUnreadMessagesCountChanged(UnreadMessagesController.INSTANCE.getUnreadMessages());
             UnreadMessagesController.INSTANCE.getUnreadMessagesPublishProcessor()
