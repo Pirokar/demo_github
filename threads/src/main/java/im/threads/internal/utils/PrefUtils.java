@@ -14,7 +14,6 @@ import androidx.core.util.ObjectsCompat;
 import androidx.preference.PreferenceManager;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
-import androidx.security.crypto.MasterKeys;
 
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.gson.JsonSyntaxException;
@@ -67,7 +66,6 @@ public final class PrefUtils {
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String AUTH_TOKEN = "AUTH_TOKEN";
     private static final String AUTH_SCHEMA = "AUTH_SCHEMA";
-    private static final String MIGRATED = "MIGRATED";
     private static final String CLIENT_NOTIFICATION_DISPLAY_TYPE = "CLIENT_NOTIFICATION_DISPLAY_TYPE";
     private static final String THREAD_ID = "THREAD_ID";
     private static final String FILE_DESCRIPTION_DRAFT = "FILE_DESCRIPTION_DRAFT";
@@ -80,6 +78,8 @@ public final class PrefUtils {
 
     private PrefUtils() {
     }
+
+    private static SharedPreferences sharedPreferences;
 
     public static String getLastCopyText() {
         return getDefaultSharedPreferences().getString(LAST_COPY_TEXT, null);
@@ -470,8 +470,14 @@ public final class PrefUtils {
     }
 
     private static SharedPreferences getDefaultSharedPreferences() {
-        SharedPreferences sharedPreferences;
+        if (sharedPreferences == null) {
+            createSharedPreferences();
+        }
 
+        return sharedPreferences;
+    }
+
+    private static void createSharedPreferences() {
         try {
             MasterKey masterKey = new MasterKey.Builder(Config.instance.context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -487,7 +493,5 @@ public final class PrefUtils {
             Log.e(TAG, exception.toString());
             sharedPreferences = Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE);
         }
-
-        return sharedPreferences;
     }
 }
