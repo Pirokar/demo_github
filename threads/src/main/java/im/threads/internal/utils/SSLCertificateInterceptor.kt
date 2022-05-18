@@ -24,14 +24,10 @@ class SSLCertificateInterceptor : Interceptor {
             }
             Log.i(TAG, "handshake success")
             val certificates: List<Certificate> = handshake.peerCertificates
-            if (certificates == null) {
+            if (certificates.isEmpty())
                 Log.i(TAG, "no peer certificates")
-                return response
-            }
-
-            for (certificate in certificates) {
-                Log.i(TAG, "Server $certificate")
-            }
+            else
+                certificates.forEach { Log.i(TAG, "Server $it") }
             return response
         } catch (e: Exception) {
             Log.e(TAG, "<-- HTTP FAILED: $e")

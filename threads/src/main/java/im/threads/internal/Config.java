@@ -115,7 +115,7 @@ public final class Config {
     }
 
     private SslSocketFactoryConfig getSslSocketFactoryConfig(List<Integer> certificateRawResIds) {
-        if (certificateRawResIds == null || certificateRawResIds.size() == 0)
+        if (certificateRawResIds == null || certificateRawResIds.isEmpty())
             return null;
 
         KeyStore keyStore = TlsConfigurationUtils.createTlsPinningKeyStore(
