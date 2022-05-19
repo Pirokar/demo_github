@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
+import im.threads.internal.formatters.ChatItemType;
 import im.threads.internal.helpers.ChatItemListHelper;
 import im.threads.internal.holders.BaseHolder;
 import im.threads.internal.holders.ConsultFileViewHolder;
@@ -1147,7 +1148,8 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             for (int i = items.size() - 1; i >= 0; i--) {
                 final ChatItem chatItem = items.get(i);
                 if (chatItem instanceof SystemMessage) {
-                    if (!ObjectsCompat.equals(chatItem.getThreadId(), currentThreadId)) {
+                    if (!ObjectsCompat.equals(chatItem.getThreadId(), currentThreadId)
+                            && !((SystemMessage) chatItem).getType().equals(ChatItemType.CLIENT_BLOCKED.name())) {
                         items.remove(chatItem);
                     }
                     if (type == ClientNotificationDisplayType.CURRENT_THREAD_WITH_GROUPING) {

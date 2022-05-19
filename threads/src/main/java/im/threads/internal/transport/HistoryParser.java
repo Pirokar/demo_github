@@ -86,6 +86,7 @@ public final class HistoryParser {
                     case PARTING_AFTER_SURVEY:
                     case THREAD_CLOSED:
                     case THREAD_WILL_BE_REASSIGNED:
+                    case CLIENT_BLOCKED:
                     case THREAD_IN_PROGRESS:
                         out.add(getSystemMessageFromHistory(message));
                         break;

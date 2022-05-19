@@ -40,7 +40,7 @@ public final class ThreadsApi {
         if (Config.instance.newChatCenterApi) {
             return newThreadsApi.history(token, beforeDate, count, version);
         } else {
-            return oldThreadsApi.history(token, beforeDate, count, version);
+            return oldThreadsApi.history(token, beforeDate, count, version, OldThreadsApi.API_VERSION);
         }
     }
 

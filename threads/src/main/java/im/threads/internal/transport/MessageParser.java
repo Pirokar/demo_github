@@ -55,6 +55,7 @@ public final class MessageParser {
     public static ChatItem format(String messageId, long sentAt, String shortMessage, JsonObject fullMessage) {
         final ChatItemType type = ChatItemType.fromString(getType(fullMessage));
         switch (type) {
+            case CLIENT_BLOCKED:
             case THREAD_ENQUEUED:
             case AVERAGE_WAIT_TIME:
             case PARTING_AFTER_SURVEY:
@@ -76,7 +77,6 @@ public final class MessageParser {
             case NONE:
             case MESSAGES_READ:
                 return getMessageRead(fullMessage);
-            case CLIENT_BLOCKED:
             case SCENARIO:
                 return null;
             case ATTACHMENT_SETTINGS:
