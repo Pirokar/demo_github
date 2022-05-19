@@ -212,6 +212,7 @@ public final class ChatFragment extends BaseFragment implements
     private boolean isNewMessageUpdateTimeoutOn = false;
 
     private QuickReplyItem quickReplyItem = null;
+    private int previousChatItemsCount = 0;
 
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);
@@ -677,7 +678,7 @@ public final class ChatFragment extends BaseFragment implements
                         }
                     } else {
                         binding.scrollDownButtonContainer.setVisibility(View.GONE);
-                        recyclerView.post(() -> chatAdapter.setAllMessagesRead());
+                        recyclerView.post(() -> setMessagesAsRead());
                     }
                 }
             }
@@ -690,12 +691,24 @@ public final class ChatFragment extends BaseFragment implements
             } else {
                 scrollToPosition(chatAdapter.getItemCount() - 1, false);
             }
-            chatAdapter.setAllMessagesRead();
+            setMessagesAsRead();
             binding.scrollDownButtonContainer.setVisibility(View.GONE);
             if (isInMessageSearchMode) {
                 hideSearchMode();
             }
         });
+    }
+
+    private void setMessagesAsRead() {
+        chatAdapter.setAllMessagesRead();
+        setMessagesAsReadForThisThreadInDB();
+    }
+
+    private void setMessagesAsReadForThisThreadInDB() {
+        if (chatAdapter.getItemCount() != previousChatItemsCount) {
+            mChatController.setMessagesInCurrentThreadAsReadInDB();
+            previousChatItemsCount = chatAdapter.getItemCount();
+        }
     }
 
     private void configureUserTypingSubscription() {
@@ -1501,7 +1514,7 @@ public final class ChatFragment extends BaseFragment implements
             mChatController.onUserInput(message);
         }
         if (null != chatAdapter) {
-            chatAdapter.setAllMessagesRead();
+            setMessagesAsRead();
         }
         if (clearInput) {
             clearInput();
@@ -1815,7 +1828,7 @@ public final class ChatFragment extends BaseFragment implements
 
     public void setAllMessagesWereRead() {
         if (null != chatAdapter) {
-            chatAdapter.setAllMessagesRead();
+            setMessagesAsRead();
         }
     }
 

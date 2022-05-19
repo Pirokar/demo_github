@@ -531,6 +531,13 @@ public final class ChatController {
         fragment = null;
     }
 
+    public void setMessagesInCurrentThreadAsReadInDB() {
+        subscribe(DatabaseHolder.getInstance().setAllConsultMessagesWereReadInThread(PrefUtils.getThreadId())
+                .subscribe(UnreadMessagesController.INSTANCE::refreshUnreadMessagesCount,
+                        error -> ThreadsLogger.e(TAG, "setAllMessagesWereRead() " + error.getMessage()))
+        );
+    }
+
     private boolean subscribe(final Disposable event) {
         if (compositeDisposable == null || compositeDisposable.isDisposed()) {
             compositeDisposable = new CompositeDisposable();
