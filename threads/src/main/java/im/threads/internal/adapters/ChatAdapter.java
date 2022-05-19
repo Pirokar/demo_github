@@ -9,6 +9,12 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
@@ -20,11 +26,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.util.ObjectsCompat;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.ChatItemType;
@@ -1148,9 +1149,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             for (int i = items.size() - 1; i >= 0; i--) {
                 final ChatItem chatItem = items.get(i);
                 if (chatItem instanceof SystemMessage) {
-                    String messageType = ((SystemMessage) chatItem).getType();
+                    boolean isMessageUserBlocked = ((SystemMessage) chatItem).getType().equals(ChatItemType.CLIENT_BLOCKED.name());
                     if (!ObjectsCompat.equals(chatItem.getThreadId(), currentThreadId)
-                            && !messageType.equals(ChatItemType.CLIENT_BLOCKED.name())) {
+                            && !isMessageUserBlocked) {
                         items.remove(chatItem);
                     }
                     if (type == ClientNotificationDisplayType.CURRENT_THREAD_WITH_GROUPING) {
