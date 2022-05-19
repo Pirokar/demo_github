@@ -1148,8 +1148,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             for (int i = items.size() - 1; i >= 0; i--) {
                 final ChatItem chatItem = items.get(i);
                 if (chatItem instanceof SystemMessage) {
+                    String messageType = ((SystemMessage) chatItem).getType();
                     if (!ObjectsCompat.equals(chatItem.getThreadId(), currentThreadId)
-                            && !((SystemMessage) chatItem).getType().equals(ChatItemType.CLIENT_BLOCKED.name())) {
+                            && !messageType.equals(ChatItemType.CLIENT_BLOCKED.name())) {
                         items.remove(chatItem);
                     }
                     if (type == ClientNotificationDisplayType.CURRENT_THREAD_WITH_GROUPING) {
