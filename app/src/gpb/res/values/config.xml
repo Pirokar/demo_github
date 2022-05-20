@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="datastore_url" translatable="false">http://open-ig.gpb-test.chc.dte/files</string>
+    <string name="datastore_url" translatable="false">http://open-ig.gpb-test.chc.dte/</string>
     <string name="serverBaseUrl" translatable="false">http://open-ig.gpb-test.chc.dte</string>
-    <string name="threadsGateUrl" translatable="false">ws://open-ig.gpb-test.chc.dte/gate/socket</string>
+    <string name="threadsGateUrl" translatable="false">ws://open-ig.gpb-test.chc.dte/socket</string>
     <string name="threadsGateProviderUid" translatable="false">GPB-TEST_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM</string>
     <bool name="files_and_media_menu_item_enabled">true</bool>
+    <bool name="new_chat_center_api">true</bool>
 </resources>
+
