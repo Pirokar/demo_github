@@ -9,6 +9,7 @@ import im.threads.internal.model.SslSocketFactoryConfig;
 import im.threads.internal.transport.AuthInterceptor;
 import im.threads.internal.utils.AppInfoHelper;
 import im.threads.internal.utils.DeviceInfoHelper;
+import im.threads.internal.utils.SSLCertificateInterceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -21,13 +22,6 @@ public final class ApiGenerator {
 
     private final ThreadsApi threadsApi;
 
-    public static ThreadsApi getThreadsApi() {
-        if (apiGenerator == null) {
-            apiGenerator = new ApiGenerator();
-        }
-        return apiGenerator.threadsApi;
-    }
-
     private ApiGenerator() {
         Retrofit build = new Retrofit.Builder()
                 .baseUrl(Config.instance.serverBaseUrl)
@@ -38,6 +32,13 @@ public final class ApiGenerator {
                 build.create(OldThreadsApi.class),
                 build.create(NewThreadsApi.class)
         );
+    }
+
+    public static ThreadsApi getThreadsApi() {
+        if (apiGenerator == null) {
+            apiGenerator = new ApiGenerator();
+        }
+        return apiGenerator.threadsApi;
     }
 
     private OkHttpClient createOkHttpClient() {
@@ -58,6 +59,7 @@ public final class ApiGenerator {
         if (Config.instance.isDebugLoggingEnabled) {
             httpClientBuilder.addInterceptor(new HttpLoggingInterceptor()
                     .setLevel(HttpLoggingInterceptor.Level.BODY));
+            httpClientBuilder.addInterceptor(new SSLCertificateInterceptor());
         }
         SslSocketFactoryConfig sslSocketFactoryConfig = config.sslSocketFactoryConfig;
         if (sslSocketFactoryConfig != null) {
