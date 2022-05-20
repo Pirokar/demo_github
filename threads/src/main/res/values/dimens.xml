@@ -21,7 +21,6 @@
     <dimen name="threads_stroke_width_small">1dp</dimen>
 
     <dimen name="consultant_margin_right">52dp</dimen>
-    <dimen name="consultant_margin_left">16dp</dimen>
     <dimen name="threads_operator_photo_size">40dp</dimen>
     <dimen name="threads_system_operator_photo_size">40dp</dimen>
     <dimen name="consultant_photo_offset_size">-20dp</dimen>
