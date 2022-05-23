@@ -23,7 +23,7 @@ import retrofit2.http.Query;
  */
 public interface OldThreadsApi {
 
-    String API_VERSION = "13";
+    String API_VERSION = "14";
 
     @Multipart
     @PUT("files")
@@ -33,12 +33,13 @@ public interface OldThreadsApi {
             @Header("X-Client-Token") String token
     );
 
-    @GET("history/v" + API_VERSION)
+    @GET("history")
     Call<HistoryResponse> history(
             @Header("X-Client-Token") String token,
             @Query("before") String beforeDate,
             @Query("count") Integer count,
-            @Query("libVersion") String version
+            @Query("libVersion") String version,
+            @Query("chatApiVersion") String chatApiVersion
     );
 
     @GET("opengraph")
