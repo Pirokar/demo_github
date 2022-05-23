@@ -1,156 +1,147 @@
-package im.threads.internal.utils;
+package im.threads.internal.utils
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Context
+import android.net.Uri
+import android.text.TextUtils
+import im.threads.internal.Config
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.lang.Exception
+import java.lang.StringBuilder
+import java.net.HttpURLConnection
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
+import kotlin.math.floor
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class FileDownloader(private val path: String, fileName: String, ctx: Context, private val downloadLister: DownloadLister) {
+    private val outputFile: File = File(
+        getDownloadDir(ctx), generateFileName(
+            path, fileName
+        )
+    )
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.Locale;
+    private var isStopped = false
 
-import javax.net.ssl.HttpsURLConnection;
-
-import im.threads.internal.Config;
-
-public class FileDownloader {
-    private static final String TAG = "FileDownloader ";
-    private final String path;
-    private final File outputFile;
-    private final DownloadLister downloadLister;
-
-    private boolean isStopped;
-
-    public FileDownloader(@NonNull String path, @NonNull String fileName, @NonNull Context ctx, @Nullable DownloadLister downloadLister) {
-        this.path = path;
-        this.outputFile = new File(getDownloadDir(ctx), generateFileName(path, fileName));
-        this.downloadLister = downloadLister;
-    }
-
-    public static File getDownloadDir(Context ctx) {
-        return ctx.getFilesDir();
-    }
-
-    public static String generateFileName(@NonNull String path, @NonNull String fileName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getFileName(fileName))
-                .append("(")
-                .append(Uri.parse(path).getLastPathSegment())
-                .append(")");
-        final String ext = getFileExtension(fileName);
-        if (ext != null) {
-            sb.append(ext);
-        }
-        return sb.toString();
-    }
-
-    private static String getFileExtension(final String path) {
-        if (path != null && path.lastIndexOf('.') != -1) {
-            return path.substring(path.lastIndexOf('.'));
-        }
-        return null;
-    }
-
-    private static String getFileName(String fileName) {
-        if (fileName.lastIndexOf('.') != -1) {
-            return fileName.substring(0, fileName.lastIndexOf('.'));
-        }
-        return fileName;
-    }
-
-    public void stop() {
-        isStopped = true;
-    }
-
-    public Long getFileLength(HttpURLConnection urlConnection) {
+    fun download() {
         try {
-            List<String> values = urlConnection.getHeaderFields().get("Content-Length");
-            if (values != null && !values.isEmpty()) {
-                return Long.parseLong((String) values.get(0));
+            val url = URL(path)
+            Config.instance.sslSocketFactoryConfig?.let {
+                HttpsURLConnection.setDefaultSSLSocketFactory(it.sslSocketFactory)
             }
-        } catch (Exception e) {
-            ThreadsLogger.e(TAG, "download", e);
-        }
-        return null;
-    }
-
-    public void download() {
-        try {
-            URL url = new URL(this.path);
-            boolean isHTTPS = url.getProtocol().toLowerCase(Locale.ROOT).equals("https");
-            if (isHTTPS && Config.instance.sslSocketFactoryConfig != null) {
-                HttpsURLConnection.setDefaultSSLSocketFactory(Config.instance.sslSocketFactoryConfig.getSslSocketFactory());
-            }
-            HttpURLConnection urlConnection;
-            if (isHTTPS) {
-                urlConnection = (HttpsURLConnection) url.openConnection();
+            val urlConnection = if (url.protocol.equals("https", ignoreCase = true)) {
+                url.openConnection() as HttpsURLConnection
             } else {
-                urlConnection = (HttpURLConnection) url.openConnection();
+                url.openConnection() as HttpURLConnection
             }
             try {
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.getClientID());
-                urlConnection.setDoOutput(false);
-                urlConnection.setUseCaches(false);
-                urlConnection.setDoInput(true);
-                urlConnection.setConnectTimeout(60000);
-                urlConnection.setReadTimeout(60000);
-                if (isHTTPS && Config.instance.sslSocketFactoryConfig != null) {
-                    ((HttpsURLConnection)urlConnection).setHostnameVerifier((hostname, session) -> true);
+                urlConnection.requestMethod = "GET"
+                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.getClientID())
+                if (!TextUtils.isEmpty(PrefUtils.getAuthToken())) {
+                    urlConnection.setRequestProperty("Authorization", PrefUtils.getAuthToken())
                 }
-                Long length = getFileLength(urlConnection);
-                FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                int len1;
-                long bytesReaded = 0;
-                long lastReadTime = System.currentTimeMillis();
-                final byte[] buffer = new byte[1024 * 8];
-                while ((len1 = in.read(buffer)) > 0 && !isStopped) {
-                    fileOutputStream.write(buffer, 0, len1);
-                    bytesReaded += len1;
-                    if (length != null && (System.currentTimeMillis() > (lastReadTime + 500))) {
-                        int progress = (int) Math.floor((((double) bytesReaded) / ((double) length)) * 100.0);
-                        lastReadTime = System.currentTimeMillis();
-                        if (downloadLister != null) {
-                            downloadLister.onProgress(progress);
-                        }
+                if (!TextUtils.isEmpty(PrefUtils.getAuthSchema())) {
+                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtils.getAuthSchema())
+                }
+                urlConnection.doOutput = false
+                urlConnection.useCaches = false
+                urlConnection.doInput = true
+                urlConnection.connectTimeout = 60000
+                urlConnection.readTimeout = 60000
+
+                if (urlConnection is HttpsURLConnection) {
+                    urlConnection.setHostnameVerifier { hostname, session -> true }
+                }
+
+                val length = getFileLength(urlConnection)
+                val fileOutputStream = FileOutputStream(outputFile)
+                val `in`: InputStream = BufferedInputStream(urlConnection.inputStream)
+                var tempLength: Int
+                var bytesRead: Long = 0
+                var lastReadTime = System.currentTimeMillis()
+                val buffer = ByteArray(1024 * 8)
+
+                while (`in`.read(buffer).also { tempLength = it } > 0 && !isStopped) {
+                    fileOutputStream.write(buffer, 0, tempLength)
+                    bytesRead += tempLength.toLong()
+                    if (length != null && System.currentTimeMillis() > lastReadTime + 500) {
+                        val progress = floor(bytesRead.toDouble() / length * 100.0).toInt()
+                        lastReadTime = System.currentTimeMillis()
+                        downloadLister.onProgress(progress.toDouble())
                     }
                 }
-                fileOutputStream.flush();
-                fileOutputStream.close();
+
+                fileOutputStream.flush()
+                fileOutputStream.close()
+
                 if (!isStopped) {
-                    if (downloadLister != null) {
-                        downloadLister.onComplete(outputFile);
-                    }
+                    downloadLister.onComplete(outputFile)
                 }
-            } catch (Exception e) {
-                ThreadsLogger.e(TAG, "1 ", e);
-                if (downloadLister != null) {
-                    downloadLister.onFileDownloadError(e);
-                }
+            } catch (e: Exception) {
+                ThreadsLogger.e(TAG, "1 ", e)
+                downloadLister.onFileDownloadError(e)
             } finally {
-                urlConnection.disconnect();
+                urlConnection.disconnect()
             }
-        } catch (Exception e) {
-            ThreadsLogger.e(TAG, "2 ", e);
-            if (downloadLister != null) {
-                downloadLister.onFileDownloadError(e);
-            }
+        } catch (e: Exception) {
+            ThreadsLogger.e(TAG, "2 ", e)
+            downloadLister.onFileDownloadError(e)
         }
     }
 
-    public interface DownloadLister {
-        void onProgress(double progress);
+    fun stop() {
+        isStopped = true
+    }
 
-        void onComplete(File file);
+    private fun getFileLength(urlConnection: HttpURLConnection): Long? {
+        try {
+            val values = urlConnection.headerFields["Content-Length"]
+            if (values != null && values.isNotEmpty()) {
+                return values[0]?.toLong()
+            }
+        } catch (e: Exception) {
+            ThreadsLogger.e(TAG, "download", e)
+        }
+        return null
+    }
 
-        void onFileDownloadError(Exception e);
+    interface DownloadLister {
+        fun onProgress(progress: Double)
+        fun onComplete(file: File)
+        fun onFileDownloadError(e: Exception?)
+    }
 
+    companion object {
+        private const val TAG = "FileDownloader "
+        @JvmStatic
+        fun getDownloadDir(ctx: Context): File {
+            return ctx.filesDir
+        }
+
+        fun generateFileName(path: String, fileName: String): String {
+            val sb = StringBuilder()
+            sb.append(getFileName(fileName))
+                .append("(")
+                .append(Uri.parse(path).lastPathSegment)
+                .append(")")
+            val ext = getFileExtension(fileName)
+            if (ext != null) {
+                sb.append(ext)
+            }
+            return sb.toString()
+        }
+
+        private fun getFileExtension(path: String?): String? {
+            return if (path != null && path.lastIndexOf('.') != -1) {
+                path.substring(path.lastIndexOf('.'))
+            } else null
+        }
+
+        private fun getFileName(fileName: String): String {
+            return if (fileName.lastIndexOf('.') != -1) {
+                fileName.substring(0, fileName.lastIndexOf('.'))
+            } else fileName
+        }
     }
 }

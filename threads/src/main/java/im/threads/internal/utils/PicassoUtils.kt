@@ -5,10 +5,10 @@ import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import im.threads.config.HttpClientSettings
 import im.threads.internal.model.SslSocketFactoryConfig
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
 object PicassoUtils {
 
@@ -19,9 +19,16 @@ object PicassoUtils {
     ): OkHttpClient {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor { chain ->
-                val newRequest: Request = chain.request().newBuilder()
-                    .addHeader("X-Ext-Client-ID", PrefUtils.getClientID())
-                    .build()
+                val builder = chain.request().newBuilder().apply {
+                    addHeader("X-Ext-Client-ID", PrefUtils.getClientID())
+                    if (!PrefUtils.getAuthToken().isNullOrBlank()) {
+                        addHeader("Authorization", PrefUtils.getAuthToken())
+                    }
+                    if (!PrefUtils.getAuthSchema().isNullOrBlank()) {
+                        addHeader("X-Auth-Schema", PrefUtils.getAuthSchema())
+                    }
+                }
+                val newRequest: Request = builder.build()
                 chain.proceed(newRequest)
             }
             .connectTimeout(httpClientSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)

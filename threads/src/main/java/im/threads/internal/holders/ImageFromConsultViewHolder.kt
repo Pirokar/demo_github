@@ -95,9 +95,10 @@ class ImageFromConsultViewHolder(
         mImage.setOnLongClickListener(onLongClickListener)
         mImage.setImageResource(0)
         if (fileDescription != null) {
-            if (fileDescription.fileUri != null && !fileDescription.isDownloadError) {
+            val fileUri = fileDescription.fileUri?.toString() ?: fileDescription.downloadPath
+            if (fileUri != null && !fileDescription.isDownloadError) {
                 Picasso.get()
-                    .load(fileDescription.fileUri)
+                    .load(fileUri)
                     .error(style.imagePlaceholder)
                     .fit()
                     .centerCrop()
