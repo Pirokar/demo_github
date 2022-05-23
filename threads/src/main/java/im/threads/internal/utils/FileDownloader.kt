@@ -38,12 +38,12 @@ class FileDownloader(private val path: String, fileName: String, ctx: Context, p
             }
             try {
                 urlConnection.requestMethod = "GET"
-                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.getClientID())
-                if (!TextUtils.isEmpty(PrefUtils.getAuthToken())) {
-                    urlConnection.setRequestProperty("Authorization", PrefUtils.getAuthToken())
+                urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.clientID)
+                if (!TextUtils.isEmpty(PrefUtils.authToken)) {
+                    urlConnection.setRequestProperty("Authorization", PrefUtils.authToken)
                 }
-                if (!TextUtils.isEmpty(PrefUtils.getAuthSchema())) {
-                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtils.getAuthSchema())
+                if (!TextUtils.isEmpty(PrefUtils.authSchema)) {
+                    urlConnection.setRequestProperty("X-Auth-Schema", PrefUtils.authSchema)
                 }
                 urlConnection.doOutput = false
                 urlConnection.useCaches = false
