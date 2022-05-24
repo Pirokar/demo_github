@@ -10,8 +10,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -66,7 +68,7 @@ public class FileDownloader {
         isStopped = true;
     }
 
-    public Long getFileLength(HttpsURLConnection urlConnection) {
+    public Long getFileLength(HttpURLConnection urlConnection) {
         try {
             List<String> values = urlConnection.getHeaderFields().get("Content-Length");
             if (values != null && !values.isEmpty()) {
@@ -81,10 +83,16 @@ public class FileDownloader {
     public void download() {
         try {
             URL url = new URL(this.path);
-            if (Config.instance.sslSocketFactoryConfig != null) {
+            boolean isHTTPS = url.getProtocol().toLowerCase(Locale.ROOT).equals("https");
+            if (isHTTPS && Config.instance.sslSocketFactoryConfig != null) {
                 HttpsURLConnection.setDefaultSSLSocketFactory(Config.instance.sslSocketFactoryConfig.getSslSocketFactory());
             }
-            HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+            HttpURLConnection urlConnection;
+            if (isHTTPS) {
+                urlConnection = (HttpsURLConnection) url.openConnection();
+            } else {
+                urlConnection = (HttpURLConnection) url.openConnection();
+            }
             try {
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setRequestProperty("X-Ext-Client-ID", PrefUtils.getClientID());
@@ -93,8 +101,9 @@ public class FileDownloader {
                 urlConnection.setDoInput(true);
                 urlConnection.setConnectTimeout(60000);
                 urlConnection.setReadTimeout(60000);
-                urlConnection.setHostnameVerifier((hostname, session) -> true);
-
+                if (isHTTPS && Config.instance.sslSocketFactoryConfig != null) {
+                    ((HttpsURLConnection)urlConnection).setHostnameVerifier((hostname, session) -> true);
+                }
                 Long length = getFileLength(urlConnection);
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
