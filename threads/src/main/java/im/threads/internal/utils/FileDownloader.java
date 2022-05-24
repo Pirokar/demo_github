@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -82,11 +83,12 @@ public class FileDownloader {
     public void download() {
         try {
             URL url = new URL(this.path);
-            if (Config.instance.sslSocketFactoryConfig != null) {
+            boolean isHTTPS = url.getProtocol().toLowerCase(Locale.ROOT).equals("https");
+            if (isHTTPS && Config.instance.sslSocketFactoryConfig != null) {
                 HttpsURLConnection.setDefaultSSLSocketFactory(Config.instance.sslSocketFactoryConfig.getSslSocketFactory());
             }
             HttpURLConnection urlConnection;
-            if (Config.instance.sslSocketFactoryConfig != null) {
+            if (isHTTPS) {
                 urlConnection = (HttpsURLConnection) url.openConnection();
             } else {
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -99,7 +101,7 @@ public class FileDownloader {
                 urlConnection.setDoInput(true);
                 urlConnection.setConnectTimeout(60000);
                 urlConnection.setReadTimeout(60000);
-                if (Config.instance.sslSocketFactoryConfig != null) {
+                if (isHTTPS && Config.instance.sslSocketFactoryConfig != null) {
                     ((HttpsURLConnection)urlConnection).setHostnameVerifier((hostname, session) -> true);
                 }
                 Long length = getFileLength(urlConnection);
