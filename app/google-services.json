@@ -190,7 +190,79 @@
       "client_info": {
         "mobilesdk_app_id": "1:158671513869:android:8e761a7deba980f5b02844",
         "android_client_info": {
+          "package_name": "dte.chc.amurtiger.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.polarbear-push"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:8e761a7deba980f5b02844",
+        "android_client_info": {
           "package_name": "dte.chc.prod.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKcAbz8ZVaaWRYnmL_9v8B2VwSPFFebCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158671513869-nkvrgokcvj16g3jhstpvsnb489jaij40.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "158671513869-1p8gincfalrn9lm58agq8qh0bnhnl188.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.brooma.threads.polarbear-push"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158671513869:android:8e761a7deba980f5b02844",
+        "android_client_info": {
+          "package_name": "dte.chc.gpb.android"
         }
       },
       "oauth_client": [
