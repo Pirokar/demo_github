@@ -77,8 +77,8 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                     DatabaseHolder.getInstance().updateFileDescription(fileDescription)
                     sendDownloadErrorBroadcast(fileDescription, e)
                 }
-            })
-
+            }
+        )
 
         if (START_DOWNLOAD_FD_TAG == inputData.getString(START_DOWNLOAD_ACTION)) {
             if (runningDownloads.containsKey(fileDescription)) {
@@ -130,7 +130,6 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
         )
     }
 
-
     companion object {
 
         const val TAG = "FileDownloadWorker"
@@ -153,7 +152,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 .setInputData(inputData.build())
                 .build()
             WorkManager.getInstance(context)
-                .enqueueUniqueWork(WORKER_NAME+fileDescription.downloadPath, ExistingWorkPolicy.KEEP, workRequest)
+                .enqueueUniqueWork(WORKER_NAME + fileDescription.downloadPath, ExistingWorkPolicy.KEEP, workRequest)
         }
 
         @JvmStatic
@@ -166,7 +165,7 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                 .setInputData(inputData.build())
                 .build()
             WorkManager.getInstance(context)
-                .enqueueUniqueWork(WORKER_NAME+fileDescription.downloadPath, ExistingWorkPolicy.KEEP, workRequest)
+                .enqueueUniqueWork(WORKER_NAME + fileDescription.downloadPath, ExistingWorkPolicy.KEEP, workRequest)
         }
     }
 }

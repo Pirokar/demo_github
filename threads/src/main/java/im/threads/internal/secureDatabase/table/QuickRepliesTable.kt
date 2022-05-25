@@ -11,15 +11,15 @@ import java.util.ArrayList
 class QuickRepliesTable : Table() {
     override fun createTable(db: SQLiteDatabase) {
         db.execSQL(
-            "CREATE TABLE " + TABLE_QUICK_REPLIES + "("
-                    + COLUMN_QUICK_REPLIES_ID + " integer primary key autoincrement, "
-                    + COLUMN_QUICK_REPLIES_SERVER_ID + " integer, "
-                    + COLUMN_QUICK_REPLIES_MESSAGE_UUID + " string, "
-                    + COLUMN_QUICK_REPLIES_TYPE + " text, "
-                    + COLUMN_QUICK_REPLIES_TEXT + " text, "
-                    + COLUMN_QUICK_REPLIES_IMAGE_URL + " text, "
-                    + COLUMN_QUICK_REPLIES_URL + " text "
-                    + ")"
+            "CREATE TABLE " + TABLE_QUICK_REPLIES + "(" +
+                COLUMN_QUICK_REPLIES_ID + " integer primary key autoincrement, " +
+                COLUMN_QUICK_REPLIES_SERVER_ID + " integer, " +
+                COLUMN_QUICK_REPLIES_MESSAGE_UUID + " string, " +
+                COLUMN_QUICK_REPLIES_TYPE + " text, " +
+                COLUMN_QUICK_REPLIES_TEXT + " text, " +
+                COLUMN_QUICK_REPLIES_IMAGE_URL + " text, " +
+                COLUMN_QUICK_REPLIES_URL + " text " +
+                ")"
         )
     }
 
@@ -63,8 +63,10 @@ class QuickRepliesTable : Table() {
     ) {
         try {
             sqlHelper.getWritableDatabase(DB_PASSWORD).beginTransaction()
-            val deleteQuickRepliesSql = ("delete from " + TABLE_QUICK_REPLIES
-                    + " where " + COLUMN_QUICK_REPLIES_MESSAGE_UUID + " = ? ")
+            val deleteQuickRepliesSql = (
+                "delete from " + TABLE_QUICK_REPLIES +
+                    " where " + COLUMN_QUICK_REPLIES_MESSAGE_UUID + " = ? "
+                )
             sqlHelper.getWritableDatabase(DB_PASSWORD).execSQL(
                 deleteQuickRepliesSql, arrayOf(messageUUID)
             )

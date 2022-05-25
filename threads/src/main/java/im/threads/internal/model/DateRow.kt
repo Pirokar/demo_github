@@ -5,8 +5,8 @@ import androidx.core.util.ObjectsCompat
 class DateRow(override val timeStamp: Long) : ChatItem, MediaAndFileItem {
     override fun toString(): String {
         return "DateRow{" +
-                "date=" + timeStamp +
-                '}'
+            "date=" + timeStamp +
+            '}'
     }
 
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {

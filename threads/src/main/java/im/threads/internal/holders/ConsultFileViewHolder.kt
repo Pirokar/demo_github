@@ -74,10 +74,10 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
     init {
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
-                    AppCompatResources.getDrawable(
-                            itemView.context,
-                            style.incomingMessageBubbleBackground
-                    )
+                AppCompatResources.getDrawable(
+                    itemView.context,
+                    style.incomingMessageBubbleBackground
+                )
             setPadding(
                 context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
                 context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),

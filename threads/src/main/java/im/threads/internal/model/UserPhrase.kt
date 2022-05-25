@@ -1,15 +1,15 @@
 package im.threads.internal.model
 
-import im.threads.internal.utils.FileUtils.isImage
-import im.threads.internal.utils.FileUtils.isVoiceMessage
-import im.threads.internal.opengraph.OGData
 import android.text.TextUtils
 import androidx.core.util.ObjectsCompat
+import im.threads.internal.opengraph.OGData
+import im.threads.internal.utils.FileUtils.isImage
+import im.threads.internal.utils.FileUtils.isVoiceMessage
 import java.util.UUID
 
 class UserPhrase constructor(
     override var id: String?,
-    //This this a mfms messageId required for read status updates
+    // This this a mfms messageId required for read status updates
     var providerId: String?,
     val providerIds: List<String>?,
     override val phraseText: String?,
@@ -26,7 +26,7 @@ class UserPhrase constructor(
     var isCopy = false
     var campaignMessage: CampaignMessage? = null
 
-    //для поиска сообщений в чате
+    // для поиска сообщений в чате
     override var found = false
 
     constructor(
@@ -61,35 +61,43 @@ class UserPhrase constructor(
     )
 
     val isOnlyImage: Boolean
-        get() = (TextUtils.isEmpty(phraseText)
-                && quote == null && isImage(fileDescription))
+        get() = (
+            TextUtils.isEmpty(phraseText) &&
+                quote == null && isImage(fileDescription)
+            )
     val isOnlyVoiceMessage: Boolean
-        get() = (TextUtils.isEmpty(phraseText)
-                && quote == null && isVoiceMessage(fileDescription))
+        get() = (
+            TextUtils.isEmpty(phraseText) &&
+                quote == null && isVoiceMessage(fileDescription)
+            )
     val isOnlyDoc: Boolean
-        get() = (TextUtils.isEmpty(phraseText)
-                && quote == null
-                && !isImage(fileDescription)
-                && !isVoiceMessage(fileDescription))
+        get() = (
+            TextUtils.isEmpty(phraseText) &&
+                quote == null &&
+                !isImage(fileDescription) &&
+                !isVoiceMessage(fileDescription)
+            )
 
     fun hasFile() = fileDescription != null || (quote?.fileDescription != null)
 
     override fun toString(): String {
         return """
-            UserPhrase{phrase='${phraseText}'}
+            UserPhrase{phrase='$phraseText'}
             
-            """.trimIndent()
+        """.trimIndent()
     }
 
     fun hasSameContent(userPhrase: UserPhrase?): Boolean {
         if (userPhrase == null) {
             return false
         }
-        var hasSameContent = (ObjectsCompat.equals(id, userPhrase.id)
-                && ObjectsCompat.equals(phraseText, userPhrase.phraseText)
-                && ObjectsCompat.equals(providerId, userPhrase.providerId)
-                && ObjectsCompat.equals(timeStamp, userPhrase.timeStamp)
-                && ObjectsCompat.equals(sentState, userPhrase.sentState))
+        var hasSameContent = (
+            ObjectsCompat.equals(id, userPhrase.id) &&
+                ObjectsCompat.equals(phraseText, userPhrase.phraseText) &&
+                ObjectsCompat.equals(providerId, userPhrase.providerId) &&
+                ObjectsCompat.equals(timeStamp, userPhrase.timeStamp) &&
+                ObjectsCompat.equals(sentState, userPhrase.sentState)
+            )
         if (fileDescription != null) {
             hasSameContent =
                 hasSameContent && fileDescription!!.hasSameContent(userPhrase.fileDescription)
@@ -111,15 +119,15 @@ class UserPhrase constructor(
         if (other == null || javaClass != other.javaClass) return false
         val that = other as UserPhrase
         return timeStamp == that.timeStamp && isCopy == that.isCopy && found == that.found &&
-                ObjectsCompat.equals(id, that.id) &&
-                ObjectsCompat.equals(providerId, that.providerId) &&
-                ObjectsCompat.equals(providerIds, that.providerIds) &&
-                ObjectsCompat.equals(phraseText, that.phraseText) && sentState == that.sentState &&
-                ObjectsCompat.equals(quote, that.quote) &&
-                ObjectsCompat.equals(fileDescription, that.fileDescription) &&
-                ObjectsCompat.equals(ogData, that.ogData) &&
-                ObjectsCompat.equals(ogUrl, that.ogUrl) &&
-                ObjectsCompat.equals(threadId, that.threadId)
+            ObjectsCompat.equals(id, that.id) &&
+            ObjectsCompat.equals(providerId, that.providerId) &&
+            ObjectsCompat.equals(providerIds, that.providerIds) &&
+            ObjectsCompat.equals(phraseText, that.phraseText) && sentState == that.sentState &&
+            ObjectsCompat.equals(quote, that.quote) &&
+            ObjectsCompat.equals(fileDescription, that.fileDescription) &&
+            ObjectsCompat.equals(ogData, that.ogData) &&
+            ObjectsCompat.equals(ogUrl, that.ogUrl) &&
+            ObjectsCompat.equals(threadId, that.threadId)
     }
 
     override fun hashCode(): Int {

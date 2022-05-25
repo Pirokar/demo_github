@@ -12,5 +12,5 @@ interface LastUserActivityTimeCounter {
     fun updateLastUserActivityTime()
 
     /** Получить время в секундах с момента последней активности. */
-    fun getSecondsSinceLastActivity() : Long
+    fun getSecondsSinceLastActivity(): Long
 }

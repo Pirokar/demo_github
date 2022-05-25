@@ -9,5 +9,5 @@ package im.threads.internal.utils.time
 interface TimeSource {
 
     /** Получить текущее время в миллисекундах. */
-    fun getCurrentTime() : Long
+    fun getCurrentTime(): Long
 }

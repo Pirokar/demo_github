@@ -18,7 +18,6 @@ enum class AttachmentStateEnum(val state: String) {
     }
 }
 
-
 enum class ErrorStateEnum(val state: String) {
     ANY("ANY"),
     DISALLOWED("DS-1"),

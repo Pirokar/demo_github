@@ -13,8 +13,10 @@ import javax.net.ssl.SSLSession
 object PicassoUtils {
 
     @JvmStatic
-    fun getOkHttpClient(httpClientSettings: HttpClientSettings,
-                        sslSocketFactoryConfig: SslSocketFactoryConfig?): OkHttpClient {
+    fun getOkHttpClient(
+        httpClientSettings: HttpClientSettings,
+        sslSocketFactoryConfig: SslSocketFactoryConfig?
+    ): OkHttpClient {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val newRequest: Request = chain.request().newBuilder()
@@ -37,9 +39,11 @@ object PicassoUtils {
     }
 
     @JvmStatic
-    fun setPicasso(context: Context,
-                   httpClientSettings: HttpClientSettings,
-                   sslSocketFactoryConfig: SslSocketFactoryConfig?) {
+    fun setPicasso(
+        context: Context,
+        httpClientSettings: HttpClientSettings,
+        sslSocketFactoryConfig: SslSocketFactoryConfig?
+    ) {
         val httpClient = getOkHttpClient(httpClientSettings, sslSocketFactoryConfig)
         Picasso.setSingletonInstance(
             Picasso.Builder(context)

@@ -12,12 +12,12 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
 
     override fun createTable(db: SQLiteDatabase) {
         db.execSQL(
-            "CREATE TABLE " + TABLE_QUOTE + "("
-                    + COLUMN_QUOTE_UUID + " text,"
-                    + COLUMN_QUOTE_FROM + " text, "
-                    + COLUMN_QUOTE_BODY + " text, "
-                    + COLUMN_QUOTE_TIMESTAMP + " integer, "
-                    + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " integer)" // message id
+            "CREATE TABLE " + TABLE_QUOTE + "(" +
+                COLUMN_QUOTE_UUID + " text," +
+                COLUMN_QUOTE_FROM + " text, " +
+                COLUMN_QUOTE_BODY + " text, " +
+                COLUMN_QUOTE_TIMESTAMP + " integer, " +
+                COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " integer)" // message id
         )
     }
 
@@ -39,8 +39,10 @@ class QuotesTable(private val fileDescriptionsTable: FileDescriptionsTable) : Ta
             cv.put(COLUMN_QUOTE_BODY, quote.text)
             cv.put(COLUMN_QUOTE_TIMESTAMP, quote.timeStamp)
             sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(
-                ("select " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " from " + TABLE_QUOTE
-                        + " where " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " = ?"),
+                (
+                    "select " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " from " + TABLE_QUOTE +
+                        " where " + COLUMN_QUOTED_BY_MESSAGE_UUID_EXT + " = ?"
+                    ),
                 arrayOf(quotedByMessageUuid)
             ).use { c ->
                 val existsInDb: Boolean = c.count > 0

@@ -26,8 +26,8 @@ class Seeker {
             }
         }
         lastQuery = query
-        //для поиска сообщений в чате - пробегаемся по всем сообщениям и отмечаем
-        //те, которые соответствуют запросу
+        // для поиска сообщений в чате - пробегаемся по всем сообщениям и отмечаем
+        // те, которые соответствуют запросу
         for (chatItem in target) {
             if (chatItem is ChatPhrase) {
                 chatItem.found =
@@ -35,13 +35,13 @@ class Seeker {
             }
         }
         return if (forward) {
-            if (lastHighlightedIndex == 0) { //if it is last
+            if (lastHighlightedIndex == 0) { // if it is last
                 Pair(target, lastHighlightedItem)
             } else {
                 val initial = if (lastHighlightedIndex == -1) target.size - 1 else lastHighlightedIndex - 1
                 for (i in initial downTo 0) {
-                    if (target[i] is ChatPhrase
-                        && (target[i] as ChatPhrase).phraseText?.lowercase(Locale.getDefault())
+                    if (target[i] is ChatPhrase &&
+                        (target[i] as ChatPhrase).phraseText?.lowercase(Locale.getDefault())
                             ?.contains(query.lowercase()) == true
                     ) {
                         lastHighlightedItem = (target[i] as ChatPhrase)
@@ -58,8 +58,8 @@ class Seeker {
         } else {
             if (lastHighlightedIndex == -1) {
                 for (i in target.indices.reversed()) {
-                    if (target[i] is ChatPhrase
-                        && (target[i] as ChatPhrase).phraseText?.lowercase(Locale.getDefault())
+                    if (target[i] is ChatPhrase &&
+                        (target[i] as ChatPhrase).phraseText?.lowercase(Locale.getDefault())
                             ?.contains(query.lowercase()) == true
                     ) {
                         lastHighlightedItem = (target[i] as ChatPhrase)
@@ -70,8 +70,8 @@ class Seeker {
                 return Pair(target, null)
             }
             for (i in lastHighlightedIndex + 1 until target.size) {
-                if (target[i] is ChatPhrase
-                    && (target[i] as ChatPhrase).phraseText?.lowercase(Locale.getDefault())
+                if (target[i] is ChatPhrase &&
+                    (target[i] as ChatPhrase).phraseText?.lowercase(Locale.getDefault())
                         ?.contains(query.lowercase()) == true
                 ) {
                     lastHighlightedItem = (target[i] as ChatPhrase)

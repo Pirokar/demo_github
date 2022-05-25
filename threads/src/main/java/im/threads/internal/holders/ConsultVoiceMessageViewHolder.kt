@@ -30,11 +30,11 @@ import im.threads.internal.views.VoiceTimeLabelFormatter
 import im.threads.internal.views.formatAsDuration
 import im.threads.internal.widget.text_view.QuoteMessageTextView
 import java.text.SimpleDateFormat
-import java.util.*
-
+import java.util.Date
+import java.util.Locale
 
 class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false)
+    LayoutInflater.from(parent.context).inflate(R.layout.item_consult_voice_message, parent, false)
 ) {
     private val style: ChatStyle = Config.instance.chatStyle
     private val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -43,47 +43,47 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
     private var formattedDuration = ""
 
     private val phraseTextView =
-            itemView.findViewById<QuoteMessageTextView>(R.id.voice_message_consult_text).apply {
-                setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
-            }
+        itemView.findViewById<QuoteMessageTextView>(R.id.voice_message_consult_text).apply {
+            setLinkTextColor(getColorInt(style.incomingMessageLinkColor))
+        }
     private val slider: Slider = itemView.findViewById(R.id.voice_message_consult_slider)
     private val buttonPlayPause =
-            itemView.findViewById<ImageView>(R.id.voice_message_consult_button_play_pause).apply {
-                setColorFilter(
-                        getColorInt(style.incomingPlayPauseButtonColor),
-                        PorterDuff.Mode.SRC_ATOP
-                )
-            }
+        itemView.findViewById<ImageView>(R.id.voice_message_consult_button_play_pause).apply {
+            setColorFilter(
+                getColorInt(style.incomingPlayPauseButtonColor),
+                PorterDuff.Mode.SRC_ATOP
+            )
+        }
     private val fileSizeTextView: TextView = itemView.findViewById(R.id.file_size)
     private val audioStatusTextView: TextView =
-            itemView.findViewById(R.id.voice_message_consult_audio_status)
+        itemView.findViewById(R.id.voice_message_consult_audio_status)
     private val mTimeStampTextView =
-            itemView.findViewById<TextView>(R.id.timestamp).apply {
-                setTextColor(getColorInt(style.incomingMessageTimeColor))
-            }
+        itemView.findViewById<TextView>(R.id.timestamp).apply {
+            setTextColor(getColorInt(style.incomingMessageTimeColor))
+        }
     private val filterView = itemView.findViewById<View>(R.id.filter).apply {
         setBackgroundColor(
-                ContextCompat.getColor(
-                        itemView.context,
-                        style.chatHighlightingColor
-                )
+            ContextCompat.getColor(
+                itemView.context,
+                style.chatHighlightingColor
+            )
         )
     }
     private val secondFilterView = itemView.findViewById<View>(R.id.filter_second).apply {
         setBackgroundColor(
-                ContextCompat.getColor(
-                        itemView.context,
-                        style.chatHighlightingColor
-                )
+            ContextCompat.getColor(
+                itemView.context,
+                style.chatHighlightingColor
+            )
         )
     }
     private val mConsultAvatar = itemView.findViewById<ImageView>(R.id.consult_avatar).apply {
         layoutParams.height =
-                itemView.context.resources.getDimension(style.operatorAvatarSize)
-                        .toInt()
+            itemView.context.resources.getDimension(style.operatorAvatarSize)
+                .toInt()
         layoutParams.width =
-                itemView.context.resources.getDimension(style.operatorAvatarSize)
-                        .toInt()
+            itemView.context.resources.getDimension(style.operatorAvatarSize)
+                .toInt()
     }
 
     var context: Context
@@ -92,10 +92,10 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
         context = parent.context
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
-                    AppCompatResources.getDrawable(
-                            itemView.context,
-                            style.incomingMessageBubbleBackground
-                    )
+                AppCompatResources.getDrawable(
+                    itemView.context,
+                    style.incomingMessageBubbleBackground
+                )
             setPadding(
                 context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingLeft),
                 context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingTop),
@@ -103,36 +103,36 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
                 context.resources.getDimensionPixelSize(style.bubbleIncomingPaddingBottom)
             )
             background.setColorFilter(
-                    getColorInt(style.incomingMessageBubbleColor),
-                    PorterDuff.Mode.SRC_ATOP
+                getColorInt(style.incomingMessageBubbleColor),
+                PorterDuff.Mode.SRC_ATOP
             )
             val bubbleLeftMarginDp = itemView.context.resources.getDimension(R.dimen.margin_quarter)
             val bubbleLeftMarginPx = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    bubbleLeftMarginDp,
-                    itemView.resources.displayMetrics
+                TypedValue.COMPLEX_UNIT_DIP,
+                bubbleLeftMarginDp,
+                itemView.resources.displayMetrics
             ).toInt()
             val lp = layoutParams as RelativeLayout.LayoutParams
             lp.setMargins(bubbleLeftMarginPx, lp.topMargin, lp.rightMargin, lp.bottomMargin)
             layoutParams = lp
         }
         setTextColorToViews(
-                arrayOf(phraseTextView, fileSizeTextView),
-                style.incomingMessageTextColor
+            arrayOf(phraseTextView, fileSizeTextView),
+            style.incomingMessageTextColor
         )
         itemView.findViewById<View>(R.id.voice_message_consult_delimiter)
-                .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
+            .setBackgroundColor(getColorInt(style.chatToolbarColorResId))
     }
 
     fun onBind(
-            consultPhrase: ConsultPhrase,
-            highlighted: Boolean,
-            formattedDuration: String,
-            onLongClick: OnLongClickListener,
-            onAvatarClickListener: View.OnClickListener,
-            pausePlayClickListener: View.OnClickListener,
-            onChangeListener: Slider.OnChangeListener,
-            onSliderTouchListener: Slider.OnSliderTouchListener
+        consultPhrase: ConsultPhrase,
+        highlighted: Boolean,
+        formattedDuration: String,
+        onLongClick: OnLongClickListener,
+        onAvatarClickListener: View.OnClickListener,
+        pausePlayClickListener: View.OnClickListener,
+        onChangeListener: Slider.OnChangeListener,
+        onSliderTouchListener: Slider.OnSliderTouchListener
     ) {
         this.fileDescription = consultPhrase.fileDescription
         if (this.fileDescription == null) return

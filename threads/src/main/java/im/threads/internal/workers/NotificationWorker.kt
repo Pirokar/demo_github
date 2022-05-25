@@ -51,7 +51,6 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     private var notificationChannel: NotificationChannel? = null
     private var style: ChatStyle = Config.instance.chatStyle
 
-
     override fun doWork(): Result {
         ThreadsLogger.i(TAG, "doWork")
 
@@ -351,7 +350,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
                 override fun onBitmapLoaded(
                     bitmap: Bitmap,
                     from: LoadedFrom
-                ) { //round icon in corner
+                ) { // round icon in corner
                     pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap)
                     pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap)
                 }

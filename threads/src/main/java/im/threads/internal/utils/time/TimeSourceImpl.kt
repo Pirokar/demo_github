@@ -9,5 +9,4 @@ package im.threads.internal.utils.time
 class TimeSourceImpl : TimeSource {
 
     override fun getCurrentTime() = System.currentTimeMillis()
-
 }

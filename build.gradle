@@ -12,6 +12,7 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.10'
         classpath 'net.researchgate:gradle-release:2.8.1'
         classpath 'com.huawei.agconnect:agcp:1.6.4.300'
+        classpath "org.jlleitschuh.gradle:ktlint-gradle:10.3.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -19,9 +20,10 @@ buildscript {
 allprojects {
     repositories {
         google()
-        maven { url "https://jitpack.io" }
+        mavenCentral()
         maven { url 'https://developer.huawei.com/repo' }
         maven { url 'https://maven-pub.edna.ru/repository/maven-public/' }
+        maven { url "https://jitpack.io" }
     }
 }
 

@@ -36,8 +36,9 @@ object ChatCenterPushMessageHelper {
         val sdf = SimpleDateFormat(CAMPAIGN_DATE_FORMAT_PARSE, Locale.getDefault())
         if (PushMessageAttributes.THREADS.equals(
                 bundle.getString(
-                    PushMessageAttributes.ORIGIN
-                ), ignoreCase = true
+                        PushMessageAttributes.ORIGIN
+                    ),
+                ignoreCase = true
             )
         ) {
             when {

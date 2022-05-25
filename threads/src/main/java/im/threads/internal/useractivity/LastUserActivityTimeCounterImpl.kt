@@ -12,7 +12,7 @@ import im.threads.internal.utils.time.TimeSource
  * @since 14.02.2022
  */
 class LastUserActivityTimeCounterImpl(
-        private val timeSource: TimeSource
+    private val timeSource: TimeSource
 ) : LastUserActivityTimeCounter {
 
     private var lastActivityTime = timeSource.getCurrentTime()
@@ -22,7 +22,7 @@ class LastUserActivityTimeCounterImpl(
     }
 
     override fun getSecondsSinceLastActivity() =
-            (timeSource.getCurrentTime() - lastActivityTime) / MS_IN_SECOND
+        (timeSource.getCurrentTime() - lastActivityTime) / MS_IN_SECOND
 
     companion object {
         private const val MS_IN_SECOND = 1000
