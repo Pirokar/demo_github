@@ -54,7 +54,6 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLSession
 
-
 class ThreadsGateTransport(
     threadsGateUrl: String,
     threadsGateProviderUid: String,
@@ -199,8 +198,10 @@ class ThreadsGateTransport(
 
     override fun getToken(): String {
         val clientIdSignature = PrefUtils.getClientIdSignature()
-        return ((if (TextUtils.isEmpty(clientIdSignature)) PrefUtils.getDeviceAddress() else clientIdSignature)
-                + ":" + PrefUtils.getClientID())
+        return (
+            (if (TextUtils.isEmpty(clientIdSignature)) PrefUtils.getDeviceAddress() else clientIdSignature) +
+                ":" + PrefUtils.getClientID()
+            )
     }
 
     @Synchronized

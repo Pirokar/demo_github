@@ -31,33 +31,33 @@ class MessagesTable(
         db.execSQL(
             String.format(
                 Locale.US,
-                "create table %s " +  //messages table
-                        "( %s integer primary key autoincrement," +  //id column
-                        " %s integer, " +  //timestamp
-                        " %s text, " +  //phrase
-                        " %s text, " +  //COLUMN_FORMATTED_PHRASE
-                        " %s integer, " +  //item type
-                        " %s text, " +  //name
-                        " %s text, " +  //avatar path
-                        " %s text, " +  // message id
-                        " %s integer, " +  //sex
-                        " %s integer," +  //message sent state
-                        "%s text," +  //consultid
-                        "%s text," +  //COLUMN_CONSULT_STATUS
-                        "%s text" //COLUMN_CONSULT_TITLE
-                        + ", " + COLUMN_CONSULT_ORG_UNIT + " text"  //COLUMN_CONSULT_ORG_UNIT
-                        + ", " + COLUMN_CONSULT_ROLE + " text"  //COLUMN_CONSULT_ROLE
-                        + ", " + "%s text," +  //connection type
-                        "%s integer," +  //isRead
-                        "%s text, " +  //COLUMN_PROVIDER_ID
-                        "%s text " //COLUMN_PROVIDER_IDS
-                        + ", " + COLUMN_DISPLAY_MESSAGE + " integer"
-                        + ", " + COLUMN_SURVEY_SENDING_ID + " integer"
-                        + ", " + COLUMN_SURVEY_HIDE_AFTER + " integer"
-                        + ", " + COLUMN_THREAD_ID + " integer"
-                        + ", " + COLUMN_BLOCK_INPUT + " integer"
-                        + ", " + COLUMN_SPEECH_STATUS + " text"
-                        + ")",
+                "create table %s " + // messages table
+                    "( %s integer primary key autoincrement," + // id column
+                    " %s integer, " + // timestamp
+                    " %s text, " + // phrase
+                    " %s text, " + // COLUMN_FORMATTED_PHRASE
+                    " %s integer, " + // item type
+                    " %s text, " + // name
+                    " %s text, " + // avatar path
+                    " %s text, " + // message id
+                    " %s integer, " + // sex
+                    " %s integer," + // message sent state
+                    "%s text," + // consultid
+                    "%s text," + // COLUMN_CONSULT_STATUS
+                    "%s text" + // COLUMN_CONSULT_TITLE
+                    ", " + COLUMN_CONSULT_ORG_UNIT + " text" + // COLUMN_CONSULT_ORG_UNIT
+                    ", " + COLUMN_CONSULT_ROLE + " text" + // COLUMN_CONSULT_ROLE
+                    ", " + "%s text," + // connection type
+                    "%s integer," + // isRead
+                    "%s text, " + // COLUMN_PROVIDER_ID
+                    "%s text " + // COLUMN_PROVIDER_IDS
+                    ", " + COLUMN_DISPLAY_MESSAGE + " integer" +
+                    ", " + COLUMN_SURVEY_SENDING_ID + " integer" +
+                    ", " + COLUMN_SURVEY_HIDE_AFTER + " integer" +
+                    ", " + COLUMN_THREAD_ID + " integer" +
+                    ", " + COLUMN_BLOCK_INPUT + " integer" +
+                    ", " + COLUMN_SPEECH_STATUS + " text" +
+                    ")",
                 TABLE_MESSAGES,
                 COLUMN_TABLE_ID,
                 COLUMN_TIMESTAMP,
@@ -118,9 +118,11 @@ class MessagesTable(
     }
 
     fun getChatItem(sqlHelper: SQLiteOpenHelper, messageUuid: String?): ChatItem? {
-        val sql = ("select * from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_UUID + " = ?"
-                + " order by " + COLUMN_TIMESTAMP + " desc")
+        val sql = (
+            "select * from " + TABLE_MESSAGES +
+                " where " + COLUMN_MESSAGE_UUID + " = ?" +
+                " order by " + COLUMN_TIMESTAMP + " desc"
+            )
         val selectionArgs = arrayOf(messageUuid)
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
@@ -200,10 +202,12 @@ class MessagesTable(
 
     fun getLastConsultInfo(sqlHelper: SQLiteOpenHelper, id: String): ConsultInfo? {
         val sql =
-            ("select " + COLUMN_AVATAR_PATH + ", " + COLUMN_NAME + ", " + COLUMN_CONSULT_STATUS
-                    + " from " + TABLE_MESSAGES
-                    + " where " + COLUMN_CONSULT_ID + " =  ? "
-                    + " order by " + COLUMN_TIMESTAMP + " desc")
+            (
+                "select " + COLUMN_AVATAR_PATH + ", " + COLUMN_NAME + ", " + COLUMN_CONSULT_STATUS +
+                    " from " + TABLE_MESSAGES +
+                    " where " + COLUMN_CONSULT_ID + " =  ? " +
+                    " order by " + COLUMN_TIMESTAMP + " desc"
+                )
         val selectionArgs = arrayOf(id)
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
@@ -245,9 +249,11 @@ class MessagesTable(
     }
 
     fun getLastConsultPhrase(sqlHelper: SQLiteOpenHelper): ConsultPhrase? {
-        val sql = ("select * from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal
-                + " order by " + COLUMN_TIMESTAMP + " desc")
+        val sql = (
+            "select * from " + TABLE_MESSAGES +
+                " where " + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal +
+                " order by " + COLUMN_TIMESTAMP + " desc"
+            )
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, arrayOf()).use { c ->
             if (c.moveToFirst()) {
                 return getConsultPhrase(sqlHelper, c)
@@ -259,10 +265,12 @@ class MessagesTable(
     fun setAllMessagesWereRead(sqlHelper: SQLiteOpenHelper): Int {
         val cv = ContentValues()
         cv.put(COLUMN_IS_READ, true)
-        val whereClause = ("(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal +
+        val whereClause = (
+            "(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal +
                 " or (" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal + ")" +
                 " or " + COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal + ")" +
-                " and " + COLUMN_IS_READ + " = 0")
+                " and " + COLUMN_IS_READ + " = 0"
+            )
         return sqlHelper.getWritableDatabase(DB_PASSWORD)
             .update(TABLE_MESSAGES, cv, whereClause, null)
     }
@@ -270,16 +278,20 @@ class MessagesTable(
     fun setMessageWasRead(sqlHelper: SQLiteOpenHelper, uuid: String) {
         val cv = ContentValues()
         cv.put(COLUMN_IS_READ, true)
-        val whereClause = (COLUMN_MESSAGE_UUID + " = ? " +
-                " and " + COLUMN_IS_READ + " = 0")
+        val whereClause = (
+            COLUMN_MESSAGE_UUID + " = ? " +
+                " and " + COLUMN_IS_READ + " = 0"
+            )
         sqlHelper.getWritableDatabase(DB_PASSWORD)
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(uuid))
     }
 
     fun getSurvey(sqlHelper: SQLiteOpenHelper, sendingId: Long): Survey? {
-        val sql = ("select * from " + TABLE_MESSAGES
-                + " where " + COLUMN_SURVEY_SENDING_ID + " = ?"
-                + " order by " + COLUMN_TIMESTAMP + " desc")
+        val sql = (
+            "select * from " + TABLE_MESSAGES +
+                " where " + COLUMN_SURVEY_SENDING_ID + " = ?" +
+                " order by " + COLUMN_TIMESTAMP + " desc"
+            )
         val selectionArgs = arrayOf(sendingId.toString())
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
             if (c.moveToFirst()) {
@@ -296,7 +308,8 @@ class MessagesTable(
                 "select count(%s) from %s",
                 COLUMN_TABLE_ID,
                 TABLE_MESSAGES
-            ), null
+            ),
+            null
         ).use { c ->
             if (c.count == 0) {
                 return 0
@@ -307,7 +320,8 @@ class MessagesTable(
     }
 
     fun getUnreadMessagesCount(sqlHelper: SQLiteOpenHelper): Int {
-        val sql = ("select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
+        val sql = (
+            "select " + COLUMN_PROVIDER_ID + " , " + COLUMN_PROVIDER_IDS +
                 " from " + TABLE_MESSAGES +
                 " where (" +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal + " or " +
@@ -315,13 +329,15 @@ class MessagesTable(
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal +
                 ")" +
                 " and " + COLUMN_IS_READ + " = 0" +
-                " order by " + COLUMN_TIMESTAMP + " asc")
+                " order by " + COLUMN_TIMESTAMP + " asc"
+            )
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, null)
             .use { c -> return c.count }
     }
 
     fun getUnreadMessagesUuid(sqlHelper: SQLiteOpenHelper): List<String?> {
-        val sql = ("select " + COLUMN_MESSAGE_UUID +
+        val sql = (
+            "select " + COLUMN_MESSAGE_UUID +
                 " from " + TABLE_MESSAGES +
                 " where (" +
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal + " or " +
@@ -329,7 +345,8 @@ class MessagesTable(
                 COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal +
                 ")" +
                 " and " + COLUMN_IS_READ + " = 0" +
-                " order by " + COLUMN_TIMESTAMP + " asc")
+                " order by " + COLUMN_TIMESTAMP + " asc"
+            )
         val ids: MutableSet<String?> = HashSet()
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, null).use { c ->
             c.moveToFirst()
@@ -344,8 +361,10 @@ class MessagesTable(
     fun setNotSentSurveyDisplayMessageToFalse(sqlHelper: SQLiteOpenHelper): Int {
         val cv = ContentValues()
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
-        val whereClause = (COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal +
-                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal)
+        val whereClause = (
+            COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal +
+                " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal
+            )
         return sqlHelper.getWritableDatabase(DB_PASSWORD)
             .update(TABLE_MESSAGES, cv, whereClause, null)
     }
@@ -574,9 +593,11 @@ class MessagesTable(
     }
 
     private fun insertOrUpdateMessage(sqlHelper: SQLiteOpenHelper, cv: ContentValues) {
-        val sql = ("select " + COLUMN_MESSAGE_UUID +
-                " from " + TABLE_MESSAGES
-                + " where " + COLUMN_MESSAGE_UUID + " = ?")
+        val sql = (
+            "select " + COLUMN_MESSAGE_UUID +
+                " from " + TABLE_MESSAGES +
+                " where " + COLUMN_MESSAGE_UUID + " = ?"
+            )
         val selectionArgs = arrayOf(cv.getAsString(COLUMN_MESSAGE_UUID))
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
             if (c.count > 0) {
@@ -595,9 +616,11 @@ class MessagesTable(
     }
 
     private fun insertOrUpdateSurvey(sqlHelper: SQLiteOpenHelper, survey: Survey) {
-        val sql = ("select " + COLUMN_SURVEY_SENDING_ID
-                + " from " + TABLE_MESSAGES
-                + " where " + COLUMN_SURVEY_SENDING_ID + " = ? and " + COLUMN_MESSAGE_TYPE + " = ? ")
+        val sql = (
+            "select " + COLUMN_SURVEY_SENDING_ID +
+                " from " + TABLE_MESSAGES +
+                " where " + COLUMN_SURVEY_SENDING_ID + " = ? and " + COLUMN_MESSAGE_TYPE + " = ? "
+            )
         val selectionArgs =
             arrayOf(survey.sendingId.toString(), MessageType.SURVEY.ordinal.toString())
         val cv = ContentValues()
@@ -634,9 +657,11 @@ class MessagesTable(
     ) {
         val cv = ContentValues()
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
-        val whereClause = (COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal +
+        val whereClause = (
+            COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal +
                 " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal +
-                " and " + COLUMN_SURVEY_SENDING_ID + " != ?")
+                " and " + COLUMN_SURVEY_SENDING_ID + " != ?"
+            )
         sqlHelper.getWritableDatabase(DB_PASSWORD)
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(currentSurveySendingId.toString()))
     }
@@ -648,8 +673,10 @@ class MessagesTable(
         val cv = ContentValues()
         cv.put(COLUMN_DISPLAY_MESSAGE, false)
         val whereClause =
-            (COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal +
-                    " and " + COLUMN_MESSAGE_UUID + " != ?")
+            (
+                COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal +
+                    " and " + COLUMN_MESSAGE_UUID + " != ?"
+                )
         sqlHelper.getWritableDatabase(DB_PASSWORD)
             .update(TABLE_MESSAGES, cv, whereClause, arrayOf(uuid))
     }

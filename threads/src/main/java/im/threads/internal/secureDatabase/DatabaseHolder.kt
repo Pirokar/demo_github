@@ -92,7 +92,6 @@ class DatabaseHolder private constructor() {
 
     val unreadMessagesUuid: List<String?> = myOpenHelper.getUnreadMessagesUuid()
 
-
     fun checkAndUpdate() {
         val oldHelper = im.threads.internal.database.ThreadsDbHelper(Config.instance.context)
         if (needMigrateToNewDB(oldHelper)) {

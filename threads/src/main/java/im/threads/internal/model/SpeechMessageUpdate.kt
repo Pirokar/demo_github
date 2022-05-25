@@ -17,5 +17,4 @@ data class SpeechMessageUpdate constructor(
     override fun isTheSameItem(otherItem: ChatItem?): Boolean {
         return otherItem is SpeechMessageUpdate
     }
-
 }

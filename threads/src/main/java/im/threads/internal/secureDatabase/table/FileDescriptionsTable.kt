@@ -15,21 +15,21 @@ class FileDescriptionsTable : Table() {
 
     override fun createTable(db: SQLiteDatabase) {
         db.execSQL(
-            "CREATE TABLE " + TABLE_FILE_DESCRIPTION + " ( "
-                    + COLUMN_FD_FROM + " text, "
-                    + COLUMN_FD_PATH + " text, "
-                    + COLUMN_FD_TIMESTAMP + " integer, "
-                    + COLUMN_FD_MESSAGE_UUID_EXT + " integer, "
-                    + COLUMN_FD_URL + " text, "
-                    + COLUMN_FD_SIZE + " integer, "
-                    + COLUMN_FD_IS_FROM_QUOTE + " integer, "
-                    + COLUMN_FD_FILENAME + " text,"
-                    + COLUMN_FD_MIME_TYPE + " text,"
-                    + COLUMN_FD_DOWNLOAD_PROGRESS + " integer, "
-                    + COLUMN_FD_SELFIE + " integer, "
-                    + COLUMN_FD_ATTACHMENT_STATE + " text, "
-                    + COLUMN_FD_ERROR_CODE + " text, "
-                    + COLUMN_FD_ERROR_MESSAGE + " text )"
+            "CREATE TABLE " + TABLE_FILE_DESCRIPTION + " ( " +
+                COLUMN_FD_FROM + " text, " +
+                COLUMN_FD_PATH + " text, " +
+                COLUMN_FD_TIMESTAMP + " integer, " +
+                COLUMN_FD_MESSAGE_UUID_EXT + " integer, " +
+                COLUMN_FD_URL + " text, " +
+                COLUMN_FD_SIZE + " integer, " +
+                COLUMN_FD_IS_FROM_QUOTE + " integer, " +
+                COLUMN_FD_FILENAME + " text," +
+                COLUMN_FD_MIME_TYPE + " text," +
+                COLUMN_FD_DOWNLOAD_PROGRESS + " integer, " +
+                COLUMN_FD_SELFIE + " integer, " +
+                COLUMN_FD_ATTACHMENT_STATE + " text, " +
+                COLUMN_FD_ERROR_CODE + " text, " +
+                COLUMN_FD_ERROR_MESSAGE + " text )"
         )
     }
 
@@ -102,9 +102,11 @@ class FileDescriptionsTable : Table() {
         cv.put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.state.state)
         cv.put(COLUMN_FD_ERROR_CODE, fileDescription.errorCode.state)
         cv.put(COLUMN_FD_ERROR_MESSAGE, fileDescription.errorMessage)
-        val sql = ("select " + COLUMN_FD_MESSAGE_UUID_EXT + " and " + COLUMN_FD_PATH +
-                " from " + TABLE_FILE_DESCRIPTION
-                + " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?")
+        val sql = (
+            "select " + COLUMN_FD_MESSAGE_UUID_EXT + " and " + COLUMN_FD_PATH +
+                " from " + TABLE_FILE_DESCRIPTION +
+                " where " + COLUMN_FD_MESSAGE_UUID_EXT + " = ?"
+            )
         val selectionArgs = arrayOf(fdMessageUuid)
         sqlHelper.getWritableDatabase(DB_PASSWORD).rawQuery(sql, selectionArgs).use { c ->
             val existsInDb: Boolean = c.count > 0
@@ -192,8 +194,10 @@ class FileDescriptionsTable : Table() {
                 sqlHelper.getWritableDatabase(DB_PASSWORD).update(
                     TABLE_FILE_DESCRIPTION,
                     cv,
-                    ("" + COLUMN_FD_FILENAME
-                            + " like ? and " + COLUMN_FD_URL + " like ?"),
+                    (
+                        "" + COLUMN_FD_FILENAME +
+                            " like ? and " + COLUMN_FD_URL + " like ?"
+                        ),
                     arrayOf(it.incomingName, it.downloadPath)
                 )
             }
@@ -220,8 +224,10 @@ class FileDescriptionsTable : Table() {
         sqlHelper.getWritableDatabase(DB_PASSWORD).update(
             TABLE_FILE_DESCRIPTION,
             cv,
-            ("" + COLUMN_FD_FILENAME
-                    + " like ? and " + COLUMN_FD_URL + " like ?"),
+            (
+                "" + COLUMN_FD_FILENAME +
+                    " like ? and " + COLUMN_FD_URL + " like ?"
+                ),
             arrayOf(fileDescription.incomingName, fileDescription.downloadPath)
         )
     }

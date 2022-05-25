@@ -48,7 +48,12 @@ object FileUtils {
     fun getFileName(uri: Uri): String {
         Config.instance.context.contentResolver.query(uri, null, null, null, null).use { cursor ->
             if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                return if (index >= 0) {
+                    cursor.getString(index)
+                } else {
+                    ""
+                }
             }
         }
         return "threads" + UUID.randomUUID()
@@ -58,7 +63,12 @@ object FileUtils {
     fun getFileSize(uri: Uri): Long {
         Config.instance.context.contentResolver.query(uri, null, null, null, null).use { cursor ->
             if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE))
+                val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+                return if (index >= 0) {
+                    cursor.getLong(index)
+                } else {
+                    0L
+                }
             }
         }
         return 0
@@ -66,22 +76,32 @@ object FileUtils {
 
     @JvmStatic
     fun isImage(fileDescription: FileDescription?): Boolean {
-        return (fileDescription != null
-                && (getExtensionFromFileDescription(fileDescription) == JPEG
-                || getExtensionFromFileDescription(fileDescription) == PNG))
+        return (
+            fileDescription != null &&
+                (
+                    getExtensionFromFileDescription(fileDescription) == JPEG ||
+                        getExtensionFromFileDescription(fileDescription) == PNG
+                    )
+            )
     }
 
     @JvmStatic
     fun isVoiceMessage(fileDescription: FileDescription?): Boolean {
-        return (fileDescription != null
-                && getExtensionFromFileDescription(fileDescription) == AUDIO)
+        return (
+            fileDescription != null &&
+                getExtensionFromFileDescription(fileDescription) == AUDIO
+            )
     }
 
     @JvmStatic
     fun isDoc(fileDescription: FileDescription?): Boolean {
-        return (fileDescription != null
-                && (getExtensionFromFileDescription(fileDescription) == PDF
-                || getExtensionFromFileDescription(fileDescription) == OTHER_DOC_FORMATS))
+        return (
+            fileDescription != null &&
+                (
+                    getExtensionFromFileDescription(fileDescription) == PDF ||
+                        getExtensionFromFileDescription(fileDescription) == OTHER_DOC_FORMATS
+                    )
+            )
     }
 
     @JvmStatic
@@ -212,14 +232,14 @@ object FileUtils {
         ) {
             return AUDIO
         }
-        return if (extension.equals("txt", ignoreCase = true)
-            || extension.equals("doc", ignoreCase = true)
-            || extension.equals("docx", ignoreCase = true)
-            || extension.equals("xls", ignoreCase = true)
-            || extension.equals("xlsx", ignoreCase = true)
-            || extension.equals("xlsm", ignoreCase = true)
-            || extension.equals("xltx", ignoreCase = true)
-            || extension.equals("xlt", ignoreCase = true)
+        return if (extension.equals("txt", ignoreCase = true) ||
+            extension.equals("doc", ignoreCase = true) ||
+            extension.equals("docx", ignoreCase = true) ||
+            extension.equals("xls", ignoreCase = true) ||
+            extension.equals("xlsx", ignoreCase = true) ||
+            extension.equals("xlsm", ignoreCase = true) ||
+            extension.equals("xltx", ignoreCase = true) ||
+            extension.equals("xlt", ignoreCase = true)
         ) {
             OTHER_DOC_FORMATS
         } else UNKNOWN

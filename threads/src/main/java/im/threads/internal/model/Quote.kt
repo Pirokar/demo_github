@@ -29,23 +29,25 @@ class Quote(
 
     override fun toString(): String {
         return "Quote{" +
-                "phraseOwnerTitle='" + phraseOwnerTitle + '\'' +
-                ", text='" + text + '\'' +
-                ", fileDescription=" + fileDescription +
-                ", timeStamp=" + timeStamp +
-                ", isFromConsult=" + isFromConsult +
-                ", quotedPhraseConsultId='" + quotedPhraseConsultId + '\'' +
-                '}'
+            "phraseOwnerTitle='" + phraseOwnerTitle + '\'' +
+            ", text='" + text + '\'' +
+            ", fileDescription=" + fileDescription +
+            ", timeStamp=" + timeStamp +
+            ", isFromConsult=" + isFromConsult +
+            ", quotedPhraseConsultId='" + quotedPhraseConsultId + '\'' +
+            '}'
     }
 
     fun hasSameContent(quote: Quote?): Boolean {
         if (quote == null) {
             return false
         }
-        var hasSameContent = (ObjectsCompat.equals(uuid, quote.uuid)
-                && ObjectsCompat.equals(phraseOwnerTitle, quote.phraseOwnerTitle)
-                && ObjectsCompat.equals(text, quote.text)
-                && ObjectsCompat.equals(timeStamp, quote.timeStamp))
+        var hasSameContent = (
+            ObjectsCompat.equals(uuid, quote.uuid) &&
+                ObjectsCompat.equals(phraseOwnerTitle, quote.phraseOwnerTitle) &&
+                ObjectsCompat.equals(text, quote.text) &&
+                ObjectsCompat.equals(timeStamp, quote.timeStamp)
+            )
         if (fileDescription != null) {
             hasSameContent =
                 hasSameContent && fileDescription!!.hasSameContent(quote.fileDescription)

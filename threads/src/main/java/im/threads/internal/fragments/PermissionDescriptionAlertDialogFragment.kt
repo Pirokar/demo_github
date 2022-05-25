@@ -34,7 +34,6 @@ import im.threads.styles.permissions.PermissionDescriptionImageStyle
 import im.threads.styles.permissions.PermissionDescriptionTextStyle
 import im.threads.styles.permissions.PermissionDescriptionType
 
-
 /**
  * Диалоговое окно с описанием причины запроса разрешения.
  */
@@ -87,7 +86,7 @@ class PermissionDescriptionAlertDialogFragment : DialogFragment() {
             .inflate(R.layout.fragment_dialog_permission_description, container)
 
         val type = requireArguments().getSerializable(KEY_PERMISSION_DESCRIPTION_TYPE)
-                as PermissionDescriptionType
+            as PermissionDescriptionType
         val requestCode = requireArguments().getInt(KEY_REQUEST_CODE)
 
         val dialogStyle = getPermissionDescriptionDialogStyle(type)

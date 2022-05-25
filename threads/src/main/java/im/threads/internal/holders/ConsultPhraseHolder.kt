@@ -109,7 +109,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
 
-    var context: Context;
+    var context: Context
 
     init {
         context = parent.context
@@ -147,7 +147,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 rightTextHeader,
                 mRightTextDescr,
                 rightTextFileStamp
-            ), style.incomingMessageTextColor
+            ),
+            style.incomingMessageTextColor
         )
         setUpProgressButton(mCircularProgressButton)
     }
@@ -222,7 +223,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                             itemView.getContext(),
                             url
                         )
-                    })
+                    }
+                )
             } else {
                 hideOGView()
             }
@@ -261,7 +263,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                             FileUtils.getFileName(quoteFileDescription) + if (fileSize > 0) """
      
      ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
-     """.trimIndent() else ""
+                        """.trimIndent() else ""
                         mCircularProgressButton.setOnClickListener(onQuoteClickListener)
                         mCircularProgressButton.setProgress(if (quoteFileDescription.fileUri != null) 100 else quoteFileDescription.downloadProgress)
                     }
@@ -296,7 +298,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 mRightTextDescr.text =
                     FileUtils.getFileName(fileDescription) + if (fileSize > 0) """  
      ${Formatter.formatFileSize(itemView.getContext(), fileSize)}
-     """.trimIndent() else ""
+                """.trimIndent() else ""
                 rightTextFileStamp.text = itemView.getContext().getString(
                     R.string.threads_sent_at,
                     quoteSdf.format(Date(fileDescription.timeStamp))
