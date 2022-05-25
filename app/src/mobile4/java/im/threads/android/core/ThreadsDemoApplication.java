@@ -59,7 +59,8 @@ public class ThreadsDemoApplication extends MultiDexApplication {
                 .unreadMessagesCountListener(unreadMessagesSubject::onNext)
                 .surveyCompletionDelay(2000)
                 .historyLoadingCount(50)
-                .isDebugLoggingEnabled(true);
+                .isDebugLoggingEnabled(true)
+                .certificateRawResIds(Collections.singletonList(R.raw.edna));
         TransportConfig transportConfig = PrefUtils.getTransportConfig(this);
         if (transportConfig != null) {
             configBuilder.serverBaseUrl(transportConfig.getBaseUrl())
