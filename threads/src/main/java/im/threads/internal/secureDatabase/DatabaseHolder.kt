@@ -86,13 +86,11 @@ class DatabaseHolder private constructor() {
             .subscribeOn(Schedulers.io())
     }
 
-    val messagesCount: Int = myOpenHelper.getMessagesCount()
+    fun getMessagesCount(): Int = myOpenHelper.getMessagesCount()
 
-    val unreadMessagesCount: Int = myOpenHelper.getUnreadMessagesCount()
+    fun getUnreadMessagesCount(): Int = myOpenHelper.getUnreadMessagesCount()
 
-    fun getUnreadMessagesUuid(): List<String?> {
-        return myOpenHelper.getUnreadMessagesUuid()
-    }
+    fun getUnreadMessagesUuid(): List<String?> = myOpenHelper.getUnreadMessagesUuid()
 
     fun checkAndUpdate() {
         val oldHelper = im.threads.internal.database.ThreadsDbHelper(Config.instance.context)
