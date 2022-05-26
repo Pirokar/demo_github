@@ -70,6 +70,7 @@ public final class PrefUtils {
     private static final String THREAD_ID = "THREAD_ID";
     private static final String FILE_DESCRIPTION_DRAFT = "FILE_DESCRIPTION_DRAFT";
     private static final String CAMPAIGN_MESSAGE = "CAMPAIGN_MESSAGE";
+    private static final String PREF_ATTACHMENT_SETTINGS = "PREF_ATTACHMENT_SETTINGS";
 
     private static final String UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT";
 
@@ -180,6 +181,17 @@ public final class PrefUtils {
                 .edit()
                 .putLong(THREAD_ID, threadId)
                 .commit();
+    }
+
+    public static void setAttachmentSettings(String settings) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(PREF_ATTACHMENT_SETTINGS, settings)
+                .commit();
+    }
+
+    public static String getAttachmentSettings() {
+        return getDefaultSharedPreferences().getString(PREF_ATTACHMENT_SETTINGS, "");
     }
 
     @Nullable
@@ -396,7 +408,7 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static void migrateSharedPreferences() {
+    public static void migrateMainSharedPreferences() {
         SharedPreferences oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(Config.instance.context);
         SharedPreferences notEncryptedPreferences = Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE);
 
@@ -406,6 +418,13 @@ public final class PrefUtils {
         if (!notEncryptedPreferences.getAll().isEmpty()) {
             movePreferences(notEncryptedPreferences, getDefaultSharedPreferences());
         }
+    }
+
+    public static void migrateNamedPreferences(String preferenceName) {
+        movePreferences(
+                Config.instance.context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE),
+                getDefaultSharedPreferences()
+        );
     }
 
     @WorkerThread
@@ -425,6 +444,14 @@ public final class PrefUtils {
 
     public static void setUnreadPushCount(int unreadPushCount) {
         getDefaultSharedPreferences().edit().putInt(UNREAD_PUSH_COUNT, unreadPushCount).commit();
+    }
+
+    public static SharedPreferences getDefaultSharedPreferences() {
+        if (sharedPreferences == null) {
+            createSharedPreferences();
+        }
+
+        return sharedPreferences;
     }
 
     private static void resetPushToken() {
@@ -467,14 +494,6 @@ public final class PrefUtils {
                 .edit()
                 .putString(TRANSPORT_TYPE, transportType)
                 .commit();
-    }
-
-    private static SharedPreferences getDefaultSharedPreferences() {
-        if (sharedPreferences == null) {
-            createSharedPreferences();
-        }
-
-        return sharedPreferences;
     }
 
     private static void createSharedPreferences() {

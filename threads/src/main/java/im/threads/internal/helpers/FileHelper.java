@@ -1,15 +1,11 @@
 package im.threads.internal.helpers;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-
-import androidx.preference.PreferenceManager;
-
 import java.io.File;
-
 import im.threads.internal.Config;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
 import im.threads.internal.transport.models.AttachmentSettings;
+import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadsLogger;
 
 public enum FileHelper {
@@ -17,7 +13,6 @@ public enum FileHelper {
     INSTANCE;
 
     private static final double MEGABYTE = 1024 * 1024;
-    private static final String PREF_ATTACHMENT_SETTINGS = "PREF_ATTACHMENT_SETTINGS";
     private static String TAG = FileHelper.class.getSimpleName();
 
     FileHelper() {
@@ -53,18 +48,16 @@ public enum FileHelper {
     }
 
     private void saveAttachmentSettings(AttachmentSettings.Content attachmentSettingsContent) {
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(Config.instance.context).edit();
-        editor.putString(PREF_ATTACHMENT_SETTINGS, Config.instance.gson.toJson(attachmentSettingsContent));
-        editor.commit();
+        PrefUtils.setAttachmentSettings(Config.instance.gson.toJson(attachmentSettingsContent));
     }
 
     private AttachmentSettings.Content getAttachmentSettings() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(Config.instance.context);
-        String settingsStr = sharedPreferences.getString(PREF_ATTACHMENT_SETTINGS, null);
-        if (settingsStr == null) {
+        String settingsStr = PrefUtils.getAttachmentSettings();
+        if (settingsStr.isEmpty()) {
             return getDefaultAttachmentSettings();
         } else {
-            AttachmentSettings.Content attachmentSettingsContent = Config.instance.gson.fromJson(settingsStr, AttachmentSettings.Content.class);
+            AttachmentSettings.Content attachmentSettingsContent
+                    = Config.instance.gson.fromJson(settingsStr, AttachmentSettings.Content.class);
             if (attachmentSettingsContent == null) {
                 return getDefaultAttachmentSettings();
             } else {

@@ -142,12 +142,14 @@ public final class ChatController {
     private CompositeDisposable compositeDisposable;
 
     private ChatController() {
+        PrefUtils.migrateNamedPreferences(TAG);
         ChatStyle chatStyle = Config.instance.getChatStyle();
         inputEnabledDuringQuickReplies = chatStyle.inputEnabledDuringQuickReplies;
         appContext = Config.instance.context;
         chatUpdateProcessor = ChatUpdateProcessor.getInstance();
         databaseHolder = DatabaseHolder.getInstance();
-        consultWriter = new ConsultWriter(appContext.getSharedPreferences(TAG, Context.MODE_PRIVATE));
+
+        consultWriter = new ConsultWriter(PrefUtils.getDefaultSharedPreferences());
         ThreadUtils.runOnUiThread(() -> unsendMessageHandler = new Handler(msg -> {
                     if (msg.what == RESEND_MSG) {
                         if (!unsendMessages.isEmpty()) {
