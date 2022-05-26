@@ -115,6 +115,10 @@ public final class ConfigBuilder {
         return this;
     }
 
+    public Context getContext() {
+        return context;
+    }
+
     Config build() {
         return new Config(
                 context,

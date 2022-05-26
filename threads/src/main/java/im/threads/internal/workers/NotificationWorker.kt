@@ -467,7 +467,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
         notificationManager.notify(CAMPAIGN_MESSAGE_PUSH_ID, notificationBuilder.build())
     }
 
-    private fun getChatIntent(appMarker: String?): PendingIntent =
+    private fun getChatIntent(appMarker: String?): PendingIntent? =
         Config.instance.pendingIntentCreator.create(context, appMarker)
 
     private fun needsShowNotification(): Boolean = !ChatFragment.isShown()
