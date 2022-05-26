@@ -17,7 +17,8 @@ import kotlin.math.floor
 
 class FileDownloader(private val path: String, fileName: String, ctx: Context, private val downloadLister: DownloadLister) {
     private val outputFile: File = File(
-        getDownloadDir(ctx), generateFileName(
+        getDownloadDir(ctx),
+        generateFileName(
             path, fileName
         )
     )
