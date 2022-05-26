@@ -30,7 +30,6 @@
 # Application classes that will be serialized/deserialized over Gson
 -keep class im.threads.** { *; }
 -keep class net.sqlcipher.* { *; }
--keep class com.edna.android.push_lite.huawei.**{ *; }
 -keep class im.threads.internal.model.** { *; }
 -keep class im.threads.internal.transport.models.** { <fields>; }
 -keep class im.threads.internal.transport.threads_gate.** { <fields>; }
