@@ -83,7 +83,7 @@ public class ThreadsDemoApplication extends MultiDexApplication {
         if (metaData != null && metaData.containsKey(USE_SSL)) {
             return metaData.getBoolean(USE_SSL);
         }
-        return true;
+        return false;
     }
 
     @Override
