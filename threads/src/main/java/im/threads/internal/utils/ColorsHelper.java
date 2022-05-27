@@ -2,6 +2,7 @@ package im.threads.internal.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 
 public final class ColorsHelper {
 
@@ -81,4 +83,27 @@ public final class ColorsHelper {
             }
         }
     }
+
+    public static ColorStateList getColorStateList(Context context,
+                                                   @ColorRes int disabledColorResId,
+                                                   @ColorRes int enabledColorResId,
+                                                   @ColorRes int pressedColorResId) {
+        return new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_pressed},
+                        new int[]{android.R.attr.state_enabled},
+                        new int[]{-android.R.attr.state_enabled}
+                },
+                new int[]{
+                        ContextCompat.getColor(context, pressedColorResId),
+                        ContextCompat.getColor(context, enabledColorResId),
+                        ContextCompat.getColor(context, disabledColorResId)
+                }
+        );
+    }
+
+    public static void setTintColorStateList(@Nullable ImageView view, ColorStateList colorStateList) {
+        ImageViewCompat.setImageTintList(view, colorStateList);
+    }
+
 }
