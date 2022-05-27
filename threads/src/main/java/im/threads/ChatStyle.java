@@ -123,6 +123,24 @@ public final class ChatStyle implements Serializable {
     @DimenRes
     public int bubbleIncomingPaddingBottom = R.dimen.bubbleIncomingPaddingBottom;
 
+    @DimenRes
+    public int inputFieldPaddingLeft = R.dimen.margin_three_fourth;
+    @DimenRes
+    public int inputFieldPaddingTop = R.dimen.margin_quarter;
+    @DimenRes
+    public int inputFieldPaddingRight = R.dimen.margin_three_fourth;
+    @DimenRes
+    public int inputFieldPaddingBottom = R.dimen.margin_quarter;
+
+    @DimenRes
+    public int inputFieldMarginLeft = R.dimen.threads_margin_zero;
+    @DimenRes
+    public int inputFieldMarginTop = R.dimen.threads_margin_zero;
+    @DimenRes
+    public int inputFieldMarginRight = R.dimen.threads_margin_zero;
+    @DimenRes
+    public int inputFieldMarginBottom = R.dimen.threads_margin_zero;
+
     @ColorRes
     public int incomingMessageLinkColor = R.color.threads_incoming_message_link;
     @ColorRes
@@ -1454,6 +1472,32 @@ public final class ChatStyle implements Serializable {
         this.bubbleIncomingPaddingTop = top;
         this.bubbleIncomingPaddingRight = right;
         this.bubbleIncomingPaddingBottom = bottom;
+        return this;
+    }
+
+    public ChatStyle setInputFieldPadding(
+            @DimenRes int left,
+            @DimenRes int top,
+            @DimenRes int right,
+            @DimenRes int bottom
+    ) {
+        this.inputFieldPaddingLeft = left;
+        this.inputFieldPaddingTop = top;
+        this.inputFieldPaddingRight = right;
+        this.inputFieldPaddingBottom = bottom;
+        return this;
+    }
+
+    public ChatStyle setInputFieldMargin(
+            @DimenRes int left,
+            @DimenRes int top,
+            @DimenRes int right,
+            @DimenRes int bottom
+    ) {
+        this.inputFieldMarginLeft = left;
+        this.inputFieldMarginTop = top;
+        this.inputFieldMarginRight = right;
+        this.inputFieldMarginBottom = bottom;
         return this;
     }
 

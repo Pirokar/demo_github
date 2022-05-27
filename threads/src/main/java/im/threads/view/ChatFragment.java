@@ -36,6 +36,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -845,6 +846,21 @@ public final class ChatFragment extends BaseFragment implements
         binding.inputEditView.setBackground(AppCompatResources.getDrawable(activity, style.inputBackground));
         binding.inputEditView.setHint(style.inputHint);
         binding.inputEditView.setMaxLines(INPUT_EDIT_VIEW_MIN_LINES_COUNT);
+        binding.inputEditView.setPadding(
+                getResources().getDimensionPixelSize(style.inputFieldPaddingLeft),
+                getResources().getDimensionPixelSize(style.inputFieldPaddingTop),
+                getResources().getDimensionPixelSize(style.inputFieldPaddingRight),
+                getResources().getDimensionPixelSize(style.inputFieldPaddingBottom)
+        );
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.inputEditView.getLayoutParams();
+        params.setMargins(
+                getResources().getDimensionPixelSize(style.inputFieldMarginLeft),
+                getResources().getDimensionPixelSize(style.inputFieldMarginTop),
+                getResources().getDimensionPixelSize(style.inputFieldMarginRight),
+                getResources().getDimensionPixelSize(style.inputFieldMarginBottom)
+        );
+        binding.inputEditView.setLayoutParams(params);
+
         binding.inputEditView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

@@ -190,6 +190,18 @@ public class ChatStyleBuilderHelper {
                         R.dimen.alt_bubbleIncomingPaddingRight,
                         R.dimen.alt_bubbleIncomingPaddingBottom
                 )
+                .setInputFieldPadding(
+                        R.dimen.alt_input_field_padding_left,
+                        R.dimen.alt_input_field_padding_top,
+                        R.dimen.alt_input_field_padding_right,
+                        R.dimen.alt_input_field_padding_bottom
+                )
+                .setInputFieldMargin(
+                        R.dimen.alt_input_field_margin_left,
+                        R.dimen.alt_input_field_margin_top,
+                        R.dimen.alt_input_field_margin_right,
+                        R.dimen.alt_input_field_margin_bottom
+                )
 
                 .setFixedChatTitle(R.bool.alt_threads_chat_fixed_chat_title)
                 .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images)
