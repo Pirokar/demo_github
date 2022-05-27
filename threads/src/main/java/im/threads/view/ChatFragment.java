@@ -701,12 +701,13 @@ public final class ChatFragment extends BaseFragment implements
 
     private void setMessagesAsRead() {
         chatAdapter.setAllMessagesRead();
-        setMessagesAsReadForThisThreadInDB();
+        setMessagesAsReadForStorages();
     }
 
-    private void setMessagesAsReadForThisThreadInDB() {
-        if (chatAdapter.getItemCount() != previousChatItemsCount) {
+    private void setMessagesAsReadForStorages() {
+        if (previousChatItemsCount == 0 || chatAdapter.getItemCount() != previousChatItemsCount) {
             mChatController.setMessagesInCurrentThreadAsReadInDB();
+            PrefUtils.setUnreadPushCount(0);
             previousChatItemsCount = chatAdapter.getItemCount();
         }
     }
