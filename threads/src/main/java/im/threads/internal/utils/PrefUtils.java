@@ -18,12 +18,14 @@ import androidx.security.crypto.MasterKey;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 import java.util.UUID;
 
+import im.threads.BuildConfig;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.model.CampaignMessage;
@@ -409,14 +411,19 @@ public final class PrefUtils {
     }
 
     public static void migrateMainSharedPreferences() {
-        SharedPreferences oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(Config.instance.context);
-        SharedPreferences notEncryptedPreferences = Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE);
+        Context context = Config.instance.context;
+        SharedPreferences oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences notEncryptedPreferences = context.getSharedPreferences(
+                STORE_NAME, Context.MODE_PRIVATE
+        );
 
         if (!oldSharedPreferences.getAll().isEmpty()) {
             movePreferences(oldSharedPreferences, getDefaultSharedPreferences());
+            deletePreferenceWithNameContains(context.getPackageName());
         }
         if (!notEncryptedPreferences.getAll().isEmpty()) {
             movePreferences(notEncryptedPreferences, getDefaultSharedPreferences());
+            deletePreferenceWithNameContains(STORE_NAME);
         }
     }
 
@@ -425,6 +432,7 @@ public final class PrefUtils {
                 Config.instance.context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE),
                 getDefaultSharedPreferences()
         );
+        deletePreferenceWithNameContains(preferenceName);
     }
 
     @WorkerThread
@@ -482,6 +490,23 @@ public final class PrefUtils {
 
         editor.commit();
         fromPrefs.edit().clear().commit();
+    }
+
+    private static void deletePreferenceWithNameContains(String nameContains) {
+        Context context = Config.instance.context;
+        try {
+            File dir = new File(context.getFilesDir().getParent() + "/shared_prefs/");
+            String[] children = dir.list();
+            if (children != null) {
+                for (String child : children) {
+                    if (child.contains(nameContains)) {
+                        new File(dir, child).delete();
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            Log.e(TAG, "Error when deleting preference file", exception);
+        }
     }
 
     private static String getTransportType() {
