@@ -3,4 +3,5 @@
     <bool name="threads_chat_is_light_status_bar">false</bool>
     <bool name="threads_chat_fixed_chat_title">false</bool>
     <bool name="threads_chat_fixed_chat_subtitle">false</bool>
+    <bool name="threads_chat_hide_chat_subtitle">false</bool>
 </resources>

@@ -1663,6 +1663,9 @@ public final class ChatFragment extends BaseFragment implements
                             }
                             setSubtitle(info, context);
                         }
+                        if (getResources().getBoolean(style.hideChatSubtitle)) {
+                            binding.subtitle.setVisibility(View.GONE);
+                        }
                         chatAdapter.removeConsultSearching();
                         showOverflowMenu();
                     }
@@ -1745,7 +1748,8 @@ public final class ChatFragment extends BaseFragment implements
             binding.consultName.setVisibility(View.VISIBLE);
         }
         if (mChatController != null && mChatController.isConsultFound() && !isInMessageSearchMode
-                && !getResources().getBoolean(style.fixedChatTitle)) {
+                && !getResources().getBoolean(style.fixedChatTitle)
+                && !getResources().getBoolean(style.hideChatSubtitle)) {
             binding.subtitle.setVisibility(View.VISIBLE);
         }
     }
@@ -1766,6 +1770,9 @@ public final class ChatFragment extends BaseFragment implements
             binding.consultName.setVisibility(View.VISIBLE);
             binding.searchLo.setVisibility(View.GONE);
             binding.search.setText("");
+        }
+        if (getResources().getBoolean(style.hideChatSubtitle)) {
+            binding.subtitle.setVisibility(View.GONE);
         }
     }
 
