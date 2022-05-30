@@ -1,6 +1,5 @@
 package im.threads.view;
 
-import static im.threads.ChatStyle.COLOR_STATE_FULL_ARRAY_SIZE;
 import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
 
 import android.app.Activity;
@@ -11,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -48,7 +46,6 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.view.ViewCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -174,6 +171,8 @@ public final class ChatFragment extends BaseFragment implements
 
     private static final int INPUT_EDIT_VIEW_MIN_LINES_COUNT = 1;
     private static final int INPUT_EDIT_VIEW_MAX_LINES_COUNT = 7;
+
+    private static final int COLOR_STATE_FULL_ARRAY_SIZE = 3;
 
     private static boolean chatIsShown = false;
     private static boolean afterResume = false;

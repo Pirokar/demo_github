@@ -142,7 +142,6 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int chatBodyIconsTint = R.color.threads_green_83B144;
     public int[] chatBodyIconsColorState = null;
-    public static final int COLOR_STATE_FULL_ARRAY_SIZE = 3;
 
     @ColorRes
     public int chatSystemMessageTextColor = R.color.threads_chat_connection_message;
@@ -828,7 +827,7 @@ public final class ChatStyle implements Serializable {
     public ChatStyle setChatBodyIconsColorStateTint(@ColorRes final int iconStateDisabledTint,
                                                     @ColorRes final int iconStateEnabledTint,
                                                     @ColorRes final int iconStatePressedTint) {
-        this.chatBodyIconsColorState = new int[]{
+        this.chatBodyIconsColorState = new int[] {
                 iconStateDisabledTint,
                 iconStateEnabledTint,
                 iconStatePressedTint
