@@ -467,33 +467,33 @@ public final class ChatFragment extends BaseFragment implements
             private void startRecorder() {
                 subscribe(
                         Completable.fromAction(() -> {
-                                    synchronized (this) {
-                                        Context context = getContext();
-                                        if (context == null) {
-                                            return;
-                                        }
-                                        recorder = new MediaRecorder();
-                                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                            voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.ogg", fileNameDateFormat.format(new Date()));
-                                            recorder.setOutputFormat(MediaRecorder.OutputFormat.OGG);
-                                            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.OPUS);
-                                        } else {
-                                            voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.wav", fileNameDateFormat.format(new Date()));
-                                            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                                            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
-                                            recorder.setAudioEncodingBitRate(128000);
-                                            recorder.setAudioSamplingRate(44100);
-                                        }
-                                        recorder.setOutputFile(voiceFilePath);
-                                        try {
-                                            recorder.prepare();
-                                        } catch (IOException e) {
-                                            ThreadsLogger.e(TAG, "prepare() failed");
-                                        }
-                                        recorder.start();
-                                    }
-                                })
+                            synchronized (this) {
+                                Context context = getContext();
+                                if (context == null) {
+                                    return;
+                                }
+                                recorder = new MediaRecorder();
+                                recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.ogg", fileNameDateFormat.format(new Date()));
+                                    recorder.setOutputFormat(MediaRecorder.OutputFormat.OGG);
+                                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.OPUS);
+                                } else {
+                                    voiceFilePath = context.getFilesDir().getAbsolutePath() + String.format("/voice%s.wav", fileNameDateFormat.format(new Date()));
+                                    recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+                                    recorder.setAudioEncodingBitRate(128000);
+                                    recorder.setAudioSamplingRate(44100);
+                                }
+                                recorder.setOutputFile(voiceFilePath);
+                                try {
+                                    recorder.prepare();
+                                } catch (IOException e) {
+                                    ThreadsLogger.e(TAG, "prepare() failed");
+                                }
+                                recorder.start();
+                            }
+                        })
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(() -> {
                                         },
@@ -723,11 +723,11 @@ public final class ChatFragment extends BaseFragment implements
 
     private void configureRecordButtonVisibility() {
         Disposable recordButtonVisibilityDisposable = Observable.combineLatest(
-                        RxUtils.toObservableImmediately(inputTextObservable),
-                        RxUtils.toObservableImmediately(fileDescription),
-                        (s, fileDescriptionOptional) -> (TextUtils.isEmpty(s) || s.trim().isEmpty())
-                                && fileDescriptionOptional.isEmpty()
-                )
+                RxUtils.toObservableImmediately(inputTextObservable),
+                RxUtils.toObservableImmediately(fileDescription),
+                (s, fileDescriptionOptional) -> (TextUtils.isEmpty(s) || s.trim().isEmpty())
+                        && fileDescriptionOptional.isEmpty()
+        )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::setRecordButtonVisibility,
                         error -> ThreadsLogger.e(TAG, "configureInputChangesSubscription "
@@ -1187,9 +1187,9 @@ public final class ChatFragment extends BaseFragment implements
         }
         subscribe(
                 Single.fromCallable(() -> Stream.of(mAttachedImages)
-                                .filter(value -> FileUtils.canBeSent(requireContext(), value))
-                                .toList()
-                        )
+                        .filter(value -> FileUtils.canBeSent(requireContext(), value))
+                        .toList()
+                )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(filteredPhotos -> {
@@ -1327,9 +1327,9 @@ public final class ChatFragment extends BaseFragment implements
         }
         subscribe(
                 Single.fromCallable(() -> Stream.of(photos)
-                                .filter(value -> FileUtils.canBeSent(requireContext(), value))
-                                .toList()
-                        )
+                        .filter(value -> FileUtils.canBeSent(requireContext(), value))
+                        .toList()
+                )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(filteredPhotos -> {
@@ -1394,12 +1394,12 @@ public final class ChatFragment extends BaseFragment implements
         );
         String inputText = inputTextObservable.get();
         sendMessage(Collections.singletonList(
-                        new UpcomingUserMessage(
-                                getFileDescription(),
-                                campaignMessage,
-                                mQuote,
-                                inputText != null ? inputText.trim() : null,
-                                false)
+                new UpcomingUserMessage(
+                        getFileDescription(),
+                        campaignMessage,
+                        mQuote,
+                        inputText != null ? inputText.trim() : null,
+                        false)
                 )
         );
     }
@@ -1753,7 +1753,7 @@ public final class ChatFragment extends BaseFragment implements
         if (mChatController != null && mChatController.isConsultFound()
                 && !isInMessageSearchMode
                 && !isFixedChatTitle
-                &&  isVisibleSubtitle){
+                && isVisibleSubtitle) {
             binding.subtitle.setVisibility(View.VISIBLE);
         }
     }
@@ -2617,12 +2617,12 @@ public final class ChatFragment extends BaseFragment implements
         public void onQiuckReplyClick(QuickReply quickReply) {
             hideQuickReplies();
             sendMessage(Collections.singletonList(
-                            new UpcomingUserMessage(
-                                    null,
-                                    null,
-                                    null,
-                                    quickReply.getText().trim(),
-                                    isCopy(quickReply.getText()))
+                    new UpcomingUserMessage(
+                            null,
+                            null,
+                            null,
+                            quickReply.getText().trim(),
+                            isCopy(quickReply.getText()))
                     ),
                     false
             );
