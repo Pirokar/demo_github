@@ -71,7 +71,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     private val mTimeStampTextView =
         itemView.findViewById<BubbleTimeTextView>(R.id.timestamp).apply {
             setTextColor(getColorInt(style.incomingMessageTimeColor))
-            if(style.incomingMessageTimeTextSize > 0)
+            if (style.incomingMessageTimeTextSize > 0)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
         }
     private val mPhraseTextView = itemView.findViewById<BubbleMessageTextView>(R.id.text).apply {

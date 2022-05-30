@@ -35,7 +35,7 @@ class ImageFromConsultViewHolder(
 
     private val mTimeStampTextView = (itemView.findViewById(R.id.timestamp) as TextView).apply {
         setTextColor(getColorInt(style.incomingImageTimeColor))
-        if(style.incomingMessageTimeTextSize > 0)
+        if (style.incomingMessageTimeTextSize > 0)
             setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
         background.setColorFilter(
             getColorInt(style.incomingImageTimeBackgroundColor),
