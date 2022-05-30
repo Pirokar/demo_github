@@ -59,7 +59,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
         mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.outgoingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
-        if(style.outgoingMessageTimeTextSize > 0)
+        if (style.outgoingMessageTimeTextSize > 0)
             mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize));
     }
 
