@@ -172,8 +172,6 @@ public final class ChatFragment extends BaseFragment implements
     private static final int INPUT_EDIT_VIEW_MIN_LINES_COUNT = 1;
     private static final int INPUT_EDIT_VIEW_MAX_LINES_COUNT = 7;
 
-    private static final int COLOR_STATE_FULL_ARRAY_SIZE = 3;
-
     private static boolean chatIsShown = false;
     private static boolean afterResume = false;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -358,8 +356,9 @@ public final class ChatFragment extends BaseFragment implements
         binding.sendMessage.setImageResource(style.sendMessageIconResId);
         binding.addAttachment.setImageResource(style.attachmentIconResId);
         binding.quoteClear.setImageResource(style.quoteClearIconResId);
+        int fullColorStateListSize = 3;
         if(style.chatBodyIconsColorState != null
-                && style.chatBodyIconsColorState.length >= COLOR_STATE_FULL_ARRAY_SIZE) {
+                && style.chatBodyIconsColorState.length >= fullColorStateListSize) {
             ColorStateList chatImagesColorStateList = ColorsHelper.getColorStateList(activity,
                     style.chatBodyIconsColorState[0],
                     style.chatBodyIconsColorState[1],
