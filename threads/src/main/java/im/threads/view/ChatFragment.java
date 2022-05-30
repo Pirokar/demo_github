@@ -1663,7 +1663,7 @@ public final class ChatFragment extends BaseFragment implements
                             }
                             setSubtitle(info, context);
                         }
-                        if (getResources().getBoolean(style.hideChatSubtitle)) {
+                        if (!getResources().getBoolean(style.visible_chat_subtitle)) {
                             binding.subtitle.setVisibility(View.GONE);
                         }
                         chatAdapter.removeConsultSearching();
@@ -1747,9 +1747,13 @@ public final class ChatFragment extends BaseFragment implements
         if (!isInMessageSearchMode) {
             binding.consultName.setVisibility(View.VISIBLE);
         }
-        if (mChatController != null && mChatController.isConsultFound() && !isInMessageSearchMode
-                && !getResources().getBoolean(style.fixedChatTitle)
-                && !getResources().getBoolean(style.hideChatSubtitle)) {
+
+        boolean isFixedChatTitle = getResources().getBoolean(style.fixedChatTitle);
+        boolean isVisibleSubtitle = getResources().getBoolean(style.visible_chat_subtitle);
+        if (mChatController != null && mChatController.isConsultFound()
+                && !isInMessageSearchMode
+                && !isFixedChatTitle
+                &&  isVisibleSubtitle){
             binding.subtitle.setVisibility(View.VISIBLE);
         }
     }
@@ -1771,7 +1775,7 @@ public final class ChatFragment extends BaseFragment implements
             binding.searchLo.setVisibility(View.GONE);
             binding.search.setText("");
         }
-        if (getResources().getBoolean(style.hideChatSubtitle)) {
+        if (!getResources().getBoolean(style.visible_chat_subtitle)) {
             binding.subtitle.setVisibility(View.GONE);
         }
     }

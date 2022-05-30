@@ -192,6 +192,7 @@ public class ChatStyleBuilderHelper {
                 )
 
                 .setFixedChatTitle(R.bool.alt_threads_chat_fixed_chat_title)
+                .setVisibleChatSubtitle(R.bool.alt_threads_visible_chat_subtitle)
                 .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images)
                 .setLoaderTextResId(R.string.alt_loading)
                 .setMediaAndFilesWindowLightStatusBarResId(R.bool.alt_threads_chat_is_light_status_bar)
@@ -208,7 +209,6 @@ public class ChatStyleBuilderHelper {
                 .setEmptyMediaAndFilesDescriptionTextResId(R.string.threads_no_media_and_files_alt_description)
                 .setEmptyMediaAndFilesDescriptionFontPath(LATO_LIGHT_FONT_PATH)
                 .setEmptyMediaAndFilesDescriptionTextSize(R.dimen.alt_threads_attachments_no_files_description_text_size)
-                .setEmptyMediaAndFilesDescriptionTextColor(R.color.white)
-                .setHideChatSubtitle(R.bool.alt_threads_chat_hide_chat_title);
+                .setEmptyMediaAndFilesDescriptionTextColor(R.color.white);
     }
 }
