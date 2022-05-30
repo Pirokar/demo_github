@@ -191,6 +191,8 @@ public class ChatStyleBuilderHelper {
                         R.dimen.alt_bubbleIncomingPaddingBottom
                 )
 
+                .setOutgoingTimeTextSize(R.dimen.text_small)
+                .setIncomingTimeTextSize(R.dimen.text_big)
                 .setFixedChatTitle(R.bool.alt_threads_chat_fixed_chat_title)
                 .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images)
                 .setLoaderTextResId(R.string.alt_loading)

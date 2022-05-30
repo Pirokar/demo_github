@@ -45,6 +45,8 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
     private val mSizeTextView: TextView = itemView.findViewById(R.id.file_size)
     private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timestamp).apply {
         setTextColor(getColorInt(style.incomingMessageTimeColor))
+        if(style.incomingMessageTimeTextSize > 0)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, itemView.context.resources.getDimension(style.incomingMessageTimeTextSize))
     }
     private val mConsultAvatar = itemView.findViewById<ImageView>(R.id.consult_avatar).apply {
         layoutParams.height =

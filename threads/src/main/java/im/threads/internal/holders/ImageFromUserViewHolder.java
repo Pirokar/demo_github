@@ -4,6 +4,7 @@ import static im.threads.internal.model.MessageState.STATE_SENDING;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,8 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingImageTimeColor));
         mTimeStampTextView.getBackground().setColorFilter(getColorInt(style.outgoingImageTimeBackgroundColor), PorterDuff.Mode.SRC_ATOP);
+        if(style.outgoingMessageTimeTextSize > 0)
+            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize));
     }
 
     public void onBind(final UserPhrase userPhrase, boolean highlighted, final Runnable clickRunnable, final Runnable longClickRunnable) {
