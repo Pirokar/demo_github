@@ -36,6 +36,7 @@ import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.TlsConfigurationUtils;
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
 import im.threads.styles.permissions.PermissionDescriptionType;
+import okhttp3.Interceptor;
 
 public final class Config {
 
@@ -57,6 +58,8 @@ public final class Config {
 
     @NonNull
     public final ThreadsLib.PendingIntentCreator pendingIntentCreator;
+    @Nullable
+    public final Interceptor networkInterceptor;
     @Nullable
     public final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener;
     @NonNull
@@ -91,6 +94,7 @@ public final class Config {
                   @Nullable String threadsGateHCMProviderUid,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
+                  @Nullable Interceptor networkInterceptor,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
                   int surveyCompletionDelay,
@@ -99,6 +103,7 @@ public final class Config {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
+        this.networkInterceptor = networkInterceptor;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.clientIdIgnoreEnabled = MetaDataUtils.getClientIdIgnoreEnabled(this.context);
         this.newChatCenterApi = MetaDataUtils.getNewChatCenterApi(this.context);
@@ -275,7 +280,8 @@ public final class Config {
                 threadsGateHCMProviderUid,
                 isDebugLoggingEnabled,
                 socketClientSettings,
-                sslSocketFactoryConfig);
+                sslSocketFactoryConfig,
+                networkInterceptor);
     }
 
     @NonNull

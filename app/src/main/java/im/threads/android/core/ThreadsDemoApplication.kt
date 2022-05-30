@@ -6,6 +6,15 @@ import android.text.TextUtils
 import androidx.multidex.MultiDexApplication
 import com.edna.android.push_lite.PushController
 import com.pandulapeter.beagle.Beagle
+import com.pandulapeter.beagle.common.configuration.Behavior
+import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
+import com.pandulapeter.beagle.logOkHttp.BeagleOkHttpLogger
+import com.pandulapeter.beagle.modules.AppInfoButtonModule
+import com.pandulapeter.beagle.modules.BugReportButtonModule
+import com.pandulapeter.beagle.modules.DeviceInfoModule
+import com.pandulapeter.beagle.modules.KeylineOverlaySwitchModule
+import com.pandulapeter.beagle.modules.LifecycleLogListModule
+import com.pandulapeter.beagle.modules.NetworkLogListModule
 import im.threads.ConfigBuilder
 import im.threads.ThreadsLib
 import im.threads.ThreadsLib.PendingIntentCreator
@@ -21,6 +30,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import okhttp3.Interceptor
 
 class ThreadsDemoApplication : MultiDexApplication() {
     private var disposable: Disposable? = null
@@ -43,6 +53,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
             .historyLoadingCount(50)
             .isDebugLoggingEnabled(true)
             .certificateRawResIds(listOf(R.raw.edna))
+            .networkInterceptor((BeagleOkHttpLogger.logger as? Interceptor?))
 
         val transportConfig = getTransportConfig(this)
         if (transportConfig != null) {
@@ -53,7 +64,25 @@ class ThreadsDemoApplication : MultiDexApplication() {
         }
 
         ThreadsLib.init(configBuilder)
-        Beagle.initialize(this)
+        Beagle.initialize(
+            this,
+            behavior = Behavior(
+                bugReportingBehavior = Behavior.BugReportingBehavior(
+                    crashLoggers = listOf(BeagleCrashLogger)
+                ),
+                networkLogBehavior = Behavior.NetworkLogBehavior(
+                    networkLoggers = listOf(BeagleOkHttpLogger)
+                )
+            )
+        )
+        Beagle.set(
+            AppInfoButtonModule(),
+            NetworkLogListModule(),
+            LifecycleLogListModule(),
+            KeylineOverlaySwitchModule(),
+            DeviceInfoModule(),
+            BugReportButtonModule()
+        )
     }
 
     override fun onTerminate() {

@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.pandulapeter.beagle.Beagle
 import im.threads.ThreadsLib
 import im.threads.UserInfoBuilder
 import im.threads.android.R
@@ -331,7 +332,8 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
             return true
         }
         if (id == R.id.edit_transport_config) {
-            showEditTransportConfigDialog()
+            Beagle.show()
+            // showEditTransportConfigDialog()
             return true
         }
         return super.onOptionsItemSelected(item)

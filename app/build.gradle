@@ -138,12 +138,18 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttpVersion"
 
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
-    implementation "io.github.pandulapeter.beagle:ui-activity:$beagleVersion"
 
+    //Beagle
+    implementation "io.github.pandulapeter.beagle:ui-activity:$beagleVersion"
+    implementation "io.github.pandulapeter.beagle:log-crash:$beagleVersion"
+    api "io.github.pandulapeter.beagle:log-okhttp:$beagleVersion"
+
+    //Push lite
     debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
     debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
     releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
     releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
