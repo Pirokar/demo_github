@@ -1,5 +1,6 @@
 package im.threads.view;
 
+import static im.threads.ChatStyle.COLOR_STATE_FULL_ARRAY_SIZE;
 import static im.threads.internal.utils.PrefUtils.getFileDescriptionDraft;
 
 import android.app.Activity;
@@ -358,7 +359,8 @@ public final class ChatFragment extends BaseFragment implements
         binding.sendMessage.setImageResource(style.sendMessageIconResId);
         binding.addAttachment.setImageResource(style.attachmentIconResId);
         binding.quoteClear.setImageResource(style.quoteClearIconResId);
-        if(style.chatBodyIconsColorState != null && style.chatBodyIconsColorState.length > 2) {
+        if(style.chatBodyIconsColorState != null
+                && style.chatBodyIconsColorState.length >= COLOR_STATE_FULL_ARRAY_SIZE) {
             ColorStateList chatImagesColorStateList = ColorsHelper.getColorStateList(activity,
                     style.chatBodyIconsColorState[0],
                     style.chatBodyIconsColorState[1],
