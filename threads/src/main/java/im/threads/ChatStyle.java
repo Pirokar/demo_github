@@ -55,7 +55,7 @@ public final class ChatStyle implements Serializable {
     @BoolRes
     public int fixedChatSubtitle = R.bool.threads_chat_fixed_chat_subtitle;
     @BoolRes
-    public int visibleChatSubtitle = R.bool.threads_visible_chat_subtitle;
+    public int isChatSubtitleVisible = R.bool.threads_chat_subtitle_is_visible;
 
     public boolean showBackButton = false;
     public boolean chatSubtitleShowOrgUnit = false;
@@ -488,8 +488,8 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    public ChatStyle setVisibleChatSubtitle(@BoolRes final int visibleChatSubtitle) {
-        this.visibleChatSubtitle = visibleChatSubtitle;
+    public ChatStyle setVisibleChatSubtitle(@BoolRes final int isChatSubtitleVisible) {
+        this.isChatSubtitleVisible = isChatSubtitleVisible;
         return this;
     }
 

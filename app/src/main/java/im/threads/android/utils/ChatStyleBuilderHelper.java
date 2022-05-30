@@ -192,7 +192,7 @@ public class ChatStyleBuilderHelper {
                 )
 
                 .setFixedChatTitle(R.bool.alt_threads_chat_fixed_chat_title)
-                .setVisibleChatSubtitle(R.bool.alt_threads_visible_chat_subtitle)
+                .setVisibleChatSubtitle(R.bool.alt_threads_chat_subtitle_is_visible)
                 .setMaxGalleryImagesCount(R.integer.alt_max_count_attached_images)
                 .setLoaderTextResId(R.string.alt_loading)
                 .setMediaAndFilesWindowLightStatusBarResId(R.bool.alt_threads_chat_is_light_status_bar)
