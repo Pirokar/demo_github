@@ -2,15 +2,18 @@ package im.threads.android.core
 
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.text.TextUtils
 import androidx.multidex.MultiDexApplication
 import com.edna.android.push_lite.PushController
 import com.pandulapeter.beagle.Beagle
 import com.pandulapeter.beagle.common.configuration.Behavior
+import com.pandulapeter.beagle.common.configuration.toText
 import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
 import com.pandulapeter.beagle.logOkHttp.BeagleOkHttpLogger
 import com.pandulapeter.beagle.modules.AppInfoButtonModule
 import com.pandulapeter.beagle.modules.BugReportButtonModule
+import com.pandulapeter.beagle.modules.DeveloperOptionsButtonModule
 import com.pandulapeter.beagle.modules.DeviceInfoModule
 import com.pandulapeter.beagle.modules.KeylineOverlaySwitchModule
 import com.pandulapeter.beagle.modules.LifecycleLogListModule
@@ -22,6 +25,7 @@ import im.threads.android.R
 import im.threads.android.data.Card
 import im.threads.android.push.HCMTokenRefresher.requestToken
 import im.threads.android.ui.BottomNavigationActivity
+import im.threads.android.ui.DeveloperOptionsActivity
 import im.threads.android.utils.PrefUtils.getCards
 import im.threads.android.utils.PrefUtils.getTheme
 import im.threads.android.utils.PrefUtils.getTransportConfig
@@ -76,12 +80,23 @@ class ThreadsDemoApplication : MultiDexApplication() {
             )
         )
         Beagle.set(
-            AppInfoButtonModule(),
+            AppInfoButtonModule(getString(R.string.about_app).toText()),
+            DeveloperOptionsButtonModule(
+                getString(R.string.developer_options).toText(),
+                onButtonPressed = {
+                    val intent = Intent(
+                        this, DeveloperOptionsActivity::class.java
+                    ).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+                    startActivity(intent)
+                }
+            ),
             NetworkLogListModule(),
             LifecycleLogListModule(),
             KeylineOverlaySwitchModule(),
             DeviceInfoModule(),
-            BugReportButtonModule()
+            BugReportButtonModule(),
         )
     }
 

@@ -32,6 +32,9 @@
 
     <string name="demo_unread_messages_count">Unread message counts:&#032;</string>
 
+    <string name="about_app">"About app"</string>
+    <string name="developer_options">Developer options</string>
+
     <string-array name="demo_designs">
         <item>@string/demo_design_green_style</item>
         <item>@string/demo_design_blue_style</item>
