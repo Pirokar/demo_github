@@ -108,6 +108,12 @@ class ThreadsDbHelper(val context: Context) :
         return messagesTable.setAllMessagesWereRead(this)
     }
 
+    override fun setAllConsultMessagesWereReadWithThreadId(threadId: Long?): Int {
+        return threadId?.let {
+            messagesTable.setAllMessagesWereReadInThread(this, threadId)
+        } ?: 0
+    }
+
     override fun setMessageWasRead(providerId: String) {
         messagesTable.setMessageWasRead(this, providerId)
     }

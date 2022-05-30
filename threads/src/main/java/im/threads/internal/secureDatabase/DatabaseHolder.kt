@@ -64,6 +64,11 @@ class DatabaseHolder private constructor() {
             .subscribeOn(Schedulers.io())
     }
 
+    fun setAllConsultMessagesWereReadInThread(threadId: Long?): Completable {
+        return Completable.fromCallable { myOpenHelper.setAllConsultMessagesWereReadWithThreadId(threadId) }
+            .subscribeOn(Schedulers.io())
+    }
+
     fun setMessageWasRead(uuid: String?) {
         uuid?.let { myOpenHelper.setMessageWasRead(it) }
     }
