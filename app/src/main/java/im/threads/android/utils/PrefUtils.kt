@@ -16,6 +16,8 @@ object PrefUtils {
     private const val PREF_THREADS_GATE_PROVIDER_UID = "PREF_THREADS_GATE_PROVIDER_UID"
     private const val PREF_THREADS_GATE_HCM_PROVIDER_UID = "PREF_THREADS_GATE_HCM_PROVIDER_UID"
     private const val PREF_THEME = "PREF_THEME"
+    private const val PREF_SERVERS_NAME = "SERVERS_PREFS"
+    private const val PREF_CURRENT_SERVER = "PREF_CURRENT_SERVER"
 
     @JvmStatic
     fun storeCards(ctx: Context?, cards: List<Card?>?) {
@@ -87,5 +89,37 @@ object PrefUtils {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx)
         val theme = sharedPreferences.getString(PREF_THEME, null) ?: ""
         return ChatDesign.enumOf(ctx, theme)
+    }
+
+    @JvmStatic
+    fun addServers(servers: Map<String, String>) {
+        val context = Config.instance.context
+        val prefsEditor = context.getSharedPreferences(PREF_SERVERS_NAME, Context.MODE_PRIVATE).edit()
+        servers.forEach { prefsEditor.putString(it.key, it.value) }
+        prefsEditor.commit()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun getAllServers(): Map<String, String> {
+        val context = Config.instance.context
+        return context
+            .getSharedPreferences(PREF_SERVERS_NAME, Context.MODE_PRIVATE)
+            .all as? Map<String, String> ?: HashMap()
+    }
+
+    @JvmStatic
+    fun setCurrentServer(currentServerName: String) {
+        PreferenceManager
+            .getDefaultSharedPreferences(Config.instance.context)
+            .edit()
+            .putString(PREF_CURRENT_SERVER, currentServerName)
+            .commit()
+    }
+
+    @JvmStatic
+    fun getCurrentServer(): String {
+        return PreferenceManager
+            .getDefaultSharedPreferences(Config.instance.context)
+            .getString(PREF_CURRENT_SERVER, "") ?: ""
     }
 }
