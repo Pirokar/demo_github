@@ -53,7 +53,7 @@
     <string name="threads_request_to_resolve_thread_close">Нет</string>
     <string name="threads_request_to_resolve_thread_open">Да</string>
 
-    <string name="threads_push_title">@string/app_name1</string>
+    <string name="threads_push_title">Edna Threads Demo</string>
 
 
     <!-- Альтернативный дизайн -->
