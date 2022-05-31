@@ -76,5 +76,6 @@
     <string name="login">Залогиниться</string>
 
     <string name="alt_loading">Загрузка чата…</string>
+    <string name="select_server">Выберите сервер</string>
 
 </resources>

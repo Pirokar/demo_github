@@ -23,9 +23,10 @@ import im.threads.ThreadsLib
 import im.threads.ThreadsLib.PendingIntentCreator
 import im.threads.android.R
 import im.threads.android.data.Card
+import im.threads.android.di.appModule
 import im.threads.android.push.HCMTokenRefresher.requestToken
 import im.threads.android.ui.BottomNavigationActivity
-import im.threads.android.ui.DeveloperOptionsActivity
+import im.threads.android.ui.developer_options.DeveloperOptionsActivity
 import im.threads.android.utils.PrefUtils.getCards
 import im.threads.android.utils.PrefUtils.getTheme
 import im.threads.android.utils.PrefUtils.getTransportConfig
@@ -35,6 +36,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import okhttp3.Interceptor
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class ThreadsDemoApplication : MultiDexApplication() {
     private var disposable: Disposable? = null
@@ -42,6 +45,11 @@ class ThreadsDemoApplication : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
+
+        startKoin {
+            androidContext(applicationContext)
+            modules(appModule)
+        }
 
         disposable = Completable.fromAction { requestToken(this) }
             .subscribeOn(Schedulers.io())
@@ -152,7 +160,6 @@ class ThreadsDemoApplication : MultiDexApplication() {
         @JvmStatic
         val unreadMessagesSubject = BehaviorSubject.create<Int>()
         @JvmStatic
-        var appContext: Context? = null
-            private set
+        lateinit var appContext: Context
     }
 }

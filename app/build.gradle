@@ -103,6 +103,7 @@ android {
 
     buildFeatures {
         dataBinding = true
+        viewBinding true
     }
 
     applicationVariants.all { variant ->
@@ -149,6 +150,9 @@ dependencies {
     debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
     releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
     releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+
+    // Koin main features for Android
+    implementation "io.insert-koin:koin-android:$koin_version"
 
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
