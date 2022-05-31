@@ -68,7 +68,6 @@ object PrefUtils {
                 ?: return null
         val threadsGateHCMProviderUid =
             sharedPreferences.getString(PREF_THREADS_GATE_HCM_PROVIDER_UID, null)
-                ?: return null
         return TransportConfig(
             baseUrl = baseUrl,
             threadsGateUrl = threadsGateUrl,
@@ -92,34 +91,32 @@ object PrefUtils {
     }
 
     @JvmStatic
-    fun addServers(servers: Map<String, String>) {
-        val context = Config.instance.context
+    fun addServers(context: Context, servers: Map<String, String>) {
         val prefsEditor = context.getSharedPreferences(PREF_SERVERS_NAME, Context.MODE_PRIVATE).edit()
         servers.forEach { prefsEditor.putString(it.key, it.value) }
         prefsEditor.commit()
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getAllServers(): Map<String, String> {
-        val context = Config.instance.context
+    fun getAllServers(context: Context): Map<String, String> {
         return context
             .getSharedPreferences(PREF_SERVERS_NAME, Context.MODE_PRIVATE)
             .all as? Map<String, String> ?: HashMap()
     }
 
     @JvmStatic
-    fun setCurrentServer(currentServerName: String) {
+    fun setCurrentServer(context: Context, currentServerName: String) {
         PreferenceManager
-            .getDefaultSharedPreferences(Config.instance.context)
+            .getDefaultSharedPreferences(context)
             .edit()
             .putString(PREF_CURRENT_SERVER, currentServerName)
             .commit()
     }
 
     @JvmStatic
-    fun getCurrentServer(): String {
+    fun getCurrentServer(context: Context): String {
         return PreferenceManager
-            .getDefaultSharedPreferences(Config.instance.context)
+            .getDefaultSharedPreferences(context)
             .getString(PREF_CURRENT_SERVER, "") ?: ""
     }
 }

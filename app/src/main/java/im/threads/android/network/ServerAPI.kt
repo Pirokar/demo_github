@@ -3,8 +3,9 @@ package im.threads.android.network
 import android.text.TextUtils
 import android.util.Log
 import com.pandulapeter.beagle.logOkHttp.BeagleOkHttpLogger
-import im.threads.android.R
 import im.threads.android.core.ThreadsDemoApplication.Companion.appContext
+import im.threads.android.use_cases.developer_options.DeveloperOptionsInteractor
+import im.threads.android.use_cases.developer_options.DeveloperOptionsUseCase
 import im.threads.internal.Config
 import im.threads.internal.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
@@ -20,10 +21,13 @@ import javax.net.ssl.SSLSession
 internal object ServerAPI {
     private val TAG = ServerAPI::class.java.simpleName
     private var serverAPI: IServerAPI? = null
+
+    private val developerOptions: DeveloperOptionsUseCase = DeveloperOptionsInteractor(appContext)
+
     @JvmStatic
     val aPI: IServerAPI?
         get() {
-            val serverBaseUrl = appContext!!.getString(R.string.serverBaseUrl)
+            val serverBaseUrl = developerOptions.getCurrentServer().serverBaseUrl
             return if (TextUtils.isEmpty(serverBaseUrl)) {
                 Log.w(TAG, "Server base url is empty")
                 null

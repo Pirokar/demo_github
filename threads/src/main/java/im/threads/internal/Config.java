@@ -260,10 +260,7 @@ public final class Config {
         if (ConfigBuilder.TransportType.MFMS_PUSH == transportType) {
             throw new MetaConfigurationException("MFMS push transport is not supported anymore");
         }
-        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
-                ? providedThreadsGateUrl
-                : MetaDataUtils.getThreadsGateUrl(this.context);
-        if (TextUtils.isEmpty(threadsGateUrl)) {
+        if (TextUtils.isEmpty(providedThreadsGateUrl)) {
             throw new MetaConfigurationException("Threads gate url is not set");
         }
         String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
@@ -275,7 +272,7 @@ public final class Config {
         if (TextUtils.isEmpty(threadsGateProviderUid)) {
             throw new MetaConfigurationException("Threads gate provider uid is not set");
         }
-        return new ThreadsGateTransport(threadsGateUrl,
+        return new ThreadsGateTransport(providedThreadsGateUrl,
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
                 isDebugLoggingEnabled,

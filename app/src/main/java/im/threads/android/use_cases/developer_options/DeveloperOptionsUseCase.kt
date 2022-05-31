@@ -12,7 +12,8 @@ interface DeveloperOptionsUseCase {
     val gpbConfig: ServerConfig
     val prodConfig: ServerConfig
 
-    fun getCurrentServer(): ServerConfig?
+    fun isServerNotSet(): Boolean
+    fun makeDefaultInit()
+    fun getCurrentServer(): ServerConfig
     fun setCurrentServer(serverName: String)
-    fun addExistingServers()
 }

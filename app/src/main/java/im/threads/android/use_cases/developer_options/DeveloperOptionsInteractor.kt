@@ -1,12 +1,14 @@
 package im.threads.android.use_cases.developer_options
 
+import android.content.Context
 import com.google.gson.Gson
 import im.threads.android.data.ServerConfig
+import im.threads.android.data.TransportConfig
 import im.threads.android.utils.PrefUtils
 import im.threads.android.utils.fromJson
 import im.threads.android.utils.toJson
 
-class DeveloperOptionsInteractor : DeveloperOptionsUseCase {
+class DeveloperOptionsInteractor(private val context: Context) : DeveloperOptionsUseCase {
     override val mobile1Config = ServerConfig(
         "Mobile 1",
         "http://datastore.mobile1.chc.dte/",
@@ -80,16 +82,33 @@ class DeveloperOptionsInteractor : DeveloperOptionsUseCase {
         true
     )
 
-    override fun getCurrentServer(): ServerConfig? {
-        val preferencesMap = PrefUtils.getAllServers()
-        val serverPreference = preferencesMap[PrefUtils.getCurrentServer()]
+    override fun isServerNotSet() = getCurrentServer() == null
 
-        return preferencesMap[serverPreference]?.let { Gson().fromJson(it) }
+    override fun makeDefaultInit() {
+        addExistingServers()
+        setCurrentServer(mobile1Config.name)
+        PrefUtils.saveTransportConfig(
+            context,
+            TransportConfig(
+                mobile1Config.serverBaseUrl,
+                threadsGateUrl = mobile1Config.threadsGateUrl,
+                threadsGateProviderUid = mobile1Config.threadsGateProviderUid
+            )
+        )
     }
 
-    override fun setCurrentServer(serverName: String) = PrefUtils.setCurrentServer(serverName)
+    override fun getCurrentServer(): ServerConfig {
+        val preferencesMap = PrefUtils.getAllServers(context)
+        val serverPreference = preferencesMap[PrefUtils.getCurrentServer(context)]
 
-    override fun addExistingServers() {
+        return preferencesMap[serverPreference]?.let { Gson().fromJson(it) } ?: mobile1Config
+    }
+
+    override fun setCurrentServer(serverName: String) {
+        PrefUtils.setCurrentServer(context, serverName)
+    }
+
+    private fun addExistingServers() {
         val hashMap = HashMap<String, String>()
         hashMap[mobile1Config.name] = mobile1Config.toJson()
         hashMap[mobile2Config.name] = mobile2Config.toJson()
@@ -100,6 +119,6 @@ class DeveloperOptionsInteractor : DeveloperOptionsUseCase {
         hashMap[gpbConfig.name] = gpbConfig.toJson()
         hashMap[prodConfig.name] = prodConfig.toJson()
 
-        PrefUtils.addServers(hashMap)
+        PrefUtils.addServers(context, hashMap)
     }
 }

@@ -27,6 +27,8 @@ import im.threads.android.di.appModule
 import im.threads.android.push.HCMTokenRefresher.requestToken
 import im.threads.android.ui.BottomNavigationActivity
 import im.threads.android.ui.developer_options.DeveloperOptionsActivity
+import im.threads.android.use_cases.developer_options.DeveloperOptionsInteractor
+import im.threads.android.use_cases.developer_options.DeveloperOptionsUseCase
 import im.threads.android.utils.PrefUtils.getCards
 import im.threads.android.utils.PrefUtils.getTheme
 import im.threads.android.utils.PrefUtils.getTransportConfig
@@ -41,15 +43,19 @@ import org.koin.core.context.startKoin
 
 class ThreadsDemoApplication : MultiDexApplication() {
     private var disposable: Disposable? = null
+    private lateinit var developerOptions: DeveloperOptionsUseCase
 
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
+        developerOptions = DeveloperOptionsInteractor(appContext)
 
         startKoin {
             androidContext(applicationContext)
             modules(appModule)
         }
+
+        checkCurrentServer()
 
         disposable = Completable.fromAction { requestToken(this) }
             .subscribeOn(Schedulers.io())
@@ -111,6 +117,12 @@ class ThreadsDemoApplication : MultiDexApplication() {
     override fun onTerminate() {
         super.onTerminate()
         disposable?.dispose()
+    }
+
+    private fun checkCurrentServer() {
+        if (developerOptions.isServerNotSet()) {
+            developerOptions.makeDefaultInit()
+        }
     }
 
     private class CustomPendingIntentCreator : PendingIntentCreator {
