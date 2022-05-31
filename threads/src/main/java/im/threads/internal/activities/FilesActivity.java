@@ -89,9 +89,7 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
             }
         }
         setContentView(R.layout.activity_files_and_media);
-        mToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow), style);
         if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
             mFilesAndMediaController = FilesAndMediaController.getInstance();
             getSupportFragmentManager().beginTransaction().add(mFilesAndMediaController, TAG).commit();
@@ -153,6 +151,17 @@ public final class FilesActivity extends BaseActivity implements FilesAndMediaAd
             }
         });
         setActivityStyle(Config.instance.getChatStyle());
+    }
+
+    private void initToolbar(Toolbar toolbar, View toolbarShadow, ChatStyle style) {
+        mToolbar = toolbar;
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        boolean isShadowVisible = getResources().getBoolean(style.isChatTitleShadowVisible);
+        toolbarShadow.setVisibility(isShadowVisible ? View.VISIBLE : View.INVISIBLE);
+        if (!isShadowVisible) {
+            toolbar.setElevation(0);
+        }
     }
 
     @Override

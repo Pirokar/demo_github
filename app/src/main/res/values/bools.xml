@@ -2,4 +2,5 @@
 <resources>
     <bool name="alt_threads_chat_is_light_status_bar">true</bool>
     <bool name="alt_threads_chat_fixed_chat_title">true</bool>
+    <bool name="alt_threads_chat_title_shadow_is_visible">false</bool>
 </resources>

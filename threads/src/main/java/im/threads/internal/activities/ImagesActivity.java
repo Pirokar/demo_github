@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -61,7 +62,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setContentView(R.layout.activity_images);
         mViewPager = findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
-        initToolbar(findViewById(R.id.toolbar));
+        initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow));
         style = Config.instance.getChatStyle();
         compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
                 .doOnSuccess(data -> {
@@ -91,7 +92,7 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         );
     }
 
-    private void initToolbar(Toolbar toolbar) {
+    private void initToolbar(Toolbar toolbar, View toolbarShadow) {
         setSupportActionBar(toolbar);
         Drawable drawable = AppCompatResources.getDrawable(this,
                 R.drawable.ic_arrow_back_white_24dp);
@@ -103,6 +104,11 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         }
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         toolbar.setTitle("");
+        boolean isShadowVisible = getResources().getBoolean(style.isChatTitleShadowVisible);
+        toolbarShadow.setVisibility(isShadowVisible ? View.VISIBLE : View.INVISIBLE);
+        if (!isShadowVisible) {
+            toolbar.setElevation(0);
+        }
     }
 
     @Override
