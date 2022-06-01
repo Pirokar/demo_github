@@ -77,5 +77,6 @@
 
     <string name="alt_loading">Загрузка чата…</string>
     <string name="select_server">Выберите сервер</string>
+    <string name="add_server">Добавить сервер</string>
 
 </resources>

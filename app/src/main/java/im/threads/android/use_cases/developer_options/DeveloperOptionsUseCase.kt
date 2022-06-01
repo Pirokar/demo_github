@@ -16,5 +16,6 @@ interface DeveloperOptionsUseCase {
     fun makeDefaultInit()
     fun getCurrentServer(): ServerConfig
     fun setCurrentServer(serverName: String)
+    fun getServers(): List<ServerConfig>
     fun addServer(serverConfig: ServerConfig)
 }

@@ -1,6 +1,7 @@
 package im.threads.android.use_cases.developer_options
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import im.threads.android.data.ServerConfig
 import im.threads.android.data.TransportConfig
@@ -9,6 +10,8 @@ import im.threads.android.utils.fromJson
 import im.threads.android.utils.toJson
 
 class DeveloperOptionsInteractor(private val context: Context) : DeveloperOptionsUseCase {
+    private val TAG = "DeveloperOptions"
+
     override val mobile1Config = ServerConfig(
         "Mobile 1",
         "http://datastore.mobile1.chc.dte/",
@@ -38,9 +41,9 @@ class DeveloperOptionsInteractor(private val context: Context) : DeveloperOption
 
     override val mobile4Config = ServerConfig(
         "Mobile 4",
-        "http://datastore.mobile4.chc.dte/",
-        "http://arm.mobile4.chc.dte",
-        "http://tg.mobile4.chc.dte/socket",
+        "https://mobile4.dev.flex.mfms.ru",
+        "https://mobile4.dev.flex.mfms.ru",
+        "wss://mobile4.dev.flex.mfms.ru/gate/socket",
         "MOBILE4_HwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkMz65",
         false
     )
@@ -100,7 +103,23 @@ class DeveloperOptionsInteractor(private val context: Context) : DeveloperOption
     override fun getCurrentServer() = getLatestServer() ?: mobile1Config
 
     override fun setCurrentServer(serverName: String) {
-        PrefUtils.setCurrentServer(context, serverName)
+        getServers().firstOrNull { it.name == serverName }?.let { serverConfig ->
+            PrefUtils.saveTransportConfig(
+                context,
+                TransportConfig(
+                    serverConfig.serverBaseUrl,
+                    threadsGateUrl = serverConfig.threadsGateUrl,
+                    threadsGateProviderUid = serverConfig.threadsGateProviderUid
+                )
+            )
+            PrefUtils.setCurrentServer(context, serverName)
+        } ?: Log.e(TAG, "Cannot set server!")
+    }
+
+    override fun getServers(): List<ServerConfig> {
+        return PrefUtils
+            .getAllServers(context)
+            .map { Gson().fromJson<ServerConfig>(it.value) }
     }
 
     override fun addServer(serverConfig: ServerConfig) {
@@ -124,8 +143,8 @@ class DeveloperOptionsInteractor(private val context: Context) : DeveloperOption
 
     private fun getLatestServer(): ServerConfig? {
         val preferencesMap = PrefUtils.getAllServers(context)
-        val serverPreference = preferencesMap[PrefUtils.getCurrentServer(context)]
-
-        return preferencesMap[serverPreference]?.let { Gson().fromJson(it) }
+        return preferencesMap[PrefUtils.getCurrentServer(context)]?.let {
+            Gson().fromJson<ServerConfig>(it)
+        }
     }
 }

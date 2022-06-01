@@ -13,11 +13,11 @@ import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
 import com.pandulapeter.beagle.logOkHttp.BeagleOkHttpLogger
 import com.pandulapeter.beagle.modules.AppInfoButtonModule
 import com.pandulapeter.beagle.modules.BugReportButtonModule
-import com.pandulapeter.beagle.modules.DeveloperOptionsButtonModule
 import com.pandulapeter.beagle.modules.DeviceInfoModule
 import com.pandulapeter.beagle.modules.KeylineOverlaySwitchModule
 import com.pandulapeter.beagle.modules.LifecycleLogListModule
 import com.pandulapeter.beagle.modules.NetworkLogListModule
+import com.pandulapeter.beagle.modules.TextModule
 import im.threads.ConfigBuilder
 import im.threads.ThreadsLib
 import im.threads.ThreadsLib.PendingIntentCreator
@@ -95,9 +95,10 @@ class ThreadsDemoApplication : MultiDexApplication() {
         )
         Beagle.set(
             AppInfoButtonModule(getString(R.string.about_app).toText()),
-            DeveloperOptionsButtonModule(
-                getString(R.string.developer_options).toText(),
-                onButtonPressed = {
+            TextModule(
+                getString(R.string.developer_options),
+                TextModule.Type.BUTTON,
+                onItemSelected = {
                     val intent = Intent(
                         this, DeveloperOptionsActivity::class.java
                     ).apply {

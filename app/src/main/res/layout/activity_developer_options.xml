@@ -10,20 +10,37 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:text="@string/select_server"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:layout_marginTop="@dimen/activity_vertical_margin"/>
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:textColor="@android:color/black"
+                android:text="@string/select_server"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical" />
+
+            <Button
+                android:id="@+id/addServerBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:text="@string/add_server"/>
+
+        </FrameLayout>
 
         <RadioGroup
             android:id="@+id/serversRadioButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginEnd="@dimen/activity_horizontal_margin" />
