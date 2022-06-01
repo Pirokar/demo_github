@@ -231,10 +231,6 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         EditCardDialog.open(this, card)
     }
 
-    private fun showEditTransportConfigDialog() {
-        EditTransportConfigDialog.open(this)
-    }
-
     fun sendExampleMessage() {
         val view = findViewById<View>(android.R.id.content)
         view.isDrawingCacheEnabled = true
@@ -340,9 +336,8 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
             showEditCardDialog()
             return true
         }
-        if (id == R.id.edit_transport_config) {
+        if (id == R.id.open_settings) {
             Beagle.show()
-            // showEditTransportConfigDialog()
             return true
         }
         return super.onOptionsItemSelected(item)

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jakewharton.processphoenix.ProcessPhoenix
 import im.threads.android.data.ServerName
 import im.threads.android.databinding.ActivityDeveloperOptionsBinding
+import im.threads.android.ui.EditTransportConfigDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DeveloperOptionsActivity : AppCompatActivity() {
@@ -22,6 +23,7 @@ class DeveloperOptionsActivity : AppCompatActivity() {
         subscribeForServerChanges()
         subscribeForRestartApp()
         setOnClickForActivateServer()
+        setOnClickForChangeServer()
         viewModel.fetchServerNames()
     }
 
@@ -49,6 +51,12 @@ class DeveloperOptionsActivity : AppCompatActivity() {
 
     private fun setOnClickForActivateServer() = with(binding) {
         activateServerBtn.setOnClickListener { viewModel.onActivateServerClicked() }
+    }
+
+    private fun setOnClickForChangeServer() = with(binding) {
+        editCurrentServerBtn.setOnClickListener {
+            EditTransportConfigDialog.open(this@DeveloperOptionsActivity)
+        }
     }
 
     private fun fillServerListView(serverList: List<ServerName>) = with(binding) {
