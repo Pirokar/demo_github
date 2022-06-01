@@ -82,7 +82,7 @@ class DeveloperOptionsInteractor(private val context: Context) : DeveloperOption
         true
     )
 
-    override fun isServerNotSet() = getCurrentServer() == null
+    override fun isServerNotSet() = getLatestServer() == null
 
     override fun makeDefaultInit() {
         addExistingServers()
@@ -97,28 +97,35 @@ class DeveloperOptionsInteractor(private val context: Context) : DeveloperOption
         )
     }
 
-    override fun getCurrentServer(): ServerConfig {
-        val preferencesMap = PrefUtils.getAllServers(context)
-        val serverPreference = preferencesMap[PrefUtils.getCurrentServer(context)]
-
-        return preferencesMap[serverPreference]?.let { Gson().fromJson(it) } ?: mobile1Config
-    }
+    override fun getCurrentServer() = getLatestServer() ?: mobile1Config
 
     override fun setCurrentServer(serverName: String) {
         PrefUtils.setCurrentServer(context, serverName)
     }
 
-    private fun addExistingServers() {
-        val hashMap = HashMap<String, String>()
-        hashMap[mobile1Config.name] = mobile1Config.toJson()
-        hashMap[mobile2Config.name] = mobile2Config.toJson()
-        hashMap[mobile3Config.name] = mobile3Config.toJson()
-        hashMap[mobile4Config.name] = mobile4Config.toJson()
-        hashMap[amurtigerConfig.name] = amurtigerConfig.toJson()
-        hashMap[beta3Config.name] = beta3Config.toJson()
-        hashMap[gpbConfig.name] = gpbConfig.toJson()
-        hashMap[prodConfig.name] = prodConfig.toJson()
+    override fun addServer(serverConfig: ServerConfig) {
+        val map = hashMapOf(Pair(serverConfig.name, serverConfig.toJson()))
+        PrefUtils.addServers(context, map)
+    }
 
+    private fun addExistingServers() {
+        val hashMap = hashMapOf(
+            Pair(mobile1Config.name, mobile1Config.toJson()),
+            Pair(mobile2Config.name, mobile2Config.toJson()),
+            Pair(mobile3Config.name, mobile3Config.toJson()),
+            Pair(mobile4Config.name, mobile4Config.toJson()),
+            Pair(amurtigerConfig.name, amurtigerConfig.toJson()),
+            Pair(beta3Config.name, beta3Config.toJson()),
+            Pair(gpbConfig.name, gpbConfig.toJson()),
+            Pair(prodConfig.name, prodConfig.toJson())
+        )
         PrefUtils.addServers(context, hashMap)
+    }
+
+    private fun getLatestServer(): ServerConfig? {
+        val preferencesMap = PrefUtils.getAllServers(context)
+        val serverPreference = preferencesMap[PrefUtils.getCurrentServer(context)]
+
+        return preferencesMap[serverPreference]?.let { Gson().fromJson(it) }
     }
 }
