@@ -14,6 +14,7 @@ interface DeveloperOptionsUseCase {
 
     fun isServerNotSet(): Boolean
     fun makeDefaultInit()
+    fun setServerAsChanged()
     fun getCurrentServer(): ServerConfig
     fun setCurrentServer(serverName: String)
     fun getServers(): List<ServerConfig>

@@ -29,9 +29,9 @@ import im.threads.android.ui.BottomNavigationActivity
 import im.threads.android.ui.developer_options.DeveloperOptionsActivity
 import im.threads.android.use_cases.developer_options.DeveloperOptionsInteractor
 import im.threads.android.use_cases.developer_options.DeveloperOptionsUseCase
-import im.threads.android.utils.PrefUtils.getCards
-import im.threads.android.utils.PrefUtils.getTheme
-import im.threads.android.utils.PrefUtils.getTransportConfig
+import im.threads.android.utils.PrefUtilsApp.getCards
+import im.threads.android.utils.PrefUtilsApp.getTheme
+import im.threads.android.utils.PrefUtilsApp.getTransportConfig
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable

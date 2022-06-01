@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment
 import com.jakewharton.processphoenix.ProcessPhoenix
 import im.threads.android.data.TransportConfig
 import im.threads.android.databinding.DialogEditTransportConfigBinding
-import im.threads.android.utils.PrefUtils
+import im.threads.android.utils.PrefUtilsApp
 import im.threads.internal.utils.MetaDataUtils
 
 /**
@@ -37,7 +37,7 @@ class EditTransportConfigDialog : DialogFragment() {
         binding = DialogEditTransportConfigBinding.inflate(inflater)
         binding?.apply {
             saveButton.setOnClickListener {
-                PrefUtils.saveTransportConfig(
+                PrefUtilsApp.saveTransportConfig(
                     requireContext(),
                     TransportConfig(
                         baseUrl = baseUrl.text.toString(),
@@ -55,7 +55,7 @@ class EditTransportConfigDialog : DialogFragment() {
                 dismiss()
             }
             val context = requireContext()
-            val transportConfig = PrefUtils.getTransportConfig(context)
+            val transportConfig = PrefUtilsApp.getTransportConfig(context)
             if (transportConfig != null) {
                 baseUrl.setText(transportConfig.baseUrl)
                 threadsGateUrl.setText(transportConfig.threadsGateUrl)

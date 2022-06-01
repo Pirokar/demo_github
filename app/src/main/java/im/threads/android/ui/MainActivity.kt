@@ -28,9 +28,10 @@ import im.threads.android.utils.CardsSnapHelper
 import im.threads.android.utils.ChatDesign
 import im.threads.android.utils.ChatStyleBuilderHelper
 import im.threads.android.utils.PermissionDescriptionDialogStyleBuilderHelper
-import im.threads.android.utils.PrefUtils.getCards
-import im.threads.android.utils.PrefUtils.getTheme
-import im.threads.android.utils.PrefUtils.storeCards
+import im.threads.android.utils.PrefUtilsApp
+import im.threads.android.utils.PrefUtilsApp.getCards
+import im.threads.android.utils.PrefUtilsApp.getTheme
+import im.threads.android.utils.PrefUtilsApp.storeCards
 import im.threads.internal.model.CampaignMessage
 import im.threads.internal.utils.PrefUtils
 import im.threads.internal.utils.ThreadsLogger
@@ -101,9 +102,17 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
             }
         })
         binding.cardsView.adapter = cardsAdapter
+        checkIsServerChanged()
         showCards(getCards(this))
         intent?.data?.let {
             Toast.makeText(this, "intent contains data: $it", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkIsServerChanged() {
+        if (PrefUtilsApp.getIsServerChanged(applicationContext)) {
+            storeCards(applicationContext, listOf())
+            PrefUtilsApp.setIsServerChanged(applicationContext, false)
         }
     }
 

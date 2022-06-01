@@ -8,7 +8,7 @@ import im.threads.android.data.Card
 import im.threads.android.data.TransportConfig
 import im.threads.internal.Config
 
-object PrefUtils {
+object PrefUtilsApp {
     private const val TAG = "DemoAppPrefUtils "
     private const val PREF_CARDS_LIST = "PREF_CARDS_LIST"
     private const val PREF_SERVER_BASE_URL = "PREF_SERVER_BASE_URL"
@@ -18,6 +18,7 @@ object PrefUtils {
     private const val PREF_THEME = "PREF_THEME"
     private const val PREF_SERVERS_NAME = "SERVERS_PREFS"
     private const val PREF_CURRENT_SERVER = "PREF_CURRENT_SERVER"
+    private const val PREF_IS_SERVER_CHANGED = "PREF_IS_SERVER_CHANGED"
 
     @JvmStatic
     fun storeCards(ctx: Context?, cards: List<Card?>?) {
@@ -118,5 +119,21 @@ object PrefUtils {
         return PreferenceManager
             .getDefaultSharedPreferences(context)
             .getString(PREF_CURRENT_SERVER, "") ?: ""
+    }
+
+    @JvmStatic
+    fun setIsServerChanged(context: Context, isChanged: Boolean) {
+        PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .edit()
+            .putBoolean(PREF_IS_SERVER_CHANGED, isChanged)
+            .commit()
+    }
+
+    @JvmStatic
+    fun getIsServerChanged(context: Context): Boolean {
+        return PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .getBoolean(PREF_IS_SERVER_CHANGED, false)
     }
 }
