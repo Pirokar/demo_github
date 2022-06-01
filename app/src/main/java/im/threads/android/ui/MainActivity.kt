@@ -269,7 +269,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         }
     }
 
-    fun prepareBottomNavigationActivityIntent(appMarker: String): Intent? {
+    private fun prepareBottomNavigationActivityIntent(appMarker: String): Intent? {
         val clientCards: List<Card> = getCards(this)
         var pushClientCard: Card? = null
         for (clientCard in clientCards) {
@@ -299,7 +299,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         startActivity(intent)
     }
 
-    fun getTestCampaignMessage(): CampaignMessage {
+    private fun getTestCampaignMessage(): CampaignMessage {
         return CampaignMessage(
             "Test push message",
             "Push sender",

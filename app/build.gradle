@@ -91,7 +91,7 @@ dependencies {
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
 
     //Beagle
-    implementation "io.github.pandulapeter.beagle:ui-activity:$beagleVersion"
+    implementation "io.github.pandulapeter.beagle:ui-drawer:$beagleVersion"
     debugImplementation "io.github.pandulapeter.beagle:log-crash-noop:$beagleVersion"
     releaseImplementation  "io.github.pandulapeter.beagle:log-crash:$beagleVersion"
     api "io.github.pandulapeter.beagle:log-okhttp:$beagleVersion"

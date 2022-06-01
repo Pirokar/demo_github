@@ -7,6 +7,7 @@ import com.hadilq.liveevent.LiveEvent
 import im.threads.android.data.ServerName
 import im.threads.android.use_cases.developer_options.DeveloperOptionsUseCase
 import kotlin.math.abs
+import kotlin.random.Random
 
 class DeveloperOptionsViewModel(private val devOptions: DeveloperOptionsUseCase) : ViewModel() {
     val serverNamesLiveData: LiveData<List<ServerName>> get() = _serverNamesLiveData
@@ -35,8 +36,7 @@ class DeveloperOptionsViewModel(private val devOptions: DeveloperOptionsUseCase)
     }
 
     fun getIdForString(string: String): Int {
-        val intMax = 2147483647
-        val id = abs((0..intMax).random())
+        val id = abs((0..Int.MAX_VALUE).random())
         stringIds[id] = string
 
         return id

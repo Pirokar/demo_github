@@ -7,20 +7,18 @@ import android.text.TextUtils
 import androidx.multidex.MultiDexApplication
 import com.edna.android.push_lite.PushController
 import com.pandulapeter.beagle.Beagle
+import com.pandulapeter.beagle.common.configuration.Appearance
 import com.pandulapeter.beagle.common.configuration.Behavior
+import com.pandulapeter.beagle.common.configuration.Text
 import com.pandulapeter.beagle.common.configuration.toText
+import com.pandulapeter.beagle.common.contracts.BeagleListItemContract
 import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
 import com.pandulapeter.beagle.logOkHttp.BeagleOkHttpLogger
-import com.pandulapeter.beagle.modules.AppInfoButtonModule
-import com.pandulapeter.beagle.modules.BugReportButtonModule
-import com.pandulapeter.beagle.modules.DeviceInfoModule
-import com.pandulapeter.beagle.modules.KeylineOverlaySwitchModule
-import com.pandulapeter.beagle.modules.LifecycleLogListModule
-import com.pandulapeter.beagle.modules.NetworkLogListModule
-import com.pandulapeter.beagle.modules.TextModule
+import com.pandulapeter.beagle.modules.*
 import im.threads.ConfigBuilder
 import im.threads.ThreadsLib
 import im.threads.ThreadsLib.PendingIntentCreator
+import im.threads.android.BuildConfig
 import im.threads.android.R
 import im.threads.android.data.Card
 import im.threads.android.di.appModule
@@ -40,6 +38,9 @@ import io.reactivex.subjects.BehaviorSubject
 import okhttp3.Interceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import java.util.Timer
+import kotlin.concurrent.schedule
+import java.util.*
 
 class ThreadsDemoApplication : MultiDexApplication() {
     private var disposable: Disposable? = null
@@ -82,11 +83,25 @@ class ThreadsDemoApplication : MultiDexApplication() {
         }
 
         ThreadsLib.init(configBuilder)
+        configureDebugMenu()
+    }
+
+    private fun configureDebugMenu() {
         Beagle.initialize(
             this,
+            appearance = Appearance(
+                themeResourceId = R.style.DebugMenuTheme
+            ),
             behavior = Behavior(
                 bugReportingBehavior = Behavior.BugReportingBehavior(
-                    crashLoggers = listOf(BeagleCrashLogger)
+                    crashLoggers = listOf(BeagleCrashLogger),
+                    buildInformation = {
+                        listOf(
+                            "Version name".toText() to BuildConfig.VERSION_NAME,
+                            "Version code".toText() to BuildConfig.VERSION_CODE.toString(),
+                            "Application ID".toText() to BuildConfig.APPLICATION_ID
+                        )
+                    }
                 ),
                 networkLogBehavior = Behavior.NetworkLogBehavior(
                     networkLoggers = listOf(BeagleOkHttpLogger)
@@ -94,7 +109,12 @@ class ThreadsDemoApplication : MultiDexApplication() {
             )
         )
         Beagle.set(
-            AppInfoButtonModule(getString(R.string.about_app).toText()),
+            HeaderModule(
+                title = getString(R.string.app_name),
+                subtitle = BuildConfig.APPLICATION_ID,
+                text = "${BuildConfig.BUILD_TYPE} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+            ),
+            PaddingModule(size = PaddingModule.Size.LARGE),
             TextModule(
                 getString(R.string.developer_options),
                 TextModule.Type.BUTTON,
@@ -107,11 +127,34 @@ class ThreadsDemoApplication : MultiDexApplication() {
                     startActivity(intent)
                 }
             ),
+            BugReportButtonModule(),
+            ScreenCaptureToolboxModule(),
+            SingleSelectionListModule(
+                title = getString(R.string.developer_options),
+                items = listOf(
+                    MenuListItemContractImplementation("server 1"),
+                    MenuListItemContractImplementation("server 2"),
+                    MenuListItemContractImplementation("server 3"),
+                ),
+                isExpandedInitially = false,
+                isValuePersisted = true,
+                initiallySelectedItemId = "server 1",
+                onSelectionChanged = {  },
+            ),
+            DividerModule(),
+            TextModule("Logs", TextModule.Type.SECTION_HEADER),
             NetworkLogListModule(),
+            LogListModule(maxItemCount = 100),
             LifecycleLogListModule(),
+            DividerModule(),
+            TextModule("Debug", TextModule.Type.SECTION_HEADER),
+            AnimationDurationSwitchModule(),
             KeylineOverlaySwitchModule(),
             DeviceInfoModule(),
-            BugReportButtonModule(),
+            DeveloperOptionsButtonModule(),
+            PaddingModule(size = PaddingModule.Size.LARGE),
+            AppInfoButtonModule(getString(R.string.about_app).toText()),
+            ForceCrashButtonModule(),
         )
     }
 
@@ -151,7 +194,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
             } else {
                 // This is an example of creating pending intent for single-chat app
                 val clientCards = getCards(context)
-                if (!clientCards.isEmpty()) {
+                if (clientCards.isNotEmpty()) {
                     val (userId, clientData, appMarker1, clientIdSignature, authToken, authSchema) = clientCards[0]
                     return BottomNavigationActivity.createPendingIntent(
                         context,
@@ -167,6 +210,13 @@ class ThreadsDemoApplication : MultiDexApplication() {
             }
             return null
         }
+    }
+
+    data class MenuListItemContractImplementation(
+        private val name: CharSequence
+    ) : BeagleListItemContract {
+
+        override val title = name.toText()
     }
 
     companion object {
