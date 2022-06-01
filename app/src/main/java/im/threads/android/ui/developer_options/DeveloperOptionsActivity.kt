@@ -8,6 +8,8 @@ import com.jakewharton.processphoenix.ProcessPhoenix
 import im.threads.android.data.ServerName
 import im.threads.android.databinding.ActivityDeveloperOptionsBinding
 import im.threads.android.ui.EditTransportConfigDialog
+import im.threads.android.ui.add_server_dialog.AddServerDialog
+import im.threads.android.ui.add_server_dialog.AddServerDialogActions
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DeveloperOptionsActivity : AppCompatActivity() {
@@ -24,6 +26,7 @@ class DeveloperOptionsActivity : AppCompatActivity() {
         subscribeForRestartApp()
         setOnClickForActivateServer()
         setOnClickForChangeServer()
+        setOnClickForAddServer()
         viewModel.fetchServerNames()
     }
 
@@ -56,6 +59,17 @@ class DeveloperOptionsActivity : AppCompatActivity() {
     private fun setOnClickForChangeServer() = with(binding) {
         editCurrentServerBtn.setOnClickListener {
             EditTransportConfigDialog.open(this@DeveloperOptionsActivity)
+        }
+    }
+
+    private fun setOnClickForAddServer() = with(binding) {
+        addServerBtn.setOnClickListener {
+            val onServerAddedAction = object : AddServerDialogActions {
+                override fun onServerAdded() {
+                    viewModel.fetchServerNames()
+                }
+            }
+            AddServerDialog.open(this@DeveloperOptionsActivity, onServerAddedAction)
         }
     }
 
