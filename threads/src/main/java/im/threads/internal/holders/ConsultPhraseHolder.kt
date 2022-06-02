@@ -1,6 +1,5 @@
 package im.threads.internal.holders
 
-import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.text.SpannableString
@@ -109,10 +108,9 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         setTextColor(getColorInt(style.incomingMessageTimeColor))
     }
 
-    var context: Context
+    private val context = parent.context
 
     init {
-        context = parent.context
         itemView.findViewById<View>(R.id.bubble).apply {
             background =
                 AppCompatResources.getDrawable(
@@ -278,10 +276,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 mImage.setOnClickListener(imageClickListener)
                 Picasso.get()
                     .load(fileDescription.downloadPath)
-                    .error(style.imagePlaceholder)
-                    .fit()
-                    .centerCrop()
-                    .into(mImage)
+                    .into(getPicassoTargetForView(mImage, style.imagePlaceholder))
             } else {
                 fileRow.visibility = View.VISIBLE
                 ViewUtils.setClickListener(fileRow as ViewGroup, null as View.OnClickListener?)
