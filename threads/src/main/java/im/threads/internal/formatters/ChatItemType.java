@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 public enum ChatItemType {
     TYPING,
     ATTACHMENT_SETTINGS,
+    ATTACHMENT_UPDATED,
     // incoming
     SCHEDULE,
     SURVEY,

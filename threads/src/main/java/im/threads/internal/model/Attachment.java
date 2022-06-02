@@ -1,5 +1,7 @@
 package im.threads.internal.model;
 
+import android.text.TextUtils;
+
 public final class Attachment {
     private String result;
     private boolean isSelfie;
@@ -7,6 +9,8 @@ public final class Attachment {
     private AttachmentStateEnum state = AttachmentStateEnum.ANY;
     private ErrorStateEnum errorCode = ErrorStateEnum.ANY;
     private String errorMessage = "";
+    private String name;
+    private String type;
 
     public String getResult() {
         return result;
@@ -54,5 +58,29 @@ public final class Attachment {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getName() {
+        if(!TextUtils.isEmpty(name))
+            return name;
+        if(optional != null)
+            return optional.getName();
+        return null;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        if(!TextUtils.isEmpty(type))
+            return type;
+        if(optional != null)
+            return optional.getType();
+        return null;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
