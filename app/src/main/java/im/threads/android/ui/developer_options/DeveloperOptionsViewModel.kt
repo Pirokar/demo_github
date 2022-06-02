@@ -5,11 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
 import im.threads.android.data.ServerName
-import im.threads.android.use_cases.developer_options.DeveloperOptionsUseCase
+import im.threads.android.use_cases.developer_options.DevOptionsUseCase
 import kotlin.math.abs
-import kotlin.random.Random
 
-class DeveloperOptionsViewModel(private val devOptions: DeveloperOptionsUseCase) : ViewModel() {
+class DeveloperOptionsViewModel(private val devOptions: DevOptionsUseCase) : ViewModel() {
     val serverNamesLiveData: LiveData<List<ServerName>> get() = _serverNamesLiveData
     private val _serverNamesLiveData = MutableLiveData<List<ServerName>>()
     val serverChangedLiveData = LiveEvent<Boolean>()

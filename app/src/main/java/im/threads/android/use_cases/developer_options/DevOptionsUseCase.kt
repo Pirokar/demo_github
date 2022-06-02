@@ -2,7 +2,7 @@ package im.threads.android.use_cases.developer_options
 
 import im.threads.android.data.ServerConfig
 
-interface DeveloperOptionsUseCase {
+interface DevOptionsUseCase {
     val mobile1Config: ServerConfig
     val mobile2Config: ServerConfig
     val mobile3Config: ServerConfig
@@ -12,6 +12,7 @@ interface DeveloperOptionsUseCase {
     val gpbConfig: ServerConfig
     val prodConfig: ServerConfig
 
+    fun configureDebugMenu()
     fun isServerNotSet(): Boolean
     fun makeDefaultInit()
     fun setServerAsChanged()

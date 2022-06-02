@@ -337,7 +337,9 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
             return true
         }
         if (id == R.id.open_settings) {
-            Beagle.show()
+            if (!Beagle.hide()) {
+                Beagle.show()
+            }
             return true
         }
         return super.onOptionsItemSelected(item)
