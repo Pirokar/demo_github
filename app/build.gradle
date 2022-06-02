@@ -105,9 +105,6 @@ dependencies {
     // Koin main features for Android
     implementation "io.insert-koin:koin-android:$koin_version"
 
-    // Single live data
-    implementation "com.github.hadilq:live-event:$singlelivedata_version"
-
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }

@@ -14,8 +14,7 @@ import im.threads.android.data.Card
 import im.threads.android.di.appModule
 import im.threads.android.push.HCMTokenRefresher.requestToken
 import im.threads.android.ui.BottomNavigationActivity
-import im.threads.android.use_cases.developer_options.DevOptionsInteractor
-import im.threads.android.use_cases.developer_options.DevOptionsUseCase
+import im.threads.android.use_cases.developer_options.ServersSelectionUseCase
 import im.threads.android.utils.PrefUtilsApp.getCards
 import im.threads.android.utils.PrefUtilsApp.getTheme
 import im.threads.android.utils.PrefUtilsApp.getTransportConfig
@@ -25,17 +24,17 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import okhttp3.Interceptor
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class ThreadsDemoApplication : MultiDexApplication() {
     private var disposable: Disposable? = null
-    private lateinit var developerOptions: DevOptionsUseCase
+    private val developerOptions: ServersSelectionUseCase by inject()
 
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
-        developerOptions = DevOptionsInteractor(appContext)
 
         startKoin {
             androidContext(applicationContext)

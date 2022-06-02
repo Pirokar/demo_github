@@ -58,9 +58,6 @@
             android:label="@string/title_activity_bottom_navigation"
             android:theme="@style/BottomNavigationTheme"/>
 
-        <activity android:name=".ui.developer_options.DeveloperOptionsActivity"
-            android:theme="@style/ThreadsStyle"/>
-
         <service android:name=".push.CustomPushFcmIntentService"
             android:exported="false">
             <intent-filter>

@@ -2,11 +2,17 @@ package im.threads.android.use_cases.developer_options
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
+import com.jakewharton.processphoenix.ProcessPhoenix
 import com.pandulapeter.beagle.Beagle
 import com.pandulapeter.beagle.common.configuration.Appearance
 import com.pandulapeter.beagle.common.configuration.Behavior
+import com.pandulapeter.beagle.common.configuration.Placement
 import com.pandulapeter.beagle.common.configuration.toText
 import com.pandulapeter.beagle.common.contracts.BeagleListItemContract
 import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
@@ -32,13 +38,17 @@ import im.threads.android.R
 import im.threads.android.core.ThreadsDemoApplication
 import im.threads.android.data.ServerConfig
 import im.threads.android.data.TransportConfig
-import im.threads.android.ui.developer_options.DeveloperOptionsActivity
+import im.threads.android.ui.EditTransportConfigDialog
+import im.threads.android.ui.MainActivity
+import im.threads.android.ui.add_server_dialog.AddServerDialog
+import im.threads.android.ui.add_server_dialog.AddServerDialogActions
 import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.fromJson
 import im.threads.android.utils.toJson
 
-class DevOptionsInteractor(private val context: Context) : DevOptionsUseCase {
+class ServersSelectionInteractor(private val context: Context) : ServersSelectionUseCase {
     private val TAG = "DeveloperOptions"
+    private var isServersListInitialized = false
     private var currentServerName = ""
     private var servers = listOf<ServerMenuItem>()
 
@@ -141,48 +151,7 @@ class DevOptionsInteractor(private val context: Context) : DevOptionsUseCase {
                 }
             )
         )
-        Beagle.set(
-            HeaderModule(
-                title = getString(R.string.app_name),
-                subtitle = BuildConfig.APPLICATION_ID,
-                text = "${BuildConfig.BUILD_TYPE} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-            ),
-            PaddingModule(size = PaddingModule.Size.LARGE),
-            TextModule(
-                getString(R.string.developer_options),
-                TextModule.Type.BUTTON,
-                onItemSelected = {
-                    val intent = Intent(context, DeveloperOptionsActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-                    context.startActivity(intent)
-                }
-            ),
-            BugReportButtonModule(),
-            ScreenCaptureToolboxModule(),
-            SingleSelectionListModule(
-                title = getString(R.string.developer_options),
-                items = servers,
-                isExpandedInitially = false,
-                isValuePersisted = true,
-                initiallySelectedItemId = currentServerName,
-                onSelectionChanged = { onServerChanged(it) },
-            ),
-            DividerModule(),
-            TextModule("Logs", TextModule.Type.SECTION_HEADER),
-            NetworkLogListModule(),
-            LogListModule(maxItemCount = 100),
-            LifecycleLogListModule(),
-            DividerModule(),
-            TextModule("Debug", TextModule.Type.SECTION_HEADER),
-            AnimationDurationSwitchModule(),
-            KeylineOverlaySwitchModule(),
-            DeviceInfoModule(),
-            DeveloperOptionsButtonModule(),
-            PaddingModule(size = PaddingModule.Size.LARGE),
-            AppInfoButtonModule(getString(R.string.about_app).toText()),
-            ForceCrashButtonModule(),
-        )
+        setModulesToBeagle()
     }
 
     override fun isServerNotSet() = getLatestServer() == null
@@ -231,6 +200,75 @@ class DevOptionsInteractor(private val context: Context) : DevOptionsUseCase {
         PrefUtilsApp.addServers(context, map)
     }
 
+    override fun addUiDependedModulesToDebugMenu(activity: AppCompatActivity) {
+        val editTransportModule = TextModule(
+            getString(R.string.demo_change_current_server),
+            TextModule.Type.BUTTON,
+            onItemSelected = {
+                EditTransportConfigDialog.open(activity)
+            }
+        )
+        val paddingModule = PaddingModule(PaddingModule.Size.MEDIUM)
+        val addServerModule = TextModule(
+            getString(R.string.demo_add_server),
+            TextModule.Type.BUTTON,
+            onItemSelected = {
+                val onServerAddedAction = object : AddServerDialogActions {
+                    override fun onServerAdded() {
+                        fetchServerNames()
+                        setModulesToBeagle()
+                        addUiDependedModulesToDebugMenu(activity)
+                    }
+                }
+                AddServerDialog.open(activity, onServerAddedAction)
+            }
+        )
+        Beagle.add(
+            editTransportModule,
+            paddingModule,
+            addServerModule,
+            placement = Placement.Below(SINGLE_SELECTION_MODULE_ID)
+        )
+    }
+
+    private fun setModulesToBeagle() {
+        Beagle.set(
+            HeaderModule(
+                title = getCurrentServerTitle(),
+                subtitle = BuildConfig.APPLICATION_ID,
+                text = "${BuildConfig.BUILD_TYPE} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+            ),
+            PaddingModule(size = PaddingModule.Size.LARGE),
+            BugReportButtonModule(),
+            ScreenCaptureToolboxModule(),
+            DividerModule(),
+            TextModule(getString(R.string.demo_server_selection), TextModule.Type.SECTION_HEADER),
+            SingleSelectionListModule(
+                id = SINGLE_SELECTION_MODULE_ID,
+                title = currentServerName,
+                items = servers,
+                isExpandedInitially = false,
+                isValuePersisted = true,
+                initiallySelectedItemId = currentServerName,
+                onSelectionChanged = { onServerChanged(it) }
+            ),
+            DividerModule(),
+            TextModule("Logs", TextModule.Type.SECTION_HEADER),
+            NetworkLogListModule(),
+            LogListModule(maxItemCount = 100),
+            LifecycleLogListModule(),
+            DividerModule(),
+            TextModule("Debug", TextModule.Type.SECTION_HEADER),
+            AnimationDurationSwitchModule(),
+            KeylineOverlaySwitchModule(),
+            DeviceInfoModule(),
+            DeveloperOptionsButtonModule(),
+            PaddingModule(size = PaddingModule.Size.LARGE),
+            AppInfoButtonModule(getString(R.string.about_app).toText()),
+            ForceCrashButtonModule(),
+        )
+    }
+
     private fun addExistingServers() {
         val hashMap = hashMapOf(
             Pair(mobile1Config.name, mobile1Config.toJson()),
@@ -246,10 +284,21 @@ class DevOptionsInteractor(private val context: Context) : DevOptionsUseCase {
     }
 
     private fun onServerChanged(serverMenuItem: ServerMenuItem?) {
-        serverMenuItem?.let {
-            currentServerName = it.name.toString()
-            setCurrentServer(it.name.toString())
+        if (isServersListInitialized) {
+            serverMenuItem?.let {
+                currentServerName = it.name.toString()
+                setCurrentServer(it.name.toString())
+                Toast.makeText(
+                    context,
+                    getString(R.string.demo_restart_app_for_server_apply),
+                    Toast.LENGTH_SHORT
+                ).show()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    ProcessPhoenix.triggerRebirth(context, Intent(context, MainActivity::class.java))
+                }, 2000)
+            }
         }
+        isServersListInitialized = true
     }
 
     private fun getLatestServer(): ServerConfig? {
@@ -266,9 +315,15 @@ class DevOptionsInteractor(private val context: Context) : DevOptionsUseCase {
             .sortedBy { it.name.toString() }
     }
 
+    private fun getCurrentServerTitle() = "${getString(R.string.demo_server)}: $currentServerName"
+
     private fun getString(resId: Int) = context.getString(resId)
 
     data class ServerMenuItem(val name: CharSequence) : BeagleListItemContract {
         override val title = name.toText()
+    }
+
+    companion object {
+        private const val SINGLE_SELECTION_MODULE_ID = "singleSelectionModuleId"
     }
 }

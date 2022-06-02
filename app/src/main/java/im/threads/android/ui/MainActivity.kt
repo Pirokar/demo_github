@@ -23,6 +23,7 @@ import im.threads.android.ui.BottomNavigationActivity.ARG_NEEDS_SHOW_CHAT
 import im.threads.android.ui.CardsAdapter.CardActionListener
 import im.threads.android.ui.EditCardDialog.EditCardDialogActionsListener
 import im.threads.android.ui.YesNoDialog.YesNoDialogActionListener
+import im.threads.android.use_cases.developer_options.ServersSelectionUseCase
 import im.threads.android.utils.CardsLinearLayoutManager
 import im.threads.android.utils.CardsSnapHelper
 import im.threads.android.utils.ChatDesign
@@ -41,6 +42,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.koin.android.ext.android.inject
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -57,6 +59,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
     private lateinit var cardsAdapter: CardsAdapter
     private val cardsSnapHelper: CardsSnapHelper = CardsSnapHelper()
     private var cardForDelete: Card? = null
+    private val serverSelectionUseCase: ServersSelectionUseCase by inject()
 
     private val compositeDisposable = CompositeDisposable()
     private lateinit var socketResponseDisposable: Disposable
@@ -107,6 +110,7 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
         intent?.data?.let {
             Toast.makeText(this, "intent contains data: $it", Toast.LENGTH_SHORT).show()
         }
+        serverSelectionUseCase.addUiDependedModulesToDebugMenu(this)
     }
 
     private fun checkIsServerChanged() {

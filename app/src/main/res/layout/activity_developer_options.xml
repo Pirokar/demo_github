@@ -24,7 +24,7 @@
                 android:textSize="18sp"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:textColor="@android:color/black"
-                android:text="@string/select_server"
+                android:text="@string/demo_select_server"
                 android:textStyle="bold"
                 android:layout_gravity="center_vertical" />
 
@@ -35,7 +35,7 @@
                 android:layout_gravity="center_vertical|end"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:textColor="@android:color/black"
-                android:text="@string/add_server"/>
+                android:text="@string/demo_add_server"/>
 
         </FrameLayout>
 
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 tools:visibility="visible"
-                android:text="@string/activate_server"
+                android:text="@string/demo_activate_server"
                 android:textColor="@android:color/black"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 style="?android:attr/buttonBarButtonStyle" />
@@ -72,7 +72,7 @@
                 android:id="@+id/editCurrentServerBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/change_current_server"
+                android:text="@string/demo_change_current_server"
                 android:textColor="@android:color/black"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 style="?android:attr/buttonBarButtonStyle" />

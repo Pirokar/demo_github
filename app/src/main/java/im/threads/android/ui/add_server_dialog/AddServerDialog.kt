@@ -13,12 +13,12 @@ import androidx.fragment.app.DialogFragment
 import im.threads.android.R
 import im.threads.android.data.ServerConfig
 import im.threads.android.databinding.DialogAddServerBinding
-import im.threads.android.use_cases.developer_options.DevOptionsUseCase
+import im.threads.android.use_cases.developer_options.ServersSelectionUseCase
 import org.koin.android.ext.android.inject
 
 class AddServerDialog(private val callback: AddServerDialogActions) : DialogFragment() {
     private lateinit var binding: DialogAddServerBinding
-    private val devOptions: DevOptionsUseCase by inject()
+    private val devOptions: ServersSelectionUseCase by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
