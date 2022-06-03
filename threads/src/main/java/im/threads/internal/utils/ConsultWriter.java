@@ -16,6 +16,9 @@ public final class ConsultWriter {
     private static final String SEARCHING_CONSULT = "SEARCHING_CONSULT";
     private final SharedPreferences sharedPreferences;
 
+    /**
+     * @param sharedPreferences only secured shared preferences are allowed!
+     */
     public ConsultWriter(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
     }

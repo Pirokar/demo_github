@@ -135,6 +135,7 @@ dependencies {
     implementation "com.github.adrielcafe:AndroidAudioConverter:$rootProject.androidAudioConverterVersion"
 
     implementation "com.google.firebase:firebase-messaging:$fcmVersion"
+    implementation 'androidx.security:security-crypto:1.1.0-alpha03'
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"

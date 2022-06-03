@@ -5,19 +5,27 @@ import static im.threads.ConfigBuilder.TransportType.THREADS_GATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.ObjectsCompat;
 import androidx.preference.PreferenceManager;
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
 
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.security.GeneralSecurityException;
+import java.util.Map;
 import java.util.UUID;
 
+import im.threads.BuildConfig;
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.model.CampaignMessage;
@@ -60,18 +68,21 @@ public final class PrefUtils {
     private static final String DEVICE_UID = "DEVICE_UID";
     private static final String AUTH_TOKEN = "AUTH_TOKEN";
     private static final String AUTH_SCHEMA = "AUTH_SCHEMA";
-    private static final String MIGRATED = "MIGRATED";
     private static final String CLIENT_NOTIFICATION_DISPLAY_TYPE = "CLIENT_NOTIFICATION_DISPLAY_TYPE";
     private static final String THREAD_ID = "THREAD_ID";
     private static final String FILE_DESCRIPTION_DRAFT = "FILE_DESCRIPTION_DRAFT";
     private static final String CAMPAIGN_MESSAGE = "CAMPAIGN_MESSAGE";
+    private static final String PREF_ATTACHMENT_SETTINGS = "PREF_ATTACHMENT_SETTINGS";
 
     private static final String UNREAD_PUSH_COUNT = "UNREAD_PUSH_COUNT";
 
     private static final String STORE_NAME = "im.threads.internal.utils.PrefStore";
+    private static final String ENCRYPTED_STORE_NAME = "im.threads.internal.utils.EncryptedPrefStore";
 
     private PrefUtils() {
     }
+
+    private static SharedPreferences sharedPreferences;
 
     public static String getLastCopyText() {
         return getDefaultSharedPreferences().getString(LAST_COPY_TEXT, null);
@@ -172,6 +183,17 @@ public final class PrefUtils {
                 .edit()
                 .putLong(THREAD_ID, threadId)
                 .commit();
+    }
+
+    public static void setAttachmentSettings(String settings) {
+        getDefaultSharedPreferences()
+                .edit()
+                .putString(PREF_ATTACHMENT_SETTINGS, settings)
+                .commit();
+    }
+
+    public static String getAttachmentSettings() {
+        return getDefaultSharedPreferences().getString(PREF_ATTACHMENT_SETTINGS, "");
     }
 
     @Nullable
@@ -388,27 +410,29 @@ public final class PrefUtils {
                 .commit();
     }
 
-    public static void migrateToSeparateStorageIfNeeded() {
-        SharedPreferences newSharedPreferences = getDefaultSharedPreferences();
-        if (!newSharedPreferences.getBoolean(MIGRATED, false)) {
-            SharedPreferences oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(Config.instance.context);
-            newSharedPreferences
-                    .edit()
-                    .putString(TAG_CLIENT_ID, oldSharedPreferences.getString(PrefUtils.class + TAG_CLIENT_ID, ""))
-                    .putBoolean(TAG_CLIENT_ID_ENCRYPTED, oldSharedPreferences.getBoolean(PrefUtils.class + TAG_CLIENT_ID_ENCRYPTED, false))
-                    .putString(CLIENT_ID_SIGNATURE_KEY, oldSharedPreferences.getString(PrefUtils.class + CLIENT_ID_SIGNATURE_KEY, ""))
-                    .putString(TAG_NEW_CLIENT_ID, oldSharedPreferences.getString(PrefUtils.class + TAG_NEW_CLIENT_ID, null))
-                    .putBoolean(IS_CLIENT_ID_SET_TAG, oldSharedPreferences.getBoolean(PrefUtils.class + IS_CLIENT_ID_SET_TAG, false))
-                    .putString(CLIENT_NAME, oldSharedPreferences.getString(PrefUtils.class + CLIENT_NAME, ""))
-                    .putString(EXTRA_DATA, oldSharedPreferences.getString(PrefUtils.class + EXTRA_DATA, ""))
-                    .putString(LAST_COPY_TEXT, oldSharedPreferences.getString(PrefUtils.class + LAST_COPY_TEXT, null))
-                    .putLong(TAG_THREAD_ID, oldSharedPreferences.getLong(PrefUtils.class + TAG_THREAD_ID, -1L))
-                    .putString(APP_MARKER_KEY, oldSharedPreferences.getString(PrefUtils.class + APP_MARKER_KEY, ""))
-                    .putString(DEVICE_ADDRESS, oldSharedPreferences.getString(PrefUtils.class + DEVICE_ADDRESS, ""))
-                    .putString(DEVICE_UID, oldSharedPreferences.getString(PrefUtils.class + DEVICE_UID, ""))
-                    .putBoolean(MIGRATED, true)
-                    .commit();
+    public static void migrateMainSharedPreferences() {
+        Context context = Config.instance.context;
+        SharedPreferences oldSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences notEncryptedPreferences = context.getSharedPreferences(
+                STORE_NAME, Context.MODE_PRIVATE
+        );
+
+        if (!oldSharedPreferences.getAll().isEmpty()) {
+            movePreferences(oldSharedPreferences, getDefaultSharedPreferences());
+            deletePreferenceWithNameContains(context.getPackageName());
         }
+        if (!notEncryptedPreferences.getAll().isEmpty()) {
+            movePreferences(notEncryptedPreferences, getDefaultSharedPreferences());
+            deletePreferenceWithNameContains(STORE_NAME);
+        }
+    }
+
+    public static void migrateNamedPreferences(String preferenceName) {
+        movePreferences(
+                Config.instance.context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE),
+                getDefaultSharedPreferences()
+        );
+        deletePreferenceWithNameContains(preferenceName);
     }
 
     @WorkerThread
@@ -430,11 +454,59 @@ public final class PrefUtils {
         getDefaultSharedPreferences().edit().putInt(UNREAD_PUSH_COUNT, unreadPushCount).commit();
     }
 
+    public static SharedPreferences getDefaultSharedPreferences() {
+        if (sharedPreferences == null) {
+            createSharedPreferences();
+        }
+
+        return sharedPreferences;
+    }
+
     private static void resetPushToken() {
         FirebaseInstallations.getInstance().delete()
                 .addOnCompleteListener(
                         task -> FirebaseInstallations.getInstance().getId()
                 );
+    }
+
+    private static void movePreferences(SharedPreferences fromPrefs, SharedPreferences toPrefs) {
+        SharedPreferences.Editor editor = toPrefs.edit();
+        for(Map.Entry<String,?> entry : fromPrefs.getAll().entrySet()){
+            Object value = entry.getValue();
+            String key = entry.getKey();
+
+            if(value instanceof Boolean) {
+                editor.putBoolean(key, (Boolean) value);
+            } else if(value instanceof Float) {
+                editor.putFloat(key, (Float) value);
+            } else if(value instanceof Integer) {
+                editor.putInt(key, (Integer) value);
+            } else if(value instanceof Long) {
+                editor.putLong(key, (Long) value);
+            } else if(value instanceof String) {
+                editor.putString(key, ((String) value));
+            }
+        }
+
+        editor.commit();
+        fromPrefs.edit().clear().commit();
+    }
+
+    private static void deletePreferenceWithNameContains(String nameContains) {
+        Context context = Config.instance.context;
+        try {
+            File dir = new File(context.getFilesDir().getParent() + "/shared_prefs/");
+            String[] children = dir.list();
+            if (children != null) {
+                for (String child : children) {
+                    if (child.contains(nameContains)) {
+                        new File(dir, child).delete();
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            Log.e(TAG, "Error when deleting preference file", exception);
+        }
     }
 
     private static String getTransportType() {
@@ -449,7 +521,21 @@ public final class PrefUtils {
                 .commit();
     }
 
-    private static SharedPreferences getDefaultSharedPreferences() {
-        return Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE);
+    private static void createSharedPreferences() {
+        try {
+            MasterKey masterKey = new MasterKey.Builder(Config.instance.context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
+
+            sharedPreferences = EncryptedSharedPreferences.create(
+                    Config.instance.context,
+                    ENCRYPTED_STORE_NAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
+        } catch (GeneralSecurityException | IOException exception) {
+            Log.e(TAG, exception.toString());
+            sharedPreferences = Config.instance.context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE);
+        }
     }
 }
