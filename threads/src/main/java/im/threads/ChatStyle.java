@@ -54,6 +54,10 @@ public final class ChatStyle implements Serializable {
     public int fixedChatTitle = R.bool.threads_chat_fixed_chat_title;
     @BoolRes
     public int fixedChatSubtitle = R.bool.threads_chat_fixed_chat_subtitle;
+    @BoolRes
+    public int isChatSubtitleVisible = R.bool.threads_chat_subtitle_is_visible;
+    @BoolRes
+    public int isChatTitleShadowVisible = R.bool.threads_chat_title_shadow_is_visible;
 
     public boolean showBackButton = false;
     public boolean chatSubtitleShowOrgUnit = false;
@@ -164,6 +168,8 @@ public final class ChatStyle implements Serializable {
 
     @ColorRes
     public int chatBodyIconsTint = R.color.threads_green_83B144;
+    public int[] chatBodyIconsColorState = null;
+
     @ColorRes
     public int chatSystemMessageTextColor = R.color.threads_chat_connection_message;
 
@@ -509,6 +515,16 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    public ChatStyle setVisibleChatSubtitle(@BoolRes final int isChatSubtitleVisible) {
+        this.isChatSubtitleVisible = isChatSubtitleVisible;
+        return this;
+    }
+
+    public ChatStyle setVisibleChatTitleShadow(@BoolRes final int isChatTitleShadowVisible) {
+        this.isChatTitleShadowVisible = isChatTitleShadowVisible;
+        return this;
+    }
+
     public ChatStyle setFixedChatSubtitle(@BoolRes final int fixedChatSubtitle) {
         this.fixedChatSubtitle = fixedChatSubtitle;
         return this;
@@ -845,6 +861,17 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
+    public ChatStyle setChatBodyIconsColorStateTint(@ColorRes final int iconStateDisabledTint,
+                                                    @ColorRes final int iconStateEnabledTint,
+                                                    @ColorRes final int iconStatePressedTint) {
+        this.chatBodyIconsColorState = new int[] {
+                iconStateDisabledTint,
+                iconStateEnabledTint,
+                iconStatePressedTint
+        };
+        return this;
+    }
+
     public ChatStyle setInputIconTintResId(@ColorRes final int inputIconTintResId) {
         this.inputIconTintResId = inputIconTintResId;
         return this;
@@ -1090,7 +1117,7 @@ public final class ChatStyle implements Serializable {
      * @param chatMessageInputColor         - R.color.threads_input_background
      * @param inputTextColor                - R.color.threads_input_text
      * @param inputTextFont                 - setInputTextFont(String path)
-     * @param attachmentIconResId          - R.drawable.threads_ic_attachment_button
+     * @param attachmentIconResId           - R.drawable.threads_ic_attachment_button
      * @param sendMessageIconResId          - R.drawable.threads_ic_send_button
      * @param inputHint                     - R.string.threads_input_hint
      * @param inputHeight                   - R.dimen.threads_input_height

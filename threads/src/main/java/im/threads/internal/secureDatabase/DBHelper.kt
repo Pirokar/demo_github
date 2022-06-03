@@ -26,6 +26,7 @@ interface DBHelper {
     fun getLastConsultPhrase(): ConsultPhrase?
 
     fun setAllConsultMessagesWereRead(): Int
+    fun setAllConsultMessagesWereReadWithThreadId(threadId: Long?): Int
     fun setMessageWasRead(providerId: String)
     fun getSurvey(sendingId: Long): Survey?
     fun setNotSentSurveyDisplayMessageToFalse(): Int

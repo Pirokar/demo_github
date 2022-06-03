@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="im.threads">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -22,7 +23,8 @@
 
     <application
         android:hardwareAccelerated="true"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        android:fullBackupContent="@xml/backup_rules">
         <activity
             android:name="im.threads.view.ChatActivity"
             android:launchMode="singleTop"

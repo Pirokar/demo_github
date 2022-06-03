@@ -275,6 +275,17 @@ class MessagesTable(
             .update(TABLE_MESSAGES, cv, whereClause, null)
     }
 
+    fun setAllMessagesWereReadInThread(sqlHelper: SQLiteOpenHelper, threadId: Long): Int {
+        val cv = ContentValues()
+        cv.put(COLUMN_IS_READ, true)
+        val whereClause = ("(" + COLUMN_MESSAGE_TYPE + " = " + MessageType.CONSULT_PHRASE.ordinal +
+                " or (" + COLUMN_MESSAGE_TYPE + " = " + MessageType.SURVEY.ordinal + " and " + COLUMN_MESSAGE_SEND_STATE + " = " + MessageState.STATE_NOT_SENT.ordinal + ")" +
+                " or " + COLUMN_MESSAGE_TYPE + " = " + MessageType.REQUEST_RESOLVE_THREAD.ordinal + ")" +
+                " and " + COLUMN_IS_READ + " = 0 and $COLUMN_THREAD_ID = $threadId")
+        return sqlHelper.getWritableDatabase(DB_PASSWORD)
+            .update(TABLE_MESSAGES, cv, whereClause, null)
+    }
+
     fun setMessageWasRead(sqlHelper: SQLiteOpenHelper, uuid: String) {
         val cv = ContentValues()
         cv.put(COLUMN_IS_READ, true)

@@ -16,6 +16,7 @@
         android:visibility="gone"/>
 
     <View
+        android:id="@+id/toolbar_shadow"
         android:layout_width="match_parent"
         android:layout_height="63dp"
         android:background="@drawable/toolbar_shadow" />

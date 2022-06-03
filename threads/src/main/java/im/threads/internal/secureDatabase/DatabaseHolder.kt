@@ -64,6 +64,11 @@ class DatabaseHolder private constructor() {
             .subscribeOn(Schedulers.io())
     }
 
+    fun setAllConsultMessagesWereReadInThread(threadId: Long?): Completable {
+        return Completable.fromCallable { myOpenHelper.setAllConsultMessagesWereReadWithThreadId(threadId) }
+            .subscribeOn(Schedulers.io())
+    }
+
     fun setMessageWasRead(uuid: String?) {
         uuid?.let { myOpenHelper.setMessageWasRead(it) }
     }
@@ -86,11 +91,11 @@ class DatabaseHolder private constructor() {
             .subscribeOn(Schedulers.io())
     }
 
-    val messagesCount: Int = myOpenHelper.getMessagesCount()
+    fun getMessagesCount(): Int = myOpenHelper.getMessagesCount()
 
-    val unreadMessagesCount: Int = myOpenHelper.getUnreadMessagesCount()
+    fun getUnreadMessagesCount(): Int = myOpenHelper.getUnreadMessagesCount()
 
-    val unreadMessagesUuid: List<String?> = myOpenHelper.getUnreadMessagesUuid()
+    fun getUnreadMessagesUuid(): List<String?> = myOpenHelper.getUnreadMessagesUuid()
 
     fun checkAndUpdate() {
         val oldHelper = im.threads.internal.database.ThreadsDbHelper(Config.instance.context)
