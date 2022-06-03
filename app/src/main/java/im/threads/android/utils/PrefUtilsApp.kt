@@ -3,10 +3,13 @@ package im.threads.android.utils
 import android.content.Context
 import android.util.Log
 import androidx.preference.PreferenceManager
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import im.threads.android.data.Card
+import im.threads.android.data.ServerConfig
 import im.threads.android.data.TransportConfig
 import im.threads.internal.Config
+import java.io.File
 
 object PrefUtilsApp {
     private const val TAG = "DemoAppPrefUtils "
@@ -17,6 +20,7 @@ object PrefUtilsApp {
     private const val PREF_THREADS_GATE_HCM_PROVIDER_UID = "PREF_THREADS_GATE_HCM_PROVIDER_UID"
     private const val PREF_THEME = "PREF_THEME"
     private const val PREF_SERVERS_NAME = "SERVERS_PREFS"
+    private const val PREF_IMPORTED_FILE_SERVERS_NAME = "servers_config"
     private const val PREF_CURRENT_SERVER = "PREF_CURRENT_SERVER"
     private const val PREF_IS_SERVER_CHANGED = "PREF_IS_SERVER_CHANGED"
 
@@ -92,17 +96,15 @@ object PrefUtilsApp {
     }
 
     @JvmStatic
-    fun addServers(context: Context, servers: Map<String, String>) {
+    fun addServers(context: Context, servers: Map<String, String>, clearExisting: Boolean = false) {
         val prefsEditor = context.getSharedPreferences(PREF_SERVERS_NAME, Context.MODE_PRIVATE).edit()
+        if (clearExisting) prefsEditor.clear()
         servers.forEach { prefsEditor.putString(it.key, it.value) }
         prefsEditor.commit()
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun getAllServers(context: Context): Map<String, String> {
-        return context
-            .getSharedPreferences(PREF_SERVERS_NAME, Context.MODE_PRIVATE)
-            .all as? Map<String, String> ?: HashMap()
+        return getServersFrom(context, PREF_SERVERS_NAME)
     }
 
     @JvmStatic
@@ -135,5 +137,42 @@ object PrefUtilsApp {
         return PreferenceManager
             .getDefaultSharedPreferences(context)
             .getBoolean(PREF_IS_SERVER_CHANGED, false)
+    }
+
+    @JvmStatic
+    fun applyServersFromFile(context: Context) {
+        val serversFromApp = getAllServers(context)
+            .map { Gson().fromJson<ServerConfig>(it.value) }
+            .filter { it.isFromApp }
+        val servers = getServersFrom(context, PREF_IMPORTED_FILE_SERVERS_NAME)
+            .map { Gson().fromJson<ServerConfig>(it.value) }
+            .toMutableList()
+        servers.addAll(serversFromApp)
+        val serversToSave = servers.associate { it.name to it.toJson() }
+        addServers(context, serversToSave, true)
+        deletePreferenceWithNameContains(context, PREF_IMPORTED_FILE_SERVERS_NAME)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun getServersFrom(context: Context, prefsName: String): Map<String, String> {
+        return context
+            .getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+            .all as? Map<String, String> ?: HashMap()
+    }
+
+    private fun deletePreferenceWithNameContains(context: Context, nameContains: String) {
+        try {
+            val dir = File(context.filesDir.parent + "/shared_prefs/")
+            val children = dir.list()
+            if (children != null) {
+                for (child in children) {
+                    if (child.contains(nameContains)) {
+                        File(dir, child).delete()
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+            Log.e(TAG, "Error when deleting preference file", exception)
+        }
     }
 }

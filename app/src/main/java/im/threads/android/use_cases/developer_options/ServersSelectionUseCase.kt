@@ -4,15 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import im.threads.android.data.ServerConfig
 
 interface ServersSelectionUseCase {
-    val mobile1Config: ServerConfig
-    val mobile2Config: ServerConfig
-    val mobile3Config: ServerConfig
-    val mobile4Config: ServerConfig
-    val amurtigerConfig: ServerConfig
-    val beta3Config: ServerConfig
-    val gpbConfig: ServerConfig
-    val prodConfig: ServerConfig
-
     fun configureDebugMenu()
     fun isServerNotSet(): Boolean
     fun makeDefaultInit()

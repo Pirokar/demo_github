@@ -45,85 +45,14 @@ import im.threads.android.ui.add_server_dialog.AddServerDialogActions
 import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.fromJson
 import im.threads.android.utils.toJson
+import java.io.FileOutputStream
+import java.io.InputStream
 
 class ServersSelectionInteractor(private val context: Context) : ServersSelectionUseCase {
     private val TAG = "DeveloperOptions"
     private var isServersListInitialized = false
     private var currentServerName = ""
     private var servers = listOf<ServerMenuItem>()
-
-    override val mobile1Config = ServerConfig(
-        "Mobile 1",
-        "http://datastore.mobile1.chc.dte/",
-        "http://arm.mobile1.chc.dte",
-        "http://tg.mobile1.chc.dte/socket",
-        "MOBILE1_93jLrvripZeDXSKJzdRfEu9QpMMvIe5LKKHQl",
-        false
-    )
-
-    override val mobile2Config = ServerConfig(
-        "Mobile 2",
-        "http://datastore.mobile2.chc.dte/",
-        "http://arm.mobile2.chc.dte",
-        "http://tg.mobile2.chc.dte/socket",
-        "MOBILE2_oYrHwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkM",
-        false
-    )
-
-    override val mobile3Config = ServerConfig(
-        "Mobile 3",
-        "http://datastore.mobile3.chc.dte/",
-        "http://arm.mobile3.chc.dte",
-        "http://tg.mobile3.chc.dte/socket",
-        "MOBILE3_MMvIe5LKKHQlepr8vripZeDXSKJzdRfEu9Qp",
-        false
-    )
-
-    override val mobile4Config = ServerConfig(
-        "Mobile 4",
-        "https://mobile4.dev.flex.mfms.ru",
-        "https://mobile4.dev.flex.mfms.ru",
-        "wss://mobile4.dev.flex.mfms.ru/gate/socket",
-        "MOBILE4_HwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkMz65",
-        false
-    )
-
-    override val amurtigerConfig = ServerConfig(
-        "Amurtiger",
-        "https://amurtiger.edna.io/",
-        "https://amurtiger.edna.io/",
-        "wss://amurtiger.edna.io/socket",
-        "PH5ucnVkYXMtbmV3LTE1MzE5MTQ2NTk4MDItZ2VuZXJhdGVkV2l0aFVJfj4",
-        true
-    )
-
-    override val beta3Config = ServerConfig(
-        "Beta 3",
-        "https://arm.beta3.chc.dte/",
-        "https://arm.beta3.chc.dte",
-        "wss://arm.beta3.chc.dte/gate/socket",
-        "KtfvH538KBfjoMMY9Q9ha65CtWeMshQb6nBPhAY12SMH8",
-        true
-    )
-
-    override val gpbConfig = ServerConfig(
-        "GPB",
-        "http://open-ig.gpb-test.chc.dte/",
-        "http://open-ig.gpb-test.chc.dte",
-        "ws://open-ig.gpb-test.chc.dte/socket",
-        "GPB-TEST_iT6VrvripZeDCCVJzdRfEu9QpMMvIe5L5KcEM",
-        true,
-        newChatCenterApi = true
-    )
-
-    override val prodConfig = ServerConfig(
-        "PROD",
-        "https://beta-prod.edna.ru/",
-        "https://beta-prod.edna.ru",
-        "wss://beta-prod.edna.ru/socket",
-        "YmV0YS1wcm9kLmVkbmEucnU7O2FuZHJvaWQ7OzIwMjIwMzI4",
-        true
-    )
 
     override fun configureDebugMenu() {
         fetchServerNames()
@@ -157,14 +86,19 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
     override fun isServerNotSet() = getLatestServer() == null
 
     override fun makeDefaultInit() {
-        addExistingServers()
-        setCurrentServer(mobile1Config.name)
+        copyServersFromFile()
+        fetchServerNames()
+        if (currentServerName.isBlank()) {
+            currentServerName = getServers().first().name
+        }
+        setCurrentServer(currentServerName)
+        val currentServerConfig = getCurrentServer()
         PrefUtilsApp.saveTransportConfig(
             context,
             TransportConfig(
-                mobile1Config.serverBaseUrl,
-                threadsGateUrl = mobile1Config.threadsGateUrl,
-                threadsGateProviderUid = mobile1Config.threadsGateProviderUid
+                currentServerConfig.serverBaseUrl,
+                threadsGateUrl = currentServerConfig.threadsGateUrl,
+                threadsGateProviderUid = currentServerConfig.threadsGateProviderUid
             )
         )
     }
@@ -173,7 +107,16 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
         PrefUtilsApp.setIsServerChanged(context, true)
     }
 
-    override fun getCurrentServer() = getLatestServer() ?: mobile1Config
+    override fun getCurrentServer(): ServerConfig {
+        return getLatestServer()?.let { server ->
+            val serverExistInList = getServers().firstOrNull { it.name == server.name } != null
+            return if (serverExistInList) {
+                server
+            } else {
+                getDefaultServer()
+            }
+        } ?: getDefaultServer()
+    }
 
     override fun setCurrentServer(serverName: String) {
         getServers().firstOrNull { it.name == serverName }?.let { serverConfig ->
@@ -231,6 +174,23 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
         )
     }
 
+    private fun copyServersFromFile() {
+        val `in`: InputStream = context.resources.openRawResource(R.raw.servers_config)
+        val out = FileOutputStream(context.filesDir.parent + "/shared_prefs/servers_config.xml")
+        val buff = ByteArray(1024)
+        var read = 0
+
+        try {
+            while (`in`.read(buff).also { read = it } > 0) {
+                out.write(buff, 0, read)
+            }
+        } finally {
+            `in`.close()
+            out.close()
+        }
+        PrefUtilsApp.applyServersFromFile(context)
+    }
+
     private fun setModulesToBeagle() {
         Beagle.set(
             HeaderModule(
@@ -269,20 +229,6 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
         )
     }
 
-    private fun addExistingServers() {
-        val hashMap = hashMapOf(
-            Pair(mobile1Config.name, mobile1Config.toJson()),
-            Pair(mobile2Config.name, mobile2Config.toJson()),
-            Pair(mobile3Config.name, mobile3Config.toJson()),
-            Pair(mobile4Config.name, mobile4Config.toJson()),
-            Pair(amurtigerConfig.name, amurtigerConfig.toJson()),
-            Pair(beta3Config.name, beta3Config.toJson()),
-            Pair(gpbConfig.name, gpbConfig.toJson()),
-            Pair(prodConfig.name, prodConfig.toJson())
-        )
-        PrefUtilsApp.addServers(context, hashMap)
-    }
-
     private fun onServerChanged(serverMenuItem: ServerMenuItem?) {
         if (isServersListInitialized) {
             serverMenuItem?.let {
@@ -315,7 +261,14 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
             .sortedBy { it.name.toString() }
     }
 
-    private fun getCurrentServerTitle() = "${getString(R.string.demo_server)}: $currentServerName"
+    private fun getCurrentServerTitle() = PrefUtilsApp.getCurrentServer(context)
+
+    private fun getDefaultServer(): ServerConfig {
+        return PrefUtilsApp
+            .getAllServers(context)
+            .map { Gson().fromJson<ServerConfig>(it.value) }
+            .first()
+    }
 
     private fun getString(resId: Int) = context.getString(resId)
 

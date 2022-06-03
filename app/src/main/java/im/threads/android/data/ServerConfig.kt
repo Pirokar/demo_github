@@ -7,5 +7,6 @@ data class ServerConfig(
     val threadsGateUrl: String,
     val threadsGateProviderUid: String,
     val filesAndMediaMenuItemEnabled: Boolean,
-    val newChatCenterApi: Boolean = false
+    val newChatCenterApi: Boolean = false,
+    val isFromApp: Boolean = false
 )

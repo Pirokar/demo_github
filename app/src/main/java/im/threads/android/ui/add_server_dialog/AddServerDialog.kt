@@ -53,7 +53,8 @@ class AddServerDialog(private val callback: AddServerDialogActions) : DialogFrag
                         threadsGateUrl,
                         threadsGateProviderUid,
                         filesAndMediaMenuItemEnabledSwitch.isChecked,
-                        newChatCenterApiSwitch.isChecked
+                        newChatCenterApiSwitch.isChecked,
+                        true
                     )
                     devOptions.addServer(serverConfig)
                     callback.onServerAdded()
