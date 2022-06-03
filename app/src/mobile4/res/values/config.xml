@@ -5,4 +5,5 @@
     <string name="threadsGateUrl" translatable="false">wss://mobile4.dev.flex.mfms.ru/gate/socket</string>
     <string name="threadsGateProviderUid" translatable="false">MOBILE4_HwZ9QhTihb2d8U3I17dBHy1NB9vA9XVkMz65</string>
     <bool name="files_and_media_menu_item_enabled">false</bool>
+    <bool name="use_ssl">true</bool>
 </resources>

@@ -111,6 +111,11 @@
             android:value="@bool/files_and_media_menu_item_enabled"/>
 
         <meta-data
+            android:name="im.threads.android.useSSL"
+            tools:replace="android:value"
+            android:value="@bool/use_ssl"/>
+
+        <meta-data
             android:name="com.pushserver.android.logs"
             android:value="true"/>
 

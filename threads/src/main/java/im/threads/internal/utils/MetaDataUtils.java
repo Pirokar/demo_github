@@ -101,7 +101,7 @@ public class MetaDataUtils {
     }
 
     @Nullable
-    private static Bundle getMetaData(@NonNull Context context) {
+    public static Bundle getMetaData(@NonNull Context context) {
         try {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             return ai.metaData;
