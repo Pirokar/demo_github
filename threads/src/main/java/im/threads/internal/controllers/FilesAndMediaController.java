@@ -54,10 +54,7 @@ public final class FilesAndMediaController extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (compositeDisposable != null) {
-            compositeDisposable.dispose();
-            compositeDisposable = null;
-        }
+        compositeDisposable.dispose();
     }
 
     public void bindActivity(FilesActivity activity) {
