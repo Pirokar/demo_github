@@ -7,24 +7,16 @@ class Attachment {
     var state = AttachmentStateEnum.ANY
     var errorCode = ErrorStateEnum.ANY
     var errorMessage = ""
+
     var name: String? = null
+        get() {
+            return if (field.isNullOrEmpty()) field
+            else optional?.name
+        }
+
     var type: String? = null
-
-    fun getName(): String? {
-        if (!name.isNullOrEmpty())
-            return name
-        optional?.let {
-            return it.name
+        get() {
+            return if (field.isNullOrEmpty())  field
+            else optional?.type
         }
-        return null
-    }
-
-    fun getType(): String? {
-        if (!type.isNullOrEmpty())
-            return type
-        optional?.let {
-            return it.type
-        }
-        return null
-    }
 }
