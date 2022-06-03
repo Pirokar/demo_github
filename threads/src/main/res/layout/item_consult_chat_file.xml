@@ -73,8 +73,8 @@
             android:layout_marginStart="@dimen/margin_half"
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toEndOf="@+id/delimiter"
-            tools:text="счет на оплатуrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.pdf"
-            android:textColor="@color/threads_incoming_message_text" />
+            android:textColor="@color/threads_incoming_message_text"
+            tools:text="счет на оплатуrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.pdf" />
 
         <im.threads.internal.widget.text_view.BubbleMessageTextView
             android:id="@+id/file_size"
@@ -86,8 +86,8 @@
             android:layout_marginTop="@dimen/margin_half"
             android:layout_toEndOf="@+id/delimiter"
             android:paddingBottom="@dimen/margin_half"
-            tools:text="1,2 mb"
-            android:textColor="@color/threads_incoming_message_text" />
+            android:textColor="@color/threads_incoming_message_text"
+            tools:text="1,2 mb" />
 
         <im.threads.internal.widget.text_view.BubbleTimeTextView
             android:id="@+id/timestamp"
@@ -96,8 +96,8 @@
             android:layout_below="@+id/header"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="@dimen/margin_half"
-            tools:text="10:19"
-            android:textColor="@color/threads_operator_message_timestamp" />
+            android:textColor="@color/threads_operator_message_timestamp"
+            tools:text="10:19" />
     </RelativeLayout>
 
     <im.threads.internal.widget.text_view.BubbleTimeTextView

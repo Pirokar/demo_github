@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,6 +141,8 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         mBubble.getBackground().setColorFilter(getColorInt(style.outgoingMessageBubbleColor), PorterDuff.Mode.SRC_ATOP);
         setTextColorToViews(new TextView[]{mRightTextDescr, mPhraseTextView, mRightTextHeader, mRightTextTimeStamp, fileSizeTextView, quoteTextDescr, quoteTextHeader, quoteTextTimeStamp}, style.outgoingMessageTextColor);
         mTimeStampTextView.setTextColor(getColorInt(style.outgoingMessageTimeColor));
+        if (style.outgoingMessageTimeTextSize > 0)
+            mTimeStampTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, parent.getContext().getResources().getDimension(style.outgoingMessageTimeTextSize));
         ogTimestamp.setTextColor(getColorInt(style.outgoingMessageTimeColor));
         itemView.findViewById(R.id.delimeter).setBackgroundColor(getColorInt(style.outgoingMessageTextColor));
         mFileImageButton.setBackgroundColorResId(style.outgoingMessageTextColor);

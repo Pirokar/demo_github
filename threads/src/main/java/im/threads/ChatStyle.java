@@ -96,6 +96,11 @@ public final class ChatStyle implements Serializable {
     @ColorRes
     public int outgoingMessageTimeColor = R.color.threads_user_message_timestamp;
 
+    @DimenRes
+    public int incomingMessageTimeTextSize = 0;
+    @DimenRes
+    public int outgoingMessageTimeTextSize = 0;
+
     @DrawableRes
     public int outgoingImageBubbleMask = R.drawable.thread_outgoing_image_mask;
     @ColorRes
@@ -1525,6 +1530,16 @@ public final class ChatStyle implements Serializable {
         this.inputFieldMarginTop = top;
         this.inputFieldMarginRight = right;
         this.inputFieldMarginBottom = bottom;
+        return this;
+    }
+
+    public ChatStyle setOutgoingTimeTextSize(@DimenRes int textSize) {
+        this.outgoingMessageTimeTextSize = textSize;
+        return this;
+    }
+
+    public ChatStyle setIncomingTimeTextSize(@DimenRes int textSize) {
+        this.incomingMessageTimeTextSize = textSize;
         return this;
     }
 
