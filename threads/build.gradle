@@ -5,9 +5,6 @@ plugins {
     id 'kotlin-kapt'
     id 'maven-publish'
 }
-Properties properties = new Properties()
-def mavenProdUser = properties.getProperty('mavenProdUser')
-def mavenProdPass = properties.getProperty('mavenProdPass')
 
 android {
 
