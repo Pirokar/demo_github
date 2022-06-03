@@ -35,6 +35,7 @@ public class ChatStyleBuilderHelper {
 
     private static void configureGreenDesign(ChatStyle chatStyle) {
         chatStyle.setChatSubtitleShowConsultOrgUnit(true)
+                .setVisibleChatTitleShadow(R.bool.alt_threads_chat_title_shadow_is_visible)
                 .setShowConsultSearching(true)
                 .setVoiceMessageEnabled(true);
         //Do nothing, using default threads design

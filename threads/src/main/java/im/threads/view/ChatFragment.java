@@ -2123,7 +2123,7 @@ public final class ChatFragment extends BaseFragment implements
         if (activity == null) return;
         binding.toolbar.setTitle("");
         ColorsHelper.setBackgroundColor(activity, binding.toolbar, style.chatToolbarColorResId);
-
+        initToolbarShadow();
         if (activity instanceof ChatActivity) {
             binding.chatBackButton.setVisibility(View.VISIBLE);
         } else {
@@ -2145,6 +2145,14 @@ public final class ChatFragment extends BaseFragment implements
         ColorsHelper.setTint(activity, binding.reply, toolbarInverseIconTint);
         if (getResources().getBoolean(style.fixedChatTitle)) {
             setTitleStateDefault();
+        }
+    }
+
+    private void initToolbarShadow() {
+        boolean isShadowVisible = getResources().getBoolean(style.isChatTitleShadowVisible);
+        binding.toolbarShadow.setVisibility(isShadowVisible ? View.VISIBLE : View.INVISIBLE);
+        if (!isShadowVisible) {
+            binding.toolbar.setElevation(0);
         }
     }
 
@@ -2275,6 +2283,7 @@ public final class ChatFragment extends BaseFragment implements
 
         ColorsHelper.setBackgroundColor(activity, binding.toolbar,
                 style.chatToolbarContextMenuColorResId);
+        binding.toolbar.setElevation(0);
 
         binding.copyControls.setVisibility(View.VISIBLE);
         binding.consultName.setVisibility(View.GONE);

@@ -4,4 +4,5 @@
     <bool name="threads_chat_fixed_chat_title">false</bool>
     <bool name="threads_chat_fixed_chat_subtitle">false</bool>
     <bool name="threads_chat_subtitle_is_visible">true</bool>
+    <bool name="threads_chat_title_shadow_is_visible">true</bool>
 </resources>
