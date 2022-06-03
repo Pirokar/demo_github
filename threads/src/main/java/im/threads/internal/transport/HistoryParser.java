@@ -235,14 +235,12 @@ public final class HistoryParser {
         if (attachments.size() > 0) {
             Attachment attachment = attachments.get(0);
             if (attachment != null) {
-                String incomingName = null;
-                String mimeType = null;
+                String incomingName = attachment.getName();
+                String mimeType = attachment.getType();
                 long size = 0;
                 Optional metaData = attachment.getOptional();
                 if (metaData != null) {
-                    incomingName = metaData.getName();
                     size = metaData.getSize();
-                    mimeType = metaData.getType();
                 }
                 fileDescription = new FileDescription(
                         null,
