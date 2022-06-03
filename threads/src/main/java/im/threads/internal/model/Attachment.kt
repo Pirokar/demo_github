@@ -10,13 +10,13 @@ class Attachment {
 
     var name: String? = null
         get() {
-            return if (field.isNullOrEmpty()) field
+            return if (!field.isNullOrEmpty()) field
             else optional?.name
         }
 
     var type: String? = null
         get() {
-            return if (field.isNullOrEmpty())  field
+            return if (!field.isNullOrEmpty())  field
             else optional?.type
         }
 }
