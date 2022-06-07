@@ -1,14 +1,11 @@
 plugins {
-    id 'com.android.library'
+    id 'com.android.application'
+    id 'com.huawei.agconnect'
     id 'kotlin-android'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
-    id 'maven-publish'
+    id 'com.google.gms.google-services'
 }
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def mavenProdUser = properties.getProperty('mavenProdUser')
-def mavenProdPass = properties.getProperty('mavenProdPass')
 
 android {
 
@@ -19,133 +16,133 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+
     compileSdk rootProject.compileSdkVersion
 
+    defaultConfig {
+        minSdk rootProject.minSdkVersion
+        targetSdk rootProject.targetSdkVersion
+
+        versionCode 89
+        versionName "${version}"
+        project.ext.set("archivesBaseName", "Threads-app " + defaultConfig.versionName)
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled = true
+    }
+
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storePassword 'android'
+            storeFile file('debug.keystore')
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            debuggable = true
+        }
+    }
+
+    flavorDimensions "server"
+    productFlavors {
+        beta3 {
+            dimension "server"
+            applicationId "dte.chc.beta3.android"
+            resValue "string", "app_name1", "THR beta3(chc.dte)"
+        }
+        mobile1 {
+            dimension "server"
+            applicationId "dte.chc.mobile1.android"
+            resValue "string", "app_name1", "THR Mobile1 Demo"
+        }
+        mobile2 {
+            dimension "server"
+            applicationId "dte.chc.mobile2.android"
+            resValue "string", "app_name1", "THR Mobile2 Demo"
+        }
+        mobile3 {
+            dimension "server"
+            applicationId "dte.chc.mobile3.android"
+            resValue "string", "app_name1", "THR Mobile3 Demo"
+        }
+        mobile4 {
+            dimension "server"
+            applicationId "dte.chc.mobile4.android"
+            resValue "string", "app_name1", "THR Mobile4 Demo"
+        }
+        prod {
+            dimension "server"
+            applicationId "dte.chc.prod.android"
+            resValue "string", "app_name1", "THR Prod Demo"
+        }
+        amurtiger {
+            dimension "server"
+            applicationId "dte.chc.amurtiger.android"
+            resValue "string", "app_name1", "THR AmurTiger Demo"
+        }
+        gpb {
+            dimension "server"
+            applicationId "dte.chc.gpb.android"
+            resValue "string", "app_name1", "THR GPB Test Demo"
+        }
+    }
+
     lintOptions {
-        disable 'InvalidPackage'
+        abortOnError false
     }
 
     buildFeatures {
         dataBinding = true
     }
 
-    defaultConfig {
-        minSdk rootProject.minSdkVersion
-        targetSdk rootProject.targetSdkVersion
-
-        vectorDrawables.useSupportLibrary = true
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            buildConfigField "String", "VERSION_NAME", "\"${version}\""
-            consumerProguardFiles 'proguard-rules.pro'
-        }
-        debug {
-            buildConfigField "String", "VERSION_NAME", "\"${version}\""
-            consumerProguardFiles 'proguard-rules.pro'
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def appName = "THR"
+            def fileName = appName + "_" + variant.flavorName + "-" + variant.buildType.name + ".apk"
+            outputFileName = fileName
         }
     }
-
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
-    }
-
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                artifact "build/outputs/aar/threads-release.aar"
-                groupId = 'im.threads'
-                artifactId = 'threads-release'
-                version = "${version}"
-                pom.withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    configurations.implementation.allDependencies.each {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                        dependencyNode.appendNode('scope', 'runtime')
-                    }
-                }
-            }
-            debug(MavenPublication) {
-                artifact "build/outputs/aar/threads-debug.aar"
-                groupId = 'im.threads'
-                artifactId = 'threads-debug'
-                version = "${version}"
-                pom.withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    configurations.implementation.allDependencies.each {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                        dependencyNode.appendNode('scope', 'runtime')
-                    }
-                }
-            }
-        }
-
-        repositories {
-            maven {
-                if ("$version".contains('SNAPSHOT')) {
-                    // dev
-                    url 'https://maven-pub.edna.ru/repository/maven-snapshots'
-                } else {
-                    // release
-                    url 'https://maven-pub.edna.ru/repository/maven-releases'
-                }
-                credentials {
-                    username "$mavenProdUser"
-                    password "$mavenProdPass"
-                }
-            }
-        }
-    }
+repositories {
+    mavenCentral()
 }
 
 dependencies {
+    implementation project(':threads')
 
     implementation "androidx.preference:preference-ktx:$rootProject.androidXPreferenceVersion"
     implementation "androidx.core:core-ktx:$rootProject.androidXCoreVersion"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$rootProject.androidXSwiperefreshlayout"
+
+    implementation "androidx.multidex:multidex:$rootProject.androidXMultidexVersion"
     implementation "com.google.android.material:material:$rootProject.materialComponentsVersion"
 
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
-
-    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttpVersion"
 
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
-    implementation "com.annimon:stream:$rootProject.streamVersion"
+
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.okhttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttpVersion"
 
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
-    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
 
-    implementation "com.github.3llomi:RecordView:$rootProject.recordViewVersion"
-    implementation "com.github.adrielcafe:AndroidAudioConverter:$rootProject.androidAudioConverterVersion"
-
-    implementation "com.google.firebase:firebase-messaging:$fcmVersion"
-    implementation 'androidx.security:security-crypto:1.1.0-alpha03'
-
-    testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
-    testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
-    androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
-    androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
-
-    implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
-
-    implementation("androidx.work:work-runtime-ktx:$work_version")
-
-    implementation "net.zetetic:android-database-sqlcipher:$sqlcipher_version"
-    implementation "androidx.sqlite:sqlite:$sqlite_version"
+    debugImplementation "com.edna.android:push-lite-debug:$pushVersion"
+    debugImplementation "com.edna.android:push-lite-huawei-debug:$pushVersion"
+    releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
+    releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
+    implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
