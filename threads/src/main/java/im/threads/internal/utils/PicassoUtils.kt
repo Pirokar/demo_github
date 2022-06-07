@@ -5,10 +5,10 @@ import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import im.threads.config.HttpClientSettings
 import im.threads.internal.model.SslSocketFactoryConfig
-import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLSession
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLSession
 
 object PicassoUtils {
 

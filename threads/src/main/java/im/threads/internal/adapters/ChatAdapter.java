@@ -589,6 +589,35 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         diffResult.dispatchUpdatesTo(this);
     }
 
+    public void modifyImageInItem(FileDescription newFileDescription) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) instanceof ChatPhrase) {
+                ChatPhrase chatPhrase = (ChatPhrase) list.get(i);
+                FileDescription file = chatPhrase.getFileDescription();
+                String originalUrl = newFileDescription.getOriginalPath();
+                boolean isFileNotNull = file != null;
+                boolean isDownloadPathNotNull = isFileNotNull && file.getDownloadPath() != null;
+                boolean isDownloadPathMatch =
+                        isDownloadPathNotNull && file.getDownloadPath().equals(originalUrl);
+                boolean isFileUriNotNull = isFileNotNull && file.getFileUri() != null;
+                boolean isFileUriMatch = isFileUriNotNull && file.getFileUri().toString().equals(originalUrl);
+
+                if (isDownloadPathMatch || isFileUriMatch) {
+                    FileDescription currentFD = chatPhrase.getFileDescription();
+                    currentFD.setDownloadPath(newFileDescription.getDownloadPath());
+                    currentFD.setState(newFileDescription.getState());
+                    currentFD.setIncomingName(newFileDescription.getIncomingName());
+                    currentFD.setMimeType(newFileDescription.getMimeType());
+                    currentFD.setSize(newFileDescription.getSize());
+
+                    list.set(i, chatPhrase);
+                    notifyItemChanged(i);
+                    break;
+                }
+            }
+        }
+    }
+
     public int getUnreadCount() {
         return getUnreadCount(list);
     }

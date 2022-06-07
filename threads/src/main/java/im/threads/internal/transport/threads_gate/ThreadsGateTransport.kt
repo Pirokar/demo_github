@@ -3,6 +3,7 @@ package im.threads.internal.transport.threads_gate
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import androidx.core.util.ObjectsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -435,6 +436,7 @@ class ThreadsGateTransport(
                         GetMessagesData::class.java
                     )
                     for (message in data.messages) {
+                        Log.i(TAG, "Message handling: ${message.content}")
                         if (message.content.has(MessageAttributes.TYPE)) {
                             val type =
                                 ChatItemType.fromString(ThreadsGateMessageParser.getType(message))
@@ -464,7 +466,7 @@ class ThreadsGateTransport(
                             } else if (ThreadsGateMessageParser.checkId(
                                     message,
                                     PrefUtils.getClientID()
-                                )
+                                ) || message.content.toString().contains("ATTACHMENT_UPDATED")
                             ) {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem != null) {

@@ -1569,8 +1569,7 @@ public final class ChatFragment extends BaseFragment implements
 
     public void addChatItem(final ChatItem item) {
         ThreadsLogger.i(TAG, "addChatItem: " + item);
-        LinearLayoutManager layoutManager =
-                (LinearLayoutManager) binding.recycler.getLayoutManager();
+        LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recycler.getLayoutManager();
         if (layoutManager == null) {
             return;
         }
@@ -1590,6 +1589,8 @@ public final class ChatFragment extends BaseFragment implements
                 showUnreadMsgsCount(chatAdapter.getUnreadCount());
             }
             scrollDelayedOnNewMessageReceived(item instanceof UserPhrase, isLastMessageVisible);
+        } else if (needsModifyImage(item)) {
+            chatAdapter.modifyImageInItem(((ChatPhrase) item).getFileDescription());
         }
     }
 
@@ -1642,7 +1643,25 @@ public final class ChatFragment extends BaseFragment implements
             // то расписание отображать не нужно.
             return !((ScheduleInfo) item).isChatWorking() && !chatAdapter.hasSchedule();
         } else {
-            return true;
+            ChatPhrase chatPhrase;
+            try {
+                chatPhrase = (ChatPhrase) item;
+                return chatPhrase.getFileDescription() == null
+                        || TextUtils.isEmpty(chatPhrase.getFileDescription().getOriginalPath());
+            } catch (Exception exception) {
+                return true;
+            }
+        }
+    }
+
+    private boolean needsModifyImage(ChatItem item) {
+        ChatPhrase chatPhrase;
+        try {
+            chatPhrase = (ChatPhrase) item;
+            return chatPhrase.getFileDescription() != null
+                    && !TextUtils.isEmpty(chatPhrase.getFileDescription().getOriginalPath());
+        } catch (Exception exception) {
+            return false;
         }
     }
 
