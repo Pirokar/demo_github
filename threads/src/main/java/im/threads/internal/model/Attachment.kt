@@ -16,7 +16,7 @@ class Attachment {
 
     var type: String? = null
         get() {
-            return if (!field.isNullOrEmpty())  field
+            return if (!field.isNullOrEmpty()) field
             else optional?.type
         }
 }

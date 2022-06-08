@@ -185,7 +185,7 @@ class ThreadsLib private constructor(context: Context?) {
             check(instance == null) { "ThreadsLib has already been initialized" }
             Config.instance = configBuilder.build()
             instance = ThreadsLib(configBuilder.context)
-            PrefUtils.migrateToSeparateStorageIfNeeded()
+            PrefUtils.migrateMainSharedPreferences()
 
             Config.instance.unreadMessagesCountListener?.let { unreadMessagesCountListener ->
                 unreadMessagesCountListener.onUnreadMessagesCountChanged(
