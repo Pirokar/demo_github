@@ -11,6 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -24,6 +26,7 @@ import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
 import im.threads.internal.markdown.MarkdownProcessorHolder
+import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
 import im.threads.internal.opengraph.OGDataProvider
@@ -50,6 +53,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         .inflate(R.layout.item_consultant_text_with_file, parent, false)
 ) {
     private val style = Config.instance.chatStyle
+    private val rotateAnim = RotateAnimation(
+        0f, 360f,
+        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+        0.5f
+    )
     private val timeStampSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
     private var quoteSdf = if (Locale.getDefault().language.equals("ru", ignoreCase = true)) {
         SimpleDateFormat("dd MMMM yyyy", RussianFormatSymbols())
@@ -65,6 +73,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     private val mFileImage = itemView.findViewById<ImageView>(R.id.file_image)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
     private val mImage: ImageView = itemView.findViewById(R.id.image)
+    private val mLoaderImage: ImageView = itemView.findViewById<ImageView>(R.id.loaderImage)
     private val mRightTextDescr: TextView = itemView.findViewById(R.id.file_specs)
     private val rightTextFileStamp: TextView = itemView.findViewById(R.id.send_at)
     private val mTimeStampTextView =
@@ -271,14 +280,19 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             }
         }
         if (fileDescription != null) {
-            if (FileUtils.isImage(fileDescription)) {
+            val isStateReady = fileDescription.state == AttachmentStateEnum.READY
+            if (isStateReady && FileUtils.isImage(fileDescription)) {
                 fileRow.visibility = View.GONE
                 mCircularProgressButton.visibility = View.GONE
                 mImage.visibility = View.VISIBLE
                 mImage.setOnClickListener(imageClickListener)
+
+                startLoaderAnimation()
                 Picasso.get()
                     .load(fileDescription.downloadPath)
-                    .into(getPicassoTargetForView(mImage, style.imagePlaceholder))
+                    .into(getPicassoTargetForView(mImage, style.imagePlaceholder, ::stopLoaderAnimation))
+            } else if (!isStateReady && FileUtils.isImage(fileDescription)) {
+                startLoaderAnimation()
             } else {
                 fileRow.visibility = View.VISIBLE
                 ViewUtils.setClickListener(fileRow as ViewGroup, null as View.OnClickListener?)
@@ -409,6 +423,22 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     private fun hideOGView() {
         ogDataLayout.visibility = View.GONE
         mTimeStampTextView.visibility = View.VISIBLE
+    }
+
+    private fun startLoaderAnimation() {
+        mLoaderImage.visibility = View.VISIBLE
+        mImage.visibility = View.INVISIBLE
+        rotateAnim.duration = 3000
+        rotateAnim.repeatCount = Animation.INFINITE
+        mLoaderImage.animation = rotateAnim
+        rotateAnim.start()
+    }
+
+    private fun stopLoaderAnimation() {
+        mLoaderImage.visibility = View.INVISIBLE
+        mImage.visibility = View.VISIBLE
+        rotateAnim.cancel()
+        rotateAnim.reset()
     }
 
     companion object {
