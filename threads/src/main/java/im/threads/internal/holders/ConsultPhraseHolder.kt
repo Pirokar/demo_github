@@ -281,7 +281,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         }
         if (fileDescription != null) {
             val isStateReady = fileDescription.state == AttachmentStateEnum.READY
-            if (isStateReady && FileUtils.isImage(fileDescription)) {
+            if (isStateReady && isImage(fileDescription)) {
                 fileRow.visibility = View.GONE
                 mCircularProgressButton.visibility = View.GONE
                 mImage.visibility = View.VISIBLE
@@ -291,7 +291,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 Picasso.get()
                     .load(fileDescription.downloadPath)
                     .into(getPicassoTargetForView(mImage, style.imagePlaceholder, ::stopLoaderAnimation))
-            } else if (!isStateReady && FileUtils.isImage(fileDescription)) {
+            } else if (!isStateReady && isImage(fileDescription)) {
                 startLoaderAnimation()
             } else {
                 fileRow.visibility = View.VISIBLE
