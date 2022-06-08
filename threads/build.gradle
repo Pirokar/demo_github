@@ -6,6 +6,13 @@ plugins {
     id 'maven-publish'
 }
 
+Properties properties = new Properties()
+if (rootProject.file("local.properties").exists()) {
+    properties.load(rootProject.file("local.properties").newDataInputStream())
+}
+def mavenProdUser = properties.getProperty('mavenProdUser')
+def mavenProdPass = properties.getProperty('mavenProdPass')
+
 android {
 
     compileOptions {
