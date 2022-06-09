@@ -39,7 +39,7 @@
         android:textSize="@dimen/text_medium"/>
 
     <im.threads.internal.widget.CustomFontTextView
-        android:id="@+id/consultMoto"
+        android:id="@+id/consult_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/consultImage"

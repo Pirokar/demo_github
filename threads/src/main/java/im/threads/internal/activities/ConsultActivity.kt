@@ -80,15 +80,20 @@ open class ConsultActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.files_and_media) {
-            startActivity(FilesActivity.getStartIntent(this))
-            return true
+        return when (item.itemId) {
+            R.id.files_and_media -> {
+                startActivity(FilesActivity.getStartIntent(this))
+                true
+            }
+            R.id.search -> {
+                sendBroadcast(Intent(ChatFragment.ACTION_SEARCH_CHAT_FILES))
+                finish()
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
         }
-        if (item.itemId == R.id.search) {
-            sendBroadcast(Intent(ChatFragment.ACTION_SEARCH_CHAT_FILES))
-            finish()
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     @Suppress("DEPRECATION")
@@ -111,7 +116,6 @@ open class ConsultActivity : BaseActivity() {
             val wic = WindowInsetsControllerCompat(window, window.decorView)
             wic.isAppearanceLightStatusBars = isStatusBarLight
             ViewCompat.getWindowInsetsController(window.decorView)?.apply {
-                // Light text == dark status bar
                 isAppearanceLightStatusBars = !isStatusBarLight
             }
         }
@@ -132,7 +136,7 @@ open class ConsultActivity : BaseActivity() {
 
     private fun setConsultInfo() = with(binding) {
         setTextForConsultInfo(titleKey, consultTitle)
-        setTextForConsultInfo(motoKey, consultMoto)
+        setTextForConsultInfo(statusKey, consultStatus)
     }
 
     private fun setupToolbar() = with(binding) {
@@ -169,7 +173,7 @@ open class ConsultActivity : BaseActivity() {
         private const val TAG = "ConsultActivity "
         const val imageUrlKey = "imagePath"
         const val titleKey = "title"
-        const val motoKey = "moto"
+        const val statusKey = "status"
 
         @JvmStatic
         fun startActivity(
@@ -181,7 +185,7 @@ open class ConsultActivity : BaseActivity() {
             val intent = Intent(activity, ConsultActivity::class.java).apply {
                 putExtra(imageUrlKey, avatarPath)
                 putExtra(titleKey, name)
-                putExtra(motoKey, status)
+                putExtra(statusKey, status)
             }
 
             activity?.startActivity(intent)
