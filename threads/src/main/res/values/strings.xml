@@ -140,5 +140,6 @@
     <string name="loading"></string>
 
     <string name="threads_history_loading_message">The chat history is being loaded, please wait</string>
+    <string name="threads_consult_portrait">Consult portrait</string>
 
 </resources>
