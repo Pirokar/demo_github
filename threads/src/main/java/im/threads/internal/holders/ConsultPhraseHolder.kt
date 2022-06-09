@@ -72,6 +72,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         }
     private val mFileImage = itemView.findViewById<ImageView>(R.id.file_image)
     private val rightTextHeader: TextView = itemView.findViewById(R.id.to)
+    private val mImageLayout: FrameLayout = itemView.findViewById(R.id.imageLayout)
     private val mImage: ImageView = itemView.findViewById(R.id.image)
     private val mLoaderImage: ImageView = itemView.findViewById<ImageView>(R.id.loaderImage)
     private val mRightTextDescr: TextView = itemView.findViewById(R.id.file_specs)
@@ -238,7 +239,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 hideOGView()
             }
         }
-        mImage.visibility = View.GONE
+        mImageLayout.visibility = View.GONE
         if (quote == null) {
             fileRow.visibility = View.GONE
         } else {
@@ -284,6 +285,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             if (isStateReady && isImage(fileDescription)) {
                 fileRow.visibility = View.GONE
                 mCircularProgressButton.visibility = View.GONE
+                mImageLayout.visibility = View.VISIBLE
                 mImage.visibility = View.VISIBLE
                 mImage.setOnClickListener(imageClickListener)
 
@@ -426,6 +428,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
     }
 
     private fun startLoaderAnimation() {
+        mImageLayout.visibility = View.VISIBLE
         mLoaderImage.visibility = View.VISIBLE
         mImage.visibility = View.INVISIBLE
         rotateAnim.duration = 3000
