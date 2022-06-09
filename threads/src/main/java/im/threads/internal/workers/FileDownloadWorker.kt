@@ -71,11 +71,11 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
                     sendFinishBroadcast(fileDescription)
                 }
 
-                override fun onFileDownloadError(e: Exception) {
+                override fun onFileDownloadError(e: Exception?) {
                     ThreadsLogger.e(TAG, "error while downloading file ", e)
                     fileDescription.downloadProgress = 0
                     DatabaseHolder.getInstance().updateFileDescription(fileDescription)
-                    sendDownloadErrorBroadcast(fileDescription, e)
+                    e?.let { sendDownloadErrorBroadcast(fileDescription, e) }
                 }
             }
         )

@@ -176,16 +176,24 @@ class MessagesTable(
             return true
         }
         if (chatItem is UserPhrase) {
-            insertOrUpdateMessage(sqlHelper, getUserPhraseCV(chatItem))
-            chatItem.fileDescription?.let {
-                fileDescriptionTable.putFileDescription(
-                    sqlHelper,
-                    it, chatItem.id.orEmpty(), false
-                )
+            chatItem.id?.let { id ->
+                insertOrUpdateMessage(sqlHelper, getUserPhraseCV(chatItem))
+                chatItem.fileDescription?.let {
+                    fileDescriptionTable.putFileDescription(
+                        sqlHelper,
+                        it, chatItem.id.orEmpty(), false
+                    )
+                    chatItem.quote?.let { quote -> quotesTable.putQuote(sqlHelper, id, quote) }
+                }
+            } ?: run {
+                chatItem.fileDescription?.originalPath?.let {
+                    fileDescriptionTable.updateFileDescriptionByUrl(
+                        sqlHelper,
+                        chatItem.fileDescription!!
+                    )
+                }
             }
-            if (chatItem.quote != null) {
-                chatItem.id?.let { quotesTable.putQuote(sqlHelper, it, chatItem.quote) }
-            }
+
             return true
         }
         if (chatItem is Survey) {

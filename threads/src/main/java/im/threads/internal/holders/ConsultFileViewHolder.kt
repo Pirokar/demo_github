@@ -39,8 +39,8 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
         itemView.findViewById<CircularProgressButton>(R.id.circ_button).apply {
             setBackgroundColorResId(style.chatBackgroundColor)
         }
-    private val errortext: TextView = itemView.findViewById<TextView>(R.id.errortext)
-    private val loader: ImageView = itemView.findViewById<ImageView>(R.id.loader)
+    private val errortext: TextView = itemView.findViewById(R.id.errortext)
+    private val loader: ImageView = itemView.findViewById(R.id.loader)
     private val mFileHeader: TextView = itemView.findViewById(R.id.header)
     private val mSizeTextView: TextView = itemView.findViewById(R.id.file_size)
     private val mTimeStampTextView = itemView.findViewById<TextView>(R.id.timestamp).apply {
@@ -141,6 +141,7 @@ class ConsultFileViewHolder(parent: ViewGroup) : BaseHolder(
             } else {
                 loader.visibility = View.INVISIBLE
                 errortext.isVisible = false
+                mCircularProgressButton.visibility = View.VISIBLE
                 mCircularProgressButton.setProgress(if (fileDescription.fileUri != null) 100 else fileDescription.downloadProgress)
             }
             mFileHeader.text = FileUtils.getFileName(fileDescription)
