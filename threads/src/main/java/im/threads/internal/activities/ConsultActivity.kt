@@ -46,27 +46,6 @@ open class ConsultActivity : BaseActivity() {
         setupToolbar()
     }
 
-    protected fun setActivityStyle(style: ChatStyle) = with(binding) {
-        // TODO THREADS-5811 unused code
-        root.setBackgroundColor(
-            ContextCompat.getColor(baseContext, style.chatBackgroundColor)
-        )
-        consultTitle.setTextColor(
-            ContextCompat.getColor(baseContext, style.chatToolbarTextColorResId)
-        )
-        consultMoto.setTextColor(
-            ContextCompat.getColor(baseContext, style.chatToolbarTextColorResId)
-        )
-        toolbar.navigationIcon?.colorFilter = PorterDuffColorFilter(
-            ContextCompat.getColor(baseContext, style.chatToolbarTextColorResId),
-            PorterDuff.Mode.SRC_ATOP
-        )
-        toolbar.overflowIcon?.colorFilter = PorterDuffColorFilter(
-            ContextCompat.getColor(baseContext, style.chatToolbarTextColorResId),
-            PorterDuff.Mode.SRC_ATOP
-        )
-    }
-
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val searchMenuItem = menu.getItem(0)
         val searchMenuSpannable = SpannableString(searchMenuItem.title)
