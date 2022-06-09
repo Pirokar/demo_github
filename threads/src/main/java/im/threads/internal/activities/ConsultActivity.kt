@@ -12,6 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -40,9 +41,8 @@ open class ConsultActivity : BaseActivity() {
         hideSystemUI()
         setStatusBarColor()
         setContentView(binding.root)
-        setConsultImageView()
-        setConsultTitle()
-        setConsultMoto()
+        setConsultAvatar()
+        setConsultInfo()
         setupToolbar()
     }
 
@@ -117,7 +117,7 @@ open class ConsultActivity : BaseActivity() {
         }
     }
 
-    private fun setConsultImageView() = with(binding) {
+    private fun setConsultAvatar() = with(binding) {
         consultImage.background = AppCompatResources.getDrawable(
             this@ConsultActivity,
             style.defaultOperatorAvatar
@@ -130,18 +130,9 @@ open class ConsultActivity : BaseActivity() {
         }
     }
 
-    private fun setConsultTitle() = with(binding) {
-        val consultTitleString = intent.getStringExtra(titleKey)
-        if (null != consultTitleString && consultTitleString != "null") {
-            consultTitle.text = consultTitleString
-        }
-    }
-
-    private fun setConsultMoto() = with(binding) {
-        val consultMotoString = intent.getStringExtra(motoKey)
-        if (null != consultMotoString && consultMotoString != "null") {
-            consultMoto.text = consultMotoString
-        }
+    private fun setConsultInfo() = with(binding) {
+        setTextForConsultInfo(titleKey, consultTitle)
+        setTextForConsultInfo(motoKey, consultMoto)
     }
 
     private fun setupToolbar() = with(binding) {
@@ -165,6 +156,13 @@ open class ConsultActivity : BaseActivity() {
             setMargins(0, resources.getDimension(R.dimen.margin_big).toInt(), 0, 0)
         }
         toolbar.layoutParams = layoutParams
+    }
+
+    private fun setTextForConsultInfo(intentKey: String, textView: TextView) {
+        val text = intent.getStringExtra(intentKey)
+        if (null != text && text != "null") {
+            textView.text = text
+        }
     }
 
     companion object {
