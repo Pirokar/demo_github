@@ -7,6 +7,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.Nullable;
 
+//TODO: replace with extensions
 public final class Keyboard {
 
     private Keyboard() {

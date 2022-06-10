@@ -2,8 +2,6 @@ package im.threads.internal.activities
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
@@ -15,16 +13,14 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.databinding.ActivityConsultPageBinding
 import im.threads.internal.Config
 import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
-import im.threads.internal.utils.ThreadsLogger
+import im.threads.internal.utils.setColorFilter
 import im.threads.view.ChatFragment
 
 open class ConsultActivity : BaseActivity() {
@@ -82,7 +78,7 @@ open class ConsultActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.files_and_media -> {
-                startActivity(FilesActivity.getStartIntent(this))
+                FilesActivity.startActivity(this)
                 true
             }
             R.id.search -> {
@@ -108,17 +104,9 @@ open class ConsultActivity : BaseActivity() {
     }
 
     private fun setStatusBarColor() {
-        window.statusBarColor = ContextCompat.getColor(baseContext, R.color.threads_black_transparent)
+        val statusBarColor = ContextCompat.getColor(baseContext, R.color.threads_black_transparent)
         val isStatusBarLight = resources.getBoolean(style.windowLightStatusBarResId)
-        val isAndroidMOrHigher = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-
-        if (isStatusBarLight && isAndroidMOrHigher) {
-            val wic = WindowInsetsControllerCompat(window, window.decorView)
-            wic.isAppearanceLightStatusBars = isStatusBarLight
-            ViewCompat.getWindowInsetsController(window.decorView)?.apply {
-                isAppearanceLightStatusBars = !isStatusBarLight
-            }
-        }
+        super.setStatusBarColor(isStatusBarLight, statusBarColor)
     }
 
     private fun setConsultAvatar() = with(binding) {
@@ -144,14 +132,7 @@ open class ConsultActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.showOverflowMenu()
-        toolbar.overflowIcon?.let { overflowDrawable ->
-            overflowDrawable.colorFilter = PorterDuffColorFilter(
-                ContextCompat.getColor(baseContext, android.R.color.white),
-                PorterDuff.Mode.SRC_ATOP
-            )
-        } ?: run {
-            ThreadsLogger.e(TAG, "onCreate", NullPointerException("overflowDrawable is null!"))
-        }
+        toolbar.overflowIcon?.setColorFilter(ContextCompat.getColor(baseContext, android.R.color.white))
 
         val layoutParams = RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT,

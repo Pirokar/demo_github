@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_root"
@@ -9,14 +10,15 @@
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler"
+        android:id="@+id/filesRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:visibility="gone"/>
 
     <View
-        android:id="@+id/toolbar_shadow"
+        android:id="@+id/toolbarShadow"
         android:layout_width="match_parent"
         android:layout_height="63dp"
         android:background="@drawable/toolbar_shadow" />
@@ -31,7 +33,7 @@
         app:titleTextColor="@color/threads_chat_toolbar_text">
 
         <im.threads.internal.widget.CustomFontEditText
-            android:id="@+id/search_edit_text"
+            android:id="@+id/searchEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginEnd="40dp"
@@ -47,7 +49,7 @@
             android:visibility="gone" />
 
         <ImageButton
-            android:id="@+id/search"
+            android:id="@+id/searchButton"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
@@ -58,7 +60,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
-        android:id="@+id/empty_list_layout"
+        android:id="@+id/emptyListLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
@@ -69,14 +71,14 @@
         android:visibility="visible">
 
         <TextView
-            android:id="@+id/empty_list_header"
+            android:id="@+id/emptyListHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             tools:text="@string/threads_no_media_and_files_header" />
 
         <TextView
-            android:id="@+id/empty_list_description"
+            android:id="@+id/emptyListDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_half"
@@ -84,4 +86,5 @@
             tools:text="@string/threads_no_media_and_files_description" />
 
     </LinearLayout>
+
 </RelativeLayout>

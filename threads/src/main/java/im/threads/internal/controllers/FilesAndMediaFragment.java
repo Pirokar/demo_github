@@ -25,9 +25,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class FilesAndMediaController extends Fragment {
+public final class FilesAndMediaFragment extends Fragment {
 
-    private static final String TAG = FilesAndMediaController.class.getCanonicalName();
+    private static final String TAG = FilesAndMediaFragment.class.getCanonicalName();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FilesActivity activity;
@@ -35,8 +35,8 @@ public final class FilesAndMediaController extends Fragment {
     // Для приема сообщений из сервиса по скачиванию файлов
     private ProgressReceiver progressReceiver;
 
-    public static FilesAndMediaController getInstance() {
-        return new FilesAndMediaController();
+    public static FilesAndMediaFragment getInstance() {
+        return new FilesAndMediaFragment();
     }
 
     @Override

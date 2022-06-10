@@ -1114,7 +1114,7 @@ public final class ChatFragment extends BaseFragment implements
             if (isInMessageSearchMode) {
                 onActivityBackPressed();
             }
-            startActivity(FilesActivity.getStartIntent(activity));
+            FilesActivity.startActivity(activity);
             return true;
         }
         if (item.getItemId() == R.id.search) {
