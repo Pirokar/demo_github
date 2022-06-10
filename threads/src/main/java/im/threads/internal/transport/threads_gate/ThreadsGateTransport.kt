@@ -106,8 +106,8 @@ class ThreadsGateTransport(
     override fun sendRatingDone(survey: Survey) {
         val content = OutgoingMessageCreator.createRatingDoneMessage(
             survey,
-            PrefUtils.getClientID(),
-            PrefUtils.getAppMarker()
+            PrefUtils.clientID,
+            PrefUtils.appMarker
         )
         surveysInProcess[survey.sendingId] = survey
         sendMessage(
@@ -118,7 +118,7 @@ class ThreadsGateTransport(
     }
 
     override fun sendResolveThread(approveResolve: Boolean) {
-        val clientID = PrefUtils.getClientID()
+        val clientID = PrefUtils.clientID
         val content: JsonObject
         var correlationId: String
         if (approveResolve) {
@@ -133,11 +133,11 @@ class ThreadsGateTransport(
     }
 
     override fun sendUserTying(input: String) {
-        sendMessage(OutgoingMessageCreator.createMessageTyping(PrefUtils.getClientID(), input))
+        sendMessage(OutgoingMessageCreator.createMessageTyping(PrefUtils.clientID, input))
     }
 
     override fun sendInit() {
-        if (!TextUtils.isEmpty(PrefUtils.getDeviceAddress())) {
+        if (!TextUtils.isEmpty(PrefUtils.deviceAddress)) {
             sendInitChatMessage(true)
             sendEnvironmentMessage(true)
         } else {
@@ -163,7 +163,7 @@ class ThreadsGateTransport(
             consultInfo,
             quoteFilePath,
             filePath,
-            PrefUtils.getClientID()
+            PrefUtils.clientID
         )
         sendMessage(
             content,
@@ -176,7 +176,7 @@ class ThreadsGateTransport(
         sendMessage(
             OutgoingMessageCreator.createRatingReceivedMessage(
                 survey.sendingId,
-                PrefUtils.getClientID()
+                PrefUtils.clientID
             ),
             false,
             ChatItemType.SURVEY_PASSED.name + CORRELATION_ID_DIVIDER + survey.uuid
@@ -184,7 +184,7 @@ class ThreadsGateTransport(
     }
 
     override fun sendClientOffline(clientId: String) {
-        if (TextUtils.isEmpty(PrefUtils.getDeviceAddress())) {
+        if (TextUtils.isEmpty(PrefUtils.deviceAddress)) {
             return
         }
         val content = OutgoingMessageCreator.createMessageClientOffline(
@@ -198,10 +198,10 @@ class ThreadsGateTransport(
     }
 
     override fun getToken(): String {
-        val clientIdSignature = PrefUtils.getClientIdSignature()
+        val clientIdSignature = PrefUtils.clientIdSignature
         return (
-            (if (TextUtils.isEmpty(clientIdSignature)) PrefUtils.getDeviceAddress() else clientIdSignature) +
-                ":" + PrefUtils.getClientID()
+            (if (TextUtils.isEmpty(clientIdSignature)) PrefUtils.deviceAddress else clientIdSignature) +
+                ":" + PrefUtils.clientID
             )
     }
 
@@ -235,8 +235,8 @@ class ThreadsGateTransport(
         }
         val ws = webSocket ?: return
         if (sendInit &&
-            !TextUtils.isEmpty(PrefUtils.getClientID()) &&
-            !TextUtils.isEmpty(PrefUtils.getDeviceAddress())
+            !TextUtils.isEmpty(PrefUtils.clientID) &&
+            !TextUtils.isEmpty(PrefUtils.deviceAddress)
         ) {
             sendInitChatMessage(false)
             sendEnvironmentMessage(false)
@@ -244,7 +244,7 @@ class ThreadsGateTransport(
         val text = Config.instance.gson.toJson(
             SendMessageRequest(
                 correlationId,
-                SendMessageRequest.Data(PrefUtils.getDeviceAddress(), content, important)
+                SendMessageRequest.Data(PrefUtils.deviceAddress, content, important)
             )
         )
         ThreadsLogger.i(TAG, "Sending : $text")
@@ -271,14 +271,14 @@ class ThreadsGateTransport(
             AppInfoHelper.getAppVersion(),
             cloudPair.providerUid,
             cloudPair.token,
-            PrefUtils.getDeviceUid(),
+            PrefUtils.deviceUid,
             "Android",
             DeviceInfoHelper.getOsVersion(),
             DeviceInfoHelper.getLocale(Config.instance.context),
             Calendar.getInstance().timeZone.displayName,
             if (!TextUtils.isEmpty(deviceName)) deviceName else deviceModel,
             deviceModel,
-            PrefUtils.getDeviceAddress()
+            PrefUtils.deviceAddress
         )
         val text = Config.instance.gson.toJson(
             RegisterDeviceRequest(UUID.randomUUID().toString(), data)
@@ -290,8 +290,8 @@ class ThreadsGateTransport(
     private fun sendInitChatMessage(tryOpeningWebSocket: Boolean) {
         sendMessage(
             content = OutgoingMessageCreator.createInitChatMessage(
-                PrefUtils.getClientID(),
-                PrefUtils.getData()
+                PrefUtils.clientID,
+                PrefUtils.data
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
             sendInit = false
@@ -301,10 +301,10 @@ class ThreadsGateTransport(
     private fun sendEnvironmentMessage(tryOpeningWebSocket: Boolean) {
         sendMessage(
             OutgoingMessageCreator.createEnvironmentMessage(
-                PrefUtils.getUserName(),
-                PrefUtils.getClientID(),
-                PrefUtils.getClientIDEncrypted(),
-                PrefUtils.getData(),
+                PrefUtils.userName,
+                PrefUtils.clientID,
+                PrefUtils.clientIDEncrypted,
+                PrefUtils.data,
                 Config.instance.context
             ),
             tryOpeningWebSocket = tryOpeningWebSocket,
@@ -369,8 +369,8 @@ class ThreadsGateTransport(
                         response.data.toString(),
                         RegisterDeviceData::class.java
                     )
-                    val initialRegistration = TextUtils.isEmpty(PrefUtils.getDeviceAddress())
-                    PrefUtils.setDeviceAddress(data.deviceAddress)
+                    val initialRegistration = TextUtils.isEmpty(PrefUtils.deviceAddress)
+                    PrefUtils.deviceAddress = data.deviceAddress
                     if (initialRegistration) {
                         sendInitChatMessage(false)
                         sendEnvironmentMessage(false)
@@ -465,7 +465,7 @@ class ThreadsGateTransport(
                                 }
                             } else if (ThreadsGateMessageParser.checkId(
                                     message,
-                                    PrefUtils.getClientID()
+                                    PrefUtils.clientID
                                 ) || message.content.toString().contains("ATTACHMENT_UPDATED")
                             ) {
                                 val chatItem = ThreadsGateMessageParser.format(message)

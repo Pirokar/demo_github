@@ -18,12 +18,12 @@ object ChatCenterPushMessageHelper {
 
     @JvmStatic
     fun setFcmToken(fcmToken: String?) {
-        PrefUtils.setFcmToken(fcmToken)
+        PrefUtils.fcmToken = fcmToken
     }
 
     @JvmStatic
     fun setHcmToken(hcmToken: String?) {
-        PrefUtils.setHcmToken(hcmToken)
+        PrefUtils.hcmToken = hcmToken
     }
 
     @JvmStatic
@@ -61,9 +61,7 @@ object ChatCenterPushMessageHelper {
                         campaign,
                         bundle.getString(MessageAttributes.PRIORITY)?.toInt() ?: 0,
                     )
-                    PrefUtils.setCampaignMessage(
-                        campaignMessage
-                    )
+                    PrefUtils.campaignMessage = campaignMessage
                     NotificationWorker.addCampaignMessage(context, alertStr)
                     ThreadsLogger.i(TAG, "campaign message handled: $campaignMessage")
                 }
