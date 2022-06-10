@@ -183,8 +183,8 @@ class MessagesTable(
                         sqlHelper,
                         it, chatItem.id.orEmpty(), false
                     )
-                    chatItem.quote?.let { quote -> quotesTable.putQuote(sqlHelper, id, quote) }
                 }
+                chatItem.quote?.let { quote -> quotesTable.putQuote(sqlHelper, id, quote) }
             } ?: run {
                 chatItem.fileDescription?.originalPath?.let {
                     fileDescriptionTable.updateFileDescriptionByUrl(
