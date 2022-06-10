@@ -88,6 +88,5 @@ dependencies {
     releaseImplementation "com.edna.android:push-lite-release:$pushVersion"
     releaseImplementation "com.edna.android:push-lite-huawei-release:$pushVersion"
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
-
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
