@@ -20,12 +20,12 @@ object PicassoUtils {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val builder = chain.request().newBuilder().apply {
-                    addHeader("X-Ext-Client-ID", PrefUtils.getClientID())
-                    if (!PrefUtils.getAuthToken().isNullOrBlank()) {
-                        addHeader("Authorization", PrefUtils.getAuthToken())
+                    addHeader("X-Ext-Client-ID", PrefUtils.clientID)
+                    if (!PrefUtils.authToken.isNullOrBlank()) {
+                        addHeader("Authorization", PrefUtils.authToken!!)
                     }
-                    if (!PrefUtils.getAuthSchema().isNullOrBlank()) {
-                        addHeader("X-Auth-Schema", PrefUtils.getAuthSchema())
+                    if (!PrefUtils.authSchema.isNullOrBlank()) {
+                        addHeader("X-Auth-Schema", PrefUtils.authSchema!!)
                     }
                 }
                 val newRequest: Request = builder.build()
