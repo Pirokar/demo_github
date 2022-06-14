@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
 public final class FileDescription implements Parcelable {
-    public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<FileDescription>() {
+    public static final Parcelable.Creator<FileDescription> CREATOR = new Creator<>() {
         @Override
         public FileDescription createFromParcel(Parcel source) {
             String state = source.readString();
@@ -18,6 +18,7 @@ public final class FileDescription implements Parcelable {
             Uri filePath = source.readParcelable(Uri.class.getClassLoader());
             String downloadPath = source.readString();
             String incomingName = source.readString();
+            String originalPath = source.readString();
             String mimeType = source.readString();
             long size = source.readLong();
             long timeStamp = source.readLong();
@@ -30,6 +31,7 @@ public final class FileDescription implements Parcelable {
             fd.setIncomingName(incomingName);
             fd.setMimeType(mimeType);
             fd.setDownloadPath(downloadPath);
+            fd.setOriginalPath(originalPath);
             fd.setDownloadProgress(progress);
             fd.setSelfie(selfie);
             return fd;
@@ -40,11 +42,12 @@ public final class FileDescription implements Parcelable {
             return new FileDescription[size];
         }
     };
-    private final long size;
+    private long size;
     private String from;
     private Uri fileUri;
     private long timeStamp;
     private String downloadPath;
+    private String originalPath;
     private String incomingName;
     private String mimeType = null;
     private int downloadProgress;
@@ -82,6 +85,10 @@ public final class FileDescription implements Parcelable {
         return size;
     }
 
+    public void setSize(long size) {
+        this.size = size;
+    }
+
     public long getTimeStamp() {
         return timeStamp;
     }
@@ -97,6 +104,15 @@ public final class FileDescription implements Parcelable {
 
     public void setDownloadPath(String downloadPath) {
         this.downloadPath = downloadPath;
+    }
+
+    @Nullable
+    public String getOriginalPath() {
+        return originalPath;
+    }
+
+    public void setOriginalPath(String originalPath) {
+        this.originalPath = originalPath;
     }
 
     public String getIncomingName() {
@@ -196,6 +212,7 @@ public final class FileDescription implements Parcelable {
         dest.writeParcelable(fileUri, 0);
         dest.writeString(downloadPath);
         dest.writeString(incomingName);
+        dest.writeString(originalPath);
         dest.writeString(mimeType);
         dest.writeLong(size);
         dest.writeLong(timeStamp);

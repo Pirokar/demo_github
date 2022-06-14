@@ -53,7 +53,7 @@ class ThreadsLib private constructor(context: Context?) {
             return timeCounter.getSecondsSinceLastActivity()
         }
 
-    val isUserInitialized: Boolean get() = !PrefUtils.isClientIdEmpty()
+    val isUserInitialized: Boolean get() = !PrefUtils.isClientIdEmpty
 
     /**
      * @return FlowableProcessor that emits responses from WebSocket connection
@@ -63,7 +63,7 @@ class ThreadsLib private constructor(context: Context?) {
 
     fun initUser(userInfoBuilder: UserInfoBuilder) {
         if (!Config.instance.clientIdIgnoreEnabled) {
-            val currentClientId = PrefUtils.getClientID()
+            val currentClientId = PrefUtils.clientID
             if (currentClientId != null && !ObjectsCompat.equals(
                     currentClientId,
                     userInfoBuilder.clientId
@@ -75,13 +75,13 @@ class ThreadsLib private constructor(context: Context?) {
             // it will only affect GPB, every time they try to init user we will delete user related data
             ChatController.getInstance().cleanAll()
         }
-        PrefUtils.setAppMarker(userInfoBuilder.appMarker)
+        PrefUtils.appMarker = userInfoBuilder.appMarker
         PrefUtils.setNewClientId(userInfoBuilder.clientId)
-        PrefUtils.setAuthToken(userInfoBuilder.authToken)
-        PrefUtils.setAuthSchema(userInfoBuilder.authSchema)
-        PrefUtils.setClientIdSignature(userInfoBuilder.clientIdSignature)
-        PrefUtils.setUserName(userInfoBuilder.userName)
-        PrefUtils.setData(userInfoBuilder.clientData)
+        PrefUtils.authToken = userInfoBuilder.authToken
+        PrefUtils.authSchema = userInfoBuilder.authSchema
+        PrefUtils.clientIdSignature = userInfoBuilder.clientIdSignature
+        PrefUtils.userName = userInfoBuilder.userName
+        PrefUtils.data = userInfoBuilder.clientData
         PrefUtils.setClientIdEncrypted(userInfoBuilder.clientIdEncrypted)
         ChatController.getInstance().sendInit()
         ChatController.getInstance().loadHistory()
@@ -140,7 +140,7 @@ class ThreadsLib private constructor(context: Context?) {
      */
     fun sendMessage(message: String?, fileUri: Uri?): Boolean {
         val chatController = ChatController.getInstance()
-        return if (!PrefUtils.isClientIdEmpty()) {
+        return if (!PrefUtils.isClientIdEmpty) {
             var fileDescription: FileDescription? = null
             if (fileUri != null) {
                 fileDescription = FileDescription(

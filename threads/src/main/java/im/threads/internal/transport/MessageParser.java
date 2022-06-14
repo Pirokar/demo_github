@@ -242,6 +242,7 @@ public final class MessageParser {
                     timeStamp
             );
             fileDescription.setDownloadPath(attachment.getResult());
+            fileDescription.setOriginalPath(attachment.getOriginalUrl());
             fileDescription.setIncomingName(attachment.getName());
             fileDescription.setSelfie(attachment.isSelfie());
             fileDescription.setMimeType(attachment.getType());

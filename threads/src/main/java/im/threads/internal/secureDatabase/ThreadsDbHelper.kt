@@ -89,7 +89,7 @@ class ThreadsDbHelper(val context: Context) :
     }
 
     override fun updateFileDescription(fileDescription: FileDescription) {
-        fileDescriptionTable.updateFileDescription(this, fileDescription)
+        fileDescriptionTable.updateFileDescriptionByName(this, fileDescription)
     }
 
     override fun getLastConsultInfo(id: String): ConsultInfo? =
