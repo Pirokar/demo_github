@@ -1,114 +1,98 @@
-package im.threads.internal.controllers;
+package im.threads.internal.activities.files_activity
 
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import im.threads.internal.activities.ImagesActivity
+import im.threads.internal.broadcastReceivers.ProgressReceiver
+import im.threads.internal.model.FileDescription
+import im.threads.internal.secureDatabase.DatabaseHolder.Companion.getInstance
+import im.threads.internal.utils.FileUtils.getMimeType
+import im.threads.internal.utils.FileUtils.isImage
+import im.threads.internal.utils.ThreadsLogger
+import im.threads.internal.workers.FileDownloadWorker.Companion.startDownloadFD
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+class FilesViewModel(private val context: Context) : ViewModel(), ProgressReceiver.Callback {
+    private val tag = FilesViewModel::class.java.canonicalName
+    private val compositeDisposable = CompositeDisposable()
 
-import im.threads.internal.activities.FilesActivity;
-import im.threads.internal.activities.ImagesActivity;
-import im.threads.internal.broadcastReceivers.ProgressReceiver;
-import im.threads.internal.secureDatabase.DatabaseHolder;
-import im.threads.internal.model.FileDescription;
-import im.threads.internal.utils.FileUtils;
-import im.threads.internal.utils.ThreadsLogger;
-import im.threads.internal.workers.FileDownloadWorker;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-
-public final class FilesAndMediaFragment extends Fragment {
-
-    private static final String TAG = FilesAndMediaFragment.class.getCanonicalName();
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-    private FilesActivity activity;
+    private val localIntentLiveData = MutableLiveData<Intent>()
+    val intentLiveData: LiveData<Intent> get() = localIntentLiveData
+    private val localFilesFlowLiveData = MutableLiveData<FilesFlow>()
+    val filesFlowLiveData: LiveData<FilesFlow> get() = localFilesFlowLiveData
 
     // Для приема сообщений из сервиса по скачиванию файлов
-    private ProgressReceiver progressReceiver;
+    private val progressReceiver = ProgressReceiver(this)
 
-    public static FilesAndMediaFragment getInstance() {
-        return new FilesAndMediaFragment();
+    init {
+        connectReceiver()
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+    override fun onCleared() {
+        super.onCleared()
+        disconnectReceiver()
+        compositeDisposable.dispose()
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return null;
+    override fun updateProgress(fileDescription: FileDescription?) {
+        localFilesFlowLiveData.value = FilesFlow.UpdatedProgress(fileDescription)
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        compositeDisposable.dispose();
+    override fun onDownloadError(fileDescription: FileDescription?, throwable: Throwable?) {
+        localFilesFlowLiveData.value = FilesFlow.DownloadError(fileDescription, throwable)
     }
 
-    public void bindActivity(FilesActivity activity) {
-        this.activity = activity;
-        progressReceiver = new ProgressReceiver(activity);
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ProgressReceiver.PROGRESS_BROADCAST);
-        intentFilter.addAction(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST);
-        intentFilter.addAction(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST);
-        LocalBroadcastManager.getInstance(activity).registerReceiver(progressReceiver, intentFilter);
-    }
-
-    public void unbindActivity() {
-        if (this.activity != null) {
-            LocalBroadcastManager.getInstance(this.activity).unregisterReceiver(progressReceiver);
-        }
-    }
-
-    public void getFilesAsync() {
-        compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
+    fun getFilesAsync() {
+        compositeDisposable.add(
+            getInstance().allFileDescriptions
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        list -> {
-                            if (null != activity) {
-                                activity.onFileReceive(list);
-                            }
-                        },
-                        e -> ThreadsLogger.e(TAG, "getAllFileDescriptions error: " + e.getMessage()))
-        );
+                .subscribe(::onFilesReceived, ::onFilesReceivedError)
+        )
     }
 
-    public void onFileClick(FileDescription fileDescription) {
-        if (fileDescription.getFileUri() == null) {
-            return;
+    fun onFileClick(fileDescription: FileDescription) {
+        if (fileDescription.fileUri == null) {
+            return
         }
-        if (FileUtils.isImage(fileDescription)) {
-            activity.startActivity(ImagesActivity.getStartIntent(activity, fileDescription));
+        if (isImage(fileDescription)) {
+            localIntentLiveData.value = ImagesActivity.getStartIntent(context, fileDescription)
         } else {
-            Intent target = new Intent(Intent.ACTION_VIEW);
-            target.setDataAndType(fileDescription.getFileUri(), FileUtils.getMimeType(fileDescription));
-            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            try {
-                activity.startActivity(target);
-            } catch (final ActivityNotFoundException e) {
-                Toast.makeText(activity, "No application support this type of file", Toast.LENGTH_SHORT)
-                        .show();
-            }
+            val target = Intent(Intent.ACTION_VIEW)
+            target.setDataAndType(fileDescription.fileUri, getMimeType(fileDescription))
+            target.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            localIntentLiveData.value = target
         }
     }
 
-    public void onDownloadFileClick(FileDescription fileDescription) {
-        if (fileDescription.getFileUri() == null) {
-            FileDownloadWorker.startDownloadFD(activity, fileDescription);
-        }
+    fun onDownloadFileClick(fileDescription: FileDescription) {
+        fileDescription.fileUri?.let { startDownloadFD(context, fileDescription) }
+    }
+
+    private fun onFilesReceived(list: List<FileDescription?>?) {
+        localFilesFlowLiveData.value = FilesFlow.FilesReceived(list)
+    }
+
+    private fun onFilesReceivedError(error: Throwable) {
+        ThreadsLogger.e(tag, "getAllFileDescriptions error: ${error.message}")
+    }
+
+    private fun connectReceiver() {
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(ProgressReceiver.PROGRESS_BROADCAST)
+        intentFilter.addAction(ProgressReceiver.DOWNLOADED_SUCCESSFULLY_BROADCAST)
+        intentFilter.addAction(ProgressReceiver.DOWNLOAD_ERROR_BROADCAST)
+        LocalBroadcastManager.getInstance(context).registerReceiver(progressReceiver, intentFilter)
+    }
+
+    private fun disconnectReceiver() {
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(progressReceiver)
     }
 }

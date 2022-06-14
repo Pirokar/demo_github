@@ -34,7 +34,7 @@
             android:name=".internal.activities.ConsultActivity"
             android:theme="@style/ThreadsStyleConsultPage"/>
         <activity
-            android:name=".internal.activities.FilesActivity"
+            android:name=".internal.activities.files_activity.FilesActivity"
             android:theme="@style/ThreadsStyle"/>
         <activity
             android:name=".internal.activities.GalleryActivity"
