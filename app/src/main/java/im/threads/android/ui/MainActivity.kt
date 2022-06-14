@@ -287,8 +287,8 @@ class MainActivity : AppCompatActivity(), EditCardDialogActionsListener, YesNoDi
 
     fun goToChatWithQuote() {
         val campaignMessage = getTestCampaignMessage()
-        PrefUtils.setCampaignMessage(campaignMessage)
-        var intent = prepareBottomNavigationActivityIntent("dte.chc.mobile3.android")
+        PrefUtils.campaignMessage = campaignMessage
+        val intent = prepareBottomNavigationActivityIntent("dte.chc.mobile3.android")
         intent?.putExtra(ARG_NEEDS_SHOW_CHAT, true)
         startActivity(intent)
     }

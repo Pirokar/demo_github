@@ -62,8 +62,8 @@ public final class ImagesActivity extends BaseActivity implements ViewPager.OnPa
         setContentView(R.layout.activity_images);
         mViewPager = findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(this);
-        initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow));
         style = Config.instance.getChatStyle();
+        initToolbar(findViewById(R.id.toolbar), findViewById(R.id.toolbar_shadow));
         compositeDisposable.add(DatabaseHolder.getInstance().getAllFileDescriptions()
                 .doOnSuccess(data -> {
                     files = new ArrayList<>();

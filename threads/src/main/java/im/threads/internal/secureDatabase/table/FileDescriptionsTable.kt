@@ -204,32 +204,44 @@ class FileDescriptionsTable : Table() {
         }
     }
 
-    fun updateFileDescription(sqlHelper: SQLiteOpenHelper, fileDescription: FileDescription) {
-        val cv = ContentValues()
-        cv.put(COLUMN_FD_FROM, fileDescription.from)
-        cv.put(
-            COLUMN_FD_PATH,
-            if (fileDescription.fileUri != null) fileDescription.fileUri.toString() else null
-        )
-        cv.put(COLUMN_FD_URL, fileDescription.downloadPath)
-        cv.put(COLUMN_FD_TIMESTAMP, fileDescription.timeStamp)
-        cv.put(COLUMN_FD_SIZE, fileDescription.size)
-        cv.put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.downloadProgress)
-        cv.put(COLUMN_FD_FILENAME, fileDescription.incomingName)
-        cv.put(COLUMN_FD_MIME_TYPE, fileDescription.mimeType)
-        cv.put(COLUMN_FD_SELFIE, fileDescription.isSelfie)
-        cv.put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.isSelfie)
-        cv.put(COLUMN_FD_ERROR_CODE, fileDescription.errorCode.state)
-        cv.put(COLUMN_FD_ERROR_MESSAGE, fileDescription.errorMessage)
+    fun updateFileDescriptionByName(sqlHelper: SQLiteOpenHelper, fileDescription: FileDescription) {
+        val cv = getCvFromFileDescription(fileDescription)
         sqlHelper.getWritableDatabase(DB_PASSWORD).update(
             TABLE_FILE_DESCRIPTION,
             cv,
-            (
-                "" + COLUMN_FD_FILENAME +
-                    " like ? and " + COLUMN_FD_URL + " like ?"
-                ),
+            ("$COLUMN_FD_FILENAME like ? and $COLUMN_FD_URL like ?"),
             arrayOf(fileDescription.incomingName, fileDescription.downloadPath)
         )
+    }
+
+    fun updateFileDescriptionByUrl(sqlHelper: SQLiteOpenHelper, fileDescription: FileDescription) {
+        val cv = getCvFromFileDescription(fileDescription)
+        sqlHelper.getWritableDatabase(DB_PASSWORD).update(
+            TABLE_FILE_DESCRIPTION,
+            cv,
+            ("$COLUMN_FD_URL = ?"),
+            arrayOf(fileDescription.originalPath)
+        )
+    }
+
+    private fun getCvFromFileDescription(fileDescription: FileDescription): ContentValues {
+        return ContentValues().apply {
+            put(COLUMN_FD_FROM, fileDescription.from)
+            put(
+                COLUMN_FD_PATH,
+                if (fileDescription.fileUri != null) fileDescription.fileUri.toString() else null
+            )
+            put(COLUMN_FD_URL, fileDescription.downloadPath)
+            put(COLUMN_FD_TIMESTAMP, fileDescription.timeStamp)
+            put(COLUMN_FD_SIZE, fileDescription.size)
+            put(COLUMN_FD_DOWNLOAD_PROGRESS, fileDescription.downloadProgress)
+            put(COLUMN_FD_FILENAME, fileDescription.incomingName)
+            put(COLUMN_FD_MIME_TYPE, fileDescription.mimeType)
+            put(COLUMN_FD_SELFIE, fileDescription.isSelfie)
+            put(COLUMN_FD_ATTACHMENT_STATE, fileDescription.isSelfie)
+            put(COLUMN_FD_ERROR_CODE, fileDescription.errorCode.state)
+            put(COLUMN_FD_ERROR_MESSAGE, fileDescription.errorMessage)
+        }
     }
 }
 

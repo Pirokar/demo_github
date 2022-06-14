@@ -106,10 +106,6 @@ afterEvaluate {
                     // release
                     url 'https://maven-pub.edna.ru/repository/maven-releases'
                 }
-                credentials {
-                    username "$mavenProdUser"
-                    password "$mavenProdPass"
-                }
             }
         }
     }

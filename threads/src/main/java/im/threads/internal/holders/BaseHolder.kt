@@ -51,15 +51,17 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         button.setCompletedDrawable(completed)
     }
 
-    fun getPicassoTargetForView(view: ImageView, placeholderResource: Int): Target {
+    fun getPicassoTargetForView(view: ImageView, placeholderResource: Int, onLoaded: () -> Unit): Target {
         return object : Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                 view.setImageBitmap(bitmap)
                 view.scaleType = ImageView.ScaleType.CENTER_CROP
+                onLoaded()
             }
             override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
                 view.scaleType = ImageView.ScaleType.FIT_CENTER
                 view.setImageResource(placeholderResource)
+                onLoaded()
             }
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
         }

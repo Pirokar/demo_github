@@ -9,13 +9,13 @@ class ApplicationConfig(
 
     fun getCloudPair(): CloudPair {
         return when {
-            PrefUtils.getFcmToken() != null -> CloudPair(
+            PrefUtils.fcmToken != null -> CloudPair(
                 threadsGateProviderUid,
-                PrefUtils.getFcmToken()
+                PrefUtils.fcmToken
             )
-            threadsGateHuaweiProviderUid != null && PrefUtils.getHcmToken() != null -> CloudPair(
+            threadsGateHuaweiProviderUid != null && PrefUtils.hcmToken != null -> CloudPair(
                 threadsGateHuaweiProviderUid,
-                PrefUtils.getHcmToken()
+                PrefUtils.hcmToken
             )
             else -> CloudPair(threadsGateProviderUid, null)
         }
