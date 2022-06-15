@@ -130,8 +130,8 @@ class FileDownloadWorker(val context: Context, workerParameters: WorkerParameter
         )
     }
 
+    // TODO: remove static after ChatController
     companion object {
-
         const val TAG = "FileDownloadWorker"
         private const val WORKER_NAME = "im.threads.internal.workers.FileDownloadWorker"
 

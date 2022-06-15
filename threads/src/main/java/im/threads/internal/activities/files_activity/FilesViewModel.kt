@@ -10,7 +10,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import im.threads.internal.activities.ImagesActivity
 import im.threads.internal.broadcastReceivers.ProgressReceiver
 import im.threads.internal.model.FileDescription
-import im.threads.internal.secureDatabase.DatabaseHolder.Companion.getInstance
+import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.FileUtils.getMimeType
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.ThreadsLogger
@@ -19,7 +19,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class FilesViewModel(private val context: Context) : ViewModel(), ProgressReceiver.Callback {
+class FilesViewModel(
+    private val context: Context,
+    private val database: DatabaseHolder
+) : ViewModel(), ProgressReceiver.Callback {
     private val tag = FilesViewModel::class.java.canonicalName
     private val compositeDisposable = CompositeDisposable()
 
@@ -51,7 +54,7 @@ class FilesViewModel(private val context: Context) : ViewModel(), ProgressReceiv
 
     fun getFilesAsync() {
         compositeDisposable.add(
-            getInstance().allFileDescriptions
+            database.allFileDescriptions
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(::onFilesReceived, ::onFilesReceivedError)

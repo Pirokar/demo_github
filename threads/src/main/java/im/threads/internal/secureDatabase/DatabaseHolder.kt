@@ -13,7 +13,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
-class DatabaseHolder private constructor() {
+class DatabaseHolder {
     /**
      * For Autotests purposes
      *
