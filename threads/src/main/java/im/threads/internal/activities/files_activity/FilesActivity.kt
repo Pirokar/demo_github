@@ -17,6 +17,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
@@ -29,15 +30,17 @@ import im.threads.internal.activities.BaseActivity
 import im.threads.internal.adapters.files_and_media.FilesAndMediaAdapter
 import im.threads.internal.adapters.files_and_media.FilesAndMediaAdapter.OnFileClick
 import im.threads.internal.model.FileDescription
+import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.Keyboard
 import im.threads.internal.utils.setColorFilter
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FilesActivity : BaseActivity(), OnFileClick {
     private val binding: ActivityFilesAndMediaBinding by lazy {
         ActivityFilesAndMediaBinding.inflate(layoutInflater)
     }
-    private val filesViewModel: FilesViewModel by viewModel()
+    private val filesViewModel: FilesViewModel by viewModels {
+        FilesViewModel.Factory(Config.instance.context, DatabaseHolder.getInstance())
+    }
     private val style = Config.instance.chatStyle
     private var filesAndMediaAdapter: FilesAndMediaAdapter? = null
 

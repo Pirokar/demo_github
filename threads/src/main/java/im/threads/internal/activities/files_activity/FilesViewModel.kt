@@ -6,6 +6,7 @@ import android.content.IntentFilter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import im.threads.internal.activities.ImagesActivity
 import im.threads.internal.broadcastReceivers.ProgressReceiver
@@ -23,6 +24,17 @@ class FilesViewModel(
     private val context: Context,
     private val database: DatabaseHolder
 ) : ViewModel(), ProgressReceiver.Callback {
+
+    class Factory(
+        private val context: Context,
+        private val database: DatabaseHolder
+    ) : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            @Suppress("UNCHECKED_CAST")
+            return FilesViewModel(context, database) as T
+        }
+    }
+
     private val tag = FilesViewModel::class.java.canonicalName
     private val compositeDisposable = CompositeDisposable()
 
