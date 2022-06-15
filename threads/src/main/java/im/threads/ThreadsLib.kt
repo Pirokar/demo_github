@@ -9,8 +9,6 @@ import android.text.TextUtils
 import androidx.core.util.ObjectsCompat
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter
 import cafe.adriel.androidaudioconverter.callback.ILoadCallback
-import im.threads.di.ThreadsKoinContext
-import im.threads.di.mainModule
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
@@ -27,23 +25,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.processors.FlowableProcessor
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.koinApplication
 import java.io.File
 
 @Suppress("unused")
 class ThreadsLib private constructor(context: Context?) {
-    init {
-        context?.let {
-            val koinApp = koinApplication {
-                androidContext(it)
-                modules(mainModule)
-            }
-            ThreadsKoinContext.koinApp = koinApp
-            koinApp.koin
-        }
-    }
-
     /**
      * @return time in seconds since the last user activity
      */
@@ -165,7 +150,7 @@ class ThreadsLib private constructor(context: Context?) {
     }
 
     interface PendingIntentCreator {
-        fun create(context: Context?, appMarker: String?): PendingIntent?
+        fun create(context: Context, appMarker: String): PendingIntent?
     }
 
     interface UnreadMessagesCountListener {
