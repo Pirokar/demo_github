@@ -26,8 +26,8 @@ import im.threads.R
 import im.threads.databinding.ActivityFilesAndMediaBinding
 import im.threads.internal.Config
 import im.threads.internal.activities.BaseActivity
-import im.threads.internal.adapters.FilesAndMediaAdapter
-import im.threads.internal.adapters.FilesAndMediaAdapter.OnFileClick
+import im.threads.internal.adapters.files_and_media.FilesAndMediaAdapter
+import im.threads.internal.adapters.files_and_media.FilesAndMediaAdapter.OnFileClick
 import im.threads.internal.model.FileDescription
 import im.threads.internal.utils.Keyboard
 import im.threads.internal.utils.setColorFilter
@@ -67,11 +67,11 @@ class FilesActivity : BaseActivity(), OnFileClick {
         }
     }
 
-    override fun onFileClick(fileDescription: FileDescription) {
+    override fun onFileClick(fileDescription: FileDescription?) {
         filesViewModel.onFileClick(fileDescription)
     }
 
-    override fun onDownloadFileClick(fileDescription: FileDescription) {
+    override fun onDownloadFileClick(fileDescription: FileDescription?) {
         filesViewModel.onDownloadFileClick(fileDescription)
     }
 

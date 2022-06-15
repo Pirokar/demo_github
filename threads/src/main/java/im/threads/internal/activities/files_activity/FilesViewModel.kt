@@ -58,8 +58,8 @@ class FilesViewModel(private val context: Context) : ViewModel(), ProgressReceiv
         )
     }
 
-    fun onFileClick(fileDescription: FileDescription) {
-        if (fileDescription.fileUri == null) {
+    fun onFileClick(fileDescription: FileDescription?) {
+        if (fileDescription?.fileUri == null) {
             return
         }
         if (isImage(fileDescription)) {
@@ -72,8 +72,9 @@ class FilesViewModel(private val context: Context) : ViewModel(), ProgressReceiv
         }
     }
 
-    fun onDownloadFileClick(fileDescription: FileDescription) {
-        fileDescription.fileUri?.let { startDownloadFD(context, fileDescription) }
+    fun onDownloadFileClick(fileDescription: FileDescription?) {
+        val downloadPath = fileDescription?.fileUri?.toString() ?: fileDescription?.downloadPath
+        downloadPath?.let { startDownloadFD(context, fileDescription!!) }
     }
 
     private fun onFilesReceived(list: List<FileDescription?>?) {
