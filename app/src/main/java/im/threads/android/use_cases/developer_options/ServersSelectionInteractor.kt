@@ -85,7 +85,7 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
 
     override fun isServerNotSet() = getLatestServer() == null
 
-    override fun makeDefaultInit() {
+    override fun initServer() {
         copyServersFromFile()
         fetchServerNames()
         if (currentServerName.isBlank()) {

@@ -6,7 +6,7 @@ import im.threads.android.data.ServerConfig
 interface ServersSelectionUseCase {
     fun configureDebugMenu()
     fun isServerNotSet(): Boolean
-    fun makeDefaultInit()
+    fun initServer()
     fun setServerAsChanged()
     fun getCurrentServer(): ServerConfig
     fun setCurrentServer(serverName: String)

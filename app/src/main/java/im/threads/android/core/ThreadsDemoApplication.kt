@@ -41,7 +41,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
             modules(appModule)
         }
 
-        checkCurrentServer()
+        developerOptions.initServer()
 
         disposable = Completable.fromAction { requestToken(this) }
             .subscribeOn(Schedulers.io())
@@ -74,12 +74,6 @@ class ThreadsDemoApplication : MultiDexApplication() {
     override fun onTerminate() {
         super.onTerminate()
         disposable?.dispose()
-    }
-
-    private fun checkCurrentServer() {
-        if (developerOptions.isServerNotSet()) {
-            developerOptions.makeDefaultInit()
-        }
     }
 
     private class CustomPendingIntentCreator : PendingIntentCreator {

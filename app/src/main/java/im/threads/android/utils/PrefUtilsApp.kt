@@ -19,7 +19,8 @@ object PrefUtilsApp {
     private const val PREF_THREADS_GATE_PROVIDER_UID = "PREF_THREADS_GATE_PROVIDER_UID"
     private const val PREF_THREADS_GATE_HCM_PROVIDER_UID = "PREF_THREADS_GATE_HCM_PROVIDER_UID"
     private const val PREF_THEME = "PREF_THEME"
-    private const val PREF_SERVERS_NAME = "SERVERS_PREFS"
+    private const val PREF_SERVERS_LIST = "SERVERS_LIST_PREFS"
+    private const val PREF_SELECTED_SERVER_NAME = "SELECTED_SERVER_NAME_PREFS"
     private const val PREF_IMPORTED_FILE_SERVERS_NAME = "servers_config"
     private const val PREF_CURRENT_SERVER = "PREF_CURRENT_SERVER"
     private const val PREF_IS_SERVER_CHANGED = "PREF_IS_SERVER_CHANGED"
@@ -97,20 +98,19 @@ object PrefUtilsApp {
 
     @JvmStatic
     fun addServers(context: Context, servers: Map<String, String>, clearExisting: Boolean = false) {
-        val prefsEditor = context.getSharedPreferences(PREF_SERVERS_NAME, Context.MODE_PRIVATE).edit()
+        val prefsEditor = context.getSharedPreferences(PREF_SERVERS_LIST, Context.MODE_PRIVATE).edit()
         if (clearExisting) prefsEditor.clear()
         servers.forEach { prefsEditor.putString(it.key, it.value) }
         prefsEditor.commit()
     }
 
     fun getAllServers(context: Context): Map<String, String> {
-        return getServersFrom(context, PREF_SERVERS_NAME)
+        return getServersFrom(context, PREF_SERVERS_LIST)
     }
 
     @JvmStatic
     fun setCurrentServer(context: Context, currentServerName: String) {
-        PreferenceManager
-            .getDefaultSharedPreferences(context)
+        context.getSharedPreferences(PREF_SELECTED_SERVER_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(PREF_CURRENT_SERVER, currentServerName)
             .commit()
@@ -118,15 +118,13 @@ object PrefUtilsApp {
 
     @JvmStatic
     fun getCurrentServer(context: Context): String {
-        return PreferenceManager
-            .getDefaultSharedPreferences(context)
+        return context.getSharedPreferences(PREF_SELECTED_SERVER_NAME, Context.MODE_PRIVATE)
             .getString(PREF_CURRENT_SERVER, "") ?: ""
     }
 
     @JvmStatic
     fun setIsServerChanged(context: Context, isChanged: Boolean) {
-        PreferenceManager
-            .getDefaultSharedPreferences(context)
+        context.getSharedPreferences(PREF_SELECTED_SERVER_NAME, Context.MODE_PRIVATE)
             .edit()
             .putBoolean(PREF_IS_SERVER_CHANGED, isChanged)
             .commit()
@@ -134,8 +132,7 @@ object PrefUtilsApp {
 
     @JvmStatic
     fun getIsServerChanged(context: Context): Boolean {
-        return PreferenceManager
-            .getDefaultSharedPreferences(context)
+        return context.getSharedPreferences(PREF_SELECTED_SERVER_NAME, Context.MODE_PRIVATE)
             .getBoolean(PREF_IS_SERVER_CHANGED, false)
     }
 
