@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
     id 'maven-publish'
+    id 'kotlin-allopen'
 }
 
 Properties properties = new Properties()
@@ -143,15 +144,23 @@ dependencies {
     implementation "com.google.firebase:firebase-messaging:$fcmVersion"
     implementation 'androidx.security:security-crypto:1.1.0-alpha03'
 
-    testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
-    testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
-    androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
-    androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
-
     implementation "com.google.android.flexbox:flexbox:$flexboxVersion"
 
     implementation("androidx.work:work-runtime-ktx:$work_version")
 
     implementation "net.zetetic:android-database-sqlcipher:$sqlcipher_version"
     implementation "androidx.sqlite:sqlite:$sqlite_version"
+
+    testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
+    testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testImplementation group: 'org.mockito', name: 'mockito-inline', version: rootProject.mockitoInlineVersion
+    androidTestImplementation "androidx.test:runner:$rootProject.androidXTestVersion"
+    androidTestImplementation "androidx.test:rules:$rootProject.androidXTestVersion"
+    androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    androidTestImplementation "org.mockito:mockito-android:$rootProject.mockitoVersion"
+}
+
+allOpen {
+    annotation('im.threads.annotation.OpenClass')
 }

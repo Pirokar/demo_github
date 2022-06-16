@@ -3,11 +3,13 @@ package im.threads.internal.activities.files_activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import im.threads.annotation.OpenForTesting
 import im.threads.internal.activities.ImagesActivity
 import im.threads.internal.broadcastReceivers.ProgressReceiver
 import im.threads.internal.model.FileDescription
@@ -20,6 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
+@OpenForTesting
 class FilesViewModel(
     private val context: Context,
     private val database: DatabaseHolder
@@ -38,9 +41,12 @@ class FilesViewModel(
     private val tag = FilesViewModel::class.java.canonicalName
     private val compositeDisposable = CompositeDisposable()
 
-    private val localIntentLiveData = MutableLiveData<Intent>()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val localIntentLiveData = MutableLiveData<Intent>()
     val intentLiveData: LiveData<Intent> get() = localIntentLiveData
-    private val localFilesFlowLiveData = MutableLiveData<FilesFlow>()
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val localFilesFlowLiveData = MutableLiveData<FilesFlow>()
     val filesFlowLiveData: LiveData<FilesFlow> get() = localFilesFlowLiveData
 
     // Для приема сообщений из сервиса по скачиванию файлов
@@ -50,7 +56,8 @@ class FilesViewModel(
         connectReceiver()
     }
 
-    override fun onCleared() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public override fun onCleared() {
         super.onCleared()
         disconnectReceiver()
         compositeDisposable.dispose()
@@ -108,7 +115,8 @@ class FilesViewModel(
         LocalBroadcastManager.getInstance(context).registerReceiver(progressReceiver, intentFilter)
     }
 
-    private fun disconnectReceiver() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun disconnectReceiver() {
         LocalBroadcastManager.getInstance(context).unregisterReceiver(progressReceiver)
     }
 }

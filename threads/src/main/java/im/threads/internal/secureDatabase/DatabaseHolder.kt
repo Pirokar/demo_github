@@ -1,5 +1,6 @@
 package im.threads.internal.secureDatabase
 
+import im.threads.annotation.OpenForTesting
 import im.threads.internal.Config
 import im.threads.internal.model.ChatItem
 import im.threads.internal.model.ConsultInfo
@@ -13,6 +14,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
+@OpenForTesting
 class DatabaseHolder {
     /**
      * For Autotests purposes
