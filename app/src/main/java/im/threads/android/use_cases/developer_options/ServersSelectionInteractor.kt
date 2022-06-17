@@ -38,7 +38,6 @@ import im.threads.android.R
 import im.threads.android.core.ThreadsDemoApplication
 import im.threads.android.data.ServerConfig
 import im.threads.android.data.TransportConfig
-import im.threads.android.ui.EditTransportConfigDialog
 import im.threads.android.ui.MainActivity
 import im.threads.android.ui.add_server_dialog.AddServerDialog
 import im.threads.android.ui.add_server_dialog.AddServerDialogActions
@@ -53,6 +52,7 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
     private var isServersListInitialized = false
     private var currentServerName = ""
     private var servers = listOf<ServerMenuItem>()
+    private var isAddServerModuleAdded = false
 
     override fun configureDebugMenu() {
         fetchServerNames()
@@ -144,34 +144,29 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
     }
 
     override fun addUiDependedModulesToDebugMenu(activity: AppCompatActivity) {
-        val editTransportModule = TextModule(
-            getString(R.string.demo_change_current_server),
-            TextModule.Type.BUTTON,
-            onItemSelected = {
-                EditTransportConfigDialog.open(activity)
-            }
-        )
-        val paddingModule = PaddingModule(PaddingModule.Size.MEDIUM)
-        val addServerModule = TextModule(
-            getString(R.string.demo_add_server),
-            TextModule.Type.BUTTON,
-            onItemSelected = {
-                val onServerAddedAction = object : AddServerDialogActions {
-                    override fun onServerAdded() {
-                        fetchServerNames()
-                        setModulesToBeagle()
-                        addUiDependedModulesToDebugMenu(activity)
+        if (!isAddServerModuleAdded) {
+            val paddingModule = PaddingModule(PaddingModule.Size.MEDIUM)
+            val addServerModule = TextModule(
+                getString(R.string.demo_add_server),
+                TextModule.Type.BUTTON,
+                onItemSelected = {
+                    val onServerAddedAction = object : AddServerDialogActions {
+                        override fun onServerAdded() {
+                            fetchServerNames()
+                            setModulesToBeagle()
+                            addUiDependedModulesToDebugMenu(activity)
+                        }
                     }
+                    AddServerDialog.open(activity, onServerAddedAction)
                 }
-                AddServerDialog.open(activity, onServerAddedAction)
-            }
-        )
-        Beagle.add(
-            editTransportModule,
-            paddingModule,
-            addServerModule,
-            placement = Placement.Below(SINGLE_SELECTION_MODULE_ID)
-        )
+            )
+            Beagle.add(
+                paddingModule,
+                addServerModule,
+                placement = Placement.Below(SINGLE_SELECTION_MODULE_ID)
+            )
+            isAddServerModuleAdded = true
+        }
     }
 
     private fun copyServersFromFile() {

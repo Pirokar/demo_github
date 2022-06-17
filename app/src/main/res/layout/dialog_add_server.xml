@@ -43,7 +43,7 @@
             android:id="@+id/baseUrlEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/edit_transport_config_base_url" />
+            android:hint="@string/transport_config_base_url" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -55,7 +55,7 @@
             android:id="@+id/threadsGateUrlEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/edit_transport_config_threads_gate_url" />
+            android:hint="@string/transport_config_threads_gate_url" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -67,7 +67,7 @@
             android:id="@+id/threadsGateProviderUidEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/edit_transport_config_threads_gate_provider_uid" />
+            android:hint="@string/transport_config_threads_gate_provider_uid" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
