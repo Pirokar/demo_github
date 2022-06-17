@@ -70,10 +70,10 @@ public final class PermissionsActivity extends AppCompatActivity {
 
     private static boolean isPermissionsNonNull(String[] permissions) {
         if (permissions == null) return false;
-        boolean isNull = true;
+        boolean isNull = false;
         for (String permission : permissions) {
-            if (permission != null) {
-                isNull = false;
+            if (permission == null) {
+                isNull = true;
                 break;
             }
         }
