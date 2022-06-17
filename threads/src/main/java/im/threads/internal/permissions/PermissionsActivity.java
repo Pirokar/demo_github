@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -24,9 +25,10 @@ public final class PermissionsActivity extends AppCompatActivity {
     public static final int RESPONSE_DENIED = 20;
     public static final int RESPONSE_NEVER_AGAIN = 30;
     private static final int PERMISSION_REQUEST_CODE = 0;
-    private static final String EXTRA_PERMISSIONS = "EXTRA_PERMISSIONS";   // Ключ для передачи разрешений
-    private static final String EXTRA_PERMISSION_TEXT = "EXTRA_PERMISSION_TEXT";   // Ключ для передачи разрешений
-    private static final String PACKAGE_URL_SCHEME = "package:";           // Для открытия настроек
+    private static final String EXTRA_PERMISSIONS = "EXTRA_PERMISSIONS";
+    private static final String EXTRA_PERMISSION_TEXT = "EXTRA_PERMISSION_TEXT";
+    private static final String PACKAGE_URL_SCHEME = "package:";  // Для открытия настроек
+    private static final String TAG = PermissionsActivity.class.getSimpleName();
     private static final int TEXT_DEFAULT = -1;
     private boolean requiresCheck;
 
@@ -38,17 +40,25 @@ public final class PermissionsActivity extends AppCompatActivity {
      * Запуск активити
      */
     public static void startActivityForResult(Activity activity, int requestCode, int text, String... permissions) {
-        Intent intent = new Intent(activity, PermissionsActivity.class);
-        intent.putExtra(EXTRA_PERMISSIONS, permissions);
-        intent.putExtra(EXTRA_PERMISSION_TEXT, text);
-        ActivityCompat.startActivityForResult(activity, intent, requestCode, null);
+        if (isPermissionsNonNull(permissions)) {
+            Intent intent = new Intent(activity, PermissionsActivity.class);
+            intent.putExtra(EXTRA_PERMISSIONS, permissions);
+            intent.putExtra(EXTRA_PERMISSION_TEXT, text);
+            ActivityCompat.startActivityForResult(activity, intent, requestCode, null);
+        } else {
+            showPermissionsIsNullLog();
+        }
     }
 
     public static void startActivityForResult(Fragment fragment, int requestCode, int text, String... permissions) {
-        Intent intent = new Intent(fragment.getActivity(), PermissionsActivity.class);
-        intent.putExtra(EXTRA_PERMISSIONS, permissions);
-        intent.putExtra(EXTRA_PERMISSION_TEXT, text);
-        fragment.startActivityForResult(intent, requestCode, null);
+        if (isPermissionsNonNull(permissions)) {
+            Intent intent = new Intent(fragment.getActivity(), PermissionsActivity.class);
+            intent.putExtra(EXTRA_PERMISSIONS, permissions);
+            intent.putExtra(EXTRA_PERMISSION_TEXT, text);
+            fragment.startActivityForResult(intent, requestCode, null);
+        } else {
+            showPermissionsIsNullLog();
+        }
     }
 
     /**
@@ -56,6 +66,22 @@ public final class PermissionsActivity extends AppCompatActivity {
      */
     public static void startActivityForResult(Activity activity, int requestCode, String... permissions) {
         startActivityForResult(activity, requestCode, TEXT_DEFAULT, permissions);
+    }
+
+    private static boolean isPermissionsNonNull(String[] permissions) {
+        if (permissions == null) return false;
+        boolean isNull = true;
+        for (String permission : permissions) {
+            if (permission != null) {
+                isNull = false;
+                break;
+            }
+        }
+        return !isNull;
+    }
+
+    private static void showPermissionsIsNullLog() {
+        Log.e(TAG, "Permissions array is null");
     }
 
     @Override
@@ -81,7 +107,7 @@ public final class PermissionsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (requiresCheck) {
+        if (requiresCheck && isPermissionsNonNull(permissions)) {
             // Если разрешения не выданы, то нужно открыть диалог с разрешениями
             if (PermissionsChecker.permissionsDenied(PermissionsActivity.this, permissions)) {
                 requestPermissions(permissions);
@@ -89,6 +115,9 @@ public final class PermissionsActivity extends AppCompatActivity {
                 // Если выданы, закрыть активити с положительным результатом
                 allPermissionsGranted();
             }
+        } else if (permissions == null) {
+            showPermissionsIsNullLog();
+            finish();
         } else {
             requiresCheck = true;
         }
