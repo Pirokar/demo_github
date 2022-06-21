@@ -72,7 +72,7 @@ ext {
     androidXJunitVersion = '1.1.3'
     androidXTestVersion = '1.4.0'
 
-    beagleVersion = "2.8.1"
+    beagleVersion = "2.8.2"
 
     koin_version = '3.2.0'
     singlelivedata_version = '1.3.0'

@@ -47,7 +47,7 @@ import im.threads.android.utils.toJson
 import java.io.FileOutputStream
 import java.io.InputStream
 
-class ServersSelectionInteractor(private val context: Context) : ServersSelectionUseCase {
+class DebugMenuInteractor(private val context: Context) : DebugMenuUseCase {
     private val TAG = "DeveloperOptions"
     private var isServersListInitialized = false
     private var currentServerName = ""
@@ -74,10 +74,7 @@ class ServersSelectionInteractor(private val context: Context) : ServersSelectio
                 ),
                 networkLogBehavior = Behavior.NetworkLogBehavior(
                     networkLoggers = listOf(BeagleOkHttpLogger)
-                ),
-                getDrawerSize = { _, size ->
-                    size - 200
-                }
+                )
             )
         )
         setModulesToBeagle()

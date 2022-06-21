@@ -3,7 +3,7 @@ package im.threads.android.use_cases.developer_options
 import androidx.appcompat.app.AppCompatActivity
 import im.threads.android.data.ServerConfig
 
-interface ServersSelectionUseCase {
+interface DebugMenuUseCase {
     fun configureDebugMenu()
     fun isServerNotSet(): Boolean
     fun initServer()

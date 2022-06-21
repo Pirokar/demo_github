@@ -4,8 +4,8 @@ import android.text.TextUtils
 import android.util.Log
 import com.pandulapeter.beagle.logOkHttp.BeagleOkHttpLogger
 import im.threads.android.core.ThreadsDemoApplication.Companion.appContext
-import im.threads.android.use_cases.developer_options.ServersSelectionInteractor
-import im.threads.android.use_cases.developer_options.ServersSelectionUseCase
+import im.threads.android.use_cases.developer_options.DebugMenuInteractor
+import im.threads.android.use_cases.developer_options.DebugMenuUseCase
 import im.threads.internal.Config
 import im.threads.internal.utils.SSLCertificateInterceptor
 import okhttp3.Interceptor
@@ -22,7 +22,7 @@ internal object ServerAPI {
     private val TAG = ServerAPI::class.java.simpleName
     private var serverAPI: IServerAPI? = null
 
-    private val developerOptions: ServersSelectionUseCase = ServersSelectionInteractor(appContext)
+    private val developerOptions: DebugMenuUseCase = DebugMenuInteractor(appContext)
 
     @JvmStatic
     val aPI: IServerAPI?
