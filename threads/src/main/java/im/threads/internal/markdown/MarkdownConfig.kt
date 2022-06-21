@@ -1,4 +1,4 @@
-package im.threads.android.markdown
+package im.threads.internal.markdown
 
 import android.graphics.Typeface
 
@@ -21,20 +21,14 @@ class MarkdownConfig() {
     var blockMargin: Int? = null
 
     /**
-     * Starting margin before blockquotes. In pixels. Customization, if you want to separate it.
-     * Default margin is 24dp converted to pixels.
-     */
-    var blockQuote: Int? = null
-
-    /**
      * Width of a blockquote stripe. In pixels. Default: 1/4 of the block margin
      */
-    var stripeWidth: Int? = null
+    var blockQuoteWidth: Int? = null
 
     /**
      *  Color of a blockquote stripe. Default: textColor with 25 (0-255) alpha value. @ColorRes
      */
-    var stripeColor: Int? = null
+    var blockQuoteColor: Int? = null
 
     /**
      *  Controls the color of a list item.
@@ -77,12 +71,6 @@ class MarkdownConfig() {
      *  Default: inline code background color
      */
     var codeBlockBackgroundColor: Int? = null
-
-    /**
-     *  Leading margin for the block code content. In pixels.
-     *  Default: 8dp
-     */
-    var codeMultilineMargin: Int? = null
 
     /**
      * Typeface of code content. android.graphics.Typeface.

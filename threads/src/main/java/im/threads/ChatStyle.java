@@ -14,9 +14,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
-import com.yydcdut.markdown.MarkdownConfiguration;
-
 import java.io.Serializable;
+
+import im.threads.internal.markdown.MarkdownConfig;
 
 /**
  * Стиль чата.
@@ -494,7 +494,7 @@ public final class ChatStyle implements Serializable {
     public String systemMessageFont;
 
     // Конфигурации markdown в сообщениях
-    public MarkdownConfiguration incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
+    private MarkdownConfig incomingMarkdownConfiguration, outgoingMarkdownConfiguration;
 
     public ChatStyle() {
     }
@@ -1301,10 +1301,28 @@ public final class ChatStyle implements Serializable {
         return this;
     }
 
-    // https://github.com/yydcdut/RxMarkdown
-    public ChatStyle setIncomingMarkdownConfiguration(MarkdownConfiguration incoming) {
+    public ChatStyle setIncomingMarkdownConfiguration(MarkdownConfig incoming) {
         this.incomingMarkdownConfiguration = incoming;
         return this;
+    }
+
+    public MarkdownConfig getIncomingMarkdownConfiguration() {
+        if (incomingMarkdownConfiguration == null) {
+            incomingMarkdownConfiguration = new MarkdownConfig();
+        }
+        return incomingMarkdownConfiguration;
+    }
+
+    public ChatStyle setOutgoingMarkdownConfiguration(MarkdownConfig outgoing) {
+        this.outgoingMarkdownConfiguration = outgoing;
+        return this;
+    }
+
+    public MarkdownConfig getOutgoingMarkdownConfiguration() {
+        if (outgoingMarkdownConfiguration == null) {
+            outgoingMarkdownConfiguration = new MarkdownConfig();
+        }
+        return outgoingMarkdownConfiguration;
     }
 
     /**

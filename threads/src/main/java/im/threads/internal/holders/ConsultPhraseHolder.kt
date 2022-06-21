@@ -25,7 +25,7 @@ import com.squareup.picasso.Picasso
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
-import im.threads.internal.markdown.MarkdownProcessorHolder
+import im.threads.internal.markdown.MarkdownProcessor
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
@@ -201,8 +201,8 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             when {
                 consultPhrase.formattedPhrase != null -> {
                     mPhraseTextView.autoLinkMask = 0
-                    mPhraseTextView.text = MarkdownProcessorHolder.getMarkdownProcessor()
-                        .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
+                    mPhraseTextView.text = MarkdownProcessor.instance
+                        .parseOperatorMessage(consultPhrase.formattedPhrase.trim { it <= ' ' })
                     mPhraseTextView.movementMethod = LinkMovementMethod.getInstance()
                 }
                 deepLink != null -> {
