@@ -18,7 +18,7 @@ import okhttp3.Interceptor;
 
 public final class ConfigBuilder {
     @NonNull
-    private Context context;
+    Context context;
     @NonNull
     private ThreadsLib.PendingIntentCreator pendingIntentCreator = (context1, appMarker) -> {
         final Intent i = new Intent(context1, ChatActivity.class);

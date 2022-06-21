@@ -52,7 +52,13 @@ class ThreadsDemoApplication : MultiDexApplication() {
 
         val configBuilder = ConfigBuilder(this)
             .pendingIntentCreator(CustomPendingIntentCreator())
-            .unreadMessagesCountListener { t: Int -> unreadMessagesSubject.onNext(t) }
+            .unreadMessagesCountListener(object : ThreadsLib.UnreadMessagesCountListener {
+                override fun onUnreadMessagesCountChanged(count: Int) {
+                    unreadMessagesSubject.onNext(
+                        count
+                    )
+                }
+            })
             .surveyCompletionDelay(2000)
             .historyLoadingCount(50)
             .isDebugLoggingEnabled(true)
@@ -77,7 +83,7 @@ class ThreadsDemoApplication : MultiDexApplication() {
     }
 
     private class CustomPendingIntentCreator : PendingIntentCreator {
-        override fun create(context: Context, appMarker: String): PendingIntent? {
+        override fun create(context: Context, appMarker: String?): PendingIntent? {
             if (!TextUtils.isEmpty(appMarker)) {
                 val clientCards = getCards(context)
                 var pushClientCard: Card? = null

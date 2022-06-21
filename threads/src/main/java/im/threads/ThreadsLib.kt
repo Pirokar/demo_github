@@ -150,7 +150,7 @@ class ThreadsLib private constructor(context: Context?) {
     }
 
     interface PendingIntentCreator {
-        fun create(context: Context, appMarker: String): PendingIntent?
+        fun create(context: Context, appMarker: String?): PendingIntent?
     }
 
     interface UnreadMessagesCountListener {
