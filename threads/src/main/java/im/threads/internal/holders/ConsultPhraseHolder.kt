@@ -2,7 +2,6 @@ package im.threads.internal.holders
 
 import android.graphics.PorterDuff
 import android.graphics.Typeface
-import android.text.SpannableString
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.text.method.LinkMovementMethod
@@ -19,7 +18,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.text.util.LinkifyCompat
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import im.threads.R
@@ -188,32 +186,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
             when {
-                deepLink != null -> {
-                    mPhraseTextView.setOnClickListener { UrlUtils.openUrl(context, deepLink) }
-                }
-                url != null -> {
-                    mPhraseTextView.setOnClickListener { UrlUtils.openUrl(context, url) }
-                }
-                else -> {
-                    mPhraseTextView.setOnClickListener(null)
-                }
-            }
-            when {
                 consultPhrase.formattedPhrase != null -> {
                     mPhraseTextView.autoLinkMask = 0
                     mPhraseTextView.text = MarkdownProcessor.instance
                         .parseOperatorMessage(consultPhrase.formattedPhrase.trim { it <= ' ' })
                     mPhraseTextView.movementMethod = LinkMovementMethod.getInstance()
-                }
-                deepLink != null -> {
-                    val text = SpannableString(phrase)
-                    LinkifyCompat.addLinks(text, UrlUtils.DEEPLINK_URL, "")
-                    mPhraseTextView.text = text
-                }
-                url != null -> {
-                    val text = SpannableString(phrase)
-                    LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "")
-                    mPhraseTextView.text = text
                 }
                 else -> {
                     mPhraseTextView.text = phrase

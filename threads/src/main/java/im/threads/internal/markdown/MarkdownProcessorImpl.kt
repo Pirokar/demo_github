@@ -4,8 +4,10 @@ import android.content.Context
 import android.text.Spanned
 import im.threads.ChatStyle
 import im.threads.internal.Config
+import im.threads.internal.utils.UrlUtils
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
+import io.noties.markwon.MarkwonConfiguration
 import io.noties.markwon.core.MarkwonTheme
 
 // Constructor for test purposes
@@ -36,12 +38,18 @@ class MarkdownProcessorImpl(
         return Markwon.builder(context)
             .usePlugin(object : AbstractMarkwonPlugin() {
                 override fun configureTheme(builder: MarkwonTheme.Builder) {
-                    configureMessages(builder, markdownConfig)
+                    configureMessagesView(builder, markdownConfig)
                 }
-            }).build()
+
+                override fun configureConfiguration(builder: MarkwonConfiguration.Builder) {
+                    super.configureConfiguration(builder)
+                    configureLinks(builder)
+                }
+            })
+            .build()
     }
 
-    private fun configureMessages(builder: MarkwonTheme.Builder, config: MarkdownConfig) {
+    private fun configureMessagesView(builder: MarkwonTheme.Builder, config: MarkdownConfig) {
         config.linkColor?.let { builder.linkColor(it) }
         builder.isLinkUnderlined(config.isLinkUnderlined)
         config.blockMargin?.let { builder.blockMargin(it) }
@@ -64,5 +72,20 @@ class MarkdownProcessorImpl(
         config.headingTextSizeMultipliers?.let { builder.headingTextSizeMultipliers(it) }
         config.thematicBreakColor?.let { builder.thematicBreakColor(it) }
         config.thematicBreakHeight?.let { builder.thematicBreakHeight(it) }
+    }
+
+    private fun configureLinks(builder: MarkwonConfiguration.Builder) {
+        builder.linkResolver { view, link ->
+            val deepLink = UrlUtils.extractDeepLink(link)
+            val url = UrlUtils.extractLink(link)
+            when {
+                url != null -> {
+                    UrlUtils.openUrl(view.context, url)
+                }
+                deepLink != null -> {
+                    UrlUtils.openUrl(view.context, deepLink)
+                }
+            }
+        }
     }
 }
