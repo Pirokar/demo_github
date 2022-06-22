@@ -205,7 +205,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 }
                 ViewUtils.setClickListener(
                     ogDataLayout,
-                    View.OnClickListener { v: View? ->
+                    View.OnClickListener {
                         UrlUtils.openUrl(
                             itemView.getContext(),
                             url
