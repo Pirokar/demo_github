@@ -2,7 +2,6 @@ package im.threads.internal.markdown
 
 import android.content.Context
 import android.text.Spanned
-import im.threads.ChatStyle
 import im.threads.internal.Config
 import im.threads.internal.utils.UrlUtils
 import io.noties.markwon.AbstractMarkwonPlugin
@@ -11,19 +10,25 @@ import io.noties.markwon.MarkwonConfiguration
 import io.noties.markwon.core.MarkwonTheme
 
 // Constructor for test purposes
-class MarkdownProcessorImpl(
-    private var nullableContext: Context? = null,
-    private var nullableChatStyle: ChatStyle?
+class MarkwonMarkdownProcessor(
+    nullableContext: Context? = null,
+    incomingMarkdownConfig: MarkdownConfig? = null,
+    outgoingMarkdownConfig: MarkdownConfig? = null
 ) : MarkdownProcessor {
     private val context: Context by lazy { nullableContext ?: Config.instance.context }
-    private val chatStyle: ChatStyle by lazy { nullableChatStyle ?: Config.instance.chatStyle }
+    private val incomingMarkdownConfiguration: MarkdownConfig by lazy {
+        incomingMarkdownConfig ?: Config.instance.chatStyle.incomingMarkdownConfiguration
+    }
+    private val outgoingMarkdownConfiguration: MarkdownConfig by lazy {
+        outgoingMarkdownConfig ?: Config.instance.chatStyle.outgoingMarkdownConfiguration
+    }
 
     private val incomingProcessor: Markwon by lazy {
-        configureParser(chatStyle.incomingMarkdownConfiguration)
+        configureParser(incomingMarkdownConfiguration)
     }
 
     private val outgoingProcessor: Markwon by lazy {
-        configureParser(chatStyle.outgoingMarkdownConfiguration)
+        configureParser(outgoingMarkdownConfiguration)
     }
 
     override fun parseClientMessage(text: String): Spanned {

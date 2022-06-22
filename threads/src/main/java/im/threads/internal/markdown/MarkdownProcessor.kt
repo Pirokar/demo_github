@@ -7,8 +7,8 @@ interface MarkdownProcessor {
     fun parseOperatorMessage(text: String): Spanned
 
     companion object {
-        val instance: MarkdownProcessorImpl by lazy {
-            MarkdownProcessorImpl(null, null)
+        val instance: MarkwonMarkdownProcessor by lazy {
+            MarkwonMarkdownProcessor()
         }
     }
 }
