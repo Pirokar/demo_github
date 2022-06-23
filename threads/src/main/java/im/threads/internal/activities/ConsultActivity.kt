@@ -24,7 +24,7 @@ import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.utils.setColorFilter
 import im.threads.view.ChatFragment
 
-open class ConsultActivity : BaseActivity() {
+internal open class ConsultActivity : BaseActivity() {
     private val binding: ActivityConsultPageBinding by lazy {
         ActivityConsultPageBinding.inflate(layoutInflater)
     }
@@ -157,6 +157,13 @@ open class ConsultActivity : BaseActivity() {
         const val titleKey = "title"
         const val statusKey = "status"
 
+        /**
+         * Запускает текущую активити.
+         * @param activity активити, из которой будет произведен запуск ConsultActivity.
+         * @param avatarPath путь к аватару
+         * @param name имя оператора
+         * @param status статус оператора.
+         */
         @JvmStatic
         fun startActivity(
             activity: Activity?,
@@ -173,6 +180,10 @@ open class ConsultActivity : BaseActivity() {
             activity?.startActivity(intent)
         }
 
+        /**
+         * Запускает текущую активити.
+         * @param activity активити, из которой будет произведен запуск ConsultActivity.
+         */
         @JvmStatic
         fun startActivity(activity: Activity?) {
             activity?.startActivity(Intent(activity, ConsultActivity::class.java))

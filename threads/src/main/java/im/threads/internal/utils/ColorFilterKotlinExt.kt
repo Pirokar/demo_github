@@ -7,8 +7,13 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.annotation.RequiresApi
 
+/**
+ * Extension, заменяющий устарвеший метод setColorFilter.
+ * @param color цвет (не ссылка на ресурс!)
+ * @param mode ColorFilterMode, описывающий флаги для отрисовки цвета
+ */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-fun Drawable.setColorFilter(color: Int, mode: ColorFilterMode = ColorFilterMode.SRC_ATOP) {
+internal fun Drawable.setColorFilter(color: Int, mode: ColorFilterMode = ColorFilterMode.SRC_ATOP) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         colorFilter = BlendModeColorFilter(color, mode.getBlendMode())
     } else {
@@ -17,7 +22,7 @@ fun Drawable.setColorFilter(color: Int, mode: ColorFilterMode = ColorFilterMode.
     }
 }
 
-enum class ColorFilterMode {
+internal enum class ColorFilterMode {
     CLEAR,
     SRC,
     DST,
@@ -38,7 +43,7 @@ enum class ColorFilterMode {
     OVERLAY;
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun getBlendMode(): BlendMode =
+    internal fun getBlendMode(): BlendMode =
         when (this) {
             CLEAR -> BlendMode.CLEAR
             SRC -> BlendMode.SRC
@@ -60,7 +65,7 @@ enum class ColorFilterMode {
             OVERLAY -> BlendMode.OVERLAY
         }
 
-    fun getPorterDuffMode(): PorterDuff.Mode =
+    internal fun getPorterDuffMode(): PorterDuff.Mode =
         when (this) {
             CLEAR -> PorterDuff.Mode.CLEAR
             SRC -> PorterDuff.Mode.SRC

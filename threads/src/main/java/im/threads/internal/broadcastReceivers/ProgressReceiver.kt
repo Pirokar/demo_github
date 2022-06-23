@@ -46,7 +46,15 @@ class ProgressReceiver(callback: Callback) : BroadcastReceiver() {
     }
 
     interface Callback {
+        /**
+         * Определяет реакцию на обновление прогресса
+         * @param fileDescription характеристики файла, где произошел прогресс загрузки
+         */
         fun updateProgress(fileDescription: FileDescription?)
+        /**
+         * Определяет реакцию на ошибку при загрузке
+         * @param fileDescription характеристики файла, где произошла ошибка загрузки
+         */
         fun onDownloadError(fileDescription: FileDescription?, throwable: Throwable?)
     }
 

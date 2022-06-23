@@ -16,10 +16,10 @@ import java.util.Calendar
 import java.util.Locale
 
 /**
- * Created by yuri on 01.07.2016.
+ * Адаптер для списка файлов, отправленных или полученных в чате
  */
 @Suppress("NAME_SHADOWING")
-class FilesAndMediaAdapter(
+internal class FilesAndMediaAdapter(
     filesList: List<FileDescription?>,
     private val onFileClick: OnFileClick,
     private val onDownloadFileClick: OnFileClick
@@ -72,11 +72,18 @@ class FilesAndMediaAdapter(
         } else super.getItemViewType(position)
     }
 
+    /**
+     * Очищает текущий список, предварительно создавая его бэкап
+     */
     fun backupAndClear() {
         backup = ArrayList(list)
         list.clear()
     }
 
+    /**
+     * Фильтрует список по заданному параметру
+     * @param filter строка для фильтрации
+     */
     fun filter(filter: String?) {
         var filter = filter
         if (filter == null) filter = ""
@@ -106,9 +113,51 @@ class FilesAndMediaAdapter(
         updateWithDiffUtil { addItems(filteredItems) }
     }
 
+    /**
+     * Восстанавливает список из бэкапа
+     */
     fun undoClear() {
         updateWithDiffUtil { list = ArrayList(backup) }
         backup.clear()
+    }
+
+    /**
+     * Обновляет прогресс загрузки для файла
+     * @param fileDescription характеристики файла для обновление прогресса
+     */
+    fun updateProgress(fileDescription: FileDescription?) {
+        for (i in list.indices) {
+            if (list[i] is FileAndMediaItem) {
+                val mediaItem = list[i] as FileAndMediaItem
+                if (ObjectsCompat.equals(mediaItem.fileDescription, fileDescription)) {
+                    val itemCopy = mediaItem.copy(
+                        fileDescription = fileDescription!!,
+                        fileName = mediaItem.fileName
+                    )
+                    list[i] = itemCopy
+                    notifyItemChanged(i)
+                }
+            }
+        }
+    }
+
+    /**
+     * Показывает ошибку загрузки для файла
+     * @param fileDescription характеристики файла для отображения ошибки
+     */
+    fun onDownloadError(fileDescription: FileDescription?) {
+        for (i in list.indices) {
+            if (list[i] is FileAndMediaItem) {
+                val (fileDescription1) = list[i] as FileAndMediaItem
+                val itemViewType = getItemViewType(i)
+                if (ObjectsCompat.equals(fileDescription1, fileDescription) &&
+                    itemViewType == TYPE_FILE_AND_MEDIA_ROW
+                ) {
+                    fileDescription1.isDownloadError = true
+                    notifyItemChanged(i)
+                }
+            }
+        }
     }
 
     private fun addItems(fileDescriptionList: List<FileDescription?>) {
@@ -147,34 +196,6 @@ class FilesAndMediaAdapter(
         }
     }
 
-    fun updateProgress(fileDescription: FileDescription?) {
-        for (i in list.indices) {
-            if (list[i] is FileAndMediaItem) {
-                val mediaItem = list[i] as FileAndMediaItem
-                if (ObjectsCompat.equals(mediaItem.fileDescription, fileDescription)) {
-                    val itemCopy = mediaItem.copy(fileDescription!!, mediaItem.fileName)
-                    list[i] = itemCopy
-                    notifyItemChanged(i)
-                }
-            }
-        }
-    }
-
-    fun onDownloadError(fileDescription: FileDescription?) {
-        for (i in list.indices) {
-            if (list[i] is FileAndMediaItem) {
-                val (fileDescription1) = list[i] as FileAndMediaItem
-                val itemViewType = getItemViewType(i)
-                if (ObjectsCompat.equals(fileDescription1, fileDescription) &&
-                    itemViewType == TYPE_FILE_AND_MEDIA_ROW
-                ) {
-                    fileDescription1.isDownloadError = true
-                    notifyItemChanged(i)
-                }
-            }
-        }
-    }
-
     private inline fun updateWithDiffUtil(changeItems: () -> Unit) {
         val oldItems = ArrayList(list)
         changeItems()
@@ -184,7 +205,15 @@ class FilesAndMediaAdapter(
     }
 
     interface OnFileClick {
+        /**
+         * Описывает реакцию на нажатие
+         * @param fileDescription характеристики файла, на котором был произведен клик
+         */
         fun onFileClick(fileDescription: FileDescription?)
+        /**
+         * Описывает реакцию на начало загрузки файла
+         * @param fileDescription характеристики файла, на котором был произведен клик
+         */
         fun onDownloadFileClick(fileDescription: FileDescription?)
     }
 

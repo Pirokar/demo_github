@@ -22,8 +22,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
+/**
+ * ViewModel для экрана со списком файлов
+ * @param context applicationContext
+ * @param database ссылка на базу данных
+ */
 @OpenForTesting
-class FilesViewModel(
+internal class FilesViewModel(
     private val context: Context,
     private val database: DatabaseHolder
 ) : ViewModel(), ProgressReceiver.Callback {
@@ -41,12 +46,26 @@ class FilesViewModel(
     private val tag = FilesViewModel::class.java.canonicalName
     private val compositeDisposable = CompositeDisposable()
 
+    /**
+     * Приватная liveData. Не должна использоваться за пределами класса.
+     * Открыта исключительно для тестирования.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val localIntentLiveData = MutableLiveData<Intent>()
+    /**
+     * LiveData, описывающая поток интентов.
+     */
     val intentLiveData: LiveData<Intent> get() = localIntentLiveData
 
+    /**
+     * Приватная liveData. Не должна использоваться за пределами класса.
+     * Открыта исключительно для тестирования.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val localFilesFlowLiveData = MutableLiveData<FilesFlow>()
+    /**
+     * LiveData, описывающая поток событий для файлов.
+     */
     val filesFlowLiveData: LiveData<FilesFlow> get() = localFilesFlowLiveData
 
     // Для приема сообщений из сервиса по скачиванию файлов
@@ -71,6 +90,9 @@ class FilesViewModel(
         localFilesFlowLiveData.value = FilesFlow.DownloadError(fileDescription, throwable)
     }
 
+    /**
+     * Запрашивает файлы из базы данных асинхронно
+     */
     fun getFilesAsync() {
         compositeDisposable.add(
             database.allFileDescriptions
@@ -80,6 +102,12 @@ class FilesViewModel(
         )
     }
 
+    /**
+     * Реагирует на нажатие на файл.
+     * Разделяет создание интента на картинку и остальные случаи.
+     * Передает интент для запуска во view.
+     * @param fileDescription описание файла
+     */
     fun onFileClick(fileDescription: FileDescription?) {
         if (fileDescription?.fileUri == null) {
             return
@@ -94,6 +122,10 @@ class FilesViewModel(
         }
     }
 
+    /**
+     * Запускает загрузку файла, если url к нему не пустой.
+     * @param fileDescription описание файла
+     */
     fun onDownloadFileClick(fileDescription: FileDescription?) {
         val downloadPath = fileDescription?.fileUri?.toString() ?: fileDescription?.downloadPath
         downloadPath?.let { startDownloadFD(context, fileDescription!!) }
@@ -115,6 +147,9 @@ class FilesViewModel(
         LocalBroadcastManager.getInstance(context).registerReceiver(progressReceiver, intentFilter)
     }
 
+    /**
+     * Это приватный метод. Открыт только в целях тестирования.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun disconnectReceiver() {
         LocalBroadcastManager.getInstance(context).unregisterReceiver(progressReceiver)

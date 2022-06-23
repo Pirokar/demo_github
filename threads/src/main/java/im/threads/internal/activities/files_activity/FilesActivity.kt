@@ -34,7 +34,10 @@ import im.threads.internal.secureDatabase.DatabaseHolder
 import im.threads.internal.utils.Keyboard
 import im.threads.internal.utils.setColorFilter
 
-class FilesActivity : BaseActivity(), OnFileClick {
+/**
+ * Показывает список файлов, которые присутствовали в диалоге с оператором с обоих сторон
+ */
+internal class FilesActivity : BaseActivity(), OnFileClick {
     private val binding: ActivityFilesAndMediaBinding by lazy {
         ActivityFilesAndMediaBinding.inflate(layoutInflater)
     }
@@ -255,6 +258,10 @@ class FilesActivity : BaseActivity(), OnFileClick {
     }
 
     companion object {
+        /**
+         * Запускает FilesActivity
+         * @param activity активити, из которой будет произведен запуск FilesActivity.
+         */
         @JvmStatic
         fun startActivity(activity: Activity?) {
             activity?.startActivity(Intent(activity, FilesActivity::class.java))
