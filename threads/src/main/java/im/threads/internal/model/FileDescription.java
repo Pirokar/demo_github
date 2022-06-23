@@ -77,8 +77,8 @@ public final class FileDescription implements Parcelable {
         return fileUri;
     }
 
-    public void setFileUri(Uri text) {
-        this.fileUri = text;
+    public void setFileUri(Uri fileUri) {
+        this.fileUri = fileUri;
     }
 
     public long getSize() {
