@@ -437,9 +437,9 @@ public final class ChatController {
         } else {
             ConsultInfo info = databaseHolder.getConsultInfo(consultId);
             if (info != null) {
-                activity.startActivity(ConsultActivity.getStartIntent(activity, info.getPhotoUrl(), info.getName(), info.getStatus()));
+                ConsultActivity.startActivity(activity, info.getPhotoUrl(), info.getName(), info.getStatus());
             } else {
-                activity.startActivity(ConsultActivity.getStartIntent(activity));
+                ConsultActivity.startActivity(activity);
             }
         }
     }

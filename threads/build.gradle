@@ -58,6 +58,9 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 afterEvaluate {
