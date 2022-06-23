@@ -1027,7 +1027,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private String getFormattedDuration(@Nullable FileDescription fileDescription) {
         long duration = 0L;
         if (fileDescription != null && FileUtils.isVoiceMessage(fileDescription) && fileDescription.getFileUri() != null) {
-            duration = FileUtilsKt.getDuration(mediaMetadataRetriever, ctx, fileDescription.getFileUri());
+            duration = FileUtilsKt.getDuration(mediaMetadataRetriever, fileDescription.getFileUri());
         }
         return VoiceTimeLabelFormatterKt.formatAsDuration(duration);
     }
