@@ -14,7 +14,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Consumer;
-import androidx.core.util.ObjectsCompat;
 import androidx.core.util.Pair;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -738,7 +737,9 @@ public final class ChatController {
     private void subscribeToTyping() {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getTypingProcessor())
-                        .filter(clientId -> Config.instance.clientIdIgnoreEnabled || ObjectsCompat.equals(PrefUtils.getClientID(), clientId))
+                        .filter(clientId ->
+                            Config.instance.clientIdIgnoreEnabled || PrefUtils.getClientID().contains(clientId)
+                        )
                         .map(clientId ->
                                 new ConsultTyping(
                                         consultWriter.getCurrentConsultId(),

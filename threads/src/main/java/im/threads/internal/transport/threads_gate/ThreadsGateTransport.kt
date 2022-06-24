@@ -469,7 +469,7 @@ class ThreadsGateTransport(
                             } else if (ThreadsGateMessageParser.checkId(
                                     message,
                                     PrefUtils.clientID
-                                ) || message.content.toString().contains("ATTACHMENT_UPDATED")
+                                )
                             ) {
                                 val chatItem = ThreadsGateMessageParser.format(message)
                                 if (chatItem != null) {

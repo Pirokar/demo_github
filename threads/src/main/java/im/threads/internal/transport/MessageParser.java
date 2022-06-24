@@ -116,7 +116,7 @@ public final class MessageParser {
                 (!TextUtils.isEmpty(currentClientId)
                         && fullMessage != null
                         && fullMessage.has(MessageAttributes.CLIENT_ID)
-                        && currentClientId.equalsIgnoreCase(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString())
+                        && currentClientId.contains(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString())
                 );
     }
 
