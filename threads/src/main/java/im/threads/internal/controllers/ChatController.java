@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -199,10 +200,10 @@ public final class ChatController {
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
         ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
-        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
+        if (Objects.equals(newClientId, oldClientId)) {
             // clientId has not changed
             PrefUtils.setNewClientId("");
-        } else {
+        } else if (!TextUtils.isEmpty(newClientId)) {
             PrefUtils.setClientId(newClientId);
             instance.subscribe(
                     Single.fromCallable(() -> instance.onClientIdChanged())
@@ -1112,9 +1113,6 @@ public final class ChatController {
                 fragment.removeSchedule(false);
             }
         }
-        /*if (chatItem instanceof ConsultPhrase) {
-            removeResolveRequest();
-        }*/
     }
 
     private void queueMessageSending(UserPhrase userPhrase) {
