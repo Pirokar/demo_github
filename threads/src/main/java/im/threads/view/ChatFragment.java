@@ -2570,8 +2570,8 @@ public final class ChatFragment extends BaseFragment implements
 
         private String getFormattedDuration(@Nullable FileDescription fileDescription) {
             long duration = 0L;
-            if (getContext() != null && fileDescription != null && fileDescription.getFileUri() != null) {
-                duration = FileUtilsKt.getDuration(mediaMetadataRetriever, getContext(), fileDescription.getFileUri());
+            if (fileDescription != null && fileDescription.getFileUri() != null) {
+                duration = FileUtilsKt.getDuration(mediaMetadataRetriever, fileDescription.getFileUri());
             }
             return VoiceTimeLabelFormatterKt.formatAsDuration(duration);
         }

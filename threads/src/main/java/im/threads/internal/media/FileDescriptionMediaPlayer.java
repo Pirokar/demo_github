@@ -2,6 +2,7 @@ package im.threads.internal.media;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,6 +63,12 @@ public class FileDescriptionMediaPlayer {
     }
 
     public void processPlayPause(@NonNull FileDescription fileDescription) {
+        boolean isUriNonNull = fileDescription.getFileUri() != null;
+        boolean isDownloadPathNull = fileDescription.getDownloadPath() == null;
+        Uri fileUri = isUriNonNull ? fileDescription.getFileUri() :
+                isDownloadPathNull ? null : Uri.parse(fileDescription.getDownloadPath());
+        fileDescription.setFileUri(fileUri);
+
         if (fileDescription.getFileUri() == null) {
             ThreadsLogger.i(TAG, "file uri is null");
             return;
