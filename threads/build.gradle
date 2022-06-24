@@ -109,6 +109,10 @@ afterEvaluate {
                     // release
                     url 'https://maven-pub.edna.ru/repository/maven-releases'
                 }
+                credentials {
+                    username "$mavenProdUser"
+                    password "$mavenProdPass"
+                }
             }
         }
     }
@@ -150,10 +154,4 @@ dependencies {
 
     implementation "net.zetetic:android-database-sqlcipher:$sqlcipher_version"
     implementation "androidx.sqlite:sqlite:$sqlite_version"
-
-    // Koin main features for Android
-    implementation "io.insert-koin:koin-android:$koin_version"
-    // Koin Test
-    testImplementation "io.insert-koin:koin-test:$koin_version"
-    testImplementation "io.insert-koin:koin-test-junit4:$koin_version"
 }

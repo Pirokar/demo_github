@@ -36,6 +36,7 @@ import im.threads.internal.utils.ThreadsLogger;
 import im.threads.internal.utils.TlsConfigurationUtils;
 import im.threads.styles.permissions.PermissionDescriptionDialogStyle;
 import im.threads.styles.permissions.PermissionDescriptionType;
+import okhttp3.Interceptor;
 
 public final class Config {
 
@@ -57,6 +58,8 @@ public final class Config {
 
     @NonNull
     public final ThreadsLib.PendingIntentCreator pendingIntentCreator;
+    @Nullable
+    public final Interceptor networkInterceptor;
     @Nullable
     public final ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener;
     @NonNull
@@ -91,6 +94,7 @@ public final class Config {
                   @Nullable String threadsGateHCMProviderUid,
                   @NonNull ThreadsLib.PendingIntentCreator pendingIntentCreator,
                   @Nullable ThreadsLib.UnreadMessagesCountListener unreadMessagesCountListener,
+                  @Nullable Interceptor networkInterceptor,
                   boolean isDebugLoggingEnabled,
                   int historyLoadingCount,
                   int surveyCompletionDelay,
@@ -99,6 +103,7 @@ public final class Config {
         this.context = context.getApplicationContext();
         this.pendingIntentCreator = pendingIntentCreator;
         this.unreadMessagesCountListener = unreadMessagesCountListener;
+        this.networkInterceptor = networkInterceptor;
         this.isDebugLoggingEnabled = isDebugLoggingEnabled;
         this.clientIdIgnoreEnabled = MetaDataUtils.getClientIdIgnoreEnabled(this.context);
         this.newChatCenterApi = MetaDataUtils.getNewChatCenterApi(this.context);
@@ -255,10 +260,7 @@ public final class Config {
         if (ConfigBuilder.TransportType.MFMS_PUSH == transportType) {
             throw new MetaConfigurationException("MFMS push transport is not supported anymore");
         }
-        String threadsGateUrl = !TextUtils.isEmpty(providedThreadsGateUrl)
-                ? providedThreadsGateUrl
-                : MetaDataUtils.getThreadsGateUrl(this.context);
-        if (TextUtils.isEmpty(threadsGateUrl)) {
+        if (TextUtils.isEmpty(providedThreadsGateUrl)) {
             throw new MetaConfigurationException("Threads gate url is not set");
         }
         String threadsGateProviderUid = !TextUtils.isEmpty(providedThreadsGateProviderUid)
@@ -270,12 +272,13 @@ public final class Config {
         if (TextUtils.isEmpty(threadsGateProviderUid)) {
             throw new MetaConfigurationException("Threads gate provider uid is not set");
         }
-        return new ThreadsGateTransport(threadsGateUrl,
+        return new ThreadsGateTransport(providedThreadsGateUrl,
                 threadsGateProviderUid,
                 threadsGateHCMProviderUid,
                 isDebugLoggingEnabled,
                 socketClientSettings,
-                sslSocketFactoryConfig);
+                sslSocketFactoryConfig,
+                networkInterceptor);
     }
 
     @NonNull

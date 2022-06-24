@@ -14,10 +14,11 @@ import java.util.List;
 import im.threads.config.RequestConfig;
 import im.threads.internal.Config;
 import im.threads.view.ChatActivity;
+import okhttp3.Interceptor;
 
 public final class ConfigBuilder {
     @NonNull
-    private Context context;
+    Context context;
     @NonNull
     private ThreadsLib.PendingIntentCreator pendingIntentCreator = (context1, appMarker) -> {
         final Intent i = new Intent(context1, ChatActivity.class);
@@ -47,6 +48,8 @@ public final class ConfigBuilder {
     private String threadsGateProviderUid = null;
     @Nullable
     private String threadsGateHCMProviderUid = null;
+    @Nullable
+    private Interceptor networkInterceptor = null;
 
     private RequestConfig requestConfig = new RequestConfig();
     private List<Integer> certificateRawResIds = Collections.emptyList();
@@ -115,8 +118,9 @@ public final class ConfigBuilder {
         return this;
     }
 
-    public Context getContext() {
-        return context;
+    public ConfigBuilder networkInterceptor(Interceptor interceptor) {
+        this.networkInterceptor = interceptor;
+        return this;
     }
 
     Config build() {
@@ -129,6 +133,7 @@ public final class ConfigBuilder {
                 threadsGateHCMProviderUid,
                 pendingIntentCreator,
                 unreadMessagesCountListener,
+                networkInterceptor,
                 isDebugLoggingEnabled,
                 historyLoadingCount,
                 surveyCompletionDelay,

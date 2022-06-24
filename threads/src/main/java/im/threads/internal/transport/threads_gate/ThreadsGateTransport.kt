@@ -41,6 +41,7 @@ import im.threads.internal.utils.DeviceInfoHelper
 import im.threads.internal.utils.PrefUtils
 import im.threads.internal.utils.SSLCertificateInterceptor
 import im.threads.internal.utils.ThreadsLogger
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -61,7 +62,8 @@ class ThreadsGateTransport(
     threadsGateHuaweiProviderUid: String?,
     isDebugLoggingEnabled: Boolean,
     socketSettings: SocketClientSettings,
-    sslSocketFactoryConfig: SslSocketFactoryConfig? = null
+    sslSocketFactoryConfig: SslSocketFactoryConfig? = null,
+    networkInterceptor: Interceptor?
 ) : Transport(), LifecycleObserver {
     private val client: OkHttpClient
     private val request: Request
@@ -76,6 +78,7 @@ class ThreadsGateTransport(
     init {
         val httpClientBuilder = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor())
+            .apply { networkInterceptor?.let { addInterceptor(it) } }
             .pingInterval(socketSettings.resendPingIntervalMillis.toLong(), TimeUnit.MILLISECONDS)
             .connectTimeout(socketSettings.connectTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
             .readTimeout(socketSettings.readTimeoutMillis.toLong(), TimeUnit.MILLISECONDS)
