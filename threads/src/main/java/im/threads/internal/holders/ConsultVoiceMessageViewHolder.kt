@@ -18,7 +18,6 @@ import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.SpeechStatus
-import im.threads.internal.markdown.MarkdownProcessor
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.FileDescription
 import im.threads.internal.utils.CircleTransformation
@@ -196,16 +195,7 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
             phraseTextView.visibility = View.VISIBLE
             val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
-            when {
-                consultPhrase.formattedPhrase != null -> {
-                    phraseTextView.autoLinkMask = 0
-                    phraseTextView.text = MarkdownProcessor.instance
-                        .parseOperatorMessage(consultPhrase.formattedPhrase.trim { it <= ' ' })
-                }
-                else -> {
-                    phraseTextView.text = phrase
-                }
-            }
+            setTextWithMarkdown(phraseTextView, consultPhrase, phrase)
         }
     }
 

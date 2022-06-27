@@ -4,7 +4,6 @@ import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.text.TextUtils
 import android.text.format.Formatter
-import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +22,6 @@ import com.squareup.picasso.Picasso
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
-import im.threads.internal.markdown.MarkdownProcessor
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
@@ -185,17 +183,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mPhraseTextView.visibility = View.VISIBLE
             val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
-            when {
-                consultPhrase.formattedPhrase != null -> {
-                    mPhraseTextView.autoLinkMask = 0
-                    mPhraseTextView.text = MarkdownProcessor.instance
-                        .parseOperatorMessage(consultPhrase.formattedPhrase.trim { it <= ' ' })
-                    mPhraseTextView.movementMethod = LinkMovementMethod.getInstance()
-                }
-                else -> {
-                    mPhraseTextView.text = phrase
-                }
-            }
+            setTextWithMarkdown(mPhraseTextView, consultPhrase, phrase)
             if (url != null) {
                 val ogData = consultPhrase.ogData
                 if (ogData == null) {
