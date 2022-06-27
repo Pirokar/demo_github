@@ -57,7 +57,7 @@
     <color name="threads_outgoing_play_pause_button">@color/threads_white</color>
     <color name="threads_preview_play_pause_button">@color/threads_teal_009688</color>
 
-    <color name="threads_chat_icons_tint">@color/threads_black</color>
+    <color name="threads_chat_icons_tint">@color/threads_green_83B144</color>
     <color name="threads_chat_system_message">@color/threads_gray_text</color>
     <color name="threads_chat_connection_message">@color/threads_black</color>
 

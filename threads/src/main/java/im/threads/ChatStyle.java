@@ -167,7 +167,7 @@ public final class ChatStyle implements Serializable {
     public int voiceMessagePauseButton = R.drawable.threads_voice_message_pause;
 
     @ColorRes
-    public int chatBodyIconsTint = R.color.threads_green_83B144;
+    public int chatBodyIconsTint = R.color.threads_chat_icons_tint;
     public int[] chatBodyIconsColorState = null;
 
     @ColorRes
