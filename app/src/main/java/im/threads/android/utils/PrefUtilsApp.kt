@@ -50,6 +50,12 @@ object PrefUtilsApp {
         return cards ?: ArrayList()
     }
 
+    fun cleanUsers(ctx: Context?) {
+        val editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit()
+        editor.putString(PREF_CARDS_LIST, "")
+        editor.commit()
+    }
+
     fun saveTransportConfig(ctx: Context, transportConfig: TransportConfig) {
         val editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit()
         editor.putString(PREF_SERVER_BASE_URL, transportConfig.baseUrl)
