@@ -195,7 +195,7 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
             phraseTextView.visibility = View.VISIBLE
             val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
-            setTextWithMarkdown(phraseTextView, consultPhrase, phrase)
+            setOperatorTextWithMarkdown(phraseTextView, consultPhrase, phrase)
         }
     }
 
