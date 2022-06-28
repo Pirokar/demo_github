@@ -51,9 +51,7 @@ public final class ImageFromUserViewHolder extends BaseHolder {
         mImage = itemView.findViewById(R.id.image);
         this.maskedTransformation = maskedTransformation;
         filter = itemView.findViewById(R.id.filter);
-        filterSecond = itemView.findViewById(R.id.filter_second);
         filter.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
-        filterSecond.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), style.chatHighlightingColor));
         loader = itemView.findViewById(R.id.loader);
         loaderLayout = itemView.findViewById(R.id.loaderLayout);
         mTimeStampTextView = itemView.findViewById(R.id.timestamp);
@@ -79,7 +77,6 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             return true;
         });
         filter.setVisibility(isChosen ? View.VISIBLE : View.INVISIBLE);
-        filterSecond.setVisibility(isChosen ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void bindImage(FileDescription fileDescription, MessageState messageState, Runnable longClickRunnable) {

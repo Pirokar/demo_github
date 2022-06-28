@@ -6,18 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <View
-        android:id="@+id/filter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/threads_chat_highlighting" />
-
-    <View
-        android:id="@+id/filter_second"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_quarter"
-        android:background="@color/threads_chat_highlighting" />
-
     <RelativeLayout
         android:id="@+id/loaderLayout"
         style="@style/userBubble"
@@ -62,4 +50,11 @@
         android:paddingRight="2dp"
         tools:text="10:19"
         android:textColor="@color/threads_outgoing_message_time" />
+
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/threads_chat_highlighting"/>
+
 </FrameLayout>

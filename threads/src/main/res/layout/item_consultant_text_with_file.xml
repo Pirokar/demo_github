@@ -5,21 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <View
-        android:id="@+id/filter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/bubble"
-        android:layout_alignParentTop="true"
-        android:background="@color/threads_chat_highlighting" />
-
-    <View
-        android:id="@+id/filter_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/filter_offset_size"
-        android:layout_below="@+id/bubble"
-        android:background="@color/threads_chat_highlighting" />
-
     <ImageView
         android:id="@+id/consult_avatar"
         android:layout_width="@dimen/threads_operator_photo_size"
@@ -237,4 +222,19 @@
                 tools:text="10:19" />
         </FrameLayout>
     </LinearLayout>
+
+    <View
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bubble"
+        android:layout_alignParentTop="true"
+        android:background="@color/threads_chat_highlighting" />
+
+    <View
+        android:id="@+id/filter_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/filter_offset_size"
+        android:layout_below="@+id/bubble"
+        android:background="@color/threads_chat_highlighting" />
 </RelativeLayout>
