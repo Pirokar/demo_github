@@ -78,7 +78,7 @@ import im.threads.R;
 import im.threads.databinding.FragmentChatBinding;
 import im.threads.internal.Config;
 import im.threads.internal.activities.CameraActivity;
-import im.threads.internal.activities.FilesActivity;
+import im.threads.internal.activities.files_activity.FilesActivity;
 import im.threads.internal.activities.GalleryActivity;
 import im.threads.internal.activities.ImagesActivity;
 import im.threads.internal.adapters.ChatAdapter;
@@ -1114,7 +1114,7 @@ public final class ChatFragment extends BaseFragment implements
             if (isInMessageSearchMode) {
                 onActivityBackPressed();
             }
-            startActivity(FilesActivity.getStartIntent(activity));
+            FilesActivity.startActivity(activity);
             return true;
         }
         if (item.getItemId() == R.id.search) {
