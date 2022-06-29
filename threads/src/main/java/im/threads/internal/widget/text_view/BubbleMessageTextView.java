@@ -11,8 +11,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import com.yydcdut.markdown.span.MDImageSpan;
-
 import im.threads.ChatStyle;
 import im.threads.internal.Config;
 import im.threads.internal.widget.CustomFontTextView;
@@ -62,29 +60,9 @@ public final class BubbleMessageTextView extends CustomFontTextView {
             text = new SpannableStringBuilder(text).append(lastLinePadding);
         }
         if (mHasImageInText) {
-            onDetach();
             mHasImageInText = false;
         }
-        if (text instanceof Spanned) {
-            MDImageSpan[] spans = ((Spanned) text).getSpans(0, text.length(), MDImageSpan.class);
-            mHasImageInText = spans.length > 0;
-            for (MDImageSpan imageSpans : spans) {
-                imageSpans.onAttach(this);
-            }
-        }
         super.setText(text, type);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        onDetach();
-    }
-
-    @Override
-    public void onStartTemporaryDetach() {
-        super.onStartTemporaryDetach();
-        onDetach();
     }
 
     @Override
@@ -95,23 +73,4 @@ public final class BubbleMessageTextView extends CustomFontTextView {
             super.invalidateDrawable(dr);
         }
     }
-
-    final void onDetach() {
-        MDImageSpan[] images = getImages();
-        for (MDImageSpan image : images) {
-            Drawable drawable = image.getDrawable();
-            if (drawable != null) {
-                unscheduleDrawable(drawable);
-            }
-            image.onDetach();
-        }
-    }
-
-    private MDImageSpan[] getImages() {
-        if (mHasImageInText && length() > 0) {
-            return ((Spanned) getText()).getSpans(0, length(), MDImageSpan.class);
-        }
-        return new MDImageSpan[0];
-    }
-
 }

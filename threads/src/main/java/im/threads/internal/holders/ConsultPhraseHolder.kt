@@ -2,10 +2,8 @@ package im.threads.internal.holders
 
 import android.graphics.PorterDuff
 import android.graphics.Typeface
-import android.text.SpannableString
 import android.text.TextUtils
 import android.text.format.Formatter
-import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -19,13 +17,11 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.text.util.LinkifyCompat
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
-import im.threads.internal.markdown.MarkdownProcessorHolder
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
@@ -187,38 +183,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mPhraseTextView.visibility = View.VISIBLE
             val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
-            when {
-                deepLink != null -> {
-                    mPhraseTextView.setOnClickListener { UrlUtils.openUrl(context, deepLink) }
-                }
-                url != null -> {
-                    mPhraseTextView.setOnClickListener { UrlUtils.openUrl(context, url) }
-                }
-                else -> {
-                    mPhraseTextView.setOnClickListener(null)
-                }
-            }
-            when {
-                consultPhrase.formattedPhrase != null -> {
-                    mPhraseTextView.autoLinkMask = 0
-                    mPhraseTextView.text = MarkdownProcessorHolder.getMarkdownProcessor()
-                        .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
-                    mPhraseTextView.movementMethod = LinkMovementMethod.getInstance()
-                }
-                deepLink != null -> {
-                    val text = SpannableString(phrase)
-                    LinkifyCompat.addLinks(text, UrlUtils.DEEPLINK_URL, "")
-                    mPhraseTextView.text = text
-                }
-                url != null -> {
-                    val text = SpannableString(phrase)
-                    LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "")
-                    mPhraseTextView.text = text
-                }
-                else -> {
-                    mPhraseTextView.text = phrase
-                }
-            }
+            setTextWithMarkdown(mPhraseTextView, consultPhrase, phrase)
             if (url != null) {
                 val ogData = consultPhrase.ogData
                 if (ogData == null) {
@@ -228,7 +193,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 }
                 ViewUtils.setClickListener(
                     ogDataLayout,
-                    View.OnClickListener { v: View? ->
+                    View.OnClickListener {
                         UrlUtils.openUrl(
                             itemView.getContext(),
                             url

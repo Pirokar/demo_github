@@ -2,7 +2,6 @@ package im.threads.internal.holders
 
 import android.content.Context
 import android.graphics.PorterDuff
-import android.text.SpannableString
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +12,12 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.text.util.LinkifyCompat
 import com.google.android.material.slider.Slider
 import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.SpeechStatus
-import im.threads.internal.markdown.MarkdownProcessorHolder
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.FileDescription
 import im.threads.internal.utils.CircleTransformation
@@ -198,37 +195,7 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
             phraseTextView.visibility = View.VISIBLE
             val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
-            when {
-                deepLink != null -> {
-                    phraseTextView.setOnClickListener { UrlUtils.openUrl(context, deepLink) }
-                }
-                url != null -> {
-                    phraseTextView.setOnClickListener { UrlUtils.openUrl(context, url) }
-                }
-                else -> {
-                    phraseTextView.setOnClickListener(null)
-                }
-            }
-            when {
-                consultPhrase.formattedPhrase != null -> {
-                    phraseTextView.autoLinkMask = 0
-                    phraseTextView.text = MarkdownProcessorHolder.getMarkdownProcessor()
-                        .parse(consultPhrase.formattedPhrase.trim { it <= ' ' })
-                }
-                deepLink != null -> {
-                    val text = SpannableString(phrase)
-                    LinkifyCompat.addLinks(text, UrlUtils.DEEPLINK_URL, "")
-                    phraseTextView.text = text
-                }
-                url != null -> {
-                    val text = SpannableString(phrase)
-                    LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "")
-                    phraseTextView.text = text
-                }
-                else -> {
-                    phraseTextView.text = phrase
-                }
-            }
+            setTextWithMarkdown(phraseTextView, consultPhrase, phrase)
         }
     }
 

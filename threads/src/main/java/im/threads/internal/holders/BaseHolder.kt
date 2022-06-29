@@ -2,6 +2,7 @@ package im.threads.internal.holders
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,6 +16,8 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.markdown.MarkdownProcessor
+import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
 import im.threads.internal.utils.ColorsHelper
 import im.threads.internal.views.CircularProgressButton
@@ -65,6 +68,13 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
             }
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
         }
+    }
+
+    protected fun setTextWithMarkdown(textView: TextView, consultPhrase: ConsultPhrase, phrase: String) {
+        val text = consultPhrase.formattedPhrase ?: phrase
+        textView.text = MarkdownProcessor.instance
+            .parseOperatorMessage(text.trim { it <= ' ' })
+        textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun setUpDrawable(@DrawableRes iconResId: Int, @ColorRes colorRes: Int): Drawable? {
