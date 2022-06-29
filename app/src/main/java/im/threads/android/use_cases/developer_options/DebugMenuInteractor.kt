@@ -266,7 +266,6 @@ class DebugMenuInteractor(private val context: Context) : DebugMenuUseCase {
 
     private fun cleanHistory() {
         DatabaseHolder.getInstance().cleanDatabase()
-        PrefUtilsApp.cleanUsers(context)
     }
 
     private fun getString(resId: Int) = context.getString(resId)
