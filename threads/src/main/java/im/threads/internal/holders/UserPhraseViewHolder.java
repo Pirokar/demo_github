@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.TypedValue;
@@ -20,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
-import androidx.core.text.util.LinkifyCompat;
 
 import com.google.android.material.slider.Slider;
 import com.squareup.picasso.Callback;
@@ -34,6 +32,8 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.internal.markdown.MarkdownProcessor;
+import im.threads.internal.markdown.MarkwonMarkdownProcessor;
 import im.threads.internal.model.CampaignMessage;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
@@ -92,6 +92,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
     private FileDescription fileDescription = null;
     @NonNull
     private String formattedDuration = "";
+    private MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor();
 
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -187,20 +188,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
             String deepLink = UrlUtils.extractDeepLink(phrase);
             String url = UrlUtils.extractLink(phrase);
-            if (deepLink != null) {
-                final SpannableString text = new SpannableString(phrase);
-                LinkifyCompat.addLinks(text, UrlUtils.DEEPLINK_URL, "");
-                mPhraseTextView.setText(text);
-                mPhraseTextView.setOnClickListener(view -> UrlUtils.openUrl(context, deepLink));
-            } else if (url != null) {
-                final SpannableString text = new SpannableString(phrase);
-                LinkifyCompat.addLinks(text, UrlUtils.WEB_URL, "");
-                mPhraseTextView.setText(text);
-                mPhraseTextView.setOnClickListener(view -> UrlUtils.openUrl(context, url));
-            } else {
-                mPhraseTextView.setText(phrase);
-                mPhraseTextView.setOnClickListener(null);
-            }
+            setClientTextWithMarkdown(mPhraseTextView, phrase);
             if (url != null) {
                 if (userPhrase.ogData == null) {
                     loadOGData(userPhrase, url);

@@ -200,10 +200,9 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="@dimen/margin_half"
                 android:textColor="@color/threads_outgoing_message_text"
-                android:textColorLink="@color/threads_outgoing_message_link"
                 android:textSize="16sp"
                 app:last_line_padding_symbols="16"
-                tools:text="user text google.com" />
+                tools:text="user text google.com"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/voice_message"

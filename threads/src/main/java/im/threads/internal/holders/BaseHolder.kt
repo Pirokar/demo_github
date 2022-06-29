@@ -70,10 +70,18 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         }
     }
 
-    protected fun setTextWithMarkdown(textView: TextView, consultPhrase: ConsultPhrase, phrase: String) {
+    protected fun setOperatorTextWithMarkdown(textView: TextView, consultPhrase: ConsultPhrase, phrase: String) {
         val text = consultPhrase.formattedPhrase ?: phrase
-        textView.text = MarkdownProcessor.instance
-            .parseOperatorMessage(text.trim { it <= ' ' })
+        textView.text = MarkdownProcessor.instance.parseOperatorMessage(text.trim { it <= ' ' })
+        setMovementMethod(textView)
+    }
+
+    protected fun setClientTextWithMarkdown(textView: TextView, text: String) {
+        setMovementMethod(textView)
+        textView.text = MarkdownProcessor.instance.parseClientMessage(text.trim())
+    }
+
+    private fun setMovementMethod(textView: TextView) {
         textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
