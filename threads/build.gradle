@@ -150,8 +150,11 @@ dependencies {
 
     implementation "net.zetetic:android-database-sqlcipher:$sqlcipher_version"
     implementation "androidx.sqlite:sqlite:$sqlite_version"
+
+    //Markwon
     implementation "io.noties.markwon:core:$markwonVersion"
     implementation "io.noties.markwon:linkify:$markwonVersion"
+    implementation "io.noties.markwon:ext-strikethrough:$markwonVersion"
 
     testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
     testImplementation "androidx.test.ext:junit:$rootProject.androidXJunitVersion"
