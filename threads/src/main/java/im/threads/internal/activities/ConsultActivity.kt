@@ -14,13 +14,12 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.isVisible
-import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.databinding.ActivityConsultPageBinding
 import im.threads.internal.Config
 import im.threads.internal.activities.files_activity.FilesActivity
+import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.utils.setColorFilter
 import im.threads.view.ChatFragment
@@ -120,7 +119,7 @@ internal open class ConsultActivity : BaseActivity() {
         var imagePath = intent.getStringExtra(imageUrlKey)
         if (!imagePath.isNullOrEmpty()) {
             imagePath = convertRelativeUrlToAbsolute(imagePath)
-            Picasso.get().load(imagePath).into(consultImage)
+            consultImage.loadUrl(imagePath)
         }
     }
 
@@ -134,12 +133,7 @@ internal open class ConsultActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.showOverflowMenu()
-        toolbar.overflowIcon?.setColorFilter(
-            ContextCompat.getColor(
-                baseContext,
-                android.R.color.white
-            )
-        )
+        toolbar.overflowIcon?.setColorFilter(ContextCompat.getColor(baseContext, android.R.color.white))
 
         val layoutParams = RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT,

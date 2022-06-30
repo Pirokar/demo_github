@@ -12,6 +12,7 @@
         android:layout_below="@+id/bubble"
         android:layout_marginStart="@dimen/margin_half"
         android:layout_marginTop="@dimen/consultant_photo_offset_size"
+        android:scaleType="centerCrop"
         tools:src="@drawable/threads_operator_avatar_placeholder" />
 
     <LinearLayout
@@ -67,6 +68,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/margin_half"
                 android:layout_marginBottom="@dimen/margin_half"
+                android:scaleType="centerCrop"
                 android:background="@drawable/threads_ic_file_outline_24dp"
                 android:visibility="gone" />
 

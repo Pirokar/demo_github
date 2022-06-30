@@ -1,7 +1,5 @@
 package im.threads.internal;
 
-import static im.threads.internal.utils.PicassoUtils.setPicasso;
-
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -25,6 +23,7 @@ import im.threads.ThreadsLib;
 import im.threads.config.RequestConfig;
 import im.threads.config.SocketClientSettings;
 import im.threads.internal.exceptions.MetaConfigurationException;
+import im.threads.internal.image_loading.ImageLoaderOkHttpProvider;
 import im.threads.internal.model.SslSocketFactoryConfig;
 import im.threads.internal.model.gson.UriDeserializer;
 import im.threads.internal.model.gson.UriSerializer;
@@ -120,7 +119,10 @@ public final class Config {
         this.serverBaseUrl = getServerBaseUrl(serverBaseUrl);
         this.datastoreUrl = getDatastoreUrl(datastoreUrl);
         this.requestConfig = requestConfig;
-        setPicasso(this.context, requestConfig.getPicassoHttpClientSettings(), sslSocketFactoryConfig);
+        ImageLoaderOkHttpProvider.INSTANCE.createOkHttpClient(
+                requestConfig.getPicassoHttpClientSettings(),
+                sslSocketFactoryConfig
+        );
     }
 
     private SslSocketFactoryConfig getSslSocketFactoryConfig(List<Integer> certificateRawResIds) {

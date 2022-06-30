@@ -13,14 +13,15 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.google.android.material.slider.Slider
-import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.SpeechStatus
+import im.threads.internal.image_loading.ImageModifications
+import im.threads.internal.image_loading.ImageScale
+import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.FileDescription
-import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.utils.UrlUtils
 import im.threads.internal.views.VoiceTimeLabelFormatter
@@ -180,12 +181,11 @@ class ConsultVoiceMessageViewHolder(parent: ViewGroup) : VoiceMessageBaseHolder(
             mConsultAvatar.visibility = View.VISIBLE
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (consultPhrase.avatarPath != null) {
-                Picasso.get()
-                    .load(convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                    .fit()
-                    .noPlaceholder()
-                    .transform(CircleTransformation())
-                    .into(mConsultAvatar)
+                mConsultAvatar.loadUrl(
+                    convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
+                    ImageScale.FIT,
+                    transformations = listOf(ImageModifications.CircleCropModification)
+                )
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE

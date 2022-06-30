@@ -1,5 +1,6 @@
 package im.threads.internal.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.squareup.picasso.Picasso;
-
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -20,12 +19,16 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.internal.image_loading.CoilImageLoader;
+import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.FileUtils;
 
 public final class ImageFragment extends Fragment {
     private static SimpleDateFormat sdf;
     private static SimpleDateFormat hoursminutesSdf;
+    private ImageLoader imageLoader = new CoilImageLoader();
 
     public static ImageFragment getInstance(FileDescription fileDescription) {
         ImageFragment fr = new ImageFragment();
@@ -64,12 +67,21 @@ public final class ImageFragment extends Fragment {
             date.setText("");
         }
         if (FileUtils.isImage(fd)) {
-            Picasso.get()
-                    .load(fd.getFileUri())
-                    .fit()
-                    .centerInside()
-                    .error(style.imagePlaceholder)
-                    .into(imageView);
+            imageLoader.loadImageWithCallback(
+                    imageView,
+                    fd.getFileUri().toString(),
+                    ImageScale.FIT,
+                    style.imagePlaceholder,
+                    new ImageLoader.ImageLoaderCallback() {
+                        @Override
+                        public void onImageLoaded(@NonNull Drawable drawable) {
+                            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        }
+
+                        @Override
+                        public void onImageLoadError() {}
+                    }
+            );
         }
         v.setBackgroundColor(ContextCompat.getColor(getActivity(), style.imagesScreenBackgroundColor));
         from.setTextColor(ContextCompat.getColor(getActivity(), style.imagesScreenAuthorTextColor));

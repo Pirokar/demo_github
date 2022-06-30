@@ -21,8 +21,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.slider.Slider;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +30,9 @@ import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.formatters.RussianFormatSymbols;
+import im.threads.internal.image_loading.CoilImageLoader;
+import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.markdown.MarkdownProcessor;
 import im.threads.internal.markdown.MarkwonMarkdownProcessor;
 import im.threads.internal.model.CampaignMessage;
@@ -93,6 +94,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
     @NonNull
     private String formattedDuration = "";
     private MarkdownProcessor markdownProcessor = new MarkwonMarkdownProcessor();
+    private ImageLoader imageLoader = new CoilImageLoader();
 
     public UserPhraseViewHolder(final ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_text_with_file, parent, false));
@@ -215,21 +217,18 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
                     mImage.setVisibility(View.VISIBLE);
                     mImage.setOnClickListener(imageClickListener);
                     // User image can be already available locally
+                    String downloadPath;
                     if (fileDescription.getFileUri() == null) {
-                        Picasso.get()
-                                .load(fileDescription.getDownloadPath())
-                                .error(style.imagePlaceholder)
-                                .fit()
-                                .centerCrop()
-                                .into(mImage);
+                        downloadPath = fileDescription.getDownloadPath();
                     } else {
-                        Picasso.get()
-                                .load(fileDescription.getFileUri())
-                                .error(style.imagePlaceholder)
-                                .fit()
-                                .centerCrop()
-                                .into(mImage);
+                        downloadPath = fileDescription.getFileUri().toString();
                     }
+                    imageLoader.loadImage(
+                        mImage,
+                        downloadPath,
+                        ImageScale.FIT,
+                        style.imagePlaceholder
+                    );
                 } else {
                     if (fileDescription.getFileUri() != null) {
                         fileDescription.setDownloadProgress(100);
@@ -283,21 +282,18 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         if (quote.getFileDescription() != null) {
             if (FileUtils.isImage(quote.getFileDescription())) {
                 quoteImage.setVisibility(View.VISIBLE);
+                String downloadPath = "";
                 if (quote.getFileDescription().getFileUri() != null) {
-                    Picasso.get()
-                            .load(quote.getFileDescription().getFileUri())
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerCrop()
-                            .into(quoteImage);
+                    downloadPath = quote.getFileDescription().getFileUri().toString();
                 } else if (quote.getFileDescription().getDownloadPath() != null) {
-                    Picasso.get()
-                            .load(quote.getFileDescription().getDownloadPath())
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerCrop()
-                            .into(quoteImage);
+                    downloadPath = quote.getFileDescription().getDownloadPath();
                 }
+                imageLoader.loadImage(
+                        quoteImage,
+                        downloadPath,
+                        ImageScale.FIT,
+                        style.imagePlaceholder
+                );
                 if (onQuoteClickListener != null) {
                     quoteImage.setOnClickListener(onQuoteClickListener);
                 }
@@ -429,26 +425,24 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         if (TextUtils.isEmpty(ogData.getImageUrl())) {
             ogImage.setVisibility(View.GONE);
         } else {
-            Picasso.get()
-                    .load(ogData.getImageUrl())
-                    .fetch(new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            ogImage.setVisibility(View.VISIBLE);
-                            Picasso.get()
-                                    .load(ogData.getImageUrl())
-                                    .error(style.imagePlaceholder)
-                                    .fit()
-                                    .centerInside()
-                                    .into(ogImage);
-                        }
+            imageLoader.getDrawableAsync(
+                    context,
+                    ogData.getImageUrl(),
+                    null,
+                    new ImageLoader.ImageLoaderCallback() {
+                @Override
+                public void onImageLoaded(@NonNull Drawable drawable) {
+                    ogImage.setVisibility(View.VISIBLE);
+                    ogImage.setImageDrawable(drawable);
+                }
 
-                        @Override
-                        public void onError(Exception e) {
-                            ogImage.setVisibility(View.GONE);
-                            ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.getLocalizedMessage());
-                        }
-                    });
+                @Override
+                public void onImageLoadError() {
+                    ogImage.setVisibility(View.GONE);
+                    ThreadsLogger.d(TAG, "Could not load OpenGraph image in "
+                            + UserPhraseViewHolder.class.getSimpleName());
+                }
+            });
         }
     }
 

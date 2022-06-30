@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
@@ -22,9 +23,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Picasso.LoadedFrom
-import com.squareup.picasso.Target
 import im.threads.ChatStyle
 import im.threads.ConfigBuilder
 import im.threads.R
@@ -32,7 +30,9 @@ import im.threads.internal.Config
 import im.threads.internal.activities.QuickAnswerActivity
 import im.threads.internal.controllers.UnreadMessagesController
 import im.threads.internal.formatters.MessageFormatter
-import im.threads.internal.utils.CircleTransformation
+import im.threads.internal.image_loading.CoilImageLoader
+import im.threads.internal.image_loading.ImageLoader
+import im.threads.internal.image_loading.ImageModifications
 import im.threads.internal.utils.FileUtils.convertRelativeUrlToAbsolute
 import im.threads.internal.utils.ThreadsLogger
 import im.threads.internal.utils.WorkerUtils
@@ -47,6 +47,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
     Worker(context, workerParameters) {
 
     private val executor = Executors.newSingleThreadExecutor()
+    private val imageLoader: ImageLoader = CoilImageLoader()
 
     private var notificationChannel: NotificationChannel? = null
     private var style: ChatStyle = Config.instance.chatStyle
@@ -319,54 +320,55 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
         pushSmall: RemoteViews,
         pushBig: RemoteViews
     ) {
-        Picasso.get()
-            .load(operatorAvatarUrl)
-            .transform(CircleTransformation())
-            .into(object : Target {
-                override fun onBitmapLoaded(bitmap: Bitmap, from: LoadedFrom) {
-                    pushSmall.setImageViewBitmap(R.id.icon_large, bitmap)
-                    pushBig.setImageViewBitmap(R.id.icon_large, bitmap)
+        imageLoader.getDrawableAsync(
+            context,
+            operatorAvatarUrl,
+            listOf(ImageModifications.CircleCropModification),
+            object : ImageLoader.ImageLoaderCallback {
+                override fun onImageLoaded(drawable: Drawable) {
+                    onImageLoaded(drawable, pushSmall, pushBig, R.id.icon_large)
                 }
 
-                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable) {
-                    val big = BitmapFactory.decodeResource(
-                        context.resources,
-                        R.drawable.threads_operator_avatar_placeholder
-                    )
-                    pushSmall.setImageViewBitmap(R.id.icon_large, big)
-                    pushBig.setImageViewBitmap(R.id.icon_large, big)
+                override fun onImageLoadError() {
+                    onImageLoadError(pushSmall, pushBig, R.id.icon_large)
                 }
-
-                override fun onPrepareLoad(placeHolderDrawable: Drawable) {}
             }
-            )
+        )
     }
 
     private fun showPreNStyleSmallIcon(pushSmall: RemoteViews, pushBig: RemoteViews) {
-        Picasso.get()
-            .load(style.defPushIconResId)
-            .transform(CircleTransformation())
-            .into(object : Target {
-                override fun onBitmapLoaded(
-                    bitmap: Bitmap,
-                    from: LoadedFrom
-                ) { // round icon in corner
-                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap)
-                    pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap)
-                }
+        val drawable = imageLoader.getBitmapFromResource(
+            context,
+            style.defPushIconResId,
+            listOf(ImageModifications.CircleCropModification)
+        )
+        val bitmap = (drawable as BitmapDrawable).bitmap
+        pushSmall.setImageViewBitmap(R.id.icon_small_corner, bitmap)
+        pushBig.setImageViewBitmap(R.id.icon_small_corner, bitmap)
+    }
 
-                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable) {
-                    val big = BitmapFactory.decodeResource(
-                        context.resources,
-                        R.drawable.threads_operator_avatar_placeholder
-                    )
-                    pushSmall.setImageViewBitmap(R.id.icon_small_corner, big)
-                    pushBig.setImageViewBitmap(R.id.icon_small_corner, big)
-                }
+    private fun onImageLoaded(
+        drawable: Drawable,
+        pushSmall: RemoteViews,
+        pushBig: RemoteViews,
+        pushContainerResId: Int
+    ) {
+        val bitmap = (drawable as BitmapDrawable).bitmap
+        pushSmall.setImageViewBitmap(pushContainerResId, bitmap)
+        pushBig.setImageViewBitmap(pushContainerResId, bitmap)
+    }
 
-                override fun onPrepareLoad(placeHolderDrawable: Drawable) {}
-            }
-            )
+    private fun onImageLoadError(
+        pushSmall: RemoteViews,
+        pushBig: RemoteViews,
+        pushContainerResId: Int
+    ) {
+        val big = BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.threads_operator_avatar_placeholder
+        )
+        pushSmall.setImageViewBitmap(R.id.icon_large, big)
+        pushBig.setImageViewBitmap(R.id.icon_large, big)
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -434,9 +436,7 @@ open class NotificationWorker(private val context: Context, workerParameters: Wo
 
     private fun getBitmapFromUrl(url: String?): Bitmap? {
         return if (url.isNullOrEmpty()) null else try {
-            Picasso.get()
-                .load(url)
-                .transform(CircleTransformation()).get()
+            imageLoader.getBitmap(context, url, listOf(ImageModifications.CircleCropModification))
         } catch (e: IOException) {
             ThreadsLogger.e(TAG, "getBitmapFromUrl", e)
             null

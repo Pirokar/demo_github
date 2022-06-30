@@ -5,6 +5,7 @@ import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -13,9 +14,10 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
-import com.squareup.picasso.Picasso
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.image_loading.CoilImageLoader
+import im.threads.internal.image_loading.ImageLoader
 import im.threads.internal.model.FileDescription
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -33,6 +35,7 @@ object FileUtils {
     private const val OTHER_DOC_FORMATS = 4
     private const val UNKNOWN = -1
     private const val UNKNOWN_MIME_TYPE = "*/*"
+    private val imageLoader: ImageLoader = CoilImageLoader()
 
     @JvmStatic
     fun getFileName(fd: FileDescription): String {
@@ -258,42 +261,42 @@ object FileUtils {
 
     @Throws(IOException::class)
     private fun saveToFile(uri: Uri?, outputFile: File) {
-        val bitmap = Picasso.get()
-            .load(uri)
-            .get()
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        try {
-            FileOutputStream(outputFile).use { fileOutputStream ->
-                fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                fileOutputStream.flush()
+        imageLoader.getBitmap(Config.instance.context, uri.toString())?.let { drawable ->
+            val bitmap = (drawable as BitmapDrawable).bitmap
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            try {
+                FileOutputStream(outputFile).use { fileOutputStream ->
+                    fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                    fileOutputStream.flush()
+                    bitmap.recycle()
+                }
+            } catch (e: IOException) {
+                ThreadsLogger.e(TAG, "saveToFile", e)
                 bitmap.recycle()
             }
-        } catch (e: IOException) {
-            ThreadsLogger.e(TAG, "saveToFile", e)
-            bitmap.recycle()
         }
     }
 
     @Throws(IOException::class)
     private fun saveToUri(uri: Uri?, outputUri: Uri?) {
         val resolver = Config.instance.context.contentResolver
-        val bitmap = Picasso.get()
-            .load(uri)
-            .get()
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        try {
-            resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
-                if (fileOutputStream != null) {
-                    fileOutputStream.write(byteArrayOutputStream.toByteArray())
-                    fileOutputStream.flush()
-                    bitmap.recycle()
+        imageLoader.getBitmap(Config.instance.context, uri.toString())?.let { drawable ->
+            val bitmap = (drawable as BitmapDrawable).bitmap
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            try {
+                resolver.openOutputStream(outputUri!!).use { fileOutputStream ->
+                    if (fileOutputStream != null) {
+                        fileOutputStream.write(byteArrayOutputStream.toByteArray())
+                        fileOutputStream.flush()
+                        bitmap.recycle()
+                    }
                 }
+            } catch (e: IOException) {
+                ThreadsLogger.e(TAG, "saveToUri", e)
+                bitmap.recycle()
             }
-        } catch (e: IOException) {
-            ThreadsLogger.e(TAG, "saveToUri", e)
-            bitmap.recycle()
         }
     }
 

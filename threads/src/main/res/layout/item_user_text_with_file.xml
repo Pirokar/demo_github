@@ -46,6 +46,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/margin_half"
                 android:layout_marginBottom="@dimen/margin_half"
+                android:scaleType="centerCrop"
                 android:background="@drawable/threads_ic_file_outline_24dp"
                 android:visibility="gone" />
 
@@ -109,6 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:layout_marginEnd="@dimen/margin_three_fourth"
+                android:scaleType="centerCrop"
                 android:minWidth="240dp" />
 
         </FrameLayout>
@@ -274,6 +276,7 @@
                     android:id="@+id/og_image"
                     android:layout_width="match_parent"
                     android:layout_height="125dp"
+                    android:scaleType="fitXY"
                     android:minWidth="240dp" />
 
                 <im.threads.internal.widget.text_view.BubbleMessageTextView

@@ -19,33 +19,36 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
-import com.squareup.picasso.Picasso;
-
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.image_loading.CoilImageLoader;
+import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.image_loading.ImageModifications;
+import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.AttachmentStateEnum;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.model.MessageState;
 import im.threads.internal.model.UserPhrase;
-import im.threads.internal.utils.MaskedTransformation;
 
 public final class ImageFromUserViewHolder extends BaseHolder {
     private TextView mTimeStampTextView;
     private ImageView mImage;
-    private MaskedTransformation maskedTransformation;
+    private ImageModifications.MaskedModification maskedTransformation;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private View filter;
     private View filterSecond;
     private ChatStyle style;
     private ImageView loader;
     private RelativeLayout loaderLayout;
+    private ImageLoader imageLoader = new CoilImageLoader();
 
-    public ImageFromUserViewHolder(ViewGroup parent, MaskedTransformation maskedTransformation) {
+    public ImageFromUserViewHolder(ViewGroup parent, ImageModifications.MaskedModification maskedTransformation) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_image_from, parent, false));
         style = Config.instance.getChatStyle();
         mImage = itemView.findViewById(R.id.image);
@@ -102,15 +105,15 @@ public final class ImageFromUserViewHolder extends BaseHolder {
             loader.setAnimation(rotate);
         }
 
-
         if (fileDescription.getFileUri() != null && !isDownloadError) {
-            Picasso.get()
-                    .load(fileDescription.getFileUri())
-                    .error(style.imagePlaceholder)
-                    .fit()
-                    .centerCrop()
-                    .transform(maskedTransformation)
-                    .into(mImage);
+            imageLoader.loadWithModifications(
+                    mImage,
+                    fileDescription.getFileUri().toString(),
+                    ImageScale.FIT,
+                    style.imagePlaceholder,
+                    Collections.singletonList(maskedTransformation),
+                    null
+            );
         } else if (isDownloadError) {
             mImage.setImageResource(style.imagePlaceholder);
         }

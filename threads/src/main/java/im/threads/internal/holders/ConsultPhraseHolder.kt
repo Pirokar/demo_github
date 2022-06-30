@@ -2,6 +2,7 @@ package im.threads.internal.holders
 
 import android.graphics.PorterDuff
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.util.TypedValue
@@ -17,16 +18,17 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import im.threads.R
 import im.threads.internal.Config
 import im.threads.internal.formatters.RussianFormatSymbols
+import im.threads.internal.image_loading.ImageLoader
+import im.threads.internal.image_loading.ImageModifications
+import im.threads.internal.image_loading.ImageScale
+import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.opengraph.OGData
 import im.threads.internal.opengraph.OGDataProvider
-import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
 import im.threads.internal.utils.FileUtils.isImage
 import im.threads.internal.utils.ThreadsLogger
@@ -224,12 +226,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 } else {
                     if (isImage(quote.fileDescription)) {
                         mFileImage.visibility = View.VISIBLE
-                        Picasso.get()
-                            .load(quoteFileDescription.downloadPath)
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerCrop()
-                            .into(mFileImage)
+                        mFileImage.loadUrl(
+                            quoteFileDescription.downloadPath,
+                            ImageScale.FIT,
+                            style.imagePlaceholder
+                        )
                         mFileImage.setOnClickListener(onQuoteClickListener)
                     } else {
                         mCircularProgressButton.visibility = View.VISIBLE
@@ -255,9 +256,21 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
                 mImage.setOnClickListener(imageClickListener)
 
                 startLoaderAnimation()
-                Picasso.get()
-                    .load(fileDescription.downloadPath)
-                    .into(getPicassoTargetForView(mImage, style.imagePlaceholder, ::stopLoaderAnimation))
+                mImage.loadUrl(
+                    fileDescription.downloadPath,
+                    errorDrawableResId = style.imagePlaceholder,
+                    callback = object : ImageLoader.ImageLoaderCallback {
+                        override fun onImageLoaded(drawable: Drawable) {
+                            mImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                            stopLoaderAnimation()
+                        }
+
+                        override fun onImageLoadError() {
+                            mImage.scaleType = ImageView.ScaleType.FIT_CENTER
+                            stopLoaderAnimation()
+                        }
+                    }
+                )
             } else if (!isStateReady && isImage(fileDescription)) {
                 startLoaderAnimation()
             } else {
@@ -297,13 +310,11 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             showDefIcon()
             if (!TextUtils.isEmpty(consultPhrase.avatarPath)) {
-                Picasso.get()
-                    .load(FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath))
-                    .fit()
-                    .noPlaceholder()
-                    .centerCrop()
-                    .transform(CircleTransformation())
-                    .into(mConsultAvatar)
+                mConsultAvatar.loadUrl(
+                    FileUtils.convertRelativeUrlToAbsolute(consultPhrase.avatarPath),
+                    ImageScale.FIT,
+                    transformations = listOf(ImageModifications.CircleCropModification)
+                )
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE
@@ -361,24 +372,22 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
         if (TextUtils.isEmpty(ogData.imageUrl)) {
             ogImage.visibility = View.GONE
         } else {
-            Picasso.get()
-                .load(ogData.imageUrl)
-                .fetch(object : Callback {
-                    override fun onSuccess() {
+            ogImage.loadUrl(
+                ogData.imageUrl,
+                ImageScale.FIT,
+                style.imagePlaceholder,
+                callback = object : ImageLoader.ImageLoaderCallback {
+                    override fun onImageLoaded(drawable: Drawable) {
                         ogImage.visibility = View.VISIBLE
-                        Picasso.get()
-                            .load(ogData.imageUrl)
-                            .error(style.imagePlaceholder)
-                            .fit()
-                            .centerInside()
-                            .into(ogImage)
+                        ogImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
                     }
 
-                    override fun onError(e: Exception) {
+                    override fun onImageLoadError() {
                         ogImage.visibility = View.GONE
-                        ThreadsLogger.d(TAG, "Could not load OpenGraph image: " + e.message)
+                        ThreadsLogger.d(TAG, "Could not load OpenGraph image")
                     }
-                })
+                }
+            )
         }
     }
 

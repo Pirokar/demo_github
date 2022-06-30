@@ -58,7 +58,6 @@ import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordView;
 import com.google.android.material.slider.Slider;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -92,6 +91,9 @@ import im.threads.internal.fragments.PermissionDescriptionAlertDialogFragment;
 import im.threads.internal.helpers.FileHelper;
 import im.threads.internal.helpers.FileProviderHelper;
 import im.threads.internal.helpers.MediaHelper;
+import im.threads.internal.image_loading.CoilImageLoader;
+import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.media.ChatCenterAudioConverter;
 import im.threads.internal.media.ChatCenterAudioConverterCallback;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
@@ -215,6 +217,8 @@ public final class ChatFragment extends BaseFragment implements
 
     private QuickReplyItem quickReplyItem = null;
     private int previousChatItemsCount = 0;
+
+    private ImageLoader imageLoader = new CoilImageLoader();
 
     public static ChatFragment newInstance() {
         return newInstance(OpenWay.DEFAULT);
@@ -2518,11 +2522,12 @@ public final class ChatFragment extends BaseFragment implements
             binding.quoteText.setText(text);
             if (imagePath != null) {
                 binding.quoteImage.setVisibility(View.VISIBLE);
-                Picasso.get()
-                        .load(imagePath)
-                        .fit()
-                        .centerCrop()
-                        .into(binding.quoteImage);
+                imageLoader.loadImage(
+                        binding.quoteImage,
+                        imagePath.toString(),
+                        ImageScale.FIT,
+                        null
+                );
             } else {
                 binding.quoteImage.setVisibility(View.GONE);
             }

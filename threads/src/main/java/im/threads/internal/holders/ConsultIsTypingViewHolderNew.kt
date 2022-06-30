@@ -7,12 +7,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.image_loading.ImageModifications
+import im.threads.internal.image_loading.ImageScale
+import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.model.ConsultTyping
-import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
 
 /**
@@ -46,12 +47,10 @@ class ConsultIsTypingViewHolderNew(parent: ViewGroup) : RecyclerView.ViewHolder(
     fun onBind(consultTyping: ConsultTyping, consultClickListener: View.OnClickListener) {
         mConsultAvatar.setOnClickListener(consultClickListener)
         mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
-        val avatarPath = FileUtils.convertRelativeUrlToAbsolute(consultTyping.avatarPath)
-        Picasso.get()
-            .load(avatarPath)
-            .fit()
-            .centerCrop()
-            .transform(CircleTransformation())
-            .into(mConsultAvatar)
+        mConsultAvatar.loadUrl(
+            FileUtils.convertRelativeUrlToAbsolute(consultTyping.avatarPath),
+            ImageScale.FIT,
+            transformations = listOf(ImageModifications.CircleCropModification)
+        )
     }
 }

@@ -1,6 +1,7 @@
 package im.threads.internal.holders
 
 import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -12,24 +13,23 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import im.threads.ChatStyle
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.image_loading.ImageLoader
+import im.threads.internal.image_loading.ImageModifications
+import im.threads.internal.image_loading.ImageScale
+import im.threads.internal.image_loading.loadUrl
 import im.threads.internal.model.AttachmentStateEnum
 import im.threads.internal.model.ConsultPhrase
-import im.threads.internal.utils.CircleTransformation
 import im.threads.internal.utils.FileUtils
-import im.threads.internal.utils.MaskedTransformation
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ImageFromConsultViewHolder(
     parent: ViewGroup,
-    private val maskedTransformation: MaskedTransformation
+    private val maskedTransformation: ImageModifications.MaskedModification
 ) :
     BaseHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_image_from_consult, parent, false)
@@ -105,22 +105,17 @@ class ImageFromConsultViewHolder(
             val isStateReady = fileDescription.state == AttachmentStateEnum.READY
             if (isStateReady && fileUri != null && !fileDescription.isDownloadError) {
                 startLoaderAnimation()
-                Picasso.get()
-                    .load(fileUri)
-                    .error(style.imagePlaceholder)
-                    .fit()
-                    .centerCrop()
-                    .transform(maskedTransformation)
-                    .into(
-                        mImage,
-                        object : Callback {
-                            override fun onSuccess() {
-                                stopLoaderAnimation()
-                            }
-
-                            override fun onError(e: Exception?) {}
+                mImage.loadUrl(
+                    fileUri,
+                    ImageScale.FIT,
+                    style.imagePlaceholder,
+                    transformations = listOf(maskedTransformation),
+                    callback = object : ImageLoader.ImageLoaderCallback {
+                        override fun onImageLoaded(drawable: Drawable) {
+                            stopLoaderAnimation()
                         }
-                    )
+                    }
+                )
             } else if (!isStateReady) {
                 startLoaderAnimation()
             } else if (fileDescription.isDownloadError) {
@@ -135,13 +130,11 @@ class ImageFromConsultViewHolder(
             mConsultAvatar.setOnClickListener(onAvatarClickListener)
             mConsultAvatar.setImageResource(style.defaultOperatorAvatar)
             if (avatarPath != null) {
-                Picasso.get()
-                    .load(FileUtils.convertRelativeUrlToAbsolute(avatarPath))
-                    .fit()
-                    .transform(CircleTransformation())
-                    .centerInside()
-                    .noPlaceholder()
-                    .into(mConsultAvatar)
+                mConsultAvatar.loadUrl(
+                    FileUtils.convertRelativeUrlToAbsolute(avatarPath),
+                    ImageScale.FIT,
+                    transformations = listOf(ImageModifications.CircleCropModification)
+                )
             }
         } else {
             mConsultAvatar.visibility = View.INVISIBLE

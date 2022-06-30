@@ -5,11 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
-
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +18,9 @@ import java.util.Locale;
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.image_loading.CoilImageLoader;
+import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.FileDescription;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
@@ -31,6 +34,7 @@ public final class FileAndMediaViewHolder extends BaseHolder {
     private TextView timeStampTextView;
     private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private Drawable tintedDrawable;
+    private ImageLoader imageLoader = new CoilImageLoader();
 
     public FileAndMediaViewHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_and_media, parent, false));
@@ -70,19 +74,27 @@ public final class FileAndMediaViewHolder extends BaseHolder {
         }
         mDownloadButton.setProgress(fileDescription.getFileUri() != null ? 100 : fileDescription.getDownloadProgress());
         if (FileUtils.isImage(fileDescription)) {
+            String downloadPath = "";
             if (fileDescription.getFileUri() != null) {
-                Picasso.get()
-                        .load(fileDescription.getFileUri())
-                        .fit()
-                        .centerInside()
-                        .into(mImageButton);
+                downloadPath = fileDescription.getFileUri().toString();
             } else if (fileDescription.getDownloadPath() != null) {
-                Picasso.get()
-                        .load(fileDescription.getDownloadPath())
-                        .fit()
-                        .centerInside()
-                        .into(mImageButton);
+                downloadPath = fileDescription.getDownloadPath();
             }
+            imageLoader.loadImageWithCallback(
+                    mImageButton,
+                    downloadPath,
+                    ImageScale.FIT,
+                    null,
+                    new ImageLoader.ImageLoaderCallback() {
+                        @Override
+                        public void onImageLoaded(@NonNull Drawable drawable) {
+                            mImageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        }
+
+                        @Override
+                        public void onImageLoadError() {}
+                    }
+            );
         } else {
             mImageButton.setImageDrawable(tintedDrawable);
         }

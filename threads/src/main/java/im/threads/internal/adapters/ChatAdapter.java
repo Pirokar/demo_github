@@ -53,6 +53,7 @@ import im.threads.internal.holders.UnreadMessageViewHolder;
 import im.threads.internal.holders.UserFileViewHolder;
 import im.threads.internal.holders.UserPhraseViewHolder;
 import im.threads.internal.holders.VoiceMessageBaseHolder;
+import im.threads.internal.image_loading.ImageModifications;
 import im.threads.internal.media.FileDescriptionMediaPlayer;
 import im.threads.internal.model.ChatItem;
 import im.threads.internal.model.ChatPhrase;
@@ -79,7 +80,6 @@ import im.threads.internal.model.UnreadMessages;
 import im.threads.internal.model.UserPhrase;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.FileUtilsKt;
-import im.threads.internal.utils.MaskedTransformation;
 import im.threads.internal.utils.PrefUtils;
 import im.threads.internal.utils.ThreadUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -116,9 +116,9 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @NonNull
     private final Callback mCallback;
     @NonNull
-    private final MaskedTransformation outgoingImageMaskTransformation;
+    private final ImageModifications.MaskedModification outgoingImageMaskTransformation;
     @NonNull
-    private final MaskedTransformation incomingImageMaskTransformation;
+    private final ImageModifications.MaskedModification incomingImageMaskTransformation;
     @NonNull
     private final FileDescriptionMediaPlayer fdMediaPlayer;
     @NonNull
@@ -142,8 +142,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.fdMediaPlayer = fdMediaPlayer;
         this.mediaMetadataRetriever = mediaMetadataRetriever;
         ChatStyle style = Config.instance.getChatStyle();
-        this.outgoingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.outgoingImageBubbleMask));
-        this.incomingImageMaskTransformation = new MaskedTransformation(ctx.getResources().getDrawable(style.incomingImageBubbleMask));
+        this.outgoingImageMaskTransformation = new ImageModifications.MaskedModification(
+                ctx.getResources().getDrawable(style.outgoingImageBubbleMask)
+        );
+        this.incomingImageMaskTransformation = new ImageModifications.MaskedModification(
+                ctx.getResources().getDrawable(style.incomingImageBubbleMask)
+        );
         clientNotificationDisplayType = PrefUtils.getClientNotificationDisplayType();
         currentThreadId = PrefUtils.getThreadId();
     }

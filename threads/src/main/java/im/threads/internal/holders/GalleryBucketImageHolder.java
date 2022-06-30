@@ -9,14 +9,17 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-
 import im.threads.R;
+import im.threads.internal.image_loading.CoilImageLoader;
+import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.image_loading.ImageScale;
 
 public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
     private TextView mNameTextView;
     private TextView mSizeTextView;
+
+    private ImageLoader imageLoader = new CoilImageLoader();
 
     public GalleryBucketImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gallery_bucket, parent, false));
@@ -31,11 +34,14 @@ public final class GalleryBucketImageHolder extends RecyclerView.ViewHolder {
             if (null != itemClickListener)
                 vg.getChildAt(i).setOnClickListener(itemClickListener);
         }
-        Picasso.get()
-                .load(imagePath)
-                .fit()
-                .centerCrop()
-                .into(mImageView);
+
+        imageLoader.loadImage(
+                mImageView,
+                imagePath.toString(),
+                ImageScale.FIT,
+                null
+        );
+
         mNameTextView.setText(title);
         mSizeTextView.setText(count);
     }

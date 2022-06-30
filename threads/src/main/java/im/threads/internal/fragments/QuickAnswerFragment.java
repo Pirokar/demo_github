@@ -23,17 +23,20 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.squareup.picasso.Picasso;
+import java.util.List;
 
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
 import im.threads.internal.activities.QuickAnswerActivity;
 import im.threads.internal.chat_updates.ChatUpdateProcessor;
+import im.threads.internal.image_loading.CoilImageLoader;
+import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.image_loading.ImageModifications;
+import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.InputFieldEnableModel;
 import im.threads.internal.useractivity.LastUserActivityTimeCounter;
 import im.threads.internal.useractivity.LastUserActivityTimeCounterSingletonProvider;
-import im.threads.internal.utils.CircleTransformation;
 import im.threads.internal.utils.ColorsHelper;
 import im.threads.internal.utils.FileUtils;
 import im.threads.internal.utils.ThreadsLogger;
@@ -42,6 +45,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public final class QuickAnswerFragment extends BaseDialogFragment {
     public static final String TAG = QuickAnswerFragment.class.getCanonicalName();
     private EditText mEditText;
+    private ImageLoader imageLoader = new CoilImageLoader();
 
     public static QuickAnswerFragment getInstance(
             String avatarPath,
@@ -77,11 +81,14 @@ public final class QuickAnswerFragment extends BaseDialogFragment {
             String consultPhrase = arguments.getString("consultPhrase");
             if (null != avatarPath && !avatarPath.equals("null")) {
                 avatarPath = FileUtils.convertRelativeUrlToAbsolute(avatarPath);
-                Picasso.get()
-                        .load(avatarPath)
-                        .fit()
-                        .transform(new CircleTransformation())
-                        .into(imageView);
+                imageLoader.loadWithModifications(
+                        imageView,
+                        avatarPath,
+                        ImageScale.FIT,
+                        null,
+                        List.of(ImageModifications.CircleCropModification.INSTANCE),
+                        null
+                );
             }
             if (null != consultName && !consultName.equals("null"))
                 consultNameTextView.setText(consultName);

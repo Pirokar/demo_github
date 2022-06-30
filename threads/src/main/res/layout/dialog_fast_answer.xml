@@ -20,7 +20,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/margin_half"/>
+            android:layout_marginStart="@dimen/margin_half"/>
 
         <im.threads.internal.widget.CustomFontTextView
             android:id="@+id/consult_name"

@@ -9,11 +9,12 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import com.squareup.picasso.Picasso;
-
 import im.threads.ChatStyle;
 import im.threads.R;
 import im.threads.internal.Config;
+import im.threads.internal.image_loading.CoilImageLoader;
+import im.threads.internal.image_loading.ImageLoader;
+import im.threads.internal.image_loading.ImageScale;
 import im.threads.internal.model.BottomGalleryItem;
 import im.threads.internal.utils.ColorsHelper;
 
@@ -21,6 +22,7 @@ public final class BottomGalleryImageHolder extends BaseHolder {
     private final ImageView image;
     private final ImageView chosenMark;
     private final ChatStyle style;
+    private ImageLoader imageLoader = new CoilImageLoader();
 
     public BottomGalleryImageHolder(ViewGroup parent) {
         super(LayoutInflater.from(parent.getContext())
@@ -36,11 +38,21 @@ public final class BottomGalleryImageHolder extends BaseHolder {
             vg.getChildAt(i).setOnClickListener(listener);
         }
         setChosenMarkBackgroundDrawable(item);
-        Picasso.get()
-                .load(item.getImagePath())
-                .fit()
-                .centerCrop()
-                .into(image);
+        imageLoader.loadImageWithCallback(
+                image,
+                item.getImagePath().toString(),
+                ImageScale.FIT,
+                null,
+                new ImageLoader.ImageLoaderCallback() {
+                    @Override
+                    public void onImageLoaded(@NonNull Drawable drawable) {
+                        image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    }
+
+                    @Override
+                    public void onImageLoadError() {}
+                }
+        );
     }
 
     private void setChosenMarkBackgroundDrawable(@NonNull BottomGalleryItem item) {
