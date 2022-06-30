@@ -14,7 +14,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Consumer;
-import androidx.core.util.ObjectsCompat;
 import androidx.core.util.Pair;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -23,6 +22,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -199,10 +199,10 @@ public final class ChatController {
         String newClientId = PrefUtils.getNewClientID();
         String oldClientId = PrefUtils.getClientID();
         ThreadsLogger.i(TAG, "getInstance newClientId = " + newClientId + ", oldClientId = " + oldClientId);
-        if (TextUtils.isEmpty(newClientId) || newClientId.equals(oldClientId)) {
+        if (Objects.equals(newClientId, oldClientId)) {
             // clientId has not changed
             PrefUtils.setNewClientId("");
-        } else {
+        } else if (!TextUtils.isEmpty(newClientId)) {
             PrefUtils.setClientId(newClientId);
             instance.subscribe(
                     Single.fromCallable(() -> instance.onClientIdChanged())
@@ -737,7 +737,9 @@ public final class ChatController {
     private void subscribeToTyping() {
         subscribe(
                 Flowable.fromPublisher(chatUpdateProcessor.getTypingProcessor())
-                        .filter(clientId -> Config.instance.clientIdIgnoreEnabled || ObjectsCompat.equals(PrefUtils.getClientID(), clientId))
+                        .filter(clientId ->
+                            Config.instance.clientIdIgnoreEnabled || PrefUtils.getClientID().contains(clientId)
+                        )
                         .map(clientId ->
                                 new ConsultTyping(
                                         consultWriter.getCurrentConsultId(),
@@ -1112,9 +1114,6 @@ public final class ChatController {
                 fragment.removeSchedule(false);
             }
         }
-        /*if (chatItem instanceof ConsultPhrase) {
-            removeResolveRequest();
-        }*/
     }
 
     private void queueMessageSending(UserPhrase userPhrase) {

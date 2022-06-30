@@ -112,11 +112,14 @@ public final class MessageParser {
      * @return true если в fullMessage есть поле clientId и оно совпадает с currentClientId
      */
     public static boolean checkId(final JsonObject fullMessage, final String currentClientId) {
+        // "ATTACHMENT_UPDATED" excluded cause server has stopped returning this files
+        boolean isFullMessageNonNull = fullMessage != null;
         return Config.instance.clientIdIgnoreEnabled ||
+                (isFullMessageNonNull && fullMessage.toString().contains("ATTACHMENT_UPDATED")) ||
                 (!TextUtils.isEmpty(currentClientId)
-                        && fullMessage != null
+                        && isFullMessageNonNull
                         && fullMessage.has(MessageAttributes.CLIENT_ID)
-                        && currentClientId.equalsIgnoreCase(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString())
+                        && currentClientId.contains(fullMessage.get(MessageAttributes.CLIENT_ID).getAsString())
                 );
     }
 
