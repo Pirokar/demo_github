@@ -44,6 +44,7 @@ import im.threads.android.ui.add_server_dialog.AddServerDialogActions
 import im.threads.android.utils.PrefUtilsApp
 import im.threads.android.utils.fromJson
 import im.threads.android.utils.toJson
+import im.threads.internal.secureDatabase.DatabaseHolder
 import java.io.FileOutputStream
 import java.io.InputStream
 
@@ -226,6 +227,7 @@ class DebugMenuInteractor(private val context: Context) : DebugMenuUseCase {
             serverMenuItem?.let {
                 currentServerName = it.name.toString()
                 setCurrentServer(it.name.toString())
+                cleanHistory()
                 Toast.makeText(
                     context,
                     getString(R.string.demo_restart_app_for_server_apply),
@@ -260,6 +262,10 @@ class DebugMenuInteractor(private val context: Context) : DebugMenuUseCase {
             .getAllServers(context)
             .map { Gson().fromJson<ServerConfig>(it.value) }
             .first()
+    }
+
+    private fun cleanHistory() {
+        DatabaseHolder.getInstance().cleanDatabase()
     }
 
     private fun getString(resId: Int) = context.getString(resId)
