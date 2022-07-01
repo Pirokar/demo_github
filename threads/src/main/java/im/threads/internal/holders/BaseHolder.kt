@@ -54,7 +54,7 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         button.setCompletedDrawable(completed)
     }
 
-    fun getPicassoTargetForView(view: ImageView, placeholderResource: Int, onLoaded: () -> Unit): com.squareup.picasso.Target {
+    fun getPicassoTargetForView(view: ImageView, placeholderResource: Int, onLoaded: () -> Unit): Target {
         return object : Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                 view.setImageBitmap(bitmap)
@@ -72,13 +72,13 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
 
     protected fun setOperatorTextWithMarkdown(textView: TextView, consultPhrase: ConsultPhrase, phrase: String) {
         val text = consultPhrase.formattedPhrase ?: phrase
-        MarkdownProcessor.instance.parseOperatorMessage(textView, text.trim { it <= ' ' })
+        textView.text = MarkdownProcessor.instance.parseOperatorMessage(text.trim { it <= ' ' })
         setMovementMethod(textView)
     }
 
     protected fun setClientTextWithMarkdown(textView: TextView, text: String) {
         setMovementMethod(textView)
-        MarkdownProcessor.instance.parseClientMessage(textView, text.trim())
+        textView.text = MarkdownProcessor.instance.parseClientMessage(text.trim())
     }
 
     private fun setMovementMethod(textView: TextView) {

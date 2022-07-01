@@ -1,11 +1,7 @@
 package im.threads.internal.markdown
 
 import android.content.Context
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.URLSpan
-import android.text.util.Linkify
-import android.widget.TextView
+import android.text.Spanned
 import im.threads.internal.Config
 import im.threads.internal.utils.UrlUtils
 import io.noties.markwon.AbstractMarkwonPlugin
@@ -37,24 +33,12 @@ class MarkwonMarkdownProcessor(
         configureParser(outgoingMarkdownConfiguration)
     }
 
-    override fun parseClientMessage(textView: TextView, text: String) {
-        parseMessage(textView, text, outgoingProcessor)
+    override fun parseClientMessage(text: String): Spanned {
+        return outgoingProcessor.toMarkdown(text)
     }
 
-    override fun parseOperatorMessage(textView: TextView, text: String) {
-        parseMessage(textView, text, incomingProcessor)
-    }
-
-    private fun parseMessage(textView: TextView, text: String, processor: Markwon) {
-        textView.text = processor.toMarkdown(text)
-        Linkify.addLinks(textView, UrlUtils.PHONE_URL, "tel:")
-        if (!outgoingMarkdownConfiguration.isLinkUnderlined) {
-            stripUnderlines(textView)
-        }
-    }
-
-    private fun removeTelSchemeFromText(text: String): String {
-        return text.replace("tel://", "")
+    override fun parseOperatorMessage(text: String): Spanned {
+        return incomingProcessor.toMarkdown(text)
     }
 
     private fun configureParser(markdownConfig: MarkdownConfig): Markwon {
@@ -72,19 +56,6 @@ class MarkwonMarkdownProcessor(
                 }
             })
             .build()
-    }
-
-    private fun stripUnderlines(textView: TextView) {
-        val s: Spannable = SpannableString(textView.text)
-        val spans = s.getSpans(0, s.length, URLSpan::class.java)
-        for (span in spans) {
-            val start = s.getSpanStart(span)
-            val end = s.getSpanEnd(span)
-            s.removeSpan(span)
-            val newSpan = UrlSpanNoUnderline(span.url)
-            s.setSpan(newSpan, start, end, 0)
-        }
-        textView.text = s
     }
 
     private fun configureMessagesView(builder: MarkwonTheme.Builder, config: MarkdownConfig) {

@@ -1,10 +1,10 @@
 package im.threads.internal.markdown
 
-import android.widget.TextView
+import android.text.Spanned
 
 interface MarkdownProcessor {
-    fun parseClientMessage(textView: TextView, text: String)
-    fun parseOperatorMessage(textView: TextView, text: String)
+    fun parseClientMessage(text: String): Spanned
+    fun parseOperatorMessage(text: String): Spanned
 
     companion object {
         val instance: MarkwonMarkdownProcessor by lazy {

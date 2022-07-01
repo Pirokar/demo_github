@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 
 public final class UrlUtils {
 
-    public static final Pattern PHONE_URL = Pattern.compile("([0-9]+[\\- \\. \\(]*)?(\\([0-9]+\\)[\\- \\.]*)?([0-9][0-9\\- \\. \\)]+[0-9])");
     public static final Pattern DEEPLINK_URL = Pattern.compile("[a-z0-9+.-]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|*]*");
     private static final String TAG = "UrlUtils";
     /**
