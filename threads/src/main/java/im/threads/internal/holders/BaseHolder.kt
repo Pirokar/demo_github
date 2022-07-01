@@ -16,6 +16,8 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import im.threads.R
 import im.threads.internal.Config
+import im.threads.internal.markdown.LinkifyLinksHighlighter
+import im.threads.internal.markdown.LinksHighlighter
 import im.threads.internal.markdown.MarkdownProcessor
 import im.threads.internal.model.ConsultPhrase
 import im.threads.internal.model.ErrorStateEnum
@@ -27,6 +29,7 @@ import io.reactivex.disposables.Disposable
 abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private var compositeDisposable: CompositeDisposable? = CompositeDisposable()
+    private val linksHighlighter: LinksHighlighter = LinkifyLinksHighlighter()
 
     @ColorInt
     fun getColorInt(@ColorRes colorRes: Int): Int {
@@ -70,15 +73,51 @@ abstract class BaseHolder internal constructor(itemView: View) : RecyclerView.Vi
         }
     }
 
-    protected fun setOperatorTextWithMarkdown(textView: TextView, consultPhrase: ConsultPhrase, phrase: String) {
-        val text = consultPhrase.formattedPhrase ?: phrase
-        textView.text = MarkdownProcessor.instance.parseOperatorMessage(text.trim { it <= ' ' })
-        setMovementMethod(textView)
+    /**
+     * Подсчвечивает ссылки, email, номера телефонов.
+     * Если поле formattedText внутри phrase не будет пустым, производится форматирование текста.
+     * @param textView вью, где необходимо произвести обработку - подсветку, форматирование
+     * @param phrase данные для отображение во вью
+     */
+    protected fun highlightOperatorText(
+        textView: TextView,
+        phrase: ConsultPhrase
+    ) {
+        if (phrase.formattedPhrase.isNullOrBlank()) {
+            textView.text = phrase.phraseText?.trim()
+            setTextWithHighlighting(
+                textView,
+                Config.instance.chatStyle.incomingMarkdownConfiguration.isLinkUnderlined
+            )
+        } else {
+            setTextWithMarkdown(textView, phrase.formattedPhrase)
+        }
     }
 
-    protected fun setClientTextWithMarkdown(textView: TextView, text: String) {
+    /**
+     * Подсчвечивает ссылки, email, номера телефонов.
+     * @param textView вью, где необходимо произвести подсветку
+     * @param phrase текст для отображение во вью
+     */
+    protected fun highlightClientText(
+        textView: TextView,
+        phrase: String
+    ) {
+        textView.text = phrase
+        setTextWithHighlighting(
+            textView,
+            Config.instance.chatStyle.outgoingMarkdownConfiguration.isLinkUnderlined
+        )
+    }
+
+    private fun setTextWithHighlighting(textView: TextView, isUnderlined: Boolean) {
         setMovementMethod(textView)
-        textView.text = MarkdownProcessor.instance.parseClientMessage(text.trim())
+        linksHighlighter.highlightAllTypeOfLinks(textView, isUnderlined)
+    }
+
+    private fun setTextWithMarkdown(textView: TextView, text: String) {
+        setMovementMethod(textView)
+        textView.text = MarkdownProcessor.instance.parseOperatorMessage(text.trim { it <= ' ' })
     }
 
     private fun setMovementMethod(textView: TextView) {
