@@ -178,6 +178,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
         slider.addOnChangeListener(onChangeListener);
         slider.addOnSliderTouchListener(onSliderTouchListener);
         slider.setLabelFormatter(new VoiceTimeLabelFormatter());
+        initSliderView(context, style, slider);
         fileSizeTextView.setText(formattedDuration);
         setTimestamp(timeStamp);
         setSendState(sendState);
