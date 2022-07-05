@@ -44,6 +44,10 @@ class AudioConverter private constructor(private val context: Context) {
                 callback?.onFailure(IOException("Can't read the file. Missing permission?"))
                 return
             }
+            if (audioFile.path.endsWith(".wav")) {
+                callback?.onSuccess(audioFile)
+                return
+            }
             val convertedFile = getConvertedFile(
                 audioFile, format
             )
@@ -102,7 +106,7 @@ class AudioConverter private constructor(private val context: Context) {
         }
 
         private fun getConvertedFile(originalFile: File, format: AudioFormat?): File {
-            val f = originalFile.path.split("\\.").toTypedArray()
+            val f = originalFile.path.split(".").toTypedArray()
             val filePath = originalFile.path.replace(f[f.size - 1], format!!.format)
             return File(filePath)
         }
