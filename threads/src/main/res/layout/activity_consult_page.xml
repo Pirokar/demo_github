@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/consultImage"
         android:padding="@dimen/margin_big"
-        android:textColor="@color/threads_chat_toolbar_text"
+        android:textColor="@color/threads_welcome_screen_title"
         android:textSize="@dimen/text_regular"/>
 
 </RelativeLayout>
