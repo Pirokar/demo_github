@@ -335,6 +335,6 @@ object FileUtils {
 }
 
 fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
-    setDataSource(uri.toString(), mutableMapOf<String, String>())
+    setDataSource(Config.instance.context, uri)
     return extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
 }

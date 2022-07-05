@@ -7,12 +7,12 @@ import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
 import androidx.core.util.ObjectsCompat
-import cafe.adriel.androidaudioconverter.AndroidAudioConverter
-import cafe.adriel.androidaudioconverter.callback.ILoadCallback
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
+import im.threads.internal.domain.audio_converter.AudioConverter
+import im.threads.internal.domain.audio_converter.callback.ILoadCallback
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.FileDescription
 import im.threads.internal.model.UpcomingUserMessage
@@ -188,7 +188,7 @@ class ThreadsLib private constructor(context: Context?) {
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 try {
-                    AndroidAudioConverter.load(
+                    AudioConverter.load(
                         Config.instance.context,
                         object : ILoadCallback {
                             override fun onSuccess() {
