@@ -22,6 +22,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Exception
 import java.util.UUID
 
 object FileUtils {
@@ -335,6 +336,10 @@ object FileUtils {
 }
 
 fun MediaMetadataRetriever.getDuration(uri: Uri): Long {
-    setDataSource(Config.instance.context, uri)
+    try {
+        setDataSource(Config.instance.context, uri)
+    } catch (exc: Exception) {
+        setDataSource(uri.toString(), mutableMapOf<String, String>())
+    }
     return extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
 }

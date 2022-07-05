@@ -4,15 +4,12 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.text.TextUtils
 import androidx.core.util.ObjectsCompat
 import im.threads.internal.Config
 import im.threads.internal.chat_updates.ChatUpdateProcessor
 import im.threads.internal.controllers.ChatController
 import im.threads.internal.controllers.UnreadMessagesController
-import im.threads.internal.domain.audio_converter.AudioConverter
-import im.threads.internal.domain.audio_converter.callback.ILoadCallback
 import im.threads.internal.helpers.FileProviderHelper
 import im.threads.internal.model.FileDescription
 import im.threads.internal.model.UpcomingUserMessage
@@ -184,29 +181,6 @@ class ThreadsLib private constructor(context: Context?) {
                             unreadMessagesCountListener.onUnreadMessagesCountChanged(count)
                         }
                     ) { error: Throwable -> ThreadsLogger.e(TAG, "init " + error.message) }
-            }
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                try {
-                    AudioConverter.load(
-                        Config.instance.context,
-                        object : ILoadCallback {
-                            override fun onSuccess() {
-                                ThreadsLogger.i(TAG, "AndroidAudioConverter was successfully loaded")
-                            }
-
-                            override fun onFailure(error: Exception) {
-                                ThreadsLogger.e(TAG, "AndroidAudioConverter failed to load", error)
-                            }
-                        }
-                    )
-                } catch (e: UnsatisfiedLinkError) {
-                    ThreadsLogger.e(
-                        TAG,
-                        "AndroidAudioConverter failed to load (UnsatisfiedLinkError)",
-                        e
-                    )
-                }
             }
             ChatController.getInstance()
             getLastUserActivityTimeCounter()

@@ -1,11 +1,10 @@
 package im.threads.internal.domain.audio_converter
 
 import android.content.Context
-import com.github.hiteshsondhi88.libffmpeg.FFmpeg
-import com.github.hiteshsondhi88.libffmpeg.FFmpegExecuteResponseHandler
-import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
+import android.util.Log
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
 import im.threads.internal.domain.audio_converter.callback.IConvertCallback
-import im.threads.internal.domain.audio_converter.callback.ILoadCallback
 import im.threads.internal.domain.audio_converter.model.AudioFormat
 import java.io.File
 import java.io.IOException
@@ -14,6 +13,7 @@ class AudioConverter private constructor(private val context: Context) {
     private var audioFile: File? = null
     private var format: AudioFormat? = null
     private var callback: IConvertCallback? = null
+    private val tag = "AudioConverter"
 
     fun setFile(originalFile: File?): AudioConverter {
         audioFile = originalFile
@@ -31,10 +31,6 @@ class AudioConverter private constructor(private val context: Context) {
     }
 
     fun convert() {
-        if (!isLoaded) {
-            callback?.onFailure(Exception("FFmpeg not loaded"))
-            return
-        }
         audioFile?.let { audioFile ->
             if (!audioFile.exists()) {
                 callback?.onFailure(IOException("File not exists"))
@@ -44,27 +40,22 @@ class AudioConverter private constructor(private val context: Context) {
                 callback?.onFailure(IOException("Can't read the file. Missing permission?"))
                 return
             }
+            if (audioFile.path.endsWith(".wav")) {
+                callback?.onSuccess(audioFile)
+                return
+            }
             val convertedFile = getConvertedFile(
                 audioFile, format
             )
-            val cmd = arrayOf("-y", "-i", audioFile.path, convertedFile.path)
+            val cmd = "-i -y ${audioFile.absolutePath} ${convertedFile.absolutePath}"
             try {
-                FFmpeg.getInstance(context).execute(
-                    cmd,
-                    object : FFmpegExecuteResponseHandler {
-                        override fun onStart() {}
-                        override fun onProgress(message: String) {}
-                        override fun onSuccess(message: String) {
-                            callback?.onSuccess(convertedFile)
-                        }
-
-                        override fun onFailure(message: String) {
-                            callback?.onFailure(IOException(message))
-                        }
-
-                        override fun onFinish() {}
-                    }
-                )
+                Log.i(tag, cmd)
+                val session = FFmpegKit.execute(cmd)
+                if (ReturnCode.isSuccess(session.returnCode)) {
+                    callback?.onSuccess(convertedFile)
+                } else {
+                    callback?.onFailure(IOException("Cannot convert file to wav with AudioConverter"))
+                }
             } catch (e: Exception) {
                 callback?.onFailure(e)
             }
@@ -72,37 +63,12 @@ class AudioConverter private constructor(private val context: Context) {
     }
 
     companion object {
-        var isLoaded = false
-            private set
-
-        fun load(context: Context?, callback: ILoadCallback) {
-            try {
-                FFmpeg.getInstance(context).loadBinary(object : FFmpegLoadBinaryResponseHandler {
-                    override fun onStart() {}
-                    override fun onSuccess() {
-                        isLoaded = true
-                        callback.onSuccess()
-                    }
-
-                    override fun onFailure() {
-                        isLoaded = false
-                        callback.onFailure(Exception("Failed to loaded FFmpeg lib"))
-                    }
-
-                    override fun onFinish() {}
-                })
-            } catch (e: Exception) {
-                isLoaded = false
-                callback.onFailure(e)
-            }
-        }
-
         fun with(context: Context): AudioConverter {
             return AudioConverter(context)
         }
 
         private fun getConvertedFile(originalFile: File, format: AudioFormat?): File {
-            val f = originalFile.path.split("\\.").toTypedArray()
+            val f = originalFile.path.split(".").toTypedArray()
             val filePath = originalFile.path.replace(f[f.size - 1], format!!.format)
             return File(filePath)
         }
