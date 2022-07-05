@@ -188,7 +188,7 @@ public final class UserPhraseViewHolder extends VoiceMessageBaseHolder {
             mPhraseTextView.bindTimestampView(mTimeStampTextView);
             String deepLink = UrlUtils.extractDeepLink(phrase);
             String url = UrlUtils.extractLink(phrase);
-            setClientTextWithMarkdown(mPhraseTextView, phrase);
+            highlightClientText(mPhraseTextView, phrase);
             if (url != null) {
                 if (userPhrase.ogData == null) {
                     loadOGData(userPhrase, url);
