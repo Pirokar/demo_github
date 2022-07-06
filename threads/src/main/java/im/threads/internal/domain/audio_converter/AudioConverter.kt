@@ -1,135 +1,110 @@
-package im.threads.internal.domain.audio_converter;
+package im.threads.internal.domain.audio_converter
 
-import android.content.Context;
+import android.content.Context
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg
+import com.github.hiteshsondhi88.libffmpeg.FFmpegExecuteResponseHandler
+import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
+import im.threads.internal.domain.audio_converter.callback.IConvertCallback
+import im.threads.internal.domain.audio_converter.callback.ILoadCallback
+import im.threads.internal.domain.audio_converter.model.AudioFormat
+import java.io.File
+import java.io.IOException
 
-import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
-import com.github.hiteshsondhi88.libffmpeg.FFmpegExecuteResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler;
+class AudioConverter private constructor(private val context: Context) {
+    private var audioFile: File? = null
+    private var format: AudioFormat? = null
+    private var callback: IConvertCallback? = null
 
-import java.io.File;
-import java.io.IOException;
-
-import im.threads.internal.domain.audio_converter.callback.IConvertCallback;
-import im.threads.internal.domain.audio_converter.callback.ILoadCallback;
-import im.threads.internal.domain.audio_converter.model.AudioFormat;
-
-public class AudioConverter {
-
-    private static boolean loaded;
-
-    private Context context;
-    private File audioFile;
-    private AudioFormat format;
-    private IConvertCallback callback;
-
-    private AudioConverter(Context context){
-        this.context = context;
+    fun setFile(originalFile: File?): AudioConverter {
+        audioFile = originalFile
+        return this
     }
 
-    public static boolean isLoaded(){
-        return loaded;
+    fun setFormat(format: AudioFormat?): AudioConverter {
+        this.format = format
+        return this
     }
 
-    public static void load(Context context, final ILoadCallback callback){
-        try {
-            FFmpeg.getInstance(context).loadBinary(new FFmpegLoadBinaryResponseHandler() {
-                @Override
-                public void onStart() {
+    fun setCallback(callback: IConvertCallback?): AudioConverter {
+        this.callback = callback
+        return this
+    }
 
-                }
+    fun convert() {
+        if (!isLoaded) {
+            callback?.onFailure(Exception("FFmpeg not loaded"))
+            return
+        }
+        audioFile?.let { audioFile ->
+            if (!audioFile.exists()) {
+                callback!!.onFailure(IOException("File not exists"))
+                return
+            }
+            if (!audioFile.canRead()) {
+                callback!!.onFailure(IOException("Can't read the file. Missing permission?"))
+                return
+            }
+            val convertedFile = getConvertedFile(audioFile, format)
+            val cmd = arrayOf("-y", "-i", audioFile.path, convertedFile.path)
+            try {
+                FFmpeg.getInstance(context).execute(
+                    cmd,
+                    object : FFmpegExecuteResponseHandler {
+                        override fun onStart() {}
+                        override fun onProgress(message: String) {}
+                        override fun onSuccess(message: String) {
+                            callback?.onSuccess(convertedFile)
+                        }
 
-                @Override
-                public void onSuccess() {
-                    loaded = true;
-                    callback.onSuccess();
-                }
+                        override fun onFailure(message: String) {
+                            callback?.onFailure(IOException(message))
+                        }
 
-                @Override
-                public void onFailure() {
-                    loaded = false;
-                    callback.onFailure(new Exception("Failed to loaded FFmpeg lib"));
-                }
-
-                @Override
-                public void onFinish() {
-
-                }
-            });
-        } catch (Exception e){
-            loaded = false;
-            callback.onFailure(e);
+                        override fun onFinish() {}
+                    }
+                )
+            } catch (e: Exception) {
+                callback?.onFailure(e)
+            }
         }
     }
 
-    public static AudioConverter with(Context context) {
-        return new AudioConverter(context);
-    }
+    companion object {
+        var isLoaded = false
+            private set
 
-    public AudioConverter setFile(File originalFile) {
-        this.audioFile = originalFile;
-        return this;
-    }
+        @JvmStatic
+        fun load(context: Context?, callback: ILoadCallback) {
+            try {
+                FFmpeg.getInstance(context).loadBinary(object : FFmpegLoadBinaryResponseHandler {
+                    override fun onStart() {}
+                    override fun onSuccess() {
+                        isLoaded = true
+                        callback.onSuccess()
+                    }
 
-    public AudioConverter setFormat(AudioFormat format) {
-        this.format = format;
-        return this;
-    }
+                    override fun onFailure() {
+                        isLoaded = false
+                        callback.onFailure(Exception("Failed to loaded FFmpeg lib"))
+                    }
 
-    public AudioConverter setCallback(IConvertCallback callback) {
-        this.callback = callback;
-        return this;
-    }
-
-    public void convert() {
-        if(!isLoaded()){
-            callback.onFailure(new Exception("FFmpeg not loaded"));
-            return;
+                    override fun onFinish() {}
+                })
+            } catch (e: Exception) {
+                isLoaded = false
+                callback.onFailure(e)
+            }
         }
-        if(audioFile == null || !audioFile.exists()){
-            callback.onFailure(new IOException("File not exists"));
-            return;
+
+        @JvmStatic
+        fun with(context: Context): AudioConverter {
+            return AudioConverter(context)
         }
-        if(!audioFile.canRead()){
-            callback.onFailure(new IOException("Can't read the file. Missing permission?"));
-            return;
+
+        private fun getConvertedFile(originalFile: File, format: AudioFormat?): File {
+            val f = originalFile.path.split(".").toTypedArray()
+            val filePath = originalFile.path.replace(f[f.size - 1], format!!.format)
+            return File(filePath)
         }
-        final File convertedFile = getConvertedFile(audioFile, format);
-        final String[] cmd = new String[]{"-y", "-i", audioFile.getPath(), convertedFile.getPath()};
-        try {
-            FFmpeg.getInstance(context).execute(cmd, new FFmpegExecuteResponseHandler() {
-                @Override
-                public void onStart() {
-
-                }
-
-                @Override
-                public void onProgress(String message) {
-
-                }
-
-                @Override
-                public void onSuccess(String message) {
-                    callback.onSuccess(convertedFile);
-                }
-
-                @Override
-                public void onFailure(String message) {
-                    callback.onFailure(new IOException(message));
-                }
-
-                @Override
-                public void onFinish() {
-
-                }
-            });
-        } catch (Exception e){
-            callback.onFailure(e);
-        }
-    }
-
-    private static File getConvertedFile(File originalFile, AudioFormat format){
-        String[] f = originalFile.getPath().split("\\.");
-        String filePath = originalFile.getPath().replace(f[f.length - 1], format.getFormat());
-        return new File(filePath);
     }
 }
