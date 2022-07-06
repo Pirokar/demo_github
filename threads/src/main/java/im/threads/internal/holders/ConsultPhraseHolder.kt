@@ -183,7 +183,7 @@ class ConsultPhraseHolder(parent: ViewGroup) : BaseHolder(
             mPhraseTextView.visibility = View.VISIBLE
             val deepLink = UrlUtils.extractDeepLink(phrase)
             val url = UrlUtils.extractLink(phrase)
-            setOperatorTextWithMarkdown(mPhraseTextView, consultPhrase, phrase)
+            highlightOperatorText(mPhraseTextView, consultPhrase)
             if (url != null) {
                 val ogData = consultPhrase.ogData
                 if (ogData == null) {
