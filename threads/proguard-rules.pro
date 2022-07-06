@@ -31,9 +31,6 @@
 -keep class com.edna.android.push_lite.** { *; }
 -keep class net.sqlcipher.** { *; }
 -keep class im.threads.** { *; }
--keep class im.threads.internal.model.** { *; }
--keep class im.threads.internal.transport.models.** { <fields>; }
--keep class im.threads.internal.transport.threads_gate.** { <fields>; }
 
 # Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
