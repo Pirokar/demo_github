@@ -46,12 +46,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
+            debuggable = true
         }
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
-            debuggable = true
+            debuggable = false
         }
     }
 
@@ -107,4 +108,7 @@ dependencies {
 
     implementation "com.jakewharton:process-phoenix:$rootProject.processPhoenixVersion"
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
 }

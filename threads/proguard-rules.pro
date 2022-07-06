@@ -28,8 +28,11 @@
 #-keep class com.google.gson.stream.** { *; }
 
 # Application classes that will be serialized/deserialized over Gson
--keep class im.threads.** { *; }
+-keep class com.edna.android.** { *; }
+-keep class kotlinx.coroutines.android.** {*;}
 -keep class net.sqlcipher.* { *; }
+-keep class net.sqlcipher.database.* { *; }
+-keep class im.threads.** { *; }
 -keep class im.threads.internal.model.** { *; }
 -keep class im.threads.internal.transport.models.** { <fields>; }
 -keep class im.threads.internal.transport.threads_gate.** { <fields>; }
